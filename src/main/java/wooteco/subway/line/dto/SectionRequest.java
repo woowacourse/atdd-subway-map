@@ -1,5 +1,7 @@
 package wooteco.subway.line.dto;
 
+import wooteco.subway.line.entity.SectionEntity;
+
 public class SectionRequest {
     private Long upStationId;
     private Long downStationId;

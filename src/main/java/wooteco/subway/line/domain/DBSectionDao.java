@@ -15,7 +15,6 @@ import java.util.Optional;
 
 @Repository
 public class DBSectionDao implements SectionDao {
-
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<SectionEntity> sectionEntityRowMapper;
 

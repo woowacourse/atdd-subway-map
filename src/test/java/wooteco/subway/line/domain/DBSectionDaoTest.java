@@ -15,7 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 class DBSectionDaoTest {
-
     private final JdbcTemplate jdbcTemplate;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
@@ -27,11 +26,6 @@ class DBSectionDaoTest {
         this.sectionDao = new DBSectionDao(jdbcTemplate);
         this.stationDao = new DBStationDao(jdbcTemplate);
         this.lineDao = new DBLineDao(jdbcTemplate);
-    }
-
-    @BeforeEach
-    void init() {
-
     }
 
     @Test
@@ -47,17 +41,5 @@ class DBSectionDaoTest {
 
         //then
         assertThat(sectionEntity.getLineId()).isEqualTo(savedSectionEntity.getLineId());
-    }
-
-    @Test
-    void findAll() {
-    }
-
-    @Test
-    void findById() {
-    }
-
-    @Test
-    void delete() {
     }
 }

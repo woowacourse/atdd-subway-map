@@ -9,7 +9,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
-
     @Test
     @DisplayName("라인 정상 생성 테스트 ")
     void create() {

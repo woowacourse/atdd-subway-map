@@ -18,7 +18,7 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineUpdateRequest;
-import wooteco.subway.line.dto.SectionAddRequest;
+import wooteco.subway.line.dto.SectionRequest;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
@@ -31,7 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선역 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-
     @Autowired
     private StationDao stationDao;
 
@@ -43,24 +42,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private Station station3;
     private Station station4;
     private Line line;
-
-    private static Stream<Arguments> stationIds() {
-        return Stream.of(
-                Arguments.arguments(1L, 2L),
-                Arguments.arguments(2L, 3L),
-                Arguments.arguments(1L, 3L),
-                Arguments.arguments(3L, 1L)
-        );
-    }
-
-    private static Stream<Arguments> exceptionStationIds() {
-        return Stream.of(
-                Arguments.arguments(3L, 4L),
-                Arguments.arguments(4L, 3L),
-                Arguments.arguments(5L, 6L),
-                Arguments.arguments(0L, 6L)
-        );
-    }
 
     @BeforeEach
     void init() {
@@ -230,10 +211,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteUpwardEndPointStation() {
         int distance = 5;
-        SectionAddRequest sectionAddRequest = new SectionAddRequest(station2.getId(), station3.getId(), distance);
+        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), distance);
 
         //when
-        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionAddRequest);
+        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionRequest);
         ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.getId(), station1.getId());
         ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
 
@@ -248,10 +229,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteMiddlewardStation() {
         int distance = 5;
-        SectionAddRequest sectionAddRequest = new SectionAddRequest(station2.getId(), station3.getId(), distance);
+        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), distance);
 
         //when
-        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionAddRequest);
+        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionRequest);
         ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.getId(), station2.getId());
         ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
 
@@ -266,10 +247,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteDownwardEndPointStation() {
         int distance = 5;
-        SectionAddRequest sectionAddRequest = new SectionAddRequest(station2.getId(), station3.getId(), distance);
+        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), distance);
 
         //when
-        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionAddRequest);
+        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionRequest);
         ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.getId(), station3.getId());
         ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
 
@@ -280,23 +261,41 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.getName(), station2.getName());
     }
 
+    private static Stream<Arguments> stationIds() {
+        return Stream.of(
+                Arguments.arguments(1L, 2L),
+                Arguments.arguments(2L, 3L),
+                Arguments.arguments(1L, 3L),
+                Arguments.arguments(3L, 1L)
+        );
+    }
+
     @ParameterizedTest
     @DisplayName("구간 등록시 상행역화 하행역이 이미 등록 되어있다면 예외가 발생한다. ")
     @MethodSource("stationIds")
     void registrationDuplicateException(Long upStationId, Long downStationId) {
         //given
         int distance = 3;
-        SectionAddRequest acceptSectionAddRequest = new SectionAddRequest(station2.getId(), station3.getId(), 7);
-        SectionAddRequest exceptionSectionAddRequest = new SectionAddRequest(upStationId, downStationId, distance);
+        SectionRequest acceptSectionRequest = new SectionRequest(station2.getId(), station3.getId(), 7);
+        SectionRequest exceptionSectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
         //when
-        ExtractableResponse<Response> acceptSaveResponse = addSectionToHTTP(line.getId(), acceptSectionAddRequest);
+        ExtractableResponse<Response> acceptSaveResponse = addSectionToHTTP(line.getId(), acceptSectionRequest);
 
-        ExtractableResponse<Response> exceptionR = addSectionToHTTP(line.getId(), exceptionSectionAddRequest);
+        ExtractableResponse<Response> exceptionR = addSectionToHTTP(line.getId(), exceptionSectionRequest);
 
 
         //then
         assertThat(exceptionR.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private static Stream<Arguments> exceptionStationIds() {
+        return Stream.of(
+                Arguments.arguments(3L, 4L),
+                Arguments.arguments(4L, 3L),
+                Arguments.arguments(5L, 6L),
+                Arguments.arguments(0L, 6L)
+        );
     }
 
     @ParameterizedTest
@@ -305,10 +304,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void registrationNotFoundException(Long upStationId, Long downStationId) {
         //given
         int distance = 3;
-        SectionAddRequest exceptionSectionAddRequest = new SectionAddRequest(upStationId, downStationId, distance);
+        SectionRequest exceptionSectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
         //when
-        ExtractableResponse<Response> exceptionR = addSectionToHTTP(line.getId(), exceptionSectionAddRequest);
+        ExtractableResponse<Response> exceptionR = addSectionToHTTP(line.getId(), exceptionSectionRequest);
 
         //then
         assertThat(exceptionR.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -327,16 +326,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(findLineResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-
     @Test
     @DisplayName("상행 종점역을 저장한다")
     void upwardEndPointRegistration() {
         //given
         int distance = 5;
-        SectionAddRequest sectionAddRequest = new SectionAddRequest(station3.getId(), station1.getId(), distance);
+        SectionRequest sectionRequest = new SectionRequest(station3.getId(), station1.getId(), distance);
 
         //when
-        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionAddRequest);
+        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionRequest);
         ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
         LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
 
@@ -351,10 +349,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void downwardEndPointRegistration() {
         //given
         int distance = 5;
-        SectionAddRequest sectionAddRequest = new SectionAddRequest(station2.getId(), station3.getId(), distance);
+        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), distance);
 
         //when
-        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionAddRequest);
+        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionRequest);
         ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
         LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
 
@@ -410,9 +408,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> addSectionToHTTP(Long lineId, SectionAddRequest sectionAddRequest) {
+    private ExtractableResponse<Response> addSectionToHTTP(Long lineId, SectionRequest sectionRequest) {
         return RestAssured.given().log().all()
-                .body(sectionAddRequest)
+                .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines/{id}/sections", lineId)

@@ -8,7 +8,7 @@ import wooteco.subway.line.application.LineService;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineUpdateRequest;
-import wooteco.subway.line.dto.SectionAddRequest;
+import wooteco.subway.line.dto.SectionRequest;
 
 import java.net.URI;
 import java.util.List;
@@ -53,8 +53,8 @@ public class LineController {
     }
 
     @PostMapping("/{id}/sections")
-    public ResponseEntity<Void> addSection(@PathVariable final Long id, @RequestBody final SectionAddRequest sectionAddRequest) {
-        lineService.addSection(id, sectionAddRequest);
+    public ResponseEntity<Void> addSection(@PathVariable final Long id, @RequestBody final SectionRequest sectionRequest) {
+        lineService.addSection(id, sectionRequest);
         return ResponseEntity.ok().build();
     }
 

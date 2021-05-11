@@ -32,11 +32,6 @@ public class StationName implements Name {
     }
 
     @Override
-    public Name changeName(String name) {
-        return new StationName(name);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -47,12 +42,5 @@ public class StationName implements Name {
     @Override
     public int hashCode() {
         return Objects.hash(name);
-    }
-
-    @Override
-    public String toString() {
-        return "StationName{" +
-                "name='" + name + '\'' +
-                '}';
     }
 }

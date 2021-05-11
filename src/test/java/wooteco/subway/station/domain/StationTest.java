@@ -9,7 +9,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class StationTest {
-
     @Test
     @DisplayName("역 객체를 생성한다.")
     void create() {

@@ -32,11 +32,6 @@ public class LineName implements Name {
     }
 
     @Override
-    public Name changeName(final String name) {
-        return new LineName(name);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -47,12 +42,5 @@ public class LineName implements Name {
     @Override
     public int hashCode() {
         return Objects.hash(name);
-    }
-
-    @Override
-    public String toString() {
-        return "LineName{" +
-                "name='" + name + '\'' +
-                '}';
     }
 }

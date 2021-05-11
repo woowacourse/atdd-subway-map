@@ -51,24 +51,12 @@ public class Section {
         return upStation;
     }
 
-    public void changeUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
     public Station downStation() {
         return downStation;
     }
 
-    public void changeDownStation(Station downStation) {
-        this.downStation = downStation;
-    }
-
     public int distance() {
         return distance;
-    }
-
-    public void changeDistance(int distance) {
-        this.distance = distance;
     }
 
     @Override
@@ -90,17 +78,6 @@ public class Section {
 
     public boolean sameDownStation(Station targetStation) {
         return this.downStation.equals(targetStation);
-    }
-
-    @Override
-    public String toString() {
-        return "Section{" +
-                "id=" + id +
-                ", line=" + line +
-                ", upStation=" + upStation +
-                ", downStation=" + downStation +
-                ", distance=" + distance +
-                '}';
     }
 
     private void validateStation(final Station upStation, final Station downStation) {

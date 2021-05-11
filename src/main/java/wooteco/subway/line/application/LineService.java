@@ -6,7 +6,7 @@ import wooteco.subway.line.domain.*;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineUpdateRequest;
-import wooteco.subway.line.dto.SectionAddRequest;
+import wooteco.subway.line.dto.SectionRequest;
 import wooteco.subway.line.entity.LineEntity;
 import wooteco.subway.line.entity.SectionEntity;
 import wooteco.subway.station.domain.Station;
@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 
 @Service
 public class LineService {
-
     private final LineDao lineDao;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
@@ -75,11 +74,11 @@ public class LineService {
     }
 
     @Transactional
-    public void addSection(final Long lineId, final SectionAddRequest sectionAddRequest) {
+    public void addSection(final Long lineId, final SectionRequest sectionRequest) {
         LineEntity findLineEntity = findLineEntityById(lineId);
         Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());
         Sections originSections = new Sections(toSections(line));
-        Section targetSection = new Section(findStationById(sectionAddRequest.getUpStationId()), findStationById(sectionAddRequest.getDownStationId()), sectionAddRequest.getDistance());
+        Section targetSection = new Section(findStationById(sectionRequest.getUpStationId()), findStationById(sectionRequest.getDownStationId()), sectionRequest.getDistance());
 
         line.addSection(targetSection);
 

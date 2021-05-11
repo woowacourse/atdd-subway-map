@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MemoryStationDaoTest {
-
     private final StationDao stationDao = new MemoryStationDao();
 
     @AfterEach

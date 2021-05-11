@@ -10,7 +10,7 @@ import wooteco.subway.line.domain.LineDao;
 import wooteco.subway.line.domain.SectionDao;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
-import wooteco.subway.line.dto.SectionAddRequest;
+import wooteco.subway.line.dto.SectionRequest;
 import wooteco.subway.line.entity.LineEntity;
 import wooteco.subway.line.entity.SectionEntity;
 import wooteco.subway.station.domain.Station;
@@ -152,7 +152,6 @@ class LineServiceTest {
         assertThat(stationResponsesToString(response.getStations())).containsExactly("아마찌역", "마찌역");
     }
 
-
     @Test
     @DisplayName("구간 등록시 상행역과 하행역이 이미 등록 되어있다면 에러가 발생한다. ")
     void registrationDuplicateException() {
@@ -168,7 +167,7 @@ class LineServiceTest {
         when(sectionDao.findByLineIdWithUpStationId(lineId, upStationId)).thenReturn(Optional.of(new SectionEntity()));
         when(sectionDao.findByLineIdWithDownStationId(lineId, downStationId)).thenReturn(Optional.of(new SectionEntity()));
         //then
-        assertThatThrownBy(() -> lineService.addSection(lineId, new SectionAddRequest(upStationId, downStationId, distance)))
+        assertThatThrownBy(() -> lineService.addSection(lineId, new SectionRequest(upStationId, downStationId, distance)))
                 .isInstanceOf(IllegalStateException.class);
     }
 
@@ -185,7 +184,7 @@ class LineServiceTest {
         beforeSaveLineSection(lineId, upStationId, downStationId, distance);
 
         //when
-        lineService.addSection(lineId, new SectionAddRequest(upStationId, downStationId, distance));
+        lineService.addSection(lineId, new SectionRequest(upStationId, downStationId, distance));
         when(sectionDao.findByLineId(1L)).thenReturn(Arrays.asList(
                 new SectionEntity(2L, lineId, 1L, 2L, 5),
                 new SectionEntity(3L, lineId, 2L, 3L, 7),
@@ -211,7 +210,7 @@ class LineServiceTest {
         beforeSaveLineSection(lineId, upStationId, downStationId, distance);
 
         //when
-        lineService.addSection(lineId, new SectionAddRequest(upStationId, downStationId, distance));
+        lineService.addSection(lineId, new SectionRequest(upStationId, downStationId, distance));
 
         when(sectionDao.findByLineId(1L)).thenReturn(Arrays.asList(
                 new SectionEntity(2L, lineId, 1L, 2L, 5),
@@ -239,7 +238,7 @@ class LineServiceTest {
         beforeSaveLineSection(lineId, upStationId, downStationId, distance);
 
         //when
-        lineService.addSection(lineId, new SectionAddRequest(upStationId, downStationId, distance));
+        lineService.addSection(lineId, new SectionRequest(upStationId, downStationId, distance));
         when(sectionDao.findByLineId(1L)).thenReturn(Arrays.asList(
                 new SectionEntity(2L, lineId, upStationId, downStationId, 5),
                 new SectionEntity(4L, lineId, downStationId, 2L, distance),
@@ -266,7 +265,7 @@ class LineServiceTest {
         beforeSaveLineSection(lineId, upStationId, downStationId, distance);
 
         //when
-        lineService.addSection(lineId, new SectionAddRequest(upStationId, downStationId, distance));
+        lineService.addSection(lineId, new SectionRequest(upStationId, downStationId, distance));
         when(sectionDao.findByLineId(1L)).thenReturn(Arrays.asList(
                 new SectionEntity(2L, lineId, 1L, 2L, 5),
                 new SectionEntity(4L, lineId, 2L, upStationId, 7 - distance),
