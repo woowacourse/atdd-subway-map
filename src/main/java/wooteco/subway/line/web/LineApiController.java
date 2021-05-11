@@ -1,6 +1,7 @@
 package wooteco.subway.line.web;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -58,5 +59,11 @@ public class LineApiController {
     public ResponseEntity<LineResponse> readLine(@PathVariable Long lineId) {
         Line line = lineService.findLine(lineId);
         return ResponseEntity.ok(LineResponse.create(line));
+    }
+
+    @DeleteMapping("/{lineId}")
+    public ResponseEntity<Long> delete(@PathVariable Long lineId) {
+        lineService.delete(lineId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(lineId);
     }
 }

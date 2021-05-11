@@ -39,6 +39,11 @@ public class Section {
         return downStation.isSameId(targetStation.getId());
     }
 
+    public void updateId(Section section) {
+        id = section.id;
+        lineId = section.lineId;
+    }
+
     public void updateUpStation(Section section) {
         int difference = distance - section.distance;
 

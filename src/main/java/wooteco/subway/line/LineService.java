@@ -40,4 +40,11 @@ public class LineService {
     public List<Line> findAll() {
         return lineDao.findAll();
     }
+
+    public void delete(Long lineId) {
+        if (lineDao.findById(lineId).isEmpty()) {
+            throw new LineNotFoundException();
+        }
+        lineDao.delete(lineId);
+    }
 }

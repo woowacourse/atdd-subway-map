@@ -13,4 +13,6 @@ public interface LineDao {
     Optional<Line> findById(Long lineId);
 
     List<Line> findAll();
+
+    void delete(Long lineId);
 }

@@ -51,6 +51,12 @@ public class JdbcLineDao implements LineDao {
         return jdbcTemplate.query(sql, getRowMapper());
     }
 
+    @Override
+    public void delete(Long id) {
+        String sql = "DELETE FROM line WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
     private RowMapper getRowMapper() {
         RowMapper rowMapper = new RowMapper() {
             @Override

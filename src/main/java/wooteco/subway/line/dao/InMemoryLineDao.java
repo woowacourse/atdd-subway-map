@@ -45,4 +45,9 @@ public class InMemoryLineDao implements LineDao {
     public List<Line> findAll() {
         return lines;
     }
+
+    @Override
+    public void delete(Long id) {
+        lines.removeIf(line -> line.isSameId(id));
+    }
 }

@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 public class Sections {
 
     private static final int SECTION_LIMIT = 1;
+    private static final int AFFECTED_SECTION_LIMIT = 2;
     private static final int FIRST_ELEMENT = 0;
 
     private final List<Section> sections;
@@ -67,17 +68,35 @@ public class Sections {
         List<Section> collect = sections.stream()
                 .filter(originalSection -> isAdjacentSection(newSection, originalSection))
                 .collect(Collectors.toList());
+        return changedSection(newSection, collect);
+    }
 
-        if (collect.size() < SECTION_LIMIT) {
+    private Optional<Section> changedSection(Section newSection, List<Section> sections) {
+        if (sections.size() < SECTION_LIMIT || sections.size() > AFFECTED_SECTION_LIMIT) {
             throw new InvalidSectionException();
         }
 
-        if (collect.size() == SECTION_LIMIT) {
-            final Section originalSection = collect.get(FIRST_ELEMENT);
+        validateContainsBothStation(newSection, sections);
+
+        if (sections.size() == SECTION_LIMIT) {
+            final Section originalSection = sections.get(FIRST_ELEMENT);
             return updateSection(originalSection, newSection);
         }
 
         return affectedSection(newSection);
+    }
+
+    private void validateContainsBothStation(Section newSection, List<Section> sections) {
+        Optional<Section> upStation = sections.stream()
+                .filter(section -> section.hasStation(newSection.getUpStation().getId()))
+                .findAny();
+        Optional<Section> downStation = sections.stream()
+                .filter(section -> section.hasStation(newSection.getDownStation().getId()))
+                .findAny();
+
+        if (upStation.isPresent() && downStation.isPresent()) {
+            throw new InvalidSectionException();
+        }
     }
 
     private Optional<Section> affectedSection(Section newSection) {
@@ -86,26 +105,18 @@ public class Sections {
                 .findAny();
         if (sectionByUpStation.isPresent()) {
             Section section = sectionByUpStation.get();
-            return Optional.of(Section.of(
-                    section.getId(),
-                    section.getLineId(),
-                    newSection.getDownStation(),
-                    section.getDownStation(),
-                    section.getDistance() - newSection.getDistance()
-            ));
+            section.updateId(section);
+            section.updateUpStation(newSection);
+            return Optional.of(section);
         }
         Optional<Section> sectionByDownStation = sections.stream()
                 .filter(section -> section.isDownStation(newSection.getDownStation()))
                 .findAny();
         if (sectionByDownStation.isPresent()) {
             Section section = sectionByDownStation.get();
-            return Optional.of(Section.of(
-                    section.getId(),
-                    section.getLineId(),
-                    section.getUpStation(),
-                    newSection.getUpStation(),
-                    section.getDistance() - newSection.getDistance()
-            ));
+            section.updateId(section);
+            section.updateDownStation(newSection);
+            return Optional.of(section);
         }
         return Optional.empty();
     }
@@ -147,12 +158,9 @@ public class Sections {
     }
 
     public Optional<Section> transformSection(Long stationId) {
-        // 상행 종착 또는 하행 종착일 경우
-        if (sections.size() == 1) {
+        if (sections.size() == SECTION_LIMIT) {
             return Optional.empty();
         }
-
-        // downStation -> upStation ,  upStation -> downStation
 
         Station downStation = null;
         Station upStation = null;
@@ -167,7 +175,6 @@ public class Sections {
 
         }
 
-        // 가운데일 경우
         return Optional.of(Section.of(upStation, downStation, distance));
     }
 
@@ -179,15 +186,5 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.hasStation(stationId))
                 .collect(Collectors.toList());
-    }
-
-    public void change(Section newSection) {
-        sections.stream()
-                .filter(section -> section.getId().equals(newSection.getId()))
-                .map(sections::remove);
-        sections.add(newSection);
-        /*if (sections.removeIf(section -> section.getId().equals(newSection.getId()))) {
-            sections.add(newSection);
-        }*/
     }
 }

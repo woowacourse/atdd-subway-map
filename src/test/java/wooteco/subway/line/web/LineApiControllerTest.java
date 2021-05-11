@@ -12,6 +12,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
@@ -19,8 +20,7 @@ import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.section.SectionService;
 import wooteco.subway.station.dao.StationDao;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -133,7 +133,7 @@ class LineApiControllerTest {
         // when
         ResultActions result = 노선_생성(lineRequest);
 
-        // then선
+        // then
         result.andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("해당 역이 존재하지 않습니다."));
@@ -187,6 +187,38 @@ class LineApiControllerTest {
     void readLine_fail_notExistLine() throws Exception {
         // given & when
         ResultActions result = mockMvc.perform(get("/lines/" + Long.MAX_VALUE));
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("노선 삭제 - 성공")
+    void deleteLine_success() throws Exception {
+        // given
+        Long upStationId = stationDao.save(Station.from("잠실역")).getId();
+        Long downStationId = stationDao.save(Station.from("잠실새내역")).getId();
+
+        final LineRequest lineRequest =
+                new LineRequest("2호선", "bg-green-600", upStationId, downStationId, 10);
+
+        //when
+        ResultActions createdLine = 노선_생성(lineRequest);
+        LineResponse lineResponse =
+                objectMapper.readValue(createdLine.andReturn().getResponse().getContentAsString(), LineResponse.class);
+        ResultActions result = mockMvc.perform(delete("/lines/" + lineResponse.getId()));
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("노선 삭제 - 실패(해당 노선이 없을 경우)")
+    void deleteLine_fail_notExistLine() throws Exception {
+        // given & when
+        ResultActions result = mockMvc.perform(delete("/lines/" + Long.MAX_VALUE));
 
         //then
         result.andDo(print())
