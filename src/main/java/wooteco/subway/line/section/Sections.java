@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import wooteco.subway.line.exception.BothExistentStationException;
+import wooteco.subway.line.exception.NoneExistentStationException;
 
 public class Sections {
 

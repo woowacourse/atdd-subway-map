@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.line.exception.SectionSizeException;
 import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.Sections;
 import wooteco.subway.station.Station;

@@ -1,6 +1,7 @@
 package wooteco.subway.line.section;
 
 import java.util.Objects;
+import wooteco.subway.line.exception.BiggerDistanceException;
 
 public class Section {
 

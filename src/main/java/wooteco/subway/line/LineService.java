@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.line.exception.DuplicatedStationException;
 import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.SectionDao;
 import wooteco.subway.line.section.SectionRequest;

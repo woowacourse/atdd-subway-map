@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import wooteco.subway.line.exception.SectionSizeException;
 import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.Sections;
 import wooteco.subway.station.Station;
