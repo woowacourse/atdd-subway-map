@@ -196,6 +196,76 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 수정하면 예외를 발생한다.")
+    @Test
+    void updateLineWithDuplicatedName() {
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(lineRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        LineRequest lineRequest2 = new LineRequest("3호선", "주황색", 4L, 5L, 10);
+
+        RestAssured.given().log().all()
+            .body(lineRequest2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        LineRequest updateLineRequest = new LineRequest("3호선", "초록색", 4L, 5L, 10);
+
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(updateLineRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put(uri)
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("기존에 존재하는 지하철노선 색깔로 지하철노선을 수정하면 예외를 발생한다.")
+    @Test
+    void updateLineWithDuplicatedColor() {
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(lineRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        LineRequest lineRequest2 = new LineRequest("3호선", "주황색", 4L, 5L, 10);
+
+        RestAssured.given().log().all()
+            .body(lineRequest2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        LineRequest updateLineRequest = new LineRequest("2호선", "주황색", 4L, 5L, 10);
+
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(updateLineRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put(uri)
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("지하철노선을 제거한다.")
     @Test
     void deleteLine() {

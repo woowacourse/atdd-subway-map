@@ -61,6 +61,54 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .isEqualTo(lineResponse);
     }
 
+    @DisplayName("노선과 이어지지 않는 구간 생성시 예외를 발생한다.")
+    @Test
+    void createDisconnectedSection() {
+        SectionRequest disconnectedSectionRequest = new SectionRequest(4L, 5L, 10);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(disconnectedSectionRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/1/sections")
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("노선에 이미 존재하는 구간 생성시 예외를 발생한다.")
+    @Test
+    void createExistingSection() {
+        SectionRequest existingSectionRequest = new SectionRequest(1L, 2L, 10);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(existingSectionRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/1/sections")
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("노선에 초과 길이 구간 생성시 예외를 발생한다.")
+    @Test
+    void createInvalidDistanceSection() {
+        SectionRequest invalidDistanceSectionRequest = new SectionRequest(5L, 3L, 12);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(invalidDistanceSectionRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/2/sections")
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("지하철구간을 삭제한다.")
     @Test
     void deleteSection() {
@@ -94,5 +142,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         assertThat(resultResponse).usingRecursiveComparison()
                 .isEqualTo(lineResponse);
+    }
+
+    @DisplayName("마지막 지하철구간을 삭제시 예외를 발생한다.")
+    @Test
+    void deleteLastSection() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .queryParam("stationId", 2)
+            .delete("/lines/1/sections")
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
