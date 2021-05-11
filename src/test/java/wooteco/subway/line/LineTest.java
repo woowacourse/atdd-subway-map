@@ -44,9 +44,9 @@ class LineTest {
 
     @DisplayName("종점역 앞이나 뒤에 지하철역을 추가할 수 있는지 확인한다.")
     @Test
-    void isAddableTerminalStation() {
-        assertThat(line.isAddableTerminalStation(6L, 3L)).isTrue();
-        assertThat(line.isAddableTerminalStation(5L, 6L)).isTrue();
+    void includesTerminalStation() {
+        assertThat(line.includesTerminalStation(6L, 3L)).isTrue();
+        assertThat(line.includesTerminalStation(5L, 6L)).isTrue();
     }
 
     @DisplayName("해당 역이 종점역인지 확인한다.")

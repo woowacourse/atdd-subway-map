@@ -35,7 +35,6 @@ public class LineService {
         final Long upStationId = lineRequest.getUpStationId();
         final Long downStationId = lineRequest.getDownStationId();
         final int distance = lineRequest.getDistance();
-
         createSection(line.getId(), new SectionRequest(upStationId, downStationId, distance));
         return LineResponse.from(line);
     }
@@ -52,16 +51,17 @@ public class LineService {
         }
     }
 
+    @Transactional
     public SectionResponse addSection(final Long lineId, final SectionRequest sectionRequest) {
         final Line line = composeLine(lineId);
         final Long upStationId = sectionRequest.getUpStationId();
         final Long downStationId = sectionRequest.getDownStationId();
         final int distance = sectionRequest.getDistance();
-        validateDifferentStation(upStationId, downStationId);
 
+        validateDifferentStation(upStationId, downStationId);
         line.validateStationsToAddSection(upStationId, downStationId);
 
-        if (line.isAddableTerminalStation(upStationId, downStationId)) {
+        if (line.includesTerminalStation(upStationId, downStationId)) {
             return createSection(lineId, sectionRequest);
         }
 
@@ -72,8 +72,9 @@ public class LineService {
     }
 
     private Line composeLine(final Long lineId) {
-        final Line line = lineDao.findById(lineId).orElseThrow(() ->
-            new ObjectNotFoundException("해당 Id의 노선이 없습니다."));
+        final Line line = lineDao.findById(
+            lineId).orElseThrow(() -> new ObjectNotFoundException("해당 Id의 노선이 없습니다.")
+        );
         final Sections sections = new Sections(sectionDao.findByLineId(lineId));
         final List<Station> stationsGroup = sections.distinctStationIds().stream()
             .map(stationService::findById)
@@ -100,6 +101,7 @@ public class LineService {
         lineDao.deleteById(id);
     }
 
+    @Transactional
     public void deleteSection(final Long lineId, final Long stationId) {
         final Line line = composeLine(lineId);
         line.validateSizeToDeleteSection();

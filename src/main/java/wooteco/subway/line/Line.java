@@ -47,7 +47,7 @@ public class Line {
         sections.validateNoneExistentStation(upStationId, downStationId);
     }
 
-    public boolean isAddableTerminalStation(final Long upStationId, final Long downStationId) {
+    public boolean includesTerminalStation(final Long upStationId, final Long downStationId) {
         return isStartStation(downStationId) || isLastStation(upStationId);
     }
 
