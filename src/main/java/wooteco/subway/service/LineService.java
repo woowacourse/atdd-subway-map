@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.LineDao;
+import wooteco.subway.domain.line.SortedStationIds;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.SectionDao;
 import wooteco.subway.domain.station.StationDao;
@@ -55,7 +56,7 @@ public class LineService {
         Line line = findLine(id);
 
         List<Section> sections = sectionDao.listByLineId(line.getId());
-        List<Long> stationIds = new SortedStations(sections).getSorted();
+        List<Long> stationIds = new SortedStationIds(sections).get();
         List<StationResponse> stations = stationDao.stationsFilteredById(stationIds)
                 .stream()
                 .map(StationResponse::new)
