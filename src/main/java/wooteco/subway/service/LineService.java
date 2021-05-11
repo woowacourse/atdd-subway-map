@@ -106,23 +106,7 @@ public class LineService {
             .toDomain();
         Section section = new Section(line, upStation, downStation,
             new Distance(sectionRequest.getDistance()));
-        insertSection(line, section);
-    }
-
-    private void insertSection(Line line, Section section) {
-        Sections sections = new Sections(sectionService.findSectionsByLine(line));
-        Construction construction = sections.construction(line);
-        construction.insertSection(section);
-        updateSections(construction);
-    }
-
-    private void updateSections(Construction construction) {
-        for (Section sectionToCreate : construction.sectionsToCreate()) {
-            sectionService.createSection(sectionToCreate);
-        }
-        for (Section sectionToRemove : construction.getSectionsToRemove()) {
-            sectionService.remove(sectionToRemove.getId());
-        }
+        sectionService.insertSection(line, section);
     }
 
     public void deleteSections(Long lineId, Long stationId) {
@@ -130,12 +114,6 @@ public class LineService {
         Line line = subwayMapper.line(lineDao.findById(lineId));
         Sections sections = new Sections(sectionService.findSectionsByLine(line));
         Station station = stationService.showStation(stationId).toDomain();
-        removeStationInLine(line, sections, station);
-    }
-
-    private void removeStationInLine(Line line, Sections sections, Station station) {
-        Construction construction = sections.construction(line);
-        construction.deleteSectionsByStation(station);
-        updateSections(construction);
+        sectionService.removeStationInLine(line, sections, station);
     }
 }

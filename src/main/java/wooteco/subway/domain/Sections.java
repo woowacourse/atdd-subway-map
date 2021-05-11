@@ -28,7 +28,7 @@ public class Sections {
         return result;
     }
 
-    private Set<Section> sectionsByLine(Line line) {
+    public Set<Section> sectionsByLine(Line line) {
         return sections.stream()
             .filter(section -> section.getLine().equals(line))
             .collect(Collectors.toSet());
@@ -55,10 +55,6 @@ public class Sections {
             .filter(section -> now.getDownStation().equals(section.getUpStation()))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("다음 구간이 존재하지 않습니다."));
-    }
-
-    public Construction construction(Line line) {
-        return new Construction(sectionsByLine(line), line);
     }
 
     public Distance totalDistance() {

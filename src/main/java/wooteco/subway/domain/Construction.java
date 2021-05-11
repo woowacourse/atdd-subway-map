@@ -14,11 +14,15 @@ public class Construction {
     private final List<Section> sectionsToCreate;
     private final List<Section> sectionsToRemove;
 
-    public Construction(Set<Section> sections, Line line) {
+    private Construction(Set<Section> sections, Line line) {
         this.line = line;
         this.sections = new HashSet<>(sections);
         this.sectionsToCreate = new ArrayList<>();
         this.sectionsToRemove = new ArrayList<>();
+    }
+
+    public Construction(Sections sections, Line line) {
+        this(sections.sectionsByLine(line), line);
     }
 
     public void insertSection(Section section) {

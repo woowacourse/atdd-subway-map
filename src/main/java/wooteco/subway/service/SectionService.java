@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import wooteco.subway.domain.Construction;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domainmapper.SubwayMapper;
 import wooteco.subway.entity.SectionEntity;
@@ -56,5 +58,27 @@ public class SectionService {
         if (!sectionDao.existsById(id)) {
             throw new IllegalArgumentException("존재하지 않는 노선ID입니다.");
         }
+    }
+
+    public void insertSection(Line line, Section section) {
+        Sections sections = new Sections(findSectionsByLine(line));
+        Construction construction = new Construction(sections, line);
+        construction.insertSection(section);
+        updateSections(construction);
+    }
+
+    private void updateSections(Construction construction) {
+        for (Section sectionToCreate : construction.sectionsToCreate()) {
+            createSection(sectionToCreate);
+        }
+        for (Section sectionToRemove : construction.getSectionsToRemove()) {
+            remove(sectionToRemove.getId());
+        }
+    }
+
+    public void removeStationInLine(Line line, Sections sections, Station station) {
+        Construction construction = new Construction(sections, line);
+        construction.deleteSectionsByStation(station);
+        updateSections(construction);
     }
 }
