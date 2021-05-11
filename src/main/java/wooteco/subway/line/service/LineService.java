@@ -8,11 +8,15 @@ import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LinesResponse;
 import wooteco.subway.line.repository.LineRepository;
+import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.repository.SectionRepository;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,14 +57,42 @@ public class LineService {
 
     public LineResponse getLineResponseById(final Long id) {
         Line line = lineRepository.getLineById(id);
-        List<Long> stationIdsByLineId = sectionRepository.getStationIdsByLineId(id);
-        List<StationResponse> stationResponses = stationService.getAllStations();
+        List<Long> sortedStationIds = getStationIdsById(id);
 
+        List<StationResponse> stationResponses = stationService.getAllStations();
         return new LineResponse(line.getId(), line.getName(), line.getColor(),
                 stationResponses.stream()
-                        .filter(stationResponse -> stationIdsByLineId.contains(stationResponse.getId()))
+                        .filter(stationResponse -> sortedStationIds.contains(stationResponse.getId()))
                         .collect(Collectors.toList())
         );
+    }
+
+    private List<Long> getStationIdsById(final Long id) {
+        List<Section> sections = sectionRepository.getSectionsByLineId(id);
+        Map<Long, Long> connectMap = new HashMap<>();
+
+        for (Section section : sections) {
+            connectMap.put(section.getUpStationId(), section.getDownStationId());
+        }
+        Long curId = getFrontId(connectMap);
+        return getSortedStationIds(connectMap, curId);
+    }
+
+    private List<Long> getSortedStationIds(final Map<Long, Long> connectMap, Long curId) {
+        List<Long> stationIdsByLineId = new ArrayList<>();
+        stationIdsByLineId.add(curId);
+        while (connectMap.containsKey(curId)) {
+            curId = connectMap.get(curId);
+            stationIdsByLineId.add(curId);
+        }
+        return stationIdsByLineId;
+    }
+
+    private Long getFrontId(final Map<Long, Long> connectMap) {
+        List<Long> keys = new ArrayList<>(connectMap.keySet());
+        List<Long> values = new ArrayList<>(connectMap.values());
+
+        return keys.stream().filter(key -> !values.contains(key)).findFirst().orElse(null);
     }
 
     @Transactional

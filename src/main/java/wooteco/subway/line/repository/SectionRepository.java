@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.dto.SectionRequest;
 
 import java.sql.PreparedStatement;
@@ -19,6 +20,10 @@ public class SectionRepository {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Long> stationIdRowMapperByUpStationId = (resultSet, rowNum) -> resultSet.getLong("up_station_id");
     private final RowMapper<Long> stationIdRowMapperByDownStationId = (resultSet, rowNum) -> resultSet.getLong("down_station_id");
+    private final RowMapper<Section> sectionRowMapperByLineId = (resultSet, rowNum) -> new Section(
+            resultSet.getLong("up_station_id"),
+            resultSet.getLong("down_station_id")
+    );
 
     public SectionRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -36,6 +41,11 @@ public class SectionRepository {
             ps.setInt(4, distance);
             return ps;
         }, keyHolder);
+    }
+
+    public List<Section> getSectionsByLineId(final Long id){
+        String query = "SELECT up_station_id, down_station_id FROM section WHERE line_id = ?";
+        return jdbcTemplate.query(query, sectionRowMapperByLineId, id);
     }
 
     public List<Long> getStationIdsByLineId(final Long id) {
