@@ -21,7 +21,7 @@ public class InMemorySectionDao implements SectionDao {
     }
 
     @Override
-    public Section save(Section section, Long lineId) {
+    public Section create(Section section, Long lineId) {
         List<Section> sectionsByLineId = sections.getOrDefault(lineId, new ArrayList<>());
         Section createdSection = createNewObject(section);
         sectionsByLineId.add(createdSection);
@@ -49,7 +49,7 @@ public class InMemorySectionDao implements SectionDao {
                     });
         });
 
-        return save(section, lineId);
+        return create(section, lineId);
     }
 
     @Override

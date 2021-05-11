@@ -49,7 +49,7 @@ class SectionApiControllerTest extends ApiControllerTest {
         final Station 잠실새내역 = downStation();
         Line line = createLine(잠실역, 잠실새내역);
 
-        Station 강남역 = stationDao.save(Station.create("강남역"));
+        Station 강남역 = stationDao.create(Station.create("강남역"));
 
         SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 잠실역.getId(),
                 4);
@@ -72,7 +72,7 @@ class SectionApiControllerTest extends ApiControllerTest {
         // given
         final Station 잠실역 = upStation();
         final Station 잠실새내역 = downStation();
-        Station 강남역 = stationDao.save(Station.create("강남역"));
+        Station 강남역 = stationDao.create(Station.create("강남역"));
 
         Line line = createLine(잠실역, 잠실새내역);
 
@@ -96,7 +96,7 @@ class SectionApiControllerTest extends ApiControllerTest {
         // given
         final Station 잠실역 = upStation();
         final Station 잠실새내역 = downStation();
-        Station 강남역 = stationDao.save(Station.create("강남역"));
+        Station 강남역 = stationDao.create(Station.create("강남역"));
 
         Line line = createLine(잠실역, 잠실새내역);
 
@@ -120,7 +120,7 @@ class SectionApiControllerTest extends ApiControllerTest {
         // given
         final Station 잠실역 = upStation();
         final Station 잠실새내역 = downStation();
-        Station 강남역 = stationDao.save(Station.create("강남역"));
+        Station 강남역 = stationDao.create(Station.create("강남역"));
 
         Line line = createLine(잠실역, 잠실새내역);
 
@@ -144,9 +144,9 @@ class SectionApiControllerTest extends ApiControllerTest {
         // given
         final Station 잠실역 = upStation();
         final Station 잠실새내역 = downStation();
-        Station 강남역 = stationDao.save(Station.create("강남역"));
-        Station 동탄역 = stationDao.save(Station.create("동탄역"));
-        Station 수서역 = stationDao.save(Station.create("수서역"));
+        Station 강남역 = stationDao.create(Station.create("강남역"));
+        Station 동탄역 = stationDao.create(Station.create("동탄역"));
+        Station 수서역 = stationDao.create(Station.create("수서역"));
 
         Line line = createLine(잠실역, 잠실새내역);
 
@@ -175,9 +175,9 @@ class SectionApiControllerTest extends ApiControllerTest {
         // given
         final Station 잠실역 = upStation();
         final Station 잠실새내역 = downStation();
-        Station 강남역 = stationDao.save(Station.create("강남역"));
-        Station 동탄역 = stationDao.save(Station.create("동탄역"));
-        Station 수서역 = stationDao.save(Station.create("수서역"));
+        Station 강남역 = stationDao.create(Station.create("강남역"));
+        Station 동탄역 = stationDao.create(Station.create("동탄역"));
+        Station 수서역 = stationDao.create(Station.create("수서역"));
 
         Line line = createLine(잠실역, 잠실새내역);
 
@@ -206,7 +206,7 @@ class SectionApiControllerTest extends ApiControllerTest {
         // given
         final Station 잠실역 = upStation();
         final Station 잠실새내역 = downStation();
-        Station 강남역 = stationDao.save(Station.create("강남역"));
+        Station 강남역 = stationDao.create(Station.create("강남역"));
         final Line line = createLine(잠실역, 잠실새내역);
 
         final SectionRequest 강남_잠실새내 =
@@ -246,7 +246,7 @@ class SectionApiControllerTest extends ApiControllerTest {
         // given
         final Station 잠실역 = upStation();
         final Station 잠실새내역 = downStation();
-        final Station 강남역 = stationDao.save(Station.create("강남역"));
+        final Station 강남역 = stationDao.create(Station.create("강남역"));
         final Line line = createLine(잠실역, 잠실새내역);
 
         final SectionRequest 강남_잠실새내 =
@@ -286,7 +286,7 @@ class SectionApiControllerTest extends ApiControllerTest {
         // given
         final Station 잠실역 = upStation();
         final Station 잠실새내역 = downStation();
-        final Station 강남역 = stationDao.save(Station.create("강남역"));
+        final Station 강남역 = stationDao.create(Station.create("강남역"));
         final Line line = createLine(잠실역, 강남역);
 
         final SectionRequest 강남_잠실새내 = new SectionRequest(강남역.getId(), 잠실새내역.getId(), 3);
@@ -312,7 +312,7 @@ class SectionApiControllerTest extends ApiControllerTest {
         final Station 잠실새내역 = downStation();
         Line line = createLine(잠실역, 잠실새내역);
 
-        Station 강남역 = stationDao.save(Station.create("강남역"));
+        Station 강남역 = stationDao.create(Station.create("강남역"));
 
         SectionRequest 강남_잠실 =
                 new SectionRequest(강남역.getId(), 잠실역.getId(), 4);
@@ -390,10 +390,10 @@ class SectionApiControllerTest extends ApiControllerTest {
     }
 
     private Station downStation() {
-        return stationDao.save(Station.create(DOWN_STATION_NAME));
+        return stationDao.create(Station.create(DOWN_STATION_NAME));
     }
 
     private Station upStation() {
-        return stationDao.save(Station.create(UP_STATION_NAME));
+        return stationDao.create(Station.create(UP_STATION_NAME));
     }
 }

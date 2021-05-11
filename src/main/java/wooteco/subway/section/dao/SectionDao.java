@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SectionDao {
-    Section save(Section section, Long lineId);
+    Section create(Section section, Long lineId);
 
     Sections findSectionsByLineId(Long lineId);
 

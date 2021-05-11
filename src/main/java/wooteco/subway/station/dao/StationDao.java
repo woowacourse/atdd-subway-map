@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface StationDao {
-    Station save(Station station);
+    Station create(Station station);
 
     List<Station> findAll();
 

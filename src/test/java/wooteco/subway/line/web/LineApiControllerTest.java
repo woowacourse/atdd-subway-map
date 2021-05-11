@@ -38,8 +38,8 @@ class LineApiControllerTest extends ApiControllerTest {
     @DisplayName("노선 생성 - 성공")
     void createLine_success() throws Exception {
         // given
-        Long 잠실역_id = stationDao.save(Station.create("잠실역")).getId();
-        Long 잠실새내_id = stationDao.save(Station.create("잠실새내역")).getId();
+        Long 잠실역_id = stationDao.create(Station.create("잠실역")).getId();
+        Long 잠실새내_id = stationDao.create(Station.create("잠실새내역")).getId();
 
         final LineRequest 이호선 =
                 new LineRequest("2호선", "bg-green-600", 잠실역_id, 잠실새내_id, 10);
@@ -63,10 +63,10 @@ class LineApiControllerTest extends ApiControllerTest {
     @DisplayName("노선 생성 - 실패(노선 중복 이름)")
     void createLine_duplicatedName() throws Exception {
         // given
-        lineDao.save(Line.create("1호선", "bg-red-600"));
+        lineDao.create(Line.create("1호선", "bg-red-600"));
 
-        Long 잠실역_id = stationDao.save(Station.create("잠실역")).getId();
-        Long 석촌역_id = stationDao.save(Station.create("석촌역")).getId();
+        Long 잠실역_id = stationDao.create(Station.create("잠실역")).getId();
+        Long 석촌역_id = stationDao.create(Station.create("석촌역")).getId();
 
         final LineRequest 일호선 =
                 new LineRequest("1호선", "bg-green-600", 잠실역_id, 석촌역_id, 10);
@@ -84,10 +84,10 @@ class LineApiControllerTest extends ApiControllerTest {
     @DisplayName("노선 생성 - 실패(노선 중복 컬러)")
     void createLine_duplicatedColor() throws Exception {
         // given
-        lineDao.save(Line.create("1호선", "bg-green-600"));
+        lineDao.create(Line.create("1호선", "bg-green-600"));
 
-        Long 잠실역_id = stationDao.save(Station.create("잠실역")).getId();
-        Long 석촌역_id = stationDao.save(Station.create("석촌역")).getId();
+        Long 잠실역_id = stationDao.create(Station.create("잠실역")).getId();
+        Long 석촌역_id = stationDao.create(Station.create("석촌역")).getId();
 
         final LineRequest 이호선 =
                 new LineRequest("2호선", "bg-green-600", 잠실역_id, 석촌역_id, 10);
@@ -136,7 +136,7 @@ class LineApiControllerTest extends ApiControllerTest {
     @DisplayName("노선 생성 - 실패(상행선과 하행선 역이 같을 경우)")
     void createLine_sameStations() throws Exception {
         // given
-        Long 잠실역_id = stationDao.save(Station.create("잠실역")).getId();
+        Long 잠실역_id = stationDao.create(Station.create("잠실역")).getId();
 
         final LineRequest 이호선 =
                 new LineRequest("2호선", "bg-green-600", 잠실역_id, 잠실역_id, 10);
@@ -154,9 +154,9 @@ class LineApiControllerTest extends ApiControllerTest {
     @Test
     void readLine_success() throws Exception {
         //given
-        Station 강남역 = stationDao.save(Station.create("강남역"));
-        Station 잠실역 = stationDao.save(Station.create("잠실역"));
-        Station 석촌역 = stationDao.save(Station.create("석촌역"));
+        Station 강남역 = stationDao.create(Station.create("강남역"));
+        Station 잠실역 = stationDao.create(Station.create("잠실역"));
+        Station 석촌역 = stationDao.create(Station.create("석촌역"));
         LineRequest 사호선 =
                 new LineRequest("4호선", "bg-blue-600", 강남역.getId(), 잠실역.getId(), 10);
         ResultActions createdLineResult = 노선_생성(사호선);

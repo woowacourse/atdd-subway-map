@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LineDao {
-    Line save(Line line);
+    Line create(Line line);
 
     boolean existByInfo(String name, String color);
 

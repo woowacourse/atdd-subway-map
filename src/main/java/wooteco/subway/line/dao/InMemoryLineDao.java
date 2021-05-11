@@ -21,7 +21,7 @@ public class InMemoryLineDao implements LineDao {
     }
 
     @Override
-    public Line save(Line line) {
+    public Line create(Line line) {
         Line createdLine = createNewObject(line);
         lines.add(createdLine);
         return createdLine;

@@ -21,7 +21,7 @@ public class StationService {
         if (stationDao.existByName(station.getName())) {
             throw new DuplicatedStationException();
         }
-        return stationDao.save(station);
+        return stationDao.create(station);
     }
 
     public List<Station> findAll() {

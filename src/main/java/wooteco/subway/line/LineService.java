@@ -35,9 +35,9 @@ public class LineService {
         if (lineDao.existByInfo(name, color)) {
             throw new DuplicatedLineInformationException();
         }
-        Line line = lineDao.save(Line.create(name, color));
+        Line line = lineDao.create(Line.create(name, color));
         Section section = Section.create(upStation, downStation, distance);
-        sectionDao.save(section, line.getId());
+        sectionDao.create(section, line.getId());
         line.addSection(section);
         return line;
     }

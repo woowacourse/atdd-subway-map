@@ -13,7 +13,7 @@ public class InMemoryStationDao implements StationDao {
     private List<Station> stations = new ArrayList<>();
 
     @Override
-    public Station save(Station station) {
+    public Station create(Station station) {
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
