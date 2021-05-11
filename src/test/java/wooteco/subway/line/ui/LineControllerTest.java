@@ -522,6 +522,48 @@ class LineControllerTest {
                 .containsExactly(pankyo.getId());
     }
 
+    @DisplayName("중간역이 제거 될 경우 재배치를 함_거리는 두 구간의 거리의 합으로 정함")
+    @Test
+    void deleteSection_between() {
+        //given
+        Station kangnam = setDummyStation("강남역");
+        Station yangjae = setDummyStation("양재역");
+        Station pankyo = setDummyStation("판교역");
+
+        Line line = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
+        lineService.addSection(line.getId(), new Section(kangnam.getId(), pankyo.getId(), 5));
+
+        //when
+        RestAssured
+                .given().log().all()
+                .accept(MediaType.ALL_VALUE)
+                .when()
+                .delete("/lines/" + line.getId() + "/sections?stationId=" + pankyo.getId())
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .extract();
+
+        //then
+        Line savedLine = lineService.findById(line.getId());
+
+        int totalDistance = line.getSections().toList().stream()
+                .mapToInt(Section::getDistance)
+                .sum();
+
+        assertThat(savedLine.getSections().sumSectionDistance()).isEqualTo(totalDistance);
+
+        assertThat(savedLine.getSections().toList())
+                .hasSize(1);
+
+        assertThat(savedLine.getSections().toList())
+                .extracting(Section::getUpStationId)
+                .containsExactly(kangnam.getId());
+
+        assertThat(savedLine.getSections().toList())
+                .extracting(Section::getDownStationId)
+                .containsExactly(yangjae.getId());
+    }
+
     private Station setDummyStation(String stationName) {
         Station station = new Station(stationName);
         return stationRepository.save(station);

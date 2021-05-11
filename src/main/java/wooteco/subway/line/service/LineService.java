@@ -92,12 +92,14 @@ public class LineService {
         List<Section> deleteSections = sections.deleteSection(stationId);
 
         if (deleteSections.size() == 1) {
-            System.out.println("delete :" + deleteSections.get(0));
             lineRepository.deleteSection(id, deleteSections.get(0));
             return;
         }
 
         Section updateSection = sections.generateUpdateWhenDelete(deleteSections);
+
+        deleteSections.forEach(section -> lineRepository.deleteSection(id, section));
+        lineRepository.addSection(id, updateSection);
     }
 
     private void checkCreateValidation(Line line) {

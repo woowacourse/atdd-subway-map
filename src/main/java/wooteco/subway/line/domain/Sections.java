@@ -135,10 +135,23 @@ public class Sections {
     }
 
     public Section generateUpdateWhenDelete(final List<Section> deleteSections) {
-        if (deleteSections.size() == 1) {
-            return deleteSections.get(0);
+        Section firstSection = deleteSections.get(0);
+        Section secondSection = deleteSections.get(1);
+
+        return getUpdateSectionWhenDelete(firstSection, secondSection);
+    }
+
+    private Section getUpdateSectionWhenDelete(Section first, Section second) {
+        int distance = first.getDistance() + second.getDistance();
+
+        if (first.getDownStationId().equals(second.getUpStationId())) {
+            return new Section(first.getUpStationId(), second.getDownStationId(), distance);
         }
 
-        return (Section) Collections.EMPTY_LIST;
+        if (second.getDownStationId().equals(first.getUpStationId())) {
+            return new Section(second.getUpStationId(), first.getDownStationId(), distance);
+        }
+
+        throw new IllegalArgumentException("노선을 삭제 할 수 없습니다.");
     }
 }
