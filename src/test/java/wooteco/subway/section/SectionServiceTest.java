@@ -84,8 +84,11 @@ class SectionServiceTest {
     public void saveSectionWithBothStationContainCase() {
         sectionDao.save(1L, 1L, 2L, 10);
         SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(1L, 2L, 1));
+        SectionDto sectionDto2 = SectionDto.of(1L, new SectionRequest(2L, 1L, 1));
 
         assertThatThrownBy(() -> sectionService.save(sectionDto))
+                .isInstanceOf(SectionInclusionException.class);
+        assertThatThrownBy(() -> sectionService.save(sectionDto2))
                 .isInstanceOf(SectionInclusionException.class);
     }
 
