@@ -40,7 +40,7 @@ public class LineService {
         Line line = lineCreateRequest.toLine();
         Line savedLine = lineDao.save(line);
 
-        sectionDao.save(Section.of(savedLine.getId(), lineCreateRequest));
+        sectionDao.save(lineCreateRequest.toSection(savedLine.getId()));
         return LineResponse.from(savedLine);
     }
 

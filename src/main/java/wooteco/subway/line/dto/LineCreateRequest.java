@@ -3,6 +3,7 @@ package wooteco.subway.line.dto;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.section.domain.Section;
 
 public class LineCreateRequest {
     @NotBlank
@@ -30,6 +31,10 @@ public class LineCreateRequest {
 
     public Line toLine() {
         return Line.of(name, color);
+    }
+
+    public Section toSection(Long lineId) {
+        return Section.of(lineId, upStationId, downStationId, distance);
     }
 
     public String getName() {

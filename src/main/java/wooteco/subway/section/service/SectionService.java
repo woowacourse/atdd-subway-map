@@ -25,7 +25,7 @@ public class SectionService {
 
     @Transactional
     public void insertSectionInLine(Long lineId, SectionRequest sectionRequest) {
-        Section section = Section.of(lineId, sectionRequest);
+        Section section = sectionRequest.toSection(lineId);
 
         List<Section> sectionsByLineId = sectionDao.findAllByLineId(section.getLineId());
         LineRoute lineRoute = new LineRoute(sectionsByLineId);

@@ -1,7 +1,5 @@
 package wooteco.subway.section.domain;
 
-import wooteco.subway.line.dto.LineCreateRequest;
-import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.exception.SectionIllegalArgumentException;
 
 public class Section {
@@ -36,22 +34,6 @@ public class Section {
             upStationId,
             downStationId,
             distance);
-    }
-
-    public static Section of(Long id, LineCreateRequest lineCreateRequest) {
-        return new Section(null,
-            id,
-            lineCreateRequest.getUpStationId(),
-            lineCreateRequest.getDownStationId(),
-            lineCreateRequest.getDistance());
-    }
-
-    public static Section of(Long id, SectionRequest sectionRequest) {
-        return new Section(null,
-            id,
-            sectionRequest.getUpStationId(),
-            sectionRequest.getDownStationId(),
-            sectionRequest.getDistance());
     }
 
     private void validateIfDownStationSameAsUpStation(Long upStationId, Long downStationId) {
