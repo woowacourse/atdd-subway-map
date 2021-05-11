@@ -24,8 +24,8 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setUp7Line() {
-        String namSungStationId = setUpStations("남성역");
-        String naeBangStationId = setUpStations("내방역");
+        String namSungStationId = RequestUtil.requestCreateStation("남성역").header("Location").split("/")[2];
+        String naeBangStationId = RequestUtil.requestCreateStation("내방역").header("Location").split("/")[2];
         int distance = 10;
 
         Map<String, String> params = new HashMap<>();
@@ -46,37 +46,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         location = createResponse.header("Location");
     }
 
-    private ExtractableResponse<Response> setUpLine(String name, String color, String upStationName, String downStationName, String distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", setUpStations(upStationName));
-        params.put("downStationId", setUpStations(downStationName));
-        params.put("distance", distance);
-
-        return RestAssured.given()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .extract();
-    }
-
-    private String setUpStations(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        ExtractableResponse<Response> response = RestAssured.given()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then()
-                .extract();
-        return response.header("Location").split("/")[2];
-    }
-
     @AfterEach
     void stash() {
         RestAssured.given().log().all()
@@ -90,7 +59,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 생성하는 요청을 보낸다.")
     void createLineTest() {
         // when
-        ExtractableResponse<Response> response = setUpLine("신분당선", "red", "판교역", "강남역", "23");
+        ExtractableResponse<Response> response = RequestUtil.requestCreateLine("신분당선", "red", "판교역", "강남역", "23");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -101,9 +70,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 목록을 조회하는 요청을 보낸다.")
     void showLines() {
         // given
-        ExtractableResponse<Response> createResponse1 = setUpLine("신분당선", "red", "강남역", "판교역", "24");
+        ExtractableResponse<Response> createResponse1 = RequestUtil.requestCreateLine("신분당선", "red", "강남역", "판교역", "24");
 
-        ExtractableResponse<Response> createResponse2 = setUpLine("2호선", "green", "홍대역", "잠실역", "30");
+        ExtractableResponse<Response> createResponse2 = RequestUtil.requestCreateLine("2호선", "green", "홍대역", "잠실역", "30");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
