@@ -2,7 +2,7 @@ package wooteco.subway.station;
 
 import java.util.Objects;
 
-import wooteco.subway.exception.IllegalInputException;
+import wooteco.subway.exception.illegal.IllegalInputException;
 
 public class Station {
     private Long id;

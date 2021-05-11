@@ -13,13 +13,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import wooteco.subway.exception.ImpossibleDeleteException;
-import wooteco.subway.exception.ImpossibleDistanceException;
-import wooteco.subway.exception.NoSuchStationInLineException;
+import wooteco.subway.exception.illegal.ImpossibleDeleteException;
+import wooteco.subway.exception.illegal.ImpossibleDistanceException;
+import wooteco.subway.exception.nosuch.NoSuchStationInLineException;
 import wooteco.subway.line.Line;
-import wooteco.subway.line.LineService;
+import wooteco.subway.line.service.LineService;
+import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.Station;
-import wooteco.subway.station.StationService;
+import wooteco.subway.station.service.StationService;
 
 @SpringBootTest
 @Transactional

@@ -15,11 +15,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import wooteco.subway.exception.NoSuchLineException;
+import wooteco.subway.exception.nosuch.NoSuchLineException;
+import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.Section;
-import wooteco.subway.section.SectionService;
+import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.Station;
-import wooteco.subway.station.StationService;
+import wooteco.subway.station.service.StationService;
 
 @SpringBootTest
 @Transactional

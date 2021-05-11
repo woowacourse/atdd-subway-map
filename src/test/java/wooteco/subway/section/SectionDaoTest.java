@@ -11,11 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
-import wooteco.subway.exception.IllegalInputException;
+import wooteco.subway.exception.illegal.IllegalInputException;
 import wooteco.subway.line.Line;
-import wooteco.subway.line.LineDao;
+import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.station.Station;
-import wooteco.subway.station.StationDao;
+import wooteco.subway.station.dao.StationDao;
 
 @SpringBootTest
 @Sql("classpath:test-schema.sql")

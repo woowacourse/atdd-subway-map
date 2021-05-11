@@ -2,8 +2,9 @@ package wooteco.subway.section;
 
 import java.util.Objects;
 
-import wooteco.subway.exception.ImpossibleDistanceException;
-import wooteco.subway.line.LineRequest;
+import wooteco.subway.exception.illegal.ImpossibleDistanceException;
+import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.section.dto.SectionRequest;
 
 public class Section {
     private final long upStationId;

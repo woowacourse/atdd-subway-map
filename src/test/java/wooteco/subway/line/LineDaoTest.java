@@ -12,10 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.section.Section;
-import wooteco.subway.section.SectionDao;
+import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.station.Station;
-import wooteco.subway.station.StationDao;
+import wooteco.subway.station.dao.StationDao;
 
 @SpringBootTest
 @Transactional

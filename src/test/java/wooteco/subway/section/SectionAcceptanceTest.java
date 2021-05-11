@@ -19,10 +19,11 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.line.LineRequest;
-import wooteco.subway.line.LineResponse;
-import wooteco.subway.station.StationRequest;
-import wooteco.subway.station.StationResponse;
+import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.section.dto.SectionRequest;
+import wooteco.subway.station.dto.StationRequest;
+import wooteco.subway.station.dto.StationResponse;
 
 @Transactional
 @Sql("classpath:test-schema.sql")

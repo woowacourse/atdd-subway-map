@@ -6,6 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import wooteco.subway.exception.duplicate.DuplicateException;
+import wooteco.subway.exception.illegal.IllegalMethodException;
+import wooteco.subway.exception.nosuch.NoSuchException;
+
 @ControllerAdvice
 public class PageControllerAdvice {
     @ExceptionHandler(DuplicateException.class)

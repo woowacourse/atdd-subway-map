@@ -20,6 +20,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.line.dto.LineResponse;
 
 @Transactional
 @Sql("classpath:test-schema.sql")

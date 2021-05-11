@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import wooteco.subway.exception.BothStationInLineException;
-import wooteco.subway.exception.BothStationNotInLineException;
+import wooteco.subway.exception.illegal.BothStationInLineException;
+import wooteco.subway.exception.nosuch.BothStationNotInLineException;
 import wooteco.subway.station.Station;
 
 public class StationsInLine {

@@ -19,6 +19,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.station.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 @Transactional
