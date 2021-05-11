@@ -4,5 +4,5 @@
 - [x] Line 관련 테스트 코드 리팩토링
 - [ ] Exception 계층 구조 만들기
 - [ ] Station, Line 없는 입력값 검증하기
-- [ ] CustomException 만들기
-- [ ] 누락된 테스트 작성하기
+- [x] CustomException 만들기
+- [x] 누락된 테스트 작성하기

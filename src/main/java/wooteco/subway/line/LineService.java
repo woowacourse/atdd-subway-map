@@ -40,8 +40,15 @@ public class LineService {
     }
 
     private SectionResponse createSection(final Long lineId, final SectionRequest sectionRequest) {
+        validateDifferentStation(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
         final Section section = sectionDao.save(sectionRequest.toEntity(lineId));
         return SectionResponse.from(section);
+    }
+
+    private void validateDifferentStation(final Long upStationId, final Long downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new DuplicatedStationException("상행과 하행역이 같습니다.");
+        }
     }
 
     public SectionResponse addSection(final Long lineId, final SectionRequest sectionRequest) {
