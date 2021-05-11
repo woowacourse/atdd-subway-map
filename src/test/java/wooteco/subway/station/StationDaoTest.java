@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-@Sql("classpath:schema.sql")
+@Sql("classpath:test-schema.sql")
 class StationDaoTest {
 
     @Autowired

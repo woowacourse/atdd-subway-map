@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
@@ -26,35 +28,33 @@ import wooteco.subway.station.StationResponse;
 
 @Transactional
 @Sql("classpath:test-schema.sql")
-class SectionAcceptanceTest extends AcceptanceTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class SectionAcceptanceTest extends AcceptanceTest{
+    @LocalServerPort
+    int port;
 
     @BeforeEach
     public void setUp() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/stations")
-            .then().log().all()
-            .extract();
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-            .map(StationResponse::getId)
-            .collect(Collectors.toList());
-        System.out.println(resultLineIds.size());
+        RestAssured.port = port;
+
+        addStation("옥수역");
+        addStation("약수역");
+        addLine("3호선", "orange", 1, 2, 10);
     }
 
     @DisplayName("지하철 구간을 추가한다.")
     @Test
     void addSection() {
-        long station1 = addStation("옥수역").getId();
-        long station2 = addStation("약수역").getId();
+        //given
+        long newStationId = addStation("화정역").getId();
+        SectionRequest sectionRequest = new SectionRequest(1L, newStationId, 5);
 
-        long line = addLine("3호선", "orange", 1, 2, 10).getId();
-
-        SectionRequest sectionRequest = new SectionRequest(station1, station2, 100);
+        //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .body(sectionRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .post("/lines/" + line + "/sections")
+            .post("/lines/" + 1 + "/sections")
             .then().log().all()
             .extract();
 
@@ -62,36 +62,42 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
-        assertEquals(line, lineResponse.getId());
+        assertEquals(1, lineResponse.getId());
         assertEquals("3호선", lineResponse.getName());
         assertEquals("orange", lineResponse.getColor());
         assertTrue(lineResponse.getStations().containsAll(
             Arrays.asList(
-                new StationResponse(station1, "옥수역"),
-                new StationResponse(station2, "약수역")
+                new StationResponse(1L, "옥수역"),
+                new StationResponse(2L, "약수역"),
+                new StationResponse(3L, "화정역")
             )));
     }
 
     @DisplayName("지하철 구간을 삭제한다.")
     @Test
     void deleteSection() {
-        long station1 = addStation("옥수역").getId();
-        long station2 = addStation("약수역").getId();
+        //given
+        long newStationId = addStation("화정역").getId();
+        SectionRequest sectionRequest = new SectionRequest(1L, newStationId, 5);
+        RestAssured.given().log().all()
+            .body(sectionRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/" + 1 + "/sections")
+            .then().log().all()
+            .extract();
 
-        long line = addLine("3호선", "orange", 1, 2, 10).getId();
-
-        SectionRequest sectionRequest = new SectionRequest(station1, station2, 100);
+        //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .body(sectionRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .delete("/lines/" + line + "/sections?stationId=" + station2)
+            .delete("/lines/" + 1 + "/sections?stationId=" + newStationId)
             .then().log().all()
             .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        //TODO: 삭제 확
     }
 
     private StationResponse addStation(String stationName) {

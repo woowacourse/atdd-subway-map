@@ -18,7 +18,7 @@ import wooteco.subway.station.StationDao;
 
 @SpringBootTest
 @Transactional
-@Sql("classpath:schema.sql")
+@Sql("classpath:test-schema.sql")
 class LineDaoTest {
 
     @Autowired

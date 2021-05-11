@@ -20,7 +20,7 @@ import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
 @SpringBootTest
-@Sql("classpath:schema.sql")
+@Sql("classpath:test-schema.sql")
 class SectionDaoTest {
 
     @Autowired

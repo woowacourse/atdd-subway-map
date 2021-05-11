@@ -24,7 +24,7 @@ import wooteco.subway.station.StationService;
 
 @SpringBootTest
 @Transactional
-@Sql("classpath:schema.sql")
+@Sql("classpath:test-schema.sql")
 class LineServiceTest {
 
     @Autowired
