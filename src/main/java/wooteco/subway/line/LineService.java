@@ -52,7 +52,7 @@ public class LineService {
 
         line.validateStationsToAddSection(upStationId, downStationId);
 
-        if (line.isTerminalStation(upStationId, downStationId)) {
+        if (line.isAddableTerminalStation(upStationId, downStationId)) {
             return createSection(lineId, sectionRequest);
         }
 
@@ -90,5 +90,25 @@ public class LineService {
 
     public void deleteLine(final Long id) {
         lineDao.deleteById(id);
+    }
+
+    public void deleteSection(final Long lineId, final Long stationId) {
+        final Line line = composeLine(lineId);
+        line.validateSizeToDeleteSection();
+        if (line.isTerminalStation(stationId)) {
+            sectionDao.deleteById(line.findTerminalSection(stationId).getId());
+            return;
+        }
+        final Section leftSection = line.findSectionHasDownStation(stationId);
+        final Section rightSection = line.findSectionHasUpStation(stationId);
+        final Section newSection = new Section(
+            lineId,
+            leftSection.getUpStationId(),
+            rightSection.getDownStationId(),
+            leftSection.getDistance() + rightSection.getDistance()
+        );
+        sectionDao.deleteById(leftSection.getId());
+        sectionDao.deleteById(rightSection.getId());
+        sectionDao.save(newSection);
     }
 }

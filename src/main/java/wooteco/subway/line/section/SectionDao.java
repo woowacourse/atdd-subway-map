@@ -65,4 +65,12 @@ public class SectionDao {
             throw new DataNotFoundException("해당 Id의 구간이 없습니다.");
         }
     }
+    public void deleteById(final long id) {
+        final String sql = "DELETE FROM section WHERE id = ?";
+        int deletedCnt = jdbcTemplate.update(sql, id);
+
+        if (deletedCnt < 1) {
+            throw new DataNotFoundException("해당 Id의 구간이 없습니다.");
+        }
+    }
 }
