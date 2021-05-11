@@ -4,12 +4,14 @@ import wooteco.subway.exception.SubwayIllegalArgumentException;
 
 import java.util.*;
 
-public class LineRoute {
+public class Sections {
+    private static final int INVALID_DELETABLE_STATION_COUNT = 2;
+
     private final Map<Long, Section> upToDownStationMap = new HashMap<>();
     private final Map<Long, Section> downToUpStationMap = new HashMap<>();
     private final Deque<Long> upToDownSerializedMap = new ArrayDeque<>();
 
-    public LineRoute(List<Section> sectionsByLineId) {
+    public Sections(List<Section> sectionsByLineId) {
         createDirectedRoute(sectionsByLineId);
         serializeRoute(sectionsByLineId);
     }
@@ -90,11 +92,7 @@ public class LineRoute {
         return new ArrayDeque<>(upToDownSerializedMap);
     }
 
-    public Set<Long> getStationIds() {
-        return new HashSet<>(upToDownSerializedMap);
-    }
-
-    public void validateIfSectionContainsOnlyOneStationInLine(Section section) {
+    public void validateInsert(Section section) {
         long count = upToDownSerializedMap.stream()
                 .filter(sectionId -> sectionId.equals(section.getDownStationId()) || sectionId.equals(section.getUpStationId()))
                 .count();
@@ -105,6 +103,12 @@ public class LineRoute {
 
         if (count > 1) {
             throw new SubwayIllegalArgumentException("추가하려는 구간의 상행과 하행 모두 노선에 존재합니다.");
+        }
+    }
+
+    public void validateDeletable() {
+        if (upToDownSerializedMap.size() == INVALID_DELETABLE_STATION_COUNT) {
+            throw new SubwayIllegalArgumentException("구간이 하나인 노선에서 역은 더이상 삭제 할 수 없습니다.");
         }
     }
 }

@@ -12,12 +12,22 @@ public class Section {
     private final int distance;
 
     private Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+        validateArguments(lineId, upStationId, downStationId, distance);
         validateIfDownStationSameAsUpStation(upStationId, downStationId);
         this.id = id;
-        this.lineId = Objects.requireNonNull(lineId);
-        this.upStationId = Objects.requireNonNull(upStationId);
-        this.downStationId = Objects.requireNonNull(downStationId);
+        this.lineId = lineId;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    private void validateArguments(Long lineId, Long upStationId, Long downStationId, int distance) {
+        Objects.requireNonNull(lineId);
+        Objects.requireNonNull(upStationId);
+        Objects.requireNonNull(downStationId);
+        if(distance <= 0){
+            throw new SubwayIllegalArgumentException("거리는 0보다 커야 합니다.");
+        }
     }
 
     public static Section of(Long lineId, Long upStationId, Long downStationId, int distance) {

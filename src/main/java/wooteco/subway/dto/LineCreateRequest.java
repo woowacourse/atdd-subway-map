@@ -1,5 +1,7 @@
 package wooteco.subway.dto;
 
+import wooteco.subway.exception.SubwayIllegalArgumentException;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -39,7 +41,9 @@ public class LineCreateRequest {
         return distance;
     }
 
-    public boolean isSameStations() {
-        return upStationId.equals(downStationId);
+    public void validateIfDownStationDifferFromUpStation() {
+        if (upStationId.equals(downStationId)){
+            throw new SubwayIllegalArgumentException("상행과 하행 종점은 같을 수 없습니다.");
+        }
     }
 }

@@ -6,7 +6,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.LineRoute;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.LineCreateRequest;
 import wooteco.subway.dto.LineResponse;
@@ -37,7 +37,7 @@ public class LineService {
     public LineResponse save(LineCreateRequest lineCreateRequest) {
         validateDuplicateName(lineCreateRequest.getName());
         validateAllStationsIsExist(lineCreateRequest);
-        validateIfDownStationIsEqualToUpStation(lineCreateRequest);
+        lineCreateRequest.validateIfDownStationDifferFromUpStation();
 
         Line line = Line.of(null, lineCreateRequest.getName(), lineCreateRequest.getColor());
         Line savedLine = lineDao.save(line);
@@ -62,12 +62,6 @@ public class LineService {
                 .orElseThrow(() -> new NotFoundException("입력하신 상행역이 존재하지 않습니다."));
     }
 
-    private void validateIfDownStationIsEqualToUpStation(LineCreateRequest lineCreateRequest) {
-        if (lineCreateRequest.isSameStations()) {
-            throw new SubwayIllegalArgumentException("상행과 하행 종점은 같을 수 없습니다.");
-        }
-    }
-
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
@@ -79,8 +73,8 @@ public class LineService {
         Line line = lineDao.findById(id)
                 .orElseThrow(() -> new NotFoundException("해당하는 노선이 존재하지 않습니다."));
         List<Section> sectionsByLineId = sectionDao.findAllByLineId(line.getId());
-        LineRoute lineRoute = new LineRoute(sectionsByLineId);
-        List<StationResponse> stations = lineRoute.getOrderedStations()
+        Sections sections = new Sections(sectionsByLineId);
+        List<StationResponse> stations = sections.getOrderedStations()
                 .stream()
                 .map(stationDao::findById)
                 .map(Optional::get)
