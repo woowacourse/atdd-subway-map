@@ -88,4 +88,28 @@ public class SectionDao {
                 sectionInsertRequest.getUpStationId()).stream()
                 .findAny();
     }
+
+    public int countsByLineId(Long lineId) {
+        String query = "SELECT count(id) FROM section WHERE line_id = ?";
+        return jdbcTemplate.queryForObject(
+                query,
+                Integer.class,
+                lineId
+        );
+    }
+
+    public List<Section> findAllSectionsIncludeStationId(Long lineId, Long stationId) {
+        String query = "SELECT * FROM section WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
+        return jdbcTemplate.query(
+                query,
+                SECTION_MAPPER,
+                lineId,
+                stationId,
+                stationId);
+    }
+
+    public void delete(Section section) {
+        String query = "DELETE FROM section WHERE id = ?";
+        jdbcTemplate.update(query, section.getId());
+    }
 }

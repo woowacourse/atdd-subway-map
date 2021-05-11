@@ -48,7 +48,7 @@ public class LineService {
         return new LineDto(line);
     }
 
-    public void isExistById(Long id) {
+    public void checkIfExistsById(Long id) {
         if (!lineDao.isExistById(id)) {
             throw new LineNotFoundException();
         }

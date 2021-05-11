@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.controller.request.SectionInsertRequest;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
+import wooteco.subway.exception.section.DeleteSectionIsNotPermittedException;
 import wooteco.subway.exception.section.NoneOfSectionIncludedInLine;
 import wooteco.subway.exception.section.SectionDistanceMismatchException;
 import wooteco.subway.exception.section.SectionsAlreadyExistException;
@@ -11,6 +12,7 @@ import wooteco.subway.domain.SimpleSection;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SectionService {
@@ -29,6 +31,10 @@ public class SectionService {
         if (sectionDao.isIncludeAllEndStations(lineId, sectionInsertRequest)) {
             throw new SectionsAlreadyExistException();
         }
+    }
+
+    public int getSectionCountsByLineId(Long lineId) {
+        return sectionDao.countsByLineId(lineId);
     }
 
     public void insertSections(Long lineId, SectionInsertRequest sectionInsertRequest) {
@@ -70,5 +76,33 @@ public class SectionService {
         if (!section.compareDistance(insertedSection)) {
             throw new SectionDistanceMismatchException();
         }
+    }
+
+    public void validateSectionCount(Long lineId) {
+        final int counts = getSectionCountsByLineId(lineId);
+        if (counts <= 1) {
+            throw new DeleteSectionIsNotPermittedException();
+        }
+    }
+
+    public void deleteSection(Long lineId, Long stationId) {
+        final List<Section> sections = sectionDao.findAllSectionsIncludeStationId(lineId, stationId);
+        if (sections.isEmpty()) {
+            throw new DeleteSectionIsNotPermittedException();
+        }
+        Section section = adjustSection(lineId, sections);
+        sectionDao.delete(section);
+    }
+
+    private Section adjustSection(Long lineId, List<Section> sections) {
+        if (sections.size() == 1) { // 구간이 하나밖에 포함되지 않는 경우 <-> 종점인 경우
+            return sections.get(0);
+        }
+
+        final int updatedDistance = sections.stream().mapToInt(Section::getDistance).sum();
+        final Long upStationId = sections.get(0).getUpStationId();
+        final Long downStationId = sections.get(1).getDownStationId();
+        sectionDao.update(lineId, new SimpleSection(upStationId, downStationId, updatedDistance));
+        return sections.get(1);
     }
 }

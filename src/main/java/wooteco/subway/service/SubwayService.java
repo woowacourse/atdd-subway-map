@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.controller.request.SectionInsertRequest;
 import wooteco.subway.controller.response.StationResponse;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.exception.section.DeleteSectionIsNotPermittedException;
 import wooteco.subway.service.dto.LineDto;
 import wooteco.subway.service.dto.LineWithStationsDto;
 import wooteco.subway.domain.SimpleStation;
@@ -31,13 +32,18 @@ public class SubwayService {
     }
 
     public void insertSectionInLine(Long id, SectionInsertRequest sectionInsertRequest) {
-        lineService.isExistById(id);
+        lineService.checkIfExistsById(id);
         sectionService.validateEndStationsAreIncluded(id, sectionInsertRequest);
         sectionService.insertSections(id, sectionInsertRequest);
+    }
+
+    public void deleteSectionInLine(Long lineId, Long stationId) {
+        lineService.checkIfExistsById(lineId);
+        sectionService.validateSectionCount(lineId);
+        sectionService.deleteSection(lineId, stationId);
     }
 
     private List<StationResponse> makeStationResponse(List<SimpleStation> stationIds) {
         return stationService.makeStationResponses(stationIds);
     }
-
 }

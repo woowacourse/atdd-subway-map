@@ -19,17 +19,23 @@ public class SubwayController {
         this.subwayService = subwayService;
     }
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<LineWithAllSectionsResponse> showSubwayLineInformation(@PathVariable Long id)
+    @GetMapping(value = "/{lineId}")
+    public ResponseEntity<LineWithAllSectionsResponse> showSubwayLineInformation(@PathVariable Long lineId)
             throws LineNotFoundException {
-        LineWithAllSectionsResponse lineWithAllSectionsResponse = new LineWithAllSectionsResponse(subwayService.findAllInfoByLineId(id));
+        LineWithAllSectionsResponse lineWithAllSectionsResponse = new LineWithAllSectionsResponse(subwayService.findAllInfoByLineId(lineId));
         return ResponseEntity.ok().body(lineWithAllSectionsResponse);
     }
 
-    @PostMapping("/{id}/sections")
-    public ResponseEntity<LineWithAllSectionsResponse> insertSectionInLine(@PathVariable Long id, @RequestBody SectionInsertRequest sectionInsertRequest) {
-        subwayService.insertSectionInLine(id, sectionInsertRequest);
-        LineWithAllSectionsResponse lineWithAllSectionsResponse = new LineWithAllSectionsResponse(subwayService.findAllInfoByLineId(id));
-        return ResponseEntity.created(URI.create("/lines/" + id + "/sections")).body(lineWithAllSectionsResponse);
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity<LineWithAllSectionsResponse> insertSectionInLine(@PathVariable Long lineId, @RequestBody SectionInsertRequest sectionInsertRequest) {
+        subwayService.insertSectionInLine(lineId, sectionInsertRequest);
+        LineWithAllSectionsResponse lineWithAllSectionsResponse = new LineWithAllSectionsResponse(subwayService.findAllInfoByLineId(lineId));
+        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections")).body(lineWithAllSectionsResponse);
+    }
+
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity<Void> deleteSectionInLine(@PathVariable Long lineId, @RequestParam("stationId") Long stationId) {
+        subwayService.deleteSectionInLine(lineId, stationId);
+        return ResponseEntity.noContent().build();
     }
 }
