@@ -1,29 +1,24 @@
 package wooteco.subway;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import wooteco.subway.exception.repository.RepositoryException;
 import wooteco.subway.exception.service.BusinessException;
-import wooteco.subway.exception.service.ObjectNotFoundException;
-import wooteco.subway.exception.service.ValidationFailureException;
 
 @RestControllerAdvice
-public class BusinessExceptionHandler {
+public class ParentExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<String> handleBusinessException(final BusinessException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 
-    @ExceptionHandler(ObjectNotFoundException.class)
-    public ResponseEntity<String> handleObjectNotFoundException(final ObjectNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-    }
-
-    @ExceptionHandler(ValidationFailureException.class)
-    public ResponseEntity<String> handleValidationFailureException(final ValidationFailureException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    @ExceptionHandler({RepositoryException.class, DataAccessException.class})
+    public ResponseEntity<String> handleRepositoryException(final RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
