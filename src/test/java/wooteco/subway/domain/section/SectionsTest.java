@@ -89,6 +89,26 @@ class SectionsTest {
             .containsExactly(aToB);
     }
 
+    @DisplayName("정렬되어 있는대로 상행 종점부터 하행 종점까지 반환할 수 있다.")
+    @Test
+    void sortStation() {
+        // given
+        // given
+        Section aToB = new Section(1L, lineId, a, b, 2);
+        Section bToC = new Section(2L, lineId, b, c, 2);
+        Section cToD = new Section(3L, lineId, c, d, 2);
+        Section dToE = new Section(4L, lineId, d, e, 2);
+        Section etoF = new Section(5L, lineId, e, f, 2);
+
+        // when
+        List<Section> sectionValues = Arrays.asList(cToD, etoF, bToC, dToE, aToB);
+        Sections sections = new Sections(sectionValues);
+
+        // then
+        assertThat(sections.getStations())
+            .containsExactly(a, b, c, d, e, f);
+    }
+
     @DisplayName("구간 추가 - 입력받은 상행 혹은 하행역이 종점인지 확인할 수 있다.")
     @Test
     void add1() {

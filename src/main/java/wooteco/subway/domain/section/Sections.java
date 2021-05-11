@@ -113,6 +113,16 @@ public class Sections {
         return result;
     }
 
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        stations.add(values.get(0).getUpStation());
+        stations.add(values.get(0).getDownStation());
+        for (int i = 1; i <= values.size() - 1; i++) {
+            stations.add(values.get(i).getDownStation());
+        }
+        return stations;
+    }
+
     public List<Section> getValues() {
         return Collections.unmodifiableList(values);
     }
