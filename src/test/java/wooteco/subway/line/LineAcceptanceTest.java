@@ -3,7 +3,6 @@ package wooteco.subway.line;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -13,26 +12,33 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.TestUtils;
 import wooteco.subway.line.controller.dto.LineRequest;
 import wooteco.subway.line.controller.dto.LineResponse;
+import wooteco.subway.station.controller.dto.StationRequest;
 
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
+
+    private static final Long firstStationId = 1L;
+    private static final Long secondStationId = 2L;
+    private static final Long thirdStationId = 3L;
 
     @DisplayName("지하철 노선 등록 성공")
     @Test
     void createLine() {
         // given
-        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        createTwoStations();
+        final LineRequest lineRequest = createLineRequest();
 
         // when
-        final ExtractableResponse<Response> response = postLine(lineRequest);
+        final ExtractableResponse<Response> response = TestUtils.postLine(lineRequest);
 
         // then
         final LineResponse lineResponse = response.body().as(LineResponse.class);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(lineResponse.getId()).isEqualTo(1L);
         assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName());
         assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor());
     }
@@ -41,11 +47,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
-        postLine(lineRequest);
+        createTwoStations();
+        final LineRequest lineRequest = createLineRequest();
+        TestUtils.postLine(lineRequest);
 
         // when
-        final ExtractableResponse<Response> response = postLine(lineRequest);
+        final ExtractableResponse<Response> response = TestUtils.postLine(lineRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -55,14 +62,21 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLines() {
         // given
-        final LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600");
-        final ExtractableResponse<Response> createResponse1 = postLine(lineRequest1);
+        createThreeStations();
+        final LineRequest lineRequest1 = createLineRequest();
+        final ExtractableResponse<Response> createResponse1 = TestUtils.postLine(lineRequest1);
 
-        final LineRequest lineRequest2 = new LineRequest("2호선", "bg-green-600");
-        final ExtractableResponse<Response> createResponse2 = postLine(lineRequest2);
+        final LineRequest lineRequest2 = new LineRequest(
+                "2호선",
+                "bg-green-600",
+                secondStationId,
+                thirdStationId,
+                10
+        );
+        final ExtractableResponse<Response> createResponse2 = TestUtils.postLine(lineRequest2);
 
         // when
-        final ExtractableResponse<Response> response = getLines();
+        final ExtractableResponse<Response> response = TestUtils.getLines();
 
         // then
         final List<Long> resultLineIds = resultLineIds(response);
@@ -76,24 +90,29 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
-        final ExtractableResponse<Response> createResponse = postLine(lineRequest);
+        createTwoStations();
+        final LineRequest lineRequest = createLineRequest();
+        final ExtractableResponse<Response> createResponse = TestUtils.postLine(lineRequest);
 
         // when
         final String uri = createResponse.header("Location");
-        final LineRequest updateRequest = new LineRequest("분당선", "bg-red-600");
-        final ExtractableResponse<Response> response = updateLine(uri, updateRequest);
+        final LineRequest updateRequest = new LineRequest(
+                "분당선",
+                "bg-red-600"
+                );
+        final ExtractableResponse<Response> response = TestUtils.updateLine(uri, updateRequest);
 
         // then
         final Long lineId = lineId(createResponse);
-        final ExtractableResponse<Response> showLineResponse = getLine(lineId);
+        final ExtractableResponse<Response> showLineResponse = TestUtils.getLine(lineId);
         final LineResponse showLineResult = showLineResponse.body().as(LineResponse.class);
 
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(showLineResult.getId()).isEqualTo(lineId),
                 () -> assertThat(showLineResult.getName()).isEqualTo(updateRequest.getName()),
-                () -> assertThat(showLineResult.getColor()).isEqualTo(updateRequest.getColor())
+                () -> assertThat(showLineResult.getColor()).isEqualTo(updateRequest.getColor()),
+                () -> assertThat(showLineResult.getStations().size()).isEqualTo(2)
         );
     }
 
@@ -101,72 +120,16 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
-        final ExtractableResponse<Response> createResponse = postLine(lineRequest);
+        createTwoStations();
+        final LineRequest lineRequest = createLineRequest();
+        final ExtractableResponse<Response> createResponse = TestUtils.postLine(lineRequest);
 
         // when
         final String uri = createResponse.header("Location");
-        final ExtractableResponse<Response> response = deleteLine(uri);
+        final ExtractableResponse<Response> response = TestUtils.deleteLine(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private ExtractableResponse<Response> postLine(final LineRequest lineRequest) {
-        return RestAssured
-                .given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> getLine(final Long id) {
-        final ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when()
-                .get("/lines/{id}", id)
-                .then().log().all()
-                .extract();
-        return response;
-    }
-
-    private ExtractableResponse<Response> getLines() {
-        final ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
-        return response;
-    }
-
-    private ExtractableResponse<Response> updateLine(final String uri, final LineRequest updateRequest) {
-        final ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(updateRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put(uri)
-                .then().log().all()
-                .extract();
-        return response;
-    }
-
-    private ExtractableResponse<Response> deleteLine(final String uri) {
-        final ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when()
-                .delete(uri)
-                .then()
-                .extract();
-        return response;
-    }
-
-    private Long lineId(final ExtractableResponse<Response> response) {
-        return Long.parseLong(response.header("Location").split("/")[2]);
     }
 
     private List<Long> resultLineIds(final ExtractableResponse<Response> response) {
@@ -176,5 +139,40 @@ class LineAcceptanceTest extends AcceptanceTest {
         return lineResponses.stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
+    }
+
+    private Long lineId(final ExtractableResponse<Response> response) {
+        return Long.parseLong(response.header("Location").split("/")[2]);
+    }
+
+    private LineRequest createLineRequest() {
+        return new LineRequest(
+                "신분당선",
+                "bg-red-600",
+                firstStationId,
+                secondStationId,
+                10
+        );
+    }
+
+    private void createOneStation() {
+        final StationRequest suwonStationRequest = new StationRequest("수원역");
+        TestUtils.postStation(suwonStationRequest);
+    }
+
+    private void createTwoStations() {
+        final StationRequest suwonStationRequest = new StationRequest("수원역");
+        final StationRequest gangnamStationRequest = new StationRequest("강남역");
+        TestUtils.postStation(suwonStationRequest);
+        TestUtils.postStation(gangnamStationRequest);
+    }
+
+    private void createThreeStations() {
+        final StationRequest suwonStationRequest = new StationRequest("수원역");
+        final StationRequest gangnamStationRequest = new StationRequest("강남역");
+        final StationRequest bundangStationRequest = new StationRequest("분당역");
+        TestUtils.postStation(suwonStationRequest);
+        TestUtils.postStation(gangnamStationRequest);
+        TestUtils.postStation(bundangStationRequest);
     }
 }

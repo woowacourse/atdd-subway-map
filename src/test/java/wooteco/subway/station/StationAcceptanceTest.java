@@ -2,7 +2,6 @@ package wooteco.subway.station;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -12,8 +11,8 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.TestUtils;
 import wooteco.subway.station.controller.dto.StationRequest;
 import wooteco.subway.station.controller.dto.StationResponse;
 
@@ -28,7 +27,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         final StationRequest stationRequest = new StationRequest("수원역");
 
         // when
-        final ExtractableResponse<Response> response = postStation(stationRequest);
+        final ExtractableResponse<Response> response = TestUtils.postStation(stationRequest);
 
         // then
         final StationResponse stationResponse = response.body().as(StationResponse.class);
@@ -41,10 +40,10 @@ class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         final StationRequest stationRequest = new StationRequest("수원역");
-        postStation(stationRequest);
+        TestUtils.postStation(stationRequest);
 
         // when
-        final ExtractableResponse<Response> response = postStation(stationRequest);
+        final ExtractableResponse<Response> response = TestUtils.postStation(stationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -55,13 +54,13 @@ class StationAcceptanceTest extends AcceptanceTest {
     void showStations() {
         /// given
         final StationRequest stationRequest1 = new StationRequest("수원역");
-        final ExtractableResponse<Response> createResponse1 = postStation(stationRequest1);
+        final ExtractableResponse<Response> createResponse1 = TestUtils.postStation(stationRequest1);
 
         final StationRequest stationRequest2 = new StationRequest("역삼역");
-        final ExtractableResponse<Response> createResponse2 = postStation(stationRequest2);
+        final ExtractableResponse<Response> createResponse2 = TestUtils.postStation(stationRequest2);
 
         // when
-        final ExtractableResponse<Response> response = getStations();
+        final ExtractableResponse<Response> response = TestUtils.getStations();
 
         // then
         final List<Long> resultStationIds = resultStationsIds(response);
@@ -89,44 +88,13 @@ class StationAcceptanceTest extends AcceptanceTest {
     void deleteStation() {
         // given
         final StationRequest stationRequest = new StationRequest("수원역");
-        final ExtractableResponse<Response> createResponse = postStation(stationRequest);
+        final ExtractableResponse<Response> createResponse = TestUtils.postStation(stationRequest);
 
         // when
         final String uri = createResponse.header("Location");
-        final ExtractableResponse<Response> response = deleteStation(uri);
+        final ExtractableResponse<Response> response = TestUtils.deleteStation(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private ExtractableResponse<Response> postStation(final StationRequest stationRequest) {
-        return RestAssured
-                .given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> getStations() {
-        final ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
-        return response;
-    }
-
-    private ExtractableResponse<Response> deleteStation(final String uri) {
-        final ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
-        return response;
     }
 }
