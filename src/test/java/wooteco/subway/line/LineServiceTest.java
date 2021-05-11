@@ -26,6 +26,10 @@ import wooteco.subway.station.service.StationService;
 @Transactional
 @Sql("classpath:test-schema.sql")
 class LineServiceTest {
+    private static final String stationName1 = "강남역";
+    private static final String stationName2 = "서초역";
+    private static final String stationName3 = "잠실역";
+    private static final String stationName4 = "매봉역";
 
     @Autowired
     private LineService lineService;
@@ -40,10 +44,10 @@ class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        Station station1 = new Station("강남역");
-        Station station2 = new Station("서초역");
-        Station station3 = new Station("잠실역");
-        Station station4 = new Station("매봉역");
+        Station station1 = new Station(stationName1);
+        Station station2 = new Station(stationName2);
+        Station station3 = new Station(stationName3);
+        Station station4 = new Station(stationName4);
 
         stations = Arrays.asList(station1, station2, station3, station4);
         stations.forEach(station -> stationService.createStation(station));
@@ -84,25 +88,27 @@ class LineServiceTest {
         assertEquals(1L, sectionService.createSection(section));
         assertEquals(2L, sectionService.createSection(section1));
 
-        assertEquals("강남역", lineService.showLine(1L).getStations().get(0).getName());
-        assertEquals("서초역", lineService.showLine(1L).getStations().get(1).getName());
-        assertEquals("잠실역", lineService.showLine(1L).getStations().get(2).getName());
+        assertEquals(stationName1, lineService.showLine(1L).getStations().get(0).getName());
+        assertEquals(stationName2, lineService.showLine(1L).getStations().get(1).getName());
+        assertEquals(stationName3, lineService.showLine(1L).getStations().get(2).getName());
     }
 
     @DisplayName("노선을 수정한다.")
     @Test
     void updateLine() {
         showLine();
-        lineService.updateLine(1L, new Line("바뀐호선", "black"));
-        assertEquals("바뀐호선", lineService.showLine(1L).getName());
-        assertEquals("black", lineService.showLine(1L).getColor());
+        String newName = "바뀐호선";
+        String newColor = "black";
+        lineService.updateLine(1L, new Line(newName, newColor));
+        assertEquals(newName, lineService.showLine(1L).getName());
+        assertEquals(newColor, lineService.showLine(1L).getColor());
     }
 
     @DisplayName("존재하지 않는 노선을 수정한다.")
     @Test
     void updateLineException() {
         showLine();
-        assertThatThrownBy(() -> lineService.updateLine(2L, new Line("바뀐호선", "black"))).isInstanceOf(
+        assertThatThrownBy(() -> lineService.updateLine(2L, new Line("없는호선", "black"))).isInstanceOf(
             NoSuchLineException.class);
     }
 
