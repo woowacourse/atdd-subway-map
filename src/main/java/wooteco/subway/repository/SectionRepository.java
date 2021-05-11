@@ -48,7 +48,7 @@ public class SectionRepository {
     }
 
     public List<Section> findAllByStationId(long stationId) {
-        List<Section> sections = sectionDao.finAllByStationId(stationId);
+        List<Section> sections = sectionDao.findAllByStationId(stationId);
         sections.forEach(this::addStations);
         return sections;
     }
@@ -60,5 +60,9 @@ public class SectionRepository {
     public void delete(Section section) {
         long id = section.getId();
         sectionDao.deleteById(id);
+    }
+
+    public void deleteAllByLineId(long lineId) {
+        sectionDao.deleteAllById(lineId);
     }
 }

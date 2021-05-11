@@ -48,5 +48,6 @@ public class LineService {
 
     public void deleteLine(long id) {
         lineRepository.deleteById(id);
+        sectionService.deleteAllByLineId(id);
     }
 }

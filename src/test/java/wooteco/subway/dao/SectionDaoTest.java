@@ -62,7 +62,7 @@ class SectionDaoTest {
 
         long firstSectionId = sectionDao.save(firstSection);
         long lastSectionId = sectionDao.save(lastSection);
-        List<Section> sections = sectionDao.finAllByStationId(1L);
+        List<Section> sections = sectionDao.findAllByStationId(1L);
 
         assertThat(sections).containsExactly(new Section(firstSectionId, 10, 1L));
     }
@@ -121,5 +121,20 @@ class SectionDaoTest {
         assertThatCode(() -> sectionDao.deleteById(8585L))
                 .isInstanceOf(SubwayException.class)
                 .hasMessage(ExceptionStatus.ID_NOT_FOUND.getMessage());
+    }
+
+    @DisplayName("노선 아이디로 구간들을 삭제한다.")
+    @Test
+    void deleteByLineId() {
+        Section firstSection = new Section(upStation, downStation, 10, 1L);
+        Section secondSection = new Section(upStation, downStation, 10, 1L);
+        sectionDao.save(firstSection);
+        sectionDao.save(secondSection);
+
+        int beforeCounts = sectionDao.findAllByLineId(1L).size();
+        sectionDao.deleteAllById(1L);
+        int afterCounts = sectionDao.findAllByLineId(1L).size();
+
+        assertThat(beforeCounts - 2).isEqualTo(afterCounts);
     }
 }

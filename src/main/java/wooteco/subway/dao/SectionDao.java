@@ -43,7 +43,7 @@ public class SectionDao {
         return jdbcTemplate.query(query, Collections.singletonMap("LINE_ID", lineId), sectionRowMapper);
     }
 
-    public List<Section> finAllByStationId(long stationId) {
+    public List<Section> findAllByStationId(long stationId) {
         String query = "SELECT ID, DISTANCE, LINE_ID FROM SECTION WHERE :STATION_ID IN (UP_STATION_ID, DOWN_STATION_ID)";
         RowMapper<Section> sectionRowMapper = (resultSet, rowNumber) -> {
             long id = resultSet.getLong("ID");
@@ -94,5 +94,10 @@ public class SectionDao {
         String query = "DELETE FROM SECTION WHERE ID = :ID";
         int affectedRowCounts = jdbcTemplate.update(query, Collections.singletonMap("ID", id));
         validateId(affectedRowCounts);
+    }
+
+    public void deleteAllById(long lineId) {
+        String query = "DELETE FROM SECTION WHERE LINE_ID = :LINE_ID";
+        jdbcTemplate.update(query, Collections.singletonMap("LINE_ID", lineId));
     }
 }

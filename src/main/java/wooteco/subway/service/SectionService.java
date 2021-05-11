@@ -77,4 +77,8 @@ public class SectionService {
         sectionRepository.save(appendedSection);
         sectionsAroundStation.forEach(sectionRepository::delete);
     }
+
+    public void deleteAllByLineId(long lineId) {
+        sectionRepository.deleteAllByLineId(lineId);
+    }
 }
