@@ -54,8 +54,8 @@ class SectionServiceTest {
     @DisplayName("구간을 생성한다.")
     @Test
     void createSection() {
-        Section section = new Section(1L, 2L, 100);
-        Section section1 = new Section(2L, 3L, 100);
+        Section section = new Section(1L, 1L, 2L, 100);
+        Section section1 = new Section(1L, 2L, 3L, 100);
         assertEquals(1L, sectionService.createSection(section));
         assertEquals(2L, sectionService.createSection(section1));
     }
