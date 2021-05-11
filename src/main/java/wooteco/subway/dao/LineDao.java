@@ -21,7 +21,11 @@ public class LineDao {
         long id = resultSet.getLong("ID");
         String name = resultSet.getString("NAME");
         String color = resultSet.getString("COLOR");
-        return new Line(id, name, color);
+        return Line.builder()
+                .id(id)
+                .name(name)
+                .color(color)
+                .build();
     };
     private static final int ROW_COUNTS_FOR_ID_NOT_FOUND = 0;
 

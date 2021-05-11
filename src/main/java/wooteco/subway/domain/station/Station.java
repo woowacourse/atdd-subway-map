@@ -1,7 +1,12 @@
 package wooteco.subway.domain.station;
 
+import lombok.Builder;
+import lombok.Getter;
+
 import java.util.Objects;
 
+@Builder
+@Getter
 public class Station {
 
     private Long id;
@@ -14,14 +19,6 @@ public class Station {
     public Station(Long id, String name) {
         this.id = id;
         this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     @Override

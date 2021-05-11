@@ -20,7 +20,10 @@ public class LineService {
     }
 
     public Line createLine(LineDto lineDto, SectionDto sectionDto) {
-        Line line = new Line(lineDto.getName(), lineDto.getColor());
+        Line line = Line.builder()
+                .name(lineDto.getName())
+                .color(lineDto.getColor())
+                .build();
         long id = lineRepository.save(line);
         sectionService.createSection(sectionDto, id);
         return lineRepository.findById(id);
@@ -35,7 +38,11 @@ public class LineService {
     }
 
     public void editLine(long id, LineDto lineDto) {
-        Line line = new Line(id, lineDto.getName(), lineDto.getColor());
+        Line line = Line.builder()
+                .id(id)
+                .name(lineDto.getName())
+                .color(lineDto.getColor())
+                .build();
         lineRepository.update(line);
     }
 

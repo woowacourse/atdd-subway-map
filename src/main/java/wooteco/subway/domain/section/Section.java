@@ -1,5 +1,7 @@
 package wooteco.subway.domain.section;
 
+import lombok.Builder;
+import lombok.Getter;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.ExceptionStatus;
 import wooteco.subway.exception.SubwayException;
@@ -7,6 +9,8 @@ import wooteco.subway.exception.SubwayException;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+@Builder
+@Getter
 public class Section {
 
     private Long id;
@@ -90,41 +94,21 @@ public class Section {
         return Stream.of(upStation, downStation);
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public void setUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public void setDownStation(Station downStation) {
-        this.downStation = downStation;
-
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public Long getLineId() {
-        return lineId;
-    }
-
     public long getUpStationId() {
         return upStation.getId();
     }
 
     public long getDownStationId() {
         return downStation.getId();
+    }
+
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
+
     }
 
     @Override

@@ -25,14 +25,24 @@ public class SectionService {
     public long createSection(SectionDto sectionDto, long lineId) {
         Station upStation = stationService.findById(sectionDto.getUpStationId());
         Station downStation = stationService.findById(sectionDto.getDownStationId());
-        Section section = new Section(upStation, downStation, sectionDto.getDistance(), lineId);
+        Section section = Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(sectionDto.getDistance())
+                .lineId(lineId)
+                .build();
         return sectionRepository.save(section);
     }
 
     public void addSection(SectionDto sectionDto, long lineId) {
         Station upStation = stationService.findById(sectionDto.getUpStationId());
         Station downStation = stationService.findById(sectionDto.getDownStationId());
-        Section requestSection = new Section(upStation, downStation, sectionDto.getDistance(), lineId);
+        Section requestSection = Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(sectionDto.getDistance())
+                .lineId(lineId)
+                .build();
         Sections currentSections = new Sections(sectionRepository.findAllByLineId(lineId));
         splitAndUpdateSections(currentSections, requestSection);
     }

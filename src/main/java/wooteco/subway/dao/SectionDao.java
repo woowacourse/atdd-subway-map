@@ -38,7 +38,11 @@ public class SectionDao {
         RowMapper<Section> sectionRowMapper = (resultSet, rowNumber) -> {
             long id = resultSet.getLong("ID");
             int distance = resultSet.getInt("DISTANCE");
-            return new Section(id, distance, lineId);
+            return Section.builder()
+                    .id(id)
+                    .distance(distance)
+                    .lineId(lineId)
+                    .build();
         };
         return jdbcTemplate.query(query, sectionRowMapper, lineId);
     }
@@ -49,7 +53,11 @@ public class SectionDao {
             long id = resultSet.getLong("ID");
             int distance = resultSet.getInt("DISTANCE");
             long lineId = resultSet.getLong("LINE_ID");
-            return new Section(id, distance, lineId);
+            return Section.builder()
+                    .id(id)
+                    .distance(distance)
+                    .lineId(lineId)
+                    .build();
         };
         return jdbcTemplate.query(query, sectionRowMapper, stationId, stationId);
     }

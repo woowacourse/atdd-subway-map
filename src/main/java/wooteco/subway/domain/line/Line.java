@@ -1,9 +1,13 @@
 package wooteco.subway.domain.line;
 
+import lombok.Builder;
+import lombok.Getter;
 import wooteco.subway.domain.section.Sections;
 
 import java.util.Objects;
 
+@Builder
+@Getter
 public class Line {
 
     private Long id;
@@ -24,22 +28,6 @@ public class Line {
         this.name = name;
         this.color = color;
         this.sections = sections;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public Sections getSections() {
-        return sections;
     }
 
     public void setSections(Sections sections) {
