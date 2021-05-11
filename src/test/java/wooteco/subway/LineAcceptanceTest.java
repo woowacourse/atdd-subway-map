@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,11 +22,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class LineAcceptanceTest extends AcceptanceTest {
     private String location;
+    private String namSungStationId;
+    private String naeBangStationId;
 
     @BeforeEach
     void setUp7Line() {
-        String namSungStationId = RequestUtil.requestCreateStation("남성역").header("Location").split("/")[2];
-        String naeBangStationId = RequestUtil.requestCreateStation("내방역").header("Location").split("/")[2];
+        namSungStationId = RequestUtil.requestCreateStation("남성역").header("Location").split("/")[2];
+        naeBangStationId = RequestUtil.requestCreateStation("내방역").header("Location").split("/")[2];
         int distance = 10;
 
         Map<String, String> params = new HashMap<>();
@@ -105,10 +108,17 @@ class LineAcceptanceTest extends AcceptanceTest {
         String name = response.jsonPath().get("name");
         String color = response.jsonPath().get("color");
 
+        List<StationResponse> stationResponses = response.jsonPath().getList("stations", StationResponse.class);
+        List<StationResponse> expectedStationResponses = Arrays.asList(
+                new StationResponse(Long.parseLong(namSungStationId), "남성역"),
+                new StationResponse(Long.parseLong(naeBangStationId), "내방역")
+        );
+
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(name).isEqualTo("7호선");
         assertThat(color).isEqualTo("bg-green-600");
+        assertThat(stationResponses).isEqualTo(expectedStationResponses);
     }
 
     @Test
