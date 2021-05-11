@@ -9,10 +9,12 @@ import org.mockito.MockitoAnnotations;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.SectionRequest;
 import wooteco.subway.line.repository.LineRepository;
 import wooteco.subway.station.domain.Station;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.codehaus.groovy.runtime.DefaultGroovyMethods.any;
 import static org.mockito.Mockito.when;
 
 class LineServiceTest {
@@ -44,12 +46,23 @@ class LineServiceTest {
         assertThat(savedLine.stations().get(0).id()).isEqualTo(1L);
     }
 
-//    @Test
-//    @DisplayName("노선에 구간을 추가한다.")
-//    void addSection() {
-//        Long lineId = 1L;
-//        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
-//        when(sectionDao.save(any(Section.class))).thenReturn(null);
-//        lineService.addSection(1L, sectionRequest);
-//    }
+    /**
+     *     public void addSection(final Long lineId, final SectionRequest sectionRequest) {
+     *         Line originLine = lineRepository.findById(lineId);
+     *         Line addedLine = originLine.addedSectionLine(
+     *                 new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance()));
+     *         Section toUpdateSection = addedLine.affectedSection(originLine);
+     *         lineRepository.updateSection(lineId, toUpdateSection);
+     *     }
+     */
+
+    @Test
+    @DisplayName("노선에 구간을 추가한다.")
+    void addSection() {
+        Long lineId = 1L;
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
+        Section section = new Section(new Station(1L, "아마역"), new Station(2L, "마찌역"), 10);
+        when(lineRepository.findById(lineId)).thenReturn(new Line(1L, "신분당선", "화이트", section));
+        lineService.addSection(1L, sectionRequest);
+    }
 }

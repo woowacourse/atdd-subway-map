@@ -59,6 +59,7 @@ public class LineService {
         Line addedLine = originLine.addedSectionLine(
                 new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance()));
         Section toUpdateSection = addedLine.affectedSection(originLine);
+
         lineRepository.updateSection(lineId, toUpdateSection);
     }
 }

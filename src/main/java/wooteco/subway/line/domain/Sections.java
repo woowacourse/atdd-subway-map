@@ -37,7 +37,7 @@ public class Sections {
 
         Section targetSection = findSectionWithDownStation(downStation);
         checkAbleToAddByDistance(anotherSection, targetSection);
-        targetSection.changeUpStation(anotherSection.upStation());
+        targetSection.changeDownStation(anotherSection.upStation());
         targetSection.subDistance(anotherSection.distance());
         return new Sections(new ArrayList<>(sections));
 
