@@ -29,16 +29,19 @@ public class LineStationsListService {
         this.lineDao = lineDao;
     }
 
-    @Transactional(readOnly = true)
     public LineStationsListResponseDto getAllStationsInOrderListByLineId(Long lineId) {
-        List<Section> sectionsOfLine = sectionDao.findAllByLineId(lineId);
-        LineStationsInOrder lineStationsInOrder = new LineStationsInOrder(sectionsOfLine);
+        LineStationsInOrder lineStationsInOrder = getLineStationsInOrder(lineId);
         List<Long> stationIdsInOrder = lineStationsInOrder.getStationIdsInOrder();
         List<Station> stationsInAnyOrder = stationDao.findByIds(stationIdsInOrder);
         List<Station> stationsInOrder = lineStationsInOrder.getOrderedStationsByOrderedIds(stationsInAnyOrder, stationIdsInOrder);
-        List<StationResponseDto> stationResponseDtosInOrder = getStationResponseDtosFromStationsInOrder(stationsInOrder);
         Line line = getLine(lineId);
+        List<StationResponseDto> stationResponseDtosInOrder = getStationResponseDtosFromStationsInOrder(stationsInOrder);
         return new LineStationsListResponseDto(line.getId(), line.getName(), line.getColor(), stationResponseDtosInOrder);
+    }
+
+    private LineStationsInOrder getLineStationsInOrder(Long lineId) {
+        List<Section> sectionsOfLine = sectionDao.findAllByLineId(lineId);
+        return new LineStationsInOrder(sectionsOfLine);
     }
 
     private Line getLine(Long lineId) {
