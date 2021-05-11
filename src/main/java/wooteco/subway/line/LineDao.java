@@ -1,7 +1,6 @@
 package wooteco.subway.line;
 
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +13,6 @@ import wooteco.subway.exception.NoSuchLineException;
 @Repository
 public class LineDao {
 
-    private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
