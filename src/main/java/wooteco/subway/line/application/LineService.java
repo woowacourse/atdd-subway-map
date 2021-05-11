@@ -13,7 +13,6 @@ import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +26,7 @@ public class LineService {
     private final SectionDao sectionDao;
     private final StationDao stationDao;
 
-    public LineService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
+    public LineService(final LineDao lineDao, final SectionDao sectionDao, final StationDao stationDao) {
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
@@ -36,6 +35,7 @@ public class LineService {
     @Transactional
     public LineResponse save(final LineRequest lineRequest) {
         validateDuplication(lineRequest);
+        validateStations(lineRequest.getUpStationId(), lineRequest.getDownStationId());
         LineEntity savedLineEntity = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
         Station upStation = findStationById(lineRequest.getUpStationId());
         Station downStation = findStationById(lineRequest.getDownStationId());
@@ -90,7 +90,7 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteSectionByStationId(Long lineId, Long stationId) {
+    public void deleteSectionByStationId(final Long lineId, final Long stationId) {
         LineEntity findLineEntity = findLineEntityById(lineId);
         Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());
         Sections originSections = new Sections(toSections(line));
@@ -157,11 +157,17 @@ public class LineService {
         }
     }
 
-    private LineEntity findLineEntityById(Long id) {
+    private void validateStations(final Long upStationId, final Long downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new IllegalStateException("상행역과 하행역은 같을 수 없습니다");
+        }
+    }
+
+    private LineEntity findLineEntityById(final Long id) {
         return lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
     }
 
-    private Station findStationById(Long stationId) {
+    private Station findStationById(final Long stationId) {
         return stationDao.findById(stationId).orElseThrow(() -> new IllegalStateException("없는 역임!"));
     }
 }

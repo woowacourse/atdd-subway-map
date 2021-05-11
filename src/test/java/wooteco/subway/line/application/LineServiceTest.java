@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -61,6 +62,16 @@ class LineServiceTest {
         assertThat(lineResponse.getId()).isEqualTo(1L);
         assertThat(lineResponse.getStations()).hasSize(2);
         assertThat(lineResponse.getStations().get(0).getId()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("구건 저장 시 상행역과 하행역이 같으면예와가 발생한다")
+    void saveException() {
+        //given
+
+        //then
+        assertThatThrownBy(() -> lineService.save(new LineRequest("신분당선", "화이트", 1L, 1L, 10)))
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -110,9 +121,9 @@ class LineServiceTest {
         assertThat(stationResponsesToString(response.getStations())).containsExactly("검프역", "마찌역");
     }
 
-/*    @Test
+    @Test
     @DisplayName("구간을 제거한다. (중간)")
-    void deleteByStationId() {
+    void deleteMiddleStation() {
         //given
         Long lineId = 1L;
         Long targetStationId = 2L;
@@ -137,7 +148,8 @@ class LineServiceTest {
         LineResponse response = lineService.findLine(lineId);
 
         //then
-        assertThat(stationResponsesToString(response.getStations())).containsExactly("아마찌역", "마찌역"); }*/
+        assertThat(stationResponsesToString(response.getStations())).containsExactly("아마찌역", "마찌역");
+    }
 
 
     @Test
