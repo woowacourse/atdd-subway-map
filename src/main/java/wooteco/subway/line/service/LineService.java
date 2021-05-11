@@ -79,11 +79,25 @@ public class LineService {
         List<FindSectionRule> findSectionRules = Arrays.asList(new FindSectionHaveSameUpRule(),
                 new FindSectionHaveSameDownRule());
         Section deleteSection = sections.findDeleteByAdding(section, findSectionRules);
-        Section updateSection = sections.generateUpdate(section, deleteSection);
+        Section updateSection = sections.generateUpdateWhenAdd(section, deleteSection);
 
         lineRepository.deleteSection(id, deleteSection);
         lineRepository.addSection(id, updateSection);
         lineRepository.addSection(id, section);
+    }
+
+    public void deleteSection(final Long id, final Long stationId) {
+        Line line = findById(id);
+        Sections sections = line.getSections();
+        List<Section> deleteSections = sections.deleteSection(stationId);
+
+        if (deleteSections.size() == 1) {
+            System.out.println("delete :" + deleteSections.get(0));
+            lineRepository.deleteSection(id, deleteSections.get(0));
+            return;
+        }
+
+        Section updateSection = sections.generateUpdateWhenDelete(deleteSections);
     }
 
     private void checkCreateValidation(Line line) {

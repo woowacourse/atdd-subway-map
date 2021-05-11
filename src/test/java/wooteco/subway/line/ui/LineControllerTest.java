@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.domain.LineRepository;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.domain.Sections;
 import wooteco.subway.line.service.LineService;
@@ -32,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.is;
 import static wooteco.subway.line.domain.Sections.ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE;
 import static wooteco.subway.line.domain.Sections.ERROR_SECTION_HAVE_TO_ONE_STATION_IN_LINE;
-import static wooteco.subway.line.service.LineService.*;
+import static wooteco.subway.line.service.LineService.ERROR_DUPLICATED_LINE_NAME;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -40,9 +39,6 @@ class LineControllerTest {
 
     @Autowired
     private LineService lineService;
-
-    @Autowired
-    private LineRepository lineRepository;
 
     @Autowired
     private StationRepository stationRepository;
@@ -208,7 +204,7 @@ class LineControllerTest {
                 .extract();
 
         //then
-        final Line updatedLine = lineRepository.findById(line.getId());
+        final Line updatedLine = lineService.findById(line.getId());
         assertThat(updatedLine.getName()).isEqualTo("구분당선");
     }
 
@@ -231,7 +227,7 @@ class LineControllerTest {
 
         //then
         assertThatThrownBy(() -> {
-            lineRepository.findById(line.getId());
+            lineService.findById(line.getId());
         }, "", EmptyResultDataAccessException.class);
 
     }
@@ -363,7 +359,7 @@ class LineControllerTest {
                 .extract();
 
         //then
-        Line savedLine = lineRepository.findById(line.getId());
+        Line savedLine = lineService.findById(line.getId());
 
         assertThat(savedLine.getSections().sumSectionDistance()).isEqualTo(30);
 
@@ -394,7 +390,7 @@ class LineControllerTest {
                 .extract();
 
         //then
-        savedLine = lineRepository.findById(line.getId());
+        savedLine = lineService.findById(line.getId());
 
         assertThat(savedLine.getSections().sumSectionDistance()).isEqualTo(50);
 
@@ -434,7 +430,7 @@ class LineControllerTest {
                 .extract();
 
         //then
-        Line savedLine = lineRepository.findById(line.getId());
+        Line savedLine = lineService.findById(line.getId());
 
         assertThat(savedLine.getSections().sumSectionDistance()).isEqualTo(10);
 
@@ -450,6 +446,81 @@ class LineControllerTest {
                 .containsExactly(pankyo.getId(), yangjae.getId());
     }
 
+    @DisplayName("종점이 제거될 경우 다음으로 오던 역이 종점이 됨 - 상행 제거")
+    @Test
+    void deleteSection_endPointUp() {
+        //given
+        Station kangnam = setDummyStation("강남역");
+        Station yangjae = setDummyStation("양재역");
+        Station pankyo = setDummyStation("판교역");
+
+        Line line = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
+        lineService.addSection(line.getId(), new Section(kangnam.getId(), pankyo.getId(), 5));
+
+        //when
+        RestAssured
+                .given().log().all()
+                .accept(MediaType.ALL_VALUE)
+                .when()
+                .delete("/lines/" + line.getId() + "/sections?stationId=" + kangnam.getId())
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .extract();
+
+        //then
+        Line savedLine = lineService.findById(line.getId());
+
+        assertThat(savedLine.getSections().sumSectionDistance()).isEqualTo(5);
+
+        assertThat(savedLine.getSections().toList())
+                .hasSize(1);
+
+        assertThat(savedLine.getSections().toList())
+                .extracting(Section::getUpStationId)
+                .containsExactly(pankyo.getId());
+
+        assertThat(savedLine.getSections().toList())
+                .extracting(Section::getDownStationId)
+                .containsExactly(yangjae.getId());
+    }
+
+    @DisplayName("종점이 제거될 경우 다음으로 오던 역이 종점이 됨 - 하행 제거")
+    @Test
+    void deleteSection_endPointDown() {
+        //given
+        Station kangnam = setDummyStation("강남역");
+        Station yangjae = setDummyStation("양재역");
+        Station pankyo = setDummyStation("판교역");
+
+        Line line = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
+        lineService.addSection(line.getId(), new Section(kangnam.getId(), pankyo.getId(), 5));
+
+        //when
+        RestAssured
+                .given().log().all()
+                .accept(MediaType.ALL_VALUE)
+                .when()
+                .delete("/lines/" + line.getId() + "/sections?stationId=" + yangjae.getId())
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .extract();
+
+        //then
+        Line savedLine = lineService.findById(line.getId());
+
+        assertThat(savedLine.getSections().sumSectionDistance()).isEqualTo(5);
+
+        assertThat(savedLine.getSections().toList())
+                .hasSize(1);
+
+        assertThat(savedLine.getSections().toList())
+                .extracting(Section::getUpStationId)
+                .containsExactly(kangnam.getId());
+
+        assertThat(savedLine.getSections().toList())
+                .extracting(Section::getDownStationId)
+                .containsExactly(pankyo.getId());
+    }
 
     private Station setDummyStation(String stationName) {
         Station station = new Station(stationName);
@@ -463,6 +534,6 @@ class LineControllerTest {
                 )
         );
 
-        return lineRepository.save(new Line(lineName, lineColor, sections));
+        return lineService.create(new Line(lineName, lineColor, sections));
     }
 }

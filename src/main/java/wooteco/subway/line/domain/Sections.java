@@ -2,6 +2,7 @@ package wooteco.subway.line.domain;
 
 import wooteco.subway.line.domain.rule.FindSectionRule;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -108,7 +109,7 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public Section generateUpdate(final Section newSection, final Section deleteSection) {
+    public Section generateUpdateWhenAdd(final Section newSection, final Section deleteSection) {
         int distance = deleteSection.getDistance() - newSection.getDistance();
 
         if (distance <= 0) {
@@ -124,5 +125,20 @@ public class Sections {
         }
 
         throw new IllegalArgumentException("노선의 상행역 혹은 하행역을 찾을 수 없습니다.");
+    }
+
+    public List<Section> deleteSection(final Long stationId) {
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(stationId)
+                        || section.getDownStationId().equals(stationId))
+                .collect(Collectors.toList());
+    }
+
+    public Section generateUpdateWhenDelete(final List<Section> deleteSections) {
+        if (deleteSections.size() == 1) {
+            return deleteSections.get(0);
+        }
+
+        return (Section) Collections.EMPTY_LIST;
     }
 }

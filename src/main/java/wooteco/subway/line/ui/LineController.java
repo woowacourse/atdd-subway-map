@@ -84,9 +84,15 @@ public class LineController {
 
 
     @PostMapping(value = "/{id}/sections", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> addSectionInLine(@PathVariable final Long id, @RequestBody SectionAddRequest sectionAddRequest) {
+    public ResponseEntity<Void> addSection(@PathVariable final Long id, @RequestBody final SectionAddRequest sectionAddRequest) {
         Section section = new Section(sectionAddRequest.getUpStationId(), sectionAddRequest.getDownStationId(), sectionAddRequest.getDistance());
         lineService.addSection(id, section);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/sections")
+    public ResponseEntity<Void> deleteSection(@PathVariable final Long id, @RequestParam final Long stationId) {
+        lineService.deleteSection(id, stationId);
         return ResponseEntity.noContent().build();
     }
 
