@@ -68,7 +68,12 @@ public class LineController {
     }
 
     @PostMapping(value = "/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SectionCreateResponse> addSection(@PathVariable Long id, @RequestBody SectionCreateRequest sectionCreateRequest) {
+    public ResponseEntity<SectionCreateResponse> addSection(@PathVariable Long id,
+                                                            @RequestBody @Valid SectionCreateRequest sectionCreateRequest, Errors errors) {
+        if (errors.hasErrors()) {
+            throw new SubwayException("올바른 값이 아닙니다.");
+        }
+
         StationResponse upStation = stationService.findById(sectionCreateRequest.getUpStationId());
         StationResponse downStation = stationService.findById(sectionCreateRequest.getDownStationId());
         AddSectionDto addSectionDto = new AddSectionDto(id, upStation, downStation, sectionCreateRequest.getDistance());
@@ -79,7 +84,11 @@ public class LineController {
 
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest lineUpdateRequest) {
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody @Valid LineUpdateRequest lineUpdateRequest, Errors errors) {
+        if (errors.hasErrors()) {
+            throw new SubwayException("올바른 값이 아닙니다.");
+        }
+
         lineService.update(id, lineUpdateRequest);
         return ResponseEntity.ok().build();
     }
