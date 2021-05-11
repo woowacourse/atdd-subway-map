@@ -12,13 +12,14 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.line.dao.LineDao;
-import wooteco.subway.section.SectionService;
-import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.dao.line.LineDao;
+import wooteco.subway.service.SectionService;
+import wooteco.subway.dao.station.StationDao;
+import wooteco.subway.web.request.LineRequest;
+import wooteco.subway.web.response.LineResponse;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;

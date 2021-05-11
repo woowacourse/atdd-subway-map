@@ -15,9 +15,10 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
-import wooteco.subway.line.LineService;
-import wooteco.subway.section.dao.SectionDao;
-import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.service.LineService;
+import wooteco.subway.dao.section.SectionDao;
+import wooteco.subway.dao.station.StationDao;
+import wooteco.subway.web.request.SectionRequest;
 
 import java.util.List;
 
