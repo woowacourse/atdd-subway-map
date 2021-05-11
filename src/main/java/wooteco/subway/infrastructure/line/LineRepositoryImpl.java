@@ -113,6 +113,9 @@ public class LineRepositoryImpl implements LineRepository {
 
     @Override
     public void deleteById(final Long id) {
+        List<Section> sections = sectionDao.findAllByLineId(id);
+        sectionDao.delete(sections);
+
         lineDao.deleteById(id);
     }
 
