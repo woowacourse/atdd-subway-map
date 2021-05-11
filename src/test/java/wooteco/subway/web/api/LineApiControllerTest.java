@@ -64,40 +64,6 @@ class LineApiControllerTest extends AcceptanceTest {
         assertThat(result.body().asString()).isEqualTo("이미 등록되어 있는 노선 정보입니다.");
     }
 
-    @DisplayName("노선 생성 - 실패(잘못된 정보 입력)")
-    @Test
-    void createLine_wrongInfo() {
-        // when
-        final ExtractableResponse<Response> result = 기본_노선_생성();
-
-        // then
-        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(result.body().asString()).isEqualTo("잘못된 정보를 입력했습니다.");
-    }
-
-    @DisplayName("노선 목록 조회 - 성공")
-    @Test
-    void getLines() {
-        // given
-//        final LineRequest lineRequest1 = LineRequest.create("신분당선", "bg-red-600");
-//        final LineRequest lineRequest2 = LineRequest.create("2호선", "bg-green-600");
-//        노선_생성(lineRequest1);
-//        노선_생성(lineRequest2);
-//
-//        // when
-//        final ExtractableResponse<Response> result = 노선_조회();
-//
-//        // then
-//        final List<LineResponse> response = Arrays.asList(result.body().as(LineResponse[].class));
-//
-//        assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
-//        assertThat(response).hasSize(2);
-//        assertThat(response).extracting(LineResponse::getName)
-//            .containsExactlyInAnyOrder("신분당선", "2호선");
-//        assertThat(response).extracting(LineResponse::getColor)
-//            .containsExactlyInAnyOrder("bg-red-600", "bg-green-600");
-    }
-
     @DisplayName("한 노선 조회 - 성공")
     @Test
     void getLineById() {

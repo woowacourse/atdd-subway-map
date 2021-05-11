@@ -37,8 +37,16 @@ public class Section {
         return downStation.isSameId(targetStation.getId());
     }
 
+    public boolean isDownStation(Long stationId) {
+        return downStation.isSameId(stationId);
+    }
+
     public boolean isUpStation(Station targetStation) {
         return upStation.isSameId(targetStation.getId());
+    }
+
+    public boolean isUpStation(Long stationId) {
+        return upStation.isSameId(stationId);
     }
 
     public boolean isSameSection(Section targetSection) {
@@ -71,5 +79,17 @@ public class Section {
 
     public boolean containsStation(Station station) {
         return isDownStation(station) || isUpStation(station);
+    }
+
+    public boolean containsStation(Long stationId) {
+        return isUpStation(stationId) || isDownStation(stationId);
+    }
+
+    public void combineSection(Section section) {
+        if(isDownStation(section.getUpStation())) {
+            downStation = section.getDownStation();
+        } else {
+            upStation = section.getUpStation();
+        }
     }
 }

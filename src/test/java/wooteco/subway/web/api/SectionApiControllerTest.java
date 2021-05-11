@@ -167,18 +167,18 @@ class SectionApiControllerTest extends AcceptanceTest {
     @Test
     @DisplayName("구간 등록 - 실패(존재하지 않는 역을 등록할 경우)")
     public void insertSection_fail_notExistStation() {
-        //given
+        // given
         final Station upStation = 상행역();
         final Station downStation = 하행역();
         final String uri = 노선_생성(LineRequest
             .create(LINE_NAME, LINE_COLOR, upStation.getId(), downStation.getId(), DISTANCE))
             .header("Location");
 
-        //when
+        // when
         final ExtractableResponse<Response> result =
             구간_등록(uri, SectionRequest.create(upStation.getId(), Long.MAX_VALUE, 1));
 
-        //then
+        // then
         assertThat(result.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
@@ -205,6 +205,46 @@ class SectionApiControllerTest extends AcceptanceTest {
 
         // then
         assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("구간 삭제 - 성공")
+    public void dropSection() {
+        // given
+        final Station upStation = 상행역();
+        final Station downStation = 하행역();
+        final String uri =
+            노선_생성(LineRequest
+                .create(LINE_NAME, LINE_COLOR, upStation.getId(), downStation.getId(), DISTANCE))
+                .header("Location");
+
+        final Station newStation = 역_생성("대림역");
+        final int newDistance = 5;
+        final SectionRequest sectionRequest =
+            SectionRequest.create(newStation.getId(), upStation.getId(), newDistance);
+        구간_등록(uri, sectionRequest);
+
+        // when
+        final ExtractableResponse<Response> result = 구간_삭제(uri, upStation.getId());
+
+        // then
+        final LineResponse lineResponse = 노선_조회(uri).body().as(LineResponse.class);
+
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(lineResponse.getStations()).hasSize(2);
+        assertThat(lineResponse.getStations()).extracting("name")
+            .containsExactlyInAnyOrder(newStation.getName(), downStation.getName());
+    }
+
+    @Test
+    @DisplayName("구간 삭제 - 실패(존재하지 않는 역 정보)")
+    public void dropSection_fail_wrongStationId() {
+        //given
+        final String uri = 기본_노선_생성().header("Location");
+        //when
+        final ExtractableResponse<Response> result = 구간_삭제(uri, Long.MAX_VALUE);
+        //then
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private ExtractableResponse<Response> 노선_생성(LineRequest lineRequest) {
@@ -237,6 +277,15 @@ class SectionApiControllerTest extends AcceptanceTest {
             .contentType(ContentType.JSON)
             .when()
             .post(uri + "/sections")
+            .then()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> 구간_삭제(String uri, Long stationId) {
+        return RestAssured.given()
+            .contentType(ContentType.JSON)
+            .when()
+            .delete(uri + "/sections?stationId="+stationId)
             .then()
             .extract();
     }

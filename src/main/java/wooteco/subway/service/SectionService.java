@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +29,7 @@ public class SectionService {
 
         final Sections sections = Sections.create(sectionDao.findAllByLineId(lineId));
 
-        if(sections.isEmpty()) {
+        if (sections.isEmpty()) {
             throw new LineNotFoundException();
         }
 
@@ -37,5 +38,16 @@ public class SectionService {
         sectionDao.save(createdSection, lineId);
 
         return createdSection;
+    }
+
+    @Transactional
+    public void dropSection(Long lineId, Long stationId) {
+        final Sections sections = Sections.create(sectionDao.findAllByLineId(lineId));
+        if (sections.isEmpty()) {
+            throw new LineNotFoundException();
+        }
+        final Optional<Section> section = sections.affectedSectionWhenRemoving(stationId);
+        sectionDao.removeByStationId(lineId, stationId);
+        section.ifPresent(sec -> sectionDao.save(sec, lineId));
     }
 }

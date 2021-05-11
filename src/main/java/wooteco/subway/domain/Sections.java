@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import wooteco.subway.exception.badRequest.InvalidSectionException;
+import wooteco.subway.exception.notFound.StationNotFoundException;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Sections {
 
     private static final int FIRST_INDEX = 0;
+    private static final int SECOND_INDEX = 1;
 
     private final List<Section> sections;
 
@@ -84,11 +87,13 @@ public class Sections {
         boolean existsDownStation) {
         Optional<Section> foundSection = Optional.empty();
         if (existsUpStation) {
-            foundSection = sections.stream().filter(section -> section.isUpStation(newSection.getUpStation())).findAny();
+            foundSection = sections.stream()
+                .filter(section -> section.isUpStation(newSection.getUpStation())).findAny();
             foundSection.ifPresent(section -> section.updateUpStation(newSection));
         }
         if (existsDownStation) {
-            foundSection = sections.stream().filter(section -> section.isDownStation(newSection.getDownStation())).findAny();
+            foundSection = sections.stream()
+                .filter(section -> section.isDownStation(newSection.getDownStation())).findAny();
             foundSection.ifPresent(section -> section.updateDownStation(newSection));
         }
         return foundSection;
@@ -101,5 +106,32 @@ public class Sections {
 
     public boolean isEmpty() {
         return sections.isEmpty();
+    }
+
+    public Optional<Section> affectedSectionWhenRemoving(Long stationId) {
+        final List<Section> sections = this.sections.stream()
+            .filter(section -> section.containsStation(stationId))
+            .collect(Collectors.toList());
+
+        if(stationNotExist(sections)) {
+            throw new StationNotFoundException();
+        }
+
+        if (isEndStation(sections)) {
+            return Optional.empty();
+        }
+
+        Section firstSection = sections.get(FIRST_INDEX);
+        Section secondSection = sections.get(SECOND_INDEX);
+        firstSection.combineSection(secondSection);
+        return Optional.of(firstSection);
+    }
+
+    private boolean stationNotExist(List<Section> sections) {
+        return sections.size() == 0;
+    }
+
+    private boolean isEndStation(List<Section> sections) {
+        return sections.size() == 1;
     }
 }
