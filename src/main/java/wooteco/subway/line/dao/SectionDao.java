@@ -47,8 +47,8 @@ public class SectionDao implements SectionRepository {
 
     @Override
     public Sections findAllByLineId(final Long lineId) {
-        final String sql = "SELECT * FROM SECTION";
-        final List<Section> foundSections = jdbcTemplate.query(sql, rowMapper);
+        final String sql = "SELECT * FROM SECTION WHERE line_id = ?";
+        final List<Section> foundSections = jdbcTemplate.query(sql, rowMapper, lineId);
         return new Sections(foundSections);
     }
 
