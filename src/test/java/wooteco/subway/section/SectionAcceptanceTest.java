@@ -212,6 +212,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("구간 삭제")
     void deleteSection() {
+        // given
+        StationRequest 당산역 = new StationRequest("당산역");
+        StationRequest 왕십리역 = new StationRequest("왕십리역");
+
+        SectionRequest 잠실에서당산 = new SectionRequest(2L, 3L, 5);
+
+        // when
+        postResponse("/stations", 당산역);
+        postResponse("/stations", 왕십리역);
+        postResponse("/lines/1/sections", 잠실에서당산);
+        ExtractableResponse<Response> response = deleteResponse("/lines/1/sections?stationId=2");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
     }
 
@@ -241,6 +255,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post(path)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> deleteResponse(String path) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete(path)
                 .then().log().all()
                 .extract();
     }

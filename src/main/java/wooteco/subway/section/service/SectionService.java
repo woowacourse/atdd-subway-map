@@ -92,4 +92,37 @@ public class SectionService {
         return sections.toSortedStationIds();
     }
 
+    public void deleteSection(Long lineId, Long stationId) {
+        Sections sections = new Sections(jdbcSectionDao.findAllByLineId(lineId));
+        sections.validateDeletable();
+        if (sections.isOnUpEdge(stationId)) {
+            jdbcSectionDao.deleteFirstSection(lineId, stationId);
+            return;
+        }
+
+        if (sections.isOnDownEdge(stationId)) {
+            jdbcSectionDao.deleteLastSection(lineId, stationId);
+            return;
+        }
+        deleteSectionInMiddle(lineId, stationId, sections);
+    }
+
+    private void deleteSectionInMiddle(Long lineId, Long stationId, Sections sections) {
+        Section before = sections.findSectionByDown(stationId);
+        Section after = sections.findSectionByUp(stationId);
+
+        Section newSection = makeNewSection(before, after);
+
+        jdbcSectionDao.save(lineId, newSection);
+        jdbcSectionDao.deleteSections(before, after);
+    }
+
+    private Section makeNewSection(Section before, Section after) {
+        Long newUp = before.getUpStationId();
+        Long newDown = after.getDownStationId();
+        int totalDistance = before.plusDistance(after);
+
+        Section newSection = new Section(newUp, newDown, totalDistance);
+        return newSection;
+    }
 }

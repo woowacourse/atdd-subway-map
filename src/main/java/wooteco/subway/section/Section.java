@@ -63,4 +63,8 @@ public class Section {
     public boolean hasLongerDistanceThan(Section oldSection) {
         return this.distance >= oldSection.getDistance();
     }
+
+    public int plusDistance(Section after) {
+        return this.distance + after.distance;
+    }
 }

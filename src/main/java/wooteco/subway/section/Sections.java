@@ -52,11 +52,16 @@ public class Sections {
     }
 
     public boolean isOnEdge(Section section) {
-        return isOnUpEdge(section) || isOnDownEdge(section);
+        return isOnUpEdge(section.getDownStationId())
+                || isOnDownEdge(section.getUpStationId());
     }
 
-    private boolean isOnDownEdge(Section section) {
-        return section.getUpStationId().equals(getLastDownId());
+    public boolean isOnUpEdge(Long downId) {
+        return downId.equals(getFirstUpId());
+    }
+
+    public boolean isOnDownEdge(Long upId) {
+        return upId.equals(getLastDownId());
     }
 
     private Long getFirstUpId() {
@@ -71,10 +76,6 @@ public class Sections {
                 .filter(downId -> upStationIds(sections).stream().noneMatch(upId -> upId.equals(downId)))
                 .findAny()
                 .orElseThrow(() -> new SubWayException("하행역이 없습니다."));
-    }
-
-    private boolean isOnUpEdge(Section section) {
-        return section.getDownStationId().equals(getFirstUpId());
     }
 
     private List<Long> upStationIds(List<Section> sections) {
@@ -126,5 +127,33 @@ public class Sections {
                 .collect(Collectors.toList());
         stationIds.add(lastStationId);
         return stationIds;
+    }
+
+    public void validateDeletable() {
+        if (sections.size() <= 1) {
+            throw new SubWayException("구간이 한 개 이하라 삭제할 수 없습니다.");
+        }
+    }
+
+    public void deleteFirstSection() {
+        sections.remove(0);
+    }
+
+    public void deleteLastSection() {
+        sections.remove(sections.size()-1);
+    }
+
+    public Section findSectionByDown(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.isSameDown(stationId))
+                .findFirst()
+                .orElseThrow(() -> new SubWayException("일치하는 하행역이 없습니다."));
+    }
+
+    public Section findSectionByUp(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.isSameUp(stationId))
+                .findFirst()
+                .orElseThrow(() -> new SubWayException("일치하는 상행역이 없습니다."));
     }
 }

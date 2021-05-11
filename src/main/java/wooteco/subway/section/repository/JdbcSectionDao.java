@@ -86,11 +86,18 @@ public class JdbcSectionDao {
         jdbcTemplate.update(query, newSection.getUpStationId(), changedDistance, newSection.getDownStationId());
     }
 
-    private void insertNewSection(Long lineId, Section newSection) {
-        String query = "INSERT INTO section (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
-        Long upStationId = newSection.getUpStationId();
-        Long downStationId = newSection.getDownStationId();
-        int distance = newSection.getDistance();
-        jdbcTemplate.update(query, lineId, upStationId, downStationId, distance);
+    public void deleteFirstSection(Long lineId, Long stationId) {
+        String query = "DELETE FROM section WHERE line_id = ? AND up_station_id = ?";
+        jdbcTemplate.update(query, lineId, stationId);
+    }
+
+    public void deleteLastSection(Long lineId, Long stationId) {
+        String query = "DELETE FROM section WHERE line_id = ? AND down_station_id = ?";
+        jdbcTemplate.update(query, lineId, stationId);
+    }
+
+    public void deleteSections(Section before, Section after) {
+        String query = "DELETE FROM section WHERE id = ? AND id = ?";
+        jdbcTemplate.update(query, before.getId(), after.getId());
     }
 }
