@@ -4,10 +4,9 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.controller.request.SectionInsertRequest;
 import wooteco.subway.controller.response.StationResponse;
 import wooteco.subway.domain.Sections;
-import wooteco.subway.exception.section.DeleteSectionIsNotPermittedException;
+import wooteco.subway.domain.SimpleStation;
 import wooteco.subway.service.dto.LineDto;
 import wooteco.subway.service.dto.LineWithStationsDto;
-import wooteco.subway.domain.SimpleStation;
 
 import java.util.List;
 

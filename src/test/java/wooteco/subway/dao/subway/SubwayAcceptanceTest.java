@@ -12,14 +12,34 @@ import wooteco.subway.controller.response.StationResponse;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.dao.fixture.CommonFixture.*;
-import static wooteco.subway.dao.fixture.DomainFixture.STATIONS1;
-import static wooteco.subway.dao.fixture.DomainFixture.STATIONS2;
-import static wooteco.subway.dao.fixture.LineAcceptanceTestFixture.*;
+import static wooteco.subway.dao.fixture.Fixture.*;
+import static wooteco.subway.dao.fixture.LineAcceptanceTestFixture.createLineWithSection;
 import static wooteco.subway.dao.subway.SubwayAcceptanceTestFixture.*;
 
 @Sql("classpath:tableInit.sql")
 public class SubwayAcceptanceTest extends AcceptanceTest {
+    @Test
+    @DisplayName("노선 생성 - 노선을 생성한다.")
+    void createLine() {
+        // given - when
+        ExtractableResponse<Response> response = extractResponseWhenPost(createLineWithSection(STATIONS1), "/lines"); // 노선 등록
+        String uri = response.header("Location");
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.body().jsonPath().get("id").toString()).isEqualTo(uri.split("/")[2]);
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo(LINE_NAME);
+        assertThat(response.body().jsonPath().getString("color")).isEqualTo(LINE_COLOR);
+    }
+
+    @Test
+    @DisplayName("노선 생성 - 상행 종점, 하행 종점이 모두 같게 하여 노선을 생성한다.")
+    void createLineWithSameStations() {
+        // given - when
+        ExtractableResponse<Response> response = extractResponseWhenPost(createLineWithSection(STATIONS_SAME), "/lines"); // 노선 등록
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 
     @DisplayName("노선 조회 - 노선을 ID로 조회하여 포함된 모든 구간을 나타낸다.")
     @Test

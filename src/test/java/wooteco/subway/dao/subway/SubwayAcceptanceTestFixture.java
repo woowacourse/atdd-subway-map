@@ -1,12 +1,10 @@
 package wooteco.subway.dao.subway;
 
-import wooteco.subway.domain.Station;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import static wooteco.subway.dao.fixture.DomainFixture.STATION3;
-import static wooteco.subway.dao.fixture.DomainFixture.STATION4;
+import static wooteco.subway.dao.fixture.Fixture.STATION3;
+import static wooteco.subway.dao.fixture.Fixture.STATION4;
 import static wooteco.subway.dao.fixture.StationAcceptanceTestFixture.insertStation;
 
 public class SubwayAcceptanceTestFixture {

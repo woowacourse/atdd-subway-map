@@ -1,8 +1,5 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.exception.section.BothEndStationsSameException;
-
-import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 public class SimpleSection {
@@ -10,7 +7,8 @@ public class SimpleSection {
     private Long downStationId;
     private int distance;
 
-    public SimpleSection() { }
+    public SimpleSection() {
+    }
 
     public SimpleSection(Long upStationId, Long downStationId, int distance) {
         this.upStationId = upStationId;

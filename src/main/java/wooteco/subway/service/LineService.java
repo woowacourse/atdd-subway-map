@@ -1,10 +1,10 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.controller.request.LineAndSectionCreateRequest;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.controller.request.LineAndSectionCreateRequest;
 import wooteco.subway.exception.line.LineColorDuplicateException;
 import wooteco.subway.exception.line.LineNameDuplicateException;
 import wooteco.subway.exception.line.LineNotFoundException;

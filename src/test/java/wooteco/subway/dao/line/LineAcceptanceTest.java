@@ -7,30 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.controller.response.LineWithAllSectionsResponse;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.dao.fixture.CommonFixture.*;
-import static wooteco.subway.dao.fixture.DomainFixture.*;
-import static wooteco.subway.dao.fixture.LineAcceptanceTestFixture.*;
+import static wooteco.subway.dao.fixture.Fixture.*;
+import static wooteco.subway.dao.fixture.LineAcceptanceTestFixture.createLineWithSection;
 
 @Sql("classpath:tableInit.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
     private static final String LINE_URI = "/lines";
-
-    private static final Map<String, String> PARAMS1 =
-            createLineRequest("bg-red-600", "1호선", 1L, 2L, 7);
-    private static final Map<String, String> PARAMS2 =
-            createLineRequest("bg-green-600", "2호선", 1L, 2L, 7);
-    private static final Map<String, String> PARAMS_INCORRECT_FORMAT =
-            createLineRequest("bg-red-600", "1호쥐", 1L, 2L, 7);
-    private static final Map<String, String> PARAMS_SAME_COLOR =
-            createLineRequest("bg-red-600", "2호선", 1L, 2L, 7);
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -80,22 +64,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when - then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @Test
-    @DisplayName("상행 종점, 하행 종점이 모두 같게 하여 노선을 생성한다.")
-    void createLineWithSameStations() {
-
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 상행 종점역으로 노선을 생성한다.")
-    void createLineWithNotFoundUpStation() {
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 하행 종점역으로 노선을 생성한다.")
-    void createLineWithNotFoundDownStation() {
     }
 
     @DisplayName("노선을 수정한다.")

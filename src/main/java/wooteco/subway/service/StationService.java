@@ -1,18 +1,17 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.controller.request.StationRequest;
 import wooteco.subway.controller.response.StationResponse;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.SimpleStation;
 import wooteco.subway.domain.Station;
-import wooteco.subway.controller.request.StationRequest;
 import wooteco.subway.exception.station.StationDuplicateException;
 import wooteco.subway.exception.station.StationNotFoundException;
-import wooteco.subway.domain.SimpleStation;
 import wooteco.subway.service.dto.StationDto;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service

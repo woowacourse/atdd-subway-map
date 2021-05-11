@@ -1,9 +1,6 @@
 package wooteco.subway.controller.response;
 
-import wooteco.subway.domain.Line;
 import wooteco.subway.service.dto.LineDto;
-
-import java.util.List;
 
 public class LineCreateResponse {
     private Long id;

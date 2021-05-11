@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.dao.fixture.CommonFixture.*;
+import static wooteco.subway.dao.fixture.Fixture.*;
 
 @DisplayName("지하철역 관련 기능")
 @Sql("classpath:tableInit.sql")

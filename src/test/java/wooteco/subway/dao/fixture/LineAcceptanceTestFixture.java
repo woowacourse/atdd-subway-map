@@ -1,9 +1,5 @@
 package wooteco.subway.dao.fixture;
 
-import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import org.springframework.http.MediaType;
 import wooteco.subway.domain.Station;
 
 import java.util.Comparator;
@@ -12,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static wooteco.subway.dao.fixture.DomainFixture.*;
+import static wooteco.subway.dao.fixture.Fixture.*;
 import static wooteco.subway.dao.fixture.StationAcceptanceTestFixture.insertStations;
 
 public class LineAcceptanceTestFixture {
