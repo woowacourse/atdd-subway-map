@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.line.exception.LineException;
+import wooteco.subway.line.exception.SectionException;
 import wooteco.subway.station.exception.StationException;
 
 @ControllerAdvice
@@ -12,8 +13,9 @@ public final class GlobalAdvice {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleUnknownException(final RuntimeException e) {
-        final String message = "unhandled exceptions";
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+//        final String message = "unhandled exceptions";
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 
     @ExceptionHandler(StationException.class)
@@ -23,6 +25,11 @@ public final class GlobalAdvice {
 
     @ExceptionHandler(LineException.class)
     public ResponseEntity<String> handleLineException(final LineException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(SectionException.class)
+    public ResponseEntity<String> handleLineException(final SectionException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

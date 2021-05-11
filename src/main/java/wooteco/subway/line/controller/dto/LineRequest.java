@@ -23,6 +23,16 @@ public class LineRequest {
         this.distance = distance;
     }
 
+    public LineCreateDto toLineCreateDto() {
+        return new LineCreateDto(
+                name,
+                color,
+                upStationId,
+                downStationId,
+                distance
+        );
+    }
+
     public String getName() {
         return name;
     }

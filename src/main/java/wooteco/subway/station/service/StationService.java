@@ -24,6 +24,7 @@ public class StationService {
     @Transactional
     public StationDto save(final Station requestedStation) {
         final Optional<Station> station = stationRepository.findByName(requestedStation.getName());
+
         if (station.isPresent()) {
             throw new StationException("이미 존재하는 역 이름입니다.");
         }
@@ -34,7 +35,6 @@ public class StationService {
 
     public List<StationDto> showAll() {
         final List<Station> stations = stationRepository.findAll();
-
         return stations.stream()
                 .map(StationDto::of)
                 .collect(Collectors.toList());
@@ -42,11 +42,12 @@ public class StationService {
 
     @Transactional
     public void delete(final Long id) {
-        final Optional<Station> station = stationRepository.findById(id);
-        if (!station.isPresent()) {
-            throw new StationException("지우려고 하는 역이 존재하지 않습니다");
-        }
-
+        findById(id);
         stationRepository.delete(id);
+    }
+
+    public Station findById(final Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new StationException("존재하지 않는 역입니다"));
     }
 }

@@ -5,8 +5,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.line.controller.dto.LineCreateDto;
 import wooteco.subway.line.controller.dto.LineDto;
-import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.controller.dto.SectionCreateDto;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineRepository;
 import wooteco.subway.line.exception.LineException;
@@ -16,21 +17,29 @@ import wooteco.subway.line.exception.LineException;
 public class LineService {
 
     private final LineRepository lineRepository;
+    private final SectionService sectionService;
 
     public LineService(final LineRepository lineRepository, final SectionService sectionService) {
         this.lineRepository = lineRepository;
+        this.sectionService = sectionService;
     }
 
     @Transactional
-    public LineDto save(final Line requestedLine) {
-        validateExistingName(requestedLine.getName());
+    public LineDto save(final LineCreateDto lineInfo) {
+        validateExistingName(lineInfo.getName());
+        sectionService.validateSection(lineInfo.getDownStationId(), lineInfo.getUpStationId());
 
-        final Line createdLine = lineRepository.save(requestedLine);
-        return LineDto.of(createdLine);
+        final Line requestedLine = lineInfo.toLineWithNoId();
+        final Line savedLine = lineRepository.save(requestedLine);
+
+        final SectionCreateDto newSectionInfo = SectionCreateDto.ofNewLine(savedLine, lineInfo);
+        sectionService.save(newSectionInfo);
+
+        return LineDto.of(savedLine);
     }
 
-    public LineDto show(Long id) {
-        final Line line = validateExisting(id);
+    public LineDto show(final Long id) {
+        final Line line = findById(id);
 
         return LineDto.of(line);
     }
@@ -52,17 +61,13 @@ public class LineService {
 
     @Transactional
     public void delete(final Long id) {
-        validateExisting(id);
+        findById(id);
         lineRepository.delete(id);
-
     }
 
-    private Line validateExisting(final Long id) {
-        final Optional<Line> line = lineRepository.findById(id);
-        if (!line.isPresent()) {
-            throw new LineException("노선이 존재하지 않습니다.");
-        }
-        return line.get();
+    private Line findById(final Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new LineException("노선이 존재하지 않습니다."));
     }
 
     private void validateExistingName(final String name) {
@@ -76,12 +81,12 @@ public class LineService {
         final Optional<Line> possibleLine = lineRepository.findByName(name);
         if (possibleLine.isPresent()) {
             final Line line = possibleLine.get();
-            checkId(id, line);
+            checkId(line, id);
         }
     }
 
-    private void checkId(Long id, Line thisLine) {
-        if (!thisLine.isId(id)) {
+    private void checkId(final Line line, final Long id) {
+        if (!line.isId(id)) {
             throw new LineException("이미 존재하는 노선 이름입니다.");
         }
     }

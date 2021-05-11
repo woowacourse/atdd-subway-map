@@ -18,6 +18,10 @@ public class Line {
         this(null, lineRequest);
     }
 
+    public Line(final String name, final String color) {
+        this(null, name, color);
+    }
+
     public Line(final Long id, final LineRequest lineRequest) {
         this(id, lineRequest.getName(), lineRequest.getColor(), new ArrayList<>());
     }

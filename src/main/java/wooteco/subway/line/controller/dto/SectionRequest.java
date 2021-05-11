@@ -26,4 +26,13 @@ public class SectionRequest {
     public int getDistance() {
         return distance;
     }
+
+    public SectionCreateDto toSectionCreateDto(final Long lineId) {
+        return SectionCreateDto.ofExistingLine(
+                lineId,
+                downStationId,
+                upStationId,
+                distance
+        );
+    }
 }
