@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Line {
 
-    private Long id;
+    private LineId id;
     private String name;
     private String color;
 
@@ -12,12 +12,13 @@ public class Line {
     }
 
     public Line(final String name, final String color) {
+        this.id = new LineId(null);
         this.name = name;
         this.color = color;
     }
 
     public Line(final Long id, final String name, final String color) {
-        this.id = id;
+        this.id = new LineId(id);
         this.name = name;
         this.color = color;
     }
@@ -35,7 +36,10 @@ public class Line {
     }
 
     public Long getId() {
-        return id;
+        if (id == null) {
+            return null;
+        }
+        return id.getId();
     }
 
     public String getName() {
