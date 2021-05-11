@@ -98,33 +98,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithNotFoundDownStation() {
     }
 
-    // TODO 수정
-    @DisplayName("모든 노선을 조회한다.")
-    @Test
-    void getLines() {
-        // given
-        ExtractableResponse<Response> createResponse1 = extractResponseWhenPost(PARAMS1, LINE_URI);
-        ExtractableResponse<Response> createResponse2 = extractResponseWhenPost(PARAMS2, LINE_URI);
-
-        // when
-        ExtractableResponse<Response> response = extractResponseWhenGet("lines");
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineWithAllSectionsResponse.class).stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
-    }
-
     @DisplayName("노선을 수정한다.")
     @Test
     void updateLine() {
         // given
-        final ExtractableResponse<Response> createResponse = extractResponseWhenPost(PARAMS1, LINE_URI);
+        ExtractableResponse<Response> createResponse = extractResponseWhenPost(createLineWithSection(STATIONS1), "/lines"); // 노선 등록
         String uri = createResponse.header("Location");
 
         //when
@@ -132,14 +110,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.header("Date")).isNotBlank();
     }
 
     @DisplayName("노선을 Id로 제거한다.")
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = extractResponseWhenPost(PARAMS1, LINE_URI);
+        ExtractableResponse<Response> createResponse = extractResponseWhenPost(createLineWithSection(STATIONS1), "/lines"); // 노선 등록
 
         // when
         String uri = createResponse.header("Location");

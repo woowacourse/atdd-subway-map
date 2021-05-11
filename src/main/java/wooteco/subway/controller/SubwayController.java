@@ -38,4 +38,10 @@ public class SubwayController {
         subwayService.deleteSectionInLine(lineId, stationId);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping(value = "/{lineId}")
+    public ResponseEntity<Void> delete(@PathVariable Long lineId) {
+        subwayService.deleteLine(lineId);
+        return ResponseEntity.noContent().build();
+    }
 }

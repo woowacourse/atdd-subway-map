@@ -37,6 +37,11 @@ public class SubwayService {
         sectionService.insertSections(id, sectionInsertRequest);
     }
 
+    public void deleteLine(Long id) {
+        sectionService.deleteAllSectionByLineId(id);
+        lineService.deleteById(id);
+    }
+
     public void deleteSectionInLine(Long lineId, Long stationId) {
         lineService.checkIfExistsById(lineId);
         sectionService.validateSectionCount(lineId);

@@ -85,6 +85,10 @@ public class SectionService {
         }
     }
 
+    public void deleteAllSectionByLineId(Long lineId) {
+        sectionDao.deleteAllByLineId(lineId);
+    }
+
     public void deleteSection(Long lineId, Long stationId) {
         final List<Section> sections = sectionDao.findAllSectionsIncludeStationId(lineId, stationId);
         if (sections.isEmpty()) {
