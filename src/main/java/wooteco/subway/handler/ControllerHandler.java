@@ -7,10 +7,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import wooteco.subway.exception.DuplicationException;
-import wooteco.subway.exception.NotFoundException;
-import wooteco.subway.exception.SectionAdditionException;
-import wooteco.subway.exception.WrongDistanceException;
+import wooteco.subway.exception.*;
 
 @ControllerAdvice
 public class ControllerHandler {
@@ -44,6 +41,11 @@ public class ControllerHandler {
 
     @ExceptionHandler(SectionAdditionException.class)
     public ResponseEntity<String> invalidSectionForAddition(SectionAdditionException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(SectionDeleteException.class)
+    public ResponseEntity<String> invalidSectionForAddition(SectionDeleteException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

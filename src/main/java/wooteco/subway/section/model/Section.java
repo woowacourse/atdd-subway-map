@@ -5,6 +5,8 @@ import wooteco.subway.exception.WrongDistanceException;
 import wooteco.subway.line.model.Line;
 import wooteco.subway.station.model.Station;
 
+import java.util.Objects;
+
 public class Section {
 
     private final Long id;
@@ -39,6 +41,43 @@ public class Section {
         }
     }
 
+    public boolean hasUpStation(Station newUpStation) {
+        return this.upStation.equals(newUpStation);
+    }
+
+    public boolean hasDownStation(Station newDownStation) {
+        return this.downStation.equals(newDownStation);
+    }
+
+    public boolean hasStationId(Long stationId) {
+        return upStation.getId().equals(stationId) || downStation.getId().equals(stationId);
+    }
+
+    public Section splitByUpStation(Section newSection) {
+        return new Section(this.id, this.line, newSection.getDownStation(), this.downStation, this.distance - newSection.getDistance());
+    }
+
+    public Section splitByDownStation(Section newSection) {
+        return new Section(this.id, this.line, this.upStation, newSection.getUpStation(), this.distance - newSection.getDistance());
+    }
+
+    public Section merge(Section targetSection) {
+        return new Section(this.id, this.line, this.upStation,
+                targetSection.downStation, this.distance + targetSection.distance);
+    }
+
+    public Long getLineId() {
+        return this.line.getId();
+    }
+
+    public Long getUpStationId() {
+        return this.upStation.getId();
+    }
+
+    public Long getDownStationId() {
+        return this.downStation.getId();
+    }
+
     public Long getId() {
         return id;
     }
@@ -59,31 +98,16 @@ public class Section {
         return distance;
     }
 
-    public boolean hasUpStation(Station newUpStation) {
-        return this.upStation.equals(newUpStation);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
     }
 
-    public boolean hasDownStation(Station newDownStation) {
-        return this.downStation.equals(newDownStation);
-    }
-
-    public Section splitSectionByUpStation(Section newSection) {
-        return new Section(this.id, this.line, newSection.getDownStation(), this.downStation, this.distance - newSection.getDistance());
-    }
-
-    public Section splitSectionByDownStation(Section newSection) {
-        return new Section(this.id, this.line, this.upStation, newSection.getUpStation(), this.distance - newSection.getDistance());
-    }
-
-    public Long getLineId() {
-        return this.line.getId();
-    }
-
-    public Long getUpStationId() {
-        return this.upStation.getId();
-    }
-
-    public Long getDownStationId() {
-        return this.downStation.getId();
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, line, upStation, downStation, distance);
     }
 }

@@ -29,9 +29,7 @@ public class SectionService {
         List<SectionDto> sectionDtos = sectionDao.findSectionsByLineId(lineId);
         Sections sections = new Sections(mapToSections(sectionDtos));
         sections.add(convertToSection(lineId, sectionRequest));
-
-        sectionDao.deleteAllByLineId(lineId);
-        sectionDao.saveAll(sections.sections());
+        updateSections(lineId, sections);
     }
 
     private List<Section> mapToSections(List<SectionDto> sectionDtos) {
@@ -49,5 +47,17 @@ public class SectionService {
                 stationDao.findStationById(sectionRequest.getUpStationId()),
                 stationDao.findStationById(sectionRequest.getDownStationId()),
                 sectionRequest.getDistance());
+    }
+
+    public void deleteById(Long lineId, Long stationId) {
+        List<SectionDto> sectionDtos = sectionDao.findSectionsByLineId(lineId);
+        Sections sections = new Sections(mapToSections(sectionDtos));
+        sections.delete(stationId);
+        updateSections(lineId, sections);
+    }
+
+    private void updateSections(Long lineId, Sections sections) {
+        sectionDao.deleteAllByLineId(lineId);
+        sectionDao.saveAll(sections.sections());
     }
 }

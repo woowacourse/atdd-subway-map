@@ -3,6 +3,7 @@ package wooteco.subway.section.model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.exception.SectionAdditionException;
 import wooteco.subway.line.model.Line;
 import wooteco.subway.station.model.Station;
@@ -23,11 +24,13 @@ class SectionsTest {
     private Station bStation = new Station(2L, "B");
     private Station cStation = new Station(3L, "C");
 
+    private Section abSection = new Section(1L, line, aStation, bStation, 10);
+    private Section bcSection = new Section(2L, line, bStation, cStation, 10);
+
     @BeforeEach
     void setUp() {
         sections = new Sections(new ArrayList<>(Arrays.asList(
-                new Section(1L, line, aStation, bStation, 10),
-                new Section(2L, line, bStation, cStation, 10))));
+                abSection, bcSection)));
     }
 
     @DisplayName("구간 추가하는 기능")
@@ -52,7 +55,7 @@ class SectionsTest {
     @Test
     void addError() {
         //given
-        Section unConnectableSection = new Section(1L, line, new Station(4L, "D" ), new Station(5L, "E"), 8);
+        Section unConnectableSection = new Section(1L, line, new Station(4L, "D"), new Station(5L, "E"), 8);
         Section inValidDistanceSection = new Section(1L, line, new Station(5L, "E"), cStation, 11);
 
         //then
@@ -62,5 +65,27 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.add(inValidDistanceSection))
                 .isInstanceOf(SectionAdditionException.class)
                 .hasMessage("추가하는 구간의 거리가 더 짧아야합니다.");
+    }
+
+    @DisplayName("구간 삭제하는 기능")
+    @Test
+    void deleteSection() {
+        //when
+        sections.delete(bStation.getId());
+        //then
+        assertThat(sections.sections()).hasSize(1);
+        assertThat(sections.sections()).contains(abSection.merge(bcSection));
+    }
+
+    @DisplayName("구간 삭제 요청 시 존재하지 않는 역일 때 예외처리")
+    @Test
+    void name() {
+        //given
+        Long notExistId = -1L;
+
+        //then
+        assertThatThrownBy(() -> sections.delete(notExistId))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("노선 내 존재하는 역이 없습니다.");
     }
 }

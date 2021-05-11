@@ -64,6 +64,27 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(sectionResponse.body().asString()).isEqualTo("추가될 수 없는 구간입니다.");
     }
 
+    @DisplayName("section을 삭제하는 기능")
+    @Test
+    void deleteSection() {
+        //given
+        long newDownStationId = 지하철역_저장("건대역").body().jsonPath().getLong("id");
+        Long lineId = createResponse.jsonPath().getObject(".", LineDetailsResponse.class).getId();
+        Map<String, Object> params = 구간_저장을_위한_요청정보(newDownStationId, upStationId, DISTANCE - 1);
+        ExtractableResponse<Response> sectionResponse = 구간_추가_후_응답(params);
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .queryParam("stationId", newDownStationId)
+                .when().delete("/lines/{lineId}/sections", lineId)
+                .then().log().all()
+                .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+    }
+
     private Map<String, Object> 구간_저장을_위한_요청정보(long downStationId, long upStationId, int distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("downStationId", downStationId);
