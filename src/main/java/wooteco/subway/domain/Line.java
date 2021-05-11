@@ -75,4 +75,8 @@ public class Line {
                 ", color='" + color + '\'' +
                 '}';
     }
+
+    public boolean isRemovable() {
+        return this.sections.isRemovable();
+    }
 }

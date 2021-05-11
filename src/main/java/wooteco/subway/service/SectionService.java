@@ -40,6 +40,8 @@ public class SectionService {
     public void deleteSection(long lineId, long stationId) {
         Line line = this.loadLine(lineId);
 
+        validateIsRemovable(line);
+
         Station station = this.stationRepository.findById(stationId);
         line.deleteStation(station);
 
@@ -65,6 +67,12 @@ public class SectionService {
 
         line.setSectionsFrom(sections);
         return line;
+    }
+
+    private void validateIsRemovable(Line line) {
+        if (!line.isRemovable()) {
+            throw new IllegalArgumentException("등록된 역이 2개 이하일 때는 삭제할 수 없습니다.");
+        }
     }
 
     private void updateSections(long lineId, Line line) {

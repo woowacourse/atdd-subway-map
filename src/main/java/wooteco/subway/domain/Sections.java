@@ -166,4 +166,8 @@ public class Sections {
     public List<Section> sections() {
         return this.sections;
     }
+
+    public boolean isRemovable() {
+        return this.sections.size() > 1;
+    }
 }

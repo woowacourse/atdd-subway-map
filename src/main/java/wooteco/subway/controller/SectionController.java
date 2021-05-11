@@ -1,19 +1,10 @@
 package wooteco.subway.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.dao.LineRepository;
-import wooteco.subway.dao.SectionRepository;
-import wooteco.subway.dao.StationRepository;
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.service.SectionService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/lines")
