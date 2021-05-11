@@ -40,8 +40,8 @@ public class SectionRepository {
         return sectionDao.save(new Section(lineId, upStation, downStation, distance));
     }
 
-    private Station findStationById(Long upStationId) {
-        return stationDao.findById(upStationId)
+    private Station findStationById(Long stationId) {
+        return stationDao.findById(stationId)
                 .orElseThrow(() -> new IllegalStateException("[ERROR] 존재하지 않는 역입니다."));
     }
 

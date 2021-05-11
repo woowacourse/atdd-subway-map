@@ -94,13 +94,6 @@ class LineDaoImplTest {
     }
 
     @Test
-    @DisplayName("DB를 밀면 예외가 발생한다.")
-    void clear() {
-        assertThatThrownBy(() -> lineDao.clear())
-                .isInstanceOf(UnsupportedOperationException.class);
-    }
-
-    @Test
     @DisplayName("노선을 수정한다.")
     void update() {
         String updatedName = "흑기선";

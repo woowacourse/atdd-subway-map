@@ -65,12 +65,14 @@ public class SectionDaoImpl implements SectionDao {
 
     @Override
     public List<Section> findAllByLineId(Long lineId) {
-        String sql = "SELECT * FROM SECTION WHERE line_id = ?";
-        List<Section> sectionEntities = jdbcTemplate.query(sql, sectionRowMapper, lineId);
-        if (sectionEntities.isEmpty()) {
+        String sql = "SELECT * " +
+                "FROM SECTION " +
+                "WHERE line_id = ?";
+        List<Section> sections = jdbcTemplate.query(sql, sectionRowMapper, lineId);
+        if (sections.isEmpty()) {
             throw new IllegalArgumentException("[ERROR] 노선에 구간이 등록되어 있지 않습니다.");
         }
-        return sectionEntities;
+        return sections;
     }
 
     @Override
@@ -79,5 +81,13 @@ public class SectionDaoImpl implements SectionDao {
                 "SET up_station_id = ?, down_station_id = ?, distance = ? " +
                 "WHERE id = ?";
         jdbcTemplate.update(sql, section.upStation().id(), section.downStation().id(), section.distance(), section.id());
+    }
+
+    @Override
+    public List<Section> findByStationId(Long id) {
+        String sql = "SELECT * " +
+                "FROM SECTION " +
+                "WHERE up_station_id = ? OR down_station_id = ?";
+        return jdbcTemplate.query(sql, sectionRowMapper, id, id);
     }
 }

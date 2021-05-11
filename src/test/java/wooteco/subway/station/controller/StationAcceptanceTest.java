@@ -101,7 +101,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() throws JsonProcessingException {
         // given
-        StationDto station = new StationDto("강남역");
+        StationDto station = new StationDto("잠새역");
         String content = objectMapper.writeValueAsString(station);
 
         ExtractableResponse<Response> createResponse = addStation(content);

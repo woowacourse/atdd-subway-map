@@ -1,5 +1,6 @@
 package wooteco.subway.line.dao;
 
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -14,18 +15,18 @@ import java.util.Optional;
 @Repository
 public class LineDaoImpl implements LineDao {
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Line> lineRowMapper = (rs, rowNum) ->
-            new Line(rs.getLong("id"),
-                    rs.getString("name"),
-                    rs.getString("color"));
+    private final RowMapper<Line> lineRowMapper;
 
     public LineDaoImpl(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        lineRowMapper = (rs, rowNum) ->
+                new Line(rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("color"));
     }
 
     @Override
     public Line save(final Line line) {
-        validateDuplicate(line);
         String sql = "INSERT INTO LINE(name, color) VALUES(?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -51,11 +52,7 @@ public class LineDaoImpl implements LineDao {
         String sql = "SELECT * FROM LINE WHERE id = ?";
 
         List<Line> line = jdbcTemplate.query(sql, lineRowMapper, id);
-        if (line.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(line.get(0));
+        return Optional.ofNullable(DataAccessUtils.singleResult(line));
     }
 
     @Override
@@ -63,11 +60,7 @@ public class LineDaoImpl implements LineDao {
         String sql = "SELECT * FROM LINE WHERE name = ?";
 
         List<Line> line = jdbcTemplate.query(sql, lineRowMapper, name);
-        if (line.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(line.get(0));
+        return Optional.ofNullable(DataAccessUtils.singleResult(line));
     }
 
     @Override
@@ -80,16 +73,10 @@ public class LineDaoImpl implements LineDao {
     @Override
     public void delete(final Long id) {
         String sql = "DELETE FROM LINE WHERE id = ?";
+
         int rowCount = jdbcTemplate.update(sql, id);
-
-        if(rowCount == 0) {
+        if (rowCount == 0) {
             throw new IllegalStateException("[ERROR] 존재하지 않는 line_id입니다.");
-        }
-    }
-
-    private void validateDuplicate(final Line line) {
-        if (findByName(line.name()).isPresent()) {
-            throw new IllegalStateException("[ERROR] 이미 존재하는 역입니다.");
         }
     }
 }
