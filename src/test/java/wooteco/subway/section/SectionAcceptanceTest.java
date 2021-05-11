@@ -1,6 +1,5 @@
 package wooteco.subway.section;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
@@ -9,7 +8,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +92,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertThat(stationIds).containsExactly(4L, 1L , 3L, 2L);
+        assertThat(stationIds).containsExactly(4L, 1L, 3L, 2L);
     }
 
     @ParameterizedTest(name = "구간 추가 - 실패(양쪽 종점일 경우, 구간의 상행 하행 모두 노선 내에 존재할 경우")

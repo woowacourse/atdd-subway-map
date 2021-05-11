@@ -3,11 +3,12 @@ package wooteco.subway.line.domain;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import wooteco.subway.line.exception.LineIllegalArgumentException;
 import wooteco.subway.section.domain.Section;
 
 public class LineRoute {
@@ -22,8 +23,8 @@ public class LineRoute {
     }
 
     private void validateSectionsIsEmpty(List<Section> sectionsByLineId) {
-        if(sectionsByLineId.isEmpty()) {
-            throw new IllegalArgumentException("구간이 등록되지 않은 정상적인 노선이 아닙니다.");
+        if (sectionsByLineId.isEmpty()) {
+            throw new LineIllegalArgumentException("구간이 등록되지 않은 정상적인 노선이 아닙니다.");
         }
     }
 
@@ -103,7 +104,7 @@ public class LineRoute {
     }
 
     public Set<Long> getStationIds() {
-        return new HashSet<>(upToDownSerializedMap);
+        return new LinkedHashSet<>(upToDownSerializedMap);
     }
 
     public int getStationsSize() {
