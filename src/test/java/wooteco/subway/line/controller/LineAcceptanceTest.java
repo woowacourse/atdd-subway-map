@@ -51,13 +51,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // given
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(LINE_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = postResponse(LINE_REQUEST);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -71,13 +65,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         LineRequest sameStationRequest = new LineRequest(TEST_LINE_NAME, TEST_COLOR_NAME, 1L, 1L, 10);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(sameStationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = postResponse(sameStationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -87,25 +75,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        RestAssured.given().log().all()
-                .body(LINE_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        postResponse(LINE_REQUEST);
 
         // when
         LineRequest duplicateNameRequest = new LineRequest(TEST_LINE_NAME, "dark", 3L, 4L, 5);
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(duplicateNameRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = postResponse(duplicateNameRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -115,25 +90,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateColor() {
         // given
-        RestAssured.given().log().all()
-                .body(LINE_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        postResponse(LINE_REQUEST);
 
         // when
         LineRequest duplicateColorRequest = new LineRequest("3호선", TEST_COLOR_NAME, 3L, 4L, 5);
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(duplicateColorRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = postResponse(duplicateColorRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -143,21 +105,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLineById() {
         /// given
-        final ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(LINE_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        final ExtractableResponse<Response> createResponse = postResponse(LINE_REQUEST);
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get(uri)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = getResponse(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -170,30 +122,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(LINE_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse1 = postResponse(LINE_REQUEST);
 
         LineRequest lineRequest2 = new LineRequest("3호선", "dark", 3L, 4L, 5);
 
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(lineRequest2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse2 = postResponse(lineRequest2);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = getResponse("/lines");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -210,41 +146,21 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(LINE_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = postResponse(LINE_REQUEST);
 
         // when
-        Map<String, String> updateParam = new HashMap<>();
         String updateName = "빨리빨리노선";
         String updateColor = "red darken-3";
-
-        updateParam.put("name", updateName);
-        updateParam.put("color", updateColor);
-
+        LineRequest updateRequest = new LineRequest(updateName, updateColor, 1L, 2L, 10);
         String uri = response.header("Location");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(updateParam)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put(uri)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> putResponse = putResponse(updateRequest, uri);
 
-        ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
-                .when()
-                .get(uri)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> getResponse = getResponse(uri);
 
-        LineResponse result = updateResponse.body().as(LineResponse.class);
+        LineResponse result = getResponse.body().as(LineResponse.class);
 
         // then
-        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(putResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(result.getName()).isEqualTo(updateName);
         assertThat(result.getColor()).isEqualTo(updateColor);
     }
@@ -253,21 +169,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(LINE_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = postResponse(LINE_REQUEST);
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = deleteResponse(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -279,14 +185,46 @@ class LineAcceptanceTest extends AcceptanceTest {
     void whenTryDeleteWrongIdLine() {
         // given
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete("lines/-1")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = deleteResponse("lines/-1");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+
+    private ExtractableResponse<Response> postResponse(LineRequest lineRequest) {
+        return RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> getResponse(String uri) {
+        return RestAssured.given().log().all()
+                .when()
+                .get(uri)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> putResponse(LineRequest lineRequest, String uri) {
+        return RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put(uri)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> deleteResponse(String uri) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+    }
 }
