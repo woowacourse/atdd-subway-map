@@ -63,17 +63,51 @@ public class Sections {
                 .findAny();
     }
 
-    public Optional<Section> affectedSection(Section newSection) {
+    public Optional<Section> changeSection(Section newSection) {
         List<Section> collect = sections.stream()
                 .filter(originalSection -> isAdjacentSection(newSection, originalSection))
                 .collect(Collectors.toList());
 
-        if (collect.size() != SECTION_LIMIT) {
+        if (collect.size() < SECTION_LIMIT) {
             throw new InvalidSectionException();
         }
 
-        final Section originalSection = collect.get(FIRST_ELEMENT);
-        return updateSection(originalSection, newSection);
+        if (collect.size() == SECTION_LIMIT) {
+            final Section originalSection = collect.get(FIRST_ELEMENT);
+            return updateSection(originalSection, newSection);
+        }
+
+        return affectedSection(newSection);
+    }
+
+    private Optional<Section> affectedSection(Section newSection) {
+        Optional<Section> sectionByUpStation = sections.stream()
+                .filter(section -> section.isUpStation(newSection.getUpStation()))
+                .findAny();
+        if (sectionByUpStation.isPresent()) {
+            Section section = sectionByUpStation.get();
+            return Optional.of(Section.of(
+                    section.getId(),
+                    section.getLineId(),
+                    newSection.getDownStation(),
+                    section.getDownStation(),
+                    section.getDistance() - newSection.getDistance()
+            ));
+        }
+        Optional<Section> sectionByDownStation = sections.stream()
+                .filter(section -> section.isDownStation(newSection.getDownStation()))
+                .findAny();
+        if (sectionByDownStation.isPresent()) {
+            Section section = sectionByDownStation.get();
+            return Optional.of(Section.of(
+                    section.getId(),
+                    section.getLineId(),
+                    section.getUpStation(),
+                    newSection.getUpStation(),
+                    section.getDistance() - newSection.getDistance()
+            ));
+        }
+        return Optional.empty();
     }
 
     private boolean isAdjacentSection(Section newSection, Section originalSection) {
@@ -88,7 +122,6 @@ public class Sections {
     }
 
     private Optional<Section> updateSection(Section originalSection, Section newSection) {
-
         final Station upStation = newSection.getUpStation();
         final Station downStation = newSection.getDownStation();
 

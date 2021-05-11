@@ -332,6 +332,31 @@ class SectionApiControllerTest {
         result.andExpect(status().isBadRequest());
     }
 
+    @Test
+    @DisplayName("구간 등록 - 성공(중간구간 구간 등록 a-b-c-d -> a-b-k-c-d)")
+    void createSection_success_middle() throws Exception {
+        // given
+        final Station 잠실역 = upStation();
+        final Station 잠실새내역 = downStation();
+        Station 강남역 = stationDao.save(Station.from("강남역"));
+        Station 동탄역 = stationDao.save(Station.from("동탄역"));
+        Station 수서역 = stationDao.save(Station.from("수서역"));
+        Line line = createLine(잠실역, 잠실새내역);
+        SectionRequest 강남_잠실 = new SectionRequest(강남역.getId(), 잠실역.getId(), 4);
+        SectionRequest 잠실새내_동탄 = new SectionRequest(잠실새내역.getId(), 동탄역.getId(), 4);
+        구간_추가(강남_잠실, line.getId());
+        구간_추가(잠실새내_동탄, line.getId());
+        // when
+        SectionRequest 잠실_수서 = new SectionRequest(잠실역.getId(), 수서역.getId(), 2);
+        ResultActions result = 구간_추가(잠실_수서, line.getId());
+        // then
+        result.andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
+        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
+        assertThat(sections).hasSize(4);
+    }
+
     private ResultActions 구간_추가(SectionRequest sectionRequest, Long lineId) throws Exception {
         return mockMvc.perform(post("/lines/" + lineId + "/sections")
                 .content(objectMapper.writeValueAsString(sectionRequest))

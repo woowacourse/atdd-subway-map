@@ -25,9 +25,9 @@ public class SectionService {
     public Section createSection(Section section, Long lineId) {
         Sections sections = sectionDao.findSectionsByLineId(lineId);
         Section sectionWithLineId = Section.of(section, lineId);
-        Optional<Section> affectedSection = sections.affectedSection(sectionWithLineId);
-        sections.add(sectionWithLineId);
+        Optional<Section> affectedSection = sections.changeSection(sectionWithLineId);
 
+        sections.add(sectionWithLineId);
         return saveAffectedSections(sections, sectionWithLineId, affectedSection);
     }
 
