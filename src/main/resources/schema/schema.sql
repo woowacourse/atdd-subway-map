@@ -29,6 +29,11 @@ create table SECTION
     );
 
 alter table SECTION
+    add constraint fk_section_to_line
+        foreign key (line_id) references LINE (id)
+        ON DELETE CASCADE ON UPDATE CASCADE;
+
+alter table SECTION
     add constraint fk_section_to_up_station
         foreign key (up_station_id) references STATION (id)
         ON DELETE CASCADE ON UPDATE CASCADE;
