@@ -52,12 +52,10 @@ public class InMemorySectionDao implements SectionDao {
         return create(section, lineId);
     }
 
+    //todo: 삭제
     @Override
     public List<Section> findSectionContainsStationId(Long lineId, Long stationId) {
-        return sections.get(lineId)
-                .stream()
-                .filter(section -> section.hasStation(stationId))
-                .collect(Collectors.toList());
+        return new ArrayList<>();
     }
 
     @Override

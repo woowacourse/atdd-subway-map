@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.exception.section.NotEnoughSectionException;
 import wooteco.subway.exception.station.StationNotFoundException;
@@ -39,9 +40,11 @@ public class SectionService {
         validateExistStation(stationId);
         validateIsLastSection(lineId);
 
+        Station station = stationDao.findById(stationId);
+
         List<Section> sections = sectionDao.findSectionContainsStationId(lineId, stationId);
         final Sections foundSections = Sections.create(sections);
-        Optional<Section> affectedSection = foundSections.transformSection(stationId);
+        Optional<Section> affectedSection = foundSections.transformSection(station);
 
         sectionDao.removeSections(lineId, sections);
         affectedSection.ifPresent(section -> sectionDao.insertSection(section, lineId));

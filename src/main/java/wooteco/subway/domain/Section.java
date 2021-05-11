@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import wooteco.subway.exception.section.InvalidDistanceException;
 
+import java.util.Objects;
+
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class Section {
@@ -12,42 +14,34 @@ public class Section {
     private Long id;
     private Station upStation;
     private Station downStation;
-    private int distance;
+    private SectionDistance distance;
 
     public static Section create(Station upStation, Station downStation, int distance) {
         return create(null, upStation, downStation, distance);
     }
 
     public static Section create(Long id, Station upStation, Station downStation, int distance) {
-        return new Section(id, upStation, downStation, distance);
+        return new Section(id, upStation, downStation, new SectionDistance(distance));
     }
 
     public boolean isUpStation(Station targetStation) {
-        return upStation.isSameId(targetStation.getId());
+        return upStation.equals(targetStation);
     }
 
     public boolean isDownStation(Station targetStation) {
-        return downStation.isSameId(targetStation.getId());
+        return downStation.equals(targetStation);
     }
 
     public void updateUpStation(Section section) {
-        int difference = distance - section.distance;
-
-        if (difference <= 0) {
-            throw new InvalidDistanceException();
-        }
+        int difference = distance.subtract(section.distance).intValue();
         upStation = section.downStation;
-        distance = difference;
+        distance = new SectionDistance(difference);
     }
 
     public void updateDownStation(Section section) {
-        int difference = distance - section.distance;
-
-        if (difference <= 0) {
-            throw new InvalidDistanceException();
-        }
+        int difference = distance.subtract(section.distance).intValue();
         downStation = section.upStation;
-        distance = difference;
+        distance = new SectionDistance(difference);
     }
 
     public boolean isSameSection(Section newSection) {
@@ -55,15 +49,8 @@ public class Section {
                 (isUpStation(newSection.downStation) && isDownStation(newSection.upStation));
     }
 
-    public boolean hasStation(Long stationId) {
-        return upStation.isSameId(stationId) || downStation.isSameId(stationId);
+    public int getDistance(){
+        return distance.intValue();
     }
 
-    public boolean isUpStationId(Long stationId) {
-        return upStation.isSameId(stationId);
-    }
-
-    public boolean isDownStationId(Long stationId) {
-        return downStation.isSameId(stationId);
-    }
 }

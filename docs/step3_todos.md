@@ -1,9 +1,9 @@
 # 3-1 피드백
 
 - [ ] post, get API등을 메소드로 Acceptance Test로 분리
-- [ ] build.gradle: 11 -> 8
+- [x] build.gradle: 11 -> 8
 - [ ] 도메인에 대해 유니테스트 진행
-- [ ] 깃 리베이스 사용해서 시도해보기
+- [x] 깃 리베이스 사용해서 시도해보기
 - [ ] AcceptanceTest에서 drop table 쿼리 제거
 - [ ] dao 여러개 제거는 IN절을 사용하여 수정
 - [ ] 인수테스트에서는 service, persistence layer 호출하지 않고 RestAssured 사용

@@ -120,7 +120,7 @@ public class Sections {
         return Collections.unmodifiableList(sections);
     }
 
-    public Optional<Section> transformSection(Long stationId) {
+    public Optional<Section> transformSection(Station station) {
         if (sections.size() == 1) {
             return Optional.empty();
         }
@@ -130,23 +130,23 @@ public class Sections {
         int distance = 0;
 
         for (Section section : sections) {
-            downStation = determineDownStation(stationId, downStation, section);
-            upStation = determineUpStation(stationId, upStation, section);
+            downStation = determineDownStation(station, downStation, section);
+            upStation = determineUpStation(station, upStation, section);
             distance += section.getDistance();
         }
 
         return Optional.of(Section.create(upStation, downStation, distance));
     }
 
-    private Station determineUpStation(Long stationId, Station upStation, Section section) {
-        if (section.isDownStationId(stationId)) {
+    private Station determineUpStation(Station station, Station upStation, Section section) {
+        if (section.isDownStation(station)) {
             upStation = section.getUpStation();
         }
         return upStation;
     }
 
-    private Station determineDownStation(Long stationId, Station downStation, Section section) {
-        if (section.isUpStationId(stationId)) {
+    private Station determineDownStation(Station station, Station downStation, Section section) {
+        if (section.isUpStation(station)) {
             downStation = section.getDownStation();
         }
         return downStation;
