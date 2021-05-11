@@ -136,6 +136,91 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(addSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("구간 삭제 - 상행 종점 제거")
+    @Test
+    void deleteSection_top() {
+        // given
+        Station station1 = createTestStation("잠실역");
+        Station station2 = createTestStation("잠실새내역");
+        Station station3 = createTestStation("종합운동장역");
+
+        Long lineId = createTestLine("신분당선", station1.getId(), station2.getId(), 10);
+        addTestSection(lineId, station2.getId(), station3.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> deleteSectionResponse = deleteTestSection(lineId, station1.getId());
+
+        // then
+        assertThat(deleteSectionResponse.body().jsonPath().getList("stations", StationResponse.class))
+            .extracting("id", "name")
+            .containsExactlyInAnyOrder(
+                Tuple.tuple(station2.getId(), station2.getName()),
+                Tuple.tuple(station3.getId(), station3.getName())
+            );
+    }
+
+    @DisplayName("구간 삭제 - 하행 종점 제거")
+    @Test
+    void deleteSection_bottom() {
+        // given
+        Station station1 = createTestStation("잠실역");
+        Station station2 = createTestStation("잠실새내역");
+        Station station3 = createTestStation("종합운동장역");
+
+        Long lineId = createTestLine("신분당선", station1.getId(), station2.getId(), 10);
+        addTestSection(lineId, station2.getId(), station3.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> deleteSectionResponse = deleteTestSection(lineId, station3.getId());
+
+        // then
+        assertThat(deleteSectionResponse.body().jsonPath().getList("stations", StationResponse.class))
+            .extracting("id", "name")
+            .containsExactlyInAnyOrder(
+                Tuple.tuple(station1.getId(), station1.getName()),
+                Tuple.tuple(station2.getId(), station2.getName())
+            );
+    }
+
+    @DisplayName("구간 삭제 - 중간 역 제거")
+    @Test
+    void deleteSection_middle() {
+        // given
+        Station station1 = createTestStation("잠실역");
+        Station station2 = createTestStation("잠실새내역");
+        Station station3 = createTestStation("종합운동장역");
+
+        Long lineId = createTestLine("신분당선", station1.getId(), station2.getId(), 10);
+        addTestSection(lineId, station2.getId(), station3.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> deleteSectionResponse = deleteTestSection(lineId, station2.getId());
+
+        // then
+        assertThat(deleteSectionResponse.body().jsonPath().getList("stations", StationResponse.class))
+            .extracting("id", "name")
+            .containsExactlyInAnyOrder(
+                Tuple.tuple(station1.getId(), station1.getName()),
+                Tuple.tuple(station3.getId(), station3.getName())
+            );
+    }
+
+    @DisplayName("구간 삭제 예외 - 구간이 하나인 노선에서 마지막 구간을 제거할 수 없다.")
+    @Test
+    void deleteSection_exception_none() {
+        // given
+        Station station1 = createTestStation("잠실역");
+        Station station2 = createTestStation("잠실새내역");
+
+        Long lineId = createTestLine("신분당선", station1.getId(), station2.getId(), 10);
+
+        // when
+        ExtractableResponse<Response> deleteSectionResponse = deleteTestSection(lineId, station2.getId());
+
+        // then
+        assertThat(deleteSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private Station createTestStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
@@ -177,6 +262,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines/{id}/sections", lineId)
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> deleteTestSection(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete("lines/{id}/sections?stationId={sectionId}", lineId, stationId)
             .then().log().all()
             .extract();
     }
