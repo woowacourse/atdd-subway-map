@@ -54,9 +54,9 @@ public class SectionService {
 
         Sections sections = new Sections(sectionDao.findById(id, stationId));
         sectionDao.deleteById(id, stationId);
-        Long upStationId = sections.findUpStationId(stationId);
-        Long downStationId = sections.findDownStationId(stationId);
         if (sections.isNotEndPoint()) {
+            Long upStationId = sections.findUpStationId(stationId);
+            Long downStationId = sections.findDownStationId(stationId);
             sectionDao.save(new Section(id, upStationId, downStationId, sections.sumDistance()));
         }
     }

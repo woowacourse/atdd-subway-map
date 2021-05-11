@@ -5,8 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,20 +18,43 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.station.Station;
+import wooteco.subway.station.dto.StationRequest;
+import wooteco.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 @Sql("/truncate.sql")
 class LineAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> response;
+    private Long upId;
+    private Long downId;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
 
+        upId = RestAssured.given().log().all()
+            .body(new StationRequest("강남역"))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract().as(StationResponse.class)
+            .getId();
+
+        downId = RestAssured.given().log().all()
+            .body(new StationRequest("역삼역"))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract().as(StationResponse.class)
+            .getId();
+
         response = RestAssured.given().log().all()
-            .body(new LineRequest("분당선", "bg-yellow-600", null, null, 1))
+            .body(new LineRequest("분당선", "bg-yellow-600", upId, downId, 1))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -61,8 +86,8 @@ class LineAcceptanceTest extends AcceptanceTest {
             .stream()
             .map(LineResponse::getId)
             .collect(Collectors.toList());
+
         assertThat(resultLineIds).hasSize(1);
-        assertThat(resultLineIds).containsExactly(1L);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -79,6 +104,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getName()).isEqualTo("분당선");
         assertThat(lineResponse.getColor())
             .isEqualTo("bg-yellow-600");
+        assertThat(lineResponse.getStations()).hasSize(2);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
