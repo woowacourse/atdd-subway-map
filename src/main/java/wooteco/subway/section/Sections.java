@@ -1,6 +1,6 @@
 package wooteco.subway.section;
 
-import wooteco.subway.exception.InvalidAddSectionException;
+import wooteco.subway.exception.section.SectionAdditionException;
 
 import java.util.*;
 import java.util.function.BiPredicate;
@@ -24,7 +24,7 @@ public class Sections {
         sections.stream()
             .filter(section -> biPredicate.test(section, newSection))
             .findAny()
-            .orElseThrow(InvalidAddSectionException::new);
+            .orElseThrow(SectionAdditionException::new);
     }
 
     private boolean isConnected(Section newSection, Section section) {
@@ -55,7 +55,7 @@ public class Sections {
 
     private void isValidDistance(Section newSection, Section section) {
         if (section.isSameOrLongDistance(newSection)) {
-            throw new InvalidAddSectionException();
+            throw new SectionAdditionException();
         }
     }
 

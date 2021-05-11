@@ -1,4 +1,6 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.station;
+
+import wooteco.subway.exception.SubwayException;
 
 public class StationLengthException extends SubwayException {
     public StationLengthException() {

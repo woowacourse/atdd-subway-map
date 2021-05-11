@@ -1,7 +1,7 @@
 package wooteco.subway.line;
 
-import wooteco.subway.exception.LineLengthException;
-import wooteco.subway.exception.LineSuffixException;
+import wooteco.subway.exception.line.LineLengthException;
+import wooteco.subway.exception.line.LineSuffixException;
 
 import java.util.Objects;
 

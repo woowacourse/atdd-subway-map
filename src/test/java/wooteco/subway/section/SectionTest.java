@@ -2,7 +2,7 @@ package wooteco.subway.section;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.exception.SectionDuplicationException;
+import wooteco.subway.exception.section.SectionDuplicationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

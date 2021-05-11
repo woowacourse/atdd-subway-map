@@ -2,8 +2,8 @@ package wooteco.subway.line;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.exception.LineLengthException;
-import wooteco.subway.exception.LineSuffixException;
+import wooteco.subway.exception.line.LineLengthException;
+import wooteco.subway.exception.line.LineSuffixException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

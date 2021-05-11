@@ -2,8 +2,8 @@ package wooteco.subway.station;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.exception.StationLengthException;
-import wooteco.subway.exception.StationSuffixException;
+import wooteco.subway.exception.station.StationLengthException;
+import wooteco.subway.exception.station.StationSuffixException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

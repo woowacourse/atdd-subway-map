@@ -1,7 +1,7 @@
 package wooteco.subway.station;
 
-import wooteco.subway.exception.StationLengthException;
-import wooteco.subway.exception.StationSuffixException;
+import wooteco.subway.exception.station.StationLengthException;
+import wooteco.subway.exception.station.StationSuffixException;
 
 import java.util.Objects;
 

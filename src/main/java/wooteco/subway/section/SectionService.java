@@ -1,7 +1,7 @@
 package wooteco.subway.section;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.exception.InvalidDeleteSectionException;
+import wooteco.subway.exception.section.SectionDeletionException;
 import wooteco.subway.station.StationResponse;
 import wooteco.subway.station.StationService;
 
@@ -59,7 +59,7 @@ public class SectionService {
     private void validateRemovableSize(Long lineId) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         if (sections.isOne()) {
-            throw new InvalidDeleteSectionException();
+            throw new SectionDeletionException();
         }
     }
 

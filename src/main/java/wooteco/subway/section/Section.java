@@ -1,6 +1,6 @@
 package wooteco.subway.section;
 
-import wooteco.subway.exception.SectionDuplicationException;
+import wooteco.subway.exception.section.SectionDuplicationException;
 
 public class Section {
 
