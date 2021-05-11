@@ -60,7 +60,8 @@ public class LineService {
     }
 
     public ReadLineDto findOne(@Valid final LineServiceDto lineServiceDto) {
-        Line line = lineDao.show(lineServiceDto.getId());
+        Line line = lineDao.show(lineServiceDto.getId())
+            .orElseThrow(() -> new NotFoundLineException());
         List<StationResponse> stationResponses = sectionService.findAllbyLindId(line.getId());
         return ReadLineDto.of(line, stationResponses);
     }

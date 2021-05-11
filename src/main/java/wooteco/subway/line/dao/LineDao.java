@@ -3,6 +3,7 @@ package wooteco.subway.line.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -40,9 +41,9 @@ public class LineDao {
         return new Line(key, line.getName(), line.getColor());
     }
 
-    public Line show(final Long id) {
+    public Optional<Line> show(final Long id) {
         String sql = "SELECT * FROM LINE WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
     }
 
     public List<Line> showAll() {

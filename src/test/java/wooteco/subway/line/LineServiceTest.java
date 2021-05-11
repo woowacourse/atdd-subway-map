@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -90,7 +91,8 @@ public class LineServiceTest {
         String name = "1호선";
         String color = "파란색";
 
-        when(mockLineDao.show(id)).thenReturn(new Line(id, name, color));
+        Optional<Line> candidate = Optional.ofNullable(new Line(id, name, color));
+        when(mockLineDao.show(id)).thenReturn(candidate);
 
         // when
         ReadLineDto readLineDto = lineService.findOne(new LineServiceDto((id)));
@@ -109,8 +111,9 @@ public class LineServiceTest {
         String updateName = "7호선";
         String updateColor = "녹담색";
 
+        Optional<Line> candidate = Optional.ofNullable(new Line(id, updateName, updateColor));
         when(mockLineDao.update(eq(id), any(Line.class))).thenReturn(1);
-        when(mockLineDao.show(id)).thenReturn(new Line(id, updateName, updateColor));
+        when(mockLineDao.show(id)).thenReturn(candidate);
 
         // when
         lineService.update(new LineServiceDto(id, updateName, updateColor));

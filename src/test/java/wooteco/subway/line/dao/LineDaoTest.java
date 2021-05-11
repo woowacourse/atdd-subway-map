@@ -57,7 +57,7 @@ class LineDaoTest {
         long id = saveLine.getId();
 
         // when
-        Line requestedLine = lineDao.show(id);
+        Line requestedLine = lineDao.show(id).get();
 
         // then
         assertThat(requestedLine.getId()).isEqualTo(id);
@@ -110,7 +110,7 @@ class LineDaoTest {
 
         // when
         lineDao.update((int) id, requestLine);
-        Line responseLine = lineDao.show(id);
+        Line responseLine = lineDao.show(id).get();
 
         // then
         assertThat(responseLine.getName()).isEqualTo(requestName);
