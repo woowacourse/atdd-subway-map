@@ -72,19 +72,31 @@ public class SectionService {
             throw new SectionIllegalArgumentException("종점은 삭제 할 수 없습니다.");
         }
 
-        Optional<Section> upSection = lineRoute
+        Optional<Section> upSectionOpt = lineRoute
             .getSectionFromUpToDownStationMapByStationId(stationId);
-        Optional<Section> downSection = lineRoute
+        Optional<Section> downSectionOpt = lineRoute
             .getSectionFromDownToUpStationMapByStationId(stationId);
 
-        if (upSection.isPresent() && downSection.isPresent()) {
-            sectionDao.save(Section.of(lineId,
-                downSection.get().getUpStationId(),
-                upSection.get().getDownStationId(),
-                upSection.get().getDistance() + downSection.get().getDistance()));
+        if (isDeleteStationInMiddleOfLine(upSectionOpt, downSectionOpt)) {
+            insertMergeSectionBeforeDelete(lineId, upSectionOpt, downSectionOpt);
         }
 
-        upSection.ifPresent(section -> sectionDao.delete(section.getId()));
-        downSection.ifPresent(section -> sectionDao.delete(section.getId()));
+        deleteEachSectionContainsDeleteStation(upSectionOpt, downSectionOpt);
+    }
+
+    private boolean isDeleteStationInMiddleOfLine(Optional<Section> upSectionOpt, Optional<Section> downSectionOpt) {
+        return upSectionOpt.isPresent() && downSectionOpt.isPresent();
+    }
+
+    private void insertMergeSectionBeforeDelete(Long lineId, Optional<Section> upSectionOpt, Optional<Section> downSectionOpt) {
+        Section upSection = upSectionOpt.get();
+        Section downSection = downSectionOpt.get();
+        Section mergeSection = Section.of(lineId, downSection.getUpStationId(), upSection.getDownStationId(), upSection.getDistance() + downSection.getDistance());
+        sectionDao.save(mergeSection);
+    }
+
+    private void deleteEachSectionContainsDeleteStation(Optional<Section> upSectionOpt, Optional<Section> downSectionOpt) {
+        upSectionOpt.ifPresent(section -> sectionDao.delete(section.getId()));
+        downSectionOpt.ifPresent(section -> sectionDao.delete(section.getId()));
     }
 }
