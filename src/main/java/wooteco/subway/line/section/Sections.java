@@ -115,14 +115,6 @@ public class Sections {
         return sectionGroup.get(sectionGroup.size() - 1);
     }
 
-    private boolean isUpEndStation(final long existentStationId) {
-        return sectionGroup.get(0).getUpStationId() == existentStationId;
-    }
-
-    private boolean isDownEndStation(final long existentStationId) {
-        return sectionGroup.get(sectionGroup.size() - 1).getDownStationId() == existentStationId;
-    }
-
     public Section findSectionHasThisAsUpStation(long existentStationId) {
         return sectionGroup.stream()
             .filter(section -> section.getUpStationId() == existentStationId)

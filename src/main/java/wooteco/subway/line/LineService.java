@@ -72,7 +72,6 @@ public class LineService {
         return new Line(line.getId(), line.getName(), line.getColor(), sections, new Stations(stationsGroup));
     }
 
-
     public List<LineResponse> findLines() {
         return lineDao.findAll().stream().
             map(LineResponse::from).
@@ -99,6 +98,10 @@ public class LineService {
             sectionDao.deleteById(line.findTerminalSection(stationId).getId());
             return;
         }
+        deleteMiddleStation(lineId, stationId, line);
+    }
+
+    private void deleteMiddleStation(final Long lineId, final Long stationId, final Line line) {
         final Section leftSection = line.findSectionHasDownStation(stationId);
         final Section rightSection = line.findSectionHasUpStation(stationId);
         final Section newSection = new Section(
@@ -107,6 +110,7 @@ public class LineService {
             rightSection.getDownStationId(),
             leftSection.getDistance() + rightSection.getDistance()
         );
+
         sectionDao.deleteById(leftSection.getId());
         sectionDao.deleteById(rightSection.getId());
         sectionDao.save(newSection);
