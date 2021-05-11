@@ -11,15 +11,8 @@ public class Section {
     private Station downStation;
     private int distance;
 
-    public Section() {
-    }
-
-    public Section(Long upStationId, Long downStationId, int distance) {
-        this(0L, 0L, new Station(upStationId), new Station(downStationId), distance);
-    }
-
-    public Section(final Station upStation, final Station downStation, final int distance) {
-        this(0L, 0L, upStation, downStation, distance);
+    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
+        this(0L, lineId, new Station(upStationId), new Station(downStationId), distance);
     }
 
     public Section(final Long lineId, final Station upStation, final Station downStation, final int distance) {
@@ -58,7 +51,6 @@ public class Section {
         return lineId;
     }
 
-
     public boolean has(Station station) {
         return upStation.equals(station) || downStation.equals(station);
     }
@@ -73,6 +65,10 @@ public class Section {
 
     public boolean lessDistanceThan(Section anotherSection) {
         return this.distance <= anotherSection.distance;
+    }
+
+    public int subtractDistance(Section anotherSection) {
+        return this.distance - anotherSection.distance;
     }
 
     @Override

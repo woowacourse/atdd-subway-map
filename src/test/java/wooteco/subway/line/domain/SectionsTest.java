@@ -3,8 +3,6 @@ package wooteco.subway.line.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import wooteco.subway.station.domain.Station;
 
 import java.util.Arrays;
@@ -18,30 +16,43 @@ class SectionsTest {
     private Station station2;
     private Section section;
     private Sections sections;
+    private Station station3;
 
     @BeforeEach
     void setUp() {
         station1 = new Station(1L, "아마역");
         station2 = new Station(2L, "마찌역");
+        station3 = new Station(3L, "잠실역");
         section = new Section(1L, 1L, station1, station2, 10);
         sections = new Sections(Arrays.asList(section));
     }
 
     @Test
-    @DisplayName("노선에 역이 하나만 등록되어 있는지 확인한다. - 두개다 이미 등록되어 있음")
-    void isOnlyOneRegistered1() {
-        boolean isOnlyOneRegistered = sections.isOnlyOneRegistered(section);
+    @DisplayName("등록하려는 구간으로 등록된 구간들에 이미 존재하는 역을 찾는다.")
+    void registeredStation() {
+        // given
+        Section newSection = new Section(1L, 1L, station1, station3, 10);
 
-        assertThat(isOnlyOneRegistered).isFalse();
+        // when
+        Station station = sections.registeredStation(newSection);
+
+        // then
+        assertThat(station).isEqualTo(station1);
     }
 
     @Test
-    @DisplayName("노선에 역이 하나만 등록되어 있는지 확인한다. - 하나만 등록되어 있음")
-    void isAlreadyRegistered2() {
-        Section newSection = new Section(new Station(1L), new Station(3L), 10);
-        boolean alreadyRegistered = sections.isOnlyOneRegistered(newSection);
+    @DisplayName("등록하려는 구간으로 등록된 구간들에 이미 존재하는 역을 찾는다. - 예외 : 두 역 모두 존재할 시")
+    void registeredStationException1() {
+        assertThatThrownBy(() -> sections.registeredStation(section))
+                .isInstanceOf(IllegalStateException.class);
+    }
 
-        assertThat(alreadyRegistered).isTrue();
+    @Test
+    @DisplayName("등록하려는 구간으로 등록된 구간들에 이미 존재하는 역을 찾는다. - 예외 : 두 역 모두 존재하지 않을 시")
+    void registeredStationException2() {
+        Section newSection = new Section(1L, 1L, station3, new Station(4L), 10);
+        assertThatThrownBy(() -> sections.registeredStation(newSection))
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -50,53 +61,35 @@ class SectionsTest {
         assertThat(sections.sortedStations()).containsExactly(station1, station2);
     }
 
-//    @Test
-//    @DisplayName("구간을 추가한 sections를 반환시 노선에 등록할 구간의 역이 하나만 등록되어 있지 않은 경우 예외가 발생한다. - 둘다 등록 안돼있음")
-//    void addedSectionsException1() {
-//        Station station3 = new Station(3L, "잠실역");
-//        Station station4 = new Station(4L, "강남역");
-//        Section newSection = new Section(station4, station3, 5);
-//        assertThatThrownBy(() -> sections.addedSection(newSection))
-//                .isInstanceOf(IllegalStateException.class);
-//    }
-//
-//    @Test
-//    @DisplayName("구간을 추가한 sections를 반환시 노선에 등록할 구간의 역이 하나만 등록되어 있지 않은 경우 예외가 발생한다. - 둘다 등록돼있음")
-//    void addedSectionsException2() {
-//        Section newSection = new Section(station1, station2, 5);
-//        assertThatThrownBy(() -> sections.addedSection(newSection))
-//                .isInstanceOf(IllegalStateException.class);
-//    }
-//
-//    @Test
-//    @DisplayName("구간을 추가한 sections를 반환시 노선에 등록할 구간의 역이 하나만 등록되어 있지 않은 경우 예외가 발생한다. - 둘다 등록돼있음")
-//    void addedSectionsException3() {
-//        Section newSection = new Section(station1, station2, 5);
-//        assertThatThrownBy(() -> sections.addedSection(newSection))
-//                .isInstanceOf(IllegalStateException.class);
-//    }
-//
-//    @ParameterizedTest
-//    @ValueSource(ints = {10, 15})
-//    @DisplayName("구간을 추가한 sections를 반환시 거리가 기존 구간 길이보다 크거나 같으면 예외가 발생한다.")
-//    void addedSectionsException4(int distance) {
-//        Station station3 = new Station(3L, "잠실역");
-//        Section newSection = new Section(station1, station3, distance);
-//        assertThatThrownBy(() -> sections.addedSection(newSection))
-//                .isInstanceOf(IllegalArgumentException.class);
-//    }
+    @Test
+    @DisplayName("해당 station을 upStation으로 가지고 있는 구간을 찾는다.")
+    void findSectionWithUpStation1() {
+        Section findSection = sections.findSectionWithUpStation(station1);
 
-//    @Test
-//    @DisplayName("")
-//    void affectedSection() {
-//        // 1아마 - 2마찌
-//        // 1아마- 3잠실 추가
-//        // affectedSection =
-//        Station station3 = new Station(3L, "잠실역");
-//        Section newSection = new Section(2L,1L,  station1, station3, 5);
-//        Sections addedSections = sections.addedSections(newSection);
-//        assertThat(addedSections.sortedStations()).hasSize(3);
-//        assertThat(sections.sortedStations()).hasSize(2);
-//        assertThat(addedSections.affectedSection(sections).id()).isEqualTo(10);
-//    }
+        assertThat(findSection).isEqualTo(section);
+    }
+
+    @Test
+    @DisplayName("해당 station을 upStation으로 가지고 있는 구간을 찾는다. - 존재하지 않음")
+    void findSectionWithUpStation2() {
+        Section findSection = sections.findSectionWithUpStation(station3);
+
+        assertThat(findSection.id()).isEqualTo(0L);
+    }
+
+    @Test
+    @DisplayName("해당 station을 downStation으로 가지고 있는 구간을 찾는다.")
+    void findSectionWithDownStation1() {
+        Section findSection = sections.findSectionWithDownStation(station2);
+
+        assertThat(findSection).isEqualTo(section);
+    }
+
+    @Test
+    @DisplayName("해당 station을 downStation으로 가지고 있는 구간을 찾는다. - 존재하지 않음")
+    void findSectionWithDownStation2() {
+        Section findSection = sections.findSectionWithDownStation(station3);
+
+        assertThat(findSection.id()).isEqualTo(0L);
+    }
 }

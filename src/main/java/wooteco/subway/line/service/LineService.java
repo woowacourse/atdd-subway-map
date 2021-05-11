@@ -57,19 +57,19 @@ public class LineService {
     @Transactional
     public void addSection(final Long lineId, final SectionRequest sectionRequest) {
         Line line = lineRepository.findById(lineId);
-        Section toAddSection = new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
-        Station targetStation = line.duplicatedStation(toAddSection);
+        Section toAddSection = new Section(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        Station targetStation = line.registeredStation(toAddSection);
         if (toAddSection.hasUpStation(targetStation)) {
             Section targetSection = line.findSectionWithUpStation(targetStation);
             checkAbleToAddByDistance(toAddSection, targetSection);
             lineRepository.updateSection(lineId,
-                    new Section(targetSection.id(), lineId, toAddSection.downStation(), targetSection.downStation(), targetSection.distance() - toAddSection.distance()));
+                    new Section(targetSection.id(), lineId, toAddSection.downStation(), targetSection.downStation(), targetSection.subtractDistance(toAddSection)));
         }
         if (toAddSection.hasDownStation(targetStation)) {
             Section targetSection = line.findSectionWithDownStation(targetStation);
             checkAbleToAddByDistance(toAddSection, targetSection);
             lineRepository.updateSection(lineId,
-                    new Section(targetSection.id(), lineId, targetSection.upStation(), toAddSection.upStation(), targetSection.distance() - toAddSection.distance()));
+                    new Section(targetSection.id(), lineId, targetSection.upStation(), toAddSection.upStation(), targetSection.subtractDistance(toAddSection)));
         }
         lineRepository.addSection(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
     }
