@@ -19,6 +19,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("구간 관리 관련 기능 인수 테스트")
 public class SectionAcceptanceTest extends AcceptanceTest {
     private String lineLocation;
     private String namSungStationId;

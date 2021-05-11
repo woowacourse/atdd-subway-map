@@ -22,8 +22,9 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("노선 관련 기능 인수 테스트")
 class LineAcceptanceTest extends AcceptanceTest {
-    private String location;
+    private String lineLocation;
     private String namSungStationId;
     private String naeBangStationId;
 
@@ -48,14 +49,14 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then()
                 .extract();
 
-        location = createResponse.header("Location");
+        lineLocation = createResponse.header("Location");
     }
 
     @AfterEach
     void stash() {
         RestAssured.given().log().all()
                 .when()
-                .delete(location)
+                .delete(lineLocation)
                 .then()
                 .extract();
     }
@@ -113,7 +114,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get(location)
+                .get(lineLocation)
                 .then().log().all()
                 .extract();
 
@@ -144,13 +145,13 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put(location)
+                .put(lineLocation)
                 .then().log().all()
                 .extract();
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get(location)
+                .get(lineLocation)
                 .then().log().all()
                 .extract();
 
@@ -168,7 +169,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .delete(location)
+                .delete(lineLocation)
                 .then().log().all()
                 .extract();
 
