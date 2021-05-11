@@ -12,6 +12,7 @@ public class Fixture {
     static final Station SAMSUNG_STATION = new Station(7L, "삼성역");
     static final Station GYODAE_STATION = new Station(8L, "교대역");
     static final Station ANYANG_STATION = new Station(9L, "안양역");
+    static final Station YEOKSAM_STATION = new Station(10L, "역삼역");
 
     static final Section FIRST_SECTION = new Section(GANGNAM_STATION, JAMSIL_STATION, 10);
     static final Section DOUBLE_END_UPSTATION_SECTION = new Section(JONGHAP_STATION, JAMSIL_STATION, 10);

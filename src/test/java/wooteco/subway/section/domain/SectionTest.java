@@ -4,17 +4,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.section.exception.SectionHasSameStationsException;
 import wooteco.subway.section.exception.SectionNotSequentialException;
-import wooteco.subway.station.domain.Station;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static wooteco.subway.section.domain.Fixture.*;
 
 @DisplayName("구간 기능 테스트")
 class SectionTest {
-    private final Station GANGNAM_STATION = new Station(1L, "강남역");
-    private final Station YEOKSAM_STATION = new Station(2L, "역삼역");
-    private final Station JAMSIL_STATION = new Station(3L, "잠실역");
-    private final Station SADANG_STATION = new Station(4L, "사당역");
     private final long TEN_DISTANCE = 10;
     private final long FIVE_DISTANCE = 5;
 
@@ -42,6 +38,35 @@ class SectionTest {
         assertThat(mergedSection.getUpStation()).isEqualTo(GANGNAM_STATION);
         assertThat(mergedSection.getDownStation()).isEqualTo(JAMSIL_STATION);
         assertThat(mergedSection.getDistance()).isEqualTo(TEN_DISTANCE + FIVE_DISTANCE);
+    }
+
+    @DisplayName("상행역을 업데이트 하는 기능")
+    @Test
+    void updateUpStationTest() {
+        //given
+        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, TEN_DISTANCE);
+
+        //when
+        Section updatedSection = section.updateUpStation(JAMSIL_STATION, FIVE_DISTANCE);
+        //then
+        assertThat(updatedSection.getUpStation()).isEqualTo(JAMSIL_STATION);
+        assertThat(updatedSection.getDownStation()).isEqualTo(YEOKSAM_STATION);
+        assertThat(updatedSection.getDistance()).isEqualTo(section.getDistance() - FIVE_DISTANCE);
+    }
+
+    @DisplayName("하행역을 업데이트 하는 기능")
+    @Test
+    void updateDownStationTest() {
+        //given
+        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, TEN_DISTANCE);
+
+        //when
+        Section updatedSection = section.updateDownStation(JAMSIL_STATION, FIVE_DISTANCE);
+
+        //then
+        assertThat(updatedSection.getUpStation()).isEqualTo(GANGNAM_STATION);
+        assertThat(updatedSection.getDownStation()).isEqualTo(JAMSIL_STATION);
+        assertThat(updatedSection.getDistance()).isEqualTo(section.getDistance() - FIVE_DISTANCE);
     }
 
     @DisplayName("구간을 합칠 때 구간이 연결되어있지 않으면 예외")
