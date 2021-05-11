@@ -28,6 +28,10 @@ public class LineName {
         }
     }
 
+    public String text() {
+        return name;
+    }
+
     public String getName() {
         return name;
     }
@@ -43,9 +47,5 @@ public class LineName {
     @Override
     public int hashCode() {
         return Objects.hash(name);
-    }
-
-    public String text() {
-        return name;
     }
 }

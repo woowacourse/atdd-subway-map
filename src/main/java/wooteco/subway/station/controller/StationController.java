@@ -5,12 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.station.controller.dto.StationRequest;
 import wooteco.subway.station.controller.dto.StationResponse;
-import wooteco.subway.station.service.StationService;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.service.StationService;
 
 import java.net.URI;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -45,10 +44,5 @@ public class StationController {
         Station station = stationService.findById(id);
         stationService.delete(station);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class})
-    public ResponseEntity<Void> exceptionHandler() {
-        return ResponseEntity.badRequest().build();
     }
 }

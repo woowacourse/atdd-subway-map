@@ -6,18 +6,14 @@ import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.controller.dto.SectionRequest;
 import wooteco.subway.section.servcie.SectionService;
 
-import java.util.NoSuchElementException;
-
 @RestController
 @RequestMapping("/lines/{lineId}/sections")
 public class SectionController {
 
     private final SectionService sectionService;
-    private final LineService lineService;
 
-    public SectionController(SectionService sectionService, LineService lineService) {
+    public SectionController(SectionService sectionService) {
         this.sectionService = sectionService;
-        this.lineService = lineService;
     }
 
     @PostMapping
@@ -31,10 +27,4 @@ public class SectionController {
         sectionService.deleteSection(lineId, stationId);
         return ResponseEntity.ok().build();
     }
-
-    @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class})
-    public ResponseEntity<Void> exceptionHandler() {
-        return ResponseEntity.badRequest().build();
-    }
-
 }

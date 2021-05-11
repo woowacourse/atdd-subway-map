@@ -45,7 +45,7 @@ public class Sections {
     }
 
     private List<Section> sort(List<Section> sections) {
-        if (sections.size() == 1) {
+        if (sections.size() < 2) {
             return sections;
         }
         Map<Station, Section> upStations = new HashMap<>();
@@ -82,5 +82,9 @@ public class Sections {
             upStations.remove(downStation);
             downStations.remove(upStation);
         }
+    }
+
+    public boolean isEmpty() {
+        return sections.isEmpty();
     }
 }

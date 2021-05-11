@@ -23,20 +23,19 @@ public class SectionService {
     }
 
     @Transactional
-    public void addSection(Long lineId, Long upStationId, Long downStationId, int distance) {
+    public Section addSection(Long lineId, Long upStationId, Long downStationId, int distance) {
         Station upStation = stationDao.findById(upStationId);
         Station downStation = stationDao.findById(downStationId);
         validateSameStation(upStation, downStation);
 
         Section section = new Section(lineId, upStation, downStation, new Distance(distance));
         Sections sections = sectionDao.findByLineId(lineId);
-        if (sections.isUpLastSection(section) || sections.isDownLastSection(section)) {
-            sectionDao.save(section);
-            return;
+        if (sections.isEmpty() || sections.isUpLastSection(section) || sections.isDownLastSection(section)) {
+            return sectionDao.save(section);
         }
         Section modifiedSection = sections.getModifiedSectionIfCanAdd(section);
-        sectionDao.save(section);
         sectionDao.update(modifiedSection);
+        return sectionDao.save(section);
     }
 
     private void validateSameStation(Station upStation, Station downStation) {
@@ -65,5 +64,9 @@ public class SectionService {
         if (sectionDao.canDelete(lineId)) {
             throw new IllegalArgumentException("구간을 삭제할 수 없습니다.");
         }
+    }
+
+    public Sections findByLineId(Long id) {
+        return sectionDao.findByLineId(id);
     }
 }

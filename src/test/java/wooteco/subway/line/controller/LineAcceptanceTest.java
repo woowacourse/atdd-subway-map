@@ -64,6 +64,25 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
+    @DisplayName("동일한 역으로 지하철 노선을 생성할 경우 예외")
+    @Test
+    void createLineWhenSameStations() {
+        // given
+        LineRequest sameStationRequest = new LineRequest(TEST_LINE_NAME, TEST_COLOR_NAME, 1L, 1L, 10);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(sameStationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 생성한다.")
     @Test
     void createLineWithDuplicateName() {

@@ -5,11 +5,9 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.section.dao.SectionDao;
-import wooteco.subway.section.domain.Distance;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
-import wooteco.subway.station.dao.StationDao;
-import wooteco.subway.station.domain.Station;
+import wooteco.subway.section.servcie.SectionService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,15 +16,15 @@ import java.util.List;
 @Service
 public class LineService {
     private final LineDao lineDao;
-    private final SectionDao sectionDao;
+    private final SectionService sectionService;
 
-    public LineService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
+    public LineService(LineDao lineDao, SectionService sectionService) {
         this.lineDao = lineDao;
-        this.sectionDao = sectionDao;
+        this.sectionService = sectionService;
     }
 
     @Transactional
-    public Line save (Line line, Station upStation, Station downStation, int distance){
+    public Line save (Line line, Long upStationId, Long downStationId, int distance){
         if (isDuplicatedName(line)) {
             throw new IllegalArgumentException(String.format("노선 이름이 중복되었습니다. 중복된 노선 이름 : %s", line.getName()));
         }
@@ -34,8 +32,7 @@ public class LineService {
             throw new IllegalArgumentException(String.format("노선 색상이 중복되었습니다. 중복된 노선 색상 : %s", line.getColor()));
         }
         Line newLine = lineDao.save(line);
-        Section section = new Section(newLine.getId(), upStation, downStation, new Distance(distance));
-        Section newSection = sectionDao.save(section);
+        Section newSection = sectionService.addSection(newLine.getId(), upStationId, downStationId, distance);
         return new Line(newLine.getId(), newLine.getName(), newLine.getColor(), new Sections(new ArrayList<>(Arrays.asList(newSection))));
     }
 
@@ -52,7 +49,7 @@ public class LineService {
     }
 
     public Line findById (Long id){
-        Sections sections = sectionDao.findByLineId(id);
+        Sections sections = sectionService.findByLineId(id);
         Line line = lineDao.findById(id);
         return new Line(line.getId(), line.getName(), line.getColor(), sections);
     }
