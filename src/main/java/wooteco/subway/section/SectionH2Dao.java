@@ -41,16 +41,16 @@ public class SectionH2Dao implements SectionDao {
         String sql = "SELECT * FROM SECTION WHERE (line_id=? AND up_station_id=?) OR (line_id=? AND down_station_id=?)";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
-                    sql,
-                    (rs, rowNum) -> {
-                        Section section = new Section(
-                                rs.getLong("id"),
-                                rs.getLong("up_station_id"),
-                                rs.getLong("down_station_id"),
-                                rs.getInt("distance")
-                        );
-                        return section;
-                    }, lineId, newSection.getUpStationId(), lineId, newSection.getDownStationId()));
+                sql,
+                (rs, rowNum) -> {
+                    Section section = new Section(
+                        rs.getLong("id"),
+                        rs.getLong("up_station_id"),
+                        rs.getLong("down_station_id"),
+                        rs.getInt("distance")
+                    );
+                    return section;
+                }, lineId, newSection.getUpStationId(), lineId, newSection.getDownStationId()));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

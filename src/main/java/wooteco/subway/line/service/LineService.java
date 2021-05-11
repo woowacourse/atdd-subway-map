@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.exception.IllegalIdException;
 import wooteco.subway.exception.line.LineDuplicationException;
 import wooteco.subway.exception.line.NoLineException;
-import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 
 import java.util.List;

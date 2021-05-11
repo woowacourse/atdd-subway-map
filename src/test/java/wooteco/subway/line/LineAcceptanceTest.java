@@ -9,13 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
-<<<<<<< HEAD
-import wooteco.subway.exception.line.LineDuplicationException;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
-=======
-import wooteco.subway.station.StationRequest;
->>>>>>> fecebeb (test: 노선 조회 인수 테스트 수정)
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -90,19 +85,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철노선을 조회한다.")
     @Test
     void findLine() {
-<<<<<<< HEAD
         LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 5);
         ExtractableResponse<Response> createResponse = linePostRequest(lineRequest);
-=======
-        createStation();
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
->>>>>>> fecebeb (test: 노선 조회 인수 테스트 수정)
 
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -112,42 +96,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-<<<<<<< HEAD
         LineResponse expectedResponse = createResponse.body().as(LineResponse.class);
         LineResponse resultResponse = response.jsonPath().getList(".", LineResponse.class).get(0);
 
         assertThat(resultResponse.getId()).isEqualTo(expectedResponse.getId());
         assertThat(resultResponse.getName()).isEqualTo(expectedResponse.getName());
         assertThat(resultResponse.getColor()).isEqualTo(expectedResponse.getColor());
-=======
-        LineResponse expectedResponse = createResponse.jsonPath().getObject(".", LineResponse.class);
-        LineResponse resultResponse = response.jsonPath().getObject(".", LineResponse.class);
-
-        assertThat(resultResponse).usingRecursiveComparison()
-            .ignoringFields("stations")
-            .isEqualTo(expectedResponse);
-    }
-
-    private void createStation() {
-        StationRequest stationRequest = new StationRequest("강남역");
-        StationRequest stationRequest2 = new StationRequest("역삼역");
-
-        RestAssured.given().log().all()
-            .body(stationRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
-
-        RestAssured.given().log().all()
-            .body(stationRequest2)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
->>>>>>> fecebeb (test: 노선 조회 인수 테스트 수정)
     }
 
     @DisplayName("지하철노선을 수정한다.")

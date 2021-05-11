@@ -33,8 +33,8 @@ public class StationController {
     public ResponseEntity<List<StationResponse>> showStations() {
         List<Station> stations = stationService.stations();
         List<StationResponse> stationResponses = stations.stream()
-                .map(StationResponse::new)
-                .collect(Collectors.toList());
+            .map(StationResponse::new)
+            .collect(Collectors.toList());
         return ResponseEntity.ok(stationResponses);
     }
 

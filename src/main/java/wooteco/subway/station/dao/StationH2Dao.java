@@ -68,38 +68,38 @@ public class StationH2Dao implements StationDao {
             .stream()
             .findAny();
 
-    public Optional<Station> findById(Long id) {
-        String sql = "SELECT * FROM STATION WHERE id=?";
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(
-                sql,
-                (rs, rowNum) -> {
-                    return new Station(
-                        rs.getLong("id"),
-                        rs.getString("name")
-                    );
-                },
-                id));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
+        public Optional<Station> findById (Long id){
+            String sql = "SELECT * FROM STATION WHERE id=?";
+            try {
+                return Optional.ofNullable(jdbcTemplate.queryForObject(
+                    sql,
+                    (rs, rowNum) -> {
+                        return new Station(
+                            rs.getLong("id"),
+                            rs.getString("name")
+                        );
+                    },
+                    id));
+            } catch (EmptyResultDataAccessException e) {
+                return Optional.empty();
+            }
         }
-    }
 
-    @Override
-    public Optional<Station> findByName(String name) {
-        String sql = "SELECT * FROM STATION WHERE name=?";
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(
-                sql,
-                (rs, rowNum) -> {
-                    return new Station(
-                        rs.getLong("id"),
-                        rs.getString("name")
-                    );
-                },
-                name));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
+        @Override
+        public Optional<Station> findByName (String name){
+            String sql = "SELECT * FROM STATION WHERE name=?";
+            try {
+                return Optional.ofNullable(jdbcTemplate.queryForObject(
+                    sql,
+                    (rs, rowNum) -> {
+                        return new Station(
+                            rs.getLong("id"),
+                            rs.getString("name")
+                        );
+                    },
+                    name));
+            } catch (EmptyResultDataAccessException e) {
+                return Optional.empty();
+            }
         }
     }
-}

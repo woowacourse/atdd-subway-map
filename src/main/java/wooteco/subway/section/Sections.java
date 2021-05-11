@@ -38,12 +38,12 @@ public class Sections {
 
     private boolean isIntermediate(Section newSection, Section section) {
         return section.isUpStation(newSection.getUpStationId()) ||
-                section.isDownStation(newSection.getDownStationId());
+            section.isDownStation(newSection.getDownStationId());
     }
 
     private boolean isNotExisted(Section newSection, Section section) {
         return !(section.isUpStation(newSection.getUpStationId()) && section.isDownStation(newSection.getDownStationId())) ||
-                !(section.isUpStation(newSection.getDownStationId()) && section.isDownStation(newSection.getUpStationId()));
+            !(section.isUpStation(newSection.getDownStationId()) && section.isDownStation(newSection.getUpStationId()));
     }
 
     private void validateDistance(Section newSection) {
