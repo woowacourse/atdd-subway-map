@@ -19,7 +19,7 @@ public class Line {
     }
 
     public static Line create(Long id, String name, String color) {
-        return new Line(id, name, color, Sections.from());
+        return new Line(id, name, color, Sections.create());
     }
 
     public void addSection(Section section) {

@@ -40,7 +40,7 @@ public class SectionService {
         validateIsLastSection(lineId);
 
         List<Section> sections = sectionDao.findSectionContainsStationId(lineId, stationId);
-        final Sections foundSections = Sections.from(sections);
+        final Sections foundSections = Sections.create(sections);
         Optional<Section> affectedSection = foundSections.transformSection(stationId);
 
         sectionDao.removeSections(lineId, sections);

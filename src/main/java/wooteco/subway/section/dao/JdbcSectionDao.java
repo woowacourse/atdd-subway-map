@@ -69,7 +69,7 @@ public class JdbcSectionDao implements SectionDao {
             return Section.create(id, upStation, downStation, distance);
         }, lineId);
 
-        return Sections.from(sections);
+        return Sections.create(sections);
     }
 
     @Override

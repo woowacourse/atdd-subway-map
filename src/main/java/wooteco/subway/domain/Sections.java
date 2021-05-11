@@ -14,11 +14,11 @@ public class Sections {
     private static final int FIRST_ELEMENT = 0;
     private final List<Section> sections;
 
-    public static Sections from(Section... sections) {
-        return from(new ArrayList<>(Arrays.asList(sections)));
+    public static Sections create(Section... sections) {
+        return create(new ArrayList<>(Arrays.asList(sections)));
     }
 
-    public static Sections from(List<Section> sections) {
+    public static Sections create(List<Section> sections) {
         return new Sections(sections);
     }
 
