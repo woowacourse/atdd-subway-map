@@ -13,11 +13,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public class StationH2Dao implements StationDao {
+public class StationJdbcDao implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public StationH2Dao(JdbcTemplate jdbcTemplate) {
+    public StationJdbcDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

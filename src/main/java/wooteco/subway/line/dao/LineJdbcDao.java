@@ -13,11 +13,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public class LineH2Dao implements LineDao {
+public class LineJdbcDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public LineH2Dao(JdbcTemplate jdbcTemplate) {
+    public LineJdbcDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

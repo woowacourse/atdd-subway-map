@@ -13,11 +13,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public class SectionH2Dao implements SectionDao {
+public class SectionJdbcDao implements SectionDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public SectionH2Dao(JdbcTemplate jdbcTemplate) {
+    public SectionJdbcDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

@@ -15,7 +15,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-class StationH2DaoTest {
+class StationJdbcDaoTest {
 
     @Autowired
     private StationDao stationDao;
