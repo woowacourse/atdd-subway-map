@@ -2,6 +2,7 @@ package wooteco.subway.line.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,10 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.exception.WrongLineIdException;
+import wooteco.subway.line.exception.WrongLineInformationException;
 import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.domain.OrderedSections;
 import wooteco.subway.section.service.SectionService;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,7 +35,10 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new WrongLineInformationException("요청이 올바르지 않습니다.");
+        }
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineService.save(line);
         sectionService.create(newLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());

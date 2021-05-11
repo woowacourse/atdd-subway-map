@@ -2,10 +2,13 @@ package wooteco.subway.station.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.exception.WrongStationInformationException;
 import wooteco.subway.station.service.StationService;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,7 +24,11 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
+    public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationRequest stationRequest,
+                                                         BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new WrongStationInformationException("잘 못된 요청입니다.");
+        }
         Station station = new Station(stationRequest.getName());
         Station newStation = stationService.save(station);
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName().text());
