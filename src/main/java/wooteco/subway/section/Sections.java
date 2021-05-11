@@ -7,7 +7,10 @@ import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import wooteco.subway.exception.InvalidSectionDistanceException;
+import wooteco.subway.exception.InvalidStationException;
 import wooteco.subway.exception.NoneOrAllStationsExistingInLineException;
 
 public class Sections {
@@ -26,18 +29,18 @@ public class Sections {
     }
 
     public Long findUpStationId(Long stationId) {
-        return sections.stream()
-            .filter(section -> stationId != section.getUpStationId())
-            .findAny()
-            .get()
-            .getUpStationId();
+        return findStationId(section -> section.isUpStation(stationId));
     }
 
-    public long findDownStationId(Long stationId) {
+    public Long findDownStationId(Long stationId) {
+        return findStationId(section -> section.isDownStation(stationId));
+    }
+
+    private long findStationId(Predicate<Section> predicate) {
         return sections.stream()
-            .filter(section -> stationId != section.getDownStationId())
+            .filter(predicate)
             .findAny()
-            .get()
+            .orElseThrow(InvalidStationException::new)
             .getUpStationId();
     }
 
@@ -45,6 +48,35 @@ public class Sections {
         return sections.stream()
             .mapToInt(Section::getDistance)
             .sum();
+    }
+
+    public void validateSectionDistance(Section newSection) {
+        int distance = sectionToBeDivided(newSection).getDistance();
+        if (newSection.largerThan(distance)) {
+            throw new InvalidSectionDistanceException();
+        }
+    }
+
+    public Section sectionToBeDivided(Section newSection) {
+        return sections.stream()
+            .filter(section -> hasSameUpOrDownStationId(newSection, section))
+            .findAny()
+            .orElseThrow(InvalidStationException::new);
+    }
+
+    public Section divideSection(Long lindId, Section newSection) {
+        Section existingSection = sectionToBeDivided(newSection);
+        if (existingSection.isUpStation(newSection.getUpStationId())) {
+            return new Section(lindId, newSection.getDownStationId(),
+                existingSection.getDownStationId(), existingSection.deductDistance(newSection));
+        }
+        return new Section(lindId, existingSection.getUpStationId(), newSection.getUpStationId(),
+            existingSection.deductDistance(newSection));
+    }
+
+    private boolean hasSameUpOrDownStationId(Section newSection, Section section) {
+        return section.getUpStationId().equals(newSection.getUpStationId()) || section
+            .getDownStationId().equals(newSection.getDownStationId());
     }
 
     public void validateSectionStations(Section newSection) {
@@ -58,12 +90,12 @@ public class Sections {
             newSection.getDownStationId());
 
         stationIds.retainAll(newSectionStationsId);
-        if(stationIds.size() != VALID_SECTION_DUPLICATE_STATION_ID_CRITERIA){
+        if (stationIds.size() != VALID_SECTION_DUPLICATE_STATION_ID_CRITERIA) {
             throw new NoneOrAllStationsExistingInLineException();
         }
     }
 
-    public List<Long> sortedStationIds(){
+    public List<Long> sortedStationIds() {
         Deque<Long> sortedIds = new ArrayDeque<>();
         Map<Long, Long> upIds = new LinkedHashMap<>();
         Map<Long, Long> downIds = new LinkedHashMap<>();
@@ -86,11 +118,11 @@ public class Sections {
     }
 
     private void sort(Deque<Long> sortedIds, Map<Long, Long> upIds, Map<Long, Long> downIds) {
-        while(upIds.containsKey(sortedIds.peekFirst())){
+        while (upIds.containsKey(sortedIds.peekFirst())) {
             Long currentId = sortedIds.peekFirst();
             sortedIds.addFirst(upIds.get(currentId));
         }
-        while (downIds.containsKey(sortedIds.peekLast())){
+        while (downIds.containsKey(sortedIds.peekLast())) {
             Long currentId = sortedIds.peekLast();
             sortedIds.addLast(downIds.get(currentId));
         }

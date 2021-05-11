@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.section.dto.SectionRequest;
 
 @RestController
 @RequestMapping("/lines")
@@ -19,16 +20,17 @@ public class SectionController {
         this.service = service;
     }
 
-    // TODO 구간 추가 API
     @PostMapping("/{id}/sections")
-    public ResponseEntity<Void> createSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
-        return null;
+    public ResponseEntity<Void> createSection(@PathVariable Long id,
+        @RequestBody SectionRequest sectionRequest) {
+        service.add(id, sectionRequest);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}/sections")
-    public ResponseEntity<Void> deleteSection(@PathVariable Long id, @RequestParam("stationId") Long stationId) {
+    public ResponseEntity<Void> deleteSection(@PathVariable Long id,
+        @RequestParam("stationId") Long stationId) {
         service.deleteById(id, stationId);
         return ResponseEntity.noContent().build();
     }
-
 }

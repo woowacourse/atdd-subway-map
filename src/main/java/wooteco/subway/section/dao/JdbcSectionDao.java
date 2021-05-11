@@ -44,9 +44,8 @@ public class JdbcSectionDao implements SectionDao {
     @Override
     public List<Section> findById(Long lineId, Long id) {
         String query = "select * from SECTION where line_id = ? and (up_station_id =? or down_station_id =?)";
-        return jdbcTemplate.query(query, mapper, lineId);
+        return jdbcTemplate.query(query, mapper, lineId, id, id);
     }
-
 
     @Override
     public void deleteById(Long lineId, Long id) {
@@ -57,6 +56,12 @@ public class JdbcSectionDao implements SectionDao {
     @Override
     public void deleteAllById(Long id) {
         String query = "delete from SECTION whre line_id = ?";
+        jdbcTemplate.update(query, id);
+    }
+
+    @Override
+    public void deleteBySectionId(Long id) {
+        String query = "delete from SECTION where id = ?";
         jdbcTemplate.update(query, id);
     }
 }

@@ -1,8 +1,8 @@
 package wooteco.subway.station.dao;
 
 import java.sql.PreparedStatement;
+import java.util.Collections;
 import java.util.List;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -48,5 +48,15 @@ public class JdbcStationDao implements StationDao {
     public Station findById(Long id) {
         String query = "select * from STATION where id = ?";
         return jdbcTemplate.queryForObject(query, mapper, id);
+    }
+
+    @Override
+    public List<Station> findAllByIds(List<Long> ids) {
+        String query = String.format("select * from STATION where id in (%s)", stringify(ids.size()));
+        return jdbcTemplate.query(query, mapper, ids.toArray());
+    }
+
+    private String stringify(int size) {
+        return String.join(",", Collections.nCopies(size, "?"));
     }
 }

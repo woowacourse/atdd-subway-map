@@ -15,4 +15,10 @@ public class GlobalExceptionHandler {
         ErrorResponse response = ErrorResponse.of("Database Error", e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(UniqueSectionDeleteException.class)
+    public ResponseEntity<ErrorResponse> uniqueSectionDeleteExceptionHandle(RuntimeException e) {
+        ErrorResponse response = ErrorResponse.of("Section delete Error", e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }

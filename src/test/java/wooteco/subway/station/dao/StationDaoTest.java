@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,24 +19,29 @@ import wooteco.subway.station.Station;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class StationDaoTest {
 
+    private static final Station STATION_1 = new Station("잠실역");
+    private static final Station STATION_2 = new Station("압구정로데오역");
+
     @Autowired
     private StationDao stationDao;
 
     private Station station;
+    private Station station2;
 
     @BeforeEach
     void setUp() {
-        station = stationDao.save(new Station("잠실역"));
+        station = stationDao.save(STATION_1);
+        station2 = stationDao.save(STATION_2);
     }
 
     @Test
     void save() {
-        assertThat(station).isEqualTo(new Station("잠실역"));
+        assertThat(station).isEqualTo(STATION_1);
     }
 
     @Test
     void saveDuplicate() {
-        assertThatThrownBy(() -> stationDao.save(new Station("잠실역")))
+        assertThatThrownBy(() -> stationDao.save(STATION_1))
             .isInstanceOf(DuplicateKeyException.class);
     }
 
@@ -43,7 +49,7 @@ class StationDaoTest {
     void findAll() {
         List<Station> stations = stationDao.findAll();
 
-        assertThat(stations).containsExactly(new Station("잠실역"));
+        assertThat(stations).containsExactly(STATION_1, STATION_2);
     }
 
     @Test
@@ -52,5 +58,12 @@ class StationDaoTest {
 
         assertThatThrownBy(() -> stationDao.findById(station.getId()))
             .isInstanceOf(EmptyResultDataAccessException.class);
+    }
+
+    @Test
+    void findAllByIds() {
+        List<Station> stations = stationDao
+            .findAllByIds(Arrays.asList(station.getId(), station2.getId()));
+        assertThat(stations).containsExactly(STATION_1, STATION_2);
     }
 }

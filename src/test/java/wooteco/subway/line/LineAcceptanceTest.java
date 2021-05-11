@@ -40,10 +40,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
+        LineResponse lineResponse = response.body().as(LineResponse.class);
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-        assertThat(response.body().as(LineResponse.class).getName()).isEqualTo("분당선");
-        assertThat(response.body().as(LineResponse.class).getColor()).isEqualTo("bg-yellow-600");
+        assertThat(lineResponse.getName()).isEqualTo("분당선");
+        assertThat(lineResponse.getColor()).isEqualTo("bg-yellow-600");
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -71,11 +73,11 @@ class LineAcceptanceTest extends AcceptanceTest {
             .get("/lines/{id}", response.header("Location").split("/")[2])
             .then().log().all()
             .extract();
+        LineResponse lineResponse = actualResponse.body().as(LineResponse.class);
 
-        // then
         assertThat(actualResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(actualResponse.body().as(LineResponse.class).getName()).isEqualTo("분당선");
-        assertThat(actualResponse.body().as(LineResponse.class).getColor())
+        assertThat(lineResponse.getName()).isEqualTo("분당선");
+        assertThat(lineResponse.getColor())
             .isEqualTo("bg-yellow-600");
     }
 
@@ -89,16 +91,16 @@ class LineAcceptanceTest extends AcceptanceTest {
             .put("/lines/{id}", response.header("Location").split("/")[2])
             .then().log().all()
             .extract();
-
         ExtractableResponse<Response> actualResponse = RestAssured.given().log().all()
             .when()
             .get("/lines/{id}", response.header("Location").split("/")[2])
             .then().log().all()
             .extract();
+        LineResponse lineResponse = actualResponse.body().as(LineResponse.class);
 
         assertThat(putResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(actualResponse.body().as(LineResponse.class).getName()).isEqualTo("6호선");
-        assertThat(actualResponse.body().as(LineResponse.class).getColor())
+        assertThat(lineResponse.getName()).isEqualTo("6호선");
+        assertThat(lineResponse.getColor())
             .isEqualTo("bg-blue-600");
     }
 
