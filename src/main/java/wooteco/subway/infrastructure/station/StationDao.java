@@ -71,4 +71,10 @@ public class StationDao {
         return jdbcTemplate.update(sql, id);
     }
 
+    //is it possible?
+    public boolean isReferenced(Long id) {
+        final String sql = "SELECT count(*) FROM SECTION WHERE up_station_id = ? OR down_station_id = ?";
+
+        return jdbcTemplate.queryForObject(sql, Long.class, id, id) != 0;
+    }
 }

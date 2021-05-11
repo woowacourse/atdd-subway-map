@@ -1,4 +1,4 @@
-package wooteco.subway.presentation;
+package wooteco.subway.line;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -52,13 +52,7 @@ import static org.hamcrest.Matchers.is;
 
 @Sql("classpath:line/lineQueryInit.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class LineControllerTest {
-
-    @Autowired
-    private LineRepository lineRepository;
-
-    @Autowired
-    private StationRepository stationRepository;
+class LineAcceptanceTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -80,8 +74,8 @@ class LineControllerTest {
     @DisplayName("새로운 노선을 생성한다.")
     @Test
     void createNewline_createNewLineFromUserInputs() {
-        stationRepository.save(StationFactory.create("dummy1"));
-        stationRepository.save(StationFactory.create("dummy2"));
+        insertStation("dummy1");
+        insertStation("dummy2");
 
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()

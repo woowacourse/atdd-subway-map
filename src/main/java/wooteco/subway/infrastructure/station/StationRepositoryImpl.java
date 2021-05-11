@@ -30,8 +30,13 @@ public class StationRepositoryImpl implements StationRepository {
         return stationDao.findAll();
     }
 
+    //is it possible??
     @Override
     public int delete(Long id) {
+        if(stationDao.isReferenced(id)) {
+            throw new IllegalArgumentException("해당 역을 참조하는 노선이 있어 삭제가 불가능합니다.");
+        }
+
         return stationDao.delete(id);
     }
 }
