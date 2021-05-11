@@ -275,7 +275,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @ParameterizedTest
-    @DisplayName("구간 등록시 상행역화 하행역이 이미 등록 되어있다면 에러가 발생한다. ")
+    @DisplayName("구간 등록시 상행역화 하행역이 이미 등록 되어있다면 예외가 발생한다. ")
     @MethodSource("stationIds")
     void registrationDuplicateException(Long upStationId, Long downStationId) {
         //given
@@ -288,6 +288,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> exceptionR = addSectionToHTTP(line.getId(), exceptionSectionAddRequest);
 
+
+        //then
+        assertThat(exceptionR.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+
+    private static Stream<Arguments> exceptionStationIds(){
+        return Stream.of(
+                Arguments.arguments(3L, 4L),
+                Arguments.arguments(4L, 3L),
+                Arguments.arguments(5L, 6L),
+                Arguments.arguments(0L, 6L)
+        );
+    }
+    @ParameterizedTest
+    @DisplayName("구간 등록시 상행역화 하행역 둘다 노선에 등록 되어있지 않다면 예외가 발생한다. ")
+    @MethodSource("exceptionStationIds")
+    void registrationNotFoundException(Long upStationId, Long downStationId) {
+        //given
+        int distance = 3;
+        SectionAddRequest exceptionSectionAddRequest = new SectionAddRequest(upStationId, downStationId, distance);
+
+        //when
+        ExtractableResponse<Response> exceptionR = addSectionToHTTP(line.getId(), exceptionSectionAddRequest);
 
         //then
         assertThat(exceptionR.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

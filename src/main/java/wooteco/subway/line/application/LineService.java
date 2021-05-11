@@ -15,7 +15,6 @@ import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,7 +35,7 @@ public class LineService {
     @Transactional
     public LineResponse save(final LineRequest lineRequest) {
         validateDuplication(lineRequest);
-        validateStations(lineRequest.getUpStationId(), lineRequest.getDownStationId());
+        //validateStations(lineRequest.getUpStationId(), lineRequest.getDownStationId());
         LineEntity savedLineEntity = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
         Station upStation = findStationById(lineRequest.getUpStationId());
         Station downStation = findStationById(lineRequest.getDownStationId());
@@ -80,8 +79,6 @@ public class LineService {
 
     @Transactional
     public void addSection(final Long lineId, final SectionAddRequest sectionAddRequest) {
-        validateStations(sectionAddRequest.getUpStationId(), sectionAddRequest.getDownStationId());
-        validateDuplicationStation(lineId, sectionAddRequest.getUpStationId(), sectionAddRequest.getDownStationId());
         LineEntity findLineEntity = findLineEntityById(lineId);
         Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());
         Sections originSections = new Sections(toSections(line));
@@ -90,18 +87,6 @@ public class LineService {
         line.addSection(targetSection);
 
         dirtyChecking(originSections, line.getSections());
-    }
-
-    private void validateDuplicationStation(final Long lineId, final Long upStationId, final Long downStationId) {
-        if (sectionDao.findByLineIdWithUpStationId(lineId, upStationId).isPresent()
-                && sectionDao.findByLineIdWithDownStationId(lineId, downStationId).isPresent()) {
-            throw new IllegalStateException("이미 등록되어 있는 구간임!");
-        }
-
-        if (sectionDao.findByLineIdWithUpStationId(lineId, downStationId).isPresent()
-                && sectionDao.findByLineIdWithDownStationId(lineId, upStationId).isPresent()) {
-            throw new IllegalStateException("이미 등록되어 있는 구간임!");
-        }
     }
 
     @Transactional
@@ -169,12 +154,6 @@ public class LineService {
 
         if (lineDao.findByColor(lineRequest.getColor()).isPresent()) {
             throw new IllegalStateException("이미 있는 색깔임!");
-        }
-    }
-
-    private void validateStations(final Long upStationId, final Long downStationId) {
-        if (upStationId.equals(downStationId)) {
-            throw new IllegalStateException("상행역과 하행역은 같을 수 없습니다");
         }
     }
 

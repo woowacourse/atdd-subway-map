@@ -3,6 +3,7 @@ package wooteco.subway.line.domain;
 import wooteco.subway.station.domain.Station;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class Sections {
     private final List<Section> sections;
@@ -102,6 +103,33 @@ public class Sections {
         deleteDownwardEndPointStation(station);
     }
 
+    public List<Section> changedSections(final Sections sections) {
+        List<Section> changedSections = new ArrayList<>();
+        for (Section section : sections.sections) {
+            if (!this.sections.contains(section)) {
+                changedSections.add(section);
+            }
+        }
+        return changedSections;
+    }
+
+    public Optional<Section> findByUpwardStation(Station upStation) {
+        return sections.stream()
+                .filter(section -> section.sameUpStation(upStation))
+                .findFirst();
+
+    }
+
+    public boolean containStation(Station station) {
+        return sections.stream()
+                .flatMap(section -> Stream.of(
+                        section.upStation(),
+                        section.downStation()
+                ))
+                .distinct()
+                .anyMatch(targetStation -> targetStation.equals(station));
+    }
+
     private void deleteDownwardEndPointStation(Station station) {
         Section findSection = findByDownStationSection(station);
         this.sections.remove(findSection);
@@ -180,22 +208,5 @@ public class Sections {
             }
         }
         return null;
-    }
-
-    public List<Section> changedSections(final Sections sections) {
-        List<Section> changedSections = new ArrayList<>();
-        for (Section section : sections.sections) {
-            if (!this.sections.contains(section)) {
-                changedSections.add(section);
-            }
-        }
-        return changedSections;
-    }
-
-    public Optional<Section> findByUpwardStation(Station upStation) {
-        return sections.stream()
-                .filter(section -> section.sameUpStation(upStation))
-                .findFirst();
-
     }
 }

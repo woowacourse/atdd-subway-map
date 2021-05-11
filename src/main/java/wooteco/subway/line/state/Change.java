@@ -53,6 +53,11 @@ public abstract class Change implements State {
         return new UnModified(this.sections);
     }
 
+    @Override
+    public boolean containStation(Station station) {
+        return sections.containStation(station);
+    }
+
     private boolean isChange(Sections originSections) {
         return !originSections.changedSections(this.sections).isEmpty();
     }
