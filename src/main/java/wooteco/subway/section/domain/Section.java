@@ -42,6 +42,14 @@ public class Section {
         }
     }
 
+    public boolean equalWithUpStationId(Long upStationId) {
+        return this.upStationId.equals(upStationId);
+    }
+
+    public boolean equalWithDownStationId(Long downStationId) {
+        return this.downStationId.equals(downStationId);
+    }
+
     public Long getId() {
         return id;
     }

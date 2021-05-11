@@ -43,7 +43,7 @@ public class SectionService {
 
     private void validateIfSectionContainsOnlyOneStationInLine(Set<Long> stationIds, Section section) {
         long count = stationIds.stream()
-            .filter(stationId -> stationId.equals(section.getDownStationId()) || stationId.equals(section.getUpStationId()))
+            .filter(stationId -> section.equalWithUpStationId(stationId) || section.equalWithDownStationId(stationId))
             .count();
 
         if (count != INSERT_SECTION_IN_LINE_LIMIT) {
