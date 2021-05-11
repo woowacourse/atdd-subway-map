@@ -125,11 +125,7 @@ public class SectionService {
     public Distance distance(final Long lineId, final Long front, final Long back) {
         return new Distance(sectionDao.findDistance(lineId, front, back));
     }
-
-    public Distance distance(final Long lineId, final Long front, final Long middle, final Long back) {
-        return distance(lineId, front, middle).add(distance(lineId, middle, back));
-    }
-
+    
     // TODO :: 두개 뺼 수 있는 방법 
     private void validateDeleteSection(final Long lineId, final Long stationId) {
         if (sectionDao.stationCountInLine(lineId) <= LIMIT_NUMBER_OF_STATION_IN_LINE) {
