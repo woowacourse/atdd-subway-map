@@ -1,17 +1,16 @@
 package wooteco.subway.line.api;
 
-import javax.validation.Valid;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.util.List;
+import wooteco.subway.line.api.dto.LineDetailsResponse;
 import wooteco.subway.line.api.dto.LineRequest;
 import wooteco.subway.line.api.dto.LineResponse;
-import wooteco.subway.line.api.dto.LineDetailsResponse;
 import wooteco.subway.line.api.dto.LineUpdateRequest;
 import wooteco.subway.line.service.LineService;
+
+import javax.validation.Valid;
+import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/lines")

@@ -1,12 +1,5 @@
 package wooteco.subway.station.dao;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -16,6 +9,10 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DuplicationException;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.station.model.Station;
+
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.List;
 
 @Repository
 public class StationDao {
@@ -38,7 +35,7 @@ public class StationDao {
         String sql = "INSERT INTO station (name) VALUES (?)";
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection
-                .prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                    .prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, station.getName());
             return preparedStatement;
         }, keyHolder);

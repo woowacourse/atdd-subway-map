@@ -1,9 +1,5 @@
 package wooteco.subway.line.dao;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.List;
-import java.util.Map;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,15 +10,14 @@ import wooteco.subway.exception.DuplicationException;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.line.model.Line;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.List;
+
 @Repository
 public class LineDao {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public LineDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private final RowMapper<Line> mapperLine = (rs, rowNum) -> {
         Long id = rs.getLong("id");
         String name = rs.getString("name");
@@ -30,13 +25,17 @@ public class LineDao {
         return new Line(id, name, color);
     };
 
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     public Long save(Line line) {
         validateDuplicateNameAndColor(line);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO line (`name`, color) VALUES (?, ?)";
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection
-                .prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                    .prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, line.getName());
             preparedStatement.setString(2, line.getColor());
             return preparedStatement;
@@ -93,7 +92,7 @@ public class LineDao {
         validateDuplicateNameAndColor(updatedLine);
         String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         int updateCount = jdbcTemplate
-            .update(sql, updatedLine.getName(), updatedLine.getColor(), updatedLine.getId());
+                .update(sql, updatedLine.getName(), updatedLine.getColor(), updatedLine.getId());
         if (updateCount == 0) {
             throw new NotFoundException("존재하지 않는 노선 ID 입니다.");
         }

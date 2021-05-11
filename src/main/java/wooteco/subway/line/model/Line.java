@@ -1,8 +1,5 @@
 package wooteco.subway.line.model;
 
-import wooteco.subway.station.model.Station;
-
-import java.util.List;
 import java.util.Objects;
 
 public class Line {
@@ -32,18 +29,6 @@ public class Line {
 
     public String getColor() {
         return color;
-    }
-
-    public boolean isSameName(Line newLine) {
-        return this.name.equals(newLine.name);
-    }
-
-    public boolean isSameId(Long id) {
-        return this.id == id;
-    }
-
-    public boolean isSameColor(Line newLine) {
-        return this.color.equals(newLine.color);
     }
 
     @Override

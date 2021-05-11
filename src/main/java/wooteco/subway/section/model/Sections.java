@@ -38,28 +38,25 @@ public class Sections {
     }
 
     private void addSectionIfMatchingUpStation(Section newSection, Station newUpStation) {
-        if (hasSectionMatchingUpStation(newUpStation)) { // 상행 - 상행 겹침
+        if (hasSectionMatchingUpStation(newUpStation)) {
             Section matchingSection = getMatchingSectionByUpStation(newUpStation);
             addAfterMatchingStationIfValidDistance(newSection, matchingSection);
             return;
         }
-        // 맨 뒤에 구간 추가.
         sections.add(newSection);
     }
 
     private void addSectionIfMatchingDownStation(Section newSection, Station newDownStation) {
-        if (hasSectionMatchingDownStation(newDownStation)) { // 하행 - 하행 겹침
+        if (hasSectionMatchingDownStation(newDownStation)) {
             Section matchingSection = getMatchingSectionByDownStation(newDownStation);
             addBeforeMatingStationIfValidDistance(newSection, matchingSection);
             return;
         }
-        // 맨 앞에 구간 추가.
         sections.add(0, newSection);
     }
 
     private void addAfterMatchingStationIfValidDistance(Section newSection, Section matchingSection) {
         if (matchingSection.getDistance() > newSection.getDistance()) {
-            // 구간 추가, 거리 수정
             int index = sections.indexOf(matchingSection);
             sections.add(index, newSection);
             sections.set(index + 1, matchingSection.splitByUpStation(newSection));
@@ -70,7 +67,6 @@ public class Sections {
 
     private void addBeforeMatingStationIfValidDistance(Section newSection, Section matchingSection) {
         if (matchingSection.getDistance() > newSection.getDistance()) {
-            // 구간 추가, 거리 수정
             int index = sections.indexOf(matchingSection);
             sections.add(index + 1, newSection);
             sections.set(index, matchingSection.splitByDownStation(newSection));

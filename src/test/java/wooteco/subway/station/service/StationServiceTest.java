@@ -1,12 +1,5 @@
 package wooteco.subway.station.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,6 +9,14 @@ import wooteco.subway.station.api.dto.StationRequest;
 import wooteco.subway.station.api.dto.StationResponse;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.model.Station;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @MockitoSettings
 class StationServiceTest {
@@ -47,8 +48,8 @@ class StationServiceTest {
     void findAll() {
         //given
         List<Station> stations = Arrays.asList(
-            new Station(1L, "잠실역"),
-            new Station(2L, "잠실새내역")
+                new Station(1L, "잠실역"),
+                new Station(2L, "잠실새내역")
         );
         when(stationDao.findAll()).thenReturn(stations);
 
@@ -57,11 +58,11 @@ class StationServiceTest {
 
         //then
         assertAll(
-            () -> assertThat(stationResponses).hasSize(2),
-            () -> assertThat(stationResponses.get(0).getId()).isEqualTo(1L),
-            () -> assertThat(stationResponses.get(0).getName()).isEqualTo("잠실역"),
-            () -> assertThat(stationResponses.get(1).getId()).isEqualTo(2L),
-            () -> assertThat(stationResponses.get(1).getName()).isEqualTo("잠실새내역")
+                () -> assertThat(stationResponses).hasSize(2),
+                () -> assertThat(stationResponses.get(0).getId()).isEqualTo(1L),
+                () -> assertThat(stationResponses.get(0).getName()).isEqualTo("잠실역"),
+                () -> assertThat(stationResponses.get(1).getId()).isEqualTo(2L),
+                () -> assertThat(stationResponses.get(1).getName()).isEqualTo("잠실새내역")
         );
     }
 }

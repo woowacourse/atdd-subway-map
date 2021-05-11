@@ -7,12 +7,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.line.api.dto.LineRequest;
 import wooteco.subway.section.api.dto.SectionDto;
-import wooteco.subway.section.model.Section;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @JdbcTest
 class SectionDaoTest {

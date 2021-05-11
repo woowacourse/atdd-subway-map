@@ -14,11 +14,6 @@ import java.util.stream.Collectors;
 public class SectionDao {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public SectionDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private final RowMapper<SectionDto> mapperSection = (rs, rowNum) -> {
         Long id = rs.getLong("id");
         Long lineId = rs.getLong("line_id");
@@ -27,6 +22,10 @@ public class SectionDao {
         int distance = rs.getInt("distance");
         return new SectionDto(id, lineId, upStationId, downStationId, distance);
     };
+
+    public SectionDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public void save(Long lineId, LineRequest lineRequest) {
         String sql = "INSERT INTO `section` (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";

@@ -18,10 +18,6 @@ public class LineDetailsResponse {
     public LineDetailsResponse() {
     }
 
-    public LineDetailsResponse(Line newLine) {
-        this(newLine.getId(), newLine.getName(), newLine.getColor(), null);
-    }
-
     public LineDetailsResponse(Line newLine, List<StationResponse> stations) {
         this(newLine.getId(), newLine.getName(), newLine.getColor(), stations);
     }

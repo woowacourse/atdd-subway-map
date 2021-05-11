@@ -9,7 +9,6 @@ import java.util.Objects;
 
 public class Section {
 
-//    private final Long id;
     private final Line line;
     private final Station upStation;
     private final Station downStation;
