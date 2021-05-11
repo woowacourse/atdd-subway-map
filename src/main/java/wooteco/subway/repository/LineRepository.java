@@ -1,5 +1,8 @@
 package wooteco.subway.repository;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
@@ -7,12 +10,9 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.exception.SubwayException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 @Repository
 public class LineRepository {
+
     private static final int ONE_SECTION = 1;
 
     private final LineDao lineDao;
@@ -23,11 +23,14 @@ public class LineRepository {
         this.sectionDao = sectionDao;
     }
 
-    public Line saveLineWithSection(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public Line saveLineWithSection(String name, String color, Long upStationId, Long downStationId,
+        int distance) {
         Long createdLineId = lineDao.create(name, color);
-        Long createdSectionId = sectionDao.create(createdLineId, upStationId, downStationId, distance);
+        Long createdSectionId = sectionDao
+            .create(createdLineId, upStationId, downStationId, distance);
         List<Section> sections = new ArrayList<>();
-        Section section = new Section(createdSectionId, createdLineId, upStationId, downStationId, distance);
+        Section section = new Section(createdSectionId, createdLineId, upStationId, downStationId,
+            distance);
         sections.add(section);
         return new Line(createdLineId, name, color, sections);
     }
@@ -54,7 +57,8 @@ public class LineRepository {
         return lineDao.deleteById(lineId);
     }
 
-    public void createSectionInLine(Long lineId, Long upStationId, Long downStationId, int distance) {
+    public void createSectionInLine(Long lineId, Long upStationId, Long downStationId,
+        int distance) {
         boolean containsUpStation = containsStationInLine(lineId, upStationId);
         boolean containsDownStation = containsStationInLine(lineId, downStationId);
 
@@ -75,7 +79,6 @@ public class LineRepository {
             return;
         }
 
-
         // 하행 종점(구간) 등록
         if (containsUpStation && isEndStation(lineId, upStationId)) {
             sectionDao.create(lineId, upStationId, downStationId, distance);
@@ -84,25 +87,27 @@ public class LineRepository {
 
         // 중간 구간 등록
         if (containsUpStation) {
-            Section originSection = sectionDao.findByUpStationIdAndLineId(upStationId, lineId).get();
+            Section originSection = sectionDao.findByUpStationIdAndLineId(upStationId, lineId)
+                .get();
             validateSectionDistance(distance, originSection);
             sectionDao.deleteById(originSection.getId());
             sectionDao.create(lineId, originSection.getUpStationId(), downStationId, distance);
             sectionDao.create(lineId,
-                    downStationId,
-                    originSection.getDownStationId(),
-                    originSection.getDistance() - distance);
+                downStationId,
+                originSection.getDownStationId(),
+                originSection.getDistance() - distance);
             return;
         }
 
         if (containsDownStation) {
-            Section originSection = sectionDao.findByDownStationIdAndLineId(downStationId, lineId).get();
+            Section originSection = sectionDao.findByDownStationIdAndLineId(downStationId, lineId)
+                .get();
             validateSectionDistance(distance, originSection);
             sectionDao.deleteById(originSection.getId());
             sectionDao.create(lineId,
-                    originSection.getUpStationId(),
-                    upStationId,
-                    originSection.getDistance() - distance);
+                originSection.getUpStationId(),
+                upStationId,
+                originSection.getDistance() - distance);
             sectionDao.create(lineId, upStationId, originSection.getDownStationId(), distance);
             return;
         }
@@ -118,9 +123,9 @@ public class LineRepository {
 
     private boolean containsStationInLine(Long lineId, Long stationId) {
         Optional<Section> foundSectionByDownStationId
-                = sectionDao.findByDownStationIdAndLineId(stationId, lineId);
+            = sectionDao.findByDownStationIdAndLineId(stationId, lineId);
         Optional<Section> foundSectionByUpStationId
-                = sectionDao.findByUpStationIdAndLineId(stationId, lineId);
+            = sectionDao.findByUpStationIdAndLineId(stationId, lineId);
         return foundSectionByUpStationId.isPresent() || foundSectionByDownStationId.isPresent();
     }
 
@@ -131,8 +136,10 @@ public class LineRepository {
             throw new SubwayException("구간이 하나인 노선에서는 역을 삭제할 수 없습니다.");
         }
 
-        Optional<Section> upSectionOptional = sectionDao.findByDownStationIdAndLineId(stationId, lineId);
-        Optional<Section> downSectionOptional = sectionDao.findByUpStationIdAndLineId(stationId, lineId);
+        Optional<Section> upSectionOptional = sectionDao
+            .findByDownStationIdAndLineId(stationId, lineId);
+        Optional<Section> downSectionOptional = sectionDao
+            .findByUpStationIdAndLineId(stationId, lineId);
 
         if (isEndStation(lineId, stationId)) {
             sectionDao.deleteById(upSectionOptional.get().getId());
@@ -148,20 +155,22 @@ public class LineRepository {
         sectionDao.deleteById(upSection.getId());
         sectionDao.deleteById(downSection.getId());
         sectionDao.create(
-                lineId,
-                upSection.getUpStationId(),
-                downSection.getDownStationId(),
-                upSection.getDistance() + downSection.getDistance()
+            lineId,
+            upSection.getUpStationId(),
+            downSection.getDownStationId(),
+            upSection.getDistance() + downSection.getDistance()
         );
     }
 
     private boolean isEndStation(Long lineId, Long stationId) {
-        Optional<Section> downSectionOptional = sectionDao.findByUpStationIdAndLineId(stationId, lineId);
+        Optional<Section> downSectionOptional = sectionDao
+            .findByUpStationIdAndLineId(stationId, lineId);
         return !downSectionOptional.isPresent();
     }
 
     private boolean isStartStation(Long lineId, Long stationId) {
-        Optional<Section> upSectionOptional = sectionDao.findByDownStationIdAndLineId(stationId, lineId);
+        Optional<Section> upSectionOptional = sectionDao
+            .findByDownStationIdAndLineId(stationId, lineId);
         return !upSectionOptional.isPresent();
     }
 }

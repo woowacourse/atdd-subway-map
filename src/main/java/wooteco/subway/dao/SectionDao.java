@@ -1,5 +1,8 @@
 package wooteco.subway.dao;
 
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -8,12 +11,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Optional;
-
 @Repository
 public class SectionDao {
+
     private JdbcTemplate jdbcTemplate;
 
     public SectionDao(JdbcTemplate jdbcTemplate) {
@@ -24,7 +24,8 @@ public class SectionDao {
         String createSectionSql = "INSERT INTO section (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
         KeyHolder sectionKeyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(createSectionSql, new String[]{"id"});
+            PreparedStatement ps = connection
+                .prepareStatement(createSectionSql, new String[]{"id"});
             ps.setLong(1, lineId);
             ps.setLong(2, upStationId);
             ps.setLong(3, downStationId);
@@ -42,7 +43,7 @@ public class SectionDao {
     public Optional<Section> findById(Long sectionId) {
         String query = "SELECT * FROM section WHERE id = ?";
         Section result = DataAccessUtils.singleResult(
-                jdbcTemplate.query(query, sectionRowMapper(), sectionId));
+            jdbcTemplate.query(query, sectionRowMapper(), sectionId));
         return Optional.ofNullable(result);
     }
 
@@ -54,28 +55,29 @@ public class SectionDao {
     public Optional<Section> findByUpStationIdAndLineId(Long upStationId, Long lineId) {
         String query = "SELECT * FROM section WHERE up_station_id = ? AND line_id = ?";
         Section result = DataAccessUtils.singleResult(
-                jdbcTemplate.query(query, sectionRowMapper(), upStationId, lineId));
+            jdbcTemplate.query(query, sectionRowMapper(), upStationId, lineId));
         return Optional.ofNullable(result);
     }
 
     public Optional<Section> findByDownStationIdAndLineId(Long downStationId, Long lineId) {
         String query = "SELECT * FROM section WHERE down_station_id = ? AND line_id = ?";
         Section result = DataAccessUtils.singleResult(
-                jdbcTemplate.query(query, sectionRowMapper(), downStationId, lineId));
+            jdbcTemplate.query(query, sectionRowMapper(), downStationId, lineId));
         return Optional.ofNullable(result);
     }
 
     private RowMapper<Section> sectionRowMapper() {
         return (resultSet, rowNum) ->
-                new Section(
-                        resultSet.getLong("id"),
-                        resultSet.getLong("line_id"),
-                        resultSet.getLong("up_station_id"),
-                        resultSet.getLong("down_station_id"),
-                        resultSet.getInt("distance"));
+            new Section(
+                resultSet.getLong("id"),
+                resultSet.getLong("line_id"),
+                resultSet.getLong("up_station_id"),
+                resultSet.getLong("down_station_id"),
+                resultSet.getInt("distance"));
     }
 
-    public int edit(Long sectionId, Long lineId, Long upStationId, Long downStationId, int distance) {
+    public int edit(Long sectionId, Long lineId, Long upStationId, Long downStationId,
+        int distance) {
         String query = "UPDATE section SET line_id = ?, up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
         return jdbcTemplate.update(query, lineId, upStationId, downStationId, distance, sectionId);
     }

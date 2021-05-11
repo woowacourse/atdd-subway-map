@@ -1,5 +1,7 @@
 package wooteco.subway.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.controller.dto.request.StationRequestDto;
@@ -8,12 +10,10 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.SubwayException;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @Transactional
 public class StationService {
+
     private static final int ANY_ROW_NOT_DELETED = 0;
 
     private final StationDao stationDao;
@@ -34,8 +34,8 @@ public class StationService {
     public List<StationResponseDto> showStations() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()
-                .map(it -> new StationResponseDto(it.getId(), it.getName()))
-                .collect(Collectors.toList());
+            .map(it -> new StationResponseDto(it.getId(), it.getName()))
+            .collect(Collectors.toList());
     }
 
     public long deleteStation(Long id) {

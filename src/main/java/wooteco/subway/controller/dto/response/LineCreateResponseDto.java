@@ -1,10 +1,10 @@
 package wooteco.subway.controller.dto.response;
 
+import java.util.List;
 import wooteco.subway.controller.dto.SectionDto;
 
-import java.util.List;
-
 public class LineCreateResponseDto {
+
     private Long id;
     private String name;
     private String color;

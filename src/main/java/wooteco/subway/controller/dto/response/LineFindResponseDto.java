@@ -1,13 +1,13 @@
 package wooteco.subway.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.ArrayList;
+import java.util.List;
 import wooteco.subway.controller.dto.StationDto;
 import wooteco.subway.domain.Line;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class LineFindResponseDto {
+
     private final long id;
     private final String name;
     private final String color;

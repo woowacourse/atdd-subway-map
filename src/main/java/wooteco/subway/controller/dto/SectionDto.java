@@ -1,6 +1,7 @@
 package wooteco.subway.controller.dto;
 
 public class SectionDto {
+
     private Long id;
     private Long upStationId;
     private Long downStationId;

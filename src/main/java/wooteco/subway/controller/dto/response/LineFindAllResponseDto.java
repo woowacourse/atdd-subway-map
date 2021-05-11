@@ -1,6 +1,7 @@
 package wooteco.subway.controller.dto.response;
 
 public class LineFindAllResponseDto {
+
     private Long id;
     private String name;
     private String color;

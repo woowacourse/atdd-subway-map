@@ -1,5 +1,7 @@
 package wooteco.subway.controller;
 
+import java.net.URI;
+import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,9 +15,6 @@ import wooteco.subway.controller.dto.request.StationRequestDto;
 import wooteco.subway.controller.dto.response.StationResponseDto;
 import wooteco.subway.service.StationService;
 
-import java.net.URI;
-import java.util.List;
-
 @RestController
 @RequestMapping("/stations")
 public class StationController {
@@ -27,9 +26,11 @@ public class StationController {
     }
 
     @PostMapping("")
-    public ResponseEntity<StationResponseDto> createStation(@RequestBody StationRequestDto stationRequest) {
+    public ResponseEntity<StationResponseDto> createStation(
+        @RequestBody StationRequestDto stationRequest) {
         StationResponseDto stationResponse = stationService.createStation(stationRequest);
-        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
+        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId()))
+            .body(stationResponse);
     }
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)

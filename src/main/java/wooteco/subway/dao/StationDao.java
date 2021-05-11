@@ -1,5 +1,8 @@
 package wooteco.subway.dao;
 
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,21 +13,19 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Optional;
-
 @Repository
 public class StationDao {
+
     private static final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
-            new Station(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"));
+        new Station(
+            resultSet.getLong("id"),
+            resultSet.getString("name"));
 
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public StationDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public StationDao(JdbcTemplate jdbcTemplate,
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
@@ -43,7 +44,7 @@ public class StationDao {
     public Optional<Station> findByName(String name) {
         String query = "SELECT * FROM station WHERE name = ?";
         Station result = DataAccessUtils.singleResult(
-                jdbcTemplate.query(query, stationRowMapper, name)
+            jdbcTemplate.query(query, stationRowMapper, name)
         );
         return Optional.ofNullable(result);
     }
@@ -51,11 +52,11 @@ public class StationDao {
     public Optional<Station> findById(Long stationId) {
         String query = "SELECT * FROM station WHERE id = ?";
         Station result = DataAccessUtils.singleResult(
-                jdbcTemplate.query(query, (resultSet, rowNum) ->
-                                new Station(
-                                        resultSet.getLong("id"),
-                                        resultSet.getString("name")),
-                        stationId));
+            jdbcTemplate.query(query, (resultSet, rowNum) ->
+                    new Station(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name")),
+                stationId));
         return Optional.ofNullable(result);
     }
 

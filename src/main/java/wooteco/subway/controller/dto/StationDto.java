@@ -1,6 +1,7 @@
 package wooteco.subway.controller.dto;
 
 public class StationDto {
+
     private Long id;
     private String name;
 

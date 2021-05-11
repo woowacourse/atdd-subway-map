@@ -1,13 +1,13 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.exception.SubwayException;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import wooteco.subway.exception.SubwayException;
 
 public class Line {
+
     private static final int UP_STATION_ID_COUNT = 1;
 
     private final Long id;
@@ -82,7 +82,7 @@ public class Line {
 
     private Optional<Section> findSectionByUpStationId(Long upStationId) {
         return sections.stream()
-                .filter(section -> section.getUpStationId() == upStationId)
-                .findFirst();
+            .filter(section -> section.getUpStationId() == upStationId)
+            .findFirst();
     }
 }
