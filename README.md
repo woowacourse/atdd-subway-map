@@ -15,40 +15,143 @@
 # 지하철 노선도 미션
 스프링 과정 실습을 위한 지하철 노선도 애플리케이션
 
-<br>
+## 기능 요구 사항
 
-## 🚀 Getting Started
+## 기능요구사항
 
-### Install
-#### npm 설치
-```
-cd frontend
-npm install
-```
-> `frontend` 디렉토리에서 수행해야 합니다.
+- [x] 노선 생성
 
-### Usage
-#### webpack server 구동
-```
-npm run dev
-```
-#### application 구동
-```
-./gradlew bootRun
-```
-<br>
+    - [x] 요청
 
-## ✏️ Code Review Process
-[텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
+  ```json
+  POST /lines HTTP/1.1
+  accept: */*
+  content-type: application/json; charset=UTF-8
+  
+  {
+      "color": "bg-red-600",
+      "name": "신분당선"
+  }
+  ```
 
-<br>
+    - [x] 응답
 
-## 🐞 Bug Report
+  ```json
+  HTTP/1.1 201 
+  Location: /lines/1
+  Content-Type: application/json
+  Date: Fri, 13 Nov 2020 00:11:51 GMT
+  
+  {
+      "id": 1,
+      "name": "신분당선",
+      "color": "bg-red-600"
+  }
+  ```
 
-버그를 발견한다면, [Issues](https://github.com/woowacourse/atdd-subway-map/issues) 에 등록해주세요 :)
 
-<br>
+
+- [x] 노선 목록조회
+
+    - [x] 요청
+
+  ```json
+  GET /lines HTTP/1.1
+  accept: application/json
+  host: localhost:49468
+  ```
+
+    - [x] 응답
+
+  ```json
+  HTTP/1.1 200 
+  Content-Type: application/json
+  Date: Fri, 13 Nov 2020 00:11:51 GMT
+  
+  [
+      {
+          "id": 1,
+          "name": "신분당선",
+          "color": "bg-red-600"
+      },
+      {
+          "id": 2,
+          "name": "2호선",
+          "color": "bg-green-600"
+      }
+  ]
+  ```
+
+- [x] 노선조회
+
+    - [x] 요청
+
+  ```json
+  GET /lines/1 HTTP/1.1
+  accept: application/json
+  host: localhost:49468
+  ```
+
+    - [x] 응답
+
+  ```json
+  HTTP/1.1 200 
+  Content-Type: application/json
+  Date: Fri, 13 Nov 2020 00:11:51 GMT
+  
+  {
+      "id": 1,
+      "name": "신분당선",
+      "color": "bg-red-600"
+  }
+  ```
+
+- [x] 노선 수정
+
+    - [x] 요청
+
+  ```json
+  HTTP/1.1 200 
+  Content-Type: application/json
+  Date: Fri, 13 Nov 2020 00:11:51 GMT
+  
+  {
+      "id": 1,
+      "name": "신분당선",
+      "color": "bg-red-600"
+  }
+  ```
+
+    - [x] 응답
+
+  ```json
+  HTTP/1.1 200 
+  Date: Fri, 13 Nov 2020 00:11:51 GMT
+  ```
+
+
+
+- [x] 노션 삭제
+
+    - [x] 요청
+
+  ```json
+  HTTP/1.1 200 
+  Date: Fri, 13 Nov 2020 00:11:51 GMT
+  ```
+
+    - [x] 응답
+
+  ```json
+  HTTP/1.1 200 
+  Date: Fri, 13 Nov 2020 00:11:51 GMT
+  ```
+
+
+
 
 ## 📝 License
 
 This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master/LICENSE) licensed.
+
+

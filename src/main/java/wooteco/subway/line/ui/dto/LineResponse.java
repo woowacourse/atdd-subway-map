@@ -1,20 +1,20 @@
-package wooteco.subway.line;
+package wooteco.subway.line.ui.dto;
 
-import wooteco.subway.station.StationResponse;
+import wooteco.subway.station.ui.dto.StationResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LineResponse {
-    private Long id;
-    private String name;
-    private String color;
-    private List<StationResponse> stations;
+    private final Long id;
+    private final String name;
+    private final String color;
+    private final List<StationResponse> stations = new ArrayList<>();
 
-    public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
+    public LineResponse(final Long id, final String name, final String color) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = stations;
     }
 
     public Long getId() {
