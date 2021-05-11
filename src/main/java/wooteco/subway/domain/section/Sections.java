@@ -86,7 +86,7 @@ public class Sections {
 
     public Section splitLongerSectionAfterAdding(Section section) {
         if (isNotAddableCondition(section)) {
-            throw new SubwayException(ExceptionStatus.INVALID_SECTION);
+            throw new SubwayException(ExceptionStatus.SECTION_NOT_ADDABLE);
         }
         Section longerSection = findTargetLongerSection(section);
         return longerSection.splitLongerSectionBy(section);

@@ -60,7 +60,7 @@ public class SectionService {
     public void deleteSection(long lineId, long stationId) {
         Sections currentSections = new Sections(sectionRepository.findAllByLineId(lineId));
         if (currentSections.isNotDeletable()) {
-            throw new SubwayException(ExceptionStatus.INVALID_SECTION);
+            throw new SubwayException(ExceptionStatus.SECTION_NOT_DELETABLE);
         }
         List<Section> sectionsAroundStation = sectionRepository.findAllByStationId(stationId);
         deleteAndAppendSections(currentSections, sectionsAroundStation);

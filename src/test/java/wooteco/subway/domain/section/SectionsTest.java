@@ -191,7 +191,7 @@ class SectionsTest {
 
                 assertThatCode(() -> sections.splitLongerSectionAfterAdding(section))
                         .isInstanceOf(SubwayException.class)
-                        .hasMessage(ExceptionStatus.INVALID_SECTION.getMessage());
+                        .hasMessage(ExceptionStatus.SECTION_NOT_ADDABLE.getMessage());
             }
         }
 
@@ -213,7 +213,7 @@ class SectionsTest {
 
                 assertThatCode(() -> sections.splitLongerSectionAfterAdding(section))
                         .isInstanceOf(SubwayException.class)
-                        .hasMessage(ExceptionStatus.INVALID_SECTION.getMessage());
+                        .hasMessage(ExceptionStatus.SECTION_NOT_ADDABLE.getMessage());
             }
         }
 

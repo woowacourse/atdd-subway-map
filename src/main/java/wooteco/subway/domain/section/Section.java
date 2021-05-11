@@ -56,19 +56,19 @@ public class Section {
 
     private void validateSplitCondition(Section shorterSection) {
         if (this.distance <= shorterSection.distance) {
-            throw new SubwayException(ExceptionStatus.INVALID_SECTION);
+            throw new SubwayException(ExceptionStatus.SECTION_NOT_ADDABLE);
         }
         if (this.upStation.equals(shorterSection.upStation) && this.downStation.equals(shorterSection.downStation)) {
-            throw new SubwayException(ExceptionStatus.INVALID_SECTION);
+            throw new SubwayException(ExceptionStatus.SECTION_NOT_ADDABLE);
         }
         if (!this.upStation.equals(shorterSection.upStation) && !this.downStation.equals(shorterSection.downStation)) {
-            throw new SubwayException(ExceptionStatus.INVALID_SECTION);
+            throw new SubwayException(ExceptionStatus.SECTION_NOT_ADDABLE);
         }
     }
 
     public Section append(Section section) {
         if (!isConnectedTowardDownWith(section)) {
-            throw new SubwayException(ExceptionStatus.INVALID_SECTION);
+            throw new SubwayException(ExceptionStatus.SECTION_NOT_CONNECTABLE);
         }
         int adjustedDistance = this.distance + section.distance;
         return new Section(this.upStation, section.downStation, adjustedDistance, this.lineId);

@@ -44,7 +44,7 @@ class SectionTest {
 
         assertThatCode(() -> firstSection.append(secondSection))
                 .isInstanceOf(SubwayException.class)
-                .hasMessage(ExceptionStatus.INVALID_SECTION.getMessage());
+                .hasMessage(ExceptionStatus.SECTION_NOT_CONNECTABLE.getMessage());
     }
 
     @DisplayName("두 구간이 연결되어 있다면 ture를 반환한다.")
@@ -75,7 +75,7 @@ class SectionTest {
 
                 assertThatCode(() -> longerSection.splitLongerSectionBy(shorterSection))
                         .isInstanceOf(SubwayException.class)
-                        .hasMessage(ExceptionStatus.INVALID_SECTION.getMessage());
+                        .hasMessage(ExceptionStatus.SECTION_NOT_ADDABLE.getMessage());
             }
         }
 
@@ -91,7 +91,7 @@ class SectionTest {
 
                 assertThatCode(() -> longerSection.splitLongerSectionBy(shorterSection))
                         .isInstanceOf(SubwayException.class)
-                        .hasMessage(ExceptionStatus.INVALID_SECTION.getMessage());
+                        .hasMessage(ExceptionStatus.SECTION_NOT_ADDABLE.getMessage());
             }
 
             @DisplayName("긴 구간과 짧은 구간의 겹치는 상-하행 역이 1개도 존재하지 않으면 예외가 발생한다.")
@@ -102,7 +102,7 @@ class SectionTest {
 
                 assertThatCode(() -> longerSection.splitLongerSectionBy(shorterSection))
                         .isInstanceOf(SubwayException.class)
-                        .hasMessage(ExceptionStatus.INVALID_SECTION.getMessage());
+                        .hasMessage(ExceptionStatus.SECTION_NOT_ADDABLE.getMessage());
             }
         }
 
