@@ -16,13 +16,13 @@ public class StationService {
 
     public StationResponse createStation(final StationRequest stationRequest) {
         final Station station = stationDao.save(stationRequest.toEntity());
-        return new StationResponse(station.getId(), station.getName());
+        return StationResponse.of(station.getId(), station.getName());
     }
 
     public List<StationResponse> findStations() {
         final List<Station> stations = stationDao.findAll();
         return stations.stream()
-            .map(station -> new StationResponse(station.getId(), station.getName()))
+            .map(station -> StationResponse.of(station.getId(), station.getName()))
             .collect(Collectors.toList());
     }
 

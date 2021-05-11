@@ -10,7 +10,7 @@ public class SectionResponse {
     public SectionResponse() {
     }
 
-    public SectionResponse(final Long id, final Long upStationId, final Long downStationId, final int distance) {
+    private SectionResponse(final Long id, final Long upStationId, final Long downStationId, final int distance) {
         this.id = id;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
