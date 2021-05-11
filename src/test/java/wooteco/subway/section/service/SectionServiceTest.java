@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 
 @DisplayName("지하철 구간 비즈니스 로직 테스트")
@@ -152,5 +153,48 @@ class SectionServiceTest {
                 new StationResponse(5L, "잠실역")
                 , 5)
         )).isInstanceOf(SubwayException.class);
+    }
+
+    @DisplayName("지하철 종점 삭제")
+    @Test
+    void deleteUpEndPointSection() {
+        // given
+        given(sectionDao.findAllByLineId(1L))
+                .willReturn(Arrays.asList(
+                        new Section(1L, 1L, 1L, 2L, 3),
+                        new Section(1L, 1L, 2L, 3L, 3),
+                        new Section(1L, 1L, 3L, 4L, 3)
+                ));
+        given(sectionDao.save(any(Section.class)))
+                .willReturn(new Section());
+
+        // when
+        sectionService.deleteSection(1L, 1L);
+        sectionService.deleteSection(1L, 4L);
+
+        // then
+        verify(sectionDao).deleteByLineIdAndUpStationId(1L, 1L);
+        verify(sectionDao).deleteByLineIdAndDownStationId(1L, 4L);
+    }
+
+    @DisplayName("지하철 중간 구간 삭제")
+    @Test
+    void deleteSection() {
+        // given
+        given(sectionDao.findAllByLineId(1L))
+                .willReturn(Arrays.asList(
+                        new Section(1L, 1L, 1L, 2L, 3),
+                        new Section(1L, 1L, 2L, 3L, 3),
+                        new Section(1L, 1L, 3L, 4L, 3)
+                ));
+        given(sectionDao.save(any(Section.class)))
+                .willReturn(new Section());
+
+        // when
+        sectionService.deleteSection(1L, 2L);
+
+        // then
+        verify(sectionDao, atLeast(2)).deleteBySection(any(Section.class));
+        verify(sectionDao).save(any(Section.class));
     }
 }

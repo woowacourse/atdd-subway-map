@@ -13,6 +13,8 @@ import wooteco.subway.station.dto.StationRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static wooteco.subway.RequestForm.createRequest;
+import static wooteco.subway.RequestForm.deleteRequest;
+import static wooteco.subway.line.LineRequestForm.findByIdRequest;
 
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -189,6 +191,148 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 분당선생성 = createRequest("/lines", 분당선_RED);
         ExtractableResponse<Response> response =
                 createRequest("/lines/" + 분당선생성.jsonPath().getLong("id") + "/sections", 강남_왕십리);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철 노선에 등록된 구간을 삭제한다. - 중간역 삭제")
+    @Test
+    void deleteSection() {
+        // given
+        StationRequest 강남역 = new StationRequest("강남역");
+        StationRequest 잠실역 = new StationRequest("잠실역");
+        StationRequest 왕십리역 = new StationRequest("왕십리역");
+        StationRequest 뚝섬역 = new StationRequest("뚝섬역");
+        LineCreateRequest 분당선_RED =
+                new LineCreateRequest("분당선", "bg-red-600", 1L, 2L, 20);
+        SectionCreateRequest 강남_뚝섬 = new SectionCreateRequest(1L, 4L, 5);
+        SectionCreateRequest 뚝섬_왕십리 = new SectionCreateRequest(4L, 3L, 5);
+
+        // when
+        createRequest("/stations", 강남역);
+        createRequest("/stations", 잠실역);
+        ExtractableResponse<Response> 왕십리역생성 = createRequest("/stations", 왕십리역);
+        long 왕십리역Id = 왕십리역생성.jsonPath().getLong("id");
+        createRequest("/stations", 뚝섬역);
+        ExtractableResponse<Response> 분당선생성 = createRequest("/lines", 분당선_RED);
+        long 분당선Id = 분당선생성.jsonPath().getLong("id");
+        createRequest("/lines/" + 분당선Id + "/sections", 강남_뚝섬);
+        createRequest("/lines/" + 분당선Id + "/sections", 뚝섬_왕십리);
+        String uri = "/lines/" + 분당선Id + "/sections?stationId=" + 왕십리역Id;
+        ExtractableResponse<Response> response = deleteRequest(uri);
+        ExtractableResponse<Response> 분당선역조회 = findByIdRequest(Long.toString(분당선Id));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(분당선역조회.jsonPath().getList("stations")).hasSize(3);
+    }
+
+    @DisplayName("지하철 노선에 등록된 구간을 삭제한다. - 상행 종점 삭제")
+    @Test
+    void deleteUpEndPoint() {
+        // given
+        StationRequest 강남역 = new StationRequest("강남역");
+        StationRequest 잠실역 = new StationRequest("잠실역");
+        StationRequest 왕십리역 = new StationRequest("왕십리역");
+        StationRequest 뚝섬역 = new StationRequest("뚝섬역");
+        LineCreateRequest 분당선_RED =
+                new LineCreateRequest("분당선", "bg-red-600", 1L, 2L, 20);
+        SectionCreateRequest 강남_뚝섬 = new SectionCreateRequest(1L, 4L, 5);
+        SectionCreateRequest 뚝섬_왕십리 = new SectionCreateRequest(4L, 3L, 5);
+
+        // when
+        ExtractableResponse<Response> 강남역생성 = createRequest("/stations", 강남역);
+        long 강남역Id = 강남역생성.jsonPath().getLong("id");
+        createRequest("/stations", 잠실역);
+        createRequest("/stations", 왕십리역);
+        createRequest("/stations", 뚝섬역);
+        ExtractableResponse<Response> 분당선생성 = createRequest("/lines", 분당선_RED);
+        long 분당선Id = 분당선생성.jsonPath().getLong("id");
+        createRequest("/lines/" + 분당선Id + "/sections", 강남_뚝섬);
+        createRequest("/lines/" + 분당선Id + "/sections", 뚝섬_왕십리);
+        String uri = "/lines/" + 분당선Id + "/sections?stationId=" + 강남역Id;
+        ExtractableResponse<Response> response = deleteRequest(uri);
+        ExtractableResponse<Response> 분당선역조회 = findByIdRequest(Long.toString(분당선Id));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(분당선역조회.jsonPath().getList("stations")).hasSize(3);
+    }
+
+    @DisplayName("지하철 노선에 등록된 구간을 삭제한다. - 하행 종점 삭제")
+    @Test
+    void deleteDownEndPoint() {
+        // given
+        StationRequest 강남역 = new StationRequest("강남역");
+        StationRequest 잠실역 = new StationRequest("잠실역");
+        StationRequest 왕십리역 = new StationRequest("왕십리역");
+        StationRequest 뚝섬역 = new StationRequest("뚝섬역");
+        LineCreateRequest 분당선_RED =
+                new LineCreateRequest("분당선", "bg-red-600", 1L, 2L, 20);
+        SectionCreateRequest 강남_뚝섬 = new SectionCreateRequest(1L, 4L, 5);
+        SectionCreateRequest 뚝섬_왕십리 = new SectionCreateRequest(4L, 3L, 5);
+
+        // when
+        createRequest("/stations", 강남역);
+        ExtractableResponse<Response> 잠실역생성 = createRequest("/stations", 잠실역);
+        long 잠실역Id = 잠실역생성.jsonPath().getLong("id");
+        createRequest("/stations", 왕십리역);
+        createRequest("/stations", 뚝섬역);
+        ExtractableResponse<Response> 분당선생성 = createRequest("/lines", 분당선_RED);
+        long 분당선Id = 분당선생성.jsonPath().getLong("id");
+        createRequest("/lines/" + 분당선Id + "/sections", 강남_뚝섬);
+        createRequest("/lines/" + 분당선Id + "/sections", 뚝섬_왕십리);
+        String uri = "/lines/" + 분당선Id + "/sections?stationId=" + 잠실역Id;
+        ExtractableResponse<Response> response = deleteRequest(uri);
+        ExtractableResponse<Response> 분당선역조회 = findByIdRequest(Long.toString(분당선Id));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(분당선역조회.jsonPath().getList("stations")).hasSize(3);
+    }
+
+    @DisplayName("구간이 하나인 경우 삭제하려고하면 BAD_REQUEST를 반환")
+    @Test
+    void deleteWhenOnlyOneSection() {
+        // given
+        StationRequest 강남역 = new StationRequest("강남역");
+        StationRequest 잠실역 = new StationRequest("잠실역");
+        LineCreateRequest 분당선_RED =
+                new LineCreateRequest("분당선", "bg-red-600", 1L, 2L, 20);
+
+        // when
+        createRequest("/stations", 강남역);
+        ExtractableResponse<Response> 잠실역생성 = createRequest("/stations", 잠실역);
+        long 잠실역Id = 잠실역생성.jsonPath().getLong("id");
+        ExtractableResponse<Response> 분당선생성 = createRequest("/lines", 분당선_RED);
+        long 분당선Id = 분당선생성.jsonPath().getLong("id");
+        String uri = "/lines/" + 분당선Id + "/sections?stationId=" + 잠실역Id;
+        ExtractableResponse<Response> response = deleteRequest(uri);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("없는 역을 삭제하려고하면 BAD_REQUEST를 반환")
+    @Test
+    void deleteNotExistStation() {
+        // given
+        StationRequest 강남역 = new StationRequest("강남역");
+        StationRequest 잠실역 = new StationRequest("잠실역");
+        StationRequest 왕십리역 = new StationRequest("왕십리역");
+        LineCreateRequest 분당선_RED =
+                new LineCreateRequest("분당선", "bg-red-600", 1L, 2L, 20);
+
+        // when
+        createRequest("/stations", 강남역);
+        createRequest("/stations", 잠실역);
+        ExtractableResponse<Response> 왕십리역생성 = createRequest("/stations", 왕십리역);
+        long 왕십리역Id = 왕십리역생성.jsonPath().getLong("id");
+        ExtractableResponse<Response> 분당선생성 = createRequest("/lines", 분당선_RED);
+        long 분당선Id = 분당선생성.jsonPath().getLong("id");
+        String uri = "/lines/" + 분당선Id + "/sections?stationId=" + 왕십리역Id;
+        ExtractableResponse<Response> response = deleteRequest(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

@@ -65,4 +65,81 @@ class JdbcSectionDaoTest {
                         new Section(2L, 1L, 2L, 3L, 3)
                 ));
     }
+
+    @DisplayName("upStationId와 distance 업데이트")
+    @Test
+    void updateUpStation() {
+        // given
+        Section section = new Section(1L, 1L, 1L, 2L, 3);
+
+        // when
+        jdbcSectionDao.save(section);
+        jdbcSectionDao.updateUpStation(section, 3L);
+        List<Section> sections = jdbcSectionDao.findAllByLineId(1L);
+
+        // then
+        assertThat(sections.get(0)).usingRecursiveComparison()
+                .isEqualTo(new Section(1L, 1L, 3L, 2L, 3));
+    }
+
+    @DisplayName("downStationId와 distance 업데이트")
+    @Test
+    void updateDownStation() {
+        // given
+        Section section = new Section(1L, 1L, 1L, 2L, 3);
+
+        // when
+        jdbcSectionDao.save(section);
+        jdbcSectionDao.updateDownStation(section, 3L);
+        List<Section> sections = jdbcSectionDao.findAllByLineId(1L);
+
+        // then
+        assertThat(sections.get(0)).usingRecursiveComparison()
+                .isEqualTo(new Section(1L, 1L, 1L, 3L, 3));
+    }
+
+    @DisplayName("lineId와 upStationId로 구간 제거")
+    @Test
+    void deleteByLineIdAndUpStationId() {
+        // given
+        Section section = new Section(1L, 1L, 1L, 2L, 3);
+
+        // when
+        jdbcSectionDao.save(section);
+        jdbcSectionDao.deleteByLineIdAndUpStationId(1L, 1L);
+        List<Section> sections = jdbcSectionDao.findAllByLineId(1L);
+
+        // then
+        assertThat(sections).hasSize(0);
+    }
+
+    @DisplayName("lineId와 downStationId로 구간 제거")
+    @Test
+    void deleteByLineIdAndDownStationId() {
+        // given
+        Section section = new Section(1L, 1L, 1L, 2L, 3);
+
+        // when
+        jdbcSectionDao.save(section);
+        jdbcSectionDao.deleteByLineIdAndDownStationId(1L, 2L);
+        List<Section> sections = jdbcSectionDao.findAllByLineId(1L);
+
+        // then
+        assertThat(sections).hasSize(0);
+    }
+
+    @DisplayName("section객체에 해당하는 구간 삭제")
+    @Test
+    void deleteBySection() {
+        // given
+        Section section = new Section(1L, 1L, 1L, 2L, 3);
+
+        // when
+        jdbcSectionDao.save(section);
+        jdbcSectionDao.deleteBySection(section);
+        List<Section> sections = jdbcSectionDao.findAllByLineId(1L);
+
+        // then
+        assertThat(sections).hasSize(0);
+    }
 }

@@ -65,4 +65,22 @@ public class JdbcSectionDao implements SectionDao {
         String query = "UPDATE section SET down_station_id = ?, distance = ? WHERE line_id = ? AND down_station_id = ?";
         jdbcTemplate.update(query, upStationId, section.getDistance(), section.getLineId(), section.getDownStationId());
     }
+
+    @Override
+    public void deleteByLineIdAndUpStationId(Long lineId, Long stationId) {
+        String query = "DELETE FROM section WHERE line_id = ? AND up_station_id = ?";
+        jdbcTemplate.update(query, lineId, stationId);
+    }
+
+    @Override
+    public void deleteByLineIdAndDownStationId(Long lineId, Long stationId) {
+        String query = "DELETE FROM section WHERE line_id = ? AND down_station_id = ?";
+        jdbcTemplate.update(query, lineId, stationId);
+    }
+
+    @Override
+    public void deleteBySection(Section section) {
+        String query = "DELETE FROM section WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?";
+        jdbcTemplate.update(query, section.getLineId(), section.getUpStationId(), section.getDownStationId());
+    }
 }

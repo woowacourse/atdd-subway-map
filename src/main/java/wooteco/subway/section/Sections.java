@@ -2,20 +2,17 @@ package wooteco.subway.section;
 
 import wooteco.subway.exception.SubwayException;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 
 public class Sections {
-    private List<Section> sections;
+    private final List<Section> sections;
 
     public Sections(List<Section> sections) {
         this.sections = sort(sections);
     }
 
     private List<Section> sort(List<Section> sections) {
-        Deque<Section> waiting = new ArrayDeque<>(sections);
+        Queue<Section> waiting = new LinkedList<>(sections);
         Deque<Section> result = new ArrayDeque<>();
 
         result.addLast(waiting.remove());
@@ -34,7 +31,7 @@ public class Sections {
                 continue;
             }
 
-            waiting.addLast(section);
+            waiting.add(section);
         }
 
         return new ArrayList<>(result);
@@ -73,21 +70,21 @@ public class Sections {
     }
 
     public boolean isEndPoint(Section section) {
-        if (isUpEndStationEqualsSectionDownStation(section)) {
+        if (isUpStation(section.getDownStationId())) {
             return true;
         }
-        return isDownEndStationEqualsSectionUpStation(section);
+        return isDownStation(section.getUpStationId());
     }
 
-    public boolean isUpEndStationEqualsSectionDownStation(Section section) {
-        Long upWardEndStationId = sections.get(0).getUpStationId();
-        return upWardEndStationId.equals(section.getDownStationId());
+    public boolean isUpStation(Long id) {
+        Long upStationId = sections.get(0).getUpStationId();
+        return upStationId.equals(id);
     }
 
-    public boolean isDownEndStationEqualsSectionUpStation(Section section) {
-        Long downWardEndStationId = sections.get(sections.size() - 1)
+    public boolean isDownStation(Long id) {
+        Long downStationId = sections.get(sections.size() - 1)
                 .getDownStationId();
-        return downWardEndStationId.equals(section.getUpStationId());
+        return downStationId.equals(id);
     }
 
     public boolean sectionUpStationInStartPoints(Section section) {
@@ -98,6 +95,12 @@ public class Sections {
     public boolean sectionDownStationInEndPoints(Section section) {
         return sections.stream()
                 .anyMatch(s -> s.isSameDownStation(section));
+    }
+
+    public void checkRemainSectionSize() {
+        if (sections.size() <= 1) {
+            throw new SubwayException("제거할 수 없습니다.");
+        }
     }
 
     public List<Section> getSections() {

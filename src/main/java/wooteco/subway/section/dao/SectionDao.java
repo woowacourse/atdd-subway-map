@@ -12,4 +12,10 @@ public interface SectionDao {
     void updateUpStation(Section section, Long downStationId);
 
     void updateDownStation(Section section, Long upStationId);
+
+    void deleteByLineIdAndUpStationId(Long lineId, Long stationId);
+
+    void deleteByLineIdAndDownStationId(Long lineId, Long stationId);
+
+    void deleteBySection(Section section);
 }

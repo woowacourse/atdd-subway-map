@@ -57,31 +57,47 @@ public class SectionService {
     }
 
     private SectionCreateResponse addSectionInMiddle(Sections sections, Section section) {
-        // 1. 추가하려는 section의 시작점 == sections의 section의 시작점
         if (sections.sectionUpStationInStartPoints(section)) {
-            // 구간을 찾고
             Section candidate = sections.findByUpStationId(section.getUpStationId());
-            // 거리 비교
             candidate.updateDistance(section.getDistance());
-            // 찾은 구간의 up을 넣으려는 구간의 down으로 변경
             sectionDao.updateUpStation(candidate, section.getDownStationId());
-            // 넣으려는 구간 삽입
             return save(section);
         }
 
-        // 2. 추가하려는 section의 끝점 == sections의 section의 끝점
         if (sections.sectionDownStationInEndPoints(section)) {
-            // 구간을 찾고
             Section candidate = sections.findByDownStationId(section.getDownStationId());
-            // 거리 비교
             candidate.updateDistance(section.getDistance());
-            // 찾은 구간의 down을 넣으려는 구간의 up으로 변경
             sectionDao.updateDownStation(candidate, section.getUpStationId());
-            // 넣으려는 구간 삽입
             return save(section);
         }
 
         throw new SubwayException("추가할 수 없는 구간입니다!");
+    }
+
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+
+        sections.checkRemainSectionSize();
+
+        if (sections.isUpStation(stationId)) {
+            sectionDao.deleteByLineIdAndUpStationId(lineId, stationId);
+            return;
+        }
+
+        if (sections.isDownStation(stationId)) {
+            sectionDao.deleteByLineIdAndDownStationId(lineId, stationId);
+            return;
+        }
+
+        Section downStationSection = sections.findByDownStationId(stationId);
+        Section upStationSection = sections.findByUpStationId(stationId);
+        sectionDao.deleteBySection(upStationSection);
+        sectionDao.deleteBySection(downStationSection);
+        sectionDao.save(new Section(
+                lineId, downStationSection.getUpStationId(), upStationSection.getDownStationId(),
+                downStationSection.getDistance() + upStationSection.getDistance())
+        );
     }
 }
 

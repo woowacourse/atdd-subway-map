@@ -77,16 +77,21 @@
                 - [x] 찾은 구간의 down을 넣으려는 구간의 up으로 변경
                 - [x] 넣으려는 구간 삽입
         - [x] 나머지 경우 모두 예외
-- [ ] 구간 삭제
-    - [ ] req
+- [x] 구간 삭제
+    - [x] req
         - DELETE, /lines/{lineId}/sections?stationId={sectionId}
-    - res
+    - [x] res
         - 204 noContent
-    - [ ] 구간이 하나인 노선인 경우 삭제 불가
-    - [ ] 중간 구간이 제거된 경우
-        - [ ] 삭제하려는 구간의 up을 down으로 가지고있는 구간을 찾아, 찾은 구간의 down을 삭제하려는 구간의 down으로 변경
-        - [ ] 삭제하려는 구간의 down을 up으로 가지고있는 구간을 찾아, 찾은 구간의 up을 삭제하려는 구간의 up으로 변경
-    - [ ] 종점이 제거된 경우
+    - [x] 구간이 하나인 노선인 경우 삭제 불가
+    - [x] 상행 종점을 삭제하는 경우
+        - [x] upStationId에 상행종점이 포함된 구간 삭제해주기
+    - [x] 하행 종점을 삭제하는 경우
+        - [x] downStationId에 하행종점이 포함된 구간 삭제해주기
+    - [x] 중간역을 삭제하는 경우
+        - [x] downStationId에 중간역이 포함된 구간 찾기(1)
+        - [x] upStationId에 중간역이 포함된 구간 찾기(2)
+        - [x] (1) (2) 삭제
+        - [x] (1)의 upStationId와 (2)의 downStationId를 가지는 구간 생성
     
 ## 2단계 - 프레임워크 적용
 1. 스프링 JDBC 활용하여 H2 DB에 저장하기
