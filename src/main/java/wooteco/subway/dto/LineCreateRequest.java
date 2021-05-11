@@ -41,7 +41,7 @@ public class LineCreateRequest {
         return distance;
     }
 
-    public void validateIfDownStationDifferFromUpStation() {
+    public void validateDownStationDifferFromUpStation() {
         if (upStationId.equals(downStationId)) {
             throw new SubwayIllegalArgumentException("상행과 하행 종점은 같을 수 없습니다.");
         }

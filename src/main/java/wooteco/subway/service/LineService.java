@@ -36,7 +36,7 @@ public class LineService {
     public LineResponse save(LineCreateRequest lineCreateRequest) {
         validateDuplicateName(lineCreateRequest.getName());
         validateAllStationsIsExist(lineCreateRequest);
-        lineCreateRequest.validateIfDownStationDifferFromUpStation();
+        lineCreateRequest.validateDownStationDifferFromUpStation();
 
         Line line = Line.of(null, lineCreateRequest.getName(), lineCreateRequest.getColor());
         Line savedLine = lineDao.save(line);
