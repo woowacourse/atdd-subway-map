@@ -2,53 +2,57 @@ package wooteco.subway.line.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoSettings;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.line.api.dto.LineDetailsResponse;
 import wooteco.subway.line.api.dto.LineRequest;
 import wooteco.subway.line.api.dto.LineResponse;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.model.Line;
 import wooteco.subway.section.dao.SectionDao;
+import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.model.Station;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
-@MockitoSettings
+@SpringBootTest
+@Sql("/test.sql")
 class LineServiceTest {
 
-    @Mock
-    private LineDao lineDao;
-
-    @Mock
+    @Autowired
     private SectionDao sectionDao;
 
-    @InjectMocks
+    @Autowired
+    private StationDao stationDao;
+
+    @Autowired
+    private LineDao lineDao;
+
+    @Autowired
     private LineService lineService;
 
     @DisplayName("전체 노선 조회")
     @Test
     void findAll() {
         //given
-        when(lineDao.findAll())
-                .thenReturn(Arrays.asList(new Line(1L, "2호선", "green"),
-                        new Line(2L, "3호선", "orange")));
+        Long secondLineId = lineDao.save(new Line("2호선", "GREEN"));
+        Long firstLineId = lineDao.save(new Line("1호선", "BLUE"));
 
         //when
         List<LineResponse> lineResponses = lineService.findAll();
 
         //then
         assertAll(
-                () -> assertThat(lineResponses.get(0).getId()).isEqualTo(1L),
+                () -> assertThat(lineResponses.get(0).getId()).isEqualTo(secondLineId),
                 () -> assertThat(lineResponses.get(0).getName()).isEqualTo("2호선"),
-                () -> assertThat(lineResponses.get(1).getId()).isEqualTo(2L),
-                () -> assertThat(lineResponses.get(1).getName()).isEqualTo("3호선")
+                () -> assertThat(lineResponses.get(0).getColor()).isEqualTo("GREEN"),
+                () -> assertThat(lineResponses.get(1).getId()).isEqualTo(firstLineId),
+                () -> assertThat(lineResponses.get(1).getName()).isEqualTo("1호선"),
+                () -> assertThat(lineResponses.get(1).getColor()).isEqualTo("BLUE")
         );
     }
 
@@ -56,14 +60,15 @@ class LineServiceTest {
     @Test
     void createLine() {
         //given
-        when(lineDao.save(any()))
-                .thenReturn(1L);
-        when(lineDao.findLineById(1L))
-                .thenReturn(new Line(1L, "2호선", "green"));
+        Long stationId1 = stationDao.save(new Station("강남역"));
+        Long stationId2 = stationDao.save(new Station("잠실역"));
+        LineRequest request = new LineRequest("2호선", "green",
+                stationId1, stationId2, 10);
+
         //when
-        LineDetailsResponse lineDetailsResponse = lineService.createLine(new LineRequest("2호선", "green"));
+        LineDetailsResponse lineDetailsResponse = lineService.createLine(request);
+
         //then
-        assertThat(lineDetailsResponse.getId()).isEqualTo(1L);
         assertThat(lineDetailsResponse.getName()).isEqualTo("2호선");
         assertThat(lineDetailsResponse.getColor()).isEqualTo("green");
     }
@@ -72,13 +77,17 @@ class LineServiceTest {
     @Test
     void showLineById() {
         //given
-        when(lineDao.findLineById(1L))
-                .thenReturn(new Line(1L, "2호선", "green"));
+        Long stationId1 = stationDao.save(new Station("강남역"));
+        Long stationId2 = stationDao.save(new Station("잠실역"));
+        Long lineId = lineDao.save(new Line("2호선", "GREEN"));
+        sectionDao.save(lineId, new LineRequest("2호선","GREEN", stationId1, stationId2, 10));
+
         //when
-        LineDetailsResponse lineDetailsResponse = lineService.showLineById(1L);
+        LineDetailsResponse lineDetailsResponse = lineService.showLineById(lineId);
+
         //then
-        assertThat(lineDetailsResponse.getId()).isEqualTo(1L);
+        assertThat(lineDetailsResponse.getId()).isEqualTo(lineId);
         assertThat(lineDetailsResponse.getName()).isEqualTo("2호선");
-        assertThat(lineDetailsResponse.getColor()).isEqualTo("green");
+        assertThat(lineDetailsResponse.getColor()).isEqualTo("GREEN");
     }
 }
