@@ -42,6 +42,10 @@ public class Line {
         this.sections = new Sections(sections);
     }
 
+    public List<Station> getStations() {
+        return this.sections.getStations();
+    }
+
     public Long getId() {
         return id;
     }
