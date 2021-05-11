@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Sections {
     private final List<Section> sections;
@@ -9,14 +10,14 @@ public class Sections {
         this.sections = sections;
     }
 
-    public List<Long> sortSectionsByOrder() {
+    public List<SimpleStation> sortSectionsByOrder() {
         Deque<Long> sortedStationIds = new ArrayDeque<>();
         Map<Long, Long> upStationIds = new LinkedHashMap<>();
         Map<Long, Long> downStationIds = new LinkedHashMap<>();
 
         init(sortedStationIds, upStationIds, downStationIds);
         sortByOrder(sortedStationIds, upStationIds, downStationIds);
-        return new ArrayList<>(sortedStationIds);
+        return wrapToSimpleStation(new ArrayList<>(sortedStationIds));
     }
 
     private void init(Deque<Long> sortedStationIds, Map<Long, Long> upStationIds, Map<Long, Long> downStationIds) {
@@ -39,5 +40,11 @@ public class Sections {
             final Long id = sortedStationIds.peekLast();
             sortedStationIds.addLast(upStationIds.get(id));
         }
+    }
+
+    private List<SimpleStation> wrapToSimpleStation(List<Long> stationIds) {
+        return stationIds.stream()
+                .map(SimpleStation::new)
+                .collect(Collectors.toList());
     }
 }
