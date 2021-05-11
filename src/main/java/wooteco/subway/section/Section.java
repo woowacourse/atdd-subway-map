@@ -1,7 +1,6 @@
 package wooteco.subway.section;
 
 import wooteco.subway.exception.SubWayException;
-import wooteco.subway.section.dto.SectionRequest;
 
 public class Section {
     private Long id;
@@ -19,8 +18,8 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section(Long id, Long lineId, SectionRequest sectionReq) {
-        this(id, lineId, sectionReq.getUpStationId(), sectionReq.getDownStationId(), sectionReq.getDistance());
+    public Section(Long id, Long lineId, Section section) {
+        this(id, lineId, section.getUpStationId(), section.getDownStationId(), section.getDistance());
     }
 
     public Section(Long upStationId, Long downStationId, int distance) {

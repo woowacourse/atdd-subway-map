@@ -6,7 +6,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.section.Section;
-import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.station.Station;
 
 import java.sql.PreparedStatement;
@@ -32,19 +31,19 @@ public class JdbcSectionDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Section save(Long lineId, SectionRequest sectionReq) {
+    public Section save(Long lineId, Section section) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String query = "INSERT INTO section (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(con -> {
             PreparedStatement pstmt = con.prepareStatement(query, new String[]{"id"});
             pstmt.setLong(1, lineId);
-            pstmt.setLong(2, sectionReq.getUpStationId());
-            pstmt.setLong(3, sectionReq.getDownStationId());
-            pstmt.setInt(4, sectionReq.getDistance());
+            pstmt.setLong(2, section.getUpStationId());
+            pstmt.setLong(3, section.getDownStationId());
+            pstmt.setInt(4, section.getDistance());
             return pstmt;
         }, keyHolder);
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new Section(id, lineId, sectionReq);
+        return new Section(id, lineId, section);
     }
 
     public List<Station> findStationsBy(Long stationId, Long downStationId) {
@@ -55,5 +54,43 @@ public class JdbcSectionDao {
     public List<Section> findAllByLineId(Long lineId) {
         String query = "SELECT * FROM section WHERE line_id = ?";
         return jdbcTemplate.query(query, sectionMapper, lineId);
+    }
+
+    public Section findByUpStationId(Long lineId, Long upStationId) {
+        String query = "SELECT * FROM section WHERE up_station_id = ? AND line_id = ?";
+        return jdbcTemplate.query(query, sectionMapper, upStationId, lineId).get(0);
+    }
+
+    public Section findByDownStationId(Long lineId, Long downStationId) {
+        String query = "SELECT * FROM section WHERE down_station_id = ? AND line_id = ?";
+        return jdbcTemplate.query(query, sectionMapper, downStationId, lineId).get(0);
+    }
+
+    public Section appendToUp(Long lineId, Section newSection, int changedDistance) {
+        updateAndAppendToUp(lineId, newSection, changedDistance);
+        return save(lineId, newSection);
+    }
+
+    public Section appendBeforeDown(Long lineId, Section newSection, int changedDistance) {
+        updateAndAppendBeforeDown(newSection, changedDistance);
+        return save(lineId, newSection);
+    }
+
+    private void updateAndAppendToUp(Long lineId, Section newSection, int changedDistance) {
+        String query = "UPDATE section SET up_station_id = ?, distance = ? WHERE up_station_id = ? AND line_id = ?";
+        jdbcTemplate.update(query, newSection.getDownStationId(), changedDistance, newSection.getUpStationId(), lineId);
+    }
+
+    private void updateAndAppendBeforeDown(Section newSection, int changedDistance) {
+        String query = "UPDATE section SET down_station_id = ?, distance = ? WHERE down_station_id = ?";
+        jdbcTemplate.update(query, newSection.getUpStationId(), changedDistance, newSection.getDownStationId());
+    }
+
+    private void insertNewSection(Long lineId, Section newSection) {
+        String query = "INSERT INTO section (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
+        Long upStationId = newSection.getUpStationId();
+        Long downStationId = newSection.getDownStationId();
+        int distance = newSection.getDistance();
+        jdbcTemplate.update(query, lineId, upStationId, downStationId, distance);
     }
 }
