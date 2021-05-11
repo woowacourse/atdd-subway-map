@@ -4,15 +4,15 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.controller.request.SectionInsertRequest;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.SimpleSection;
 import wooteco.subway.exception.section.DeleteSectionIsNotPermittedException;
 import wooteco.subway.exception.section.NoneOfSectionIncludedInLine;
 import wooteco.subway.exception.section.SectionDistanceMismatchException;
 import wooteco.subway.exception.section.SectionsAlreadyExistException;
-import wooteco.subway.domain.SimpleSection;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class SectionService {
@@ -94,19 +94,15 @@ public class SectionService {
         if (sections.isEmpty()) {
             throw new DeleteSectionIsNotPermittedException();
         }
-        Section section = adjustSection(lineId, sections);
+        Section section = adjustSection(lineId, new Sections(sections));
         sectionDao.delete(section);
     }
 
-    private Section adjustSection(Long lineId, List<Section> sections) {
-        if (sections.size() == 1) { // 구간이 하나밖에 포함되지 않는 경우 <-> 종점인 경우
-            return sections.get(0);
+    private Section adjustSection(Long lineId, Sections sections) {
+        if (sections.hasOnlyOneSection()) {
+            return sections.section(0);
         }
-
-        final int updatedDistance = sections.stream().mapToInt(Section::getDistance).sum();
-        final Long upStationId = sections.get(0).getUpStationId();
-        final Long downStationId = sections.get(1).getDownStationId();
-        sectionDao.update(lineId, new SimpleSection(upStationId, downStationId, updatedDistance));
-        return sections.get(1);
+        sectionDao.update(lineId, sections.updateSectionToOneLine());
+        return sections.section(1);
     }
 }

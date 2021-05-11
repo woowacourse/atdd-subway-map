@@ -10,6 +10,21 @@ public class Sections {
         this.sections = sections;
     }
 
+    public boolean hasOnlyOneSection() {
+        return sections.size() == 1;
+    }
+
+    public Section section(int index) {
+        return sections.get(index);
+    }
+
+    public SimpleSection updateSectionToOneLine() {
+        final int updatedDistance = sections.stream().mapToInt(Section::getDistance).sum();
+        final Long upStationId = sections.get(0).getUpStationId();
+        final Long downStationId = sections.get(1).getDownStationId();
+        return new SimpleSection(upStationId, downStationId, updatedDistance);
+    }
+
     public List<SimpleStation> sortSectionsByOrder() {
         Deque<Long> sortedStationIds = new ArrayDeque<>();
         Map<Long, Long> upStationIds = new LinkedHashMap<>();
