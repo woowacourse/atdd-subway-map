@@ -77,6 +77,10 @@ public class Section {
         return upStation.isSameId(stationId);
     }
 
+    public boolean isDownStationId(Long stationId) {
+        return downStation.isSameId(stationId);
+    }
+
     public boolean isSameId(Long id) {
         return this.id.equals(id);
     }

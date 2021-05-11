@@ -166,16 +166,26 @@ public class Sections {
         Station upStation = null;
         int distance = 0;
         for (Section section : sections) {
-            if (section.isUpStationId(stationId)) {
-                downStation = section.getDownStation();
-            } else {
-                upStation = section.getUpStation();
-            }
+            downStation = determineDownStation(stationId, downStation, section);
+            upStation = determineUpStation(stationId, upStation, section);
             distance += section.getDistance();
-
         }
 
         return Optional.of(Section.of(upStation, downStation, distance));
+    }
+
+    private Station determineUpStation(Long stationId, Station upStation, Section section) {
+        if (section.isDownStationId(stationId)) {
+            upStation = section.getUpStation();
+        }
+        return upStation;
+    }
+
+    private Station determineDownStation(Long stationId, Station downStation, Section section) {
+        if (section.isUpStationId(stationId)) {
+            downStation = section.getDownStation();
+        }
+        return downStation;
     }
 
     public boolean hasSize(int size) {

@@ -54,12 +54,8 @@ public class SectionService {
         List<Section> sections = sectionDao.findContainsStationId(lineId, stationId);
         final Sections foundSections = Sections.from(sections);
 
-        //TODO : 라인 아이디가 없을 시 예외처리
         sectionDao.deleteStations(lineId, sections);
-
-        // TODO : 연결하자.
         Optional<Section> affectedSection = foundSections.transformSection(stationId);
-
         affectedSection.ifPresent(section -> sectionDao.insertSection(section, lineId));
     }
 }
