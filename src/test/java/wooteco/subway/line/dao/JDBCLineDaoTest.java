@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.section.domain.Sections;
 
 import java.util.ArrayList;
 import java.util.List;

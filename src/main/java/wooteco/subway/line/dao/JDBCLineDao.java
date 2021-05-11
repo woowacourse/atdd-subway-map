@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.section.domain.Sections;
 
 import java.sql.PreparedStatement;
 import java.util.ArrayList;

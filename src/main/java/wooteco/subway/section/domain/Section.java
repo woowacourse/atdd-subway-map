@@ -1,0 +1,51 @@
+package wooteco.subway.section.domain;
+
+import wooteco.subway.exception.IllegalSectionArgumentException;
+
+public class Section {
+
+    private final Long id;
+    private final Long lineId;
+    private final Long upStationId;
+    private final Long downStationId;
+    private final int distance;
+
+    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+        validateSection(upStationId, downStationId);
+        this.id = id;
+        this.lineId = lineId;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
+    }
+
+    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
+        this(0L, lineId, upStationId, downStationId, distance);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getLineId() {
+        return lineId;
+    }
+
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    private void validateSection(Long upStationId, Long downStationId) {
+        if(upStationId.equals(downStationId)) {
+            throw new IllegalSectionArgumentException();
+        }
+    }
+}

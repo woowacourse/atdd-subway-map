@@ -7,6 +7,8 @@ import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StationService {
@@ -22,6 +24,12 @@ public class StationService {
             throw new DuplicatedNameException();
         }
         return stationDao.save(station);
+    }
+
+    public List<Station> findByIds(List<Long> ids) {
+        return ids.stream()
+           .map(id -> stationDao.findById(id).orElseThrow(NotFoundStationException::new))
+           .collect(Collectors.toList());
     }
 
     public List<Station> findAll() {
