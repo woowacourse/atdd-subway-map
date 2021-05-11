@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
 import javax.swing.text.html.Option;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -54,18 +55,21 @@ public class SectionDao {
     }
 
     public Optional<Section> findByLineIdAndUpStationId(final Long lineId, final Long upStationId) {
-        String sql = "SELECT * FROM section WHERE line_id = ? AND up_station_id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, upStationId));
+        try {
+            String sql = "SELECT * FROM section WHERE line_id = ? AND up_station_id = ?";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, upStationId));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public Optional<Section> findByLineIdAndDownStationId(final Long lineId, final Long downStationId) {
-        String sql = "SELECT * FROM section WHERE line_id = ? AND down_station_id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, downStationId));
-    }
-
-    public int updateStationAndDistance(final Section section) {
-        String sql = "UPDATE section SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
-        return jdbcTemplate.update(sql, section.getUpStationId(), section.getDownStationId(), section.getDistance(), section.getId());
+        try {
+            String sql = "SELECT * FROM section WHERE line_id = ? AND down_station_id = ?";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, downStationId));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public int deleteByLineIdAndUpStationId(final Long lineId, final Long upStationId) {

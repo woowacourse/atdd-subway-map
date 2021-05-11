@@ -66,8 +66,12 @@ public class Section {
     }
 
     public Section updateForSave(final Section section) {
-        Distance updateDistance = section.distance.subtract(this.distance);
-        return new Section(section.id, lineId, upStationId, downStationId, updateDistance);
+        Distance updateDistance = this.distance.subtract(section.distance);
+
+        if (upStationId.equals(section.upStationId)){
+           return new Section(null, lineId, section.downStationId, downStationId, updateDistance);
+        }
+        return new Section(null, lineId, upStationId, section.upStationId, updateDistance);
     }
 
     public Section updateForDelete(final Section section) {

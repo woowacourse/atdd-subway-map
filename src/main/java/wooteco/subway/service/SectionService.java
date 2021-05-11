@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
@@ -19,6 +18,16 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
+    public SectionServiceDto saveByLineCreate(@Valid final SectionServiceDto sectionServiceDto) {
+        Section section = sectionServiceDto.toEntity();
+        Sections sections = new Sections(sectionDao.findAllByLineId(section.getLineId()));
+
+        if (sections.isNotEmpty()) {
+            throw new InvalidSectionOnLineException();
+        }
+        return saveSectionAtEnd(section);
+    }
+
     public SectionServiceDto save(@Valid final SectionServiceDto sectionServiceDto) {
         Section section = sectionServiceDto.toEntity();
         Sections sections = new Sections(sectionDao.findAllByLineId(section.getLineId()));
@@ -27,23 +36,17 @@ public class SectionService {
         if (sections.isBothEndSection(section)) {
             return saveSectionAtEnd(section);
         }
-        return saveSectionAtMiddle(section);
+        return saveSectionAtMiddle(section, sections);
     }
 
     private SectionServiceDto saveSectionAtEnd(final Section section) {
         return SectionServiceDto.from(sectionDao.save(section));
     }
 
-    private SectionServiceDto saveSectionAtMiddle(final Section section) {
-        Optional<Section> sectionByUpStation = sectionDao
-            .findByLineIdAndUpStationId(section.getLineId(), section.getUpStationId());
-        Optional<Section> sectionByDownStation = sectionDao
-            .findByLineIdAndDownStationId(section.getLineId(), section.getDownStationId());
-        Section legacySection = sectionByUpStation
-            .orElse(sectionByDownStation.orElseThrow(InvalidSectionOnLineException::new));
-        
+    private SectionServiceDto saveSectionAtMiddle(final Section section, final Sections sections) {
+        Section legacySection = sections.findByStationId(section);
+        sectionDao.save(legacySection.updateForSave(section));
         sectionDao.delete(legacySection);
-        sectionDao.save(section.updateForSave(legacySection));
         return SectionServiceDto.from(sectionDao.save(section));
     }
 
@@ -54,6 +57,7 @@ public class SectionService {
 
         if (sections.isBothEndStation(deleteDto.getStationId())) {
             deleteStationAtEnd(deleteDto);
+            return;
         }
         deleteStationAtMiddle(deleteDto);
     }

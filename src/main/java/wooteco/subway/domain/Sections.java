@@ -30,14 +30,13 @@ public class Sections {
             || stationId.equals(sortedStationIds().peekLast());
     }
 
-    public ArrayDeque<Long> sortedStationIds() {
+    public Deque<Long> sortedStationIds() {
         Deque<Long> stationIds = new ArrayDeque<>();
         Map<Long, Long> upStationIds = new LinkedHashMap<>();
         Map<Long, Long> downStationIds = new LinkedHashMap<>();
 
         initStationIds(stationIds, upStationIds, downStationIds);
         sortStationsById(stationIds, upStationIds, downStationIds);
-
         return new ArrayDeque<>(stationIds);
     }
 
@@ -50,7 +49,7 @@ public class Sections {
 
         Section section = sections.get(0);
         stationIds.addFirst(section.getUpStationId());
-        stationIds.addFirst(section.getDownStationId());
+        stationIds.addLast(section.getDownStationId());
     }
 
     private void sortStationsById(Deque<Long> stationIds, Map<Long, Long> upStationIds, Map<Long, Long> downStationIds) {
@@ -66,8 +65,8 @@ public class Sections {
     }
 
     public void insertAvailable(final Section section) {
-        boolean isUpStationExisted = checkExistedOnLine(section.getUpStationId());
-        boolean isDownStationExisted = checkExistedOnLine(section.getDownStationId());
+        boolean isUpStationExisted = isNotExistOnLine(section.getUpStationId());
+        boolean isDownStationExisted = isNotExistOnLine(section.getDownStationId());
 
         if (isUpStationExisted == isDownStationExisted) {
             throw new InvalidSectionOnLineException();
@@ -81,17 +80,31 @@ public class Sections {
     }
 
     public void validateExistStation(final Long stationId) {
-        if (checkExistedOnLine(stationId)) {
+        if (isNotExistOnLine(stationId)) {
             throw new NotFoundStationException();
         }
     }
 
-    private boolean checkExistedOnLine(final Long stationId) {
+    private boolean isNotExistOnLine(final Long stationId) {
         boolean isMatchedAtUpStation = sections.stream()
             .anyMatch(it -> stationId.equals(it.getUpStationId()));
         boolean isMatchedAtDownStation = sections.stream()
             .anyMatch(it -> stationId.equals(it.getDownStationId()));
 
-        return isMatchedAtUpStation || isMatchedAtDownStation;
+        return !(isMatchedAtUpStation || isMatchedAtDownStation);
+    }
+
+    public boolean isNotEmpty() {
+        return !sections.isEmpty();
+    }
+
+    public Section findByStationId(final Section section) {
+        return sections.stream()
+            .filter(
+                it -> section.getUpStationId().equals(it.getUpStationId()) ||
+                    section.getDownStationId().equals(it.getDownStationId())
+            )
+            .findAny()
+            .orElseThrow(InvalidSectionOnLineException::new);
     }
 }
