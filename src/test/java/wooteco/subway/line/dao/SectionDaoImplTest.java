@@ -11,7 +11,7 @@ import wooteco.subway.line.domain.Section;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-@Sql(scripts = {"classpath:schema.sql", "classpath:dummy.sql"})
+@Sql(scripts = {"classpath:schema.sql", "classpath:data.sql"})
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class SectionDaoImplTest {
     private JdbcTemplate jdbcTemplate;

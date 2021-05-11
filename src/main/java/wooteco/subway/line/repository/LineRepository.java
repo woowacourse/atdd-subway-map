@@ -47,4 +47,8 @@ public class LineRepository {
     public void updateSection(Long lineId, Section section) {
         sectionRepository.update(lineId, section);
     }
+
+    public Section addSection(Long lineId, Long upStationId, Long downStationId, int distance) {
+        return sectionRepository.save(lineId, upStationId, downStationId, distance);
+    }
 }

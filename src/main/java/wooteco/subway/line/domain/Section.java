@@ -46,24 +46,12 @@ public class Section {
         return upStation;
     }
 
-    public void changeUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
     public Station downStation() {
         return downStation;
     }
 
-    public void changeDownStation(Station downStation) {
-        this.downStation = downStation;
-    }
-
     public int distance() {
         return distance;
-    }
-
-    public void subDistance(int distance) {
-        this.distance = distance;
     }
 
     public Long lineId() {
