@@ -19,6 +19,26 @@ public class SubwayAcceptanceTestFixture {
         return params;
     }
 
+    public static Map<String, String> createAddSectionExpandUpStationRequest() {
+        insertStation(STATION3);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(3L));
+        params.put("downStationId", String.valueOf(1L));
+        params.put("distance", String.valueOf(3));
+        return params;
+    }
+
+    public static Map<String, String> createAddSectionExpandDownStationRequest() {
+        insertStation(STATION3);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(2L));
+        params.put("downStationId", String.valueOf(3L));
+        params.put("distance", String.valueOf(3));
+        return params;
+    }
+
     public static Map<String, String> createAddSectionWithLongDistanceRequest() {
         insertStation(STATION3);
 

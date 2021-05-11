@@ -8,10 +8,7 @@ import wooteco.subway.service.dto.LineDto;
 import wooteco.subway.service.dto.LineWithStationsDto;
 import wooteco.subway.domain.SimpleStation;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class SubwayService {
@@ -35,7 +32,7 @@ public class SubwayService {
 
     public void insertSectionInLine(Long id, SectionInsertRequest sectionInsertRequest) {
         lineService.isExistById(id);
-        sectionService.checkEndStationsAreIncluded(id, sectionInsertRequest);
+        sectionService.validateEndStationsAreIncluded(id, sectionInsertRequest);
         sectionService.insertSections(id, sectionInsertRequest);
     }
 

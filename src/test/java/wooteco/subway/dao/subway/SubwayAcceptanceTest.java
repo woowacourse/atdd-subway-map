@@ -62,6 +62,44 @@ public class SubwayAcceptanceTest extends AcceptanceTest {
         assertThat(stationResponses.size()).isEqualTo(3);
     }
 
+    @DisplayName("상행 종점을 추가한다.")
+    @Test
+    void expandUpStation() {
+        // given
+        ExtractableResponse<Response> createResponse = extractResponseWhenPost(createLineWithSection(STATIONS), "/lines"); // 노선 등록
+        String uri = createResponse.header("Location") + "/sections";
+
+        // when
+        final ExtractableResponse<Response> response = extractResponseWhenPost(createAddSectionExpandUpStationRequest(), uri);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.body().jsonPath().get("id").toString()).isEqualTo(uri.split("/")[2]);
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo("1호선");
+        assertThat(response.body().jsonPath().getString("color")).isEqualTo("bg-red-100");
+        final List<StationResponse> stationResponses = response.jsonPath().getList("stations", StationResponse.class);
+        assertThat(stationResponses.size()).isEqualTo(3);
+    }
+
+    @DisplayName("상행 종점을 추가한다.")
+    @Test
+    void expandDownStation() {
+        // given
+        ExtractableResponse<Response> createResponse = extractResponseWhenPost(createLineWithSection(STATIONS), "/lines"); // 노선 등록
+        String uri = createResponse.header("Location") + "/sections";
+
+        // when
+        final ExtractableResponse<Response> response = extractResponseWhenPost(createAddSectionExpandDownStationRequest(), uri);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.body().jsonPath().get("id").toString()).isEqualTo(uri.split("/")[2]);
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo("1호선");
+        assertThat(response.body().jsonPath().getString("color")).isEqualTo("bg-red-100");
+        final List<StationResponse> stationResponses = response.jsonPath().getList("stations", StationResponse.class);
+        assertThat(stationResponses.size()).isEqualTo(3);
+    }
+
     @Test
     @DisplayName("기존 구간보다 거리가 길기 때문에 구간 추가가 불가능하다.")
     void addSectionWhenDistancesAreMismatch() {
