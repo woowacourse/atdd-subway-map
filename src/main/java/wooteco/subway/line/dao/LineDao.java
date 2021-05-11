@@ -1,22 +1,63 @@
 package wooteco.subway.line.dao;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import javax.sql.DataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.line.Line;
 
-public interface LineDao {
+@Repository
+public class LineDao {
 
-    Line save(Line line);
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
+    private final RowMapper<Line> rowMapper;
 
-    Optional<Line> show(Long id);
+    public LineDao(final JdbcTemplate jdbcTemplate, final DataSource source) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(source)
+            .withTableName("LINE")
+            .usingGeneratedKeyColumns("id");
+        this.rowMapper = (rs, rowNum) -> {
+            final Long foundId = rs.getLong("id");
+            final String name = rs.getString("name");
+            final String color = rs.getString("color");
+            return new Line(foundId, name, color);
+        };
+    }
 
-    int countByName(String name);
+    public Line create(final Line line) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", line.getName());
+        params.put("color", line.getColor());
 
-    int countByColor(String color);
+        long key = jdbcInsert.executeAndReturnKey(params).longValue();
 
-    List<Line> showAll();
+        return new Line(key, line.getName(), line.getColor());
+    }
 
-    int update(long id, Line line);
+    public Line show(final Long id) {
+        String sql = "SELECT * FROM LINE WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+    }
 
-    int delete(long id);
+    public List<Line> showAll() {
+        String sql = "SELECT * FROM LINE";
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    public int update(final long id, final Line line) {
+        String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
+        return jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
+    }
+
+    public int delete(final long id) {
+        String sql = "DELETE FROM LINE WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
+    }
 }
