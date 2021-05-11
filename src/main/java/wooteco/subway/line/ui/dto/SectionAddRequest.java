@@ -3,15 +3,14 @@ package wooteco.subway.line.ui.dto;
 import java.beans.ConstructorProperties;
 
 public class SectionAddRequest {
-    private Long downStationId;
-    private Long upStationId;
-    private int distance;
+    private final Long upStationId;
+    private final Long downStationId;
+    private final int distance;
 
-    @ConstructorProperties({"downStationId", "upStationId", "distance"})
-
-    public SectionAddRequest(final Long downStationId, final Long upStationId, final int distance) {
-        this.downStationId = downStationId;
+    @ConstructorProperties({"upStationId", "downStationId", "distance"})
+    public SectionAddRequest(final Long upStationId, final Long downStationId,  final int distance) {
         this.upStationId = upStationId;
+        this.downStationId = downStationId;
         this.distance = distance;
     }
 

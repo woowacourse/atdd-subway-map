@@ -30,6 +30,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.is;
+import static wooteco.subway.line.domain.Sections.ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE;
+import static wooteco.subway.line.domain.Sections.ERROR_SECTION_HAVE_TO_ONE_STATION_IN_LINE;
 import static wooteco.subway.line.service.LineService.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -267,8 +269,9 @@ class LineControllerTest {
         //given
         Station kangnam = setDummyStation("강남역");
         Station yangjae = setDummyStation("양재역");
-        Line line = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
         Station pankyo = setDummyStation("판교역");
+
+        Line line = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
         SectionAddRequest sectionAddRequest = new SectionAddRequest(kangnam.getId(), pankyo.getId(), 10);
         //when
         //then
@@ -333,6 +336,78 @@ class LineControllerTest {
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .body(is(ERROR_SECTION_HAVE_TO_ONE_STATION_IN_LINE));
+    }
+
+    @DisplayName("새로 등록할 구간의 상행역과 하행역 중 노선에 이미 등록되어있는 역을 기준으로 새로운 구간을 추가한다.")
+    @Test
+    void addSectionInLine() {
+        //given
+        Station kangnam = setDummyStation("강남역");
+        Station yangjae = setDummyStation("양재역");
+        Station pankyo = setDummyStation("판교역");
+        Station kwangkyo = setDummyStation("광교");
+
+        Line line = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
+        SectionAddRequest sectionUpAddRequest = new SectionAddRequest(pankyo.getId(), kangnam.getId(), 10);
+
+        //when
+        RestAssured
+                .given().log().all()
+                .accept(MediaType.ALL_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .body(sectionUpAddRequest)
+                .post("/lines/" + line.getId() + "/sections")
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .extract();
+
+        //then
+        Line savedLine = lineRepository.findById(line.getId());
+
+        assertThat(savedLine.getSections().sumSectionDistance()).isEqualTo(20);
+
+        assertThat(savedLine.getSections().toList())
+                .hasSize(2);
+
+        assertThat(savedLine.getSections().toList())
+                .extracting(Section::getUpStationId)
+                .containsExactly(pankyo.getId(), kangnam.getId());
+
+        assertThat(savedLine.getSections().toList())
+                .extracting(Section::getDownStationId)
+                .containsExactly(kangnam.getId(), yangjae.getId());
+
+        //given
+        sectionUpAddRequest = new SectionAddRequest(yangjae.getId(), kwangkyo.getId(), 10);
+
+        //when
+        RestAssured
+                .given().log().all()
+                .accept(MediaType.ALL_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .body(sectionUpAddRequest)
+                .post("/lines/" + line.getId() + "/sections")
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .extract();
+
+        //then
+        savedLine = lineRepository.findById(line.getId());
+
+        assertThat(savedLine.getSections().sumSectionDistance()).isEqualTo(30);
+
+        assertThat(savedLine.getSections().toList())
+                .hasSize(3);
+
+        assertThat(savedLine.getSections().toList())
+                .extracting(Section::getUpStationId)
+                .containsExactly(pankyo.getId(), kangnam.getId(), yangjae.getId());
+
+        assertThat(savedLine.getSections().toList())
+                .extracting(Section::getDownStationId)
+                .containsExactly(kangnam.getId(), yangjae.getId(), kwangkyo.getId());
     }
 
 

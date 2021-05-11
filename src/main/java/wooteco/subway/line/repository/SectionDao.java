@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.domain.Sections;
 
@@ -18,6 +19,21 @@ public class SectionDao {
 
     public SectionDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public Section save(Long lineId, Section section) {
+        String sql = "INSERT INTO SECTION VALUES (?, ?, ?, ?)";
+
+        jdbcTemplate.update(con -> {
+            final PreparedStatement pstmt = con.prepareStatement(sql);
+            pstmt.setLong(1, lineId);
+            pstmt.setLong(2, section.getUpStationId());
+            pstmt.setLong(3, section.getDownStationId());
+            pstmt.setInt(4, section.getDistance());
+            return pstmt;
+        });
+
+        return section;
     }
 
     public void saveAll(Long lineId, Sections sections) {
@@ -39,7 +55,7 @@ public class SectionDao {
                 });
     }
 
-    public List<Section> sections(Long lineId) {
+    public List<Section> findAll(Long lineId) {
         final String sql = "SELECT * FROM SECTION WHERE line_id = ?";
 
         return jdbcTemplate.query(sql, (rs, rn) -> {
@@ -49,6 +65,7 @@ public class SectionDao {
             return new Section(upStationId, downStationId, distance);
         }, lineId);
     }
+
 
     public Optional<Section> findSectionByUpStationId(final Long id, final Long upStationId) {
         final String sql = "SELECT * FROM SECTION WHERE line_id = ? AND up_station_id = ?";

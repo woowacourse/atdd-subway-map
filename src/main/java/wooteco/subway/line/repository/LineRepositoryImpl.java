@@ -30,7 +30,7 @@ public class LineRepositoryImpl implements LineRepository {
     @Override
     public Line findById(final Long id) {
         Line line = lineDao.findById(id);
-        List<Section> sections = sectionDao.sections(id);
+        List<Section> sections = sectionDao.findAll(id);
         return new Line(line.getId(), line.getName(), line.getColor(), new Sections(sections));
     }
 
@@ -46,7 +46,7 @@ public class LineRepositoryImpl implements LineRepository {
 
     @Override
     public void addSection(final Long id, final Section section) {
-
+        sectionDao.save(id, section);
     }
 
     @Override
@@ -64,5 +64,4 @@ public class LineRepositoryImpl implements LineRepository {
         });
         return null;
     }
-
 }
