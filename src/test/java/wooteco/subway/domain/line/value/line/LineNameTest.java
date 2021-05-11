@@ -2,10 +2,10 @@ package wooteco.subway.domain.line.value.line;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.line.NameLengthException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 class LineNameTest {
 
@@ -13,8 +13,8 @@ class LineNameTest {
     @Test
     void lineColor() {
         assertThatThrownBy(() -> new LineName(""))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("글자 수는 0보다 커야 합니다.");
+                .isInstanceOf(NameLengthException.class)
+                .hasMessage("이름은 0 보다 커야 합니다.");
     }
 
 

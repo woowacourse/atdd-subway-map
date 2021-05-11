@@ -1,5 +1,7 @@
 package wooteco.subway.domain.line.value.line;
 
+import wooteco.subway.exception.line.NegativeIdException;
+
 import java.util.Objects;
 
 public final class LineId extends Number {
@@ -17,7 +19,7 @@ public final class LineId extends Number {
 
     private void validateThatIsNegativeNumber(Long id) {
         if(id < 0) {
-            throw new IllegalArgumentException("id값은 음수일 수 없습니다.");
+            throw new NegativeIdException();
         }
     }
 

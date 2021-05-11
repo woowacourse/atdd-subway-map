@@ -1,5 +1,7 @@
 package wooteco.subway.domain.line.value.section;
 
+import wooteco.subway.exception.line.NegativeOrZeroDistanceException;
+
 import java.util.Objects;
 
 public class Distance extends Number {
@@ -13,7 +15,7 @@ public class Distance extends Number {
 
     private void validateThatIsNegativeOrZeroNumber(Long id) {
         if(id <= 0) {
-            throw new IllegalArgumentException("거리는 0이나 음수일 수 없습니다.");
+            throw new NegativeOrZeroDistanceException();
         }
     }
 

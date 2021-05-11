@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.LineRepository;
+import wooteco.subway.exception.line.DuplicateLineException;
 import wooteco.subway.domain.line.section.Section;
 import wooteco.subway.domain.line.section.Sections;
 import wooteco.subway.domain.line.value.line.LineColor;
@@ -37,7 +38,7 @@ public class LineService {
 
     private void validateLineExisting(Line line) {
         if (lineRepository.contains(line)) {
-            throw new IllegalArgumentException("동알한 라인은 등록할 수 없습니다.");
+            throw new DuplicateLineException();
         }
     }
 

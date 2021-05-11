@@ -2,10 +2,10 @@ package wooteco.subway.domain.station.value;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.station.NameLengthException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 class StationNameTest {
 
@@ -13,8 +13,8 @@ class StationNameTest {
     @Test
     void stationName() {
         assertThatThrownBy(() -> new StationName(""))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("글자 수는 0보다 커야 합니다.");
+                .isInstanceOf(NameLengthException.class)
+                .hasMessage("이름은 0 보다 커야 합니다.");
     }
 
     @Test

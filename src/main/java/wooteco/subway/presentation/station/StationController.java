@@ -1,8 +1,11 @@
 package wooteco.subway.presentation.station;
 
+<<<<<<< HEAD
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
+=======
+>>>>>>> 3677b8f... refactor: custom exception으로 변경
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,6 +59,7 @@ public class StationController {
         return ResponseEntity.noContent().build();
     }
 
+<<<<<<< HEAD
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<String> duplicationKeyExceptionHandle(Exception e) {
         return ResponseEntity.badRequest().body("동일한 역을 등록할 수 없습니다");
@@ -71,4 +75,6 @@ public class StationController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
+=======
+>>>>>>> 3677b8f... refactor: custom exception으로 변경
 }

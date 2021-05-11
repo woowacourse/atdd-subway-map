@@ -12,6 +12,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+<<<<<<< HEAD
 <<<<<<< HEAD:src/test/java/wooteco/subway/ui/LineControllerTest.java
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -35,11 +36,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import wooteco.subway.domain.line.LineRepository;
 import wooteco.subway.domain.station.StationRepository;
 import wooteco.subway.presentation.line.dto.SectionRequest;
+=======
+>>>>>>> 3677b8f... refactor: custom exception으로 변경
 import wooteco.subway.presentation.line.dto.LineRequest;
+import wooteco.subway.presentation.line.dto.SectionRequest;
 import wooteco.subway.presentation.station.dto.StationRequest;
 import wooteco.subway.presentation.station.dto.StationResponse;
+<<<<<<< HEAD
 import wooteco.util.StationFactory;
 >>>>>>> e735a30... refactor: 지하철 노선 추가 API 수정 및 페키지 구조 변경:src/test/java/wooteco/subway/ui/LineControllerTest.java
+=======
+>>>>>>> 3677b8f... refactor: custom exception으로 변경
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -6,7 +6,6 @@ import wooteco.subway.domain.line.value.line.LineColor;
 import wooteco.subway.domain.line.value.line.LineId;
 import wooteco.subway.domain.line.value.line.LineName;
 
-import java.beans.ConstructorProperties;
 import java.util.List;
 import java.util.Objects;
 

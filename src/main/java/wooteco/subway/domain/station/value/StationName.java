@@ -1,5 +1,7 @@
 package wooteco.subway.domain.station.value;
 
+import wooteco.subway.exception.station.NameLengthException;
+
 import java.util.Objects;
 
 public class StationName {
@@ -13,7 +15,7 @@ public class StationName {
 
     private void validateStationNameSize(String name) {
         if(name.isEmpty()) {
-            throw new IllegalArgumentException("글자 수는 0보다 커야 합니다.");
+            throw new NameLengthException();
         }
     }
 

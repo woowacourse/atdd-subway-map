@@ -1,5 +1,7 @@
 package wooteco.subway.domain.line.value.section;
 
+import wooteco.subway.exception.line.NegativeIdException;
+
 import java.util.Objects;
 
 public class SectionId extends Number {
@@ -21,7 +23,7 @@ public class SectionId extends Number {
 
     private void validateThatIsNegativeOrZeroNumber(Long id) {
         if(id < 0) {
-            throw new IllegalArgumentException("id는 음수일 수 없습니다.");
+            throw new NegativeIdException();
         }
     }
 

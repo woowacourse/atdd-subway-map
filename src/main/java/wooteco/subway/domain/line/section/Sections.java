@@ -1,12 +1,14 @@
 package wooteco.subway.domain.line.section;
 
+import wooteco.subway.exception.line.AlreadyExistingUpAndDownStationsException;
+import wooteco.subway.exception.line.ConnectableStationNotFoundException;
+import wooteco.subway.exception.line.SectionDeleteException;
+import wooteco.subway.exception.line.SectionLengthException;
 import wooteco.subway.domain.line.value.line.LineId;
 import wooteco.subway.domain.line.value.section.Distance;
 import wooteco.subway.domain.line.value.section.SectionId;
-import wooteco.subway.domain.station.Station;
 import wooteco.subway.domain.station.value.StationId;
 
-import java.awt.peer.ListPeer;
 import java.util.*;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
@@ -47,7 +49,7 @@ public class Sections {
 
     private void validateThatSectionDistanceIsLowerThenExistingSection(Section section, Section selectedSection) {
         if (selectedSection.getDistance() <= section.getDistance()) {
-            throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다");
+            throw new SectionLengthException();
         }
     }
 
@@ -130,7 +132,7 @@ public class Sections {
 
 
         if (indexOfUpStationId != -1 && indexOfDownStationId != -1) {
-            throw new IllegalArgumentException("상행선과 하행선이 이미 존재합니다");
+            throw new AlreadyExistingUpAndDownStationsException();
         }
 
     }
@@ -148,7 +150,7 @@ public class Sections {
 
         if (!stationIds.contains(newSection.getDownStationId()) &&
                 !stationIds.contains(newSection.getUpStationId())) {
-            throw new IllegalArgumentException("연결할 수 있는 역을 찾을 수 없습니다.");
+            throw new ConnectableStationNotFoundException();
         }
     }
 
@@ -209,7 +211,7 @@ public class Sections {
 
     public void deleteSectionByStationId(Long stationId) {
         if(sections.size() == 1) {
-            throw new IllegalArgumentException("구간이 하나인 노선은 구간을 제거할 수 없습니다.");
+            throw new SectionDeleteException();
         }
 
         Optional<Section> wrappedUpSection = sections.stream()

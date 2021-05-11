@@ -1,13 +1,15 @@
 package wooteco.subway.presentation.line;
 
+<<<<<<< HEAD
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
+=======
+>>>>>>> 3677b8f... refactor: custom exception으로 변경
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.application.line.LineService;
-import wooteco.subway.application.station.StationService;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.section.Section;
 import wooteco.subway.domain.line.section.Sections;
@@ -33,14 +35,10 @@ public class LineController {
 
     private final LineDtoAssembler lineDtoAssembler;
     private final LineService lineService;
-    private final StationService stationService;
 
-    public LineController(LineDtoAssembler lineDtoAssembler,
-                          LineService lineService,
-                          StationService stationService) {
+    public LineController(LineDtoAssembler lineDtoAssembler, LineService lineService) {
         this.lineDtoAssembler = lineDtoAssembler;
         this.lineService = lineService;
-        this.stationService = stationService;
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -135,6 +133,7 @@ public class LineController {
         return ResponseEntity.ok(lineDtoAssembler.line(line));
     }
 
+<<<<<<< HEAD
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<String> duplicationKeyExceptionHandle(Exception e) {
         System.out.println(e.getMessage());
@@ -152,4 +151,6 @@ public class LineController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
+=======
+>>>>>>> 3677b8f... refactor: custom exception으로 변경
 }

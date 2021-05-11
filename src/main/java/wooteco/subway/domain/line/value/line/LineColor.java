@@ -1,5 +1,7 @@
 package wooteco.subway.domain.line.value.line;
 
+import wooteco.subway.exception.line.NameLengthException;
+
 import java.util.Objects;
 
 public final class LineColor {
@@ -13,7 +15,7 @@ public final class LineColor {
 
     private void validateLineColorSize(String lineColor) {
         if(lineColor.isEmpty()) {
-            throw new IllegalArgumentException("글자 수는 0보다 커야 합니다.");
+            throw new NameLengthException();
         }
     }
 

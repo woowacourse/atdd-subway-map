@@ -28,9 +28,7 @@ import wooteco.subway.presentation.station.dto.StationRequest;
 import wooteco.subway.presentation.station.dto.StationResponse;
 >>>>>>> 0d2741d... refactor: 페키지 구조 변경
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;

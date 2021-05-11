@@ -1,7 +1,5 @@
 package wooteco.subway.presentation.station.dto;
 
-import wooteco.subway.domain.station.Station;
-
 import java.beans.ConstructorProperties;
 
 public class StationResponse {

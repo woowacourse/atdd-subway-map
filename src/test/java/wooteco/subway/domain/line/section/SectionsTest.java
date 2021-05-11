@@ -5,9 +5,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import wooteco.subway.exception.line.AlreadyExistingUpAndDownStationsException;
+import wooteco.subway.exception.line.ConnectableStationNotFoundException;
+import wooteco.subway.exception.line.SectionLengthException;
 import wooteco.util.SectionFactory;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -80,8 +82,8 @@ class SectionsTest {
                 sections.add(
                         SectionFactory.create(2L, 1L, upStationId, downStationId, distance)
                 ))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다");
+                .isInstanceOf(SectionLengthException.class)
+                .hasMessage("기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다.");
     }
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 예외")
@@ -95,7 +97,7 @@ class SectionsTest {
                 sections.add(
                         SectionFactory.create(2L, 1L, upStationId, downStationId, 1L)
                 ))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(AlreadyExistingUpAndDownStationsException.class)
                 .hasMessage("상행선과 하행선이 이미 존재합니다");
     }
 
@@ -106,8 +108,8 @@ class SectionsTest {
                 sections.add(
                         SectionFactory.create(2L, 1L, 5L, 6L, 1L)
                 ))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("연결할 수 있는 역을 찾을 수 없습니다.");
+                .isInstanceOf(ConnectableStationNotFoundException.class)
+                .hasMessage("연결할 수 있는 역이 없습니다.");
     }
 
     @DisplayName("구간 삭제")

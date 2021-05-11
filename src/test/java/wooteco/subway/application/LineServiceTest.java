@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.application.line.LineService;
-import wooteco.subway.domain.line.section.Section;
+import wooteco.subway.exception.line.DuplicateLineException;
 import wooteco.subway.infrastructure.line.LineRepositoryImpl;
 import wooteco.subway.infrastructure.station.StationRepositoryImpl;
 import wooteco.util.LineFactory;
@@ -57,7 +57,7 @@ class LineServiceTest {
                 () -> lineService.save(
                         LineFactory.create("신분당선", "red", Collections.emptyList())
                 ))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DuplicateLineException.class)
                 .hasMessage("동알한 라인은 등록할 수 없습니다.");
     }
 

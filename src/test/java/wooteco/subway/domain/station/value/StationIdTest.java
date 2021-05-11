@@ -2,11 +2,10 @@ package wooteco.subway.domain.station.value;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.domain.line.value.line.LineId;
+import wooteco.subway.exception.line.NegativeIdException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 class StationIdTest {
 
@@ -14,8 +13,8 @@ class StationIdTest {
     @Test
     void stationId() {
         assertThatThrownBy(() -> new StationId(-1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("id는 음수일 수 없습니다.");
+                .isInstanceOf(NegativeIdException.class)
+                .hasMessage("id값은 음수일 수 없습니다.");
     }
 
     @Test
