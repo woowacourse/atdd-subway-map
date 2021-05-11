@@ -93,12 +93,12 @@ public class LIneAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() throws JsonProcessingException {
         /// given
-        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600");
+        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600",1L, 2L, 10);
         String content1 = objectMapper.writeValueAsString(lineRequest1);
 
         ExtractableResponse<Response> createResponse1 = addLine(content1);
 
-        LineRequest lineRequest2 = new LineRequest("백기선", "bg-red-600");
+        LineRequest lineRequest2 = new LineRequest("백기선", "bg-red-600",1L, 2L, 10);
         String content2 = objectMapper.writeValueAsString(lineRequest2);
 
         ExtractableResponse<Response> createResponse2 = addLine(content2);

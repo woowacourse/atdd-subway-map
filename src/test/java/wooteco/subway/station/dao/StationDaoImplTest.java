@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.station.domain.Station;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
+@Sql(scripts = {"classpath:schema.sql", "classpath:dummy.sql"})
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class StationDaoImplTest {
 
@@ -61,12 +63,8 @@ class StationDaoImplTest {
     @DisplayName("모든 역을 찾는다.")
     void findAll() {
         //given
-        Station station = new Station("김밥역");
-        Station station2 = new Station("안양역");
 
         //when
-        stationDao.save(station);
-        stationDao.save(station2);
         List<Station> stations = stationDao.findAll();
 
         assertThat(stations).hasSize(2);
