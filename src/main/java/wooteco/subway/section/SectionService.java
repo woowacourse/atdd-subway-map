@@ -3,6 +3,7 @@ package wooteco.subway.section;
 import org.springframework.stereotype.Service;
 import wooteco.subway.section.exception.SectionDistanceException;
 import wooteco.subway.section.exception.SectionInclusionException;
+import wooteco.subway.section.exception.SectionInitializationException;
 import wooteco.subway.section.exception.SectionNotFoundException;
 import wooteco.subway.station.exception.StationNotFoundException;
 
@@ -20,6 +21,7 @@ public class SectionService {
     }
 
     public Section save(SectionDto sectionDto) {
+        validateSectionInitialization(sectionDto.getLineId());
         validateSectionInclusion(sectionDto);
         if (hasEndStationInSection(sectionDto)) {
             return sectionDao.save(sectionDto.getLineId(), sectionDto.getUpStationId(),
@@ -29,11 +31,33 @@ public class SectionService {
     }
 
     public void delete(Long lineId, Long stationId) {
+        validateSectionInitialization(lineId);
         if (sectionDao.isExistingStation(lineId, stationId)) {
             throw new StationNotFoundException();
         }
-        if(sectionDao.is)
+        if (sectionDao.isEndStation(lineId, stationId)) {
+            sectionDao.delete(lineId, stationId);
+        }
+        deleteAndConnectSection(lineId, stationId);
+    }
 
+    private void deleteAndConnectSection(Long lineId, Long stationId) {
+        Section frontSection = sectionDao.findSectionByDownStationId(lineId, stationId)
+                .orElseThrow(SectionNotFoundException::new);
+        Section backSection = sectionDao.findSectionByUpStationId(lineId, stationId)
+                .orElseThrow(SectionNotFoundException::new);
+
+        sectionDao.updateDistanceAndDownStation(
+                lineId, frontSection.getUpStationId(), backSection.getDownStationId(),
+                frontSection.getDistance() + backSection.getDistance()
+        );
+        sectionDao.delete(backSection.getId());
+    }
+
+    private void validateSectionInitialization(Long lineId) {
+        if (!sectionDao.isExistingLine(lineId)) {
+            throw new SectionInitializationException();
+        }
     }
 
     private void validateSectionInclusion(SectionDto sectionDto) {

@@ -78,4 +78,12 @@ class SectionDaoTest {
         assertThat(sectionDao.hasEndStationInSection(1L, 4L, 5L)).isTrue();
         assertThat(sectionDao.hasEndStationInSection(1L, 10L, 1L)).isTrue();
     }
+
+    @Test
+    @DisplayName("존재하는 노선인지 확인")
+    public void isExistingLine() {
+        assertThat(sectionDao.isExistingLine(1L)).isFalse();
+        sectionDao.save(1L, 1L, 2L, 10);
+        assertThat(sectionDao.isExistingLine(1L)).isTrue();
+    }
 }

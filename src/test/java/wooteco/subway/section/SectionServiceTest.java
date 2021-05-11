@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.section.exception.SectionDistanceException;
 import wooteco.subway.section.exception.SectionInclusionException;
+import wooteco.subway.section.exception.SectionInitializationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -39,6 +40,14 @@ class SectionServiceTest {
         assertThat(sectionDao.findSectionByUpStationId(1L, 2L).get())
                 .usingRecursiveComparison()
                 .isEqualTo(new Section(3L, 1L, 2L, 10L, 1));
+    }
+
+    @Test
+    @DisplayName("등록되지 않은 노선에 구간을 저장하는 경우 확인")
+    public void saveSectionWithNonExistingLineCase() {
+        SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(2L, 10L, 1));
+        assertThatThrownBy(() -> sectionService.save(sectionDto))
+                .isInstanceOf(SectionInitializationException.class);
     }
 
     @Test
