@@ -11,7 +11,7 @@ public interface SectionDao {
 
     Sections findSectionsByLineId(Long lineId);
 
-    Section saveAffectedSections(Section section, Optional<Section> affectedSection,
+    Section saveAffectedSections(Section section, Section affectedSection,
                                  Long lineId);
 
     List<Section> findSectionContainsStationId(Long lineId, Long stationId);

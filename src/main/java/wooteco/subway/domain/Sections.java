@@ -56,17 +56,12 @@ public class Sections {
                 .findAny();
     }
 
-    public Optional<Section> affectedSection(Section newSection) {
+    public Section affectedSection(Section newSection) {
         List<Section> collect = sections.stream()
-                .filter(originalSection -> isAdjacentSection(newSection, originalSection))
+                .filter(originalSection -> originalSection.isAdjacent(newSection))
                 .collect(Collectors.toList());
-
-        if (isCycleSection(newSection, collect)) {
-            throw new InvalidSectionException();
-        }
         if (isMiddleSection(newSection, collect)) {
             return updateSection(collect.get(1), newSection);
-
         }
         final Section originalSection = collect.get(FIRST_ELEMENT);
         return updateSection(originalSection, newSection);
@@ -83,37 +78,18 @@ public class Sections {
                 collect.stream().anyMatch(section -> section.isDownStation(newSection.getDownStation()));
     }
 
-    private boolean isAdjacentSection(Section newSection, Section originalSection) {
-        if (originalSection.isSameSection(newSection)) {
-            throw new DuplicatedSectionException();
-        }
-
-        return originalSection.isUpStation(newSection.getUpStation()) ||
-                originalSection.isDownStation(newSection.getDownStation()) ||
-                originalSection.isUpStation(newSection.getDownStation()) ||
-                originalSection.isDownStation(newSection.getUpStation());
-    }
-
-    private Optional<Section> updateSection(Section originalSection, Section newSection) {
-
-        final Station upStation = newSection.getUpStation();
-        final Station downStation = newSection.getDownStation();
-
-        if (originalSection.isUpStation(upStation)) {
-            originalSection.updateUpStation(newSection);
-            return Optional.of(originalSection);
-        }
-
-        if (originalSection.isDownStation(downStation)) {
-            originalSection.updateDownStation(newSection);
-            return Optional.of(originalSection);
-        }
-
-        return Optional.empty();
+    private Section updateSection(Section originalSection, Section newSection) {
+        return originalSection.updateByNewSection(newSection);
     }
 
     public void add(Section section) {
         sections.add(section);
+    }
+
+    public void isAddable(Section target){
+        if (isCycleSection(target, sections)) {
+            throw new InvalidSectionException();
+        }
     }
 
     public List<Section> sections() {

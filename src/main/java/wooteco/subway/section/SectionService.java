@@ -25,13 +25,18 @@ public class SectionService {
     private final SectionDao sectionDao;
 
     @Transactional
-    public Section create(Section section, Long lineId) {
+    public Section create(Section newSection, Long lineId) {
+        //모든 섹션들을 가져옴
         Sections sections = sectionDao.findSectionsByLineId(lineId);
-        Optional<Section> affectedSection = sections.affectedSection(section);
+        // 기존 섹션과 연결 가능한 섹션인지 확인함
+        sections.isAddable(newSection);
 
-        sections.add(section);
+        // 연관된 섹션에 영향받은 섹션을 반환
+        Section affectedSection = sections.affectedSection(newSection);
 
-        return sectionDao.saveAffectedSections(section, affectedSection, lineId);
+        sections.add(newSection);
+
+        return sectionDao.saveAffectedSections(newSection, affectedSection, lineId);
     }
 
     @Transactional

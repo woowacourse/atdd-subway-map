@@ -6,7 +6,6 @@ import wooteco.subway.domain.Sections;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class InMemorySectionDao implements SectionDao {
 
@@ -34,20 +33,20 @@ public class InMemorySectionDao implements SectionDao {
         final List<Section> sections = new ArrayList<>(this.sections.get(lineId));
         return Sections.create(sections);
     }
-
+    //todo: 삭제
     @Override
-    public Section saveAffectedSections(Section section, Optional<Section> affectedSection,
+    public Section saveAffectedSections(Section section, Section affectedSection,
                                         Long lineId) {
-        affectedSection.ifPresent(받아온것 -> {
-            sections.get(lineId)
-                    .stream()
-                    .filter(안에있는것 -> 안에있는것.getId().equals(받아온것.getId()))
-                    .findAny()
-                    .ifPresent(안에있는것 -> {
-                        sections.get(lineId).remove(안에있는것);
-                        sections.get(lineId).add(받아온것);
-                    });
-        });
+//        affectedSection.ifPresent(받아온것 -> {
+//            sections.get(lineId)
+//                    .stream()
+//                    .filter(안에있는것 -> 안에있는것.getId().equals(받아온것.getId()))
+//                    .findAny()
+//                    .ifPresent(안에있는것 -> {
+//                        sections.get(lineId).remove(안에있는것);
+//                        sections.get(lineId).add(받아온것);
+//                    });
+//        });
 
         return create(section, lineId);
     }
@@ -61,7 +60,7 @@ public class InMemorySectionDao implements SectionDao {
     @Override
     public void removeSections(Long lineId, List<Section> sections) {
         for (Section section : sections) {
-            this.sections.get(lineId).removeIf(sec -> sec.isSameSection(section));
+            this.sections.get(lineId).removeIf(sec -> sec.isSameOrReversed(section));
         }
     }
 

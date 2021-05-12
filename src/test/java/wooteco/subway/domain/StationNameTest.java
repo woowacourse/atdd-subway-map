@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("StationName")
+@DisplayName("[도메인] StationName")
 class StationNameTest {
 
     @Test

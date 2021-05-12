@@ -55,7 +55,7 @@ public class JdbcSectionDao implements SectionDao {
 
     @Override
     public Sections findSectionsByLineId(Long lineId) {
-        List<Section> sections = this.jdbcTemplate.query(READ, (rs, rowNum) -> {
+        List<Section> sections = jdbcTemplate.query(READ, (rs, rowNum) -> {
             Long id = rs.getLong("id");
             String upStationName = rs.getString("upStationName");
             Long upStationId = rs.getLong("upStationId");
@@ -73,11 +73,9 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public Section saveAffectedSections(Section section, Optional<Section> affectedSection, Long lineId) {
-        if (affectedSection.isPresent()) {
-            Section updateSection = affectedSection.get();
-            jdbcTemplate.update(UPDATE, updateSection.getUpStation().getId(), updateSection.getDownStation().getId(), updateSection.getDistance(), lineId);
-        }
+    public Section saveAffectedSections(Section section, Section updateSection, Long lineId) {
+        jdbcTemplate.update(UPDATE, updateSection.getUpStation().getId(), updateSection.getDownStation().getId(), updateSection.getDistance(), lineId);
+
         return create(section, lineId);
     }
 

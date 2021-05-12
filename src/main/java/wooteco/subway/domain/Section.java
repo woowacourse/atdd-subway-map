@@ -3,9 +3,7 @@ package wooteco.subway.domain;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import wooteco.subway.exception.section.InvalidDistanceException;
-
-import java.util.Objects;
+import wooteco.subway.exception.section.DuplicatedSectionException;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -24,32 +22,46 @@ public class Section {
         return new Section(id, upStation, downStation, new SectionDistance(distance));
     }
 
-    public boolean isUpStation(Station targetStation) {
-        return upStation.equals(targetStation);
+    public boolean isUpStation(Station target) {
+        return upStation.equals(target);
     }
 
-    public boolean isDownStation(Station targetStation) {
-        return downStation.equals(targetStation);
+    public boolean isDownStation(Station target) {
+        return downStation.equals(target);
     }
 
-    public void updateUpStation(Section section) {
-        int difference = distance.subtract(section.distance).intValue();
-        upStation = section.downStation;
-        distance = new SectionDistance(difference);
+    public Section updateByNewSection(Section target) {
+        if (upStation.equals(target.upStation)) {
+            int difference = distance.subtract(target.distance).intValue();
+            upStation = target.downStation;
+            distance = new SectionDistance(difference);
+            return this;
+        }
+        if (downStation.equals(target.downStation)) {
+            int difference = distance.subtract(target.distance).intValue();
+            downStation = target.upStation;
+            distance = new SectionDistance(difference);
+            return this;
+        }
+        return this;
     }
 
-    public void updateDownStation(Section section) {
-        int difference = distance.subtract(section.distance).intValue();
-        downStation = section.upStation;
-        distance = new SectionDistance(difference);
+    public boolean isSameOrReversed(Section target) {
+        return (isUpStation(target.upStation) && isDownStation(target.downStation)) ||
+                (isUpStation(target.downStation) && isDownStation(target.upStation));
     }
 
-    public boolean isSameSection(Section newSection) {
-        return (isUpStation(newSection.upStation) && isDownStation(newSection.downStation)) ||
-                (isUpStation(newSection.downStation) && isDownStation(newSection.upStation));
+    public boolean isAdjacent(Section target) {
+        if (isSameOrReversed(target)) {
+            throw new DuplicatedSectionException();
+        }
+        return isUpStation(target.getUpStation()) ||
+                isDownStation(target.getDownStation()) ||
+                isUpStation(target.getDownStation()) ||
+                isDownStation(target.getUpStation());
     }
 
-    public int getDistance(){
+    public int getDistance() {
         return distance.intValue();
     }
 
