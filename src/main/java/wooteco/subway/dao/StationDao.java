@@ -20,8 +20,8 @@ import java.util.Optional;
 @Repository
 public class StationDao {
     private static final RowMapper<Station> BASIC_STATION_ROW_MAPPER = (resultSet, rowNumber) -> {
-        long id = resultSet.getLong("ID");
-        String name = resultSet.getString("NAME");
+        long id = resultSet.getLong("id");
+        String name = resultSet.getString("name");
         return new Station(id, name);
     };
     private static final int ROW_COUNTS_FOR_ID_NOT_FOUND = 0;
@@ -32,8 +32,8 @@ public class StationDao {
     public StationDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("STATION")
-                .usingGeneratedKeyColumns("ID");
+                .withTableName("station")
+                .usingGeneratedKeyColumns("id");
     }
 
     public long save(Station station) {
@@ -47,14 +47,14 @@ public class StationDao {
     }
 
     public List<Station> findAll() {
-        String query = "SELECT ID, NAME FROM STATION";
+        String query = "select id, name from station";
         return jdbcTemplate.query(query, BASIC_STATION_ROW_MAPPER);
     }
 
     public Optional<Station> findById(long id) {
-        String query = "SELECT ID, NAME FROM STATION WHERE ID = :ID";
+        String query = "select id, name from station where id = :id";
         try {
-            Station station = jdbcTemplate.queryForObject(query, Collections.singletonMap("ID", id), BASIC_STATION_ROW_MAPPER);
+            Station station = jdbcTemplate.queryForObject(query, Collections.singletonMap("id", id), BASIC_STATION_ROW_MAPPER);
             return Optional.ofNullable(station);
         } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
             return Optional.empty();
@@ -62,8 +62,8 @@ public class StationDao {
     }
 
     public void deleteById(long id) {
-        String query = "DELETE FROM STATION WHERE ID = :ID";
-        int affectedRowCounts = jdbcTemplate.update(query, Collections.singletonMap("ID", id));
+        String query = "delete from station where id = :id";
+        int affectedRowCounts = jdbcTemplate.update(query, Collections.singletonMap("id", id));
         if (affectedRowCounts == ROW_COUNTS_FOR_ID_NOT_FOUND) {
             throw new SubwayException(ExceptionStatus.ID_NOT_FOUND);
         }

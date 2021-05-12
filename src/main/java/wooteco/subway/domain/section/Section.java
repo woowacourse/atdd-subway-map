@@ -75,7 +75,7 @@ public class Section {
                 .lineId(this.lineId)
                 .build();
     }
-    
+
     private Section splitBeforeShorterSection(Section shorterSection, int adjustedDistance) {
         return Section.builder()
                 .id(this.id)

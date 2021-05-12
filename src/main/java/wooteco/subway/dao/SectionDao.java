@@ -23,8 +23,8 @@ public class SectionDao {
     public SectionDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("SECTION")
-                .usingGeneratedKeyColumns("ID");
+                .withTableName("section")
+                .usingGeneratedKeyColumns("id");
     }
 
     public long save(Section section) {
@@ -34,38 +34,38 @@ public class SectionDao {
     }
 
     public List<Section> findAllByLineId(long lineId) {
-        String query = "SELECT ID, DISTANCE, LINE_ID FROM SECTION WHERE LINE_ID = :LINE_ID";
+        String query = "select id, distance, line_id from section where line_id = :line_id";
         RowMapper<Section> sectionRowMapper = (resultSet, rowNumber) -> {
-            long id = resultSet.getLong("ID");
-            int distance = resultSet.getInt("DISTANCE");
+            long id = resultSet.getLong("id");
+            int distance = resultSet.getInt("distance");
             return Section.builder().id(id).distance(distance).lineId(lineId).build();
         };
-        return jdbcTemplate.query(query, Collections.singletonMap("LINE_ID", lineId), sectionRowMapper);
+        return jdbcTemplate.query(query, Collections.singletonMap("line_id", lineId), sectionRowMapper);
     }
 
     public List<Section> findAllByStationId(long stationId) {
-        String query = "SELECT ID, DISTANCE, LINE_ID FROM SECTION WHERE :STATION_ID IN (UP_STATION_ID, DOWN_STATION_ID)";
+        String query = "select id, distance, line_id from section where :station_id in (up_station_id, down_station_id)";
         RowMapper<Section> sectionRowMapper = (resultSet, rowNumber) -> {
-            long id = resultSet.getLong("ID");
-            int distance = resultSet.getInt("DISTANCE");
-            long lineId = resultSet.getLong("LINE_ID");
+            long id = resultSet.getLong("id");
+            int distance = resultSet.getInt("distance");
+            long lineId = resultSet.getLong("line_id");
             return Section.builder().id(id).distance(distance).lineId(lineId).build();
         };
-        return jdbcTemplate.query(query, Collections.singletonMap("STATION_ID", stationId), sectionRowMapper);
+        return jdbcTemplate.query(query, Collections.singletonMap("station_id", stationId), sectionRowMapper);
     }
 
     public List<Long> findStationIdsById(long id) {
-        String query = "SELECT UP_STATION_ID, DOWN_STATION_ID FROM SECTION WHERE ID = :ID";
+        String query = "select up_station_id, down_station_id from section where id = :id";
         RowMapper<List<Long>> stationIdsRowMapper = (resultSet, rowNumber) -> {
-            long upStationId = resultSet.getLong("UP_STATION_ID");
-            long downStationId = resultSet.getLong("DOWN_STATION_ID");
+            long upStationId = resultSet.getLong("up_station_id");
+            long downStationId = resultSet.getLong("down_station_id");
             return Arrays.asList(upStationId, downStationId);
         };
-        return jdbcTemplate.queryForObject(query, Collections.singletonMap("ID", id), stationIdsRowMapper);
+        return jdbcTemplate.queryForObject(query, Collections.singletonMap("id", id), stationIdsRowMapper);
     }
 
     public void update(Section section) {
-        String query = "UPDATE SECTION SET UP_STATION_ID = :UP_STATION_ID, DOWN_STATION_ID = :DOWN_STATION_ID, DISTANCE = :DISTANCE WHERE ID = :ID";
+        String query = "update section set up_station_id = :up_station_id, down_station_id = :down_station_id, distance = :distance where id = :id";
         Map<String, Object> parameters = generateParameters(section);
         int affectedRowCounts = jdbcTemplate.update(query, parameters);
         validateId(affectedRowCounts);
@@ -77,10 +77,10 @@ public class SectionDao {
         long distance = section.getDistance();
         long id = section.getId();
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("UP_STATION_ID", upStationId);
-        parameters.put("DOWN_STATION_ID", downStationId);
-        parameters.put("DISTANCE", distance);
-        parameters.put("ID", id);
+        parameters.put("up_station_id", upStationId);
+        parameters.put("down_station_id", downStationId);
+        parameters.put("distance", distance);
+        parameters.put("id", id);
         return parameters;
     }
 
@@ -91,13 +91,13 @@ public class SectionDao {
     }
 
     public void deleteById(long id) {
-        String query = "DELETE FROM SECTION WHERE ID = :ID";
-        int affectedRowCounts = jdbcTemplate.update(query, Collections.singletonMap("ID", id));
+        String query = "delete from section where id = :id";
+        int affectedRowCounts = jdbcTemplate.update(query, Collections.singletonMap("id", id));
         validateId(affectedRowCounts);
     }
 
     public void deleteAllById(long lineId) {
-        String query = "DELETE FROM SECTION WHERE LINE_ID = :LINE_ID";
-        jdbcTemplate.update(query, Collections.singletonMap("LINE_ID", lineId));
+        String query = "delete from section where line_id = :line_id";
+        jdbcTemplate.update(query, Collections.singletonMap("line_id", lineId));
     }
 }

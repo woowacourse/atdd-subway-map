@@ -18,9 +18,9 @@ import java.util.*;
 @Repository
 public class LineDao {
     private static final RowMapper<Line> BASIC_LINE_ROW_MAPPER = (resultSet, rowNumber) -> {
-        long id = resultSet.getLong("ID");
-        String name = resultSet.getString("NAME");
-        String color = resultSet.getString("COLOR");
+        long id = resultSet.getLong("id");
+        String name = resultSet.getString("name");
+        String color = resultSet.getString("color");
         return Line.builder().id(id).name(name).color(color).build();
     };
     private static final int ROW_COUNTS_FOR_ID_NOT_FOUND = 0;
@@ -31,8 +31,8 @@ public class LineDao {
     public LineDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("LINE")
-                .usingGeneratedKeyColumns("ID");
+                .withTableName("line")
+                .usingGeneratedKeyColumns("id");
     }
 
     public long save(Line line) {
@@ -46,14 +46,14 @@ public class LineDao {
     }
 
     public List<Line> findAll() {
-        String query = "SELECT ID, NAME, COLOR FROM LINE";
+        String query = "select id, name, color from line";
         return jdbcTemplate.query(query, BASIC_LINE_ROW_MAPPER);
     }
 
     public Optional<Line> findById(long id) {
-        String query = "SELECT ID, NAME, COLOR FROM LINE WHERE ID = :ID";
+        String query = "select id, name, color from line where id = :id";
         try {
-            Line line = jdbcTemplate.queryForObject(query, Collections.singletonMap("ID", id), BASIC_LINE_ROW_MAPPER);
+            Line line = jdbcTemplate.queryForObject(query, Collections.singletonMap("id", id), BASIC_LINE_ROW_MAPPER);
             return Optional.ofNullable(line);
         } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
             return Optional.empty();
@@ -61,7 +61,7 @@ public class LineDao {
     }
 
     public void update(Line line) {
-        String query = "UPDATE LINE SET NAME = :NAME, COLOR = :COLOR WHERE ID = :ID";
+        String query = "update line set name = :name, color = :color where id = :id";
         try {
             Map<String, Object> parameters = generateParameters(line);
             int affectedRowCounts = jdbcTemplate.update(query, parameters);
@@ -73,9 +73,9 @@ public class LineDao {
 
     private Map<String, Object> generateParameters(Line line) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("NAME", line.getName());
-        parameters.put("COLOR", line.getColor());
-        parameters.put("ID", line.getId());
+        parameters.put("name", line.getName());
+        parameters.put("color", line.getColor());
+        parameters.put("id", line.getId());
         return parameters;
     }
 
@@ -86,8 +86,8 @@ public class LineDao {
     }
 
     public void deleteById(long id) {
-        String query = "DELETE FROM LINE WHERE ID = :ID";
-        int affectedRowCounts = jdbcTemplate.update(query, Collections.singletonMap("ID", id));
+        String query = "delete from line where id = :id";
+        int affectedRowCounts = jdbcTemplate.update(query, Collections.singletonMap("id", id));
         validateId(affectedRowCounts);
     }
 }
