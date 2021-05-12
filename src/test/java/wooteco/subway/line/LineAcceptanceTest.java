@@ -42,7 +42,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선 등록 실패 - 선택된 역 존재하지 않음")
     @Test
-    void createLineWithOneStationCreated() {
+    void createLine_fail_oneStationOnly() {
         // given
         TestUtils.createOneStation();
         final LineRequest lineTwoRequest = TestUtils.LINE_TWO_REQUEST;
@@ -57,7 +57,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선 등록 실패 - 중복된 노선 존재")
     @Test
-    void createLineWithDuplicateName() {
+    void createLine_fail_duplicateName() {
         // given
         TestUtils.createTwoStations();
         final LineRequest lineTwoRequest = TestUtils.LINE_TWO_REQUEST;
@@ -76,9 +76,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         TestUtils.createThreeStations();
         final LineRequest lineTwoRequest = TestUtils.LINE_TWO_REQUEST;
-        ExtractableResponse<Response> lineTwoResponse = TestUtils.postLine(lineTwoRequest);
-        final LineResponse lineResponse = lineTwoResponse.as(LineResponse.class);
-        final Long lineId = lineResponse.getId();
+        final LineResponse lineTwoResponse = TestUtils.postLine(lineTwoRequest)
+                .as(LineResponse.class);
+        final Long lineId = lineTwoResponse.getId();
 
         final SectionRequest yangjaeSectionRequest = TestUtils.STATION_ONE_TO_THREE_SECTION_REQUEST;
         TestUtils.postSection(lineId, yangjaeSectionRequest);
@@ -90,7 +90,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         final LineResponse responseWithStations = getLineResponse.as(LineResponse.class);
         final List<String> stationNames = responseWithStations.getStations()
                 .stream()
-                .map(stationResponse -> stationResponse.getName())
+                .map(StationResponse::getName)
                 .collect(Collectors.toList());
         final List<String> expectedStationNames = Arrays.asList(
                 TestUtils.JAMSIL_STATION_REQUEST.getName(),

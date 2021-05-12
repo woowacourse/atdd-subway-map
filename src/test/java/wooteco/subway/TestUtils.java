@@ -28,6 +28,18 @@ public class TestUtils {
             50
     );
 
+    public static final SectionRequest STATION_TWO_TO_THREE_SECTION_REQUEST = new SectionRequest(
+            SECOND_STATION_ID,
+            THIRD_STATION_ID,
+            50
+    );
+
+    public static final SectionRequest STATION_THREE_TO_ONE_SECTION_REQUEST = new SectionRequest(
+            THIRD_STATION_ID,
+            FIRST_STATION_ID,
+            50
+    );
+
     public static final LineRequest LINE_TWO_REQUEST = new LineRequest(
             LINE_TWO.getName(),
             LINE_TWO.getColor(),
