@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.dto.SectionRequest;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -93,12 +94,12 @@ public class LIneAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() throws JsonProcessingException {
         /// given
-        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600",1L, 2L, 10);
+        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
         String content1 = objectMapper.writeValueAsString(lineRequest1);
 
         ExtractableResponse<Response> createResponse1 = addLine(content1);
 
-        LineRequest lineRequest2 = new LineRequest("백기선", "bg-red-600",1L, 2L, 10);
+        LineRequest lineRequest2 = new LineRequest("백기선", "bg-red-600", 1L, 2L, 10);
         String content2 = objectMapper.writeValueAsString(lineRequest2);
 
         ExtractableResponse<Response> createResponse2 = addLine(content2);
@@ -233,5 +234,72 @@ public class LIneAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("구간을 제거할 시 구간이 하나만 존재하면 예외가 발생한다..")
+    @Test
+    void deleteSection() throws JsonProcessingException {
+        // given
+        LineRequest lineRequest = new LineRequest("백기선", "bg-red-600", 1L, 2L, 3);
+        String content = objectMapper.writeValueAsString(lineRequest);
+        String uri = "/lines/{id}/sections";
+
+        // when
+        ExtractableResponse<Response> response =
+                RestAssured.given()
+                        .param("stationId", 1L)
+                        .log().all()
+                        .when()
+                        .delete(uri, 1L)
+                        .then().log().all()
+                        .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("구간을 추가한다.")
+    void addSection() throws JsonProcessingException {
+        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 3);
+        String content = objectMapper.writeValueAsString(sectionRequest);
+
+        ExtractableResponse<Response> response = addSection(content);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> addSection(String content) {
+        return RestAssured.given().log().all()
+                .body(content)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/{id}/sections", 1L)
+                .then().log().all()
+                .extract();
+    }
+
+    @DisplayName("구간을 제거한다.")
+    @Test
+    void deleteSection1() throws JsonProcessingException {
+        // given
+        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 3);
+        String content = objectMapper.writeValueAsString(sectionRequest);
+        addSection(content);
+
+        // when
+        String uri = "lines/{id}/sections";
+        ExtractableResponse<Response> response =
+                RestAssured.given()
+                        .param("stationId", 1L)
+                        .log().all()
+                        .when()
+                        .delete(uri, 1L)
+                        .then().log().all()
+                        .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
