@@ -4,22 +4,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.controller.request.StationRequest;
 import wooteco.subway.controller.response.StationResponse;
-import wooteco.subway.exception.SubwayException;
-import wooteco.subway.service.StationService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("classpath:/truncate-test.sql")
 @ActiveProfiles("test")
 class StationAcceptanceTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -34,46 +31,26 @@ class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
-    @Autowired
-    private StationService stationService;
-
-    private List<Long> testStationIds;
-
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        testStationIds = new ArrayList<>();
-    }
-
-    @AfterEach
-    void tearDown() {
-        try {
-            testStationIds.forEach(testStationId -> stationService.deleteById(testStationId));
-        } catch (SubwayException ignored) {
-        }
     }
 
     private ValidatableResponse createStation(StationRequest stationRequest) throws JsonProcessingException {
         String requestBody = OBJECT_MAPPER.writeValueAsString(stationRequest);
-        ValidatableResponse validatableResponse = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .body(requestBody)
                 .when().post("/stations")
                 .then().log().all();
-        int statusCode = validatableResponse.extract().statusCode();
-        if (statusCode != HttpStatus.BAD_REQUEST.value()) {
-            addCreatedStationId(validatableResponse);
-        }
-        return validatableResponse;
     }
 
-    private void addCreatedStationId(ValidatableResponse validatableResponse) {
+    private long extractStationId(ValidatableResponse validatableResponse) {
         String headerToken = validatableResponse.extract()
                 .header("Location")
                 .split("/")[2];
-        long id = Long.parseLong(headerToken);
-        testStationIds.add(id);
+        return Long.parseLong(headerToken);
     }
 
     @DisplayName("지하철역을 생성한다.")
@@ -81,7 +58,7 @@ class StationAcceptanceTest {
     void createStation() throws JsonProcessingException {
         StationRequest stationRequest = new StationRequest("강남역");
         ValidatableResponse validatableResponse = createStation(stationRequest);
-        long id = testStationIds.get(0);
+        long id = extractStationId(validatableResponse);
 
         StationResponse stationResponse = new StationResponse(id, "강남역");
         String responseBody = OBJECT_MAPPER.writeValueAsString(stationResponse);
@@ -105,8 +82,8 @@ class StationAcceptanceTest {
     void getStations() throws JsonProcessingException {
         StationRequest stationRequest1 = new StationRequest("강남역");
         StationRequest stationRequest2 = new StationRequest("천호역");
-        createStation(stationRequest1);
-        createStation(stationRequest2);
+        ValidatableResponse station1 = createStation(stationRequest1);
+        ValidatableResponse station2 = createStation(stationRequest2);
 
         List<Long> resultStationIds = RestAssured.given().log().all()
                 .when().get("/stations")
@@ -118,8 +95,10 @@ class StationAcceptanceTest {
                 .stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
+        long station1Id = extractStationId(station1);
+        long station2Id = extractStationId(station2);
 
-        assertThat(resultStationIds.containsAll(testStationIds)).isTrue();
+        assertThat(resultStationIds).contains(station1Id, station2Id);
     }
 
     @DisplayName("지하철역을 제거한다.")
