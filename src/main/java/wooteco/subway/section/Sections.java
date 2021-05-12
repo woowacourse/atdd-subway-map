@@ -16,26 +16,26 @@ public class Sections {
         Deque<Section> result = new ArrayDeque<>();
 
         result.addLast(waiting.poll());
-        sortUpToDown(waiting, result);
+        while (!waiting.isEmpty()) {
+            sortUpToDown(waiting, result);
+        }
 
         return new ArrayList<>(result);
     }
 
     private void sortUpToDown(Queue<Section> waiting, Deque<Section> result) {
-        while (!waiting.isEmpty()) {
-            Section section = waiting.poll();
-            Section frontBase = result.peek();
-            Section lastBase = result.peekLast();
-            if (section.isSameUpStation(lastBase.getDownStationId())) {
-                result.addLast(section);
-                continue;
-            }
-            if (section.isSameDownStation(frontBase.getUpStationId())) {
-                result.addFirst(section);
-                continue;
-            }
-            waiting.add(section);
+        Section section = waiting.poll();
+        Section frontBase = result.peek();
+        Section lastBase = result.peekLast();
+        if (section.isSameUpStation(lastBase.getDownStationId())) {
+            result.addLast(section);
+            return;
         }
+        if (section.isSameDownStation(frontBase.getUpStationId())) {
+            result.addFirst(section);
+            return;
+        }
+        waiting.add(section);
     }
 
 
