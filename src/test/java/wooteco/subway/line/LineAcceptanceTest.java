@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.dto.LineResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,6 +46,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", "1");
         params.put("downStationId", "2");
         params.put("color", "red");
+        params.put("distance", "1");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -70,6 +71,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", "4");
         params.put("downStationId", "2");
         params.put("color", "red");
+        params.put("distance", "1");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -93,6 +95,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", "1");
         params.put("downStationId", "4");
         params.put("color", "red");
+        params.put("distance", "1");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -117,6 +120,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", "2");
         params.put("downStationId", "2");
         params.put("color", "red");
+        params.put("distance", "1");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -141,6 +145,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", "2");
         params.put("downStationId", "2");
         params.put("color", "red");
+        params.put("distance", "1");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -164,6 +169,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", "2");
         params.put("downStationId", "2");
         params.put("color", "red");
+        params.put("distance", "1");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -188,6 +194,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params1.put("upStationId", "3");
         params1.put("downStationId", "2");
         params1.put("color", "red");
+        params1.put("distance", "1");
+
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -218,6 +226,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params1.put("upStationId", "3");
         params1.put("downStationId", "2");
         params1.put("color", "red");
+        params1.put("distance", "1");
+
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -231,6 +241,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params2.put("upStationId", "1");
         params2.put("downStationId", "2");
         params2.put("color", "red");
+        params2.put("distance", "1");
+
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -267,6 +279,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", "1");
         params.put("downStationId", "2");
         params.put("color", "red");
+        params.put("distance", "1");
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -296,6 +309,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", "1");
         params.put("downStationId", "2");
         params.put("color", "red");
+        params.put("distance", "1");
+
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -338,6 +353,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", "1");
         params.put("downStationId", "2");
         params.put("color", "red");
+        params.put("distance", "1");
+
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -380,6 +397,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params1.put("upStationId", "1");
         params1.put("downStationId", "2");
         params1.put("color", "red");
+        params1.put("distance", "1");
+
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -393,6 +412,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params2.put("upStationId", "1");
         params2.put("downStationId", "2");
         params2.put("color", "red");
+        params2.put("distance", "1");
+
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
