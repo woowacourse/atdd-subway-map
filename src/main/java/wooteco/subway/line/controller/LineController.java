@@ -27,6 +27,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
+    // TODO Service가 Service를 가져도 된다
+    // TODO service가 여러 DAO를 가져도 된다
     private final LineService lineService;
     private final StationService stationService;
     private final SectionService sectionService;

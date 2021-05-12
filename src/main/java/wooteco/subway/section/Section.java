@@ -3,6 +3,8 @@ package wooteco.subway.section;
 import wooteco.subway.exception.SubwayException;
 
 public class Section {
+    // TODO null 허용 필요없으면 Wrapper 클래스 x
+    // TODO Long -> Station / Long -> Line
     private Long id;
     private Long lineId;
     private Long upStationId;

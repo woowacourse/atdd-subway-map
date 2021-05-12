@@ -35,8 +35,10 @@ public class LineService {
         return new LineCreateResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
+    // TODO exist 쿼리로 변경
     private void validatesNameDuplication(LineCreateRequest lineCreateRequest) {
         lineDao.findByName(lineCreateRequest.getName())
+//                .orElseThrow(LineDuplicatedNameException::new);
                 .ifPresent(l -> {
                     throw new LineDuplicatedNameException();
                 });

@@ -57,6 +57,7 @@ public class JdbcLineDao implements LineDao {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query, lineRowMapper(), id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
+            // TODO throw 해라
         }
     }
 

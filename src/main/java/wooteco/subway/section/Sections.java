@@ -15,7 +15,7 @@ public class Sections {
         Queue<Section> waiting = new LinkedList<>(sections);
         Deque<Section> result = new ArrayDeque<>();
 
-        result.addLast(waiting.remove());
+        result.addLast(waiting.remove()); // TODO remove는 삭제한다는 의미이므로 poll사용하기
         sortUpToDown(waiting, result);
 
         return new ArrayList<>(result);
