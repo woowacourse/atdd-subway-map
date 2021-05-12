@@ -11,6 +11,8 @@ import wooteco.subway.exception.NotExistStationException;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.repository.LineRepository;
 import wooteco.subway.section.domain.Section;
+import wooteco.subway.section.domain.SectionAdder;
+import wooteco.subway.section.domain.SectionRemover;
 import wooteco.subway.section.domain.Sections;
 import wooteco.subway.section.repository.SectionRepository;
 import wooteco.subway.station.domain.Station;
@@ -73,20 +75,6 @@ public class LineService {
     }
 
     @Transactional
-    public void addSection(Section section) {
-        Sections sections = new Sections(sectionRepository.findByLineId(section.getLineId()));
-        sections.validateNewSection(section);
-
-        if (sections.isTerminalSection(section)) {
-            sectionRepository.save(section);
-            return;
-        }
-        sectionRepository.save(sections.findNewlyCreatedSection(section));
-        sectionRepository.save(section);
-        sectionRepository.delete(sections.findOriginSection(section));
-    }
-
-    @Transactional
     public List<Station> findSortedLineStations(Long id) {
         Sections sections = new Sections(sectionRepository.findByLineId(id));
 
@@ -98,6 +86,37 @@ public class LineService {
                 }
                 throw new NotExistStationException();
             }).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void addSection(Section section) {
+        SectionAdder sectionAdder = new SectionAdder(
+            sectionRepository.findByLineId(section.getLineId()));
+        sectionAdder.validateSectionAddable(section);
+
+        if (sectionAdder.isTerminalSection(section)) {
+            sectionRepository.save(section);
+            return;
+        }
+        sectionRepository.save(sectionAdder.createdSection(section));
+        sectionRepository.save(section);
+        sectionRepository.delete(sectionAdder.originSection(section));
+    }
+
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        SectionRemover sectionRemover = new SectionRemover(sectionRepository.findByLineId(lineId));
+        sectionRemover.validateSectionRemovable(stationId);
+
+        if (sectionRemover.isTerminalSection(stationId)) {
+            sectionRepository.deleteByUpStationIdAndDownStationId(
+                sectionRemover.deletedTerminalSection(lineId, stationId));
+            return;
+        }
+        for (Section section : sectionRemover.deletedSections(lineId, stationId)) {
+            sectionRepository.deleteByUpStationIdAndDownStationId(section);
+        }
+        sectionRepository.save(sectionRemover.createdSection(lineId, stationId));
     }
 
 }

@@ -61,4 +61,12 @@ public class SectionRepository {
         return jdbcTemplate.update(sql, section.getId());
     }
 
+    public void deleteAll(List<Section> deleteSections) {
+        deleteSections.forEach(this::delete);
+    }
+
+    public Integer deleteByUpStationIdAndDownStationId(Section section) {
+        String sql = "DELETE FROM SECTION WHERE up_station_id = ? AND down_station_id = ?";
+        return jdbcTemplate.update(sql, section.getUpStationId(), section.getDownStationId());
+    }
 }

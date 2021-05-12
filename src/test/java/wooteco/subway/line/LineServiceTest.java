@@ -10,10 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.exception.DeleteSectionException;
 import wooteco.subway.exception.DuplicateLineNameException;
 import wooteco.subway.exception.DuplicatedSectionException;
 import wooteco.subway.exception.NotContainStationsException;
 import wooteco.subway.exception.NotExistLineException;
+import wooteco.subway.exception.NotExistStationException;
 import wooteco.subway.exception.SectionDistanceException;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.service.LineService;
@@ -330,5 +332,116 @@ public class LineServiceTest {
             .isInstanceOf(SectionDistanceException.class);
     }
 
+    @DisplayName("상행 종점역을 삭제한다. (A-B-C에서 A 삭제)")
+    @Test
+    void deleteUpTerminalSection() {
+        // given
+        Station stationA = stationService.createStation(new Station("A"));
+        Station stationB = stationService.createStation(new Station("B"));
+        Station stationC = stationService.createStation(new Station("C"));
+
+        Line line = lineService.createLine(new Line("테스트용 노선", "bg-green-600"));
+        Long lineId = line.getId();
+        sectionService.createSection(new Section(lineId, stationA.getId(), stationB.getId(), 100));
+        lineService.addSection(new Section(lineId, stationB.getId(), stationC.getId(), 50));
+
+        // when
+        lineService.deleteSection(lineId, stationA.getId());
+
+        // then
+        assertThat(lineService.findSortedLineStations(lineId)).containsExactly(stationB, stationC);
+
+        List<Section> sections = sectionRepository.findByLineId(line.getId());
+        assertThat(sections).containsExactlyInAnyOrder(
+            new Section(2L, lineId, stationB.getId(), stationC.getId(), 50)
+        );
+    }
+
+    @DisplayName("하행 종점역을 삭제한다. (A-B-C에서 C 삭제)")
+    @Test
+    void deleteDownTerminalSection() {
+        // given
+        Station stationA = stationService.createStation(new Station("A"));
+        Station stationB = stationService.createStation(new Station("B"));
+        Station stationC = stationService.createStation(new Station("C"));
+
+        Line line = lineService.createLine(new Line("테스트용 노선", "bg-green-600"));
+        Long lineId = line.getId();
+        sectionService.createSection(new Section(lineId, stationA.getId(), stationB.getId(), 100));
+        lineService.addSection(new Section(lineId, stationB.getId(), stationC.getId(), 50));
+
+        // when
+        lineService.deleteSection(lineId, stationC.getId());
+
+        // then
+        assertThat(lineService.findSortedLineStations(lineId)).containsExactly(stationA, stationB);
+
+        List<Section> sections = sectionRepository.findByLineId(line.getId());
+        assertThat(sections).containsExactlyInAnyOrder(
+            new Section(1L, lineId, stationA.getId(), stationB.getId(), 100)
+        );
+    }
+
+    @DisplayName("역사이에 있는 역을 삭제한다. (A-B-C에서 B 삭제)")
+    @Test
+    void deleteInternalSection() {
+        // given
+        Station stationA = stationService.createStation(new Station("A"));
+        Station stationB = stationService.createStation(new Station("B"));
+        Station stationC = stationService.createStation(new Station("C"));
+
+        Line line = lineService.createLine(new Line("테스트용 노선", "bg-green-600"));
+        Long lineId = line.getId();
+        sectionService.createSection(new Section(lineId, stationA.getId(), stationB.getId(), 100));
+        lineService.addSection(new Section(lineId, stationB.getId(), stationC.getId(), 50));
+
+        // when
+        lineService.deleteSection(lineId, stationB.getId());
+
+        // then
+        assertThat(lineService.findSortedLineStations(lineId)).containsExactly(stationA, stationC);
+
+        List<Section> sections = sectionRepository.findByLineId(line.getId());
+        assertThat(sections).containsExactlyInAnyOrder(
+            new Section(3L, lineId, stationA.getId(), stationC.getId(), 150)
+        );
+    }
+
+    @DisplayName("구간이 하나밖에 존재하지 않는 노선에서 역을 삭제한다면, 예외를 던진다.")
+    @Test
+    void deleteDeleteSectionException() {
+        // given
+        Station stationA = stationService.createStation(new Station("A"));
+        Station stationB = stationService.createStation(new Station("B"));
+
+        Line line = lineService.createLine(new Line("테스트용 노선", "bg-green-600"));
+        Long lineId = line.getId();
+        sectionService.createSection(new Section(lineId, stationA.getId(), stationB.getId(), 100));
+
+        // when, then
+        assertThatThrownBy(() -> {
+            lineService.deleteSection(lineId, stationA.getId());
+        }).isInstanceOf(DeleteSectionException.class);
+    }
+
+    @DisplayName("노선에 포함되지 않는 역을 삭제한다면, 예외를 던진다.")
+    @Test
+    void deleteNotExistStationException() {
+        // given
+        Station stationA = stationService.createStation(new Station("A"));
+        Station stationB = stationService.createStation(new Station("B"));
+        Station stationC = stationService.createStation(new Station("C"));
+        Station stationD = stationService.createStation(new Station("D"));
+
+        Line line = lineService.createLine(new Line("테스트용 노선", "bg-green-600"));
+        Long lineId = line.getId();
+        sectionService.createSection(new Section(lineId, stationA.getId(), stationB.getId(), 100));
+        sectionService.createSection(new Section(lineId, stationB.getId(), stationC.getId(), 100));
+
+        // when, then
+        assertThatThrownBy(() -> {
+            lineService.deleteSection(lineId, stationD.getId());
+        }).isInstanceOf(NotExistStationException.class);
+    }
 
 }

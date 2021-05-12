@@ -9,7 +9,7 @@ public class Section {
     private final Long lineId;
     private final Long upStationId;
     private final Long downStationId;
-    private final int distance;
+    private int distance;
     private Long id;
 
     public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
@@ -23,6 +23,12 @@ public class Section {
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
         this(lineId, upStationId, downStationId, distance);
         this.id = id;
+    }
+
+    public Section(Long lineId, Long upStationId, Long downStationId) {
+        this.lineId = lineId;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
     }
 
     private void validateDistance(int distance) {
