@@ -15,7 +15,7 @@ public class Sections {
         Queue<Section> waiting = new LinkedList<>(sections);
         Deque<Section> result = new ArrayDeque<>();
 
-        result.addLast(waiting.remove()); // TODO remove는 삭제한다는 의미이므로 poll사용하기
+        result.addLast(waiting.poll());
         sortUpToDown(waiting, result);
 
         return new ArrayList<>(result);
@@ -23,7 +23,7 @@ public class Sections {
 
     private void sortUpToDown(Queue<Section> waiting, Deque<Section> result) {
         while (!waiting.isEmpty()) {
-            Section section = waiting.remove();
+            Section section = waiting.poll();
             Section frontBase = result.peek();
             Section lastBase = result.peekLast();
             if (section.isSameUpStation(lastBase.getDownStationId())) {
