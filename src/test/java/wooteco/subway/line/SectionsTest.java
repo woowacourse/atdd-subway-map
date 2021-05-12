@@ -28,7 +28,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("구간이 주어졌을 때 정렬된 역 id 리스트 생성")
+    @DisplayName("구간이 주어졌을 때 정렬된 역 리스트 생성")
     void path() {
         assertThat(sections.path()).containsExactly(JAMSIL_STATION, SAMSUNG_STATION, GANGNAM_STATION);
     }
@@ -39,9 +39,9 @@ class SectionsTest {
         Station newStation = new Station(4L, "new");
         Section addFirst = new Section(newStation, JAMSIL_STATION, 3);
 
-        Sections newSections = sections.add(addFirst);
+        sections.add(addFirst);
 
-        assertThat(newSections.path()).containsExactly(newStation, JAMSIL_STATION, SAMSUNG_STATION, GANGNAM_STATION);
+        assertThat(sections.path()).containsExactly(newStation, JAMSIL_STATION, SAMSUNG_STATION, GANGNAM_STATION);
     }
 
     @Test
@@ -50,9 +50,9 @@ class SectionsTest {
         Station newStation = new Station(4L, "new");
         Section addLast = new Section(GANGNAM_STATION, newStation, 3);
 
-        Sections newSections = sections.add(addLast);
+        sections.add(addLast);
 
-        assertThat(newSections.path()).containsExactly(JAMSIL_STATION, SAMSUNG_STATION, GANGNAM_STATION, newStation);
+        assertThat(sections.path()).containsExactly(JAMSIL_STATION, SAMSUNG_STATION, GANGNAM_STATION, newStation);
     }
 
     @Test
@@ -78,34 +78,24 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("같은 역 입력 들어왔을 때")
-    void sectionSameStation() {
-        Station station = new Station(5L, "new");
-        Section section = new Section(station, station, 3);
-
-        assertThatThrownBy(() -> sections.add(section)).isInstanceOf(SectionException.class)
-                                                       .hasMessage(SectionError.SAME_STATION_INPUT.getMessage());
-    }
-
-    @Test
     @DisplayName("하행으로부터 갈림길 방지 연결")
     void addFromDownStation() {
         Station station = new Station(5L, "new");
         Section section = new Section(station, SAMSUNG_STATION, 3);
 
-        Sections newSections = sections.add(section);
+        sections.add(section);
 
-        assertThat(newSections.path()).containsExactly(JAMSIL_STATION, station, SAMSUNG_STATION, GANGNAM_STATION);
+        assertThat(sections.path()).containsExactly(JAMSIL_STATION, station, SAMSUNG_STATION, GANGNAM_STATION);
     }
 
     @Test
     @DisplayName("상행으로부터 갈림길 방지 연결")
     void addFromUpStation() {
         Station station = new Station(5L, "new");
-        Section section = new Section(SAMSUNG_STATION,station, 3);
+        Section section = new Section(SAMSUNG_STATION, station, 3);
 
-        Sections newSections = sections.add(section);
+        sections.add(section);
 
-        assertThat(newSections.path()).containsExactly(JAMSIL_STATION, SAMSUNG_STATION, station, GANGNAM_STATION);
+        assertThat(sections.path()).containsExactly(JAMSIL_STATION, SAMSUNG_STATION, station, GANGNAM_STATION);
     }
 }

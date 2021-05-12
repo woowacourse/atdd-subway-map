@@ -1,5 +1,7 @@
 package wooteco.subway.line;
 
+import wooteco.subway.line.exception.SectionError;
+import wooteco.subway.line.exception.SectionException;
 import wooteco.subway.station.Station;
 
 public class Section {
@@ -8,6 +10,9 @@ public class Section {
     private int distance;
 
     public Section(Station upStation, Station downStation, int distance) {
+        if (upStation.equals(downStation)) {
+            throw new SectionException(SectionError.SAME_STATION_INPUT);
+        }
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;

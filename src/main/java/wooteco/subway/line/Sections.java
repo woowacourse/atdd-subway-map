@@ -8,113 +8,141 @@ import java.util.*;
 
 public class Sections {
     private final List<Section> sections;
-    private final Deque<Station> path;
 
     public Sections(List<Section> sections) {
         this.sections = new ArrayList<>(sections);
-        this.path = buildPath(sections);
     }
 
-    private Deque<Station> buildPath(List<Section> sections) {
-        Map<Station, Section> upStationMap = new HashMap<>();
-        Map<Station, Section> downStationMap = new HashMap<>();
+    public List<Station> path() {
+        Map<Station, Section> sectionsFromUpStation = sectionsFromUpStation();
+        Station station = upStation();
 
-        Deque<Station> sortedStation = new ArrayDeque<>();
+        List<Station> path = new ArrayList<>();
+        path.add(station);
 
+        while (hasNext(station, sectionsFromUpStation)) {
+            station = nextStation(station, sectionsFromUpStation);
+            path.add(station);
+        }
+        return path;
+    }
+
+    private boolean hasNext(Station station, Map<Station, Section> sectionsFromUpStation) {
+        return sectionsFromUpStation.containsKey(station);
+    }
+
+    private Station nextStation(Station station, Map<Station, Section> sectionsFromUpStation) {
+        return sectionsFromUpStation.get(station)
+                                    .getDownStation();
+    }
+
+    private Station upStation() {
+        return findDifferentStation(upStations(), downStations());
+    }
+
+    private Station downStation() {
+        return findDifferentStation(downStations(), upStations());
+    }
+
+    private Station findDifferentStation(Set<Station> from, Set<Station> to) {
+        return from.stream()
+                   .filter(station -> !to.contains(station))
+                   .findAny()
+                   .orElseThrow(() -> new SectionException(SectionError.CANNOT_FIND_DIFFERENT_STATION));
+    }
+
+    private Map<Station, Section> sectionsFromUpStation() {
+        Map<Station, Section> map = new HashMap<>();
         for (Section section : sections) {
-            upStationMap.put(section.getUpStation(), section);
-            downStationMap.put(section.getDownStation(), section);
+            map.put(section.getUpStation(), section);
         }
-
-        sortedStation.addFirst(sections.get(0)
-                                       .getUpStation());
-        sortedStation.addLast(sections.get(0)
-                                      .getDownStation());
-
-        while (upStationMap.containsKey(sortedStation.getLast())) {
-            sortedStation.addLast(upStationMap.get(sortedStation.getLast())
-                                              .getDownStation());
-        }
-
-        while (downStationMap.containsKey(sortedStation.getFirst())) {
-            sortedStation.addFirst(downStationMap.get(sortedStation.getFirst())
-                                                 .getUpStation());
-        }
-
-        return sortedStation;
+        return map;
     }
 
-    public Sections add(Section section) {
-        checkSameStationInput(section);
-        checkBothStationInPath(section);
-        checkBothStationNotInPath(section);
-        if (isEndPointAddition(section)) {
-            sections.add(section);
-            return new Sections(sections);
+    private Map<Station, Section> sectionsFromDownStation() {
+        Map<Station, Section> map = new HashMap<>();
+        for (Section section : sections) {
+            map.put(section.getDownStation(), section);
         }
+        return map;
+    }
 
-        if (path.contains(section.getDownStation())) {
-            Section existingSection = sections.stream()
-                                              .filter(sec -> sec.getDownStation()
-                                                                .equals(section.getDownStation()))
-                                              .findAny()
-                                              .orElseThrow(() -> new SectionException(SectionError.NO_SECTION_FOUND));
-            if (existingSection.getDistance() <= section.getDistance()) {
+    private Set<Station> upStations() {
+        Set<Station> stations = new HashSet<>();
+        for (Section section : sections) {
+            stations.add(section.getUpStation());
+        }
+        return stations;
+    }
+
+    private Set<Station> downStations() {
+        Set<Station> stations = new HashSet<>();
+        for (Section section : sections) {
+            stations.add(section.getDownStation());
+        }
+        return stations;
+    }
+
+    public void add(Section section) {
+        List<Station> path = path();
+        checkBothStationInPath(section, path);
+        checkBothStationNotInPath(section, path);
+        if (isEndPoint(section)) {
+            sections.add(section);
+            return;
+        }
+        if (isMiddleUpToDown(section)) {
+            Section origin = sectionsFromUpStation().get(section.getUpStation());
+            int replacedDistance = origin.getDistance() - section.getDistance();
+            if (replacedDistance <= 0) {
                 throw new SectionException(SectionError.CANNOT_DIVIDE_ORIGIN_SECTION);
             }
-            int diff = existingSection.getDistance() - section.getDistance();
-            sections.add(new Section(existingSection.getUpStation(), section.getUpStation(), diff));
-            sections.remove(existingSection);
+            Section newSection = new Section(section.getDownStation(), origin.getDownStation(), replacedDistance);
+            replaceSection(origin, newSection);
             sections.add(section);
-            return new Sections(sections);
+            return;
         }
 
-        if (path.contains(section.getUpStation())) {
-            Section existingSection = sections.stream()
-                                              .filter(sec -> sec.getUpStation()
-                                                                .equals(section.getUpStation()))
-                                              .findAny()
-                                              .orElseThrow(() -> new SectionException(SectionError.NO_SECTION_FOUND));
-            if (existingSection.getDistance() <= section.getDistance()) {
+        if (isMiddleDownToUp(section)) {
+            Section origin = sectionsFromDownStation().get(section.getDownStation());
+            int replacedDistance = origin.getDistance() - section.getDistance();
+            if (replacedDistance <= 0) {
                 throw new SectionException(SectionError.CANNOT_DIVIDE_ORIGIN_SECTION);
             }
-            int diff = existingSection.getDistance() - section.getDistance();
-            sections.add(new Section(section.getDownStation(), existingSection.getDownStation(), diff));
-            sections.remove(existingSection);
+            Section newSection = new Section(origin.getUpStation(), section.getUpStation(), replacedDistance);
+            replaceSection(origin, newSection);
             sections.add(section);
-            return new Sections(sections);
+            return;
         }
-        throw new SectionException(SectionError.UNCATHCED_ADD_ERROR);
-
+        throw new SectionException(SectionError.UNMATCHED_ADD_ERROR);
     }
 
-    private void checkSameStationInput(Section section) {
-        if (section.getDownStation()
-                   .equals(section.getUpStation())) {
-            throw new SectionException(SectionError.SAME_STATION_INPUT);
-        }
+    private void replaceSection(Section from, Section to) {
+        sections.set(sections.indexOf(from), to);
     }
 
-    private void checkBothStationInPath(Section section) {
+    private boolean isMiddleUpToDown(Section section) {
+        return upStations().contains(section.getUpStation()) && !downStations().contains(section.getDownStation());
+    }
+
+    private boolean isMiddleDownToUp(Section section) {
+        return !upStations().contains(section.getUpStation()) && downStations().contains(section.getDownStation());
+    }
+
+    private void checkBothStationInPath(Section section, List<Station> path) {
         if (path.contains(section.getDownStation()) && path.contains(section.getUpStation())) {
             throw new SectionException(SectionError.BOTH_STATION_IN_PATH);
         }
     }
 
-    private void checkBothStationNotInPath(Section section) {
+    private void checkBothStationNotInPath(Section section, List<Station> path) {
         if (!path.contains(section.getDownStation()) && !path.contains(section.getUpStation())) {
             throw new SectionException(SectionError.NONE_STATION_IN_PATH);
         }
     }
 
-    private boolean isEndPointAddition(Section section) {
-        Station firstStation = path.getFirst();
-        Station lastStation = path.getLast();
-        return firstStation.equals(section.getDownStation()) || lastStation.equals(section.getUpStation());
-    }
-
-    public List<Station> path() {
-        return new ArrayList<>(path);
+    private boolean isEndPoint(Section section) {
+        return upStation().equals(section.getDownStation()) || downStation().equals(section.getUpStation());
     }
 
     public List<Section> getSections() {
