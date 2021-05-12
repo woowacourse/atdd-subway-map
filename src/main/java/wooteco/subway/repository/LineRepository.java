@@ -8,7 +8,6 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
 import wooteco.subway.exception.SubwayException;
 import wooteco.subway.service.SectionsDirtyChecking;
 
@@ -60,13 +59,6 @@ public class LineRepository {
             sectionDao.deleteById(section.getId());
         }
         return lineDao.deleteById(lineId);
-    }
-
-    public void createSectionInLine(Long lineId, Long upStationId, Long downStationId,
-        int distance) {
-        List<Section> sectionsGroup = sectionDao.findByLineId(lineId);
-        Sections sections = new Sections(sectionsGroup);
-        sections.createSectionInLine(lineId, upStationId, downStationId, distance, dirtyChecking);
     }
 
     public void deleteSectionInLine(Long lineId, Long stationId) {

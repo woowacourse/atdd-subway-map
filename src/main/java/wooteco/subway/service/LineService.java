@@ -14,8 +14,10 @@ import wooteco.subway.controller.dto.request.LineEditRequestDto;
 import wooteco.subway.controller.dto.response.LineCreateResponseDto;
 import wooteco.subway.controller.dto.response.LineFindAllResponseDto;
 import wooteco.subway.controller.dto.response.LineFindResponseDto;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.SubwayException;
 import wooteco.subway.repository.LineRepository;
@@ -29,10 +31,16 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final SectionDao sectionDao;
+    private final SectionsDirtyChecking dirtyChecking;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository,
+        StationRepository stationRepository, SectionDao sectionDao,
+        SectionsDirtyChecking dirtyChecking) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.sectionDao = sectionDao;
+        this.dirtyChecking = dirtyChecking;
     }
 
     public LineCreateResponseDto createLine(LineCreateRequestDto lineRequest) {
@@ -104,7 +112,9 @@ public class LineService {
         int distance) {
         Line line = lineRepository.findLineWithSectionsById(lineId);
         line.validateCreateSectionInLine(upStationId, downStationId);
-        lineRepository.createSectionInLine(lineId, upStationId, downStationId, distance);
+        List<Section> sectionsGroup = sectionDao.findByLineId(lineId);
+        Sections sections = new Sections(sectionsGroup);
+        sections.createSectionInLine(lineId, upStationId, downStationId, distance, dirtyChecking);
     }
 
     public void deleteSectionInLine(Long lineId, Long stationId) {
