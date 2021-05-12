@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Sections {
+    private static final int NOT_DELETABLE_SECTION_COUNTS = 1;
 
     private final List<Section> sections;
 
@@ -70,7 +71,7 @@ public class Sections {
     }
 
     public boolean canDeleteEndSection(Sections removableTarget) {
-        if (isNotDeletable() || removableTarget.sections.size() != 1) {
+        if (this.isNotDeletable() || removableTarget.hasSeveralSections()) {
             return false;
         }
         int lastIndex = sections.size() - 1;
@@ -80,8 +81,12 @@ public class Sections {
         return targetSection.equals(firstSection) || targetSection.equals(lastSection);
     }
 
+    private boolean hasSeveralSections() {
+        return sections.size() != NOT_DELETABLE_SECTION_COUNTS;
+    }
+
     public boolean isNotDeletable() {
-        return sections.size() == 1;
+        return sections.size() == NOT_DELETABLE_SECTION_COUNTS;
     }
 
     public Section splitLongerSectionAfterAdding(Section section) {
