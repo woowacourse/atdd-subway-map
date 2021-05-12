@@ -104,7 +104,6 @@ public class LineService {
         int distance) {
         Line line = lineRepository.findLineWithSectionsById(lineId);
         line.validateCreateSectionInLine(upStationId, downStationId);
-
         lineRepository.createSectionInLine(lineId, upStationId, downStationId, distance);
     }
 

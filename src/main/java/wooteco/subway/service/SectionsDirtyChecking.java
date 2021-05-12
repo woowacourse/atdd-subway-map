@@ -1,4 +1,4 @@
-package wooteco.subway.repository;
+package wooteco.subway.service;
 
 import java.util.ArrayList;
 import java.util.List;

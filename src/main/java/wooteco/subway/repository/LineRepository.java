@@ -8,7 +8,9 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.exception.SubwayException;
+import wooteco.subway.service.SectionsDirtyChecking;
 
 @Repository
 public class LineRepository {
@@ -62,76 +64,9 @@ public class LineRepository {
 
     public void createSectionInLine(Long lineId, Long upStationId, Long downStationId,
         int distance) {
-        List<Section> sections = sectionDao.findByLineId(lineId);
-        dirtyChecking.setInitSections(sections);
-        boolean containsUpStation = containsStationInLine(sections, upStationId);
-        boolean containsDownStation = containsStationInLine(sections, downStationId);
-
-        // 상행, 하행 종점(구간) 등록
-        if (isStartStation(sections, downStationId) && isEndStation(sections, upStationId)) {
-            sections.add(new Section(null, lineId, upStationId, downStationId, distance));
-            dirtyChecking.dirtyChecking(sections);
-            return;
-        }
-
-        // 중간 구간 등록
-        if (containsUpStation) {
-            Section originSection = sections.stream()
-                .filter(section -> section.getUpStationId().equals(upStationId)).findFirst().get();
-            validateSectionDistance(distance, originSection);
-            sections.remove(originSection);
-            sections.add(new Section(
-                null,
-                lineId,
-                originSection.getUpStationId(),
-                downStationId,
-                distance));
-            sections.add(new Section(
-                null,
-                lineId,
-                downStationId,
-                originSection.getDownStationId(),
-                originSection.getDistance() - distance));
-            dirtyChecking.dirtyChecking(sections);
-            return;
-        }
-
-        if (containsDownStation) {
-            Section originSection = sections.stream()
-                .filter(section -> section.getDownStationId().equals(downStationId)).findFirst().get();
-            validateSectionDistance(distance, originSection);
-            sections.remove(originSection);
-            sections.add(new Section(
-                null,
-                lineId,
-                originSection.getUpStationId(),
-                upStationId,
-                originSection.getDistance() - distance));
-            sections.add(new Section(
-                null,
-                lineId,
-                upStationId,
-                originSection.getDownStationId(),
-                distance));
-            dirtyChecking.dirtyChecking(sections);
-            return;
-        }
-
-        throw new SubwayException("잘못된 요청입니다.");
-    }
-
-    private void validateSectionDistance(int newSectionDistance, Section originSection) {
-        if (originSection.getDistance() <= newSectionDistance) {
-            throw new SubwayException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
-        }
-    }
-
-    private boolean containsStationInLine(List<Section> sections, Long stationId) {
-        Optional<Section> foundSectionByDownStationId = sections.stream()
-            .filter(section -> section.getDownStationId().equals(stationId)).findFirst();
-        Optional<Section> foundSectionByUpStationId = sections.stream()
-            .filter(section -> section.getUpStationId().equals(stationId)).findFirst();
-        return foundSectionByUpStationId.isPresent() || foundSectionByDownStationId.isPresent();
+        List<Section> sectionsGroup = sectionDao.findByLineId(lineId);
+        Sections sections = new Sections(sectionsGroup);
+        sections.createSectionInLine(lineId, upStationId, downStationId, distance, dirtyChecking);
     }
 
     public void deleteSectionInLine(Long lineId, Long stationId) {
@@ -172,23 +107,9 @@ public class LineRepository {
         return !downSectionOptional.isPresent();
     }
 
-    private boolean isEndStation(List<Section> sections, Long stationId) {
-        Optional<Section> downSectionOptional = sections.stream()
-            .filter(section -> section.getUpStationId().equals(stationId))
-            .findFirst();
-        return !downSectionOptional.isPresent();
-    }
-
     private boolean isStartStation(Long lineId, Long stationId) {
         Optional<Section> upSectionOptional = sectionDao
             .findByDownStationIdAndLineId(stationId, lineId);
-        return !upSectionOptional.isPresent();
-    }
-
-    private boolean isStartStation(List<Section> sections, Long stationId) {
-        Optional<Section> upSectionOptional = sections.stream()
-            .filter(section -> section.getDownStationId().equals(stationId))
-            .findFirst();
         return !upSectionOptional.isPresent();
     }
 }
