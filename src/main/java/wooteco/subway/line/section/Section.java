@@ -36,6 +36,30 @@ public class Section {
         }
     }
 
+    public boolean isUpEqualDown(Section section) {
+        return upStationId.equals(section.getDownStationId());
+    }
+
+    public boolean isDownEqualUp(Section section) {
+        return downStationId.equals(section.getUpStationId());
+    }
+
+    public boolean isUpEqualUp(Section section) {
+        return upStationId.equals(section.getUpStationId());
+    }
+
+    public boolean isDownEqualDown(Section section) {
+        return downStationId.equals(section.getDownStationId());
+    }
+
+    public int getDiffDistance(Section addSection) {
+        return distance - addSection.getDistance();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
     public Long getUpStationId() {
         return upStationId;
     }

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import wooteco.subway.exception.IllegalUserInputException;
 import wooteco.subway.exception.NotExistItemException;
@@ -57,9 +59,54 @@ public class Sections {
         return new ArrayList<>(sections);
     }
 
-    public Section findJoinSection(Section section) {
-        validate(section);
+    public Section findJoinResultSection(Section addSection) {
+        validateStationCount(addSection);
+        Section sideSection = findJoinSideSection(addSection);
+        if (Objects.nonNull(sideSection)) {
+            return sideSection;
+        }
+
+        return findJoinMiddleSection(addSection);
+    }
+
+    private Section findJoinSideSection(Section addSection) {
+        Section firstSection = sections.get(0);
+        Section lastSection = sections.get(sections.size() - 1);
+        if (addSection.isDownEqualUp(firstSection)) {
+            return firstSection;
+        }
+        if (addSection.isUpEqualDown(lastSection)) {
+            return lastSection;
+        }
         return null;
+    }
+
+    private Section findJoinMiddleSection(Section addSection) {
+        Optional<Section> upEqualStation = sections.stream().filter(addSection::isUpEqualUp).findFirst();
+        if (upEqualStation.isPresent()) {
+            Section section = upEqualStation.get();
+            validateDistance(upEqualStation.get(), addSection);
+            return new Section(section.getId(), addSection.getDownStationId(),
+                section.getDownStationId(), section.getDiffDistance(addSection));
+        }
+
+        Optional<Section> downEqualStation = sections.stream().filter(addSection::isDownEqualDown).findFirst();
+        if (downEqualStation.isPresent()) {
+            Section section = downEqualStation.get();
+            validateDistance(downEqualStation.get(), addSection);
+            return new Section(section.getId(), section.getUpStationId(),
+                addSection.getUpStationId(), section.getDiffDistance(addSection));
+        }
+        throw new IllegalUserInputException();
+    }
+
+    private void validateStationCount(Section section) {
+        Set<Long> stationIds = getStationIds();
+        int stationCount = getStationCount(section.getUpStationId(), stationIds, 0);
+        stationCount = getStationCount(section.getDownStationId(), stationIds, stationCount);
+        if (stationCount != 1) {
+            throw new IllegalUserInputException();
+        }
     }
 
     private Set<Long> getStationIds() {
@@ -71,16 +118,15 @@ public class Sections {
         return stationIds;
     }
 
-    private void validate(Section section) {
-        Set<Long> stationIds = getStationIds();
-        int stationCount = 0;
-        if (stationIds.contains(section.getDownStationId())) {
-            stationCount++;
+    private int getStationCount(Long stationId, Set<Long> stationIds, int stationCount) {
+        if (stationIds.contains(stationId)) {
+            return stationCount + 1;
         }
-        if (stationIds.contains(section.getUpStationId())) {
-            stationCount++;
-        }
-        if (stationCount != 2) {
+        return stationCount;
+    }
+
+    private void validateDistance(Section section, Section addSection) {
+        if (section.getDiffDistance(addSection) <= 0) {
             throw new IllegalUserInputException();
         }
     }

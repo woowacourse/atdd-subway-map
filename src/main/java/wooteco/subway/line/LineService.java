@@ -33,7 +33,7 @@ public class LineService {
 
         SectionRequest sectionRequest = new SectionRequest(lineRequest.getUpStationId(),
             lineRequest.getDownStationId(), lineRequest.getDistance());
-        sectionService.save(newLine.getId(), sectionRequest);
+        sectionService.save(newLine.getId(), sectionRequest, true);
 
         Sections sections = sectionService.findByLineId(newLine.getId());
 

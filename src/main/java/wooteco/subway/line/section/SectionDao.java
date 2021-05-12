@@ -4,7 +4,6 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.line.section.dto.SectionRequest;
 
 @Repository
 public class SectionDao {
@@ -44,4 +43,13 @@ public class SectionDao {
             , lineId);
     }
 
+    public void update(Long lineId, Section resultSection) {
+        String sql = "update SECTION set up_station_id = ?, down_station_id = ?, distance = ? where line_id = ?";
+        jdbcTemplate.update(
+            sql,
+            resultSection.getUpStationId(),
+            resultSection.getDownStationId(),
+            resultSection.getDistance(),
+            lineId);
+    }
 }

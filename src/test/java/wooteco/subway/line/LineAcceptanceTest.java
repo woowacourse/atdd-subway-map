@@ -9,8 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.assertj.core.api.ThrowableAssert;
-import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +35,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private final String notExistItemMessage = "[ERROR] 해당 아이템이 존재하지 않습니다.";
     private final String noInputMessage = "[ERROR] 입력값이 존재하지 않습니다.";
     private final String duplicateMessage = "[ERROR] 중복된 이름입니다.";
+    private final String IllegalUserInputMessage = "[ERROR] 잘못된 입력입니다.";
     private final LineRequest line2Request = new LineRequest("2호선", "bg-green-600", 1L, 4L, 10);
     private final LineRequest line3Request = new LineRequest("3호선", "bg-orange-600", 1L, 3L, 13);
     private static final Station gangnamStation = new Station(1L, "강남역");
@@ -75,7 +74,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createLineAPI(line2Request);
 
         ExtractableResponse<Response> response = createLineAPI(line2Request);
-        checkedThenException(response, duplicateMessage);
+        thenBadRequestException(response, duplicateMessage);
     }
 
     @Test
@@ -93,7 +92,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        checkedThenException(response, noInputMessage);
+        thenBadRequestException(response, noInputMessage);
     }
 
     @Test
@@ -111,7 +110,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        checkedThenException(response, noInputMessage);
+        thenBadRequestException(response, noInputMessage);
     }
 
     @Test
@@ -129,7 +128,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        checkedThenException(response, noInputMessage);
+        thenBadRequestException(response, noInputMessage);
     }
 
     @Test
@@ -147,7 +146,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        checkedThenException(response, noInputMessage);
+        thenBadRequestException(response, noInputMessage);
     }
 
     @Test
@@ -165,7 +164,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        checkedThenException(response, noInputMessage);
+        thenBadRequestException(response, noInputMessage);
     }
 
     @Test
@@ -183,7 +182,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        checkedThenException(response, noInputMessage);
+        thenBadRequestException(response, noInputMessage);
     }
 
     @Test
@@ -201,7 +200,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        checkedThenException(response, noInputMessage);
+        thenBadRequestException(response, noInputMessage);
     }
 
     @Test
@@ -219,7 +218,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        checkedThenException(response, noInputMessage);
+        thenBadRequestException(response, noInputMessage);
     }
 
     @ParameterizedTest
@@ -238,7 +237,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        checkedThenException(response, noInputMessage);
+        thenBadRequestException(response, noInputMessage);
     }
 
     @Test
@@ -288,7 +287,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getLineAPI();
 
         // then
-        checkedThenException(response, notExistItemMessage);
+        thenBadRequestException(response, notExistItemMessage);
     }
 
     @Test
@@ -313,7 +312,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = updateLineAPI(line3Request);
 
         //then
-        checkedThenException(response, notExistItemMessage);
+        thenBadRequestException(response, notExistItemMessage);
     }
 
     @Test
@@ -327,7 +326,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = updateLineAPI(line3Request);
 
         //then
-        checkedThenException(response, duplicateMessage);
+        thenBadRequestException(response, duplicateMessage);
     }
 
     @Test
@@ -359,8 +358,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("변경면 변경에 맞게 순서가 유지되어야 한다.")
-    void getStationWithMultiSection() {
+    @DisplayName("노선에 상행 구간이 추가되면 순서가 변경되어야 한다.")
+    void getLineWithAddSectionAtInitLocation() {
         //given
         createLineAPI(line2Request);
         SectionRequest sectionRequest = new SectionRequest(2L, 1L, 5);
@@ -376,12 +375,109 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getLineAPI();
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        LineResponse lineResponse = response.as(LineResponse.class);
+        thenAddSection(stations, response);
+    }
 
-        assertThat(lineResponse.getStations())
-            .usingRecursiveComparison()
-            .isEqualTo(stations);
+    @Test
+    @DisplayName("Section 중간에 추가하면 관계와 거리가 맞아야 한다.")
+    void getLineWithAddSectionAtMiddleLocation() {
+        //given
+        createLineAPI(line2Request);
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 5);
+        createSectionAPI(sectionRequest);
+
+        List<StationResponse> stations = Arrays.asList(
+            new StationResponse(1L, gangnamStation.getName()),
+            new StationResponse(2L, jamsilStation.getName()),
+            new StationResponse(4L, sillimStation.getName())
+        );
+
+        //when
+        ExtractableResponse<Response> response = getLineAPI();
+
+        //then
+        thenAddSection(stations, response);
+    }
+
+    @Test
+    @DisplayName("노선에 하행 구간이 추가되면 순서가 변경되어야 한다.")
+    void getLineWithAddSectionAtLastLocation() {
+        //given
+        createLineAPI(line2Request);
+        SectionRequest sectionRequest = new SectionRequest(4L, 2L, 5);
+        createSectionAPI(sectionRequest);
+
+        List<StationResponse> stations = Arrays.asList(
+            new StationResponse(1L, gangnamStation.getName()),
+            new StationResponse(4L, sillimStation.getName()),
+            new StationResponse(2L, jamsilStation.getName())
+        );
+
+        //when
+        ExtractableResponse<Response> response = getLineAPI();
+
+        //then
+        thenAddSection(stations, response);
+    }
+
+    @Test
+    @DisplayName("같은 구간을 추가하면 에러가 발생한다.")
+    void addSectionWithEqualSection() {
+        //given
+        createLineAPI(line2Request);
+        SectionRequest sectionRequest = new SectionRequest(1L, 4L, 10);
+
+        //when
+        ExtractableResponse<Response> response = createSectionAPI(sectionRequest);
+
+        //then
+        thenBadRequestException(response, IllegalUserInputMessage);
+    }
+
+    @Test
+    @DisplayName("노선에 이미 포함된 역이 들어간 구간을 추가하면 에러가 발생한다.")
+    void addSectionWithEqualTwoStation() {
+        //given
+        createLineAPI(line2Request);
+        createSectionAPI(new SectionRequest(4L, 3L, 10));
+
+        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 10);
+
+        //when
+        ExtractableResponse<Response> response = createSectionAPI(sectionRequest);
+
+        //then
+        thenBadRequestException(response, IllegalUserInputMessage);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {10, 11})
+    @DisplayName("노선의 중간에 구간이 추가될때 기존구간보다 거리가 크거나 같으면 에러가 발생한다.")
+    void addSectionWithOverDistance(int value) {
+        //given
+        createLineAPI(line2Request);
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, value);
+
+        //when
+        ExtractableResponse<Response> response = createSectionAPI(sectionRequest);
+
+        //then
+        thenBadRequestException(response, IllegalUserInputMessage);
+    }
+
+    @Test
+    @DisplayName("노선에 포함되지 않은 역 2개가 포함된 구간을 추가하면 에러가 발생한다.")
+    void addSectionWithNotHaveStation() {
+        //given
+        createLineAPI(line2Request);
+
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 10);
+
+        //when
+        ExtractableResponse<Response> response = createSectionAPI(sectionRequest);
+
+        //then
+        thenBadRequestException(response, IllegalUserInputMessage);
     }
 
     private ExtractableResponse<Response> createLineAPI(LineRequest lineRequest) {
@@ -443,7 +539,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private void checkedThenException(ExtractableResponse<Response> response, String message) {
+    private void thenBadRequestException(ExtractableResponse<Response> response, String message) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString()).isEqualTo(message);
     }
@@ -456,5 +552,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .post("/lines/1/sections")
             .then()
             .extract();
+    }
+
+    private void thenAddSection(List<StationResponse> stations,
+        ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineResponse lineResponse = response.as(LineResponse.class);
+
+        assertThat(lineResponse.getStations())
+            .usingRecursiveComparison()
+            .isEqualTo(stations);
     }
 }

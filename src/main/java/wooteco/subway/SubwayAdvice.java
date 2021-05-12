@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.exception.DuplicateException;
+import wooteco.subway.exception.IllegalUserInputException;
 import wooteco.subway.exception.NotExistItemException;
 import wooteco.subway.exception.NotInputDataException;
 
@@ -22,6 +23,11 @@ public class SubwayAdvice {
 
     @ExceptionHandler(NotInputDataException.class)
     public ResponseEntity<String> handleNotInputDataException(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalUserInputException.class)
+    public ResponseEntity<String> handleIllegalUserInputException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
