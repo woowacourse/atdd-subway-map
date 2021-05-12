@@ -5,7 +5,10 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class InMemorySectionDao implements SectionDao {
 
@@ -33,6 +36,7 @@ public class InMemorySectionDao implements SectionDao {
         final List<Section> sections = new ArrayList<>(this.sections.get(lineId));
         return Sections.create(sections);
     }
+
     //todo: 삭제
     @Override
     public Section saveModified(Section section, Section affectedSection,

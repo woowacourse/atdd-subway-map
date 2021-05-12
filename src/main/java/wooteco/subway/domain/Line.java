@@ -22,7 +22,7 @@ public class Line {
         return create(id, name, color, Sections.create());
     }
 
-    public static Line create(Long id, String name, String color, Sections sections){
+    public static Line create(Long id, String name, String color, Sections sections) {
         return new Line(id, name, color, sections);
     }
 

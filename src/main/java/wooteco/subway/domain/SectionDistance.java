@@ -19,11 +19,11 @@ public class SectionDistance {
         }
     }
 
-    public SectionDistance subtract(SectionDistance target){
-        return new SectionDistance(distance-target.distance);
+    public SectionDistance subtract(SectionDistance target) {
+        return new SectionDistance(distance - target.distance);
     }
 
-    public int intValue(){
+    public int intValue() {
         return distance;
     }
 

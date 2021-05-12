@@ -30,7 +30,7 @@ public class Station {
         return this.name.equals(new StationName(name));
     }
 
-    public String getName(){
+    public String getName() {
         return name.getName();
     }
 

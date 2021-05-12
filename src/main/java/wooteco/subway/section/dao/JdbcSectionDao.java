@@ -11,7 +11,6 @@ import wooteco.subway.domain.Station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository

@@ -4,7 +4,6 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface SectionDao {
     Section create(Section section, Long lineId);

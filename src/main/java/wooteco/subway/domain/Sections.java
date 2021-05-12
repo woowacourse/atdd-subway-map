@@ -101,7 +101,7 @@ public class Sections {
             throw new SectionCycleException();
         }
 
-        if(isUnLinkableSection(target)){
+        if (isUnLinkableSection(target)) {
             throw new SectionUnlinkedException();
         }
     }

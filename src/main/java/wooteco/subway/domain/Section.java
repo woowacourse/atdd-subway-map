@@ -28,7 +28,7 @@ public class Section {
     }
 
     private static void validateSameUpAndDown(Station upStation, Station downStation) {
-        if(upStation.equals(downStation)){
+        if (upStation.equals(downStation)) {
             throw new SectionHasSameUpAndDownException();
         }
     }

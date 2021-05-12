@@ -7,7 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @DisplayName("[도메인] Line")
 class LineTest {
     private static final Station 강남역 = Station.create(1L, "강남역");
@@ -50,7 +52,7 @@ class LineTest {
     @DisplayName("같은 아이디 확인")
     @Test
     void isSameId() {
-        Line line = Line.create(1L,"1호선", "bg-green-300");
+        Line line = Line.create(1L, "1호선", "bg-green-300");
 
         assertTrue(line.isSameId(1L));
     }
