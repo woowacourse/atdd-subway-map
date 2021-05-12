@@ -49,7 +49,7 @@ public class SectionRepositoryTest {
     @DisplayName("종점인 역을 제거할 때 종점인 역과 연결되어있던 역을 종점으로 해서 구간을 변경한다")
     @Test
     void deleteSection_endStation() {
-        sectionRepository.deleteRelevantSections(lineId, 3L);
+        sectionRepository.deleteByStationId(lineId, 3L);
 
         String query = "SELECT line_id, up_station_id, down_station_id, distance FROM section WHERE line_id = ?";
         List<Section> sections = jdbcTemplate.query(
@@ -73,7 +73,7 @@ public class SectionRepositoryTest {
     @DisplayName("종점이 아닌 역을 제거할 때 해당 역과 관련된 두 역을 다 지운다")
     @Test
     void deleteSection_nonEndStation() {
-        sectionRepository.deleteRelevantSections(1L, 4L);
+        sectionRepository.deleteByStationId(1L, 4L);
 
         String query = "SELECT line_id, up_station_id, down_station_id, distance FROM section WHERE line_id = ?";
         List<Section> sections = jdbcTemplate.query(
@@ -148,7 +148,7 @@ public class SectionRepositoryTest {
     @DisplayName("해당역이 상행선으로 존재하는 구간과 하행선으로 존재하는 구간의 합을 반환한다")
     @Test
     void getNewSectionDistance() {
-        assertThat(sectionRepository.getNewSectionDistance(lineId, 2L)).isEqualTo(9);
+        assertThat(sectionRepository.getNewDistance(lineId, 2L)).isEqualTo(9);
     }
 
     @DisplayName("해당역이 하행역으로 존재하는 구간의 상행역 id를 반환한다")
@@ -182,11 +182,11 @@ public class SectionRepositoryTest {
     void getExistingSectionByBaseStation() {
         Section sectionWithUpStationBase = new Section(lineId, 4L, 5L);
         Section expectedSection = new Section(3L, lineId, 4L, 3L, 7);
-        assertThat(sectionRepository.getExistingSectionByBaseStation(sectionWithUpStationBase)).isEqualTo(expectedSection);
+        assertThat(sectionRepository.findByBaseStation(sectionWithUpStationBase)).isEqualTo(expectedSection);
 
         Section sectionWithDownStationBase = new Section(lineId, 5L, 4L);
         expectedSection = new Section(1L, lineId, 2L, 4L, 4);
-        assertThat(sectionRepository.getExistingSectionByBaseStation(sectionWithDownStationBase)).isEqualTo(expectedSection);
+        assertThat(sectionRepository.findByBaseStation(sectionWithDownStationBase)).isEqualTo(expectedSection);
     }
 
     @DisplayName("주어진 구간 정보대로 해당 구간을 업데이트 한다")
@@ -196,7 +196,7 @@ public class SectionRepositoryTest {
         assertThat(getSection(1L)).isEqualTo(originalSection);
 
         Section sectionForUpdate = new Section(1L, lineId, 3L, 1L, 12);
-        sectionRepository.updateSection(sectionForUpdate);
+        sectionRepository.update(sectionForUpdate);
 
         Section section = getSection(1L);
         assertThat(section).isEqualTo(sectionForUpdate);

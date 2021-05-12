@@ -55,12 +55,12 @@ public class SectionRepository {
         return count == 1;
     }
 
-    public void deleteRelevantSections(final Long lineId, final Long stationId) {
+    public void deleteByStationId(final Long lineId, final Long stationId) {
         String query = "DELETE FROM section WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
         jdbcTemplate.update(query, lineId, stationId, stationId);
     }
 
-    public int getNewSectionDistance(final Long lineId, final Long stationId) {
+    public int getNewDistance(final Long lineId, final Long stationId) {
         String query = "SELECT SUM(distance) FROM section WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
         return jdbcTemplate.queryForObject(query, Integer.class, lineId, stationId, stationId);
     }
@@ -102,18 +102,18 @@ public class SectionRepository {
         return sections;
     }
 
-    public Section getExistingSectionByBaseStation(final Section section) {
+    public Section findByBaseStation(final Section section) {
         String query;
         Long lineId = section.getLineId();
         if (doesExistInUpStation(lineId, section.getUpStationId())) {
             query = "SELECT id, line_id, up_station_id, down_station_id, distance FROM section WHERE line_id = ? AND up_station_id = ?";
-            return sendQueryToGetSection(query, lineId, section.getUpStationId());
+            return sendQuery(query, lineId, section.getUpStationId());
         }
         query = "SELECT id, line_id, up_station_id, down_station_id, distance FROM section WHERE line_id = ? AND down_station_id = ?";
-        return sendQueryToGetSection(query, lineId, section.getDownStationId());
+        return sendQuery(query, lineId, section.getDownStationId());
     }
 
-    private Section sendQueryToGetSection(final String query, final Long lineId, final Long stationId) {
+    private Section sendQuery(final String query, final Long lineId, final Long stationId) {
         return jdbcTemplate.queryForObject(
                 query,
                 (resultSet, rowNum) -> new Section(
@@ -127,7 +127,7 @@ public class SectionRepository {
         );
     }
 
-    public void updateSection(final Section section) {
+    public void update(final Section section) {
         String query = "UPDATE section SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
         jdbcTemplate.update(query, section.getUpStationId(), section.getDownStationId(), section.getDistance(), section.getId());
     }

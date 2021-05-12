@@ -24,7 +24,7 @@ public class LineRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Line save(final Line line) {
+    public long save(final Line line) {
         String query = "INSERT INTO line(color, name) VALUES(?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -35,19 +35,15 @@ public class LineRepository {
             return ps;
         }, keyHolder);
 
-        return new Line(
-                Objects.requireNonNull(keyHolder.getKey()).longValue(),
-                line.getColor(),
-                line.getName()
-        );
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public List<Line> getLines() {
+    public List<Line> findAll() {
         String query = "SELECT id, color, name FROM line ORDER BY id";
         return jdbcTemplate.query(query, lineRowMapper);
     }
 
-    public Line getLine(final Long id) {
+    public Line findById(final Long id) {
         String query = "SELECT id, color, name FROM line WHERE id = ?";
         return jdbcTemplate.queryForObject(query, lineRowMapper, id);
     }

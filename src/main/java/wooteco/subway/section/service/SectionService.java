@@ -21,7 +21,8 @@ public class SectionService {
         this.sectionRepository = sectionRepository;
     }
 
-    public void save(final Section section) {
+    public void save(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
+        Section section = new Section(lineId, upStationId, downStationId, distance);
         if (sectionRepository.isInitialSave(section)) {
             sectionRepository.save(section);
             return;
@@ -41,10 +42,10 @@ public class SectionService {
 
     private void addSection(final Section section) {
         if (isNotEndStationSave(section)) {
-            Section originalSection = sectionRepository.getExistingSectionByBaseStation(section);
+            Section originalSection = sectionRepository.findByBaseStation(section);
             Section modifiedSection = getModifiedSection(section, originalSection);
 
-            sectionRepository.updateSection(modifiedSection);
+            sectionRepository.update(modifiedSection);
         }
         sectionRepository.save(section);
     }
@@ -100,7 +101,7 @@ public class SectionService {
             Section newSection = createNewSection(lineId, stationId);
             sectionRepository.save(newSection);
         }
-        sectionRepository.deleteRelevantSections(lineId, stationId);
+        sectionRepository.deleteByStationId(lineId, stationId);
     }
 
     private void validateSectionCount(final Long lineId) {
@@ -118,7 +119,7 @@ public class SectionService {
     private Section createNewSection(final Long lineId, final Long stationId) {
         long newUpStationId = sectionRepository.getNewUpStationId(lineId, stationId);
         long newDownStationId = sectionRepository.getNewDownStationId(lineId, stationId);
-        int newDistance = sectionRepository.getNewSectionDistance(lineId, stationId);
+        int newDistance = sectionRepository.getNewDistance(lineId, stationId);
 
         return new Section(lineId, newUpStationId, newDownStationId, newDistance);
     }

@@ -39,7 +39,7 @@ public class StationRepository {
         );
     }
 
-    public List<Station> getStations() {
+    public List<Station> findAll() {
         String query = "SELECT id, name FROM station ORDER BY id";
         return jdbcTemplate.query(query, stationRowMapper);
     }

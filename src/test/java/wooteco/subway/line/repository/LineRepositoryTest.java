@@ -34,7 +34,7 @@ class LineRepositoryTest {
     @Test
     void save() {
         Line line = new Line("bg-blue-600", "1호선");
-        assertThat(lineRepository.save(line).getId()).isEqualTo(3L);
+        assertThat(lineRepository.save(line)).isEqualTo(3L);
     }
 
     @DisplayName("전체 line을 조회하면, DB에 존재하는 line 리스트를 반환한다.")
@@ -45,7 +45,7 @@ class LineRepositoryTest {
                 new Line(2L, "bg-green-600", "2호선")
         );
 
-        List<Line> lines = lineRepository.getLines();
+        List<Line> lines = lineRepository.findAll();
         assertThat(lines).usingRecursiveComparison().isEqualTo(expectedLines);
     }
 
@@ -54,7 +54,7 @@ class LineRepositoryTest {
     void getLines_noLinesSaved_emptyList() {
         jdbcTemplate.update("DELETE FROM line");
 
-        List<Line> lines = lineRepository.getLines();
+        List<Line> lines = lineRepository.findAll();
         assertThat(lines).isEmpty();
     }
 
@@ -62,7 +62,7 @@ class LineRepositoryTest {
     @Test
     void getLine() {
         Line expectedLine = new Line(1L, "bg-red-600", "신분당선");
-        assertThat(lineRepository.getLine(1L)).isEqualTo(expectedLine);
+        assertThat(lineRepository.findById(1L)).isEqualTo(expectedLine);
     }
 
     @DisplayName("id를 통해 line 수정 요청을 보내면, DB에있는 line정보를 수정한다")
