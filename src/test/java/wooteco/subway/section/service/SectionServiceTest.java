@@ -115,7 +115,7 @@ class SectionServiceTest {
                 new StationResponse(4L, "잠실역")
                 , 1));
         // then
-        verify(sectionDao).updateUpStation(any(Section.class), any(Long.class));
+        verify(sectionDao).updateUpStationId(any(Section.class), any(Long.class));
         verify(sectionDao).save(any(Section.class));
     }
 

@@ -74,7 +74,7 @@ class JdbcSectionDaoTest {
 
         // when
         jdbcSectionDao.save(section);
-        jdbcSectionDao.updateUpStation(section, 3L);
+        jdbcSectionDao.updateUpStationId(section, 3L);
         List<Section> sections = jdbcSectionDao.findAllByLineId(1L);
 
         // then
@@ -90,7 +90,7 @@ class JdbcSectionDaoTest {
 
         // when
         jdbcSectionDao.save(section);
-        jdbcSectionDao.updateDownStation(section, 3L);
+        jdbcSectionDao.updateDownStationId(section, 3L);
         List<Section> sections = jdbcSectionDao.findAllByLineId(1L);
 
         // then

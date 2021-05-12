@@ -70,14 +70,14 @@ public class SectionService {
     private SectionCreateResponse updateUpStation(Sections sections, Section newSection) {
         Section section = sections.findByUpStationId(newSection.getUpStationId());
         section.updateDistance(newSection.getDistance());
-        sectionDao.updateUpStation(section, newSection.getDownStationId());
+        sectionDao.updateUpStationId(section, newSection.getDownStationId());
         return save(newSection);
     }
 
     private SectionCreateResponse updateDownStation(Sections sections, Section newSection) {
         Section section = sections.findByDownStationId(newSection.getDownStationId());
         section.updateDistance(newSection.getDistance());
-        sectionDao.updateDownStation(section, newSection.getUpStationId());
+        sectionDao.updateDownStationId(section, newSection.getUpStationId());
         return save(newSection);
     }
 

@@ -54,28 +54,28 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public void updateUpStation(Section section, Long downStationId) {
+    public void updateUpStationId(Section section, Long upStationId) {
         String query = "UPDATE section SET up_station_id = ?, distance = ? WHERE line_id = ? AND up_station_id = ?";
-        jdbcTemplate.update(query, downStationId, section.getDistance(), section.getLineId(), section.getUpStationId());
+        jdbcTemplate.update(query, upStationId, section.getDistance(), section.getLineId(), section.getUpStationId());
     }
 
 
     @Override
-    public void updateDownStation(Section section, Long upStationId) {
+    public void updateDownStationId(Section section, Long downStationId) {
         String query = "UPDATE section SET down_station_id = ?, distance = ? WHERE line_id = ? AND down_station_id = ?";
-        jdbcTemplate.update(query, upStationId, section.getDistance(), section.getLineId(), section.getDownStationId());
+        jdbcTemplate.update(query, downStationId, section.getDistance(), section.getLineId(), section.getDownStationId());
     }
 
     @Override
-    public void deleteByLineIdAndUpStationId(Long lineId, Long stationId) {
+    public void deleteByLineIdAndUpStationId(Long lineId, Long upStationId) {
         String query = "DELETE FROM section WHERE line_id = ? AND up_station_id = ?";
-        jdbcTemplate.update(query, lineId, stationId);
+        jdbcTemplate.update(query, lineId, upStationId);
     }
 
     @Override
-    public void deleteByLineIdAndDownStationId(Long lineId, Long stationId) {
+    public void deleteByLineIdAndDownStationId(Long lineId, Long downStationId) {
         String query = "DELETE FROM section WHERE line_id = ? AND down_station_id = ?";
-        jdbcTemplate.update(query, lineId, stationId);
+        jdbcTemplate.update(query, lineId, downStationId);
     }
 
     @Override
