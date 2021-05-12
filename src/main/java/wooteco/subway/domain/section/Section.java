@@ -48,22 +48,42 @@ public class Section {
     public Section splitLongerSectionBy(Section shorterSection) {
         validateSplitCondition(shorterSection);
         int adjustedDistance = this.distance - shorterSection.distance;
-        if (this.upStation.equals(shorterSection.upStation)) {
-            return new Section(this.id, shorterSection.downStation, this.downStation, adjustedDistance, this.lineId);
+        if (this.hasSameUpStation(shorterSection)) {
+            return splitAfterShorterSection(shorterSection, adjustedDistance);
         }
-        return new Section(this.id, this.upStation, shorterSection.upStation, adjustedDistance, this.lineId);
+        return splitBeforeShorterSection(shorterSection, adjustedDistance);
     }
 
     private void validateSplitCondition(Section shorterSection) {
-        if (this.distance <= shorterSection.distance) {
+        if (distance <= shorterSection.distance) {
             throw new SubwayException(ExceptionStatus.SECTION_NOT_ADDABLE);
         }
-        if (this.upStation.equals(shorterSection.upStation) && this.downStation.equals(shorterSection.downStation)) {
+        if (this.hasSameUpStation(shorterSection) && this.hasSameDownStation(shorterSection)) {
             throw new SubwayException(ExceptionStatus.SECTION_NOT_ADDABLE);
         }
-        if (!this.upStation.equals(shorterSection.upStation) && !this.downStation.equals(shorterSection.downStation)) {
+        if (upStation.notEquals(shorterSection.upStation) && downStation.notEquals(shorterSection.downStation)) {
             throw new SubwayException(ExceptionStatus.SECTION_NOT_ADDABLE);
         }
+    }
+
+    private Section splitAfterShorterSection(Section shorterSection, int adjustedDistance) {
+        return Section.builder()
+                .id(this.id)
+                .upStation(shorterSection.downStation)
+                .downStation(this.downStation)
+                .distance(adjustedDistance)
+                .lineId(this.lineId)
+                .build();
+    }
+    
+    private Section splitBeforeShorterSection(Section shorterSection, int adjustedDistance) {
+        return Section.builder()
+                .id(this.id)
+                .upStation(this.upStation)
+                .downStation(shorterSection.upStation)
+                .distance(adjustedDistance)
+                .lineId(this.lineId)
+                .build();
     }
 
     public Section append(Section section) {
@@ -71,7 +91,12 @@ public class Section {
             throw new SubwayException(ExceptionStatus.SECTION_NOT_CONNECTABLE);
         }
         int adjustedDistance = this.distance + section.distance;
-        return new Section(this.upStation, section.downStation, adjustedDistance, this.lineId);
+        return Section.builder()
+                .upStation(this.upStation)
+                .downStation(section.downStation)
+                .distance(adjustedDistance)
+                .lineId(this.lineId)
+                .build();
     }
 
     public boolean isConnectedTowardDownWith(Section nextSection) {

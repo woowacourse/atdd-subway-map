@@ -21,6 +21,10 @@ public class Station {
         this.name = name;
     }
 
+    public boolean notEquals(Station station) {
+        return !this.equals(station);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
