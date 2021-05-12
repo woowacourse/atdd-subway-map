@@ -6,10 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import wooteco.subway.controller.request.LineRequest;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.repository.LineRepository;
-import wooteco.subway.service.dto.LineDto;
-import wooteco.subway.service.dto.SectionDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -39,26 +38,18 @@ class LineServiceTest {
         long lineId = 1L;
         Line line = new Line(name, color);
         Line retrievedLine = new Line(lineId, name, color);
-        SectionDto sectionDto = SectionDto.builder()
-                .upStationId(upStationId)
-                .downStationId(downStationId)
-                .distance(distance)
-                .build();
+        LineRequest lineRequest = new LineRequest(name, color, upStationId, downStationId, distance);
 
         given(lineRepository.save(line)).willReturn(lineId);
-        given(sectionService.createSection(sectionDto, lineId)).willReturn(1L);
+        given(sectionService.createSection(lineRequest, lineId)).willReturn(lineId);
         given(lineRepository.findById(lineId)).willReturn(retrievedLine);
 
-        LineDto lineDto = LineDto.builder()
-                .name(name)
-                .color(color)
-                .build();
-        Line savedLine = lineService.createLine(lineDto, sectionDto);
+        Line savedLine = lineService.createLine(lineRequest);
 
         assertThat(savedLine).isEqualTo(retrievedLine);
         verify(lineRepository, times(1)).save(line);
         verify(lineRepository, times(1)).findById(lineId);
-        verify(sectionService, times(1)).createSection(sectionDto, lineId);
+        verify(sectionService, times(1)).createSection(lineRequest, lineId);
     }
 
     @DisplayName("노선 조회에 성공한다.")
@@ -79,10 +70,10 @@ class LineServiceTest {
     void editLine() {
         String name = "changedName";
         String color = "black";
-        LineDto lineDto = new LineDto(name, color);
+        LineRequest lineRequest = new LineRequest(name, color, 1L, 1L, 1);
         Line line = new Line(1L, name, color);
 
-        lineService.editLine(1L, lineDto);
+        lineService.editLine(1L, lineRequest);
 
         verify(lineRepository, times(1)).update(line);
     }

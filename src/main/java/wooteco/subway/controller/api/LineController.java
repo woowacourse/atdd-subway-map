@@ -12,8 +12,6 @@ import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.SectionService;
-import wooteco.subway.service.dto.LineDto;
-import wooteco.subway.service.dto.SectionDto;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -33,28 +31,11 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
-        LineDto lineDto = getLineDto(lineRequest);
-        SectionDto sectionDto = getSectionDto(lineRequest);
-        Line savedLine = lineService.createLine(lineDto, sectionDto);
+        Line savedLine = lineService.createLine(lineRequest);
         LineResponse lineResponse = LineResponse.from(savedLine);
         URI uri = URI.create("/lines/" + savedLine.getId());
         return ResponseEntity.created(uri)
                 .body(lineResponse);
-    }
-
-    private LineDto getLineDto(LineRequest lineRequest) {
-        return LineDto.builder()
-                .name(lineRequest.getName())
-                .color(lineRequest.getColor())
-                .build();
-    }
-
-    private SectionDto getSectionDto(LineRequest lineRequest) {
-        return SectionDto.builder()
-                .upStationId(lineRequest.getUpStationId())
-                .downStationId(lineRequest.getDownStationId())
-                .distance(lineRequest.getDistance())
-                .build();
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -80,8 +61,7 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> editLine(@PathVariable long id, @RequestBody @Valid LineRequest lineRequest) {
-        LineDto lineDto = getLineDto(lineRequest);
-        lineService.editLine(id, lineDto);
+        lineService.editLine(id, lineRequest);
         return ResponseEntity.noContent()
                 .build();
     }
@@ -95,19 +75,10 @@ public class LineController {
 
     @PostMapping("/{id}/sections")
     public ResponseEntity<LineResponse> addSection(@PathVariable long id, @RequestBody @Valid SectionRequest sectionRequest) {
-        SectionDto sectionDto = getSectionDto(sectionRequest);
-        sectionService.addSection(sectionDto, id);
+        sectionService.addSection(sectionRequest, id);
         Line line = lineService.findById(id);
         LineResponse lineResponse = writeLineResponse(line);
         return ResponseEntity.ok(lineResponse);
-    }
-
-    private SectionDto getSectionDto(SectionRequest sectionRequest) {
-        return SectionDto.builder()
-                .upStationId(sectionRequest.getUpStationId())
-                .downStationId(sectionRequest.getDownStationId())
-                .distance(sectionRequest.getDistance())
-                .build();
     }
 
     @DeleteMapping("/{id}/sections")

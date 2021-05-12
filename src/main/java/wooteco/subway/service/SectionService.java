@@ -1,13 +1,14 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.controller.request.LineRequest;
+import wooteco.subway.controller.request.SectionRequest;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.ExceptionStatus;
 import wooteco.subway.exception.SubwayException;
 import wooteco.subway.repository.SectionRepository;
-import wooteco.subway.service.dto.SectionDto;
 
 import java.util.List;
 
@@ -22,25 +23,25 @@ public class SectionService {
         this.stationService = stationService;
     }
 
-    public long createSection(SectionDto sectionDto, long lineId) {
-        Station upStation = stationService.findById(sectionDto.getUpStationId());
-        Station downStation = stationService.findById(sectionDto.getDownStationId());
+    public long createSection(LineRequest lineRequest, long lineId) {
+        Station upStation = stationService.findById(lineRequest.getUpStationId());
+        Station downStation = stationService.findById(lineRequest.getDownStationId());
         Section section = Section.builder()
                 .upStation(upStation)
                 .downStation(downStation)
-                .distance(sectionDto.getDistance())
+                .distance(lineRequest.getDistance())
                 .lineId(lineId)
                 .build();
         return sectionRepository.save(section);
     }
 
-    public void addSection(SectionDto sectionDto, long lineId) {
-        Station upStation = stationService.findById(sectionDto.getUpStationId());
-        Station downStation = stationService.findById(sectionDto.getDownStationId());
+    public void addSection(SectionRequest sectionRequest, long lineId) {
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Section requestSection = Section.builder()
                 .upStation(upStation)
                 .downStation(downStation)
-                .distance(sectionDto.getDistance())
+                .distance(sectionRequest.getDistance())
                 .lineId(lineId)
                 .build();
         Sections currentSections = new Sections(sectionRepository.findAllByLineId(lineId));

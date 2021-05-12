@@ -6,13 +6,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import wooteco.subway.controller.request.LineRequest;
+import wooteco.subway.controller.request.SectionRequest;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.ExceptionStatus;
 import wooteco.subway.exception.SubwayException;
 import wooteco.subway.repository.SectionRepository;
-import wooteco.subway.service.dto.SectionDto;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,12 +51,8 @@ class SectionServiceTest {
         given(stationService.findById(downStationId)).willReturn(downStation);
         given(sectionRepository.save(section)).willReturn(sectionId);
 
-        SectionDto sectionDto = SectionDto.builder()
-                .upStationId(upStationId)
-                .downStationId(downStationId)
-                .distance(distance)
-                .build();
-        long createdSectionId = sectionService.createSection(sectionDto, lineId);
+        LineRequest lineRequest = new LineRequest("1호선", "black", upStationId, downStationId, distance);
+        long createdSectionId = sectionService.createSection(lineRequest, lineId);
 
         assertThat(createdSectionId).isEqualTo(sectionId);
         verify(stationService, times(1)).findById(upStationId);
@@ -70,14 +67,10 @@ class SectionServiceTest {
         int distance = 14;
         long lineId = 1;
         Station upStation = new Station(upStationId, "천호역");
-        SectionDto sectionDto = SectionDto.builder()
-                .upStationId(upStationId)
-                .downStationId(upStationId)
-                .distance(distance)
-                .build();
+        LineRequest lineRequest = new LineRequest("1호선", "black", upStationId, upStationId, distance);
         given(stationService.findById(upStationId)).willReturn(upStation);
 
-        assertThatCode(() -> sectionService.createSection(sectionDto, lineId))
+        assertThatCode(() -> sectionService.createSection(lineRequest, lineId))
                 .isInstanceOf(SubwayException.class)
                 .hasMessage(ExceptionStatus.INVALID_SECTION.getMessage());
         verify(stationService, times(2)).findById(upStationId);
@@ -101,12 +94,8 @@ class SectionServiceTest {
         given(stationService.findById(3L)).willReturn(insertStation);
         given(sectionRepository.findAllByLineId(1L)).willReturn(currentSectionList);
 
-        SectionDto sectionDto = SectionDto.builder()
-                .upStationId(1L)
-                .downStationId(3L)
-                .distance(5)
-                .build();
-        sectionService.addSection(sectionDto, 1L);
+        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 5);
+        sectionService.addSection(sectionRequest, 1L);
 
         verify(stationService, times(1)).findById(1L);
         verify(stationService, times(1)).findById(3L);
@@ -129,12 +118,8 @@ class SectionServiceTest {
         given(stationService.findById(3L)).willReturn(newEndStation);
         given(sectionRepository.findAllByLineId(1L)).willReturn(Arrays.asList(currentSection));
 
-        SectionDto sectionDto = SectionDto.builder()
-                .upStationId(3L)
-                .downStationId(1L)
-                .distance(5)
-                .build();
-        sectionService.addSection(sectionDto, 1L);
+        SectionRequest sectionRequest = new SectionRequest(3L, 1L, 5);
+        sectionService.addSection(sectionRequest, 1L);
 
         verify(stationService, times(1)).findById(1L);
         verify(stationService, times(1)).findById(3L);
@@ -173,7 +158,6 @@ class SectionServiceTest {
         Section firstSection = new Section(1L, upStation, middleStation, 10, 1L);
         Section lastSection = new Section(2L, middleStation, downStation, 10, 1L);
         List<Section> currentSectionList = Arrays.asList(firstSection, lastSection);
-        Sections currentSections = new Sections(currentSectionList);
         Sections removableSections = new Sections(currentSectionList);
 
         given(sectionRepository.findAllByLineId(1L)).willReturn(currentSectionList);

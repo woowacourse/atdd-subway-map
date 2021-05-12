@@ -1,10 +1,9 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.controller.request.LineRequest;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.repository.LineRepository;
-import wooteco.subway.service.dto.LineDto;
-import wooteco.subway.service.dto.SectionDto;
 
 import java.util.List;
 
@@ -19,13 +18,13 @@ public class LineService {
         this.sectionService = sectionService;
     }
 
-    public Line createLine(LineDto lineDto, SectionDto sectionDto) {
+    public Line createLine(LineRequest lineRequest) {
         Line line = Line.builder()
-                .name(lineDto.getName())
-                .color(lineDto.getColor())
+                .name(lineRequest.getName())
+                .color(lineRequest.getColor())
                 .build();
         long id = lineRepository.save(line);
-        sectionService.createSection(sectionDto, id);
+        sectionService.createSection(lineRequest, id);
         return lineRepository.findById(id);
     }
 
@@ -37,11 +36,11 @@ public class LineService {
         return lineRepository.findById(id);
     }
 
-    public void editLine(long id, LineDto lineDto) {
+    public void editLine(long id, LineRequest lineRequest) {
         Line line = Line.builder()
                 .id(id)
-                .name(lineDto.getName())
-                .color(lineDto.getColor())
+                .name(lineRequest.getName())
+                .color(lineRequest.getColor())
                 .build();
         lineRepository.update(line);
     }
