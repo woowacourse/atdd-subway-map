@@ -20,6 +20,7 @@ class SectionsTest {
     private static final Station 수서역 = Station.create(2L, "수서역");
     private static final Station 잠실역 = Station.create(3L, "잠실역");
     private static final Station 동탄역 = Station.create(4L, "동탄역");
+    private static final Station 양재역 = Station.create(5L, "양재역");
     private static final Section 강남_수서 = Section.create(강남역, 수서역, 10);
     private static final Section 수서_강남 = Section.create(수서역, 강남역, 4);
     private static final Section 수서_잠실 = Section.create(수서역, 잠실역, 10);
@@ -39,7 +40,7 @@ class SectionsTest {
 
     @DisplayName("구간추가 - 성공")
     @Test
-    void add() {
+    void addAndThenGetModifiedAdjacen() {
         Sections sections = Sections.create(강남_수서);
 
         Section modifiedSection = sections.addAndThenGetModifiedAdjacent(수서_잠실);

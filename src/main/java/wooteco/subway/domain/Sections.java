@@ -150,8 +150,4 @@ public class Sections {
         return sections.size() == size;
     }
 
-    public void add(Section section) {
-        sections.add(section);
-    }
-
 }

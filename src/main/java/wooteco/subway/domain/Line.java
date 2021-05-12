@@ -19,11 +19,11 @@ public class Line {
     }
 
     public static Line create(Long id, String name, String color) {
-        return new Line(id, name, color, Sections.create());
+        return create(id, name, color, Sections.create());
     }
 
-    public void addSection(Section section) {
-        sections.add(section);
+    public static Line create(Long id, String name, String color, Sections sections){
+        return new Line(id, name, color, sections);
     }
 
     public List<Station> stations() {
@@ -42,7 +42,7 @@ public class Line {
         return id.equals(lineId);
     }
 
-    public void insertSections(Sections sections) {
+    public void setSections(Sections sections) {
         this.sections = sections;
     }
 }

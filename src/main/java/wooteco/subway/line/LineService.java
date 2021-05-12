@@ -26,7 +26,7 @@ public class LineService {
 
         Line line = lineDao.findById(lineId);
         Sections sections = sectionDao.findSectionsByLineId(lineId);
-        line.insertSections(sections);
+        line.setSections(sections);
 
         return line;
     }
@@ -35,7 +35,7 @@ public class LineService {
         List<Line> lines = lineDao.showAll();
         for (Line line : lines) {
             Sections sections = sectionDao.findSectionsByLineId(line.getId());
-            line.insertSections(sections);
+            line.setSections(sections);
         }
 
         return lines;
@@ -48,7 +48,7 @@ public class LineService {
         Line line = lineDao.create(Line.create(name, color));
         Section section = Section.create(upStation, downStation, distance);
         sectionDao.create(section, line.getId());
-        line.addSection(section);
+        line.setSections(Sections.create(section));
 
         return line;
     }
