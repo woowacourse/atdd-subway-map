@@ -2,7 +2,10 @@ package wooteco.subway.domain;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import wooteco.subway.exception.section.InvalidSectionException;
+import wooteco.subway.exception.section.DuplicatedSectionException;
+import wooteco.subway.exception.section.SectionCycleException;
+import wooteco.subway.exception.section.SectionHasSameUpAndDownException;
+import wooteco.subway.exception.section.SectionInternalRemovableConflictException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,6 +15,8 @@ public class Sections {
 
     private static final int FIRST_ELEMENT = 0;
     private static final int SECOND_ELEMENT = 1;
+    private static final int EXPECTED_REMOVE_SITUATION = 2;
+    private static final int TWO_ADJACENT_SECTIONS = 2;
     private final List<Section> sections;
 
     public static Sections create(Section... sections) {
@@ -46,7 +51,7 @@ public class Sections {
         return new ArrayList<>(result);
     }
 
-    public Section modifyAdjacent(Section newSection) {
+    private Section modifyAdjacent(Section newSection) {
         List<Section> collect = sections.stream()
                 .filter(originalSection -> originalSection.isAdjacent(newSection))
                 .collect(Collectors.toList());
@@ -57,9 +62,9 @@ public class Sections {
         return updateSection(originalSection, newSection);
     }
 
-    private boolean isMiddleSection(Section newSection, List<Section> collect) {
-        return collect.size() == 2 &&
-                collect.stream()
+    private boolean isMiddleSection(Section newSection, List<Section> sections) {
+        return sections.size() == TWO_ADJACENT_SECTIONS &&
+                sections.stream()
                         .anyMatch(section -> section.isUpStation(newSection.getUpStation()));
     }
 
@@ -72,14 +77,24 @@ public class Sections {
         return originalSection.updateByNewSection(newSection);
     }
 
-    public void add(Section section) {
+    public Section addAndThenGetModifiedAdjacent(Section section) {
+        validateAddable(section);
+        Section modifiedSection = modifyAdjacent(section);
         sections.add(section);
+
+        return modifiedSection;
     }
 
-    public void isAddable(Section target) {
-        if (isCycleSection(target, sections)) {
-            throw new InvalidSectionException();
+    private void validateAddable(Section target) {
+        if (sections.stream().anyMatch(section -> section.isSameOrReversed(target))) {
+            throw new DuplicatedSectionException();
         }
+
+        if (isCycleSection(target, sections)) {
+            throw new SectionCycleException();
+        }
+
+        //todo: 끊겨있는 구간 추가
     }
 
     public List<Section> sections() {
@@ -87,6 +102,8 @@ public class Sections {
     }
 
     public Section mergeTwoIntoOne(Station station) {
+        validateIsSizeTwo(sections);
+
         Section section = sections.get(FIRST_ELEMENT);
         int distance = sections.stream()
                 .mapToInt(Section::getDistance)
@@ -99,6 +116,12 @@ public class Sections {
         Station upStation = section.getUpStation();
         Station downStation = sections.get(SECOND_ELEMENT).getDownStation();
         return Section.create(upStation, downStation, distance);
+    }
+
+    private void validateIsSizeTwo(List<Section> sections) {
+        if (sections.size() != EXPECTED_REMOVE_SITUATION) {
+            throw new SectionInternalRemovableConflictException();
+        }
     }
 
     public boolean hasSize(int size) {

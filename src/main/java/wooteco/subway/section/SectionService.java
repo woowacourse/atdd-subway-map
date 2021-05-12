@@ -7,7 +7,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.line.LineNotFoundException;
-import wooteco.subway.exception.section.NotEnoughSectionException;
+import wooteco.subway.exception.section.LastSectionRemainedException;
 import wooteco.subway.exception.station.StationNotFoundException;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.section.dao.SectionDao;
@@ -27,9 +27,7 @@ public class SectionService {
     @Transactional
     public Section create(Section newSection, Long lineId) {
         Sections sections = sectionDao.findSectionsByLineId(lineId);
-        sections.isAddable(newSection);
-        Section modifiedSection = sections.modifyAdjacent(newSection);
-        sections.add(newSection);
+        Section modifiedSection = sections.addAndThenGetModifiedAdjacent(newSection);
 
         return sectionDao.saveModified(newSection, modifiedSection, lineId);
     }
@@ -38,7 +36,7 @@ public class SectionService {
     public void remove(Long lineId, Long stationId) {
         validateExistLine(lineId);
         validateExistStation(stationId);
-        validateIsLastSection(lineId);
+        validateIsLastRemainedSection(lineId);
 
         Station station = stationDao.findById(stationId);
         List<Section> effectiveSections = sectionDao.findAdjacentByStationId(lineId, stationId);
@@ -50,9 +48,9 @@ public class SectionService {
         }
     }
 
-    private void validateIsLastSection(Long lineId) {
+    private void validateIsLastRemainedSection(Long lineId) {
         if (sectionDao.findSectionsByLineId(lineId).hasSize(1)) {
-            throw new NotEnoughSectionException();
+            throw new LastSectionRemainedException();
         }
     }
 

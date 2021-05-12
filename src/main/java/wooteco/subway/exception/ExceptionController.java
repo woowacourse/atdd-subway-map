@@ -17,5 +17,9 @@ public class ExceptionController {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
+    @ExceptionHandler(InternalLogicConflictException.class)
+    public ResponseEntity<Void> handle(InternalLogicConflictException e) {
+        return ResponseEntity.badRequest().build();
+    }
 
 }
