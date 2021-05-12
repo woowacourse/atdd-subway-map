@@ -73,6 +73,8 @@ public class SubwayService {
     }
 
     public void deleteAdjacentSectionByStationId(long lineId, long stationId) {
+        Sections sections = new Sections(sectionDao.selectAll(lineId));
+        sections.validateIfPossibleToDelete();
         Optional<Section> downwardSection = sectionDao.selectDownwardSection(lineId, stationId);
         Optional<Section> upwardSection = sectionDao.selectUpwardSection(lineId, stationId);
 

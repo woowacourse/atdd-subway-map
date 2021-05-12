@@ -107,4 +107,10 @@ public class Sections {
             throw new SubwayException(HttpStatus.BAD_REQUEST, "거리 오류");
         }
     }
+
+    public void validateIfPossibleToDelete() {
+        if (this.sections.size() == 1) {
+            throw new SubwayException(HttpStatus.BAD_REQUEST, "구간이 하나뿐이므로 삭제 불가능합니다.");
+        }
+    }
 }
