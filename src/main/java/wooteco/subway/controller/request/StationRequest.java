@@ -1,12 +1,12 @@
 package wooteco.subway.controller.request;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 public class StationRequest {
 
-    @NotNull(message = "이름을 입력해주세요.")
-    @NotEmpty(message = "이름은 공백을 허용하지 않습니다.")
+    @NotBlank(message = "이름은 입력해주세요.")
+    @Pattern(regexp = "^[가-힣|0-9]*역$")
     private String name;
 
     public StationRequest() {
