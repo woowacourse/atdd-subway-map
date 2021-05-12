@@ -51,13 +51,13 @@ public class ConstructionTest {
 
     @DisplayName("구간을 삽입한다.(구간 사이에 삽입한다.)")
     @Test
-    void insertSectionBetweenSections() {
+    void createSectionBetweenSections() {
         // given
         Section section = new Section(lines.get(0), stations.get(1), stations.get(5),
             new Distance(1));
 
         // when
-        construction.insertSection(section);
+        construction.createSection(section);
 
         // then
         List<Section> sectionsToCreate = Arrays.asList(
@@ -81,13 +81,13 @@ public class ConstructionTest {
 
     @DisplayName("구간을 삽입한다.(마지막 구간에 삽입한다.)")
     @Test
-    void insertSectionAsLastSection() {
+    void createSectionAsLastSection() {
         // given
         Section section = new Section(lines.get(0), stations.get(5), stations.get(0),
             new Distance(1));
 
         // when
-        construction.insertSection(section);
+        construction.createSection(section);
 
         // then
         List<Section> sectionsToCreate = Collections.singletonList(
@@ -106,13 +106,13 @@ public class ConstructionTest {
 
     @DisplayName("다른 노선의 구간을 추가시 예외 처리한다.")
     @Test
-    void insertSectionWithDifferentLine() {
+    void createSectionWithDifferentLine() {
         // given
         Section section = new Section(lines.get(1), stations.get(5), stations.get(0),
             new Distance(1));
 
         // then
-        assertThatIllegalArgumentException().isThrownBy(() -> construction.insertSection(section))
+        assertThatIllegalArgumentException().isThrownBy(() -> construction.createSection(section))
             .withMessage("다른 노선의 구간은 추가할 수 없습니다.");
     }
 

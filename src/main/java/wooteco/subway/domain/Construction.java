@@ -25,7 +25,7 @@ public class Construction {
         this(sections.sectionsByLine(line), line);
     }
 
-    public void insertSection(Section section) {
+    public void createSection(Section section) {
         validateSectionToInsert(section);
         validateToConstruct();
         if (isEndSectionInsertion(section)) {

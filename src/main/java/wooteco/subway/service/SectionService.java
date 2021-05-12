@@ -60,10 +60,10 @@ public class SectionService {
         }
     }
 
-    public void insertSection(Line line, Section section) {
+    public void createSection(Line line, Section section) {
         Sections sections = new Sections(findSectionsByLine(line));
         Construction construction = new Construction(sections, line);
-        construction.insertSection(section);
+        construction.createSection(section);
         updateSections(construction);
     }
 

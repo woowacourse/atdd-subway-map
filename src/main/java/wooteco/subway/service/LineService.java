@@ -105,7 +105,7 @@ public class LineService {
             .toDomain();
         Section section = new Section(line, upStation, downStation,
             new Distance(sectionRequest.getDistance()));
-        sectionService.insertSection(line, section);
+        sectionService.createSection(line, section);
     }
 
     public void deleteSections(Long lineId, Long stationId) {
