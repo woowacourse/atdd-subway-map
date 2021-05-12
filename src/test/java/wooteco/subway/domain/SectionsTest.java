@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.InternalLogicConflictException;
 import wooteco.subway.exception.section.DuplicatedSectionException;
 import wooteco.subway.exception.section.SectionHasSameUpAndDownException;
+import wooteco.subway.exception.section.SectionUnlinkedException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -67,6 +68,17 @@ class SectionsTest {
 
         assertThatThrownBy(() -> sections.addAndThenGetModifiedAdjacent(Section.create(강남역, 강남역, 10)))
                 .isInstanceOf(SectionHasSameUpAndDownException.class);
+    }
+
+    @DisplayName("구간추가 - 실패(연결불가 구간 추가)")
+    @Test
+    void addAndThenGetModifiedAdjacent_실패_연결불가() {
+        List<Section> setting = Arrays.asList(수서_잠실, 강남_수서);
+        Section section = Section.create(동탄역, 양재역, 10);
+        Sections sections = Sections.create(setting);
+
+        assertThatThrownBy(() -> sections.addAndThenGetModifiedAdjacent(section))
+                .isInstanceOf(SectionUnlinkedException.class);
     }
 
     @DisplayName("구간 가져오기")
