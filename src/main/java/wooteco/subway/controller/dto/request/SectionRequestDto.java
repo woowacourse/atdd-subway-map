@@ -1,29 +1,18 @@
-package wooteco.subway.line;
+package wooteco.subway.controller.dto.request;
 
-public class LineRequest {
-    private String name;
-    private String color;
+public class SectionRequestDto {
+
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
-    public LineRequest() {
+    public SectionRequestDto() {
     }
 
-    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
-        this.name = name;
-        this.color = color;
+    public SectionRequestDto(Long upStationId, Long downStationId, int distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
     }
 
     public Long getUpStationId() {

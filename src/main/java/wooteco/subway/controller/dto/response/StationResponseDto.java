@@ -1,18 +1,15 @@
-package wooteco.subway.station;
+package wooteco.subway.controller.dto.response;
 
-public class Station {
+public class StationResponseDto {
+
     private Long id;
     private String name;
 
-    public Station() {
+    public StationResponseDto() {
     }
 
-    public Station(Long id, String name) {
+    public StationResponseDto(Long id, String name) {
         this.id = id;
-        this.name = name;
-    }
-
-    public Station(String name) {
         this.name = name;
     }
 
@@ -24,4 +21,3 @@ public class Station {
         return name;
     }
 }
-
