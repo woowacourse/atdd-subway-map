@@ -2,8 +2,8 @@ package wooteco.subway.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.InternalLogicConflictException;
 import wooteco.subway.exception.section.DuplicatedSectionException;
-import wooteco.subway.exception.section.SectionCycleException;
 import wooteco.subway.exception.section.SectionHasSameUpAndDownException;
 
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("[도메인] Sections")
 class SectionsTest {
@@ -19,13 +19,22 @@ class SectionsTest {
     private static final Station 강남역 = Station.create(1L, "강남역");
     private static final Station 수서역 = Station.create(2L, "수서역");
     private static final Station 잠실역 = Station.create(3L, "잠실역");
+    private static final Station 동탄역 = Station.create(4L, "동탄역");
     private static final Section 강남_수서 = Section.create(강남역, 수서역, 10);
     private static final Section 수서_강남 = Section.create(수서역, 강남역, 4);
     private static final Section 수서_잠실 = Section.create(수서역, 잠실역, 10);
+    private static final Section 잠실_동탄 = Section.create(잠실역, 동탄역, 10);
 
     @DisplayName("구간 순서대로 역 보여주기")
     @Test
     void convertToSortedStations() {
+        List<Section> setting = Arrays.asList(수서_잠실, 강남_수서, 잠실_동탄);
+        Sections sections = Sections.create(setting);
+
+        List<Station> stations = sections.convertToSortedStations();
+
+        assertThat(stations).hasSize(4);
+        assertThat(stations).containsExactly(강남역, 수서역, 잠실역, 동탄역);
     }
 
     @DisplayName("구간추가 - 성공")
@@ -44,9 +53,9 @@ class SectionsTest {
     void addAndThenGetModifiedAdjacent_실패_같은구간() {
         Sections sections = Sections.create(강남_수서);
 
-        assertThatThrownBy(()->sections.addAndThenGetModifiedAdjacent(수서_강남))
+        assertThatThrownBy(() -> sections.addAndThenGetModifiedAdjacent(수서_강남))
                 .isInstanceOf(DuplicatedSectionException.class);
-        assertThatThrownBy(()->sections.addAndThenGetModifiedAdjacent(강남_수서))
+        assertThatThrownBy(() -> sections.addAndThenGetModifiedAdjacent(강남_수서))
                 .isInstanceOf(DuplicatedSectionException.class);
     }
 
@@ -55,25 +64,41 @@ class SectionsTest {
     void addAndThenGetModifiedAdjacent_실패_앞뒤같은구간() {
         Sections sections = Sections.create(강남_수서);
 
-        assertThatThrownBy(()->sections.addAndThenGetModifiedAdjacent(Section.create(강남역, 강남역, 10)))
+        assertThatThrownBy(() -> sections.addAndThenGetModifiedAdjacent(Section.create(강남역, 강남역, 10)))
                 .isInstanceOf(SectionHasSameUpAndDownException.class);
     }
 
     @DisplayName("구간 가져오기")
     @Test
     void sections() {
+        List<Section> setting = Arrays.asList(수서_잠실, 강남_수서, 잠실_동탄);
+        Sections sections = Sections.create(setting);
+
+        List<Section> result = sections.sections();
+
+        assertThat(result).hasSize(3);
     }
 
     @DisplayName("삭제 -실패(내부로직 이상 테스트)")
     @Test
     void removeStationInBetween_내부구현로직이상() {
+        List<Section> setting = Arrays.asList(수서_잠실, 강남_수서, 잠실_동탄);
+        Sections sections = Sections.create(setting);
+
+        assertThatThrownBy(() -> sections.removeStationInBetween(강남역))
+                .isInstanceOf(InternalLogicConflictException.class);
 
     }
 
     @DisplayName("삭제")
     @Test
     void removeStationInBetween() {
+        List<Section> setting = Arrays.asList(수서_잠실, 강남_수서);
+        Sections sections = Sections.create(setting);
 
+        Section result = sections.removeStationInBetween(수서역);
+
+        assertThat(result).isEqualTo((Section.create(강남역, 잠실역, 20)));
     }
 
     @DisplayName("크기확인")
