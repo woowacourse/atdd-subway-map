@@ -1,5 +1,6 @@
 package wooteco.subway.line.controller;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.controller.dto.LineRequest;
@@ -17,14 +18,16 @@ import java.util.stream.Collectors;
 public class LineController {
 
     private final LineService lineService;
+    private final ModelMapper modelMapper;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, ModelMapper modelMapper) {
         this.lineService = lineService;
+        this.modelMapper = modelMapper;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
-        LineDto line = new LineDto(lineRequest.getName(), lineRequest.getColor());
+        LineDto line = new LineDto();
         LineDto newLine = lineService.save(line);
         LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
