@@ -38,11 +38,15 @@ public class Section {
         return this.downStationId.equals(stationId);
     }
 
-    public void updateDistance(Integer distance) {
+    public void updateDistance(int distance) {
+        validatesDistanceCanAdd(distance);
+        this.distance = this.distance - distance;
+    }
+
+    private void validatesDistanceCanAdd(int distance) {
         if (this.distance <= distance) {
             throw new SubwayException("넣을 수 없는 거리입니다.");
         }
-        this.distance = this.distance - distance;
     }
 
     public Long getId() {
