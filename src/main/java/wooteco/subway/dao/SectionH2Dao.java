@@ -22,7 +22,6 @@ public class SectionH2Dao implements SectionRepository {
         return new Section(sectionId, lineId, distance);
     };
 
-    @Autowired
     public SectionH2Dao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

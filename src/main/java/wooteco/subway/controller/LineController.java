@@ -17,7 +17,6 @@ public class LineController {
     private final LineService lineService;
     private final LineRepository lineRepository;
 
-    @Autowired
     public LineController(LineService lineService, LineRepository lineRepository) {
         this.lineService = lineService;
         this.lineRepository = lineRepository;

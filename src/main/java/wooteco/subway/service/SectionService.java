@@ -19,7 +19,6 @@ public class SectionService {
     private final LineRepository lineRepository;
     private final SectionRepository sectionRepository;
 
-    @Autowired
     public SectionService(StationRepository stationRepository, LineRepository lineRepository, SectionRepository sectionRepository) {
         this.stationRepository = stationRepository;
         this.lineRepository = lineRepository;

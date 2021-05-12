@@ -22,7 +22,6 @@ public class LineH2Dao implements LineRepository {
         return new Line(id, name, color);
     };
 
-    @Autowired
     public LineH2Dao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
