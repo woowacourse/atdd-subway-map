@@ -17,7 +17,7 @@ public class ExceptionController {
         String message = methodArgumentNotValidException.getFieldErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .collect(Collectors.joining("/n"));
+                .collect(Collectors.joining(System.lineSeparator()));
         return ResponseEntity.badRequest().body(message);
     }
 
