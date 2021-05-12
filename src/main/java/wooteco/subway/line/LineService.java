@@ -21,32 +21,29 @@ public class LineService {
     }
 
     public Line create(final Line line) {
-        validateName(line.getName());
+        validateName(line);
 
-        final Long id = lineDao.save(line.getName(), line.getColor(), line.getUpStationId(), line.getDownStationId());
+        final Long id = lineDao.save(line);
         sectionDao.save(id, line.getUpStationId(), line.getDownStationId(), line.getDistance());
 
         return findById(id);
     }
 
     public void update(final Line line) {
-        final Long id = line.getId();
+        final Long lineId = line.getId();
+        validateExisting(lineId);
 
-        validateExisting(id);
-
-        final String newName = line.getName();
-        final String oldName = findById(id).getName();
-
-        if (!oldName.equals(newName)) {
-            validateName(newName);
+        final Line old = findById(lineId);
+        if (old.isDifferentName(line)) {
+            validateName(line);
         }
 
-        lineDao.update(line.getId(), line.getName(), line.getColor());
+        lineDao.update(lineId, line.getName(), line.getColor());
     }
 
     public void delete(final Long id) {
         validateExisting(id);
-
+        deleteAllSectionsInLine(id);
         lineDao.delete(id);
     }
 
@@ -59,18 +56,14 @@ public class LineService {
         return lineDao.findAll();
     }
 
-    public Long upStationId(final Long id) {
-        return lineDao.findUpStationId(id);
-    }
-
-    public Long downStationId(final Long id) {
-        return lineDao.findDownStationId(id);
-    }
-
-    private void validateName(final String name) {
-        if (lineDao.isExistingName(name)) {
+    private void validateName(final Line line) {
+        if (lineDao.isExistingName(line.getName())) {
             throw new LineException("이미 존재하는 노선 이름입니다.");
         }
+    }
+
+    private void deleteAllSectionsInLine(final Long id){
+        sectionDao.deleteAllSectionInLine(id);
     }
 
     private void validateExisting(final Long id) {

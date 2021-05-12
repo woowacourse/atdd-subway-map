@@ -21,6 +21,10 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public Long save(final Line line) {
+        return save(line.getName(), line.getColor(), line.getUpStationId(), line.getDownStationId());
+    }
+
     public Long save(final String name, final String color, final Long upStationId, final Long downStationId) {
         final String sql = "INSERT INTO LINE (name, color, up_station_id, down_station_id) VALUES (?, ?, ?, ?)";
 

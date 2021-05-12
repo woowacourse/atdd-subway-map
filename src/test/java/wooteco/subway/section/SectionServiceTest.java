@@ -213,7 +213,11 @@ class SectionServiceTest {
     }
 
     private void validateFinalStation(final Station expectedUpStation, final Station expectedDownStation){
-        assertThat(lineService.upStationId(testLine.getId())).isEqualTo(expectedUpStation.getId());
-        assertThat(lineService.downStationId(testLine.getId())).isEqualTo(expectedDownStation.getId());
+        final List<Long> stations = lineService.allStationIdInLine(testLine.getId());
+        final Long actualUpStationId = stations.get(0);
+        final Long actualDownStationId = stations.get(stations.size()-1);
+
+        assertThat(actualUpStationId).isEqualTo(expectedUpStation.getId());
+        assertThat(actualDownStationId).isEqualTo(expectedDownStation.getId());
     }
 }

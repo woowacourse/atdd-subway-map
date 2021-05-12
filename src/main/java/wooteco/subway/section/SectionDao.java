@@ -77,9 +77,20 @@ public class SectionDao {
         jdbcTemplate.update(sql, section.id());
     }
 
+    public void deleteAllSectionInLine(final Long lineId) {
+        final String sql = "DELETE FROM SECTION WHERE line_id = ?";
+        int update = jdbcTemplate.update(sql, lineId);
+    }
+
     public Long stationCountInLine(final Long lineId) {
         final String sql = "SELECT COUNT(*) from SECTION WHERE line_id = ?";
-        return jdbcTemplate.queryForObject(sql, Long.class, lineId) + 1;
+        final Long columnCount = jdbcTemplate.queryForObject(sql, Long.class, lineId);
+
+        if(columnCount == 0){
+            return 0L;
+        }
+
+        return columnCount+1;
     }
 
     private RowMapper<Section> rowMapper() {
