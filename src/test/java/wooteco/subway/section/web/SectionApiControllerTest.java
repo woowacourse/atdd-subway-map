@@ -297,7 +297,7 @@ class SectionApiControllerTest extends ApiControllerTest {
         // then
         result.andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("잘못된 구간입니다."));
+                .andExpect(content().string("사이클이 생기는 구간입니다."));
     }
 
     @Test

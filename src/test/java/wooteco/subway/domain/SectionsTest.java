@@ -23,6 +23,7 @@ class SectionsTest {
     private static final Section 수서_강남 = Section.create(수서역, 강남역, 4);
     private static final Section 수서_잠실 = Section.create(수서역, 잠실역, 10);
 
+    @DisplayName("구간 순서대로 역 보여주기")
     @Test
     void convertToSortedStations() {
     }
@@ -38,9 +39,9 @@ class SectionsTest {
         assertThat(modifiedSection).isEqualTo(강남_수서);
     }
 
-    @DisplayName("구간추가 - 살퍄(의미상 같은 구간 추가)")
+    @DisplayName("구간추가 - 실패(의미상 같은 구간 추가)")
     @Test
-    void add_실패_같은구간() {
+    void addAndThenGetModifiedAdjacent_실패_같은구간() {
         Sections sections = Sections.create(강남_수서);
 
         assertThatThrownBy(()->sections.addAndThenGetModifiedAdjacent(수서_강남))
@@ -49,22 +50,29 @@ class SectionsTest {
                 .isInstanceOf(DuplicatedSectionException.class);
     }
 
-    @DisplayName("구간추가 - 살퍄(앞뒤역이 같은 구간 추가)")
+    @DisplayName("구간추가 - 실패(앞뒤역이 같은 구간 추가)")
     @Test
-    void add_실패_앞뒤같은구간() {
+    void addAndThenGetModifiedAdjacent_실패_앞뒤같은구간() {
         Sections sections = Sections.create(강남_수서);
 
         assertThatThrownBy(()->sections.addAndThenGetModifiedAdjacent(Section.create(강남역, 강남역, 10)))
                 .isInstanceOf(SectionHasSameUpAndDownException.class);
     }
 
+    @DisplayName("구간 가져오기")
     @Test
     void sections() {
     }
 
-    @DisplayName("삭제시 내부로직 이상 테스트")
+    @DisplayName("삭제 -실패(내부로직 이상 테스트)")
     @Test
-    void mergeTwoIntoOne() {
+    void removeStationInBetween_내부구현로직이상() {
+
+    }
+
+    @DisplayName("삭제")
+    @Test
+    void removeStationInBetween() {
 
     }
 

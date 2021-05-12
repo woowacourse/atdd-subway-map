@@ -4,8 +4,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import wooteco.subway.exception.section.DuplicatedSectionException;
 import wooteco.subway.exception.section.SectionCycleException;
-import wooteco.subway.exception.section.SectionHasSameUpAndDownException;
 import wooteco.subway.exception.section.SectionInternalRemovableConflictException;
+import wooteco.subway.exception.section.SectionUnlinkedException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,14 +31,16 @@ public class Sections {
         Deque<Station> result = new ArrayDeque<>();
         Map<Station, Station> upStationToFindDown = new HashMap<>();
         Map<Station, Station> downStationToFindUp = new HashMap<>();
+        setMapToFindStations(upStationToFindDown, downStationToFindUp);
 
-        for (Section section : sections) {
-            upStationToFindDown.put(section.getUpStation(), section.getDownStation());
-            downStationToFindUp.put(section.getDownStation(), section.getUpStation());
-        }
-        Station station = sections.get(FIRST_ELEMENT).getUpStation();
-        result.add(station);
+        Station pivotStation = sections.get(FIRST_ELEMENT).getUpStation();
+        result.add(pivotStation);
+        sortStations(result, upStationToFindDown, downStationToFindUp);
 
+        return new ArrayList<>(result);
+    }
+
+    private void sortStations(Deque<Station> result, Map<Station, Station> upStationToFindDown, Map<Station, Station> downStationToFindUp) {
         while (downStationToFindUp.containsKey(result.peekFirst())) {
             Station current = result.peekFirst();
             result.addFirst(downStationToFindUp.get(current));
@@ -47,8 +49,13 @@ public class Sections {
             Station current = result.peekLast();
             result.addLast(upStationToFindDown.get(current));
         }
+    }
 
-        return new ArrayList<>(result);
+    private void setMapToFindStations(Map<Station, Station> upStationToFindDown, Map<Station, Station> downStationToFindUp) {
+        for (Section section : sections) {
+            upStationToFindDown.put(section.getUpStation(), section.getDownStation());
+            downStationToFindUp.put(section.getDownStation(), section.getUpStation());
+        }
     }
 
     private Section modifyAdjacent(Section newSection) {
@@ -86,7 +93,7 @@ public class Sections {
     }
 
     private void validateAddable(Section target) {
-        if (sections.stream().anyMatch(section -> section.isSameOrReversed(target))) {
+        if (isDuplicatedSection(target)) {
             throw new DuplicatedSectionException();
         }
 
@@ -94,20 +101,35 @@ public class Sections {
             throw new SectionCycleException();
         }
 
-        //todo: 끊겨있는 구간 추가
+        if(isUnLinkableSection(target)){
+            throw new SectionUnlinkedException();
+        }
+    }
+
+    private boolean isUnLinkableSection(Section target) {
+        return sections.stream().noneMatch(section -> section.isAdjacent(target));
+    }
+
+    private boolean isDuplicatedSection(Section target) {
+        return sections.stream().anyMatch(section -> section.isSameOrReversed(target));
     }
 
     public List<Section> sections() {
         return Collections.unmodifiableList(sections);
     }
 
-    public Section mergeTwoIntoOne(Station station) {
+    public Section removeStationInBetween(Station station) {
         validateIsSizeTwo(sections);
 
         Section section = sections.get(FIRST_ELEMENT);
         int distance = sections.stream()
                 .mapToInt(Section::getDistance)
                 .sum();
+
+        return mergeTwoIntoOne(station, section, distance);
+    }
+
+    private Section mergeTwoIntoOne(Station station, Section section, int distance) {
         if (section.isUpStation(station)) {
             Station downStation = section.getDownStation();
             Station upStation = sections.get(SECOND_ELEMENT).getUpStation();
@@ -126,5 +148,9 @@ public class Sections {
 
     public boolean hasSize(int size) {
         return sections.size() == size;
+    }
+
+    public void add(Section section) {
+        sections.add(section);
     }
 }

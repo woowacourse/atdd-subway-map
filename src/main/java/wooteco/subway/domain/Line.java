@@ -23,7 +23,7 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        sections.addAndThenGetModifiedAdjacent(section);
+        sections.add(section);
     }
 
     public List<Station> stations() {

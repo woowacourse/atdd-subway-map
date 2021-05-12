@@ -43,7 +43,7 @@ public class SectionService {
         sectionDao.removeSections(lineId, effectiveSections);
 
         if (effectiveSections.size() == WHEN_BETWEEN_SECTIONS) {
-            Section section = Sections.create(effectiveSections).mergeTwoIntoOne(station);
+            Section section = Sections.create(effectiveSections).removeStationInBetween(station);
             sectionDao.insertSection(section, lineId);
         }
     }
