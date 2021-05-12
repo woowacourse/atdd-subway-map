@@ -7,11 +7,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class LineTest {
+
     private Sections sections;
 
     @BeforeEach
     void setUp() {
-        sections = new Sections(new Section(new Station(1L, "a"), new Station(2L, "b"), new Distance(1)));
+        sections = new Sections(
+            new Section(new Station(1L, "a"), new Station(2L, "b"), new Distance(1)));
     }
 
     @DisplayName("ID가 같으면 같은 노선으로 취급한다.")

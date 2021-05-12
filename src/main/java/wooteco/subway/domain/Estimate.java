@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Estimate {
+
     private final List<Section> sectionsToCreate;
     private final List<Section> sectionsToRemove;
 

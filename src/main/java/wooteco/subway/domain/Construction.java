@@ -105,7 +105,8 @@ public class Construction {
         }
     }
 
-    private void addSectionsToCreateAfterRemoveSection(List<Section> sectionsToCreate, List<Section> sectionsToRemove) {
+    private void addSectionsToCreateAfterRemoveSection(List<Section> sectionsToCreate,
+        List<Section> sectionsToRemove) {
         Sections sections = new Sections(new HashSet<>(sectionsToRemove));
         Section newSection = new Section(sections.firstStation(), sections.lastStation(),
             sections.totalDistance());

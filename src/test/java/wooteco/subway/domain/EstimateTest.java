@@ -20,9 +20,11 @@ public class EstimateTest {
             .asList(new Section(1L, new Station(1L, "a"), new Station(2L, "b"), new Distance(1)),
                 new Section(2L, new Station(5L, "e"), new Station(6L, "f"), new Distance(1)));
         List<Section> sectionsToDelete = Collections
-            .singletonList(new Section(3L, new Station(3L, "c"), new Station(4L, "d"), new Distance(1)));
+            .singletonList(
+                new Section(3L, new Station(3L, "c"), new Station(4L, "d"), new Distance(1)));
         List<Section> sectionsToDelete2 = Collections
-            .singletonList(new Section(3L, new Station(3L, "c"), new Station(4L, "d"), new Distance(1)));
+            .singletonList(
+                new Section(3L, new Station(3L, "c"), new Station(4L, "d"), new Distance(1)));
         Estimate estimate = new Estimate(sectionsToCreate, sectionsToDelete);
         Estimate estimate2 = new Estimate(sectionsToCreate2, sectionsToDelete2);
         assertThat(estimate).isEqualTo(estimate2);

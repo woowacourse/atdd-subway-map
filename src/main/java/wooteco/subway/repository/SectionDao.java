@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.entity.SectionEntity;
 
@@ -41,7 +40,8 @@ public class SectionDao {
             return ps;
         }, keyHolder);
 
-        return new SectionEntity(Objects.requireNonNull(keyHolder.getKey()).longValue(), lineId, section);
+        return new SectionEntity(Objects.requireNonNull(keyHolder.getKey()).longValue(), lineId,
+            section);
     }
 
     public List<SectionEntity> filterByLineId(Long lineId) {

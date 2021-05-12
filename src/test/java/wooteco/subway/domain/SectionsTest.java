@@ -1,6 +1,5 @@
 package wooteco.subway.domain;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
@@ -14,9 +13,9 @@ import org.junit.jupiter.api.Test;
 
 public class SectionsTest {
 
+    Set<Section> sectionsToTest;
     private Sections sections;
     private List<Station> stations;
-    Set<Section> sectionsToTest;
     private Distance distance;
 
     @BeforeEach
