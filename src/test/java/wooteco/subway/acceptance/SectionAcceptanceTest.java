@@ -141,7 +141,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.asString()).isEqualTo("추가할 수 없는 구간입니다.");
+        assertThat(response.asString()).isEqualTo("이미 두 역 모두 노선에 등록되어 있습니다.");
     }
 
     @DisplayName("상행 종점역이나 하행 종점역에 구간 추가한다.")
@@ -171,6 +171,28 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(lineResponse.getStations()).usingRecursiveFieldByFieldElementComparator()
             .isEqualTo(expected);
+    }
+
+    @DisplayName("이미 두 역 모두 가지고 있는 노선에 등록을 하면 예외 처리한다.")
+    @Test
+    void createSectionInLineAlreadyHasAllSections() {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(stationIds.get(1)));
+        params.put("downStationId", String.valueOf(stationIds.get(2)));
+        params.put("distance", "5");
+        postSection(params,
+            createdResponse.header("Location") + "/sections");
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("upStationId", String.valueOf(stationIds.get(0)));
+        params2.put("downStationId", String.valueOf(stationIds.get(2)));
+        params2.put("distance", "9");
+        ExtractableResponse<Response> response = postSection(params,
+            createdResponse.header("Location") + "/sections");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("이미 두 역 모두 노선에 등록되어 있습니다.");
     }
 
     @DisplayName("기존 구간보다 길거나 같은 구간을 사이에 추가한다.")

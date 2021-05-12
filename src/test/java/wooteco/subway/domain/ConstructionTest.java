@@ -99,6 +99,14 @@ public class ConstructionTest {
         assertThat(estimate.sectionsToRemove()).hasSize(0);
     }
 
+    @DisplayName("이미 두 역 모두 가지고 있는 노선에 등록을 하면 예외 처리한다.")
+    @Test
+    void createSectionInLineAlreadyHasAllSections() {
+        assertThatIllegalArgumentException().isThrownBy(() -> construction
+            .createSection(new Section(1L, stations.get(0), stations.get(1), distance)))
+            .withMessage("이미 두 역 모두 노선에 등록되어 있습니다.");
+    }
+
     @DisplayName("구간을 삭제한다. (구간 사이에 있는 역을 삭제한다.)")
     @Test
     void deleteSectionsBetweenSections() {

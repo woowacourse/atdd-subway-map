@@ -16,6 +16,7 @@ public class Construction {
     }
 
     public Estimate createSection(Section section) {
+        validateExistingStationCount(section);
         List<Section> sectionsToCreate = new ArrayList<>();
         List<Section> sectionsToRemove = new ArrayList<>();
         if (isEndSectionInsertion(section)) {
@@ -24,6 +25,12 @@ public class Construction {
         }
         insertSectionWhenNotEndSectionInsertion(section, sectionsToCreate, sectionsToRemove);
         return new Estimate(sectionsToCreate, sectionsToRemove);
+    }
+
+    private void validateExistingStationCount(Section section) {
+        if (line.hasStation(section.getUpStation()) && line.hasStation(section.getDownStation())) {
+            throw new IllegalArgumentException("이미 두 역 모두 노선에 등록되어 있습니다.");
+        }
     }
 
     private boolean isEndSectionInsertion(Section section) {

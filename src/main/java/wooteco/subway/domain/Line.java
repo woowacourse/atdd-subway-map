@@ -60,6 +60,10 @@ public class Line {
         return sections.count();
     }
 
+    public boolean hasStation(Station station) {
+        return !hasNotStation(station);
+    }
+
     public boolean hasNotStation(Station station) {
         return sections.hasNotStation(station);
     }
