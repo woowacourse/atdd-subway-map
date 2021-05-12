@@ -10,10 +10,6 @@ public class LineResponse {
     private String name;
     private String color;
 
-    public LineResponse() {
-
-    }
-
     public LineResponse(Line newLine) {
         this(newLine.getId(), newLine.getName(), newLine.getColor());
     }

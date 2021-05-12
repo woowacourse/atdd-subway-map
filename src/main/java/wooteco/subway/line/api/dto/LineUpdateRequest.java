@@ -10,7 +10,7 @@ public class LineUpdateRequest {
     @NotEmpty(message = "노선 색을 지정해야합니다.")
     private String color;
 
-    public LineUpdateRequest() {
+    private LineUpdateRequest() {
     }
 
     public String getName() {

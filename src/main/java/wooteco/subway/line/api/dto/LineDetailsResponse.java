@@ -15,7 +15,8 @@ public class LineDetailsResponse {
     private String color;
     private List<StationResponse> stations;
 
-    public LineDetailsResponse() {
+    private LineDetailsResponse() {
+
     }
 
     public LineDetailsResponse(Line newLine, List<StationResponse> stations) {

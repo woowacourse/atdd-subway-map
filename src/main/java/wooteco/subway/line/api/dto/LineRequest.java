@@ -20,11 +20,7 @@ public class LineRequest {
     private int distance;
 
 
-    public LineRequest() {
-    }
-
-    public LineRequest(String name, String color) {
-        this(name, color, null, null, 0);
+    private LineRequest() {
     }
 
     public LineRequest(String name, String color, Long upStationId, Long downStationId,
