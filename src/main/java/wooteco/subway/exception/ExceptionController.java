@@ -12,8 +12,8 @@ public class ExceptionController {
         return ResponseEntity.notFound().build();
     }
 
-    @ExceptionHandler(SubwayException.class)
-    public ResponseEntity<String> handle(SubwayException e) {
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<String> handle(InvalidRequestException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

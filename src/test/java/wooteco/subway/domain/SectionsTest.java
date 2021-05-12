@@ -3,7 +3,7 @@ package wooteco.subway.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.InternalLogicConflictException;
-import wooteco.subway.exception.section.DuplicatedSectionException;
+import wooteco.subway.exception.section.SectionDuplicatedException;
 import wooteco.subway.exception.section.SectionHasSameUpAndDownException;
 import wooteco.subway.exception.section.SectionUnlinkedException;
 
@@ -56,9 +56,9 @@ class SectionsTest {
         Sections sections = Sections.create(강남_수서);
 
         assertThatThrownBy(() -> sections.addAndThenGetModifiedAdjacent(수서_강남))
-                .isInstanceOf(DuplicatedSectionException.class);
+                .isInstanceOf(SectionDuplicatedException.class);
         assertThatThrownBy(() -> sections.addAndThenGetModifiedAdjacent(강남_수서))
-                .isInstanceOf(DuplicatedSectionException.class);
+                .isInstanceOf(SectionDuplicatedException.class);
     }
 
     @DisplayName("구간추가 - 실패(앞뒤역이 같은 구간 추가)")

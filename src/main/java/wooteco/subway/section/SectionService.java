@@ -7,7 +7,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.line.LineNotFoundException;
-import wooteco.subway.exception.section.LastSectionRemainedException;
+import wooteco.subway.exception.section.SectionLastRemainedException;
 import wooteco.subway.exception.station.StationNotFoundException;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.section.dao.SectionDao;
@@ -50,7 +50,7 @@ public class SectionService {
 
     private void validateIsLastRemainedSection(Long lineId) {
         if (sectionDao.findSectionsByLineId(lineId).hasSize(1)) {
-            throw new LastSectionRemainedException();
+            throw new SectionLastRemainedException();
         }
     }
 

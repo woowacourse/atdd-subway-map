@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.station.DuplicatedStationException;
+import wooteco.subway.exception.station.StationDuplicatedException;
 import wooteco.subway.exception.station.StationNotFoundException;
 import wooteco.subway.station.dao.StationDao;
 
@@ -46,7 +46,7 @@ public class StationService {
 
     private void validateExistName(Station station) {
         if (stationDao.existByName(station.getName())) {
-            throw new DuplicatedStationException();
+            throw new StationDuplicatedException();
         }
     }
 }

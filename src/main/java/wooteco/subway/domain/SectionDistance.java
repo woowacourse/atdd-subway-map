@@ -1,6 +1,6 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.exception.section.InvalidDistanceException;
+import wooteco.subway.exception.section.DistancePreviousOverException;
 
 import java.util.Objects;
 
@@ -15,7 +15,7 @@ public class SectionDistance {
 
     private void validateIsPositive(int distance) {
         if (distance <= 0) {
-            throw new InvalidDistanceException();
+            throw new DistancePreviousOverException();
         }
     }
 

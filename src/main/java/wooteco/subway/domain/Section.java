@@ -3,7 +3,7 @@ package wooteco.subway.domain;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import wooteco.subway.exception.section.DuplicatedSectionException;
+import wooteco.subway.exception.section.SectionDuplicatedException;
 import wooteco.subway.exception.section.SectionHasSameUpAndDownException;
 
 import java.util.Objects;
@@ -64,7 +64,7 @@ public class Section {
 
     public boolean isAdjacent(Section target) {
         if (isSameOrReversed(target)) {
-            throw new DuplicatedSectionException();
+            throw new SectionDuplicatedException();
         }
         return isUpStation(target.getUpStation()) ||
                 isDownStation(target.getDownStation()) ||

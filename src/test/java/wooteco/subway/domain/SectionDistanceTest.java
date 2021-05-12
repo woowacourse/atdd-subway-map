@@ -2,7 +2,7 @@ package wooteco.subway.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.exception.section.InvalidDistanceException;
+import wooteco.subway.exception.section.DistancePreviousOverException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -30,6 +30,6 @@ class SectionDistanceTest {
     @DisplayName("유효성 체크 - 자연수 검사")
     void validate() {
         assertThatThrownBy(() -> new SectionDistance(0))
-                .isInstanceOf(InvalidDistanceException.class);
+                .isInstanceOf(DistancePreviousOverException.class);
     }
 }

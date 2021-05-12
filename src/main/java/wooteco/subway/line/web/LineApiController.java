@@ -7,7 +7,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.line.InsufficientLineInformationException;
+import wooteco.subway.exception.line.LineInsufficientRequestException;
 import wooteco.subway.line.LineService;
 import wooteco.subway.station.StationService;
 
@@ -43,7 +43,7 @@ public class LineApiController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new InsufficientLineInformationException();
+            throw new LineInsufficientRequestException();
         }
 
         Station upStation = stationService.find(lineRequest.getUpStationId());

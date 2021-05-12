@@ -6,7 +6,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.section.NotPositiveDistanceException;
+import wooteco.subway.exception.section.DistanceNotPositiveException;
 import wooteco.subway.section.SectionService;
 import wooteco.subway.station.StationService;
 
@@ -24,7 +24,7 @@ public class SectionApiController {
     @PostMapping
     public ResponseEntity<SectionResponse> createSection(@RequestBody @Valid SectionRequest sectionRequest, BindingResult bindingResult, @PathVariable Long lineId) {
         if (bindingResult.hasErrors()) {
-            throw new NotPositiveDistanceException();
+            throw new DistanceNotPositiveException();
         }
 
         Station upStation = stationService.find(sectionRequest.getUpStationId());

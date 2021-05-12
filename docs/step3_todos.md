@@ -13,7 +13,7 @@
 - [x] Sections: List<Station> 인데 Sections라고 하는지?
 - [x] Sections: 로직 정리 및 메소드이름 정리, 매직넘버, 스트림은 결과를 변수로 한번 추출하고 진행
 - [x] Optional 금지!
-- [ ] SubwayException은 왜 다 badRequest
+- [x] SubwayException은 왜 다 badRequest
 - [ ] LineService: 파라미터 갯수 줄이기, Info 금지
 - [ ] Dao: 쿼리 static? 왜?
 - [ ] SectionDao: create, insert 둘다 insert 구문 실행 무슨차이?

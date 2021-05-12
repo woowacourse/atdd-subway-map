@@ -2,7 +2,7 @@ package wooteco.subway.domain;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import wooteco.subway.exception.section.DuplicatedSectionException;
+import wooteco.subway.exception.section.SectionDuplicatedException;
 import wooteco.subway.exception.section.SectionCycleException;
 import wooteco.subway.exception.section.SectionInternalRemovableConflictException;
 import wooteco.subway.exception.section.SectionUnlinkedException;
@@ -94,7 +94,7 @@ public class Sections {
 
     private void validateAddable(Section target) {
         if (isDuplicatedSection(target)) {
-            throw new DuplicatedSectionException();
+            throw new SectionDuplicatedException();
         }
 
         if (isCycleSection(target, sections)) {
