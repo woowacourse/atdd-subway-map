@@ -114,7 +114,8 @@ public class SectionService {
         Section newSection = makeNewSection(before, after);
 
         jdbcSectionDao.save(lineId, newSection);
-        jdbcSectionDao.deleteSections(before, after);
+        jdbcSectionDao.delete(before);
+        jdbcSectionDao.delete(after);
     }
 
     private Section makeNewSection(Section before, Section after) {

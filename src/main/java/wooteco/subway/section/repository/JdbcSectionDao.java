@@ -96,8 +96,8 @@ public class JdbcSectionDao {
         jdbcTemplate.update(query, lineId, stationId);
     }
 
-    public void deleteSections(Section before, Section after) {
-        String query = "DELETE FROM section WHERE id = ? AND id = ?";
-        jdbcTemplate.update(query, before.getId(), after.getId());
+    public void delete(Section section) {
+        String query = "DELETE FROM section WHERE id = ?";
+        jdbcTemplate.update(query, section.getId());
     }
 }
