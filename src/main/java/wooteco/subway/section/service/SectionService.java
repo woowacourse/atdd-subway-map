@@ -22,16 +22,20 @@ public class SectionService {
     }
 
     public void save(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
-        Section section = new Section(lineId, upStationId, downStationId, distance);
+        Section section = new Section(
+                lineId,
+                new Station(upStationId),
+                new Station(downStationId),
+                distance);
         if (sectionRepository.isInitialSave(section)) {
             sectionRepository.save(section);
             return;
         }
-        validateSection(section);
-        addSection(section);
+        validate(section);
+        add(section);
     }
 
-    private void validateSection(final Section section) {
+    private void validate(final Section section) {
         if (bothStationsExist(section)) {
             throw new DuplicateSectionException();
         }
@@ -40,37 +44,37 @@ public class SectionService {
         }
     }
 
-    private void addSection(final Section section) {
+    private void add(final Section section) {
         if (isNotEndStationSave(section)) {
             Section originalSection = sectionRepository.findByBaseStation(section);
-            Section modifiedSection = getModifiedSection(section, originalSection);
+            Section modifiedSection = modify(originalSection, section);
 
             sectionRepository.update(modifiedSection);
         }
         sectionRepository.save(section);
     }
 
-    private Section getModifiedSection(final Section section, final Section originalSection) {
-        validateSectionDistance(section, originalSection);
+    private Section modify(final Section originalSection, final Section section) {
+        validateDistance(section, originalSection);
         int newSectionDistance = originalSection.getDistanceGap(section);
 
         if (originalSection.hasSameUpStation(section)) {
             return new Section(
                     originalSection.getId(),
                     section.getLineId(),
-                    section.getDownStationId(),
-                    originalSection.getDownStationId(),
+                    new Station(section.getDownStationId()),
+                    new Station(originalSection.getDownStationId()),
                     newSectionDistance);
         }
         return new Section(
                 originalSection.getId(),
                 section.getLineId(),
-                originalSection.getUpStationId(),
-                section.getUpStationId(),
+                new Station(originalSection.getUpStationId()),
+                new Station(section.getUpStationId()),
                 newSectionDistance);
     }
 
-    private void validateSectionDistance(final Section section, final Section originalSection) {
+    private void validateDistance(final Section section, final Section originalSection) {
         if (originalSection.isShorterOrEqualTo(section)) {
             throw new IllegalSectionDistanceException();
         }
@@ -121,7 +125,11 @@ public class SectionService {
         long newDownStationId = sectionRepository.getNewDownStationId(lineId, stationId);
         int newDistance = sectionRepository.getNewDistance(lineId, stationId);
 
-        return new Section(lineId, newUpStationId, newDownStationId, newDistance);
+        return new Section(
+                lineId,
+                new Station(newUpStationId),
+                new Station(newDownStationId),
+                newDistance);
     }
 
     public List<Station> getAllStations(final Long lineId) {

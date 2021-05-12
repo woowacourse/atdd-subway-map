@@ -116,12 +116,17 @@ public class SectionRepository {
     private Section sendQuery(final String query, final Long lineId, final Long stationId) {
         return jdbcTemplate.queryForObject(
                 query,
-                (resultSet, rowNum) -> new Section(
-                        resultSet.getLong("id"),
-                        resultSet.getLong("line_id"),
-                        resultSet.getLong("up_station_id"),
-                        resultSet.getLong("down_station_id"),
-                        resultSet.getInt("distance")),
+                (resultSet, rowNum) -> {
+                    Station upStation = new Station(resultSet.getLong("up_station_id"));
+                    Station downStation = new Station(resultSet.getLong("down_station_id"));
+
+                    return new Section(
+                            resultSet.getLong("id"),
+                            resultSet.getLong("line_id"),
+                            upStation,
+                            downStation,
+                            resultSet.getInt("distance"));
+                },
                 lineId,
                 stationId
         );

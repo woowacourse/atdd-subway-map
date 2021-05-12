@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.repository.SectionRepository;
+import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.service.NoSuchStationException;
 
 import java.util.Arrays;
@@ -70,8 +71,8 @@ public class SectionServiceTest {
 
         List<Section> sections = getSections();
         List<Section> expectedSections = Arrays.asList(
-                new Section(lineId, 2L, 4L, 4),
-                new Section(lineId, 1L, 2L, 5)
+                new Section(lineId, new Station(2L), new Station(4L), 4),
+                new Section(lineId, new Station(1L), new Station(2L), 5)
         );
 
         assertThat(sections).hasSameSizeAs(expectedSections).containsAll(expectedSections);
@@ -84,8 +85,8 @@ public class SectionServiceTest {
 
         List<Section> sections = getSections();
         List<Section> expectedSections = Arrays.asList(
-                new Section(lineId, 1L, 2L, 5),
-                new Section(lineId, 2L, 3L, 11)
+                new Section(lineId, new Station(1L), new Station(2L), 5),
+                new Section(lineId, new Station(2L), new Station(3L), 11)
         );
 
         assertThat(sections).hasSameSizeAs(expectedSections).containsAll(expectedSections);
@@ -119,10 +120,10 @@ public class SectionServiceTest {
 
         List<Section> sections = getSections();
         List<Section> expectedSections = Arrays.asList(
-                new Section(lineId, 1L, 2L, 5),
-                new Section(lineId, 2L, 4L, 4),
-                new Section(lineId, 4L, 3L, 7),
-                new Section(lineId, 3L, 5L, 14)
+                new Section(lineId, new Station(1L), new Station(2L), 5),
+                new Section(lineId, new Station(2L), new Station(4L), 4),
+                new Section(lineId, new Station(4L), new Station(3L), 7),
+                new Section(lineId, new Station(3L), new Station(5L), 14)
         );
 
         assertThat(sections).hasSameSizeAs(expectedSections).containsAll(expectedSections);
@@ -139,10 +140,10 @@ public class SectionServiceTest {
 
         List<Section> sections = getSections();
         List<Section> expectedSections = Arrays.asList(
-                new Section(lineId, 1L, 2L, 5),
-                new Section(lineId, 2L, 5L, 1),
-                new Section(lineId, 5L, 4L, 3),
-                new Section(lineId, 4L, 3L, 7)
+                new Section(lineId, new Station(1L), new Station(2L), 5),
+                new Section(lineId, new Station(2L), new Station(5L), 1),
+                new Section(lineId, new Station(5L), new Station(4L), 3),
+                new Section(lineId, new Station(4L), new Station(3L), 7)
         );
 
         assertThat(sections).hasSameSizeAs(expectedSections).containsAll(expectedSections);
@@ -155,11 +156,11 @@ public class SectionServiceTest {
         // 잠실역 (1) - 5 - 잠실새내역 (2) - 1 - 강남역 (5) - 2 - 해운대역 (6) - 1 - 한성백제역 (4) - 7 - 몽촌토성역 (3)
         sections = getSections();
         expectedSections = Arrays.asList(
-                new Section(lineId, 1L, 2L, 5),
-                new Section(lineId, 2L, 5L, 1),
-                new Section(lineId, 5L, 6L, 2),
-                new Section(lineId, 6L, 4L, 1),
-                new Section(lineId, 4L, 3L, 7)
+                new Section(lineId, new Station(1L), new Station(2L), 5),
+                new Section(lineId, new Station(2L), new Station(5L), 1),
+                new Section(lineId, new Station(5L), new Station(6L), 2),
+                new Section(lineId, new Station(6L), new Station(4L), 1),
+                new Section(lineId, new Station(4L), new Station(3L), 7)
         );
 
         assertThat(sections).hasSameSizeAs(expectedSections).containsAll(expectedSections);
@@ -181,8 +182,8 @@ public class SectionServiceTest {
                 query,
                 (resultSet, rowNum) -> new Section(
                         resultSet.getLong("line_id"),
-                        resultSet.getLong("up_station_id"),
-                        resultSet.getLong("down_station_id"),
+                        new Station(resultSet.getLong("up_station_id")),
+                        new Station(resultSet.getLong("down_station_id")),
                         resultSet.getInt("distance")
                 ),
                 1

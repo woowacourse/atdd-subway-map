@@ -56,15 +56,15 @@ public class SectionRepositoryTest {
                 query,
                 (resultSet, rowNum) -> new Section(
                         resultSet.getLong("line_id"),
-                        resultSet.getLong("up_station_id"),
-                        resultSet.getLong("down_station_id"),
+                        new Station(resultSet.getLong("up_station_id")),
+                        new Station(resultSet.getLong("down_station_id")),
                         resultSet.getInt("distance")
                 ),
                 1
         );
         List<Section> expectedSections = Arrays.asList(
-                new Section(lineId, 2L, 4L, 4),
-                new Section(lineId, 1L, 2L, 5)
+                new Section(lineId, new Station(2L), new Station(4L), 4),
+                new Section(lineId, new Station(1L), new Station(2L), 5)
         );
 
         assertThat(sections).hasSameSizeAs(expectedSections).containsAll(expectedSections);
@@ -80,14 +80,14 @@ public class SectionRepositoryTest {
                 query,
                 (resultSet, rowNum) -> new Section(
                         resultSet.getLong("line_id"),
-                        resultSet.getLong("up_station_id"),
-                        resultSet.getLong("down_station_id"),
+                        new Station(resultSet.getLong("up_station_id")),
+                        new Station(resultSet.getLong("down_station_id")),
                         resultSet.getInt("distance")
                 ),
                 1
         );
         List<Section> expectedSections = Arrays.asList(
-                new Section(lineId, 1L, 2L, 5)
+                new Section(lineId, new Station(1L), new Station(2L), 5)
         );
 
         assertThat(sections).hasSameSizeAs(expectedSections).containsAll(expectedSections);
@@ -120,7 +120,7 @@ public class SectionRepositoryTest {
         String stationQuery = "INSERT INTO station(name) VALUES(?)";
         jdbcTemplate.update(stationQuery, "해운대역");
 
-        Section section = new Section(lineId, 3L, 5L, 10);
+        Section section = new Section(lineId, new Station(3L), new Station(5L), 10);
         sectionRepository.save(section);
 
         Section sectionSaved = getSection(4L);
@@ -180,22 +180,22 @@ public class SectionRepositoryTest {
     @DisplayName("주어진 구간의 상행선이 라인 노선 상 상행선으로 존재하면 해당 구간을 반환하고 반대의 경우에는 하행선으로 존재하는 구간을 반환한다")
     @Test
     void getExistingSectionByBaseStation() {
-        Section sectionWithUpStationBase = new Section(lineId, 4L, 5L);
-        Section expectedSection = new Section(3L, lineId, 4L, 3L, 7);
+        Section sectionWithUpStationBase = new Section(lineId, new Station(4L), new Station(5L));
+        Section expectedSection = new Section(3L, lineId, new Station(4L), new Station(3L), 7);
         assertThat(sectionRepository.findByBaseStation(sectionWithUpStationBase)).isEqualTo(expectedSection);
 
-        Section sectionWithDownStationBase = new Section(lineId, 5L, 4L);
-        expectedSection = new Section(1L, lineId, 2L, 4L, 4);
+        Section sectionWithDownStationBase = new Section(lineId, new Station(5L), new Station(4L));
+        expectedSection = new Section(1L, lineId, new Station(2L), new Station(4L), 4);
         assertThat(sectionRepository.findByBaseStation(sectionWithDownStationBase)).isEqualTo(expectedSection);
     }
 
     @DisplayName("주어진 구간 정보대로 해당 구간을 업데이트 한다")
     @Test
     void updateSection() {
-        Section originalSection = new Section(lineId, 2L, 4L, 4);
+        Section originalSection = new Section(lineId, new Station(2L), new Station(4L), 4);
         assertThat(getSection(1L)).isEqualTo(originalSection);
 
-        Section sectionForUpdate = new Section(1L, lineId, 3L, 1L, 12);
+        Section sectionForUpdate = new Section(1L, lineId, new Station(3L), new Station(1L), 12);
         sectionRepository.update(sectionForUpdate);
 
         Section section = getSection(1L);
@@ -208,8 +208,8 @@ public class SectionRepositoryTest {
                 query,
                 (resultSet, rowNum) -> new Section(
                         resultSet.getLong("line_id"),
-                        resultSet.getLong("up_station_id"),
-                        resultSet.getLong("down_station_id"),
+                        new Station(resultSet.getLong("up_station_id")),
+                        new Station(resultSet.getLong("down_station_id")),
                         resultSet.getInt("distance")
                 ),
                 sectionId

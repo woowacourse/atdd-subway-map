@@ -1,27 +1,29 @@
 package wooteco.subway.section.domain;
 
+import wooteco.subway.station.domain.Station;
+
 import java.util.Objects;
 
 public class Section {
     private final Long id;
     private final Long lineId;
-    private final Long upStationId;
-    private final Long downStationId;
+    private final Station upStation;
+    private final Station downStation;
     private final Integer distance;
 
-    public Section(final Long lineId, final Long upStationId, final Long downStationId) {
-        this(lineId, upStationId, downStationId, null);
+    public Section(final Long lineId, final Station upStation, final Station downStation) {
+        this(lineId, upStation, downStation, null);
     }
 
-    public Section(final Long lineId, final Long upStationId, final Long downStationId, final Integer distance) {
-        this(null, lineId, upStationId, downStationId, distance);
+    public Section(final Long lineId, final Station upStationId, final Station downStation, final Integer distance) {
+        this(null, lineId, upStationId, downStation, distance);
     }
 
-    public Section(final Long id, final Long lineId, final Long upStationId, final Long downStationId, final Integer distance) {
+    public Section(final Long id, final Long lineId, final Station upStation, final Station downStation, final Integer distance) {
         this.id = id;
         this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
@@ -34,11 +36,11 @@ public class Section {
     }
 
     public Long getUpStationId() {
-        return upStationId;
+        return upStation.getId();
     }
 
     public Long getDownStationId() {
-        return downStationId;
+        return downStation.getId();
     }
 
     public int getDistance() {
@@ -54,7 +56,7 @@ public class Section {
     }
 
     public boolean hasSameUpStation(final Section that) {
-        return this.upStationId.equals(that.upStationId);
+        return this.upStation.equals(that.upStation);
     }
 
     @Override
@@ -62,11 +64,11 @@ public class Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final Section section = (Section) o;
-        return distance == section.distance && Objects.equals(lineId, section.lineId) && Objects.equals(upStationId, section.upStationId) && Objects.equals(downStationId, section.downStationId);
+        return Objects.equals(id, section.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lineId, upStationId, downStationId, distance);
+        return Objects.hash(id);
     }
 }
