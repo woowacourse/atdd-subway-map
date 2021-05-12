@@ -52,7 +52,7 @@ public class ConstructionTest {
             new Distance(1));
 
         // when
-        construction.createSection(section);
+        Estimate estimate = construction.createSection(section);
 
         // then
         List<Section> sectionsToCreate = Arrays.asList(
@@ -67,10 +67,10 @@ public class ConstructionTest {
             .withIgnoredFields("id")
             .build();
 
-        assertThat(construction.sectionsToCreate())
+        assertThat(estimate.sectionsToCreate())
             .usingRecursiveFieldByFieldElementComparator(configuration)
             .usingElementComparatorIgnoringFields().containsAll(sectionsToCreate);
-        assertThat(construction.sectionsToRemove()).usingRecursiveFieldByFieldElementComparator()
+        assertThat(estimate.sectionsToRemove()).usingRecursiveFieldByFieldElementComparator()
             .containsAll(sectionsToRemove);
     }
 
@@ -82,7 +82,7 @@ public class ConstructionTest {
             new Distance(1));
 
         // when
-        construction.createSection(section);
+        Estimate estimate = construction.createSection(section);
 
         // then
         List<Section> sectionsToCreate = Collections.singletonList(
@@ -93,17 +93,17 @@ public class ConstructionTest {
             .withIgnoredFields("id")
             .build();
 
-        assertThat(construction.sectionsToCreate())
+        assertThat(estimate.sectionsToCreate())
             .usingRecursiveFieldByFieldElementComparator(configuration)
             .usingElementComparatorIgnoringFields().containsAll(sectionsToCreate);
-        assertThat(construction.sectionsToRemove()).hasSize(0);
+        assertThat(estimate.sectionsToRemove()).hasSize(0);
     }
 
     @DisplayName("구간을 삭제한다. (구간 사이에 있는 역을 삭제한다.)")
     @Test
     void deleteSectionsBetweenSections() {
         // when
-        construction.deleteSectionsByStation(stations.get(1));
+        Estimate estimate = construction.deleteSectionsByStation(stations.get(1));
 
         // then
         List<Section> sectionsToCreate = Collections.singletonList(
@@ -118,10 +118,10 @@ public class ConstructionTest {
             .withIgnoredFields("id")
             .build();
 
-        assertThat(construction.sectionsToCreate())
+        assertThat(estimate.sectionsToCreate())
             .usingRecursiveFieldByFieldElementComparator(configuration)
             .usingElementComparatorIgnoringFields().containsAll(sectionsToCreate);
-        assertThat(construction.sectionsToRemove()).usingRecursiveFieldByFieldElementComparator()
+        assertThat(estimate.sectionsToRemove()).usingRecursiveFieldByFieldElementComparator()
             .containsAll(sectionsToRemove);
     }
 
@@ -129,15 +129,15 @@ public class ConstructionTest {
     @Test
     void deleteSectionsByLastStation() {
         // when
-        construction.deleteSectionsByStation(stations.get(0));
+        Estimate estimate = construction.deleteSectionsByStation(stations.get(0));
 
         // then
         List<Section> sectionsToRemove = Collections.singletonList(
             new Section(1L, stations.get(0), stations.get(1), distance)
         );
 
-        assertThat(construction.sectionsToCreate()).hasSize(0);
-        assertThat(construction.sectionsToRemove()).usingRecursiveFieldByFieldElementComparator()
+        assertThat(estimate.sectionsToCreate()).hasSize(0);
+        assertThat(estimate.sectionsToRemove()).usingRecursiveFieldByFieldElementComparator()
             .containsAll(sectionsToRemove);
     }
 

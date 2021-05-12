@@ -8,29 +8,22 @@ public class Construction {
 
     private static final int MIN_SECTION_COUNT = 1;
     private static final int SECTION_COUNT_DONT_NEED_TO_CREATE = 1;
+
     private final Line line;
-    private final List<Section> sectionsToCreate;
-    private final List<Section> sectionsToRemove;
 
     public Construction(Line line) {
         this.line = line;
-        sectionsToCreate = new ArrayList<>();
-        sectionsToRemove = new ArrayList<>();
     }
 
-    public void createSection(Section section) {
-        validateToConstruct();
+    public Estimate createSection(Section section) {
+        List<Section> sectionsToCreate = new ArrayList<>();
+        List<Section> sectionsToRemove = new ArrayList<>();
         if (isEndSectionInsertion(section)) {
             sectionsToCreate.add(section);
-            return;
+            return new Estimate(sectionsToCreate, sectionsToRemove);
         }
-        insertSectionWhenNotEndSectionInsertion(section);
-    }
-
-    private void validateToConstruct() {
-        if (!sectionsToCreate.isEmpty() || !sectionsToRemove.isEmpty()) {
-            throw new IllegalStateException("이미 구간을 수정하였습니다.");
-        }
+        insertSectionWhenNotEndSectionInsertion(section, sectionsToCreate, sectionsToRemove);
+        return new Estimate(sectionsToCreate, sectionsToRemove);
     }
 
     private boolean isEndSectionInsertion(Section section) {
@@ -38,10 +31,11 @@ public class Construction {
             || section.getDownStation().equals(line.firstStation());
     }
 
-    private void insertSectionWhenNotEndSectionInsertion(Section section) {
+    private void insertSectionWhenNotEndSectionInsertion(Section section,
+        List<Section> sectionsToCreate, List<Section> sectionsToRemove) {
         Section sectionToConstruct = sectionToConstruct(section);
         sectionsToRemove.add(sectionToConstruct);
-        registerSections(section, sectionToConstruct);
+        registerSections(section, sectionToConstruct, sectionsToCreate);
     }
 
     private Section sectionToConstruct(Section sectionToInsert) {
@@ -51,18 +45,21 @@ public class Construction {
             .orElseThrow(() -> new IllegalArgumentException("추가할 수 없는 구간입니다."));
     }
 
-    private void registerSections(Section section, Section sectionToConstruct) {
+    private void registerSections(Section section, Section sectionToConstruct,
+        List<Section> sectionsToCreate) {
         Station sameStation = sectionToConstruct.sameStation(section);
         if (section.getUpStation().equals(sameStation)) {
-            registerSectionsToUpdateWhenSameUpStation(section, sectionToConstruct);
+            registerSectionsToUpdateWhenSameUpStation(section, sectionToConstruct,
+                sectionsToCreate);
         }
         if (section.getDownStation().equals(sameStation)) {
-            registerSectionsToUpdateWhenSameDownStation(section, sectionToConstruct);
+            registerSectionsToUpdateWhenSameDownStation(section, sectionToConstruct,
+                sectionsToCreate);
         }
     }
 
     private void registerSectionsToUpdateWhenSameUpStation(Section section,
-        Section sectionToConstruct) {
+        Section sectionToConstruct, List<Section> sectionsToCreate) {
         sectionsToCreate.add(section);
         sectionsToCreate
             .add(new Section(section.getDownStation(), sectionToConstruct.getDownStation(),
@@ -71,29 +68,28 @@ public class Construction {
     }
 
     private void registerSectionsToUpdateWhenSameDownStation(Section section,
-        Section sectionToConstruct) {
+        Section sectionToConstruct, List<Section> sectionsToCreate) {
         sectionsToCreate.add(new Section(sectionToConstruct.getUpStation(), section.getUpStation(),
             new Distance(
                 sectionToConstruct.getDistance().value() - section.getDistance().value())));
         sectionsToCreate.add(section);
     }
 
-    public void deleteSectionsByStation(Station station) {
-        validateToConstruct();
+    public Estimate deleteSectionsByStation(Station station) {
         validateNumberOfSections();
         validateToHasStation(station);
-        List<Section> sectionsWithStation = line.sectionsWithStation(station);
-        sectionsToRemove.addAll(sectionsWithStation);
-        if (sectionsWithStation.size() > SECTION_COUNT_DONT_NEED_TO_CREATE) {
-            addSectionsToCreateAfterRemoveSection();
+        List<Section> sectionsToCreate = new ArrayList<>();
+        List<Section> sectionsToRemove = line.sectionsWithStation(station);
+        if (sectionsToRemove.size() > SECTION_COUNT_DONT_NEED_TO_CREATE) {
+            addSectionsToCreateAfterRemoveSection(sectionsToCreate, sectionsToRemove);
         }
+        return new Estimate(sectionsToCreate, sectionsToRemove);
     }
 
     private void validateToHasStation(Station station) {
         if (line.hasNotStation(station)) {
             throw new IllegalArgumentException("존재하지 않는 역입니다.");
         }
-
     }
 
     private void validateNumberOfSections() {
@@ -102,21 +98,14 @@ public class Construction {
         }
     }
 
-    private void addSectionsToCreateAfterRemoveSection() {
+    private void addSectionsToCreateAfterRemoveSection(List<Section> sectionsToCreate, List<Section> sectionsToRemove) {
         Sections sections = new Sections(new HashSet<>(sectionsToRemove));
-        Section newSection = new Section(sections.firstStation(), sections.lastStation(), sections.totalDistance());
+        Section newSection = new Section(sections.firstStation(), sections.lastStation(),
+            sections.totalDistance());
         sectionsToCreate.add(newSection);
     }
 
     public Line line() {
         return line;
-    }
-
-    public List<Section> sectionsToCreate() {
-        return new ArrayList<>(sectionsToCreate);
-    }
-
-    public List<Section> sectionsToRemove() {
-        return new ArrayList<>(sectionsToRemove);
     }
 }

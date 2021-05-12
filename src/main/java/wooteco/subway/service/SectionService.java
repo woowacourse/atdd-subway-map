@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Construction;
+import wooteco.subway.domain.Estimate;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
@@ -60,24 +61,21 @@ public class SectionService {
     }
 
     public void createSectionInLine(Section section, Line line) {
-
         Construction construction = new Construction(line);
-        construction.createSection(section);
-        updateSections(construction);
+        updateSections(construction.createSection(section), line.getId());
     }
 
-    private void updateSections(Construction construction) {
-        for (Section sectionToCreate : construction.sectionsToCreate()) {
-            createSection(sectionToCreate, construction.line().getId());
+    private void updateSections(Estimate estimate, Long lineId) {
+        for (Section sectionToCreate : estimate.sectionsToCreate()) {
+            createSection(sectionToCreate, lineId);
         }
-        for (Section sectionToRemove : construction.sectionsToRemove()) {
+        for (Section sectionToRemove : estimate.sectionsToRemove()) {
             remove(sectionToRemove.getId());
         }
     }
 
     public void removeStationInLine(Station station, Line line) {
         Construction construction = new Construction(line);
-        construction.deleteSectionsByStation(station);
-        updateSections(construction);
+        updateSections(construction.deleteSectionsByStation(station), line.getId());
     }
 }
