@@ -7,10 +7,11 @@ public class Distance {
     private final int value;
 
     public Distance(final int value) {
+        validateDistance(value);
         this.value = value;
     }
 
-    private void validDistance(final int value) {
+    private void validateDistance(final int value) {
         if (value <= 0) {
             throw new IllegalArgumentException("거리는 0이상의 값을 가져야 합니다.");
         }
