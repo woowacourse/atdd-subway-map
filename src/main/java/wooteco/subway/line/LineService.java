@@ -7,6 +7,7 @@ import wooteco.subway.section.SectionDao;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -31,7 +32,6 @@ public class LineService {
 
     public void update(final Line line) {
         final Long lineId = line.getId();
-        validateExisting(lineId);
 
         final Line old = findById(lineId);
         if (old.isDifferentName(line)) {
@@ -42,9 +42,12 @@ public class LineService {
     }
 
     public void delete(final Long id) {
-        validateExisting(id);
-        deleteAllSectionsInLine(id);
-        lineDao.delete(id);
+        final Optional<Line> optionalLine = lineDao.findById(id);
+
+        optionalLine.ifPresent((line)->{
+            sectionDao.deleteAllSectionInLine(id);
+            lineDao.delete(id);
+        });
     }
 
     public Line findById(final Long id) {
@@ -60,14 +63,6 @@ public class LineService {
         if (lineDao.isExistingName(line.getName())) {
             throw new LineException("이미 존재하는 노선 이름입니다.");
         }
-    }
-
-    private void deleteAllSectionsInLine(final Long id){
-        sectionDao.deleteAllSectionInLine(id);
-    }
-
-    private void validateExisting(final Long id) {
-        findById(id);
     }
 
     public List<Long> allStationIdInLine(final Long lineId) {

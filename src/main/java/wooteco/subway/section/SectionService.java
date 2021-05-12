@@ -48,7 +48,7 @@ public class SectionService {
 
     private void addFinalSection(final Long lineId, final Long front, final Long back, final int distance) {
         final FinalStations before = new FinalStations(lineDao.findUpStationId(lineId), lineDao.findDownStationId(lineId));
-        lineDao.update(lineId, before.addStations(front, back));
+        lineDao.updateFinalStations(lineId, before.addStations(front, back));
         sectionDao.save(lineId, front, back, distance);
     }
 
@@ -103,7 +103,7 @@ public class SectionService {
     private void deleteDownStation(final Long lineId, final Long stationId) {
         if (lineDao.isDownStation(lineId, stationId)) {
             Section sectionToDelete = sectionDao.findSectionByBackStation(lineId, stationId);
-            lineDao.update(lineId, lineDao.findUpStationId(lineId), sectionToDelete.front());
+            lineDao.updateFinalStations(lineId, lineDao.findUpStationId(lineId), sectionToDelete.front());
             sectionDao.deleteSection(sectionToDelete);
         }
     }
@@ -111,7 +111,7 @@ public class SectionService {
     private void deleteUpStation(final Long lineId, final Long stationId) {
         if (lineDao.isUpStation(lineId, stationId)) {
             Section sectionToDelete = sectionDao.findSectionByFrontStation(lineId, stationId);
-            lineDao.update(lineId, sectionToDelete.back(), lineDao.findDownStationId(lineId));
+            lineDao.updateFinalStations(lineId, sectionToDelete.back(), lineDao.findDownStationId(lineId));
             sectionDao.deleteSection(sectionToDelete);
         }
     }
@@ -119,13 +119,13 @@ public class SectionService {
     public Distance distance(final Long lineId, final Long front, final Long back) {
         return new Distance(sectionDao.findDistance(lineId, front, back));
     }
-    
+
     private void validateDeleteSection(final Long lineId, final Long stationId) {
         if (sectionDao.stationCountInLine(lineId) <= LIMIT_NUMBER_OF_STATION_IN_LINE) {
             throw new LineException("종점 뿐인 노선의 역을 삭제할 수 없습니다.");
         }
 
-        if (!sectionDao.isExistingStation(lineId, stationId)) {
+        if (!sectionDao.isExistingStationInLine(lineId, stationId)) {
             throw new LineException("노선에 존재하지 않는 역을 삭제할 수 없습니다.");
         }
     }

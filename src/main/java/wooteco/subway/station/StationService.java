@@ -2,16 +2,20 @@ package wooteco.subway.station;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.section.SectionDao;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class StationService {
     private final StationDao stationDao;
+    private final SectionDao sectionDao;
 
-    public StationService(final StationDao stationDao) {
+    public StationService(final StationDao stationDao, final SectionDao sectionDao) {
         this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
     }
 
     public Station save(final Station station) {
@@ -21,28 +25,33 @@ public class StationService {
         return findById(id);
     }
 
-    private void validateName(final String name) {
-        if (stationDao.isExistingName(name)) {
-            throw new StationException("이미 존재하는 역 이름입니다.");
-        }
+    public void delete(final Long id) {
+        final Optional optionalStation = stationDao.findById(id);
+
+        optionalStation.ifPresent((station)->{
+            checkIsNotInLine(id);
+            stationDao.delete(id);
+        });
+    }
+
+    public Station findById(final Long id) {
+        return stationDao.findById(id)
+                .orElseThrow(() -> new StationException("존재하지 않는 역입니다."));
     }
 
     public List<Station> findAll() {
         return stationDao.findAll();
     }
 
-    public void delete(final Long id) {
-        validateExisting(id);
-
-        stationDao.delete(id);
+    private void validateName(final String name) {
+        if (stationDao.isExistingName(name)) {
+            throw new StationException("이미 존재하는 역 이름입니다.");
+        }
     }
 
-    private void validateExisting(final Long id) {
-        findById(id);
-    }
-
-    public Station findById(final Long id) {
-        return stationDao.findById(id)
-                .orElseThrow(() -> new StationException("존재하지 않는 역입니다."));
+    private void checkIsNotInLine(final Long id){
+        if(sectionDao.isExistingStation(id)){
+            throw new StationException("구간에 등록된 역은 삭제할 수 없습니다.");
+        }
     }
 }

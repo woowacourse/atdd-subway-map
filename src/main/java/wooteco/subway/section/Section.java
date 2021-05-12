@@ -7,7 +7,7 @@ public class Section {
     private Long back;
     private int distance;
 
-    public Section(Long id, Long lineId, Long front, Long back, int distance) {
+    public Section(final Long id, final Long lineId, final Long front, final Long back, final int distance) {
         this.id = id;
         this.lineId = lineId;
         this.front = front;
@@ -25,10 +25,6 @@ public class Section {
 
     public int distance() {
         return distance;
-    }
-
-    public Long lineId() {
-        return lineId;
     }
 
     public Long id() {

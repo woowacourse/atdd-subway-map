@@ -46,7 +46,7 @@ public class SectionDao {
             throw new LineException("존재하지 않는 구간입니다.");
         }
     }
-    
+
     public Section findSectionByFrontStation(final Long lineId, final Long frontStationId) {
         final String sql = "SELECT * from SECTION WHERE line_id = ? AND front_station_id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper(), lineId, frontStationId);
@@ -57,7 +57,12 @@ public class SectionDao {
         return jdbcTemplate.queryForObject(sql, rowMapper(), lineId, backStationId);
     }
 
-    public boolean isExistingStation(final Long lineId, final Long stationId) {
+    public boolean isExistingStation(final Long stationId) {
+        final String sql = "SELECT EXISTS(SELECT from SECTION WHERE (front_station_id = ? OR back_station_id = ?))";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, stationId, stationId);
+    }
+
+    public boolean isExistingStationInLine(final Long lineId, final Long stationId) {
         final String sql = "SELECT EXISTS(SELECT from SECTION WHERE line_id = ? AND (front_station_id = ? OR back_station_id = ?))";
         return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId, stationId);
     }
@@ -79,7 +84,7 @@ public class SectionDao {
 
     public void deleteAllSectionInLine(final Long lineId) {
         final String sql = "DELETE FROM SECTION WHERE line_id = ?";
-        int update = jdbcTemplate.update(sql, lineId);
+        jdbcTemplate.update(sql, lineId);
     }
 
     public Long stationCountInLine(final Long lineId) {
