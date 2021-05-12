@@ -7,7 +7,7 @@ public class Distance {
 
     public Distance(final int value) {
         if (value <= 0) {
-            throw new LineException("올바르지 않은 Distance 값입니다. + " + value);
+            throw new LineException("올바르지 않은 Distance 값입니다. " + value);
         }
         this.value = value;
     }

@@ -25,11 +25,11 @@ public class FinalStations {
         return this.upStationId.equals(downStationId) != this.downStationId.equals(upStationId);
     }
 
-    public Long getUpStationId() {
+    public Long upStationId() {
         return upStationId;
     }
 
-    public Long getDownStationId() {
+    public Long downStationId() {
         return downStationId;
     }
 }

@@ -72,9 +72,9 @@ public class SectionDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId);
     }
 
-    public void deleteSection(final Long sectionId) {
+    public void deleteSection(final Section section) {
         final String sql = "DELETE FROM SECTION WHERE id = ?";
-        jdbcTemplate.update(sql, sectionId);
+        jdbcTemplate.update(sql, section.id());
     }
 
     public Long stationCountInLine(final Long lineId) {
