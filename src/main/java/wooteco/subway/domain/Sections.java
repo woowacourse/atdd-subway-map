@@ -2,7 +2,6 @@ package wooteco.subway.domain;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import wooteco.subway.exception.section.DuplicatedSectionException;
 import wooteco.subway.exception.section.InvalidSectionException;
 
 import java.util.*;
@@ -12,6 +11,7 @@ import java.util.stream.Collectors;
 public class Sections {
 
     private static final int FIRST_ELEMENT = 0;
+    private static final int SECOND_ELEMENT = 1;
     private final List<Section> sections;
 
     public static Sections create(Section... sections) {
@@ -22,46 +22,36 @@ public class Sections {
         return new Sections(sections);
     }
 
-    public List<Station> asStations() {
-        LinkedList<Station> sortedStation = new LinkedList<>();
-        final Section pivotSection = sections.get(0);
-        sortPreviousSections(sortedStation, pivotSection);
-        sortFollowingSections(sortedStation, pivotSection);
-        return sortedStation;
+    public List<Station> convertToSortedStations() {
+        Deque<Station> result = new ArrayDeque<>();
+        Map<Station, Station> upStationToFindDown = new HashMap<>();
+        Map<Station, Station> downStationToFindUp = new HashMap<>();
+
+        for (Section section : sections) {
+            upStationToFindDown.put(section.getUpStation(), section.getDownStation());
+            downStationToFindUp.put(section.getDownStation(), section.getUpStation());
+        }
+        Station station = sections.get(FIRST_ELEMENT).getUpStation();
+        result.add(station);
+
+        while (downStationToFindUp.containsKey(result.peekFirst())) {
+            Station current = result.peekFirst();
+            result.addFirst(downStationToFindUp.get(current));
+        }
+        while (upStationToFindDown.containsKey(result.peekLast())) {
+            Station current = result.peekLast();
+            result.addLast(upStationToFindDown.get(current));
+        }
+
+        return new ArrayList<>(result);
     }
 
-    private void sortPreviousSections(LinkedList<Station> sortedSections, Section section) {
-        final Station upStation = section.getUpStation();
-        sortedSections.addFirst(upStation);
-        findSectionByDownStation(upStation)
-                .ifPresent(sec -> sortPreviousSections(sortedSections, sec));
-    }
-
-    private Optional<Section> findSectionByDownStation(Station targetStation) {
-        return sections.stream()
-                .filter(section -> section.isDownStation(targetStation))
-                .findAny();
-    }
-
-    private void sortFollowingSections(LinkedList<Station> sortedSections, Section section) {
-        final Station downStation = section.getDownStation();
-        sortedSections.addLast(downStation);
-        findSectionByUpStation(downStation)
-                .ifPresent(sec -> sortFollowingSections(sortedSections, sec));
-    }
-
-    private Optional<Section> findSectionByUpStation(Station targetStation) {
-        return sections.stream()
-                .filter(section -> section.isUpStation(targetStation))
-                .findAny();
-    }
-
-    public Section affectedSection(Section newSection) {
+    public Section modifyAdjacent(Section newSection) {
         List<Section> collect = sections.stream()
                 .filter(originalSection -> originalSection.isAdjacent(newSection))
                 .collect(Collectors.toList());
         if (isMiddleSection(newSection, collect)) {
-            return updateSection(collect.get(1), newSection);
+            return updateSection(collect.get(SECOND_ELEMENT), newSection);
         }
         final Section originalSection = collect.get(FIRST_ELEMENT);
         return updateSection(originalSection, newSection);
@@ -86,7 +76,7 @@ public class Sections {
         sections.add(section);
     }
 
-    public void isAddable(Section target){
+    public void isAddable(Section target) {
         if (isCycleSection(target, sections)) {
             throw new InvalidSectionException();
         }
@@ -96,36 +86,19 @@ public class Sections {
         return Collections.unmodifiableList(sections);
     }
 
-    public Optional<Section> transformSection(Station station) {
-        if (sections.size() == 1) {
-            return Optional.empty();
-        }
-
-        Station downStation = null;
-        Station upStation = null;
-        int distance = 0;
-
-        for (Section section : sections) {
-            downStation = determineDownStation(station, downStation, section);
-            upStation = determineUpStation(station, upStation, section);
-            distance += section.getDistance();
-        }
-
-        return Optional.of(Section.create(upStation, downStation, distance));
-    }
-
-    private Station determineUpStation(Station station, Station upStation, Section section) {
-        if (section.isDownStation(station)) {
-            upStation = section.getUpStation();
-        }
-        return upStation;
-    }
-
-    private Station determineDownStation(Station station, Station downStation, Section section) {
+    public Section mergeTwoIntoOne(Station station) {
+        Section section = sections.get(FIRST_ELEMENT);
+        int distance = sections.stream()
+                .mapToInt(Section::getDistance)
+                .sum();
         if (section.isUpStation(station)) {
-            downStation = section.getDownStation();
+            Station downStation = section.getDownStation();
+            Station upStation = sections.get(SECOND_ELEMENT).getUpStation();
+            return Section.create(upStation, downStation, distance);
         }
-        return downStation;
+        Station upStation = section.getUpStation();
+        Station downStation = sections.get(SECOND_ELEMENT).getDownStation();
+        return Section.create(upStation, downStation, distance);
     }
 
     public boolean hasSize(int size) {

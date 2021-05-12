@@ -27,7 +27,7 @@ public class Line {
     }
 
     public List<Station> stations() {
-        return sections.asStations();
+        return sections.convertToSortedStations();
     }
 
     public boolean isSameName(String name) {

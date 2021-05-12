@@ -35,8 +35,8 @@ public class InMemorySectionDao implements SectionDao {
     }
     //todo: 삭제
     @Override
-    public Section saveAffectedSections(Section section, Section affectedSection,
-                                        Long lineId) {
+    public Section saveModified(Section section, Section affectedSection,
+                                Long lineId) {
 //        affectedSection.ifPresent(받아온것 -> {
 //            sections.get(lineId)
 //                    .stream()
@@ -53,7 +53,7 @@ public class InMemorySectionDao implements SectionDao {
 
     //todo: 삭제
     @Override
-    public List<Section> findSectionContainsStationId(Long lineId, Long stationId) {
+    public List<Section> findAdjacentByStationId(Long lineId, Long stationId) {
         return new ArrayList<>();
     }
 

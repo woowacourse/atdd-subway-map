@@ -73,14 +73,14 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public Section saveAffectedSections(Section section, Section updateSection, Long lineId) {
+    public Section saveModified(Section section, Section updateSection, Long lineId) {
         jdbcTemplate.update(UPDATE, updateSection.getUpStation().getId(), updateSection.getDownStation().getId(), updateSection.getDistance(), lineId);
 
         return create(section, lineId);
     }
 
     @Override
-    public List<Section> findSectionContainsStationId(Long lineId, Long stationId) {
+    public List<Section> findAdjacentByStationId(Long lineId, Long stationId) {
         List<Section> sections = this.jdbcTemplate.query(READ_BY_ID_AND_STATION, (rs, rowNum) -> {
             Long id = rs.getLong("id");
             String upStationName = rs.getString("upStationName");

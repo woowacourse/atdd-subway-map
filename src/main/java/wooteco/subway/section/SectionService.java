@@ -14,29 +14,24 @@ import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.station.dao.StationDao;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class SectionService {
 
+    private static final int WHEN_BETWEEN_SECTIONS = 2;
     private final StationDao stationDao;
     private final LineDao lineDao;
     private final SectionDao sectionDao;
 
     @Transactional
     public Section create(Section newSection, Long lineId) {
-        //모든 섹션들을 가져옴
         Sections sections = sectionDao.findSectionsByLineId(lineId);
-        // 기존 섹션과 연결 가능한 섹션인지 확인함
         sections.isAddable(newSection);
-
-        // 연관된 섹션에 영향받은 섹션을 반환
-        Section affectedSection = sections.affectedSection(newSection);
-
+        Section modifiedSection = sections.modifyAdjacent(newSection);
         sections.add(newSection);
 
-        return sectionDao.saveAffectedSections(newSection, affectedSection, lineId);
+        return sectionDao.saveModified(newSection, modifiedSection, lineId);
     }
 
     @Transactional
@@ -46,13 +41,13 @@ public class SectionService {
         validateIsLastSection(lineId);
 
         Station station = stationDao.findById(stationId);
+        List<Section> effectiveSections = sectionDao.findAdjacentByStationId(lineId, stationId);
+        sectionDao.removeSections(lineId, effectiveSections);
 
-        List<Section> sections = sectionDao.findSectionContainsStationId(lineId, stationId);
-        final Sections foundSections = Sections.create(sections);
-        Optional<Section> affectedSection = foundSections.transformSection(station);
-
-        sectionDao.removeSections(lineId, sections);
-        affectedSection.ifPresent(section -> sectionDao.insertSection(section, lineId));
+        if (effectiveSections.size() == WHEN_BETWEEN_SECTIONS) {
+            Section section = Sections.create(effectiveSections).mergeTwoIntoOne(station);
+            sectionDao.insertSection(section, lineId);
+        }
     }
 
     private void validateIsLastSection(Long lineId) {

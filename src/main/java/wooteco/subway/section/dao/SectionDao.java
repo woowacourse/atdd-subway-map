@@ -11,10 +11,10 @@ public interface SectionDao {
 
     Sections findSectionsByLineId(Long lineId);
 
-    Section saveAffectedSections(Section section, Section affectedSection,
-                                 Long lineId);
+    Section saveModified(Section section, Section affectedSection,
+                         Long lineId);
 
-    List<Section> findSectionContainsStationId(Long lineId, Long stationId);
+    List<Section> findAdjacentByStationId(Long lineId, Long stationId);
 
     void removeSections(Long lineId, List<Section> sections);
 
