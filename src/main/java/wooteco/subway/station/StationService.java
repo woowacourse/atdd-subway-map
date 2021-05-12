@@ -28,10 +28,13 @@ public class StationService {
     public void delete(final Long id) {
         final Optional optionalStation = stationDao.findById(id);
 
-        optionalStation.ifPresent((station)->{
+        if(optionalStation.isPresent()){
             checkIsNotInLine(id);
             stationDao.delete(id);
-        });
+            return;
+        }
+
+        throw new StationException("존재하지 않는 역입니다.");
     }
 
     public Station findById(final Long id) {

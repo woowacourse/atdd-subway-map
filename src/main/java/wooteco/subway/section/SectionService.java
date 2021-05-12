@@ -19,6 +19,10 @@ public class SectionService {
         this.lineDao = lineDao;
     }
 
+    public void addSection(final Long lineId, final Section section){
+        addSection(lineId, section.front(), section.back(), section.distance());
+    }
+
     public void addSection(final Long lineId, final Long front, final Long back, final int distance) {
         if (isFinalSection(lineId, front, back)) {
             addFinalSection(lineId, front, back, distance);

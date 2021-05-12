@@ -15,6 +15,10 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section(final Long front, final Long back, final int distance) {
+        this(null, null, front, back, distance);
+    }
+
     public Long front() {
         return front;
     }

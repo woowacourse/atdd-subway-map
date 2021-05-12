@@ -23,9 +23,6 @@ public class LineServiceTest {
     private LineService lineService;
 
     @Autowired
-    private SectionDao sectionDao;
-
-    @Autowired
     private SectionService sectionService;
 
     private Line savedLine;
@@ -90,9 +87,9 @@ public class LineServiceTest {
     @DisplayName("노선 삭제 시, 노선이 포함하는 모든 구간 데이터를 삭제한다.")
     @Test
     public void deleteAllSectionInLine(){
-        assertThat(sectionDao.stationCountInLine(savedLineId)).isEqualTo(2);
+        assertThat(lineService.allStationIdInLine(savedLineId).size()).isEqualTo(2);
         lineService.delete(savedLineId);
-        assertThat(sectionDao.stationCountInLine(savedLineId)).isEqualTo(0);
+        assertThat(lineService.allStationIdInLine(savedLineId).size()).isEqualTo(0);
     }
 
     @DisplayName("노선을 조회한다.")

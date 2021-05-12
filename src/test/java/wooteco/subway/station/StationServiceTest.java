@@ -3,8 +3,10 @@ package wooteco.subway.station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.section.SectionDao;
 
@@ -18,7 +20,7 @@ public class StationServiceTest {
     @Autowired
     private StationService stationService;
 
-    @Autowired
+    @MockBean
     private SectionDao sectionDao;
 
     private Station savedStation;
@@ -56,13 +58,20 @@ public class StationServiceTest {
         assertThat(preSize-1).isEqualTo(postSize);
     }
 
+    @DisplayName("존재하지 않는 역은 제거할 수 없다.")
+    @Test
+    public void deleteNonExistentStation(){
+        assertThatThrownBy(()->{
+            stationService.delete(Long.MAX_VALUE);
+        }).isInstanceOf(StationException.class);
+    }
+
     @DisplayName("구간에 등록되어 있는 역을 제거할 수 없음")
     @Test
     public void deleteStationInSection(){
-        final Long mockLineId = 1L;
-        final Long mockStationId = 2L;
+        Mockito.when(sectionDao.isExistingStation(savedStation.getId()))
+                .thenReturn(true);
 
-        sectionDao.save(mockLineId, savedStation.getId(), mockStationId, 1);
         assertThatThrownBy(()->{
             stationService.delete(savedStation.getId());
         }).isInstanceOf(StationException.class);

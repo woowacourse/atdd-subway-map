@@ -4,25 +4,25 @@ public class FinalStations {
     private final Long upStationId;
     private final Long downStationId;
 
-    public FinalStations(Long upStationId, Long downStationId) {
+    public FinalStations(final Long upStationId, final Long downStationId) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
     }
 
-    public FinalStations addStations(Long upStationId, Long downStationId) {
-        if (this.upStationId.equals(downStationId)) {
-            return new FinalStations(upStationId, this.downStationId);
+    public FinalStations addStations(final Long frontStationId, final Long backStationId) {
+        if (this.upStationId.equals(backStationId)) {
+            return new FinalStations(frontStationId, this.downStationId);
         }
 
-        if (this.downStationId.equals(upStationId)) {
-            return new FinalStations(this.upStationId, downStationId);
+        if (this.downStationId.equals(frontStationId)) {
+            return new FinalStations(this.upStationId, backStationId);
         }
 
         return this;
     }
 
-    public boolean isFinalSection(Long upStationId, Long downStationId) {
-        return this.upStationId.equals(downStationId) != this.downStationId.equals(upStationId);
+    public boolean isFinalSection(final Long frontStationId, final Long backStationId) {
+        return this.upStationId.equals(backStationId) != this.downStationId.equals(frontStationId);
     }
 
     public Long upStationId() {

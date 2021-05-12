@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.SectionDao;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -44,10 +45,13 @@ public class LineService {
     public void delete(final Long id) {
         final Optional<Line> optionalLine = lineDao.findById(id);
 
-        optionalLine.ifPresent((line)->{
+        if(optionalLine.isPresent()){
             sectionDao.deleteAllSectionInLine(id);
             lineDao.delete(id);
-        });
+            return;
+        }
+
+        throw new LineException("존재하지 않는 노선입니다.");
     }
 
     public Line findById(final Long id) {
@@ -66,15 +70,21 @@ public class LineService {
     }
 
     public List<Long> allStationIdInLine(final Long lineId) {
+        if(sectionDao.stationCountInLine(lineId) == 0){
+            return Collections.EMPTY_LIST;
+        }
+        return findBackStations(lineId, lineDao.findUpStationId(lineId));
+    }
+
+    private List<Long> findBackStations(final Long lineId, Long frontStationId){
         final List<Long> stations = new LinkedList<>();
 
-        Long stationId = lineDao.findUpStationId(lineId);
-        while(!lineDao.isDownStation(lineId, stationId)){
-            stations.add(stationId);
-            Section next = sectionDao.findSectionByFrontStation(lineId, stationId);
-            stationId = next.back();
+        while(!lineDao.isDownStation(lineId, frontStationId)){
+            stations.add(frontStationId);
+            Section next = sectionDao.findSectionByFrontStation(lineId, frontStationId);
+            frontStationId = next.back();
         }
-        stations.add(stationId);
+        stations.add(frontStationId);
 
         return stations;
     }
