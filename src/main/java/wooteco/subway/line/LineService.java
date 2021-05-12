@@ -102,6 +102,7 @@ public class LineService {
     public void deleteLine(long lineId) {
         final Line line = findLineById(lineId);
         lineDao.delete(line.getId());
+        sectionDao.deleteLine(line.getId());
     }
 
     public void createSection(long lineId, long upStationId, long downStationId, int distance) {
@@ -123,7 +124,7 @@ public class LineService {
         saveSectionToDB(upperSection);
         final Section lowerSection = changedSections.get(upperSection);
         saveSectionToDB(lowerSection);
-        sectionDao.delete(lineId, upperSection.getUpStation().getId(), lowerSection.getDownStation().getId());
+        sectionDao.deleteSection(lineId, upperSection.getUpStation().getId(), lowerSection.getDownStation().getId());
     }
 
     private void saveSectionToDB(Section section) {
@@ -139,7 +140,7 @@ public class LineService {
         final Station station = findStationById(stationId);
         if (line.checkSectionAtEdge(station)) {
             Section section = line.removeSectionAtEdge(station);
-            sectionDao.delete(lineId, section.getUpStation().getId(), section.getDownStation().getId());
+            sectionDao.deleteSection(lineId, section.getUpStation().getId(), section.getDownStation().getId());
             return;
         }
         deleteSectionInBetween(line, station);
@@ -161,6 +162,6 @@ public class LineService {
         final Long lineId = section.getLineId();
         final Long upStationId = section.getUpStation().getId();
         final Long downStationId = section.getDownStation().getId();
-        sectionDao.delete(lineId, upStationId, downStationId);
+        sectionDao.deleteSection(lineId, upStationId, downStationId);
     }
 }
