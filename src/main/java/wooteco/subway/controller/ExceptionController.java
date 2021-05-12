@@ -1,17 +1,24 @@
 package wooteco.subway.controller;
 
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.exception.SubwayException;
 
+import java.util.stream.Collectors;
+
 @ControllerAdvice
 public class ExceptionController {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleBindingException(MethodArgumentNotValidException methodArgumentNotValidException) {
-        return ResponseEntity.badRequest().body(methodArgumentNotValidException.getMessage());
+        String message = methodArgumentNotValidException.getFieldErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining("/n"));
+        return ResponseEntity.badRequest().body(message);
     }
 
     @ExceptionHandler(SubwayException.class)
