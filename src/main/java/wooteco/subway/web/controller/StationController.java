@@ -45,16 +45,13 @@ public class StationController {
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
 
-        return ResponseEntity
-                .ok(stationResponses);
+        return ResponseEntity.ok(stationResponses);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         stationService.delete(id);
 
-        return ResponseEntity
-                .noContent()
-                .build();
+        return ResponseEntity.noContent().build();
     }
 }

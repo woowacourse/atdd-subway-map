@@ -41,12 +41,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private static final String DISTANCE = "distance";
 
     private static final String EMPTY_STRING = " ";
-    private static final long ZERO = 0L;
+    private static final Long ZERO = 0L;
     private static final long INVALID_ID = Long.MAX_VALUE;
 
     static {
-        put(DATA_EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, ZERO, ZERO, ZERO);
-        put(DATA_NULL, null, null, null, null, null);
+        setLineData(DATA_EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, ZERO, ZERO, ZERO.intValue());
+        setLineData(DATA_NULL, null, null, null, null, null);
         DATA_FOR_UPDATE.put(NAME, "수정이름");
         DATA_FOR_UPDATE.put(COLOR, "수정 색");
     }
@@ -58,8 +58,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long stationB = postStation(stationData("B역"));
         Long stationC = postStation(stationData("C역"));
 
-        put(DATA1, "1호선", "bg-red-600", stationA, stationB, 3L);
-        put(DATA2, "2호선", "bg-green-600", stationB, stationC, 5L);
+        setLineData(DATA1, "1호선", "bg-red-600", stationA, stationB, 3);
+        setLineData(DATA2, "2호선", "bg-green-600", stationB, stationC, 5);
     }
 
     private Map<String, Object> stationData(String name) {
@@ -76,8 +76,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .getId();
     }
 
-    private static void put(Map<String, Object> data, String name, String color,
-            Long upStationId, Long downStationId, Long distance) {
+    private static void setLineData(Map<String, Object> data, String name, String color,
+            Long upStationId, Long downStationId, Integer distance) {
         data.put(NAME, name);
         data.put(COLOR, color);
         data.put(UP_STATION_ID, upStationId);
@@ -169,6 +169,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return Arrays.stream(responses)
                 .map(response -> response.as(LineResponse.class))
                 .collect(Collectors.toList());
+    }
+
+    @Test
+    @DisplayName("노선 단일 조회")
+    void find() {
+        /// given
+        ExtractableResponse<Response> postResponse = postLine(DATA1);
+
+        // when
+        ExtractableResponse<Response> findResponse = getLine(postResponse.header(LOCATION));
+
+        // then
+        assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        LineResponse result = findResponse.as(LineResponse.class);
+        assertThat(result.getName()).isEqualTo(DATA1.get("name"));
+        assertThat(result.getColor()).isEqualTo(DATA1.get("color"));
     }
 
     @Test

@@ -1,28 +1,37 @@
 package wooteco.subway.domain.line;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import wooteco.subway.domain.section.Section;
+import wooteco.subway.web.dto.StationResponse;
 
-public class SortedStationIds {
+public class SortedStations {
 
     Map<Long, Long> up = new HashMap<>();
     Map<Long, Long> down = new HashMap<>();
     ArrayDeque<Long> result = new ArrayDeque<>();
 
     private final List<Section> sections;
+    private final Map<Long, StationResponse> stationMap;
 
-    public SortedStationIds(List<Section> sections) {
+    public SortedStations(List<Section> sections, List<StationResponse> stations) {
         this.sections = sections;
+        this.stationMap = new HashMap<>();
+        for (StationResponse station : stations) {
+            stationMap.put(station.getId(), station);
+        }
     }
 
-    public List<Long> get() {
+    public List<StationResponse> get() {
         init(sections);
         sort();
-        return new ArrayList<>(result);
+
+        return result.stream()
+                .map(stationMap::get)
+                .collect(Collectors.toList());
     }
 
     private void init(List<Section> sections) {

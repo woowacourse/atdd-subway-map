@@ -1,12 +1,12 @@
 package wooteco.subway.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.LineDao;
-import wooteco.subway.domain.line.SortedStationIds;
+import wooteco.subway.domain.line.SortedStations;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.SectionDao;
 import wooteco.subway.domain.station.StationDao;
@@ -16,7 +16,6 @@ import wooteco.subway.web.dto.StationResponse;
 import wooteco.subway.web.exception.NotFoundException;
 
 @Service
-@Transactional
 public class LineService {
 
     private final LineDao lineDao;
@@ -56,13 +55,27 @@ public class LineService {
         Line line = findLine(id);
 
         List<Section> sections = sectionDao.listByLineId(line.getId());
-        List<Long> stationIds = new SortedStationIds(sections).get();
-        List<StationResponse> stations = stationDao.stationsFilteredById(stationIds)
+
+        List<StationResponse> stations = stationDao.stationsFilteredById(stationIds(sections))
                 .stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
 
-        return new LineResponse(line, stations);
+        List<StationResponse> sortedStations = new SortedStations(sections, stations).get();
+
+        return new LineResponse(line, sortedStations);
+    }
+
+    private List<Long> stationIds(List<Section> sections) {
+        List<Long> stationIds = new ArrayList<>();
+        for (Section section : sections) {
+            stationIds.add(section.getUpStationId());
+            stationIds.add(section.getDownStationId());
+        }
+        List<Long> distinctStationIds = stationIds.stream()
+                .distinct()
+                .collect(Collectors.toList());
+        return distinctStationIds;
     }
 
     public void update(Long id, Line line) {

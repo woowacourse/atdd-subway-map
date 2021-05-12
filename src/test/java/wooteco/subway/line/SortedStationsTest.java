@@ -2,19 +2,28 @@ package wooteco.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.domain.line.SortedStationIds;
+import wooteco.subway.domain.line.SortedStations;
 import wooteco.subway.domain.section.Section;
+import wooteco.subway.web.dto.StationResponse;
 
-public class SortedStationIdsTest {
+public class SortedStationsTest {
 
     @Test
     void sortTest() {
-        SortedStationIds sortedStationIds = new SortedStationIds(inputSections());
-        assertThat(sortedStationIds.get()).containsExactly(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L);
+        final List<Long> ids = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L);
+
+        List<StationResponse> stations = ids.stream()
+                .map(id -> new StationResponse(id, "역"))
+                .collect(Collectors.toList());
+
+        SortedStations sortedStations = new SortedStations(inputSections(), stations);
+        assertThat(sortedStations.get()).containsAll(stations);
     }
 
     private List<Section> inputSections() {

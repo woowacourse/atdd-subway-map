@@ -8,6 +8,13 @@ public class Section {
     private final Long downStationId;
     private final Integer distance;
 
+    public Section(Long lineId, Section section) {
+        this(lineId,
+                section.getUpStationId(),
+                section.getDownStationId(),
+                section.getDistance());
+    }
+
     public Section(Long upStationId, Long downStationId, Integer distance) {
         this(null, upStationId, downStationId, distance);
     }
