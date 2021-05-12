@@ -32,7 +32,7 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
         Line savedLine = lineService.createLine(lineRequest);
-        LineResponse lineResponse = LineResponse.from(savedLine);
+        LineResponse lineResponse = LineResponse.writeWithoutStationList(savedLine);
         URI uri = URI.create("/lines/" + savedLine.getId());
         return ResponseEntity.created(uri)
                 .body(lineResponse);
@@ -56,7 +56,7 @@ public class LineController {
         Sections sections = line.getSections();
         List<Station> stations = sections.getStations();
         List<StationResponse> stationResponses = StationResponse.fromList(stations);
-        return LineResponse.of(line, stationResponses);
+        return LineResponse.writeWithStationList(line, stationResponses);
     }
 
     @PutMapping("/{id}")

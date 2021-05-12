@@ -22,17 +22,17 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public static LineResponse of(Line line, List<StationResponse> stations) {
+    public static LineResponse writeWithStationList(Line line, List<StationResponse> stations) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }
 
-    public static LineResponse from(Line line) {
+    public static LineResponse writeWithoutStationList(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), Collections.emptyList());
     }
 
     public static List<LineResponse> fromList(List<Line> lines) {
         return lines.stream()
-                .map(LineResponse::from)
+                .map(LineResponse::writeWithoutStationList)
                 .collect(Collectors.toList());
     }
 
