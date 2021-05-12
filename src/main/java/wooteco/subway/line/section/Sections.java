@@ -2,8 +2,11 @@ package wooteco.subway.line.section;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import wooteco.subway.exception.IllegalUserInputException;
 import wooteco.subway.exception.NotExistItemException;
 
 public class Sections {
@@ -52,5 +55,33 @@ public class Sections {
 
     public List<Section> getSections() {
         return new ArrayList<>(sections);
+    }
+
+    public Section findJoinSection(Section section) {
+        validate(section);
+        return null;
+    }
+
+    private Set<Long> getStationIds() {
+        Set<Long> stationIds = new HashSet<>();
+        for (Section section : sections) {
+            stationIds.add(section.getDownStationId());
+            stationIds.add(section.getUpStationId());
+        }
+        return stationIds;
+    }
+
+    private void validate(Section section) {
+        Set<Long> stationIds = getStationIds();
+        int stationCount = 0;
+        if (stationIds.contains(section.getDownStationId())) {
+            stationCount++;
+        }
+        if (stationIds.contains(section.getUpStationId())) {
+            stationCount++;
+        }
+        if (stationCount != 2) {
+            throw new IllegalUserInputException();
+        }
     }
 }
