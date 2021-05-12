@@ -6,6 +6,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.exception.*;
+import wooteco.subway.exception.sectionexception.SectionAdditionException;
+import wooteco.subway.exception.sectionexception.SectionDeleteException;
+import wooteco.subway.exception.sectionexception.WrongDistanceException;
 
 import java.util.HashMap;
 import java.util.Map;

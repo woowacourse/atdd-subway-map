@@ -1,7 +1,7 @@
 package wooteco.subway.section.model;
 
 import wooteco.subway.exception.DuplicationException;
-import wooteco.subway.exception.WrongDistanceException;
+import wooteco.subway.exception.sectionexception.WrongDistanceException;
 import wooteco.subway.line.model.Line;
 import wooteco.subway.station.model.Station;
 

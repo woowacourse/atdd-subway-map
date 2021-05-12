@@ -1,8 +1,8 @@
 package wooteco.subway.section.model;
 
 import wooteco.subway.exception.NotFoundException;
-import wooteco.subway.exception.SectionAdditionException;
-import wooteco.subway.exception.SectionDeleteException;
+import wooteco.subway.exception.sectionexception.SectionAdditionException;
+import wooteco.subway.exception.sectionexception.SectionDeleteException;
 import wooteco.subway.station.model.Station;
 
 import java.util.Collections;

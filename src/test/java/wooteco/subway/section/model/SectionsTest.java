@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.NotFoundException;
-import wooteco.subway.exception.SectionAdditionException;
+import wooteco.subway.exception.sectionexception.SectionAdditionException;
 import wooteco.subway.line.model.Line;
 import wooteco.subway.station.model.Station;
 
