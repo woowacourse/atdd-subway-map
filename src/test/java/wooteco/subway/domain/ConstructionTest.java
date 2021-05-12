@@ -16,18 +16,11 @@ import org.junit.jupiter.api.Test;
 public class ConstructionTest {
 
     private Construction construction;
-    private List<Line> lines;
     private List<Station> stations;
-    private Sections sections;
     private Distance distance;
 
     @BeforeEach
     void SetUp() {
-        lines = Arrays.asList(
-            new Line(1L, "1호선", "bg-red-600"),
-            new Line(2L, "2호선", "bg-blue-600")
-        );
-
         stations = Arrays.asList(
             new Station(1L, "답십리역"),
             new Station(2L, "왕십리역"),
@@ -39,21 +32,23 @@ public class ConstructionTest {
 
         distance = new Distance(5);
 
-        sections = new Sections(new HashSet<>(Arrays.asList(
-            new Section(1L, lines.get(0), stations.get(0), stations.get(1), distance),
-            new Section(2L, lines.get(0), stations.get(1), stations.get(2), distance),
-            new Section(3L, lines.get(0), stations.get(2), stations.get(3), distance),
-            new Section(4L, lines.get(1), stations.get(1), stations.get(4), distance)
+        Sections sections = new Sections(new HashSet<>(Arrays.asList(
+            new Section(1L, stations.get(0), stations.get(1), distance),
+            new Section(2L, stations.get(1), stations.get(2), distance),
+            new Section(3L, stations.get(2), stations.get(3), distance),
+            new Section(4L, stations.get(3), stations.get(4), distance)
         )));
 
-        construction = new Construction(sections, lines.get(0));
+        Line line = new Line(1L, "1호선", "bg-red-600", sections);
+
+        construction = new Construction(line);
     }
 
     @DisplayName("구간을 삽입한다.(구간 사이에 삽입한다.)")
     @Test
     void createSectionBetweenSections() {
         // given
-        Section section = new Section(lines.get(0), stations.get(1), stations.get(5),
+        Section section = new Section(stations.get(1), stations.get(5),
             new Distance(1));
 
         // when
@@ -61,11 +56,11 @@ public class ConstructionTest {
 
         // then
         List<Section> sectionsToCreate = Arrays.asList(
-            new Section(lines.get(0), stations.get(1), stations.get(5), new Distance(1)),
-            new Section(lines.get(0), stations.get(5), stations.get(2), new Distance(4))
+            new Section(stations.get(1), stations.get(5), new Distance(1)),
+            new Section(stations.get(5), stations.get(2), new Distance(4))
         );
         List<Section> sectionsToRemove = Collections.singletonList(
-            new Section(2L, lines.get(0), stations.get(1), stations.get(2), new Distance(5))
+            new Section(2L, stations.get(1), stations.get(2), new Distance(5))
         );
 
         RecursiveComparisonConfiguration configuration = RecursiveComparisonConfiguration.builder()
@@ -83,7 +78,7 @@ public class ConstructionTest {
     @Test
     void createSectionAsLastSection() {
         // given
-        Section section = new Section(lines.get(0), stations.get(5), stations.get(0),
+        Section section = new Section(stations.get(5), stations.get(0),
             new Distance(1));
 
         // when
@@ -91,7 +86,7 @@ public class ConstructionTest {
 
         // then
         List<Section> sectionsToCreate = Collections.singletonList(
-            new Section(lines.get(0), stations.get(5), stations.get(0), new Distance(1))
+            new Section(stations.get(5), stations.get(0), new Distance(1))
         );
 
         RecursiveComparisonConfiguration configuration = RecursiveComparisonConfiguration.builder()
@@ -104,18 +99,6 @@ public class ConstructionTest {
         assertThat(construction.sectionsToRemove()).hasSize(0);
     }
 
-    @DisplayName("다른 노선의 구간을 추가시 예외 처리한다.")
-    @Test
-    void createSectionWithDifferentLine() {
-        // given
-        Section section = new Section(lines.get(1), stations.get(5), stations.get(0),
-            new Distance(1));
-
-        // then
-        assertThatIllegalArgumentException().isThrownBy(() -> construction.createSection(section))
-            .withMessage("다른 노선의 구간은 추가할 수 없습니다.");
-    }
-
     @DisplayName("구간을 삭제한다. (구간 사이에 있는 역을 삭제한다.)")
     @Test
     void deleteSectionsBetweenSections() {
@@ -124,11 +107,11 @@ public class ConstructionTest {
 
         // then
         List<Section> sectionsToCreate = Collections.singletonList(
-            new Section(lines.get(0), stations.get(0), stations.get(2), new Distance(10))
+            new Section(stations.get(0), stations.get(2), new Distance(10))
         );
         List<Section> sectionsToRemove = Arrays.asList(
-            new Section(1L, lines.get(0), stations.get(0), stations.get(1), distance),
-            new Section(2L, lines.get(0), stations.get(1), stations.get(2), distance)
+            new Section(1L, stations.get(0), stations.get(1), distance),
+            new Section(2L, stations.get(1), stations.get(2), distance)
         );
 
         RecursiveComparisonConfiguration configuration = RecursiveComparisonConfiguration.builder()
@@ -150,7 +133,7 @@ public class ConstructionTest {
 
         // then
         List<Section> sectionsToRemove = Collections.singletonList(
-            new Section(1L, lines.get(0), stations.get(0), stations.get(1), distance)
+            new Section(1L, stations.get(0), stations.get(1), distance)
         );
 
         assertThat(construction.sectionsToCreate()).hasSize(0);
@@ -162,7 +145,9 @@ public class ConstructionTest {
     @Test
     void deleteSectionsWhenHasOnlyOneSection() {
         // when
-        Construction constructionWithOnlyOneSection = new Construction(sections, lines.get(1));
+        Line line = new Line("2호선", "bg-blue-300",
+            new Sections(new Section(stations.get(0), stations.get(1), new Distance(1))));
+        Construction constructionWithOnlyOneSection = new Construction(line);
 
         // then
         assertThatIllegalStateException()
@@ -175,7 +160,7 @@ public class ConstructionTest {
     @Test
     void deleteSectionWithInvalidStation() {
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> construction.deleteSectionsByStation(stations.get(4)))
+            .isThrownBy(() -> construction.deleteSectionsByStation(stations.get(5)))
             .withMessage("존재하지 않는 역입니다.");
     }
 }

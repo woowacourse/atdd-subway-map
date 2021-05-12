@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Construction;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domainmapper.SubwayMapper;
 import wooteco.subway.entity.SectionEntity;
@@ -27,26 +26,26 @@ public class SectionService {
         this.subwayMapper = subwayMapper;
     }
 
-    public Section createSection(Section section) {
-        SectionEntity newSectionEntity = sectionDao.save(section);
-        return subwayMapper.section(newSectionEntity, section.getLine(),
-            section.getUpStation(), section.getDownStation());
+    public Section createSection(Section section, Long lineId) {
+        SectionEntity newSectionEntity = sectionDao.save(section, lineId);
+        return subwayMapper
+            .section(newSectionEntity, section.getUpStation(), section.getDownStation());
     }
 
-    public Set<Section> findSectionsByLine(Line line) {
-        List<SectionEntity> sectionEntities = sectionDao.filterByLineId(line.getId());
+    public Set<Section> findSectionsByLineId(Long lineId) {
+        List<SectionEntity> sectionEntities = sectionDao.filterByLineId(lineId);
 
         return sectionEntities.stream()
-            .map(sectionEntity -> sectionFromEntity(line, sectionEntity))
+            .map(this::sectionFromEntity)
             .collect(Collectors.toSet());
     }
 
-    private Section sectionFromEntity(Line line, SectionEntity sectionEntity) {
+    private Section sectionFromEntity(SectionEntity sectionEntity) {
         Station upStation = stationService.showStation(sectionEntity.getUpStationId()).toDomain();
         Station downStation = stationService.showStation(sectionEntity.getDownStationId())
             .toDomain();
 
-        return subwayMapper.section(sectionEntity, line, upStation, downStation);
+        return subwayMapper.section(sectionEntity, upStation, downStation);
     }
 
     public void remove(Long id) {
@@ -60,24 +59,24 @@ public class SectionService {
         }
     }
 
-    public void createSection(Line line, Section section) {
-        Sections sections = new Sections(findSectionsByLine(line));
-        Construction construction = new Construction(sections, line);
+    public void createSectionInLine(Section section, Line line) {
+
+        Construction construction = new Construction(line);
         construction.createSection(section);
         updateSections(construction);
     }
 
     private void updateSections(Construction construction) {
         for (Section sectionToCreate : construction.sectionsToCreate()) {
-            createSection(sectionToCreate);
+            createSection(sectionToCreate, construction.line().getId());
         }
         for (Section sectionToRemove : construction.sectionsToRemove()) {
             remove(sectionToRemove.getId());
         }
     }
 
-    public void removeStationInLine(Line line, Sections sections, Station station) {
-        Construction construction = new Construction(sections, line);
+    public void removeStationInLine(Station station, Line line) {
+        Construction construction = new Construction(line);
         construction.deleteSectionsByStation(station);
         updateSections(construction);
     }

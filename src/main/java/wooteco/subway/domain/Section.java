@@ -7,27 +7,23 @@ public class Section {
 
     private final Long id;
     @NonNull
-    private final Line line;
-    @NonNull
     private final Station upStation;
     @NonNull
     private final Station downStation;
     @NonNull
     private final Distance distance;
 
-    public Section(Long id, Line line, Station upStation, Station downStation,
-        Distance distance) {
+    public Section(Long id, Station upStation,
+        Station downStation, Distance distance) {
         validateUpStationAndDownStation(upStation, downStation);
         this.id = id;
-        this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    public Section(Line line, Station upStation, Station downStation,
-        Distance distance) {
-        this(null, line, upStation, downStation, distance);
+    public Section(Station upStation, Station downStation, Distance distance) {
+        this(null, upStation, downStation, distance);
     }
 
     private static void validateUpStationAndDownStation(Station upStation, Station downStation) {
@@ -59,10 +55,6 @@ public class Section {
 
     public Long getId() {
         return id;
-    }
-
-    public Line getLine() {
-        return line;
     }
 
     public Station getUpStation() {

@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,15 +36,15 @@ public class LineService {
 
     public LineResponse createLine(LineRequest lineRequest) {
         validateNameAndColor(lineRequest);
-
-        Line line = subwayMapper
-            .line(lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor())));
         Station upStation = stationService.showStation(lineRequest.getUpStationId()).toDomain();
         Station downStation = stationService.showStation(lineRequest.getDownStationId()).toDomain();
-        Section newSection = sectionService.createSection(
-            new Section(line, upStation, downStation, new Distance(lineRequest.getDistance())));
+        Section section = new Section(upStation, downStation,
+            new Distance(lineRequest.getDistance()));
 
-        return new LineResponse(line, newSection);
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor(), new Sections(section));
+        LineEntity lineEntity = lineDao.save(line);
+        Section newSection = sectionService.createSection(section, lineEntity.getId());
+        return new LineResponse(subwayMapper.line(lineEntity, new Sections(newSection)));
     }
 
     private void validateNameAndColor(LineRequest lineRequest) {
@@ -56,18 +57,21 @@ public class LineService {
     public List<LineResponse> showLines() {
         List<LineEntity> lineEntities = lineDao.findAll();
         return lineEntities.stream()
-            .map(lineEntity -> new LineResponse(lineEntity.getId(), lineEntity.getName(),
-                lineEntity.getColor()))
+            .map(lineEntity -> new LineResponse(lineFromEntity(lineEntity)))
             .collect(Collectors.toList());
+    }
+
+    private Line lineFromEntity(LineEntity lineEntity) {
+        Set<Section> sections = sectionService.findSectionsByLineId(lineEntity.getId());
+        return subwayMapper.line(lineEntity, new Sections(sections));
     }
 
     @Transactional(readOnly = true)
     public LineResponse showLine(Long id) {
         validateToExistId(id);
-        Line line = subwayMapper.line(lineDao.findById(id));
-        Sections sections = new Sections(sectionService.findSectionsByLine(line));
+        Line line = lineFromEntity(lineDao.findById(id));
 
-        return new LineResponse(line, sections.pathByLine(line));
+        return new LineResponse(line);
     }
 
     private void validateToExistId(Long id) {
@@ -99,20 +103,21 @@ public class LineService {
 
     public void createSection(Long id, SectionRequest sectionRequest) {
         validateToExistId(id);
-        Line line = subwayMapper.line(lineDao.findById(id));
+        Line line = subwayMapper.line(lineDao.findById(id), new Sections(
+            sectionService.findSectionsByLineId(id)));
         Station upStation = stationService.showStation(sectionRequest.getUpStationId()).toDomain();
         Station downStation = stationService.showStation(sectionRequest.getDownStationId())
             .toDomain();
-        Section section = new Section(line, upStation, downStation,
+        Section section = new Section(upStation, downStation,
             new Distance(sectionRequest.getDistance()));
-        sectionService.createSection(line, section);
+        sectionService.createSectionInLine(section, line);
     }
 
-    public void deleteSections(Long lineId, Long stationId) {
-        validateToExistId(lineId);
-        Line line = subwayMapper.line(lineDao.findById(lineId));
-        Sections sections = new Sections(sectionService.findSectionsByLine(line));
+    public void deleteSections(Long id, Long stationId) {
+        validateToExistId(id);
+        Line line = subwayMapper.line(lineDao.findById(id), new Sections(
+            sectionService.findSectionsByLineId(id)));
         Station station = stationService.showStation(stationId).toDomain();
-        sectionService.removeStationInLine(line, sections, station);
+        sectionService.removeStationInLine(station, line);
     }
 }

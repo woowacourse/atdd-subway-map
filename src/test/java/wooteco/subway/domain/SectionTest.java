@@ -16,15 +16,14 @@ public class SectionTest {
     @BeforeEach
     void setUp() {
         section = new Section(
-            1L, new Line("2호선", "bg-red-600"), new Station(1L, "왕십리역"),
-            new Station(2L, "답삽리역"), new Distance(3));
+            1L, new Station(1L, "왕십리역"), new Station(2L, "답삽리역"), new Distance(3));
     }
 
     @DisplayName("ID가 같으면 같은 구간으로 취급한다.")
     @Test
     void equals() {
         assertThat(section).isEqualTo(new Section(
-            1L, new Line("3호선", "bg-blue-600"), new Station(3L, "서울역"),
+            1L, new Station(3L, "서울역"),
             new Station(4L, "시청역"), new Distance(4)));
     }
 
@@ -32,7 +31,7 @@ public class SectionTest {
     @Test
     void notEquals() {
         assertThat(section).isNotEqualTo(new Section(
-            2L, new Line("2호선", "bg-red-600"), new Station(1L, "왕십리역"),
+            2L, new Station(1L, "왕십리역"),
             new Station(2L, "답삽리역"), new Distance(3)));
     }
 
@@ -40,13 +39,7 @@ public class SectionTest {
     @Test
     void createSectionWithSameUpStationAndDownStation() {
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> new Section(
-                new Line("1호선", "bg-red-600"), new Station(1L, "왕십리역"),
-                new Station(1L, "왕십리역"), new Distance(3)))
-            .withMessage("상행역과 하행역이 같을 수 없습니다.");
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> new Section(
-                1L, new Line("1호선", "bg-red-600"), new Station(1L, "왕십리역"),
+            .isThrownBy(() -> new Section(new Station(1L, "왕십리역"),
                 new Station(1L, "왕십리역"), new Distance(3)))
             .withMessage("상행역과 하행역이 같을 수 없습니다.");
     }
@@ -57,8 +50,8 @@ public class SectionTest {
         "1, 2, false", "2, 3, false"})
     void hasOnlyOneSameStation(Long stationId1, Long stationId2, boolean expected) {
         // when
-        Section sectionToCompare = new Section(new Line("1호선", "bg-blue-600"),
-            new Station(stationId1, ""), new Station(stationId2, ""), new Distance(3));
+        Section sectionToCompare = new Section(new Station(stationId1, ""),
+            new Station(stationId2, ""), new Distance(3));
 
         // then
         assertThat(section.hasOnlyOneSameStation(sectionToCompare)).isEqualTo(expected);
@@ -80,8 +73,8 @@ public class SectionTest {
     @CsvSource(value = {"1, 3, 1", "3, 2, 2"})
     void sameStation(Long stationId1, Long stationId2, Long expected) {
         // when
-        Section sectionToCompare = new Section(new Line("1호선", "bg-blue-600"),
-            new Station(stationId1, ""), new Station(stationId2, ""), new Distance(3));
+        Section sectionToCompare = new Section(new Station(stationId1, ""),
+            new Station(stationId2, ""), new Distance(3));
 
         // then
         assertThat(section.sameStation(sectionToCompare).getId()).isEqualTo(expected);
@@ -92,8 +85,8 @@ public class SectionTest {
     @CsvSource(value = {"3, 4", "2, 3"})
     void sameStationWithInvalidSection(Long stationId1, Long stationId2) {
         // when
-        Section sectionToCompare = new Section(new Line("1호선", "bg-blue-600"),
-            new Station(stationId1, ""), new Station(stationId2, ""), new Distance(3));
+        Section sectionToCompare = new Section(new Station(stationId1, ""),
+            new Station(stationId2, ""), new Distance(3));
 
         // then
         assertThatIllegalArgumentException()
