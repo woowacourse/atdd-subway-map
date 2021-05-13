@@ -5,14 +5,12 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.controller.web.station.StationRequest;
 import wooteco.subway.controller.web.station.StationResponse;
-import wooteco.subway.station.dao.StationDao;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,9 +23,6 @@ import static wooteco.subway.station.controller.StationControllerTestUtils.지�
 public class StationControllerTest extends AcceptanceTest {
     public static final String TEST_STATION_NAME = "강남역";
     public static final StationRequest REQUEST_BODY = new StationRequest(TEST_STATION_NAME);
-
-    @Autowired
-    private StationDao stationDao;
 
     @DisplayName("지하철역을 생성한다.")
     @Transactional

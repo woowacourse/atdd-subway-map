@@ -1,10 +1,8 @@
 package wooteco.subway.line.domain;
 
 import wooteco.subway.section.domain.OrderedSections;
-import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
 
-import java.util.List;
 import java.util.Objects;
 
 public class Line {
@@ -19,10 +17,6 @@ public class Line {
 
     public Line(Long id, String name, String color, Sections sections) {
         this(id, new LineName(name), new LineColor(color), sections);
-    }
-
-    public Line(String name, String color, List<Section> sections) {
-        this(null, new LineName(name), new LineColor(color), new OrderedSections(sections));
     }
 
     public Line(Line idLine, OrderedSections sections) {

@@ -13,8 +13,8 @@ import wooteco.subway.AcceptanceTest;
 import wooteco.subway.controller.web.line.LineRequest;
 import wooteco.subway.controller.web.line.LineResponse;
 import wooteco.subway.controller.web.section.SectionRequest;
-import wooteco.subway.line.fixture.LineFixture;
 import wooteco.subway.controller.web.station.StationResponse;
+import wooteco.subway.line.fixture.LineFixture;
 import wooteco.subway.station.fixture.StationFixture;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,21 +25,21 @@ import static wooteco.subway.station.controller.StationControllerTestUtils.지�
 @DisplayName("구간 기능 테스트")
 @Transactional
 class SectionControllerTest extends AcceptanceTest {
-    private static LineRequest lineRequestBody;
+    private LineRequest lineRequestBody;
 
-    private static Long LINE_ID;
-    private static Long GANG_NAM_ID;
-    private static Long JAM_SIL_ID;
-    private static Long YEOK_SAM_ID;
+    private Long lineId;
+    private Long gangNamId;
+    private Long jamSilId;
+    private Long yeokSamId;
 
     @BeforeEach
     void insertDummyData() {
-        GANG_NAM_ID = 지하철역을_생성한다(StationFixture.GANG_SAM_STATION_REQUEST).as(StationResponse.class).getId();
-        JAM_SIL_ID = 지하철역을_생성한다(StationFixture.JAM_SIL_STATION_REQUEST).as(StationResponse.class).getId();
-        YEOK_SAM_ID = 지하철역을_생성한다(StationFixture.YEOK_SAM_STATION_REQUEST).as(StationResponse.class).getId();
+        gangNamId = 지하철역을_생성한다(StationFixture.GANG_SAM_STATION_REQUEST).as(StationResponse.class).getId();
+        jamSilId = 지하철역을_생성한다(StationFixture.JAM_SIL_STATION_REQUEST).as(StationResponse.class).getId();
+        yeokSamId = 지하철역을_생성한다(StationFixture.YEOK_SAM_STATION_REQUEST).as(StationResponse.class).getId();
 
-        lineRequestBody = new LineRequest(LineFixture.TEST_LINE_NAME, LineFixture.TEST_COLOR_NAME, GANG_NAM_ID, JAM_SIL_ID, TEST_DISTANCE);
-        LINE_ID = 지하철노선을_생성한다(lineRequestBody).as(LineResponse.class).getId();
+        lineRequestBody = new LineRequest(LineFixture.TEST_LINE_NAME, LineFixture.TEST_COLOR_NAME, gangNamId, jamSilId, TEST_DISTANCE);
+        lineId = 지하철노선을_생성한다(lineRequestBody).as(LineResponse.class).getId();
     }
 
     @DisplayName("구간을 생성한다.")
@@ -47,9 +47,9 @@ class SectionControllerTest extends AcceptanceTest {
     @Test
     void createSection() {
         // given
-        SectionRequest sectionRequest = new SectionRequest(JAM_SIL_ID, YEOK_SAM_ID, 10L);
+        SectionRequest sectionRequest = new SectionRequest(jamSilId, yeokSamId, 10L);
         // when
-        ExtractableResponse<Response> response = 구간을_생성한다(LINE_ID, sectionRequest);
+        ExtractableResponse<Response> response = 구간을_생성한다(lineId, sectionRequest);
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -69,16 +69,16 @@ class SectionControllerTest extends AcceptanceTest {
     @Test
     void deleteSectionTest() {
         // given
-        SectionRequest sectionRequest = new SectionRequest(JAM_SIL_ID, YEOK_SAM_ID, 10L);
+        SectionRequest sectionRequest = new SectionRequest(jamSilId, yeokSamId, 10L);
         // when
-        ExtractableResponse<Response> response = 구간을_생성한다(LINE_ID, sectionRequest);
+        ExtractableResponse<Response> response = 구간을_생성한다(lineId, sectionRequest);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         String uri = response.header("Location");
         // then
         RestAssured.given().log().all()
                 .when()
-                .delete(uri + "/sections?stationId=" + JAM_SIL_ID)
+                .delete(uri + "/sections?stationId=" + jamSilId)
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
     }
