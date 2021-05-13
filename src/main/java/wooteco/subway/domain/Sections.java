@@ -1,5 +1,9 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.domain.exception.AlreadyRegisteredStationsException;
+import wooteco.subway.domain.exception.NewSectionDistanceOverException;
+import wooteco.subway.domain.exception.NotRegisteredStationsException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -50,10 +54,10 @@ public class Sections {
 
     private static void validateRegisteredStations(boolean hasUpStation, boolean hasDownStation) {
         if (hasUpStation && hasDownStation) {
-            throw new IllegalArgumentException("두 역이 모두 해당 노선에 등록되어 있습니다.");
+            throw new AlreadyRegisteredStationsException("두 역이 모두 해당 노선에 등록되어 있습니다.");
         }
         if (!hasUpStation && !hasDownStation) {
-            throw new IllegalArgumentException("두 역이 모두 노선에 등록되어 있지 않습니다.");
+            throw new NotRegisteredStationsException("두 역이 모두 노선에 등록되어 있지 않습니다.");
         }
     }
 
@@ -89,7 +93,7 @@ public class Sections {
 
     private static void validateDistance(int distance, Section sectionToDelete) {
         if (distance > sectionToDelete.getDistance()) {
-            throw new IllegalArgumentException("기존 구간의 길이를 넘어서는 구간을 추가할 수 없습니다.");
+            throw new NewSectionDistanceOverException("기존 구간의 길이를 넘어서는 구간을 추가할 수 없습니다.");
         }
     }
 
@@ -98,7 +102,7 @@ public class Sections {
         boolean hasDownStation = isDownStationOfAnywhere(station);
 
         if (!hasUpStation && !hasDownStation) {
-            throw new IllegalArgumentException("등록되지 않은 역입니다.");
+            throw new NotRegisteredStationsException("두 역이 모두 노선에 등록되어 있지 않습니다.");
         }
 
         if (hasUpStation && hasDownStation) {

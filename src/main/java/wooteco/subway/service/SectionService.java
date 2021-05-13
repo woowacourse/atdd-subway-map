@@ -9,6 +9,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.service.exception.InvalidSectionDeleteException;
 
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class SectionService {
 
     private void validateIsRemovable(Line line) {
         if (!line.isRemovable()) {
-            throw new IllegalArgumentException("등록된 역이 2개 이하일 때는 삭제할 수 없습니다.");
+            throw new InvalidSectionDeleteException("등록된 역이 2개 이하일 때는 삭제할 수 없습니다.");
         }
     }
 

@@ -1,19 +1,12 @@
 package wooteco.subway.controller;
 
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
+@RestControllerAdvice(assignableTypes = {StationController.class})
 public class StationControllerAdvice {
-
-    @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity<String> handleEmptyResultException(Exception e) {
-        return ResponseEntity.badRequest()
-                .body(e.getMessage());
-    }
 
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<String> handleDuplicateUniqueColumnException(Exception e) {
