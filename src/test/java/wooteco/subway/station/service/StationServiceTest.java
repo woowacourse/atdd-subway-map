@@ -18,7 +18,6 @@ import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,13 +58,13 @@ class StationServiceTest {
     void StationDuplicatedNameException() {
         // given
         StationRequest 왕십리역 = new StationRequest("왕십리");
-        given(stationDao.findByName(any(String.class)))
-                .willThrow(StationDuplicatedNameException.class);
+        given(stationDao.existByName(any(String.class)))
+                .willReturn(true);
 
         // when & then
         assertThatThrownBy(() -> stationService.save(왕십리역))
                 .isInstanceOf(StationDuplicatedNameException.class);
-        verify(stationDao).findByName(any(String.class));
+        verify(stationDao).existByName(any(String.class));
     }
 
     @DisplayName("모든 지하철 역 조회")
@@ -114,7 +113,7 @@ class StationServiceTest {
         // given
         Station 잠실역 = new Station(1L, "잠실역");
         given(stationDao.findById(잠실역.getId()))
-                .willReturn(Optional.of(잠실역));
+                .willReturn(잠실역);
 
         // when & then
         assertThatThrownBy(() -> stationService.checkValidStation(잠실역.getId(), 잠실역.getId()))
@@ -126,7 +125,7 @@ class StationServiceTest {
     void validatesExistStation() {
         // given
         given(stationDao.findById(any(Long.class)))
-                .willReturn(Optional.empty());
+                .willThrow(StationNotFoundException.class);
 
         // when & then
         assertThatThrownBy(() -> stationService.checkValidStation(1L, 2L))
@@ -142,11 +141,11 @@ class StationServiceTest {
                 new SectionResponse(2L, 3L)
         );
         given(stationDao.findById(1L))
-                .willReturn(Optional.of(new Station(1L, "강남역")));
+                .willReturn(new Station(1L, "강남역"));
         given(stationDao.findById(2L))
-                .willReturn(Optional.of(new Station(2L, "잠실역")));
+                .willReturn(new Station(2L, "잠실역"));
         given(stationDao.findById(3L))
-                .willReturn(Optional.of(new Station(3L, "왕십리역")));
+                .willReturn(new Station(3L, "왕십리역"));
 
         // when
         List<StationResponse> stations = stationService.findStations(sections);
@@ -166,7 +165,7 @@ class StationServiceTest {
     void findById() {
         // given
         given(stationDao.findById(1L))
-                .willReturn(Optional.of(new Station(1L, "강남역")));
+                .willReturn(new Station(1L, "강남역"));
 
         // when
         StationResponse response = stationService.findById(1L);
@@ -181,7 +180,7 @@ class StationServiceTest {
     void findByIdWithNotExistId() {
         // given
         given(stationDao.findById(1L))
-                .willReturn(Optional.empty());
+                .willThrow(StationNotFoundException.class);
 
         // when & then
         assertThatThrownBy(() -> stationService.findById(1L))

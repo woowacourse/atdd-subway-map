@@ -1,12 +1,12 @@
 package wooteco.subway.station.dao;
 
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.exception.station.StationNotFoundException;
 import wooteco.subway.station.Station;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class InMemoryStationDao implements StationDao {
     private static Long seq = 0L;
@@ -20,17 +20,31 @@ public class InMemoryStationDao implements StationDao {
     }
 
     @Override
-    public Optional<Station> findById(Long id) {
+    public Station findById(Long id) {
         return stations.stream()
                 .filter(station -> station.isSameId(id))
-                .findAny();
+                .findAny()
+                .orElseThrow(StationNotFoundException::new);
     }
 
     @Override
-    public Optional<Station> findByName(String name) {
+    public boolean existByName(String name) {
+        return stations.stream()
+                .anyMatch(station -> station.isSameName(name));
+    }
+
+    @Override
+    public boolean existById(Long id) {
+        return stations.stream()
+                .anyMatch(station -> station.isSameId(id));
+    }
+
+    @Override
+    public Station findByName(String name) {
         return stations.stream()
                 .filter(station -> station.isSameName(name))
-                .findAny();
+                .findAny()
+                .orElseThrow(StationNotFoundException::new);
     }
 
     @Override

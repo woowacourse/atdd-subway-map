@@ -15,7 +15,6 @@ import wooteco.subway.station.dto.StationResponse;
 
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,10 +38,10 @@ public class StationService {
     }
 
     private void validatesNameDuplication(StationRequest stationRequest) {
-        stationDao.findByName(stationRequest.getName())
-                .ifPresent(l -> {
-                    throw new StationDuplicatedNameException();
-                });
+        boolean isExist = stationDao.existByName(stationRequest.getName());
+        if (isExist) {
+            throw new StationDuplicatedNameException();
+        }
     }
 
     public List<StationResponse> findAll() {
@@ -72,8 +71,9 @@ public class StationService {
     }
 
     private void validatesExistStation(Long id) {
-        if (Optional.empty().equals(stationDao.findById(id))) {
-            throw new SubwayException("존재하지 않는 역입니다.");
+        boolean isExist = stationDao.existById(id);
+        if (!isExist) {
+            throw new StationNotFoundException();
         }
     }
 
@@ -85,15 +85,12 @@ public class StationService {
         }
         return sortedStations.stream()
                 .map(stationDao::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
     }
 
     public StationResponse findById(Long id) {
-        Station station = stationDao.findById(id)
-                .orElseThrow(StationNotFoundException::new);
+        Station station = stationDao.findById(id);
         return new StationResponse(station);
     }
 }

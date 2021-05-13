@@ -6,12 +6,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.exception.station.StationNotFoundException;
 import wooteco.subway.station.Station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Repository
 public class JdbcStationDao implements StationDao {
@@ -37,22 +37,34 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Optional<Station> findById(Long id) {
+    public Station findById(Long id) {
         try {
             String query = "SELECT * FROM station WHERE id = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(query, stationRowMapper(), id));
+            return jdbcTemplate.queryForObject(query, stationRowMapper(), id);
         } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
+            throw new StationNotFoundException();
         }
     }
 
     @Override
-    public Optional<Station> findByName(String name) {
+    public boolean existByName(String name) {
+        String query = "SELECT EXISTS (SELECT * FROM station WHERE name = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, name);
+    }
+
+    @Override
+    public boolean existById(Long id) {
+        String query = "SELECT EXISTS (SELECT * FROM station WHERE id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, id);
+    }
+
+    @Override
+    public Station findByName(String name) {
         try {
             String query = "SELECT * FROM station WHERE name = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(query, stationRowMapper(), name));
+            return jdbcTemplate.queryForObject(query, stationRowMapper(), name);
         } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
+            throw new StationNotFoundException();
         }
     }
 

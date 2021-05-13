@@ -12,7 +12,6 @@ import wooteco.subway.station.Station;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,10 +53,10 @@ class JdbcStationDaoTest {
 
         // when
         jdbcStationDao.save(new Station(강남역));
-        Optional<Station> station = jdbcStationDao.findByName(강남역);
+        Station station = jdbcStationDao.findByName(강남역);
 
         // then
-        assertThat(station.get()).usingRecursiveComparison()
+        assertThat(station).usingRecursiveComparison()
                 .isEqualTo(new Station(1L, 강남역));
     }
 
@@ -69,10 +68,10 @@ class JdbcStationDaoTest {
 
         // when
         jdbcStationDao.save(new Station("강남역"));
-        Optional<Station> station = jdbcStationDao.findById(id);
+        Station station = jdbcStationDao.findById(id);
 
         // then
-        assertThat(station.get()).usingRecursiveComparison()
+        assertThat(station).usingRecursiveComparison()
                 .isEqualTo(new Station(1L, "강남역"));
     }
 
