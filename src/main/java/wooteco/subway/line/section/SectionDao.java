@@ -44,13 +44,15 @@ public class SectionDao {
     }
 
     public void update(Long lineId, Section resultSection) {
-        String sql = "update SECTION set up_station_id = ?, down_station_id = ?, distance = ? where line_id = ?";
+        String sql = "update SECTION set up_station_id = ?, down_station_id = ?, distance = ? where line_id = ? and id = ?";
         jdbcTemplate.update(
             sql,
             resultSection.getUpStationId(),
             resultSection.getDownStationId(),
             resultSection.getDistance(),
-            lineId);
+            lineId,
+            resultSection.getId()
+        );
     }
 
     public Section findById(Long lineId, Long sectionId) {
