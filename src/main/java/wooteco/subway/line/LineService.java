@@ -25,7 +25,7 @@ public class LineService {
         validateExistById(lineId);
 
         Line line = lineDao.findById(lineId);
-        Sections sections = sectionDao.findSectionsByLineId(lineId);
+        Sections sections = sectionDao.findAllByLineId(lineId);
         line.setSections(sections);
 
         return line;
@@ -34,7 +34,7 @@ public class LineService {
     public List<Line> findAll() {
         List<Line> lines = lineDao.showAll();
         for (Line line : lines) {
-            Sections sections = sectionDao.findSectionsByLineId(line.getId());
+            Sections sections = sectionDao.findAllByLineId(line.getId());
             line.setSections(sections);
         }
 

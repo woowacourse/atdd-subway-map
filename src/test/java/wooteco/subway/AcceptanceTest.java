@@ -9,6 +9,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import wooteco.subway.line.web.LineRequest;
+import wooteco.subway.section.web.SectionRequest;
 import wooteco.subway.station.StationRequest;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -55,9 +56,7 @@ public class AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        String location = result.header("Location");
-        String id = location.split("/")[2];
-        return Long.valueOf(id);
+        return getIdInLocation(result);
     }
 
     public static ExtractableResponse<Response> postLine(LineRequest lineRequest) {
@@ -70,6 +69,28 @@ public class AcceptanceTest {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> postSection(SectionRequest sectionRequest, Long lineId) {
+        return RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections/")
+                .then().log().all()
+                .extract();
+    }
+
+    public static Long postSectionAndGetId(SectionRequest sectionRequest, Long lineId) {
+        ExtractableResponse<Response> result = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections/")
+                .then().log().all()
+                .extract();
+
+        return getIdInLocation(result);
+    }
+
     public static Long postLineAndGetId(LineRequest lineRequest) {
         ExtractableResponse<Response> result = RestAssured.given().log().all()
                 .body(lineRequest)
@@ -79,8 +100,13 @@ public class AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        return getIdInLocation(result);
+    }
+
+    public static Long getIdInLocation(ExtractableResponse<Response> result) {
         String location = result.header("Location");
-        String id = location.split("/")[2];
+        String[] path = location.split("/");
+        String id = path[path.length - 1];
         return Long.valueOf(id);
     }
 

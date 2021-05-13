@@ -62,6 +62,7 @@ public class Sections {
         List<Section> collect = sections.stream()
                 .filter(originalSection -> originalSection.isAdjacent(newSection))
                 .collect(Collectors.toList());
+
         if (isMiddleSection(newSection, collect)) {
             return updateSection(collect.get(SECOND_ELEMENT), newSection);
         }
@@ -86,6 +87,7 @@ public class Sections {
 
     public Section addAndThenGetModifiedAdjacent(Section section) {
         validateAddable(section);
+
         Section modifiedSection = modifyAdjacent(section);
         sections.add(section);
 

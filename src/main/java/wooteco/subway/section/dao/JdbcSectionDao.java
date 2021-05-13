@@ -53,7 +53,7 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public Sections findSectionsByLineId(Long lineId) {
+    public Sections findAllByLineId(Long lineId) {
         List<Section> sections = jdbcTemplate.query(READ, (rs, rowNum) -> {
             Long id = rs.getLong("id");
             String upStationName = rs.getString("upStationName");

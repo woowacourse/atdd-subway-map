@@ -8,7 +8,7 @@ import java.util.List;
 public interface SectionDao {
     Section create(Section section, Long lineId);
 
-    Sections findSectionsByLineId(Long lineId);
+    Sections findAllByLineId(Long lineId);
 
     Section saveModified(Section section, Section affectedSection,
                          Long lineId);

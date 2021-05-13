@@ -55,7 +55,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
         // when
         ResultActions result = 구간_추가(sectionRequest, line.getId());
-        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
+        final List<Section> sections = sectionDao.findAllByLineId(line.getId()).sections();
 
         // then
         result.andDo(print())
@@ -78,7 +78,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
         // when
         ResultActions result = 구간_추가(sectionRequest, line.getId());
-        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
+        final List<Section> sections = sectionDao.findAllByLineId(line.getId()).sections();
 
         // then
         result.andDo(print())
@@ -102,7 +102,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
         // when
         ResultActions result = 구간_추가(sectionRequest, line.getId());
-        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
+        final List<Section> sections = sectionDao.findAllByLineId(line.getId()).sections();
 
         // then
         result.andDo(print())
@@ -126,7 +126,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
         // when
         ResultActions result = 구간_추가(강남_잠실새내, line.getId());
-        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
+        final List<Section> sections = sectionDao.findAllByLineId(line.getId()).sections();
 
         // then
         result.andDo(print())
@@ -157,7 +157,7 @@ class SectionApiControllerTest extends ApiControllerTest {
         // when
         SectionRequest 잠실_수서 = new SectionRequest(잠실역.getId(), 수서역.getId(), 2);
         ResultActions result = 구간_추가(잠실_수서, line.getId());
-        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
+        final List<Section> sections = sectionDao.findAllByLineId(line.getId()).sections();
 
         // then
         result.andDo(print())
@@ -188,7 +188,7 @@ class SectionApiControllerTest extends ApiControllerTest {
         // when
         SectionRequest 수서_잠실새내 = new SectionRequest(수서역.getId(), 잠실새내역.getId(), 2);
         ResultActions result = 구간_추가(수서_잠실새내, line.getId());
-        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
+        final List<Section> sections = sectionDao.findAllByLineId(line.getId()).sections();
 
         // then
         result.andDo(print())
@@ -318,7 +318,7 @@ class SectionApiControllerTest extends ApiControllerTest {
         // when
         ResultActions result = mockMvc.perform(
                 delete("/lines/" + line.getId() + "/sections?stationId=" + 잠실역.getId()));
-        final Sections sections = sectionDao.findSectionsByLineId(line.getId());
+        final Sections sections = sectionDao.findAllByLineId(line.getId());
 
         // then
         result.andDo(print())
