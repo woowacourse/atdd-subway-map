@@ -2,6 +2,8 @@ package wooteco.subway.section.domain;
 
 import wooteco.subway.section.exception.SectionDistanceTooShortException;
 
+import java.util.Objects;
+
 public class SectionDistance {
     private static final int MINIMUM_DISTANCE = 0;
     private final long distance;
@@ -27,6 +29,19 @@ public class SectionDistance {
 
     public SectionDistance minus(SectionDistance that) {
         return new SectionDistance(this.distance - that.getDistance());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SectionDistance)) return false;
+        SectionDistance that = (SectionDistance) o;
+        return getDistance() == that.getDistance();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getDistance());
     }
 
     @Override
