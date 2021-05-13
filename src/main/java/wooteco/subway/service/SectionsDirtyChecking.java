@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 
 @Component
 public class SectionsDirtyChecking {
@@ -17,11 +18,12 @@ public class SectionsDirtyChecking {
         this.sectionDao = sectionDao;
     }
 
-    public void setInitSections(List<Section> sections) {
-        this.sections = new ArrayList<>(sections);
+    public void setInitSections(Sections sections) {
+        this.sections = new ArrayList(sections.toList());
     }
 
-    public void dirtyChecking(List<Section> changedSections) {
+    public void dirtyChecking(Sections changedSectionsGroup) {
+        List<Section> changedSections = changedSectionsGroup.toList();
         for (Section changedSection : changedSections) {
             if (isNewSection(changedSection)) {
                 sectionDao.create(

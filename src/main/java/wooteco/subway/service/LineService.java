@@ -114,7 +114,10 @@ public class LineService {
         line.validateCreateSectionInLine(upStationId, downStationId);
         List<Section> sectionsGroup = sectionDao.findByLineId(lineId);
         Sections sections = new Sections(sectionsGroup);
-        sections.createSectionInLine(lineId, upStationId, downStationId, distance, dirtyChecking);
+        dirtyChecking.setInitSections(sections);
+        Sections changedSections = sections
+            .createSectionInLine(lineId, upStationId, downStationId, distance);
+        dirtyChecking.dirtyChecking(changedSections);
     }
 
     public void deleteSectionInLine(Long lineId, Long stationId) {
