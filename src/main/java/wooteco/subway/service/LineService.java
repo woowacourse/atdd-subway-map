@@ -53,6 +53,7 @@ public class LineService {
 
     public void deleteLine(Long id) {
         lineDao.deleteById(id);
+        sectionDao.deleteByLineId(id);
     }
 
     private void validateDuplication(String name) {
