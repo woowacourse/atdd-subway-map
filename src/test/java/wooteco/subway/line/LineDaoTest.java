@@ -15,7 +15,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import wooteco.subway.exception.NoSuchLineException;
+import wooteco.subway.exception.NoSuchDataException;
 
 @JdbcTest
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -91,7 +91,7 @@ public class LineDaoTest {
     void failDeleteLineTest() {
         assertThatThrownBy(() -> {
             lineDao.delete(1L);
-        }).isInstanceOf(NoSuchLineException.class);
+        }).isInstanceOf(NoSuchDataException.class);
     }
 
     @DisplayName("line 삭제 성공 테스트")
@@ -111,7 +111,7 @@ public class LineDaoTest {
             () -> {
                 lineDao.modify(1L, new LineRequest());
             }
-        ).isInstanceOf(NoSuchLineException.class);
+        ).isInstanceOf(NoSuchDataException.class);
     }
 
     @DisplayName("중복되는 line 수정 실패 테스트")

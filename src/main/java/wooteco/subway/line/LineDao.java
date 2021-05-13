@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.exception.NoSuchLineException;
+import wooteco.subway.exception.NoSuchDataException;
 
 @Repository
 public class LineDao {
@@ -25,7 +25,7 @@ public class LineDao {
         int affectedRowNumber = jdbcTemplate.update(query, id);
 
         if (affectedRowNumber == 0) {
-            throw new NoSuchLineException("없는 노선입니다.");
+            throw new NoSuchDataException("없는 노선입니다.");
         }
     }
 
@@ -60,7 +60,7 @@ public class LineDao {
         int affectedRowNumber = jdbcTemplate
             .update(query, lineRequest.getName(), lineRequest.getColor(), id);
         if (affectedRowNumber == 0) {
-            throw new NoSuchLineException("존재하지 않아 변경할 수 없습니다.");
+            throw new NoSuchDataException("존재하지 않아 변경할 수 없습니다.");
         }
     }
 

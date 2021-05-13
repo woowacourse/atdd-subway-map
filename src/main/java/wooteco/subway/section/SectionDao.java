@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.exception.NoSuchDataException;
 
 @Repository
 public class SectionDao {
@@ -60,4 +61,12 @@ public class SectionDao {
         }, lineId);
     }
 
+    public void delete(Long stationId) {
+        String query = "DELETE FROM section WHERE ID = ?";
+        int affectedRowNumber = jdbcTemplate.update(query, stationId);
+
+        if (affectedRowNumber == 0) {
+            throw new NoSuchDataException("없는 구간입니다.");
+        }
+    }
 }
