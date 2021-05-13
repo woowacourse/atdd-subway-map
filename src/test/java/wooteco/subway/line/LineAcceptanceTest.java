@@ -12,6 +12,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.presentation.line.dto.LineRequest;
 import wooteco.subway.presentation.line.dto.SectionRequest;
 import wooteco.subway.presentation.station.dto.StationRequest;
@@ -26,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 
+@Sql(value = {"classpath:/line/lineQueryInit.sql", "classpath:/station/stationQueryInit.sql"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineAcceptanceTest {
 
@@ -38,12 +40,6 @@ class LineAcceptanceTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        jdbcTemplate.update("ALTER TABLE STATION ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.update("DELETE FROM STATION");
-        jdbcTemplate.update("ALTER TABLE LINE ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.update("DELETE FROM LINE");
-        jdbcTemplate.update("ALTER TABLE SECTION ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.update("DELETE FROM SECTION");
     }
 
     @DisplayName("새로운 노선을 생성한다.")

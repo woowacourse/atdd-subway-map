@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.infrastructure.station.StationDao;
 import wooteco.util.StationFactory;
@@ -16,6 +17,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@Sql("classpath:/station/stationQueryInit.sql")
 @JdbcTest
 class StationDaoTest {
 
@@ -27,9 +29,6 @@ class StationDaoTest {
     @BeforeEach
     void setUp() {
         stationDao = new StationDao(jdbcTemplate);
-
-        jdbcTemplate.update("ALTER TABLE STATION ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.update("DELETE FROM STATION");
     }
 
     @Test

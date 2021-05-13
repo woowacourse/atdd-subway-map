@@ -12,6 +12,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.presentation.line.dto.LineRequest;
 import wooteco.subway.presentation.station.dto.StationRequest;
 import wooteco.subway.presentation.station.dto.StationResponse;
@@ -23,6 +24,7 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
+@Sql("classpath:/station/stationQueryInit.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
 
@@ -35,8 +37,6 @@ public class StationAcceptanceTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        jdbcTemplate.update("ALTER TABLE STATION ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.update("DELETE FROM STATION");
     }
 
     @DisplayName("참조중인 역을 지울 수 없다")
