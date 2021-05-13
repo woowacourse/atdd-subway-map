@@ -11,12 +11,12 @@
     <template slot="text">
       <v-form ref="lineEditForm" v-model="valid" @submit.prevent>
         <v-text-field
-          v-model="lineEditForm.name"
-          :rules="rules.line.name"
-          color="grey darken-1"
-          label="노선 이름"
-          placeholder="노선 이름"
-          outlined
+            v-model="lineEditForm.name"
+            :rules="rules.line.name"
+            color="grey darken-1"
+            label="노선 이름"
+            placeholder="노선 이름"
+            outlined
         ></v-text-field>
         <div class="d-flex">
           <v-text-field
@@ -29,12 +29,12 @@
         </div>
         <div>
           <v-text-field
-            v-model="lineEditForm.color"
-            :rules="rules.line.color"
-            :value="lineEditForm.color"
-            label="노선 색상"
-            filled
-            disabled
+              v-model="lineEditForm.color"
+              :rules="rules.line.color"
+              :value="lineEditForm.color"
+              label="노선 색상"
+              filled
+              disabled
           ></v-text-field>
           <p>
             노선의 색상을 아래 팔레트에서 선택해주세요.
@@ -42,9 +42,10 @@
           <div class="d-flex">
             <div>
               <template v-for="(color, index) in lineColors">
-                <v-btn :key="index" small class="color-button ma-1" depressed :color="color" @click="setLineColor(color)"></v-btn>
+                <v-btn :key="index" small class="color-button ma-1" depressed :color="color"
+                       @click="setLineColor(color)"></v-btn>
                 <template v-if="index === 0"></template>
-                <br v-if="index === 8 || index % 9 === 8" />
+                <br v-if="index === 8 || index % 9 === 8"/>
               </template>
             </div>
           </div>
@@ -58,13 +59,13 @@
 </template>
 
 <script>
-import { LINE_COLORS, SNACKBAR_MESSAGES } from '@/utils/constants'
+import {LINE_COLORS, SNACKBAR_MESSAGES} from '@/utils/constants'
 import Dialog from '@/components/dialogs/Dialog'
 import dialog from '@/mixins/dialog'
 import validator from '@/utils/validator'
-import { mapActions, mapMutations } from 'vuex'
-import { SHOW_SNACKBAR } from '@/store/shared/mutationTypes'
-import { EDIT_LINE, FETCH_LINES } from '@/store/shared/actionTypes'
+import {mapActions, mapMutations} from 'vuex'
+import {SHOW_SNACKBAR} from '@/store/shared/mutationTypes'
+import {EDIT_LINE, FETCH_LINES} from '@/store/shared/actionTypes'
 
 export default {
   name: 'LineEditButton',
@@ -74,7 +75,7 @@ export default {
       required: true
     }
   },
-  components: { Dialog },
+  components: {Dialog},
   mixins: [dialog],
   methods: {
     ...mapMutations([SHOW_SNACKBAR]),
@@ -83,7 +84,7 @@ export default {
       this.lineEditForm.color = color
     },
     initEditingLine() {
-      this.lineEditForm = { ...this.line }
+      this.lineEditForm = {...this.line}
     },
     async onEditLine() {
       try {
@@ -101,7 +102,7 @@ export default {
   },
   data() {
     return {
-      rules: { ...validator },
+      rules: {...validator},
       lineEditForm: {
         name: '',
         color: '',

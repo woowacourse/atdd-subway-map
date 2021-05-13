@@ -12,7 +12,6 @@ import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.controller.dto.LineRequest;
 import wooteco.subway.line.controller.dto.LineResponse;
 import wooteco.subway.station.controller.dto.StationRequest;
-import wooteco.subway.station.domain.Station;
 
 import java.util.List;
 import java.util.stream.Collectors;

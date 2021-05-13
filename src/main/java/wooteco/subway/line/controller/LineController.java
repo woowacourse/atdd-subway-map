@@ -9,7 +9,6 @@ import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
 import wooteco.subway.section.service.SectionService;
-import wooteco.subway.station.controller.dto.StationResponse;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.service.StationService;
 

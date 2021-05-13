@@ -81,7 +81,7 @@ public class Section {
     }
 
     private void validateSection(Station upStationId, Station downStationId) {
-        if(upStationId.equals(downStationId)) {
+        if (upStationId.equals(downStationId)) {
             throw new IllegalSectionArgumentException();
         }
     }

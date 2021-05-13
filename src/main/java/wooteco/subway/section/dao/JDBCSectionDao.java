@@ -46,22 +46,22 @@ public class JDBCSectionDao implements SectionDao {
     public Sections findByLineId(Long lineId) {
         String query =
                 "SELECT s.id AS section_id, line_id, " +
-                "up_table.id AS up_id, " +
-                "up_table.name AS up_name, " +
-                "down_table.id AS down_id, " +
-                "down_table.name AS down_name, " +
-                "distance FROM section AS s\n" +
-                "LEFT JOIN station AS up_table ON s.up_station_id = up_table.id\n" +
-                "LEFT JOIN station AS down_table ON s.down_station_id = down_table.id\n" +
-                "WHERE s.line_id = ?";
+                        "up_table.id AS up_id, " +
+                        "up_table.name AS up_name, " +
+                        "down_table.id AS down_id, " +
+                        "down_table.name AS down_name, " +
+                        "distance FROM section AS s\n" +
+                        "LEFT JOIN station AS up_table ON s.up_station_id = up_table.id\n" +
+                        "LEFT JOIN station AS down_table ON s.down_station_id = down_table.id\n" +
+                        "WHERE s.line_id = ?";
 
         List<Section> sections = this.jdbcTemplate.query(query, (resultSet, rowNum) -> new Section(
-                    resultSet.getLong("section_id"),
-                    lineId,
-                    new Station(resultSet.getLong("up_id"), resultSet.getString("up_name")),
-                    new Station(resultSet.getLong("down_id"), resultSet.getString("down_name")),
-                    resultSet.getInt("distance")
-            ), lineId);
+                resultSet.getLong("section_id"),
+                lineId,
+                new Station(resultSet.getLong("up_id"), resultSet.getString("up_name")),
+                new Station(resultSet.getLong("down_id"), resultSet.getString("down_name")),
+                resultSet.getInt("distance")
+        ), lineId);
 
         return new Sections(sections);
     }

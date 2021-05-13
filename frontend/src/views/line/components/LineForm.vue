@@ -1,56 +1,58 @@
 <template>
   <v-form ref="lineForm" v-model="isValidLine" @submit.prevent>
     <v-text-field
-      v-model="lineForm.name"
-      :rules="rules.line.name"
-      color="grey darken-1"
-      label="노선 이름"
-      placeholder="노선 이름"
-      outlined
+        v-model="lineForm.name"
+        :rules="rules.line.name"
+        color="grey darken-1"
+        label="노선 이름"
+        placeholder="노선 이름"
+        outlined
     ></v-text-field>
     <v-row>
       <v-col cols="4">
         <v-text-field
-          v-model="lineForm.startTime"
-          :rules="rules.line.startTime"
-          color="grey darken-1"
-          label="첫차 시간"
-          placeholder="첫차 시간"
-          outlined
+            v-model="lineForm.startTime"
+            :rules="rules.line.startTime"
+            color="grey darken-1"
+            label="첫차 시간"
+            placeholder="첫차 시간"
+            outlined
         ></v-text-field>
       </v-col>
       <v-col cols="4">
         <v-text-field
-          v-model="lineForm.endTime"
-          :rules="rules.line.endTime"
-          color="grey darken-1"
-          label="막차 시간"
-          placeholder="막차 시간"
-          outlined
+            v-model="lineForm.endTime"
+            :rules="rules.line.endTime"
+            color="grey darken-1"
+            label="막차 시간"
+            placeholder="막차 시간"
+            outlined
         ></v-text-field>
       </v-col>
       <v-col cols="4">
         <v-text-field
-          v-model="lineForm.intervalTime"
-          :rules="rules.line.intervalTime"
-          color="grey darken-1"
-          label="간격"
-          placeholder="간격"
-          outlined
+            v-model="lineForm.intervalTime"
+            :rules="rules.line.intervalTime"
+            color="grey darken-1"
+            label="간격"
+            placeholder="간격"
+            outlined
         ></v-text-field>
       </v-col>
     </v-row>
     <div>
-      <v-text-field v-model="lineForm.color" :rules="rules.line.color" :value="lineForm.color" label="노선 색상" filled disabled></v-text-field>
+      <v-text-field v-model="lineForm.color" :rules="rules.line.color" :value="lineForm.color" label="노선 색상" filled
+                    disabled></v-text-field>
       <p>
         노선의 색상을 아래 팔레트에서 선택해주세요.
       </p>
       <div class="d-flex">
         <div>
           <template v-for="(color, index) in lineColors">
-            <v-btn :key="index" small class="color-button ma-1" depressed :color="color" @click="setLineColor(color)"></v-btn>
+            <v-btn :key="index" small class="color-button ma-1" depressed :color="color"
+                   @click="setLineColor(color)"></v-btn>
             <template v-if="index === 0"></template>
-            <br v-if="index === 8 || index % 9 === 8" />
+            <br v-if="index === 8 || index % 9 === 8"/>
           </template>
         </div>
       </div>
@@ -60,10 +62,10 @@
 
 <script>
 import validator from '@/utils/validator'
-import { mapActions, mapMutations } from 'vuex'
-import { SHOW_SNACKBAR } from '@/store/shared/mutationTypes'
-import { CREATE_LINE, DELETE_LINE, EDIT_LINE, FETCH_LINES } from '@/store/shared/actionTypes'
-import { LINE_COLORS } from '@/utils/constants'
+import {mapActions, mapMutations} from 'vuex'
+import {SHOW_SNACKBAR} from '@/store/shared/mutationTypes'
+import {CREATE_LINE, DELETE_LINE, EDIT_LINE, FETCH_LINES} from '@/store/shared/actionTypes'
+import {LINE_COLORS} from '@/utils/constants'
 
 export default {
   name: 'LineForm',
@@ -91,7 +93,7 @@ export default {
   },
   data() {
     return {
-      rules: { ...validator },
+      rules: {...validator},
       lineForm: {
         name: '',
         color: '',

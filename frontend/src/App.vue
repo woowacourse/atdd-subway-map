@@ -1,18 +1,18 @@
 <template>
   <v-app v-cloak>
-    <Header />
+    <Header/>
     <v-main>
-      <router-view />
+      <router-view/>
     </v-main>
-    <Snackbar />
+    <Snackbar/>
   </v-app>
 </template>
 
 <script>
 import Header from '@/views/base/header/Header'
 import Snackbar from '@/components/snackbars/Snackbar'
-import { FETCH_MEMBER } from '@/store/shared/actionTypes'
-import { mapActions } from 'vuex'
+import {FETCH_MEMBER} from '@/store/shared/actionTypes'
+import {mapActions} from 'vuex'
 
 export default {
   name: 'App',

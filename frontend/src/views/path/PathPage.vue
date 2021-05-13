@@ -9,31 +9,31 @@
           <div class="px-4 pb-6">
             <div class="d-flex width-100">
               <v-select
-                v-model="path.source"
-                class="pr-4 path-station-select"
-                :items="allStationsView"
-                label="출발역"
-                color="grey darken-1"
-                item-color="amber darken-3"
-                outlined
-                dense
+                  v-model="path.source"
+                  class="pr-4 path-station-select"
+                  :items="allStationsView"
+                  label="출발역"
+                  color="grey darken-1"
+                  item-color="amber darken-3"
+                  outlined
+                  dense
               ></v-select>
               <v-icon class="relative bottom-15">mdi-arrow-right-bold</v-icon>
               <v-select
-                v-model="path.target"
-                class="pl-4 path-station-select"
-                :items="allStationsView"
-                label="도착역"
-                color="grey darken-1"
-                item-color="amber darken-3"
-                outlined
-                dense
+                  v-model="path.target"
+                  class="pl-4 path-station-select"
+                  :items="allStationsView"
+                  label="도착역"
+                  color="grey darken-1"
+                  item-color="amber darken-3"
+                  outlined
+                  dense
               ></v-select>
             </div>
             <div class="d-flex mb-4">
               <v-btn @click="onSearchResult" color="amber" class="width-100" depressed>검색</v-btn>
             </div>
-            <v-divider v-if="pathResult" />
+            <v-divider v-if="pathResult"/>
             <div v-if="pathResult" class="d-flex justify-center mt-4">
               <v-card width="400" flat>
                 <v-tabs v-model="tab" background-color="transparent" color="amber" grow>
@@ -77,12 +77,13 @@
                 </v-tabs-items>
               </v-card>
             </div>
-            <v-divider />
+            <v-divider/>
             <div v-if="pathResult" class="d-flex justify-center mt-4">
               <v-card width="400" flat>
                 <template v-for="(station, index) in pathResult.stations">
                   <span :key="station.id">
-                    <v-chip :key="index" class="ma-2" :color="index === 0 || index === pathResult.stations.length - 1 ? 'amber' : ''">
+                    <v-chip :key="index" class="ma-2"
+                            :color="index === 0 || index === pathResult.stations.length - 1 ? 'amber' : ''">
                       <v-avatar v-if="index === 0 || index === pathResult.stations.length - 1" left>
                         <v-icon>mdi-subway</v-icon>
                       </v-avatar>
@@ -92,7 +93,7 @@
                   </span>
                 </template>
               </v-card>
-              <AddFavoriteButton :path="path" />
+              <AddFavoriteButton :path="path"/>
             </div>
           </div>
         </v-card-text>
@@ -102,60 +103,60 @@
 </template>
 
 <script>
-  import validator from '@/utils/validator'
-  import { mapActions, mapGetters, mapMutations } from 'vuex'
-  import { SHOW_SNACKBAR } from '@/store/shared/mutationTypes'
-  import { SNACKBAR_MESSAGES } from '@/utils/constants'
-  import { FETCH_STATIONS, SEARCH_PATH } from '@/store/shared/actionTypes'
-  import AddFavoriteButton from '@/views/path/components/AddFavoriteButton'
+import validator from '@/utils/validator'
+import {mapActions, mapGetters, mapMutations} from 'vuex'
+import {SHOW_SNACKBAR} from '@/store/shared/mutationTypes'
+import {SNACKBAR_MESSAGES} from '@/utils/constants'
+import {FETCH_STATIONS, SEARCH_PATH} from '@/store/shared/actionTypes'
+import AddFavoriteButton from '@/views/path/components/AddFavoriteButton'
 
-  export default {
-    name: 'PathPage',
-    components: { AddFavoriteButton },
-    computed: {
-      ...mapGetters(['stations', 'pathResult'])
-    },
-    created() {
-      this.initAllStationsView()
-    },
-    methods: {
-      ...mapMutations([SHOW_SNACKBAR]),
-      ...mapActions([SEARCH_PATH, FETCH_STATIONS]),
-      async onSearchResult() {
-        try {
-          await this.searchPath(this.path)
-        } catch (e) {
-          this.showSnackbar(SNACKBAR_MESSAGES.COMMON.FAIL)
-        }
-      },
-      async initAllStationsView() {
-        try {
-          await this.fetchStations()
-          if (this.stations.length > 0) {
-            this.allStationsView = this.stations.map(station => {
-              return {
-                text: station.name,
-                value: station.id
-              }
-            })
-          }
-        } catch (e) {
-          this.showSnackbar(SNACKBAR_MESSAGES.COMMON.FAIL)
-        }
+export default {
+  name: 'PathPage',
+  components: {AddFavoriteButton},
+  computed: {
+    ...mapGetters(['stations', 'pathResult'])
+  },
+  created() {
+    this.initAllStationsView()
+  },
+  methods: {
+    ...mapMutations([SHOW_SNACKBAR]),
+    ...mapActions([SEARCH_PATH, FETCH_STATIONS]),
+    async onSearchResult() {
+      try {
+        await this.searchPath(this.path)
+      } catch (e) {
+        this.showSnackbar(SNACKBAR_MESSAGES.COMMON.FAIL)
       }
     },
-    data() {
-      return {
-        path: {
-          source: '',
-          target: ''
-        },
-        allStationsView: [],
-        rules: { ...validator },
-        tab: null
+    async initAllStationsView() {
+      try {
+        await this.fetchStations()
+        if (this.stations.length > 0) {
+          this.allStationsView = this.stations.map(station => {
+            return {
+              text: station.name,
+              value: station.id
+            }
+          })
+        }
+      } catch (e) {
+        this.showSnackbar(SNACKBAR_MESSAGES.COMMON.FAIL)
       }
     }
+  },
+  data() {
+    return {
+      path: {
+        source: '',
+        target: ''
+      },
+      allStationsView: [],
+      rules: {...validator},
+      tab: null
+    }
   }
+}
 </script>
 <style scoped>
 .path-station-select {

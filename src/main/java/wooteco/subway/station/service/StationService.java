@@ -27,8 +27,8 @@ public class StationService {
 
     public List<Station> findByIds(List<Long> ids) {
         return ids.stream()
-           .map(id -> stationDao.findById(id).orElseThrow(NotFoundStationException::new))
-           .collect(Collectors.toList());
+                .map(id -> stationDao.findById(id).orElseThrow(NotFoundStationException::new))
+                .collect(Collectors.toList());
     }
 
     public Station findById(Long id) {

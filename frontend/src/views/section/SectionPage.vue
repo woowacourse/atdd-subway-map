@@ -8,19 +8,19 @@
         <v-card-text class="relative px-0 line-list-container d-flex flex-column">
           <div class="relative px-5 pb-5">
             <v-select
-              v-model="activeLineId"
-              :items="lineNamesViews"
-              @change="onChangeLine"
-              label="노선 선택"
-              width="400"
-              color="grey darken-1"
-              item-color="amber darken-3"
-              outlined
-              dense
+                v-model="activeLineId"
+                :items="lineNamesViews"
+                @change="onChangeLine"
+                label="노선 선택"
+                width="400"
+                color="grey darken-1"
+                item-color="amber darken-3"
+                outlined
+                dense
             ></v-select>
-            <SectionCreateButton />
+            <SectionCreateButton/>
           </div>
-          <v-divider />
+          <v-divider/>
           <div class="mt-10 overflow-y-auto">
             <v-card v-if="activeLine.id" class="mx-5" outlined>
               <v-toolbar :color="activeLine.color" dense flat>
@@ -34,7 +34,7 @@
                         <v-list-item-title v-text="station.name"></v-list-item-title>
                       </v-list-item-content>
                       <v-list-item-action class="flex-row">
-                        <SectionDeleteButton :line-id="activeLine.id" :station-id="station.id" />
+                        <SectionDeleteButton :line-id="activeLine.id" :station-id="station.id"/>
                       </v-list-item-action>
                     </v-list-item>
                   </template>
@@ -57,15 +57,15 @@
 
 <script>
 import SectionCreateButton from '@/views/section/components/SectionCreateButton'
-import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { FETCH_LINE, FETCH_LINES } from '@/store/shared/actionTypes'
+import {mapActions, mapGetters, mapMutations} from 'vuex'
+import {FETCH_LINE, FETCH_LINES} from '@/store/shared/actionTypes'
 import SectionDeleteButton from '@/views/section/components/SectionDeleteButton'
-import { SNACKBAR_MESSAGES } from '@/utils/constants'
-import { SHOW_SNACKBAR } from '@/store/shared/mutationTypes'
+import {SNACKBAR_MESSAGES} from '@/utils/constants'
+import {SHOW_SNACKBAR} from '@/store/shared/mutationTypes'
 
 export default {
   name: 'SectionPage',
-  components: { SectionDeleteButton, SectionCreateButton },
+  components: {SectionDeleteButton, SectionCreateButton},
   created() {
     this.initLinesView()
   },
@@ -75,7 +75,7 @@ export default {
   watch: {
     line() {
       if (this.activeLine.id === this.line.id) {
-        this.activeLine = { ...this.line }
+        this.activeLine = {...this.line}
       }
     }
   },

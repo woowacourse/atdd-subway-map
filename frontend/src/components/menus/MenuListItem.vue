@@ -1,7 +1,7 @@
 <template>
   <v-list-item class="cursor-pointer">
     <v-list-item-title>
-      <slot />
+      <slot/>
     </v-list-item-title>
   </v-list-item>
 </template>

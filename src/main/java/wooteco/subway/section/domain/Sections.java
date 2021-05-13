@@ -141,7 +141,7 @@ public class Sections {
                 .collect(Collectors.toList());
 
         Station fixedStation = findFixedId(sections, upStation, downStation);
-        if(fixedStation.equals(upStation)) {
+        if (fixedStation.equals(upStation)) {
             return sections.stream()
                     .filter(section -> section.isUpStation(fixedStation))
                     .findFirst()
@@ -206,7 +206,7 @@ public class Sections {
     }
 
     private void validateDeleteSection() {
-        if(sections.size() == 1) {
+        if (sections.size() == 1) {
             throw new SectionDeleteException("구간이 하나인 노선에서 마지막 구간을 제거할 수 없습니다.");
         }
     }
@@ -222,7 +222,7 @@ public class Sections {
         Section topSection = sections.get(0);
         Section bottomSection = sections.get(sections.size() - 1);
 
-        if(topSection.isUpStation(station)) {
+        if (topSection.isUpStation(station)) {
             sections.remove(topSection);
             return;
         }

@@ -9,25 +9,25 @@
           <v-card-text class="px-4 pt-4 pb-0">
             <div class="d-flex">
               <v-text-field
-                color="grey darken-1"
-                label="이메일을 입력해주세요."
-                v-model="member.email"
-                prepend-inner-icon="mdi-email"
-                dense
-                outlined
-                :rules="rules.member.email"
+                  color="grey darken-1"
+                  label="이메일을 입력해주세요."
+                  v-model="member.email"
+                  prepend-inner-icon="mdi-email"
+                  dense
+                  outlined
+                  :rules="rules.member.email"
               ></v-text-field>
             </div>
             <div class="d-flex mt-2">
               <v-text-field
-                color="grey darken-1"
-                label="비밀번호를 입력해주세요."
-                v-model="member.password"
-                prepend-inner-icon="mdi-lock"
-                dense
-                outlined
-                type="password"
-                :rules="rules.member.password"
+                  color="grey darken-1"
+                  label="비밀번호를 입력해주세요."
+                  v-model="member.password"
+                  prepend-inner-icon="mdi-lock"
+                  dense
+                  outlined
+                  type="password"
+                  :rules="rules.member.password"
               ></v-text-field>
             </div>
           </v-card-text>
@@ -48,10 +48,10 @@
 
 <script>
 import validator from '@/utils/validator'
-import { SNACKBAR_MESSAGES } from '@/utils/constants'
-import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { SHOW_SNACKBAR } from '@/store/shared/mutationTypes'
-import { LOGIN } from '@/store/shared/actionTypes'
+import {SNACKBAR_MESSAGES} from '@/utils/constants'
+import {mapActions, mapGetters, mapMutations} from 'vuex'
+import {SHOW_SNACKBAR} from '@/store/shared/mutationTypes'
+import {LOGIN} from '@/store/shared/actionTypes'
 
 export default {
   name: 'LoginPage',
@@ -69,8 +69,8 @@ export default {
         return
       }
       try {
-        const { email, password } = this.member
-        await this.login({ email, password })
+        const {email, password} = this.member
+        await this.login({email, password})
         await this.$router.replace(`/`)
         this.showSnackbar(SNACKBAR_MESSAGES.LOGIN.SUCCESS)
       } catch (e) {
@@ -81,7 +81,7 @@ export default {
   data() {
     return {
       valid: false,
-      rules: { ...validator },
+      rules: {...validator},
       member: {
         email: '',
         password: ''
