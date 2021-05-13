@@ -27,7 +27,7 @@ public class ExceptionAdvisor {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
