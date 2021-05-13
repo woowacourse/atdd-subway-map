@@ -2,16 +2,14 @@ package wooteco.subway.section.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.section.api.dto.SectionRequest;
 import wooteco.subway.line.dao.LineDao;
-import wooteco.subway.section.api.dto.SectionDto;
+import wooteco.subway.section.api.dto.SectionRequest;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.model.Section;
 import wooteco.subway.section.model.Sections;
 import wooteco.subway.station.dao.StationDao;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SectionService {

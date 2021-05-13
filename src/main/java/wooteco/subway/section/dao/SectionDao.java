@@ -24,7 +24,7 @@ public class SectionDao {
         String downStationName = rs.getString("down_station_name");
         int distance = rs.getInt("distance");
         return Section.builder()
-                .line(new Line(lineId, lineName,lineColor))
+                .line(new Line(lineId, lineName, lineColor))
                 .upStation(new Station(upStationId, upStationName))
                 .downStation(new Station(downStationId, downStationName))
                 .distance(distance)

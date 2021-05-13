@@ -4,6 +4,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 public class LineUpdateRequest {
+
     @Size(min = 2, message = "노선 이름은 최소 2글자 이상만 가능합니다.")
     private String name;
 

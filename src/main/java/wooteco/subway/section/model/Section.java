@@ -16,14 +16,6 @@ public class Section {
     private final Station downStation;
     private final int distance;
 
-    public static class SectionBuilder {
-
-        public SectionBuilder stations(Station upStation, Station downStation, int distance) {
-            validateSection(upStation, downStation, distance);
-            return this;
-        }
-    }
-
     private static void validateSection(Station upStation, Station downStation, int distance) throws WrongDistanceException {
         validateSameStations(upStation, downStation);
         validateDistance(distance);
@@ -105,5 +97,13 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(line, upStation, downStation, distance);
+    }
+
+    public static class SectionBuilder {
+
+        public SectionBuilder stations(Station upStation, Station downStation, int distance) {
+            validateSection(upStation, downStation, distance);
+            return this;
+        }
     }
 }

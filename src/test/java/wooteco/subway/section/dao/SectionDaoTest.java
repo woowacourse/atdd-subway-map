@@ -42,11 +42,11 @@ class SectionDaoTest {
         Long lineId = lineDao.save(new Line("2호선", "green"));
 
         sectionDao.save(Section.builder()
-                        .line(lineDao.findLineById(lineId))
-                        .upStation(stationDao.findStationById(stationId1))
-                        .downStation(stationDao.findStationById(stationId2))
-                        .distance(10)
-                        .build());
+                .line(lineDao.findLineById(lineId))
+                .upStation(stationDao.findStationById(stationId1))
+                .downStation(stationDao.findStationById(stationId2))
+                .distance(10)
+                .build());
         //when
         List<Section> sections = sectionDao.findSectionsByLineId(lineId);
         //then
