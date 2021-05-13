@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class InMemorySectionDao implements SectionDao {
 
     private Long seq = 0L;
-    private Map<Long, List<Section>> sections = new HashMap<>();
+    private final Map<Long, List<Section>> sections = new HashMap<>();
 
     private Section createNewObject(Section section) {
         Field field = ReflectionUtils.findField(Section.class, "id");
@@ -34,6 +34,15 @@ public class InMemorySectionDao implements SectionDao {
     public Sections findByLineId(Long lineId) {
         final List<Section> sections = new ArrayList<>(this.sections.get(lineId));
         return Sections.from(sections);
+    }
+
+    @Override
+    public Map<Long, Sections> findAll() {
+        Map<Long, Sections> sectionDictionary = new HashMap<>();
+        for (Long key : sections.keySet()) {
+            sectionDictionary.put(key, Sections.from(this.sections.get(key)));
+        }
+        return sectionDictionary;
     }
 
     @Override

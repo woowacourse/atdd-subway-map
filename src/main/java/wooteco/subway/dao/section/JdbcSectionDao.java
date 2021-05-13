@@ -10,7 +10,9 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 
 import java.sql.PreparedStatement;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Repository
@@ -48,6 +50,29 @@ public class JdbcSectionDao implements SectionDao {
         }, lineId);
 
         return Sections.from(sections);
+    }
+
+    @Override
+    public Map<Long, Sections> findAll() {
+        String sql = "SELECT id, (SELECT * FROM station WHERE station.id = section.up_station_id) AS upStation, " +
+                "(SELECT * FROM station WHERE station.id = section.down_station_id) AS downStation, " +
+                "distance FROM section;";
+        List<Section> sections = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Long foundId = rs.getLong("id");
+            Long lineId = rs.getLong("line_id");
+            Station upStation = convertRowToStation(rs.getString("upStation"));
+            Station downStation = convertRowToStation(rs.getString("downStation"));
+            int distance = rs.getInt("distance");
+
+            return Section.of(foundId, lineId, upStation, downStation, distance);
+        });
+
+        Map<Long, Sections> sectionDictionary = new HashMap<>();
+        for (Section section : sections) {
+            Long lineId = section.getLineId();
+            sectionDictionary.put(lineId, sectionDictionary.getOrDefault(lineId, Sections.from(section)).put(section));
+        }
+        return sectionDictionary;
     }
 
     private Station convertRowToStation(String row) {

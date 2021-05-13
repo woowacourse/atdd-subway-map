@@ -166,6 +166,11 @@ public class Sections {
         sections.add(section);
     }
 
+    public Sections put(Section section) {
+        add(section);
+        return this;
+    }
+
     public List<Section> sections() {
         return Collections.unmodifiableList(sections);
     }

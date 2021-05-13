@@ -12,6 +12,7 @@ import wooteco.subway.exception.line.DuplicatedLineInformationException;
 import wooteco.subway.exception.line.LineNotFoundException;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -38,7 +39,16 @@ public class LineService {
     }
 
     public List<Line> findAll() {
-        return lineDao.findAll();
+        List<Line> lines = lineDao.findAll();
+        Map<Long, Sections> all = sectionDao.findAll();
+        return insertSections(lines, all);
+    }
+
+    private List<Line> insertSections(List<Line> lines, Map<Long, Sections> sectionDictionary) {
+        for (Line line : lines) {
+            line.insertSections(sectionDictionary.get(line.getId()));
+        }
+        return lines;
     }
 
     public void delete(Long lineId) {
