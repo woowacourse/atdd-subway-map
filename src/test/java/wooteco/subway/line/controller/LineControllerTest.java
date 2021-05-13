@@ -6,16 +6,14 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.controller.web.line.LineRequest;
 import wooteco.subway.controller.web.line.LineResponse;
-import wooteco.subway.line.dao.LineDao;
-import wooteco.subway.line.fixture.LineFixture;
 import wooteco.subway.controller.web.station.StationResponse;
+import wooteco.subway.line.fixture.LineFixture;
 import wooteco.subway.station.fixture.StationFixture;
 
 import java.util.Arrays;
@@ -24,24 +22,21 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static wooteco.subway.line.controller.LineControllerTestUtils.지하철노선을_생성한다;
-import static wooteco.subway.section.domain.Fixture.*;
+import static wooteco.subway.section.domain.Fixture.TEST_DISTANCE;
 import static wooteco.subway.station.controller.StationControllerTestUtils.지하철역을_생성한다;
 
 @DisplayName("지하철 노선 테스트")
 public class LineControllerTest extends AcceptanceTest {
-    private static Long GANG_NAM_ID;
-    private static Long JAM_SIL_ID;
-    private static LineRequest lineRequest;
+    private Long gangNamId;
+    private Long jamSilId;
+    private LineRequest lineRequest;
 
     @BeforeEach
     void insertDummyData() {
-        GANG_NAM_ID = 지하철역을_생성한다(StationFixture.GANG_SAM_STATION_REQUEST).as(StationResponse.class).getId();
-        JAM_SIL_ID = 지하철역을_생성한다(StationFixture.JAM_SIL_STATION_REQUEST).as(StationResponse.class).getId();
-        lineRequest = new LineRequest(LineFixture.TEST_LINE_NAME, LineFixture.TEST_COLOR_NAME, GANG_NAM_ID, JAM_SIL_ID, TEST_DISTANCE);
+        gangNamId = 지하철역을_생성한다(StationFixture.GANG_SAM_STATION_REQUEST).as(StationResponse.class).getId();
+        jamSilId = 지하철역을_생성한다(StationFixture.JAM_SIL_STATION_REQUEST).as(StationResponse.class).getId();
+        lineRequest = new LineRequest(LineFixture.TEST_LINE_NAME, LineFixture.TEST_COLOR_NAME, gangNamId, jamSilId, TEST_DISTANCE);
     }
-
-    @Autowired
-    private LineDao dao;
 
     @DisplayName("지하철노선을 생성한다.")
     @Transactional

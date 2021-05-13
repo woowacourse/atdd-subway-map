@@ -11,7 +11,6 @@ import wooteco.subway.station.exception.WrongStationIdException;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Repository
 public class H2StationDao implements StationDao {
@@ -90,12 +89,12 @@ public class H2StationDao implements StationDao {
     }
 
     @Override
-    public void delete(Station station) {
+    public void delete(Long id) {
         String sql = "DELETE " +
                 "FROM STATION " +
                 "WHERE ID = ?";
 
-        jdbcTemplate.update(sql, station.getId());
+        jdbcTemplate.update(sql, id);
     }
 
     @Override

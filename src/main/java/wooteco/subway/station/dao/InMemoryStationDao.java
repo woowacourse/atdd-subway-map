@@ -62,9 +62,8 @@ public class InMemoryStationDao implements StationDao {
     }
 
     @Override
-    public void delete(Station station) {
-        ifAbsent(station);
-        stations.remove(station);
+    public void delete(Long id) {
+        stations.remove(findById(id));
     }
 
     @Override
