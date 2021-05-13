@@ -10,14 +10,14 @@ import wooteco.subway.domain.exception.DomainException;
 public class ControllerAdvice {
 
     @ExceptionHandler(DomainException.class)
-    public ResponseEntity<String> handleDomainException(Exception e) {
+    public ResponseEntity<String> handleDomainException(DomainException exception) {
         return ResponseEntity.badRequest()
-                .body(e.getMessage());
+                .body(exception.getMessage());
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity<String> handleEmptyResultException(Exception e) {
+    public ResponseEntity<String> handleEmptyResultException(EmptyResultDataAccessException exception) {
         return ResponseEntity.badRequest()
-                .body(e.getMessage());
+                .body(exception.getMessage());
     }
 }

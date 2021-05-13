@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class LineControllerAdvice {
 
     @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<String> handleDuplicateUniqueColumnException(Exception e) {
+    public ResponseEntity<String> handleDuplicateUniqueColumnException(DuplicateKeyException exception) {
         return ResponseEntity.badRequest()
                 .body("이미 존재하는 노선 이름입니다.");
     }
