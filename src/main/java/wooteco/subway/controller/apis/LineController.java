@@ -19,6 +19,8 @@ import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.dto.SectionResponse;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.SectionService;
@@ -42,15 +44,12 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = lineService.createLine(lineRequest.toLine());
-        Station station1 = stationService.findById(lineRequest.getUpStationId());
-        Station station2 = stationService.findById(lineRequest.getDownStationId());
-        Section section = new Section(station1, station2, lineRequest.getDistance());
-        sectionService.createSection(section, line.getId());
+        Section section = sectionService.createSection(lineRequest, line.getId());
         LineResponse lineResponse = new LineResponse(
             line,
             Arrays.asList(
-                new StationResponse(station1),
-                new StationResponse(station2)
+                new StationResponse(section.getUpStation()),
+                new StationResponse(section.getDownStation())
             )
         );
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
@@ -94,4 +93,20 @@ public class LineController {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<SectionResponse> createSection(@PathVariable Long id,
+        @RequestBody SectionRequest sectionRequest) {
+        Section section = sectionService.createSection(sectionRequest, id);
+        SectionResponse sectionResponse = new SectionResponse(
+            Arrays.asList(
+                new StationResponse(section.getUpStation()),
+                new StationResponse(section.getDownStation())
+            ),
+            section.getDistance()
+        );
+        return ResponseEntity.created(URI.create("/lines/" + id + "/sections/" + section.getId()))
+            .body(sectionResponse);
+    }
+
 }
