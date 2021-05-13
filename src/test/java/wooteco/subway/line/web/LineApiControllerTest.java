@@ -171,8 +171,8 @@ class LineApiControllerTest {
         ResultActions createdLineResult = 노선_생성(lineRequest);
         LineResponse lineResponse =
                 objectMapper.readValue(createdLineResult.andReturn().getResponse().getContentAsString(), LineResponse.class);
-        sectionService.createSection(Section.of(station1, station3, 5), lineResponse.getId());
-        sectionService.createSection(Section.of(station2, station4, 2), lineResponse.getId());
+        sectionService.create(Section.of(station1, station3, 5), lineResponse.getId());
+        sectionService.create(Section.of(station2, station4, 2), lineResponse.getId());
 
         //when
         ResultActions result = mockMvc.perform(get("/lines/" + lineResponse.getId()));

@@ -22,11 +22,11 @@ public class LineService {
     private final LineDao lineDao;
     private final SectionDao sectionDao;
 
-    public Line createLine(LineRequest lineRequest, Station upStation, Station downStation) {
-        return createLine(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
+    public Line create(LineRequest lineRequest, Station upStation, Station downStation) {
+        return create(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
     }
 
-    public Line createLine(String name, String color, Station upStation, Station downStation, int distance) {
+    public Line create(String name, String color, Station upStation, Station downStation, int distance) {
         if (lineDao.findByNameOrColor(name, color).isPresent()) {
             throw new DuplicatedLineInformationException();
         }
@@ -36,7 +36,7 @@ public class LineService {
         return line;
     }
 
-    public Line findLine(Long lineId) {
+    public Line find(Long lineId) {
         Line line = lineDao.findById(lineId).orElseThrow(LineNotFoundException::new);
         Sections sections = sectionDao.findByLineId(lineId);
         line.insertSections(sections);

@@ -26,11 +26,11 @@ public class StationService {
         return stationDao.findAll();
     }
 
-    public void deleteStation(Long id) {
+    public void delete(Long id) {
         stationDao.delete(id);
     }
 
-    public Station findStation(Long id) {
+    public Station find(Long id) {
         return stationDao.findById(id).orElseThrow(StationNotFoundException::new);
     }
 }

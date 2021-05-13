@@ -367,7 +367,7 @@ class SectionApiControllerTest {
     }
 
     private Line createLine(Station upStation, Station downStation) {
-        return lineService.createLine("1호선", "bg-blue-300", upStation, downStation, ORIGINAL_DISTANCE);
+        return lineService.create("1호선", "bg-blue-300", upStation, downStation, ORIGINAL_DISTANCE);
     }
 
     private Station downStation() {

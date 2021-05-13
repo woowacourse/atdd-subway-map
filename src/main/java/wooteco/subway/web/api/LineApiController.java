@@ -40,10 +40,10 @@ public class LineApiController {
             throw new InsufficientLineInformationException();
         }
 
-        Station upStation = stationService.findStation(lineRequest.getUpStationId());
-        Station downStation = stationService.findStation(lineRequest.getDownStationId());
+        Station upStation = stationService.find(lineRequest.getUpStationId());
+        Station downStation = stationService.find(lineRequest.getDownStationId());
 
-        Line line = lineService.createLine(lineRequest, upStation, downStation);
+        Line line = lineService.create(lineRequest, upStation, downStation);
         LineResponse lineResponse = LineResponse.of(line);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
     }
@@ -59,7 +59,7 @@ public class LineApiController {
 
     @GetMapping("/{lineId}")
     public ResponseEntity<LineResponse> readLine(@PathVariable Long lineId) {
-        Line line = lineService.findLine(lineId);
+        Line line = lineService.find(lineId);
         return ResponseEntity.ok(LineResponse.of(line));
     }
 
