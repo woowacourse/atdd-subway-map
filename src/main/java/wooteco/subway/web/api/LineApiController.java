@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,11 +30,7 @@ public class LineApiController {
     private final LineService lineService;
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest,
-        BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new WrongInformationException();
-        }
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
         final Line line = Line.create(lineRequest.getName(), lineRequest.getColor());
         Line createdLine = lineService
             .createLine(line, lineRequest.getUpStationId(), lineRequest.getDownStationId(),

@@ -67,13 +67,9 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findCompleteLineById(Long id) {
+    public Optional<Line> findLineById(Long id) {
         final String sql = "SELECT * FROM line WHERE id = ?";
-        final Optional<Line> foundLine = jdbcTemplate.query(sql, lineRowMapper(), id).stream()
-            .findAny();
-        foundLine
-            .ifPresent(line -> line.addSections(Sections.create(sectionDao.findAllByLineId(id))));
-        return foundLine;
+        return jdbcTemplate.query(sql, lineRowMapper(), id).stream().findAny();
     }
 
     @Override

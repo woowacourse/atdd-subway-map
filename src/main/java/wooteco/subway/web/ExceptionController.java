@@ -1,6 +1,7 @@
 package wooteco.subway.web;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.exception.badRequest.BadRequest;
@@ -15,7 +16,12 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(BadRequest.class)
-    public ResponseEntity lineNameDuplicated(Exception e) {
+    public ResponseEntity lineNameDuplicated(BadRequest e) {
         return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity argumentNotValid(MethodArgumentNotValidException e) {
+        return ResponseEntity.badRequest().body(e.getBindingResult());
     }
 }

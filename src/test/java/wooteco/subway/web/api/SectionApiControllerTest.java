@@ -8,9 +8,12 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.dao.station.StationDao;
 import wooteco.subway.domain.Station;
@@ -19,6 +22,7 @@ import wooteco.subway.web.request.SectionRequest;
 import wooteco.subway.web.response.LineResponse;
 
 @DisplayName("구간 등록 테스트")
+@Rollback
 class SectionApiControllerTest extends AcceptanceTest {
 
     private static final String UP_STATION_NAME = "강남역";
@@ -180,6 +184,27 @@ class SectionApiControllerTest extends AcceptanceTest {
 
         // then
         assertThat(result.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @ParameterizedTest
+    @DisplayName("구간 등록 - 실패(음수 혹은 0 거리를 등록할 때)")
+    @ValueSource(ints = {-1, 0})
+    public void insertSection_fail_wrongDistance(int distance) {
+        //given
+        final Station upStation = 상행역();
+        final Station downStation = 하행역();
+        final String uri = 노선_생성(LineRequest
+            .create(LINE_NAME, LINE_COLOR, upStation.getId(), downStation.getId(), DISTANCE))
+            .header("Location");
+
+        //when
+        final ExtractableResponse<Response> result =
+            구간_등록(uri, SectionRequest.create(upStation.getId(), downStation.getId(), distance));
+
+        //then
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(result.body().jsonPath().getString("field")).contains("distance");
+        assertThat(result.body().jsonPath().getString("defaultMessage")).contains("0보다 커야 합니다");
     }
 
     @Test

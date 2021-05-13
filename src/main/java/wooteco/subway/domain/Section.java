@@ -49,15 +49,6 @@ public class Section {
         return upStation.isSameId(stationId);
     }
 
-    public boolean isSameSection(Section targetSection) {
-        return this.isUpStation(targetSection.upStation) && this
-            .isDownStation(targetSection.downStation);
-    }
-
-    public boolean hasSameId(Long id) {
-        return this.id.equals(id);
-    }
-
     public void updateUpStation(Section section) {
         int difference = distanceDifference(section);
         upStation = section.downStation;

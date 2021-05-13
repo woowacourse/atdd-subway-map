@@ -12,51 +12,55 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.exception.badRequest.LineInfoDuplicatedException;
 import wooteco.subway.exception.notFound.LineNotFoundException;
 import wooteco.subway.exception.notFound.StationNotFoundException;
+import wooteco.subway.repository.LineRepository;
+import wooteco.subway.repository.StationRepository;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
 public class LineService {
 
-    private final LineDao lineDao;
-    private final StationDao stationDao;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     @Transactional
     public Line createLine(Line line, Long upStationId, Long downStationId, int distance) {
-        if (lineDao.findLineByName(line.getName()).isPresent()) {
+        if (lineRepository.findLineByName(line.getName()).isPresent()) {
             throw new LineInfoDuplicatedException();
         }
 
         final Station upStation =
-            stationDao.findStationById(upStationId).orElseThrow(StationNotFoundException::new);
+            stationRepository.findStationById(upStationId).orElseThrow(StationNotFoundException::new);
         final Station downStation =
-            stationDao.findStationById(downStationId).orElseThrow(StationNotFoundException::new);
+            stationRepository.findStationById(downStationId).orElseThrow(StationNotFoundException::new);
 
         final Section section = Section.create(upStation, downStation, distance);
         line.addSection(section);
 
-        return lineDao.save(line);
+        return lineRepository.save(line);
     }
 
     public List<Line> findAll() {
-        return lineDao.findAll();
+        return lineRepository.findAll();
     }
 
     public Line findLine(Long id) {
-        return lineDao.findCompleteLineById(id).orElseThrow(LineNotFoundException::new);
+        return lineRepository.findCompleteLineById(id).orElseThrow(LineNotFoundException::new);
     }
 
     @Transactional
     public void update(Long id, String name, String color) {
-        lineDao.findCompleteLineById(id).orElseThrow(LineNotFoundException::new);
-        if (lineDao.findLineByNameOrColor(name, color, id).isPresent()) {
+        final Line line = lineRepository.findCompleteLineById(id)
+            .orElseThrow(LineNotFoundException::new);
+        if (lineRepository.findLineByNameOrColor(name, color, id).isPresent()) {
             throw new LineInfoDuplicatedException();
         }
-        lineDao.update(Line.create(id, name, color));
+        line.changeInfo(name, color);
+        lineRepository.update(line);
     }
 
     @Transactional
     public void removeLine(Long id) {
-        lineDao.removeLine(id);
+        lineRepository.removeLine(id);
     }
 }

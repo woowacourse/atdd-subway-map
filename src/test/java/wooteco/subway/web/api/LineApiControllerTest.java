@@ -8,6 +8,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -62,6 +64,33 @@ class LineApiControllerTest extends AcceptanceTest {
         // then
         assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(result.body().asString()).isEqualTo("이미 등록되어 있는 노선 정보입니다.");
+    }
+
+    @Test
+    @DisplayName("노선 생성 - 실패(이름이 비어있는 노선)")
+    void createLine_fail_emptyName() {
+        //when
+        final ExtractableResponse<Response> result = 노선_생성(
+            LineRequest.create("", LINE_COLOR, 상행역().getId(), 하행역().getId(), DISTANCE));
+
+        //then
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(result.body().jsonPath().getString("field")).contains("name");
+        assertThat(result.body().jsonPath().getString("defaultMessage")).contains("비어 있을 수 없습니다");
+    }
+
+    @ParameterizedTest
+    @DisplayName("노선 생성 - 실패(거리가 음수 혹은 0일 때)")
+    @ValueSource(ints = {-1, 0})
+    void createLine_fail_wrongDistance(int distance) {
+        //when
+        final ExtractableResponse<Response> result = 노선_생성(
+            LineRequest.create(LINE_NAME, LINE_COLOR, 상행역().getId(), 하행역().getId(), distance));
+
+        //then
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(result.body().jsonPath().getString("field")).contains("distance");
+        assertThat(result.body().jsonPath().getString("defaultMessage")).contains("0보다 커야 합니다");
     }
 
     @DisplayName("한 노선 조회 - 성공")
@@ -188,15 +217,6 @@ class LineApiControllerTest extends AcceptanceTest {
     private ExtractableResponse<Response> 기본_노선_생성() {
         return 노선_생성(
             LineRequest.create(LINE_NAME, LINE_COLOR, 상행역().getId(), 하행역().getId(), DISTANCE));
-    }
-
-    private ExtractableResponse<Response> 노선_조회() {
-        return RestAssured
-            .given()
-            .when()
-            .get("/lines")
-            .then()
-            .extract();
     }
 
     private ExtractableResponse<Response> 노선_조회(Long lineId) {

@@ -32,7 +32,7 @@ public class LineDaoCache implements LineDao {
     }
 
     @Override
-    public Optional<Line> findCompleteLineById(Long id) {
+    public Optional<Line> findLineById(Long id) {
         return lines.stream()
             .filter(line -> line.isSameId(id))
             .findAny();
@@ -45,7 +45,7 @@ public class LineDaoCache implements LineDao {
 
     @Override
     public void update(Line line) {
-        findCompleteLineById(line.getId()).get().changeInfo(line.getName(), line.getColor());
+        findLineById(line.getId()).get().changeInfo(line.getName(), line.getColor());
     }
 
     @Override

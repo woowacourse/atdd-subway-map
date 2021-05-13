@@ -26,11 +26,7 @@ public class SectionApiController {
 
     @PostMapping
     public ResponseEntity insertSection(@PathVariable Long lineId,
-        @RequestBody @Valid SectionRequest sectionRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult);
-        }
-
+        @RequestBody @Valid SectionRequest sectionRequest) {
         final Section createdSection = sectionService
             .insertSection(lineId, sectionRequest.getUpStationId(),
                 sectionRequest.getDownStationId(), sectionRequest.getDistance());

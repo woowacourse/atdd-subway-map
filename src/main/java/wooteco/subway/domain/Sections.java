@@ -70,38 +70,42 @@ public class Sections {
     }
 
     public Optional<Section> affectedSectionWhenInserting(Section newSection) {
-        boolean existsUpStation = sections.stream()
-            .anyMatch(section -> section.containsStation(newSection.getUpStation()));
+        boolean existsUpStation = false;
+        boolean existsDownStation = false;
 
-        boolean existsDownStation = sections.stream()
-            .anyMatch(section -> section.containsStation(newSection.getDownStation()));
+        for (Section section : sections) {
+            if (section.containsStation(newSection.getUpStation())) {
+                existsUpStation = true;
+            }
+            if (section.containsStation(newSection.getDownStation())) {
+                existsDownStation = true;
+            }
+        }
 
         if (isNotInsertable(existsUpStation, existsDownStation)) {
             throw new InvalidSectionException();
         }
 
-        return updateSection(newSection, existsUpStation, existsDownStation);
+        return updateSection(newSection, existsUpStation);
     }
 
-    private Optional<Section> updateSection(Section newSection, boolean existsUpStation,
-        boolean existsDownStation) {
-        Optional<Section> foundSection = Optional.empty();
+    private Optional<Section> updateSection(Section newSection, boolean existsUpStation) {
+        Optional<Section> foundSection;
         if (existsUpStation) {
             foundSection = sections.stream()
                 .filter(section -> section.isUpStation(newSection.getUpStation())).findAny();
             foundSection.ifPresent(section -> section.updateUpStation(newSection));
+            return foundSection;
         }
-        if (existsDownStation) {
-            foundSection = sections.stream()
-                .filter(section -> section.isDownStation(newSection.getDownStation())).findAny();
-            foundSection.ifPresent(section -> section.updateDownStation(newSection));
-        }
+
+        foundSection = sections.stream()
+            .filter(section -> section.isDownStation(newSection.getDownStation())).findAny();
+        foundSection.ifPresent(section -> section.updateDownStation(newSection));
         return foundSection;
     }
 
     private boolean isNotInsertable(boolean existsUpStation, boolean existsDownStation) {
-        return (existsUpStation && existsDownStation) ||
-            (!existsUpStation && !existsDownStation);
+        return existsDownStation == existsUpStation;
     }
 
     public boolean isEmpty() {
@@ -113,7 +117,7 @@ public class Sections {
             .filter(section -> section.containsStation(stationId))
             .collect(Collectors.toList());
 
-        if (stationNotExist(sections)) {
+        if (isEmpty()) {
             throw new StationNotFoundException();
         }
 
@@ -125,10 +129,6 @@ public class Sections {
         Section secondSection = sections.get(SECOND_INDEX);
         firstSection.combineSection(secondSection);
         return Optional.of(firstSection);
-    }
-
-    private boolean stationNotExist(List<Section> sections) {
-        return sections.size() == 0;
     }
 
     private boolean isEndStation(List<Section> sections) {

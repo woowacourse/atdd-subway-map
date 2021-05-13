@@ -28,10 +28,7 @@ public class StationApiController {
 
     @PostMapping
     public ResponseEntity createStation(
-        @RequestBody @Valid StationRequest stationRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult);
-        }
+        @RequestBody @Valid StationRequest stationRequest) {
         final Station newStation =
             stationService.createStation(Station.create(stationRequest.getName()));
 
