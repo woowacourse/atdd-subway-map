@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
@@ -11,21 +10,17 @@ import wooteco.subway.domain.Sections;
 @Component
 public class SectionsDirtyChecking {
 
-    private List<Section> sections;
     private SectionDao sectionDao;
 
     public SectionsDirtyChecking(SectionDao sectionDao) {
         this.sectionDao = sectionDao;
     }
 
-    public void setInitSections(Sections sections) {
-        this.sections = new ArrayList(sections.toList());
-    }
-
-    public void dirtyChecking(Sections changedSectionsGroup) {
+    public void dirtyChecking(Sections initSectionsGroup, Sections changedSectionsGroup) {
+        List<Section> sections = initSectionsGroup.toList();
         List<Section> changedSections = changedSectionsGroup.toList();
         for (Section changedSection : changedSections) {
-            if (isNewSection(changedSection)) {
+            if (isNewSection(sections, changedSection)) {
                 sectionDao.create(
                     changedSection.getLineId(),
                     changedSection.getUpStationId(),
@@ -33,7 +28,7 @@ public class SectionsDirtyChecking {
                     changedSection.getDistance()
                 );
             }
-            if (isEditedSection(changedSection)) {
+            if (isEditedSection(sections, changedSection)) {
                 sectionDao.edit(
                     changedSection.getId(),
                     changedSection.getLineId(),
@@ -48,14 +43,14 @@ public class SectionsDirtyChecking {
         }
     }
 
-    private boolean isNewSection(Section changedSection) {
+    private boolean isNewSection(List<Section> sections, Section changedSection) {
         Optional<Section> filteredSection = sections.stream()
             .filter(section -> section.getId().equals(changedSection.getId()))
             .findFirst();
         return !filteredSection.isPresent();
     }
 
-    private boolean isEditedSection(Section changedSection) {
+    private boolean isEditedSection(List<Section> sections, Section changedSection) {
         Optional<Section> filteredSection = sections.stream()
             .filter(section -> {
                 return section.getId().equals(changedSection.getId()) &&

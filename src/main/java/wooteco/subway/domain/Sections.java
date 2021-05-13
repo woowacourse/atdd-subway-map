@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import wooteco.subway.exception.SubwayException;
@@ -9,7 +10,7 @@ public class Sections {
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
-        this.sections = sections;
+        this.sections = new ArrayList<>(sections);
     }
 
     public Sections createSectionInLine(Long lineId, Long upStationId, Long downStationId,
