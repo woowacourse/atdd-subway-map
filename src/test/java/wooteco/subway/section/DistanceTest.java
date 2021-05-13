@@ -1,13 +1,16 @@
 package wooteco.subway.section;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.section.domain.Distance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class DistanceTest {
 
+    @DisplayName("Distance 인스턴스 생성된다.")
     @Test
-    void createTest() {
+    void create() {
         //given
         int value = 1;
 
@@ -16,9 +19,10 @@ class DistanceTest {
 
         //then
         assertThat(distance).isInstanceOf(Distance.class);
-        assertThat(distance).isEqualTo(new Distance(1));
+        assertThat(distance).isEqualTo(new Distance(value));
     }
 
+    @DisplayName("value() 메서드로 Distance 객체의 거리 값을 가져올 수 있다")
     @Test
     void value() {
         //given
