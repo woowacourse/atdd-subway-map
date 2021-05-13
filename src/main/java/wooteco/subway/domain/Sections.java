@@ -1,29 +1,27 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import wooteco.subway.exception.SubwayException;
-import wooteco.subway.service.SectionsDirtyChecking;
 
 public class Sections {
 
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
-        this.sections = sections;
+        this.sections = new ArrayList<>(sections);
     }
 
-    public void createSectionInLine(Long lineId, Long upStationId, Long downStationId, int distance,
-        SectionsDirtyChecking dirtyChecking) {
-        dirtyChecking.setInitSections(sections);
+    public Sections createSectionInLine(Long lineId, Long upStationId, Long downStationId,
+        int distance) {
         boolean containsUpStation = containsStationInLine(sections, upStationId);
         boolean containsDownStation = containsStationInLine(sections, downStationId);
 
         // 상행, 하행 종점(구간) 등록
         if (isStartStation(sections, downStationId) && isEndStation(sections, upStationId)) {
             sections.add(new Section(null, lineId, upStationId, downStationId, distance));
-            dirtyChecking.dirtyChecking(sections);
-            return;
+            return new Sections(sections);
         }
 
         // 중간 구간 등록
@@ -44,8 +42,7 @@ public class Sections {
                 downStationId,
                 originSection.getDownStationId(),
                 originSection.getDistance() - distance));
-            dirtyChecking.dirtyChecking(sections);
-            return;
+            return new Sections(sections);
         }
 
         if (containsDownStation) {
@@ -66,8 +63,7 @@ public class Sections {
                 upStationId,
                 originSection.getDownStationId(),
                 distance));
-            dirtyChecking.dirtyChecking(sections);
-            return;
+            return new Sections(sections);
         }
 
         throw new SubwayException("잘못된 요청입니다.");
@@ -99,5 +95,9 @@ public class Sections {
             .filter(section -> section.getUpStationId().equals(stationId))
             .findFirst();
         return !downSectionOptional.isPresent();
+    }
+
+    public List<Section> toList() {
+        return sections;
     }
 }
