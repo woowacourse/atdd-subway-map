@@ -75,7 +75,7 @@ public class LineDao {
         try {
             return jdbcTemplate.update(sql, newLine.getName(), newLine.getColor(), newLine.getId());
         } catch (DuplicateKeyException e) {
-            throw new  DuplicateException();
+            throw new DuplicateException();
         }
     }
 

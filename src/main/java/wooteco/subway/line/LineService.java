@@ -21,7 +21,8 @@ public class LineService {
     private final StationService stationService;
     private final SectionService sectionService;
 
-    public LineService(LineDao lineDao, StationService stationService, SectionService sectionService) {
+    public LineService(LineDao lineDao, StationService stationService,
+        SectionService sectionService) {
         this.lineDao = lineDao;
         this.stationService = stationService;
         this.sectionService = sectionService;
@@ -56,7 +57,8 @@ public class LineService {
         return lines.stream()
             .map(line -> {
                 Sections sections = sectionService.findByLineId(line.getId());
-                List<StationResponse> stations = stationService.findByLineId(line.getId(), sections);
+                List<StationResponse> stations = stationService
+                    .findByLineId(line.getId(), sections);
                 return new LineResponse(line, stations);
             }).collect(Collectors.toList());
     }

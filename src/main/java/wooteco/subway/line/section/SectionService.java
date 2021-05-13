@@ -44,7 +44,8 @@ public class SectionService {
         Sections sections = findByLineId(lineId);
 
         Section deleteResultSection = sections.findDeleteResultSection(stationId);
-        Section updateResultSection = sections.findDeleteUpdateResultSection(stationId, deleteResultSection);
+        Section updateResultSection = sections
+            .findDeleteUpdateResultSection(stationId, deleteResultSection);
         if (Objects.nonNull(updateResultSection)) {
             sectionDao.update(lineId, updateResultSection);
         }
