@@ -43,7 +43,7 @@ public class LineApiController {
         Station upStation = stationService.findStation(lineRequest.getUpStationId());
         Station downStation = stationService.findStation(lineRequest.getDownStationId());
 
-        Line line = lineService.createLine(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
+        Line line = lineService.createLine(lineRequest, upStation, downStation);
         LineResponse lineResponse = LineResponse.create(line);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
     }

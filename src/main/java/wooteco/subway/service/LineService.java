@@ -10,6 +10,7 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.line.DuplicatedLineInformationException;
 import wooteco.subway.exception.line.LineNotFoundException;
+import wooteco.subway.web.request.LineRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,10 @@ public class LineService {
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
+
+    public Line createLine(LineRequest lineRequest, Station upStation, Station downStation) {
+        return createLine(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
+    }
 
     public Line createLine(String name, String color, Station upStation, Station downStation, int distance) {
         if (lineDao.findByNameAndColor(name, color).isPresent()) {
