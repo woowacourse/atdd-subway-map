@@ -8,6 +8,8 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.exception.ShortDistanceException;
 import wooteco.subway.line.LineDao;
 import wooteco.subway.line.SectionRequest;
 import wooteco.subway.station.Station;
@@ -28,13 +30,13 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public RouteInSection findSectionEndPoint(long lineId) {
+    public endPointInSection findSectionEndPoint(long lineId) {
 
-        List<Section> sections = sectionDao.findStationsByLineId(lineId);
-        return findEndPointInLine(sections);
+        List<Section> sections = sectionDao.findSectionsByLineId(lineId);
+        return findEndPointInSections(sections);
     }
 
-    private RouteInSection findEndPointInLine(List<Section> sections) {
+    private endPointInSection findEndPointInSections(List<Section> sections) {
         Map<Long, Long> route = new HashMap<>();
         for (Section section : sections) {
             route.put(section.getUpStationId(),
@@ -43,10 +45,10 @@ public class SectionService {
             route.put(section.getDownStationId(),
                 route.getOrDefault(section.getDownStationId(), 0L) - 1);
         }
-        return calcStationInfo(route);
+        return findEndPointInRoute(route);
     }
 
-    private RouteInSection calcStationInfo(Map<Long, Long> route) {
+    private endPointInSection findEndPointInRoute(Map<Long, Long> route) {
         long upStationId = 0L;
         long downStationId = 0L;
 
@@ -58,16 +60,16 @@ public class SectionService {
                 downStationId = entry.getKey();
             }
         }
-        return new RouteInSection(upStationId, downStationId);
+        return new endPointInSection(upStationId, downStationId);
     }
 
 
     public List<Station> findStationsInLine(long lineId) {
-        RouteInSection sectionEndPoint = findSectionEndPoint(lineId);
+        endPointInSection sectionEndPoint = findSectionEndPoint(lineId);
 
         List<Station> stations = new ArrayList<>();
 
-        Map<Long, Long> sectionEndToEndRoute = sectionDao.findStationsByLineId(lineId)
+        Map<Long, Long> sectionEndToEndRoute = sectionDao.findSectionsByLineId(lineId)
             .stream().collect(Collectors.toMap(Section::getUpStationId,
                 Section::getDownStationId));
 
@@ -80,12 +82,51 @@ public class SectionService {
         return stations;
     }
 
+    @Transactional
     public void insertSection(Long lineId, SectionRequest sectionRequest) {
 //        sectionDao.findSectionByUpStationId(sectionRequest.getUpStationId());
 //        sectionDao.findSectionByDownStationId(sectionRequest.getDownStationId());
 //
 //        findSectionByUpStationId();
+        List<Station> stationsInLine = findStationsInLine(lineId);
 
-        sectionDao.save(new Section(lineId, sectionRequest));
+        endPointInSection sectionEndPoint = findSectionEndPoint(lineId);
+        if (sectionEndPoint.getUpStationId() == sectionRequest.getDownStationId()
+            || sectionEndPoint.getDownStationId() == sectionRequest.getUpStationId()) {
+            sectionDao.save(new Section(lineId, sectionRequest));
+            return;
+        }
+        Section upSection;
+        Section downSection;
+        for (Station station : stationsInLine) {
+            if (station.getId().equals(sectionRequest.getUpStationId())) {
+                upSection = sectionDao.findByUpStationId(sectionRequest.getUpStationId());
+                if (upSection.getDistance() <= sectionRequest.getDistance()) {
+                    throw new ShortDistanceException("삽입하려는 구간의 거리가 너무 짧습니다.");
+                }
+                int distance = upSection.getDistance() - sectionRequest.getDistance();
+                sectionDao.delete(lineId, upSection.getUpStationId());
+                sectionDao.save(new Section(upSection.getLineId(),
+                    sectionRequest.getDownStationId(),
+                    upSection.getDownStationId(),
+                    distance));
+                sectionDao.save(new Section(lineId, sectionRequest));
+            }
+
+
+        }
+
+    }
+
+    public List<Section> findSectionsInLine(long lineId) {
+        return sectionDao.findSectionsByLineId(lineId);
+    }
+
+    public Section findByUpStationId(long upStationId) {
+        return sectionDao.findByUpStationId(upStationId);
+    }
+
+    public Section findByDownStationId(long upStationId) {
+        return sectionDao.findByUpStationId(upStationId);
     }
 }

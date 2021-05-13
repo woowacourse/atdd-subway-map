@@ -109,7 +109,7 @@ public class LineDaoTest {
     void failModifyLineNotExistsTest() {
         assertThatThrownBy(
             () -> {
-                lineDao.modify(1L, new LineRequest());
+                lineDao.update(1L, new LineRequest());
             }
         ).isInstanceOf(NoSuchDataException.class);
     }
@@ -121,7 +121,7 @@ public class LineDaoTest {
         lineDao.save(new Line("2호선", "black"));
         assertThatThrownBy(
             () -> {
-                lineDao.modify(2L, new LineRequest("신분당선", "red"));
+                lineDao.update(2L, new LineRequest("신분당선", "red"));
             }
         ).isInstanceOf(DuplicateKeyException.class);
     }
@@ -132,7 +132,7 @@ public class LineDaoTest {
         lineDao.save(new Line("신분당선", "black"));
 
         assertDoesNotThrow(() -> {
-            lineDao.modify(1L, new LineRequest("2호선", "black"));
+            lineDao.update(1L, new LineRequest("2호선", "black"));
         });
     }
 }

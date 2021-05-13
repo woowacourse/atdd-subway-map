@@ -2,12 +2,12 @@ package wooteco.subway.section;
 
 import java.util.Objects;
 
-public class RouteInSection {
+public class endPointInSection {
 
     private long upStationId;
     private long downStationId;
 
-    public RouteInSection(long upStationId, long downStationId) {
+    public endPointInSection(long upStationId, long downStationId) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
     }
@@ -34,10 +34,10 @@ public class RouteInSection {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof RouteInSection)) {
+        if (!(o instanceof endPointInSection)) {
             return false;
         }
-        RouteInSection that = (RouteInSection) o;
+        endPointInSection that = (endPointInSection) o;
         return upStationId == that.upStationId &&
             downStationId == that.downStationId;
     }

@@ -59,7 +59,7 @@ public class SectionDaoTest {
     @Test
     void selectSectionTest() {
         assertDoesNotThrow(() ->
-            sectionDao.findByLineId(1L)
+            sectionDao.findBySectionId(1L)
         );
     }
 
@@ -67,7 +67,7 @@ public class SectionDaoTest {
     @Test
     void failSelectSectionTest() {
         assertThatThrownBy(() ->
-            sectionDao.findByLineId(2L)
+            sectionDao.findBySectionId(2L)
         ).isInstanceOf(EmptyResultDataAccessException.class);
     }
 
@@ -75,7 +75,7 @@ public class SectionDaoTest {
     @Test
     void findAllStationSize() {
         sectionDao.save(new Section(1L, 2L, 3L, 20));
-        List<Section> stations = sectionDao.findStationsByLineId(1L);
+        List<Section> stations = sectionDao.findSectionsByLineId(1L);
         assertThat(stations).hasSize(2);
         System.out.println(stations);
     }
@@ -84,9 +84,9 @@ public class SectionDaoTest {
     @Test
     void findUpAndDownStation() {
         sectionDao.save(new Section(1L, 2L, 3L, 20));
-        RouteInSection sectionEndPoint = sectionService.findSectionEndPoint(1L);
+        endPointInSection sectionEndPoint = sectionService.findSectionEndPoint(1L);
 
-        assertThat(sectionEndPoint).isEqualTo(new RouteInSection(1L, 3L));
+        assertThat(sectionEndPoint).isEqualTo(new endPointInSection(1L, 3L));
     }
 
     @DisplayName("구간에 속한 모든 역 찾기 테스트")

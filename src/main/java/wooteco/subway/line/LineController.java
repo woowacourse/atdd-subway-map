@@ -63,7 +63,7 @@ public class LineController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StationsInLineResponse> showLineDetail(@PathVariable Long id) {
         Line line = lineDao.findById(id);
-        sectionDao.findStationsByLineId(id);
+        sectionDao.findSectionsByLineId(id);
 
         return ResponseEntity.ok()
             .body(new StationsInLineResponse(line, sectionService.findStationsInLine(id)));
@@ -72,7 +72,7 @@ public class LineController {
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> modifyLineDetail(@PathVariable Long id,
         @RequestBody LineRequest lineRequest) {
-        lineDao.modify(id, lineRequest);
+        lineDao.update(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
@@ -91,8 +91,8 @@ public class LineController {
     }
 
     @DeleteMapping("/{id}/sections")
-    public ResponseEntity deleteSection(@RequestParam Long stationId) {
-        sectionDao.delete(stationId);
+    public ResponseEntity deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
+        sectionDao.delete(id, stationId);
         return ResponseEntity.noContent().build();
     }
 

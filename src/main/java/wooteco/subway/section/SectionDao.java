@@ -37,7 +37,7 @@ public class SectionDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public Section findByLineId(long lineId) {
+    public Section findBySectionId(long sectionId) {
         String query = "SELECT * FROM section WHERE id = ?";
         return jdbcTemplate.queryForObject(query, (resultSet, rowNum) -> {
             Section section = new Section(
@@ -47,10 +47,10 @@ public class SectionDao {
                 resultSet.getInt("distance")
             );
             return section;
-        }, lineId);
+        }, sectionId);
     }
 
-    public List<Section> findStationsByLineId(long lineId) {
+    public List<Section> findSectionsByLineId(long lineId) {
         String query = "SELECT * FROM section WHERE line_id = (?)";
 
         return jdbcTemplate.query(query, (resultSet, rowNum) -> new Section(
@@ -61,12 +61,48 @@ public class SectionDao {
         ), lineId);
     }
 
-    public void delete(Long stationId) {
-        String query = "DELETE FROM section WHERE ID = ?";
-        int affectedRowNumber = jdbcTemplate.update(query, stationId);
+    public void delete(Long lineId, Long upStationId) {
+        String query = "DELETE FROM section WHERE line_id = (?) AND up_station_id = (?)";
+        int affectedRowNumber = jdbcTemplate.update(query, lineId, upStationId);
 
         if (affectedRowNumber == 0) {
             throw new NoSuchDataException("없는 구간입니다.");
         }
+    }
+
+    public Section findByUpStationId(Long upStationId) {
+        String query = "SELECT * FROM section WHERE up_station_id = ?";
+
+        return jdbcTemplate.queryForObject(query, (resultSet, rowNum) -> new Section(
+            resultSet.getLong("line_id"),
+            resultSet.getLong("up_station_id"),
+            resultSet.getLong("down_station_id"),
+            resultSet.getInt("distance")
+        ), upStationId);
+    }
+
+    public Section findByDownStationId(Long downStationId) {
+        String query = "SELECT * FROM section WHERE down_station_id = ?";
+
+        return jdbcTemplate.queryForObject(query, (resultSet, rowNum) -> new Section(
+            resultSet.getLong("line_id"),
+            resultSet.getLong("up_station_id"),
+            resultSet.getLong("down_station_id"),
+            resultSet.getInt("distance")
+        ), downStationId);
+    }
+
+    public void update(long sectionId, long nextSectionId, int newDistance) {
+        String query = "UPDATE section SET down_station_id = (?), new_distance = (?)  WHERE id = (?)";
+        int affectedRowNumber = jdbcTemplate
+            .update(query, nextSectionId, newDistance, sectionId);
+        if (affectedRowNumber == 0) {
+            throw new NoSuchDataException("존재하지 않아 변경할 수 없습니다.");
+        }
+    }
+
+    public Long findIdByStationIds(long upStationId, long downStationId) {
+        String query = "SELECT id FROM section WHERE up_station_id = (?) AND down_station_id = (?)";
+        return jdbcTemplate.queryForObject(query, Long.class, upStationId, downStationId);
     }
 }

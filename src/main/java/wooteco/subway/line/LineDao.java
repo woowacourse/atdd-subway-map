@@ -55,7 +55,7 @@ public class LineDao {
             }, id);
     }
 
-    public void modify(Long id, LineRequest lineRequest) {
+    public void update(Long id, LineRequest lineRequest) {
         String query = "UPDATE line SET name=(?), color=(?) WHERE id = (?)";
         int affectedRowNumber = jdbcTemplate
             .update(query, lineRequest.getName(), lineRequest.getColor(), id);
