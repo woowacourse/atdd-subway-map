@@ -57,14 +57,10 @@ public class JdbcStationDao implements StationDao {
     }
 
     private RowMapper getRowMapper() {
-        RowMapper rowMapper = new RowMapper() {
-            @Override
-            public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Long id = rs.getLong("id");
-                String name = rs.getString("name");
-                return Station.of(id, name);
-            }
+        return (rs, rowNum) -> {
+            Long id = rs.getLong("id");
+            String name = rs.getString("name");
+            return Station.of(id, name);
         };
-        return rowMapper;
     }
 }

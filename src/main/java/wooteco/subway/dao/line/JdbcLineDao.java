@@ -58,15 +58,11 @@ public class JdbcLineDao implements LineDao {
     }
 
     private RowMapper getRowMapper() {
-        RowMapper rowMapper = new RowMapper() {
-            @Override
-            public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Long id = rs.getLong("id");
-                String name = rs.getString("name");
-                String color = rs.getString("color");
-                return Line.of(id, name, color);
-            }
+        return (rs, rowNum) -> {
+            Long id = rs.getLong("id");
+            String name = rs.getString("name");
+            String color = rs.getString("color");
+            return Line.of(id, name, color);
         };
-        return rowMapper;
     }
 }
