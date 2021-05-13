@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class JDBCStationRepository implements StationRepository {
+public class JdbcStationRepository implements StationRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
@@ -24,7 +24,7 @@ public class JDBCStationRepository implements StationRepository {
                     resultSet.getString("name")
             );
 
-    public JDBCStationRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcStationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
