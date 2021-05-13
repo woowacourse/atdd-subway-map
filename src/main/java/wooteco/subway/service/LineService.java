@@ -31,7 +31,11 @@ public class LineService {
     }
 
     public List<Line> findAll() {
-        return lineDao.findAll();
+        List<Line> lines = lineDao.findAll();
+        lines.forEach(line -> {
+            line.setSections(sectionDao.findByLine(line.getId()));
+        });
+        return lines;
     }
 
     public Line findById(Long id) {

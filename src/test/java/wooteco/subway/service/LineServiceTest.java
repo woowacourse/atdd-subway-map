@@ -16,7 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.section.Sections;
 import wooteco.subway.repository.LineDao;
+import wooteco.subway.repository.SectionDao;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("노선 서비스 레이어 테스트")
@@ -24,6 +26,8 @@ class LineServiceTest {
 
     @Mock
     private LineDao lineDao;
+    @Mock
+    private SectionDao sectionDao;
     @InjectMocks
     private LineService lineService;
 
@@ -67,6 +71,7 @@ class LineServiceTest {
         // given
         Line line1 = new Line(1L, "2호선", "green");
         given(lineDao.findById(any())).willReturn(Optional.of(line1));
+        given(sectionDao.findByLine(1L)).willReturn(new Sections());
 
         // when
         Line line2 = lineService.findById(1L);
