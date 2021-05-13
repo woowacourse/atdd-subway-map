@@ -1,6 +1,5 @@
 package wooteco.subway.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -15,7 +14,6 @@ import java.util.List;
 public class SectionH2Dao implements SectionRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
     public SectionH2Dao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineRepository;
 import wooteco.subway.dao.SectionRepository;
@@ -19,7 +18,6 @@ public class SectionService {
     private final LineRepository lineRepository;
     private final SectionRepository sectionRepository;
 
-    @Autowired
     public SectionService(StationRepository stationRepository, LineRepository lineRepository, SectionRepository sectionRepository) {
         this.stationRepository = stationRepository;
         this.lineRepository = lineRepository;

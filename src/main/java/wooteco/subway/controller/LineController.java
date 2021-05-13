@@ -1,6 +1,5 @@
 package wooteco.subway.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.dao.LineRepository;
@@ -17,7 +16,6 @@ public class LineController {
     private final LineService lineService;
     private final LineRepository lineRepository;
 
-    @Autowired
     public LineController(LineService lineService, LineRepository lineRepository) {
         this.lineService = lineService;
         this.lineRepository = lineRepository;
