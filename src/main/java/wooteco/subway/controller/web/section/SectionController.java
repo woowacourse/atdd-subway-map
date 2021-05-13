@@ -1,4 +1,4 @@
-package wooteco.subway.section.controller;
+package wooteco.subway.controller.web.section;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.line.controller.LineResponse;
 import wooteco.subway.section.exception.WrongSectionInformationExcetpion;
 import wooteco.subway.section.service.SectionService;
 
@@ -31,13 +30,13 @@ public class SectionController {
         if (bindingResult.hasErrors()) {
             throw new WrongSectionInformationExcetpion("요청이 올바르지 않습니다.");
         }
-        sectionService.save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        sectionService.add(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         return ResponseEntity.created(URI.create("/lines/" + lineId)).build();
     }
 
     @DeleteMapping
     public ResponseEntity<Void> deleteLine(@PathVariable Long lineId, @RequestParam long stationId) {
-        sectionService.delete(lineId, stationId);
+        sectionService.remove(lineId, stationId);
         return ResponseEntity.noContent().build();
     }
 }

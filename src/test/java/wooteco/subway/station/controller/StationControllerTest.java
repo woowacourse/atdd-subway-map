@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.controller.web.station.StationRequest;
+import wooteco.subway.controller.web.station.StationResponse;
 import wooteco.subway.station.dao.StationDao;
 
 import java.util.Arrays;

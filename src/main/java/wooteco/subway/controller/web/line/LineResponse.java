@@ -1,9 +1,9 @@
-package wooteco.subway.line.controller;
+package wooteco.subway.controller.web.line;
 
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.section.domain.OrderedSections;
 import wooteco.subway.section.domain.Section;
-import wooteco.subway.station.controller.StationResponse;
+import wooteco.subway.controller.web.station.StationResponse;
 
 import java.util.Collections;
 import java.util.List;

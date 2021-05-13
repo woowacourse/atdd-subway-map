@@ -11,9 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.controller.web.line.LineRequest;
+import wooteco.subway.controller.web.line.LineResponse;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.fixture.LineFixture;
-import wooteco.subway.station.controller.StationResponse;
+import wooteco.subway.controller.web.station.StationResponse;
 import wooteco.subway.station.fixture.StationFixture;
 
 import java.util.Arrays;

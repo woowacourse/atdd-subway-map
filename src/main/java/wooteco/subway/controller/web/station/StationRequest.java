@@ -1,4 +1,4 @@
-package wooteco.subway.station.controller;
+package wooteco.subway.controller.web.station;
 
 import wooteco.subway.station.domain.Station;
 

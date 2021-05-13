@@ -10,10 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.line.controller.LineRequest;
-import wooteco.subway.line.controller.LineResponse;
+import wooteco.subway.controller.web.line.LineRequest;
+import wooteco.subway.controller.web.line.LineResponse;
+import wooteco.subway.controller.web.section.SectionRequest;
 import wooteco.subway.line.fixture.LineFixture;
-import wooteco.subway.station.controller.StationResponse;
+import wooteco.subway.controller.web.station.StationResponse;
 import wooteco.subway.station.fixture.StationFixture;
 
 import static org.assertj.core.api.Assertions.assertThat;

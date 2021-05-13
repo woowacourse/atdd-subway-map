@@ -1,4 +1,4 @@
-package wooteco.subway.line.controller;
+package wooteco.subway.controller.web.line;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;

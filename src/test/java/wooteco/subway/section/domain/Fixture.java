@@ -1,6 +1,5 @@
 package wooteco.subway.section.domain;
 
-import wooteco.subway.station.controller.StationRequest;
 import wooteco.subway.station.fixture.StationFixture;
 
 public class Fixture {
