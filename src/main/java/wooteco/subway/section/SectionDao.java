@@ -70,26 +70,26 @@ public class SectionDao {
         }
     }
 
-    public Section findByUpStationId(Long upStationId) {
-        String query = "SELECT * FROM section WHERE up_station_id = ?";
+    public Section findByUpStationId(Long lineId, Long upStationId) {
+        String query = "SELECT * FROM section WHERE line_id = (?) AND up_station_id = (?)";
 
         return jdbcTemplate.queryForObject(query, (resultSet, rowNum) -> new Section(
             resultSet.getLong("line_id"),
             resultSet.getLong("up_station_id"),
             resultSet.getLong("down_station_id"),
             resultSet.getInt("distance")
-        ), upStationId);
+        ), lineId, upStationId);
     }
 
-    public Section findByDownStationId(Long downStationId) {
-        String query = "SELECT * FROM section WHERE down_station_id = ?";
+    public Section findByDownStationId(Long lineId, Long downStationId) {
+        String query = "SELECT * FROM section WHERE line_id = (?) AND up_station_id = (?)";
 
         return jdbcTemplate.queryForObject(query, (resultSet, rowNum) -> new Section(
             resultSet.getLong("line_id"),
             resultSet.getLong("up_station_id"),
             resultSet.getLong("down_station_id"),
             resultSet.getInt("distance")
-        ), downStationId);
+        ), lineId, downStationId);
     }
 
     public void update(long sectionId, long nextSectionId, int newDistance) {
@@ -101,8 +101,8 @@ public class SectionDao {
         }
     }
 
-    public Long findIdByStationIds(long upStationId, long downStationId) {
-        String query = "SELECT id FROM section WHERE up_station_id = (?) AND down_station_id = (?)";
-        return jdbcTemplate.queryForObject(query, Long.class, upStationId, downStationId);
+    public Long findIdByStationIds(Long lineId, long upStationId, long downStationId) {
+        String query = "SELECT id FROM section WHERE up_station_id = (?) AND down_station_id = (?) AND line_id = (?)";
+        return jdbcTemplate.queryForObject(query, Long.class, upStationId, downStationId, lineId);
     }
 }

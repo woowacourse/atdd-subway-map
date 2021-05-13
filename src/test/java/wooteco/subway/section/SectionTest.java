@@ -81,7 +81,9 @@ public class SectionTest {
     void insertMidExistUpStationDistance() {
         sectionService.insertSection(1L, new SectionRequest(1L, 4L, 4));
 
-        assertThat(sectionService.findByUpStationId(1L).getDistance()).isEqualTo(4);
-        assertThat(sectionService.findByDownStationId(4L).getDistance()).isEqualTo(6);
+        assertThat(sectionService.findByUpStationId(1L, 1L).getDistance()).isEqualTo(4);
+        assertThat(sectionService.findByDownStationId(1L, 4L).getDistance()).isEqualTo(6);
     }
+
+
 }

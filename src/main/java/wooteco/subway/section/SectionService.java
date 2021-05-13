@@ -100,7 +100,7 @@ public class SectionService {
         Section downSection;
         for (Station station : stationsInLine) {
             if (station.getId().equals(sectionRequest.getUpStationId())) {
-                upSection = sectionDao.findByUpStationId(sectionRequest.getUpStationId());
+                upSection = sectionDao.findByUpStationId(lineId, sectionRequest.getUpStationId());
                 if (upSection.getDistance() <= sectionRequest.getDistance()) {
                     throw new ShortDistanceException("삽입하려는 구간의 거리가 너무 짧습니다.");
                 }
@@ -122,11 +122,11 @@ public class SectionService {
         return sectionDao.findSectionsByLineId(lineId);
     }
 
-    public Section findByUpStationId(long upStationId) {
-        return sectionDao.findByUpStationId(upStationId);
+    public Section findByUpStationId(long lineId, long upStationId) {
+        return sectionDao.findByUpStationId(lineId, upStationId);
     }
 
-    public Section findByDownStationId(long upStationId) {
-        return sectionDao.findByUpStationId(upStationId);
+    public Section findByDownStationId(long lineId, long upStationId) {
+        return sectionDao.findByUpStationId(lineId, upStationId);
     }
 }
