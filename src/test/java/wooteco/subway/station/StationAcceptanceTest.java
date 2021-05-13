@@ -46,8 +46,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_저장_후_응답(stationName);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo("이미 존재하는 역 이름입니다.");
+        assertThat(response.body().jsonPath().getString("error")).isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        assertThat(response.body().jsonPath().getInt("status")).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().jsonPath().getString("message")).isEqualTo("이미 존재하는 역 이름입니다.");
     }
 
     @DisplayName("잘못된 요청값으로 지하철역 생성 요청시, 예외처리")
@@ -121,8 +122,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_삭제_후_응답("/stations/" + (id + 1));
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo("존재하지 않는 역 ID 입니다.");
+        assertThat(response.body().jsonPath().getString("error")).isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        assertThat(response.body().jsonPath().getInt("status")).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().jsonPath().getString("message")).isEqualTo("존재하지 않는 역 ID 입니다.");
     }
 
     private ExtractableResponse<Response> 지하철역_저장_후_응답(String stationName) {

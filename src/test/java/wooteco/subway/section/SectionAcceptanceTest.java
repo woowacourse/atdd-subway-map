@@ -59,11 +59,12 @@ class SectionAcceptanceTest extends AcceptanceTest {
         Map<String, Object> params = 구간_저장을_위한_요청정보(downStationId, upStationId, DISTANCE - 1);
 
         //when
-        ExtractableResponse<Response> sectionResponse = 구간_추가_후_응답(params);
+        ExtractableResponse<Response> response = 구간_추가_후_응답(params);
 
         //then
-        assertThat(sectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(sectionResponse.body().asString()).isEqualTo("추가될 수 없는 구간입니다.");
+        assertThat(response.body().jsonPath().getString("error")).isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        assertThat(response.body().jsonPath().getInt("status")).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().jsonPath().getString("message")).isEqualTo("추가될 수 없는 구간입니다.");
     }
 
     @DisplayName("section을 삭제하는 기능")
@@ -101,8 +102,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
             .extract();
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo("노선 내 최소한 2개의 역이 존재해야 합니다.");
+        assertThat(response.body().jsonPath().getString("error")).isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        assertThat(response.body().jsonPath().getInt("status")).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().jsonPath().getString("message")).isEqualTo("노선 내 최소한 2개의 역이 존재해야 합니다.");
     }
 
     @DisplayName("노선 내 존재하지 않는 구간 삭제 요청 시 예외처리")
@@ -122,8 +124,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo("노선 내 존재하는 역이 없습니다.");
+        assertThat(response.body().jsonPath().getString("error")).isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        assertThat(response.body().jsonPath().getInt("status")).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().jsonPath().getString("message")).isEqualTo("노선 내 존재하는 역이 없습니다.");
     }
 
     private Map<String, Object> 구간_저장을_위한_요청정보(long downStationId, long upStationId, int distance) {

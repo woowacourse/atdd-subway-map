@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.line.SectionRequest;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.section.api.dto.SectionDto;
@@ -35,7 +36,8 @@ public class SectionService {
 
     private List<Section> mapToSections(List<SectionDto> sectionDtos) {
         return sectionDtos.stream()
-            .map(sectionDto -> new Section(lineDao.findLineById(sectionDto.getLineId()),
+            .map(sectionDto -> new Section(lineDao.findLineById(sectionDto.getLineId())
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 노선 ID 입니다.")),
                 stationDao.findStationById(sectionDto.getUpStationId()),
                 stationDao.findStationById(sectionDto.getDownStationId()),
                 sectionDto.getDistance()))
@@ -43,7 +45,8 @@ public class SectionService {
     }
 
     private Section convertToSection(Long lineId, SectionRequest sectionRequest) {
-        return new Section(lineDao.findLineById(lineId),
+        return new Section(lineDao.findLineById(lineId)
+            .orElseThrow(() -> new NotFoundException("존재하지 않는 노선 ID 입니다.")),
             stationDao.findStationById(sectionRequest.getUpStationId()),
             stationDao.findStationById(sectionRequest.getDownStationId()),
             sectionRequest.getDistance());

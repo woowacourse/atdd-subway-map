@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.line.api.dto.LineDetailsResponse;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.api.dto.LineRequest;
@@ -44,7 +45,8 @@ public class LineService {
     }
 
     private LineDetailsResponse getLineDetailsResponse(long createdId) {
-        Line newLine = lineDao.findLineById(createdId);
+        Line newLine = lineDao.findLineById(createdId)
+            .orElseThrow(() -> new NotFoundException("존재하지 않는 노선 ID 입니다."));
         List<SectionDto> sectionDtos = sectionDao.findSectionsByLineId(createdId);
         Sections sections = new Sections(mapToSections(sectionDtos));
 
@@ -53,7 +55,8 @@ public class LineService {
 
     private List<Section> mapToSections(List<SectionDto> sectionDtos) {
         return sectionDtos.stream()
-            .map(sectionDto -> new Section(lineDao.findLineById(sectionDto.getLineId()),
+            .map(sectionDto -> new Section(lineDao.findLineById(sectionDto.getLineId())
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 노선 ID 입니다.")),
                 stationDao.findStationById(sectionDto.getUpStationId()),
                 stationDao.findStationById(sectionDto.getDownStationId()),
                 sectionDto.getDistance()))

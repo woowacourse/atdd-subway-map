@@ -109,8 +109,6 @@ class LineServiceTest {
         lineService.deleteById(line.getId());
 
         //then
-        assertThatThrownBy(() -> lineDao.findLineById(line.getId()))
-            .isInstanceOf(NotFoundException.class);
         assertThat(sectionDao.findSectionsByLineId(line.getId())).isEmpty();
     }
 }
