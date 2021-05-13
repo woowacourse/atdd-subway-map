@@ -17,7 +17,7 @@ public class SectionDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void save(Section section) { //todo: DTO 대신 Domain 받는 구조로 변경!
+    public void save(Section section) {
         String sql = "INSERT INTO `section` (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, section.getLineId(), section.getUpStationId(),
             section.getDownStationId(), section.getDistance());

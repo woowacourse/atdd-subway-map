@@ -55,18 +55,30 @@ public class Section {
     }
 
     public Section splitByUpStation(Section newSection) {
-        return new Section(this.line, newSection.getDownStation(), this.downStation,
-            this.distance - newSection.getDistance());
+        return Section.builder()
+            .line(this.line)
+            .upStation(newSection.getDownStation())
+            .downStation(this.downStation)
+            .distance(this.distance - newSection.getDistance())
+            .build();
     }
 
     public Section splitByDownStation(Section newSection) {
-        return new Section(this.line, this.upStation, newSection.getUpStation(),
-            this.distance - newSection.getDistance());
+        return Section.builder()
+            .line(this.line)
+            .upStation(this.upStation)
+            .downStation(newSection.getUpStation())
+            .distance(this.distance - newSection.getDistance())
+            .build();
     }
 
     public Section merge(Section targetSection) {
-        return new Section(this.line, this.upStation,
-            targetSection.downStation, this.distance + targetSection.distance);
+        return Section.builder()
+            .line(this.line)
+            .upStation(this.upStation)
+            .downStation(targetSection.downStation)
+            .distance(this.distance + targetSection.distance)
+            .build();
     }
 
     public Long getLineId() {
