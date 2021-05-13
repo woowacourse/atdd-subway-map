@@ -6,6 +6,8 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.repository.LineRepository;
+import wooteco.subway.section.domain.Section;
+import wooteco.subway.section.domain.Sections;
 import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.service.StationService;
@@ -27,6 +29,10 @@ public class LineService {
 
     public List<LineResponse> getLines() {
         List<Line> lines = lineRepository.findAll();
+        for (Line line : lines) {
+            Sections sections = sectionService.getAllSections(line.getId());
+            line.setSections(sections);
+        }
         return LineResponse.toDtos(lines);
     }
 
@@ -36,11 +42,20 @@ public class LineService {
             throw new DuplicateLineNameException();
         }
         long lineId = lineRepository.save(line);
-        sectionService.save(lineId, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
-        List<Station> upAndDownStations = stationService.getUpAndDownStations(lineRequest.getUpStationId(), lineRequest.getDownStationId());
+        Long sectionId = sectionService.save(lineId, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        Sections sections = getSections(sectionId, lineId, lineRequest);
 
-        Line newLine = new Line(lineId, lineRequest.getColor(), lineRequest.getName(), upAndDownStations);
+        Line newLine = new Line(lineId, lineRequest.getColor(), lineRequest.getName(), sections);
         return LineResponse.toDto(newLine);
+    }
+
+    private Sections getSections(final Long sectionId, final long lineId, final LineRequest lineRequest) {
+        Station upStation = stationService.findStationById(lineRequest.getUpStationId());
+        Station downStation = stationService.findStationById(lineRequest.getDownStationId());
+
+        Sections sections = new Sections();
+        sections.add(new Section(sectionId, lineId, upStation, downStation, lineRequest.getDistance()));
+        return sections;
     }
 
     public LineResponse getLine(final Long id) {
@@ -49,8 +64,8 @@ public class LineService {
         }
         Line line = lineRepository.findById(id);
 
-        List<Station> allStations = sectionService.getAllStations(id);
-        line.addStations(allStations);
+        Sections sections = sectionService.getAllSections(id);
+        line.setSections(sections);
 
         return LineResponse.toDto(line);
     }

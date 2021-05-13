@@ -1,30 +1,29 @@
 package wooteco.subway.line.domain;
 
-import wooteco.subway.station.domain.Station;
+import wooteco.subway.section.domain.Sections;
+import wooteco.subway.station.domain.Stations;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class Line {
     private final Long id;
     private final String color;
     private final String name;
-    private final List<Station> stations;
+    private Sections sections;
 
     public Line(final String color, final String name) {
-        this(null, color, name, new ArrayList<>());
+        this(null, color, name, new Sections());
     }
 
     public Line(final Long id, final String color, final String name) {
-        this(id, color, name, new ArrayList<>());
+        this(id, color, name, new Sections());
     }
 
-    public Line(final Long id, final String color, final String name, final List<Station> stations) {
+    public Line(final Long id, final String color, final String name, final Sections sections) {
         this.id = id;
         this.color = color;
         this.name = name;
-        this.stations = stations;
+        this.sections = sections;
     }
 
     public Long getId() {
@@ -39,12 +38,12 @@ public class Line {
         return name;
     }
 
-    public List<Station> getStations() {
-        return stations;
+    public Stations getAllStations() {
+        return sections.getOrderedStations();
     }
 
-    public void addStations(final List<Station> stations) {
-        this.stations.addAll(stations);
+    public void setSections(final Sections sections) {
+        this.sections = sections;
     }
 
     @Override

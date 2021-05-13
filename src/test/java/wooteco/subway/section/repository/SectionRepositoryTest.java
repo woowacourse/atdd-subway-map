@@ -10,7 +10,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.section.domain.Section;
+import wooteco.subway.section.domain.Sections;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.domain.Stations;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -120,7 +122,7 @@ public class SectionRepositoryTest {
         String stationQuery = "INSERT INTO station(name) VALUES(?)";
         jdbcTemplate.update(stationQuery, "해운대역");
 
-        Section section = new Section(lineId, new Station(3L), new Station(5L), 10);
+        Section section = new Section(4L, lineId, new Station(3L), new Station(5L), 10);
         sectionRepository.save(section);
 
         Section sectionSaved = getSection(4L);
@@ -166,14 +168,17 @@ public class SectionRepositoryTest {
     @DisplayName("해당 라인에 존재하는 모든 상행역과 하행역 짝을 Map에 담아 반환한다")
     @Test
     void getAllUpAndDownStations() {
-        Map<Station, Station> upAndDownStations = sectionRepository.getAllUpAndDownStations(lineId);
-        Map<Station, Station> expectedUpAndDownStations = new HashMap<>();
-        expectedUpAndDownStations.put(new Station(1L, "잠실역"), new Station(2L, "잠실새내역"));
-        expectedUpAndDownStations.put(new Station(2L, "잠실새내역"), new Station(4L, "한성백제역"));
-        expectedUpAndDownStations.put(new Station(4L, "한성백제역"), new Station(3L, "몽촌토성역"));
+        Sections sections = sectionRepository.findAllSections(lineId);
+        Stations expectedUpAndDownStations = new Stations(
+                Arrays.asList(
+                        new Station(1L, "잠실역"),
+                        new Station(2L, "잠실새내역"),
+                        new Station(4L, "한성백제역"),
+                        new Station(3L, "몽촌토성역")
+                )
+        );
 
-        assertThat(upAndDownStations).hasSameSizeAs(expectedUpAndDownStations)
-                .containsAllEntriesOf(expectedUpAndDownStations);
+        assertThat(sections.getOrderedStations()).isEqualTo(expectedUpAndDownStations);
     }
 
     // 잠실역 (1) - 5 - 잠실새내역 (2) - 4 - 한성백제역 (4) - 7 - 몽촌토성역 (3)
@@ -192,21 +197,24 @@ public class SectionRepositoryTest {
     @DisplayName("주어진 구간 정보대로 해당 구간을 업데이트 한다")
     @Test
     void updateSection() {
-        Section originalSection = new Section(lineId, new Station(2L), new Station(4L), 4);
+        Section originalSection = new Section(1L, lineId, new Station(2L), new Station(4L), 4);
         assertThat(getSection(1L)).isEqualTo(originalSection);
 
         Section sectionForUpdate = new Section(1L, lineId, new Station(3L), new Station(1L), 12);
         sectionRepository.update(sectionForUpdate);
 
         Section section = getSection(1L);
-        assertThat(section).isEqualTo(sectionForUpdate);
+        assertThat(section.getUpStation()).isEqualTo(sectionForUpdate.getUpStation());
+        assertThat(section.getDownStationId()).isEqualTo(sectionForUpdate.getDownStationId());
+        assertThat(section.getDistance()).isEqualTo(sectionForUpdate.getDistance());
     }
 
     private Section getSection(Long sectionId) {
-        String query = "SELECT line_id, up_station_id, down_station_id, distance FROM section WHERE id = ?";
+        String query = "SELECT id, line_id, up_station_id, down_station_id, distance FROM section WHERE id = ?";
         return jdbcTemplate.queryForObject(
                 query,
                 (resultSet, rowNum) -> new Section(
+                        resultSet.getLong("id"),
                         resultSet.getLong("line_id"),
                         new Station(resultSet.getLong("up_station_id")),
                         new Station(resultSet.getLong("down_station_id")),

@@ -2,7 +2,10 @@ package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.section.domain.Section;
+import wooteco.subway.section.domain.Sections;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.domain.Stations;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.repository.StationRepository;
 
@@ -28,7 +31,7 @@ public class StationService {
     }
 
     public List<StationResponse> findAll() {
-        List<Station> stations = stationRepository.findAll();
+        Stations stations = stationRepository.findAll();
         return StationResponse.toDtos(stations);
     }
 
@@ -39,14 +42,9 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public List<Station> getUpAndDownStations(final Long upStationId, final Long downStationId) {
-        String upStationName = findNameById(upStationId);
-        String downStationName = findNameById(downStationId);
-
-        return Arrays.asList(
-                new Station(upStationId, upStationName),
-                new Station(downStationId, downStationName)
-        );
+    public Station findStationById(final Long stationId) {
+        String stationName = findNameById(stationId);
+        return new Station(stationId, stationName);
     }
 
     private String findNameById(final Long id) {

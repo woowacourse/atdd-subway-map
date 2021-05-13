@@ -13,11 +13,16 @@ import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.section.domain.Section;
+import wooteco.subway.section.domain.Sections;
 import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.domain.Stations;
 import wooteco.subway.station.dto.StationRequest;
+import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,9 +65,13 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(url).isNotBlank();
 
         LineResponse responseBody = response.body().as(LineResponse.class);
-        LineResponse expectedResponseBody = LineResponse.toDto(new Line(1L, "bg-red-600", "신분당선", Arrays.asList(
-                new Station(1L, firstStationRequest.getName()),
-                new Station(2L, secondStationRequest.getName()))
+        LineResponse expectedResponseBody = new LineResponse(
+                1L,
+                "신분당선",
+                "bg-red-600",
+                Arrays.asList(
+                        new StationResponse(1L, firstStationRequest.getName()),
+                        new StationResponse(2L, secondStationRequest.getName())
                 )
         );
 
@@ -72,7 +81,16 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("전체 line을 조회하면 저장된 모든 line들을 반환한다 ")
     @Test
     void getLines() {
-        LineRequest secondLineRequest = new LineRequest("2호선", "bg-green-600");
+        StationRequest thirdStationRequest = new StationRequest("해운대역");
+        saveStation(thirdStationRequest);
+
+        LineRequest secondLineRequest = new LineRequest(
+                "2호선",
+                "bg-green-600",
+                2L,
+                3L,
+                15
+        );
         saveLine(secondLineRequest);
 
         // when
@@ -83,16 +101,30 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
-        List<LineRequest> lineRequests = Arrays.asList(firstLineRequest, secondLineRequest);
-
-        RecursiveComparisonConfiguration configuration = RecursiveComparisonConfiguration.builder()
-                .withIgnoredFields("upStationId", "downStationId", "distance", "id", "stations")
-                .withIgnoredCollectionOrderInFields()
-                .build();
+        List<LineResponse> expectedLineResponses = Arrays.asList(
+                new LineResponse(
+                        1L,
+                        firstLineRequest.getName(),
+                        firstLineRequest.getColor(),
+                        Arrays.asList(
+                                new StationResponse(1L, firstStationRequest.getName()),
+                                new StationResponse(2L, secondStationRequest.getName())
+                        )
+                ),
+                new LineResponse(
+                        2L,
+                        secondLineRequest.getName(),
+                        secondLineRequest.getColor(),
+                        Arrays.asList(
+                                new StationResponse(2L, secondStationRequest.getName()),
+                                new StationResponse(3L, thirdStationRequest.getName())
+                        )
+                )
+        );
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(lineResponses).usingRecursiveFieldByFieldElementComparator(configuration).isEqualTo(lineRequests);
+        assertThat(lineResponses).usingRecursiveComparison().isEqualTo(expectedLineResponses);
     }
 
     @DisplayName("id를 통해 line을 조회하면, 해당 line 정보를 반환한다.")
@@ -111,16 +143,14 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        LineResponse expectedLineResponse = LineResponse.toDto(
-                new Line(
-                        1L,
-                        "bg-red-600",
-                        "신분당선",
-                        Arrays.asList(
-                                new Station(1L, firstStationRequest.getName()),
-                                new Station(3L, stationRequest.getName()),
-                                new Station(2L, secondStationRequest.getName())
-                        )
+        LineResponse expectedLineResponse = new LineResponse(
+                1L,
+                "신분당선",
+                "bg-red-600",
+                Arrays.asList(
+                        new StationResponse(1L, firstStationRequest.getName()),
+                        new StationResponse(3L, stationRequest.getName()),
+                        new StationResponse(2L, secondStationRequest.getName())
                 )
         );
 
@@ -232,14 +262,15 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // 잠실새내역 - 몽촌토성역
         LineResponse responseBody = getLineResponse();
-        LineResponse expectedResponseBody = LineResponse.toDto(new Line(
+        LineResponse expectedResponseBody = new LineResponse(
                 1L,
-                firstLineRequest.getColor(),
                 firstLineRequest.getName(),
+                firstLineRequest.getColor(),
                 Arrays.asList(
-                        new Station(2L, secondStationRequest.getName()),
-                        new Station(3L, thirdStationRequest.getName())
-                )));
+                        new StationResponse(2L, secondStationRequest.getName()),
+                        new StationResponse(3L, thirdStationRequest.getName())
+                )
+        );
 
         assertThat(responseBody).usingRecursiveComparison().isEqualTo(expectedResponseBody);
     }
@@ -257,14 +288,15 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // 잠실역 - 몽촌토성역
         LineResponse responseBody = getLineResponse();
-        LineResponse expectedResponseBody = LineResponse.toDto(new Line(
+        LineResponse expectedResponseBody = new LineResponse(
                 1L,
-                firstLineRequest.getColor(),
                 firstLineRequest.getName(),
+                firstLineRequest.getColor(),
                 Arrays.asList(
-                        new Station(1L, firstStationRequest.getName()),
-                        new Station(3L, thirdStationRequest.getName())
-                )));
+                        new StationResponse(1L, firstStationRequest.getName()),
+                        new StationResponse(3L, thirdStationRequest.getName())
+                )
+        );
 
         assertThat(responseBody).usingRecursiveComparison().isEqualTo(expectedResponseBody);
     }
@@ -277,15 +309,17 @@ class LineAcceptanceTest extends AcceptanceTest {
         saveSection(new SectionRequest(2L, 3L, 5));
 
         LineResponse lineResponse = getLineResponse();
-        LineResponse expectedResponseBody = LineResponse.toDto(new Line(
+        LineResponse expectedResponseBody = new LineResponse(
                 1L,
-                firstLineRequest.getColor(),
                 firstLineRequest.getName(),
+                firstLineRequest.getColor(),
                 Arrays.asList(
-                        new Station(1L, firstStationRequest.getName()),
-                        new Station(2L, secondStationRequest.getName()),
-                        new Station(3L, thirdStationRequest.getName())
-                )));
+                        new StationResponse(1L, firstStationRequest.getName()),
+                        new StationResponse(2L, secondStationRequest.getName()),
+                        new StationResponse(3L, thirdStationRequest.getName())
+                )
+        );
+
         assertThat(lineResponse).usingRecursiveComparison().isEqualTo(expectedResponseBody);
     }
 
@@ -297,15 +331,17 @@ class LineAcceptanceTest extends AcceptanceTest {
         saveSection(new SectionRequest(3L, 2L, 5));
 
         LineResponse lineResponse = getLineResponse();
-        LineResponse expectedResponseBody = LineResponse.toDto(new Line(
+        LineResponse expectedResponseBody = new LineResponse(
                 1L,
-                firstLineRequest.getColor(),
                 firstLineRequest.getName(),
+                firstLineRequest.getColor(),
                 Arrays.asList(
-                        new Station(1L, firstStationRequest.getName()),
-                        new Station(3L, thirdStationRequest.getName()),
-                        new Station(2L, secondStationRequest.getName())
-                )));
+                        new StationResponse(1L, firstStationRequest.getName()),
+                        new StationResponse(3L, thirdStationRequest.getName()),
+                        new StationResponse(2L, secondStationRequest.getName())
+                )
+        );
+
         assertThat(lineResponse).usingRecursiveComparison().isEqualTo(expectedResponseBody);
     }
 

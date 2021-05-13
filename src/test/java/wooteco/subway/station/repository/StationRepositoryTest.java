@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.domain.Stations;
 
 import java.util.Arrays;
 import java.util.List;
@@ -42,8 +43,10 @@ public class StationRepositoryTest {
     @DisplayName("DB에 있는 station들을 조회하면, station을 담은 리스트를 반환한다.")
     @Test
     void findAll() {
-        List<Station> stations = Arrays.asList(new Station(1L, "잠실역"), new Station(2L, "잠실새내역"));
-        assertThat(stationRepository.findAll()).usingRecursiveComparison().isEqualTo(stations);
+        Stations stations = new Stations(
+                Arrays.asList(new Station(1L, "잠실역"), new Station(2L, "잠실새내역"))
+        );
+        assertThat(stationRepository.findAll()).isEqualTo(stations);
     }
 
     @DisplayName("전체 station을 조회할 때, DB에 존재하는 station이 없다면 빈 리스트를 반환한다.")
@@ -51,8 +54,8 @@ public class StationRepositoryTest {
     void findAll_noLinesSaved_emptyList() {
         jdbcTemplate.update("DELETE FROM station");
 
-        List<Station> stations = stationRepository.findAll();
-        assertThat(stations).isEmpty();
+        Stations stations = stationRepository.findAll();
+        assertThat(stations.toList()).isEmpty();
     }
 
     @DisplayName("id를 통해 삭제 요청을 하면, DB에 있는 해당 id의 station을 삭제한다")
