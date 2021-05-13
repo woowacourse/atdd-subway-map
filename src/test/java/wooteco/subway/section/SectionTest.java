@@ -1,7 +1,11 @@
 package wooteco.subway.section;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import wooteco.subway.exception.ShortDistanceException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineDao;
 import wooteco.subway.line.SectionRequest;
@@ -67,13 +72,16 @@ public class SectionTest {
     @DisplayName("구간 중간에 삽입되며 상행이 이미 존재하는 경우")
     @Test
     void insertMidExistUpStation() {
-        sectionService.insertSection(1L, new SectionRequest(1L, 4L, 5));
+        sectionService.insertSection(1L, new SectionRequest(2L, 4L, 5));
 
         assertThat(sectionService.findStationsInLine(1L)).hasSize(4);
 
+        List<Long> stationId = new ArrayList<>();
         for (Station station : sectionService.findStationsInLine(1L)) {
-            System.out.println(station.getName());
+            stationId.add(station.getId());
         }
+        System.out.println(stationId.toString());
+        assertThat(stationId).isEqualTo(Arrays.asList(1L, 2L, 4L, 3L));
     }
 
     @DisplayName("구간 중간에 삽입되며 상행이 이미 존재하는 경우 거리값 변경 확인")
@@ -83,6 +91,37 @@ public class SectionTest {
 
         assertThat(sectionService.findByUpStationId(1L, 1L).getDistance()).isEqualTo(4);
         assertThat(sectionService.findByDownStationId(1L, 4L).getDistance()).isEqualTo(6);
+    }
+
+    @DisplayName("구간 중간에 삽입되며 하행이 이미 존재하는 경우")
+    @Test
+    void insertMidExistDownStation() {
+        sectionService.insertSection(1L, new SectionRequest(4L, 2L, 5));
+
+        assertThat(sectionService.findStationsInLine(1L)).hasSize(4);
+
+        List<Long> stationId = new ArrayList<>();
+        for (Station station : sectionService.findStationsInLine(1L)) {
+            stationId.add(station.getId());
+        }
+        assertThat(stationId).isEqualTo(Arrays.asList(1L, 4L, 2L, 3L));
+    }
+
+    @DisplayName("구간 중간에 삽입되며 하행이 이미 존재하는 경우 거리값 변경 확인")
+    @Test
+    void insertMidExistDownStationDistance() {
+        sectionService.insertSection(1L, new SectionRequest(4L, 2L, 4));
+
+        assertThat(sectionService.findByUpStationId(1L, 1L).getDistance()).isEqualTo(6);
+        assertThat(sectionService.findByDownStationId(1L, 4L).getDistance()).isEqualTo(4);
+    }
+
+    @DisplayName("구간 중간 삽입 시 거리가 모자라는 경우")
+    @Test
+    void failInsertDistance() {
+        assertThatThrownBy(() ->
+            sectionService.insertSection(1L, new SectionRequest(4L, 2L, 10))
+        ).isInstanceOf(ShortDistanceException.class);
     }
 
 

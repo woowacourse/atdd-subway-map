@@ -84,38 +84,58 @@ public class SectionService {
 
     @Transactional
     public void insertSection(Long lineId, SectionRequest sectionRequest) {
-//        sectionDao.findSectionByUpStationId(sectionRequest.getUpStationId());
-//        sectionDao.findSectionByDownStationId(sectionRequest.getDownStationId());
-//
-//        findSectionByUpStationId();
         List<Station> stationsInLine = findStationsInLine(lineId);
-
         endPointInSection sectionEndPoint = findSectionEndPoint(lineId);
-        if (sectionEndPoint.getUpStationId() == sectionRequest.getDownStationId()
-            || sectionEndPoint.getDownStationId() == sectionRequest.getUpStationId()) {
+        if (isInsertPointIsEnd(sectionRequest, sectionEndPoint)) {
             sectionDao.save(new Section(lineId, sectionRequest));
             return;
         }
+
+        sectionIsNoEndPoint(stationsInLine, lineId, sectionRequest);
+    }
+
+    private void sectionIsNoEndPoint(List<Station> stationsInLine, Long lineId,
+        SectionRequest sectionRequest) {
         Section upSection;
         Section downSection;
+
         for (Station station : stationsInLine) {
-            if (station.getId().equals(sectionRequest.getUpStationId())) {
+            if (station.isSameStationId(sectionRequest.getUpStationId())) {
                 upSection = sectionDao.findByUpStationId(lineId, sectionRequest.getUpStationId());
                 if (upSection.getDistance() <= sectionRequest.getDistance()) {
                     throw new ShortDistanceException("삽입하려는 구간의 거리가 너무 짧습니다.");
                 }
-                int distance = upSection.getDistance() - sectionRequest.getDistance();
+                int newDistance = upSection.getDistance() - sectionRequest.getDistance();
                 sectionDao.delete(lineId, upSection.getUpStationId());
-                sectionDao.save(new Section(upSection.getLineId(),
+                sectionDao.save(new Section(lineId,
                     sectionRequest.getDownStationId(),
                     upSection.getDownStationId(),
-                    distance));
+                    newDistance));
                 sectionDao.save(new Section(lineId, sectionRequest));
+                return;
             }
-
-
+            if (station.isSameStationId(sectionRequest.getDownStationId())) {
+                upSection = sectionDao
+                    .findByDownStationId(lineId, sectionRequest.getDownStationId());
+                if (upSection.getDistance() <= sectionRequest.getDistance()) {
+                    throw new ShortDistanceException("삽입하려는 구간의 거리가 너무 짧습니다.");
+                }
+                int newDistance = upSection.getDistance() - sectionRequest.getDistance();
+                sectionDao.delete(lineId, upSection.getUpStationId());
+                sectionDao.save(new Section(lineId,
+                    upSection.getUpStationId(),
+                    sectionRequest.getUpStationId(),
+                    newDistance));
+                sectionDao.save(new Section(lineId, sectionRequest));
+                return;
+            }
         }
+    }
 
+    private boolean isInsertPointIsEnd(SectionRequest sectionRequest,
+        endPointInSection sectionEndPoint) {
+        return sectionEndPoint.getUpStationId() == sectionRequest.getDownStationId()
+            || sectionEndPoint.getDownStationId() == sectionRequest.getUpStationId();
     }
 
     public List<Section> findSectionsInLine(long lineId) {

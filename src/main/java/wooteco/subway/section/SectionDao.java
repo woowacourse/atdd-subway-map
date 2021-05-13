@@ -82,7 +82,7 @@ public class SectionDao {
     }
 
     public Section findByDownStationId(Long lineId, Long downStationId) {
-        String query = "SELECT * FROM section WHERE line_id = (?) AND up_station_id = (?)";
+        String query = "SELECT * FROM section WHERE line_id = (?) AND down_station_id = (?)";
 
         return jdbcTemplate.queryForObject(query, (resultSet, rowNum) -> new Section(
             resultSet.getLong("line_id"),
