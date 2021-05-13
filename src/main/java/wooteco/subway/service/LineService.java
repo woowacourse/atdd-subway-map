@@ -9,7 +9,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.exception.DuplicateLineNameException;
+import wooteco.subway.service.exception.DuplicateLineNameException;
 
 import java.util.List;
 import java.util.stream.Collectors;

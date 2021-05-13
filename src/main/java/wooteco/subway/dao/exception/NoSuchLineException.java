@@ -1,4 +1,4 @@
-package wooteco.subway.exception;
+package wooteco.subway.dao.exception;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 

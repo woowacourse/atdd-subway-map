@@ -7,7 +7,7 @@ import wooteco.subway.dao.StationRepository;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.DuplicateStationNameException;
+import wooteco.subway.controller.exception.DuplicateStationNameException;
 
 import java.net.URI;
 import java.util.List;

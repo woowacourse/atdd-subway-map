@@ -2,7 +2,7 @@ package wooteco.subway.dao;
 
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.NoSuchLineException;
+import wooteco.subway.dao.exception.NoSuchLineException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
