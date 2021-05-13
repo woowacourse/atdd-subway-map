@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.web.exception.SubwayException;
+import wooteco.subway.web.exception.SubwayHttpException;
 
 @Repository
 public class SectionDao {
@@ -49,7 +49,7 @@ public class SectionDao {
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new SubwayException("중복된 역 이름입니다");
+            throw new SubwayHttpException("중복된 역 이름입니다");
         }
 
         return keyHolder.getKey().longValue();
@@ -63,15 +63,12 @@ public class SectionDao {
     public Long countSection(Long lineId, Long stationId) {
         final String sql = "SELECT COUNT(*) "
                 + "FROM section "
-                + "WHERE line_id = :line_id "
+                + "WHERE line_id = ? "
                 + "AND "
-                + "(up_station_id = :station_id OR down_station_id = :station_id)";
+                + "(up_station_id = ? OR down_station_id = ?)";
 
-        final Map<String, Object> namedParams = new HashMap<>();
-        namedParams.put("line_id", lineId);
-        namedParams.put("station_id", stationId);
-
-        return namedParameterJdbcTemplate.queryForObject(sql, namedParams, Long.class);
+        return jdbcTemplate.queryForObject(sql, Long.class,
+                lineId, stationId, stationId);
     }
 
     public void delete(Long id) {
@@ -107,7 +104,8 @@ public class SectionDao {
                 + "line_id = ? "
                 + "AND "
                 + "(up_station_id = ? OR down_station_id = ?)";
-        return jdbcTemplate.query(sql, sectionRowMapper, lineId, stationId, stationId);
+        return jdbcTemplate.query(sql, sectionRowMapper,
+                lineId, stationId, stationId);
     }
 
     public void deleteSectionByStationId(Long lineId, Long stationId) {
@@ -116,6 +114,7 @@ public class SectionDao {
                 + "line_id = ? "
                 + "AND "
                 + "(up_station_id = ? OR down_station_id = ?)";
-        jdbcTemplate.update(sql, lineId, stationId, stationId);
+        jdbcTemplate.update(sql,
+                lineId, stationId, stationId);
     }
 }

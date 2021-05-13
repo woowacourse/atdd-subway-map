@@ -1,17 +1,19 @@
 package wooteco.subway.domain.station;
 
 import java.sql.PreparedStatement;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.web.exception.SubwayException;
+import wooteco.subway.web.exception.SubwayHttpException;
 
 @Repository
 public class StationDao {
@@ -38,7 +40,7 @@ public class StationDao {
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new SubwayException("중복된 역 이름입니다");
+            throw new SubwayHttpException("중복된 역 이름입니다");
         }
 
         return keyHolder.getKey().longValue();
@@ -66,12 +68,14 @@ public class StationDao {
     }
 
     public List<Station> stationsFilteredById(List<Long> ids) {
-        final String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
-        final String sql = String.format("SELECT id, name FROM station WHERE id IN (%s)", inSql);
+        final String sql = "SELECT id, name FROM station WHERE id IN (:ids)";
 
-        return jdbcTemplate.query(
-                sql,
-                ids.toArray(),
-                stationRowMapper);
+        NamedParameterJdbcTemplate npJdbcTemplate = new NamedParameterJdbcTemplate(
+                Objects.requireNonNull(this.jdbcTemplate.getDataSource()));
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("ids", ids);
+
+        return npJdbcTemplate.query(sql, parameters, stationRowMapper);
     }
 }
