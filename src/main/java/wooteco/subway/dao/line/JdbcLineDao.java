@@ -52,6 +52,12 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
+    public void update(Long id, String name, String color) {
+        String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
+        jdbcTemplate.update(sql, name, color, id);
+    }
+
+    @Override
     public void delete(Long id) {
         String sql = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(sql, id);

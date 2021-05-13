@@ -69,7 +69,7 @@ class SectionApiControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
 
-        final List<Section> sections = sectionDao.findByLineId(line.getId()).sections();
+        final List<Section> sections = sectionDao.findById(line.getId()).sections();
         assertThat(sections).hasSize(2);
     }
 
@@ -95,7 +95,7 @@ class SectionApiControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
 
-        final List<Section> sections = sectionDao.findByLineId(line.getId()).sections();
+        final List<Section> sections = sectionDao.findById(line.getId()).sections();
         assertThat(sections).hasSize(2);
     }
 
@@ -120,7 +120,7 @@ class SectionApiControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
 
-        final List<Section> sections = sectionDao.findByLineId(line.getId()).sections();
+        final List<Section> sections = sectionDao.findById(line.getId()).sections();
         assertThat(sections).hasSize(2);
     }
 
@@ -146,7 +146,7 @@ class SectionApiControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
 
-        final List<Section> sections = sectionDao.findByLineId(line.getId()).sections();
+        final List<Section> sections = sectionDao.findById(line.getId()).sections();
         assertThat(sections).hasSize(2);
     }
 
@@ -280,7 +280,7 @@ class SectionApiControllerTest {
         result.andDo(print())
                 .andExpect(status().isNoContent());
 
-        final Sections sections = sectionDao.findByLineId(line.getId());
+        final Sections sections = sectionDao.findById(line.getId());
         assertThat(sections.sections().size()).isEqualTo(1);
         assertThat(sections.sections().get(0).getUpStation().getName()).isEqualTo("강남역");
         assertThat(sections.sections().get(0).getDownStation().getName()).isEqualTo("잠실새내역");
@@ -354,7 +354,7 @@ class SectionApiControllerTest {
         result.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
-        final List<Section> sections = sectionDao.findByLineId(line.getId()).sections();
+        final List<Section> sections = sectionDao.findById(line.getId()).sections();
         assertThat(sections).hasSize(4);
     }
 

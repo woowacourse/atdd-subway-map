@@ -10,8 +10,8 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Line {
     private final Long id;
-    private final String name;
-    private final String color;
+    private String name;
+    private String color;
     private Sections sections;
 
     public static Line of(String name, String color) {
@@ -48,5 +48,14 @@ public class Line {
 
     public void insertSections(Sections sections) {
         this.sections = sections;
+    }
+
+    public boolean isNotSameId(Long id) {
+        return !this.id.equals(id);
+    }
+
+    public void changeInfo(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 }

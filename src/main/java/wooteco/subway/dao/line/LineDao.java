@@ -15,4 +15,6 @@ public interface LineDao {
     List<Line> findAll();
 
     void delete(Long lineId);
+
+    void update(Long id, String name, String color);
 }

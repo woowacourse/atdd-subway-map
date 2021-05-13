@@ -36,7 +36,7 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public Sections findByLineId(Long lineId) {
+    public Sections findById(Long lineId) {
         String sql = "SELECT id, (SELECT * FROM station WHERE station.id = section.up_station_id) AS upStation, " +
                 "(SELECT * FROM station WHERE station.id = section.down_station_id) AS downStation, " +
                 "distance FROM section WHERE line_id = ?;";
@@ -90,7 +90,7 @@ public class JdbcSectionDao implements SectionDao {
 
     @Override
     public List<Section> findContainsStationId(Long lineId, Long stationId) {
-        Sections sectionsByLineId = findByLineId(lineId);
+        Sections sectionsByLineId = findById(lineId);
         return sectionsByLineId.containsStationByStationId(stationId);
     }
 

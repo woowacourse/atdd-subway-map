@@ -31,7 +31,7 @@ public class InMemorySectionDao implements SectionDao {
     }
 
     @Override
-    public Sections findByLineId(Long lineId) {
+    public Sections findById(Long lineId) {
         final List<Section> sections = new ArrayList<>(this.sections.get(lineId));
         return Sections.from(sections);
     }

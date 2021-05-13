@@ -47,6 +47,11 @@ public class InMemoryLineDao implements LineDao {
     }
 
     @Override
+    public void update(Long id, String name, String color) {
+        findById(id).ifPresent(line -> line.changeInfo(name, color));
+    }
+
+    @Override
     public void delete(Long id) {
         lines.removeIf(line -> line.isSameId(id));
     }

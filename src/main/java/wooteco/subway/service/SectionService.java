@@ -23,7 +23,7 @@ public class SectionService {
     private final SectionDao sectionDao;
 
     public Section create(Section section, Long lineId) {
-        Sections sections = sectionDao.findByLineId(lineId);
+        Sections sections = sectionDao.findById(lineId);
         Section sectionWithLineId = Section.of(section, lineId);
         Optional<Section> affectedSection = sections.changeSection(sectionWithLineId);
 
@@ -47,7 +47,7 @@ public class SectionService {
     public void delete(Long lineId, Long stationId) {
         lineDao.findById(lineId).orElseThrow(LineNotFoundException::new);
         stationDao.findById(stationId).orElseThrow(StationNotFoundException::new);
-        if (sectionDao.findByLineId(lineId).hasSize(1)) {
+        if (sectionDao.findById(lineId).hasSize(1)) {
             throw new NotEnoughSectionException();
         }
 

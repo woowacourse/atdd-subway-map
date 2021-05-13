@@ -14,6 +14,7 @@ import wooteco.subway.web.request.LineRequest;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -39,9 +40,13 @@ public class LineService {
     public Line find(Long lineId) {
         Line line = lineDao.findById(lineId)
                 .orElseThrow(LineNotFoundException::new);
-        Sections sections = sectionDao.findByLineId(lineId);
+        Sections sections = sectionDao.findById(lineId);
         line.insertSections(sections);
         return line;
+    }
+
+    public Optional<Line> findByNameOrColor(LineRequest lineRequest) {
+        return lineDao.findByNameOrColor(lineRequest.getName(), lineRequest.getColor());
     }
 
     public List<Line> findAll() {
@@ -62,5 +67,9 @@ public class LineService {
             throw new LineNotFoundException();
         }
         lineDao.delete(lineId);
+    }
+
+    public void update(Long id, LineRequest lineRequest) {
+        lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
     }
 }

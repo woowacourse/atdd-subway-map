@@ -189,7 +189,7 @@ class LineApiControllerTest {
         // given & when
         ResultActions result = mockMvc.perform(get("/lines/" + Long.MAX_VALUE));
 
-        //then
+        // then
         result.andDo(print())
                 .andExpect(status().isNotFound());
     }
@@ -204,13 +204,13 @@ class LineApiControllerTest {
         final LineRequest lineRequest =
                 new LineRequest("2호선", "bg-green-600", upStationId, downStationId, 10);
 
-        //when
+        // when
         ResultActions createdLine = 노선_생성(lineRequest);
         LineResponse lineResponse =
                 objectMapper.readValue(createdLine.andReturn().getResponse().getContentAsString(), LineResponse.class);
         ResultActions result = mockMvc.perform(delete("/lines/" + lineResponse.getId()));
 
-        //then
+        // then
         result.andDo(print())
                 .andExpect(status().isNoContent());
     }
@@ -224,6 +224,36 @@ class LineApiControllerTest {
         //then
         result.andDo(print())
                 .andExpect(status().isNotFound());
+    }
+
+    @DisplayName("노선 업데이트")
+    @Test
+    void update() throws Exception {
+        // given
+        Long upStationId = stationDao.save(Station.from("잠실역")).getId();
+        Long downStationId = stationDao.save(Station.from("잠실새내역")).getId();
+
+        final LineRequest lineRequest =
+                new LineRequest("2호선", "bg-red-600", upStationId, downStationId, 10);
+        final LineRequest lineRequest2 =
+                new LineRequest("3호선", "bg-blue-600", upStationId, downStationId, 10);
+
+        ResultActions createdLine = 노선_생성(lineRequest);
+        LineResponse lineResponse =
+                objectMapper.readValue(createdLine.andReturn().getResponse().getContentAsString(), LineResponse.class);
+
+        // when
+        ResultActions result = mockMvc.perform(put("/lines/" + lineResponse.getId())
+                .content(objectMapper.writeValueAsString(lineRequest2))
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(header().exists("Location"))
+                .andExpect(jsonPath("id").value(lineResponse.getId()));
     }
 
     private ResultActions 노선_생성(LineRequest lineRequest) throws Exception {

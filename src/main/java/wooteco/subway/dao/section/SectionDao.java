@@ -9,7 +9,7 @@ import java.util.Map;
 public interface SectionDao {
     Section save(Section section, Long lineId);
 
-    Sections findByLineId(Long lineId);
+    Sections findById(Long lineId);
 
     Map<Long, Sections> findAll();
 
