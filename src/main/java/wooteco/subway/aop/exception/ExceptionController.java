@@ -8,9 +8,9 @@ import wooteco.subway.section.exception.Section4XXException;
 import wooteco.subway.station.exception.Station4XXException;
 
 @RestControllerAdvice({
-        "wooteco.subway.line.controller",
-        "wooteco.subway.station.controller",
-        "wooteco.subway.section.controller"
+        "wooteco.subway.controller.web.line",
+        "wooteco.subway.controller.web.station",
+        "wooteco.subway.controller.web.section"
 })
 public class ExceptionController {
     @ExceptionHandler({Section4XXException.class, Line4XXException.class, Station4XXException.class})
