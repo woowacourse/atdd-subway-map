@@ -8,14 +8,12 @@ import io.restassured.response.Response;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineRequest;
-import wooteco.subway.line.section.dto.SectionRequest;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 

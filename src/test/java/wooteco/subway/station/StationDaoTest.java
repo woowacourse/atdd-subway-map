@@ -7,7 +7,6 @@ import java.util.List;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.dao.DataIntegrityViolationException;
 import wooteco.subway.UnitTest;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.UseForeignKeyException;
@@ -73,7 +72,7 @@ class StationDaoTest extends UnitTest {
     }
 
     @Test
-    @DisplayName("Station이 구간에 포함되어 있을때 역을 삭제하면 에러가 발생한다.")
+    @DisplayName("Station 이 구간에 포함되어 있을때 역을 삭제하면 에러가 발생한다.")
     void deleteWithUseStation() {
         //given
         stationDao.save(new Station("잠실역"));
@@ -82,7 +81,7 @@ class StationDaoTest extends UnitTest {
         sectionDao.save(1L, new Section(1L, 2L, 10));
 
         //when
-         ThrowableAssert.ThrowingCallable callable = () -> stationDao.delete(1L);
+        ThrowableAssert.ThrowingCallable callable = () -> stationDao.delete(1L);
 
         //then
         assertThatThrownBy(callable).isInstanceOf(UseForeignKeyException.class);

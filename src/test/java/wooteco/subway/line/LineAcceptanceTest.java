@@ -414,7 +414,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getLineAPI();
 
         //then
-        System.out.println(response.body().asString());
         thenCheckSection(stations, response);
     }
 
@@ -544,7 +543,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         ExtractableResponse<Response> lineResponse = getLineAPI();
 
-        System.out.println(lineResponse.body().asString());
         thenCheckSection(stations, lineResponse);
     }
 

@@ -23,7 +23,8 @@ class SectionTest extends UnitTest {
         int distance = 10;
 
         //when
-        ThrowableAssert.ThrowingCallable callable = () -> new Section(upStationId, downStationId, distance);
+        ThrowableAssert.ThrowingCallable callable = () -> new Section(upStationId, downStationId,
+            distance);
 
         //then
         assertThatCode(callable).doesNotThrowAnyException();
@@ -38,7 +39,8 @@ class SectionTest extends UnitTest {
         int distance = 10;
 
         //when
-        ThrowableAssert.ThrowingCallable callable = () -> new Section(upStationId, downStationId, distance);
+        ThrowableAssert.ThrowingCallable callable = () -> new Section(upStationId, downStationId,
+            distance);
 
         //then
         assertThatThrownBy(callable).isInstanceOf(NotInputDataException.class);
@@ -53,7 +55,8 @@ class SectionTest extends UnitTest {
         int distance = 10;
 
         //when
-        ThrowableAssert.ThrowingCallable callable = () -> new Section(upStationId, downStationId, distance);
+        ThrowableAssert.ThrowingCallable callable = () -> new Section(upStationId, downStationId,
+            distance);
 
         //then
         assertThatThrownBy(callable).isInstanceOf(NotInputDataException.class);
@@ -69,7 +72,8 @@ class SectionTest extends UnitTest {
         int distance = value;
 
         //when
-        ThrowableAssert.ThrowingCallable callable = () -> new Section(upStationId, downStationId, distance);
+        ThrowableAssert.ThrowingCallable callable = () -> new Section(upStationId, downStationId,
+            distance);
 
         //then
         assertThatThrownBy(callable).isInstanceOf(NotInputDataException.class);
