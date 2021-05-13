@@ -28,22 +28,11 @@ public class Sections {
         validateRegisteredStations(hasUpStation, hasDownStation);
 
         if (hasUpStation) {
-            if (isUpStationOfAnywhere(upStation)) {
-                Section sectionToUpdate = getSectionWhereUpStationIs(upStation);
-                addMiddle(sectionToUpdate, downStation, distance);
-                return;
-            }
-            addAt(new Section(upStation, downStation, distance), this.sections.size());
+            addDownStationToLine(upStation, downStation, distance);
             return;
         }
-
         if (hasDownStation) {
-            if (isDownStationOfAnywhere(downStation)) {
-                Section sectionToUpdate = getSectionWhereDownStationIs(downStation);
-                addMiddle(sectionToUpdate, upStation, sectionToUpdate.getDistance() - distance);
-                return;
-            }
-            addAt(new Section(upStation, downStation, distance), 0);
+            addUpStationToLine(upStation, downStation, distance);
         }
     }
 
@@ -73,6 +62,24 @@ public class Sections {
                 .filter(section -> section.isDownStation(downStation))
                 .findAny()
                 .get();
+    }
+
+    private void addDownStationToLine(Station upStation, Station downStation, int distance) {
+        if (isUpStationOfAnywhere(upStation)) {
+            Section sectionToUpdate = getSectionWhereUpStationIs(upStation);
+            addMiddle(sectionToUpdate, downStation, distance);
+            return;
+        }
+        addAt(new Section(upStation, downStation, distance), this.sections.size());
+    }
+
+    private void addUpStationToLine(Station upStation, Station downStation, int distance) {
+        if (isDownStationOfAnywhere(downStation)) {
+            Section sectionToUpdate = getSectionWhereDownStationIs(downStation);
+            addMiddle(sectionToUpdate, upStation, sectionToUpdate.getDistance() - distance);
+            return;
+        }
+        addAt(new Section(upStation, downStation, distance), 0);
     }
 
     private void addMiddle(Section sectionToUpdate, Station station, int distance) {
