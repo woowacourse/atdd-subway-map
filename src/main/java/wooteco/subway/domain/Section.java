@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import wooteco.subway.exception.section.InvalidDistanceException;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Section {
 
     private Long id;

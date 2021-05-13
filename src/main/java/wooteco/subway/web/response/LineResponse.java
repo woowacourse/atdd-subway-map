@@ -8,9 +8,9 @@ import wooteco.subway.domain.Line;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
 public class LineResponse {
     private Long id;
     private String name;

@@ -5,9 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wooteco.subway.domain.Station;
 
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
 public class StationResponse {
     private Long id;
     private String name;

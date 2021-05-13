@@ -14,8 +14,8 @@ import wooteco.subway.exception.station.StationNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class SectionService {
 
     private final StationDao stationDao;

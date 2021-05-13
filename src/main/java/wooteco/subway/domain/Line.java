@@ -6,12 +6,12 @@ import lombok.Getter;
 
 import java.util.List;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Line {
-    private Long id;
-    private String name;
-    private String color;
+    private final Long id;
+    private final String name;
+    private final String color;
     private Sections sections;
 
     public static Line of(String name, String color) {
