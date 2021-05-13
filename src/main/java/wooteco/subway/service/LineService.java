@@ -3,30 +3,41 @@ package wooteco.subway.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.exceptions.LineDuplicationException;
 import wooteco.subway.exceptions.LineNotFoundException;
 import wooteco.subway.repository.LineDao;
 import wooteco.subway.repository.SectionDao;
-import wooteco.subway.repository.StationDao;
 
 @Service
 public class LineService {
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
-    private final StationDao stationDao;
+    private final StationService stationService;
 
-    public LineService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
+    public LineService(LineDao lineDao, SectionDao sectionDao,
+        StationService stationService) {
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
-        this.stationDao = stationDao;
+        this.stationService = stationService;
     }
 
-    public Line createLine(Line line) {
+    public Line createLine(LineRequest lineRequest) {
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+
         validateDuplication(line.getName());
-        long id = lineDao.save(line);
-        line.setId(id);
+        long lineId = lineDao.save(line);
+        line.setId(lineId);
+
+        Section section = createSection(lineRequest);
+        long sectionId = sectionDao.save(section, lineId);
+        section.setId(sectionId);
+
+        line.addSection(section);
+
         return line;
     }
 
@@ -63,5 +74,13 @@ public class LineService {
         if (isDuplicated) {
             throw new LineDuplicationException();
         }
+    }
+
+    private Section createSection(LineRequest lineRequest) {
+        return new Section(
+            stationService.findById(lineRequest.getUpStationId()),
+            stationService.findById(lineRequest.getDownStationId()),
+            lineRequest.getDistance()
+        );
     }
 }

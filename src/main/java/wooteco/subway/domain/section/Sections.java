@@ -1,15 +1,17 @@
 package wooteco.subway.domain.section;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import wooteco.subway.exceptions.SectionNotFoundException;
+import wooteco.subway.domain.station.Station;
+import wooteco.subway.exceptions.NotAddableSectionException;
 
 public class Sections {
 
-    private List<Section> sections;
+    private List<Section> sections = new ArrayList<>();
 
     public Sections() {
     }
@@ -22,7 +24,19 @@ public class Sections {
         return sections;
     }
 
-    public Deque<Long> getSortedId() {
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        Deque<Long> stationIds = getSortedId();
+        for (long stationId : stationIds) {
+            Station station = sections.stream()
+                .map(section -> section.getStationById(stationId))
+                .findAny().get();
+            stations.add(station);
+        }
+        return stations;
+    }
+
+    private Deque<Long> getSortedId() {
         Map<Long, Long> upLineInfo = getUpLineInfo();
         Map<Long, Long> downLineInfo = getDownLineInfo();
         Deque<Long> stationIds = new ArrayDeque<>();
@@ -57,10 +71,88 @@ public class Sections {
         return new HashMap<>(stationInfo);
     }
 
-    public Section getSectionById(Long id) {
-        return sections.stream()
-            .filter(section -> section.getId().equals(id))
+    public void addSection(Section section) {
+        if (this.sections.isEmpty()) {
+            this.sections.add(section);
+            return;
+        }
+
+        checkExistStation(section);
+        checkAlreadyExistSection(section);
+
+        List<Station> stations = getStations();
+        if (stations.get(0).equals(section.getDownStation()) ||
+            stations.get(stations.size() - 1).equals(section.getUpStation())
+        ) {
+            addNewSection(section);
+            return;
+        }
+        addUpOrDown(section);
+    }
+
+
+    private void addUpOrDown(Section section) {
+        this.sections.stream()
+            .filter(sct -> sct.getUpStation().equals(section.getUpStation()))
             .findFirst()
-            .orElseThrow(SectionNotFoundException::new);
+            .ifPresent(savedSection -> addUpAndMiddleSection(section, savedSection));
+
+        this.sections.stream()
+            .filter(sct -> sct.getDownStation().equals(section.getDownStation()))
+            .findFirst()
+            .ifPresent(savedSection -> addDownAndMiddleSection(section, savedSection));
+    }
+
+    private void addUpAndMiddleSection(Section section, Section savedSection) {
+        checkDistance(section, savedSection);
+        addNewSection(section);
+
+        this.sections.add(new Section(
+            savedSection.getUpStation(),
+            savedSection.getUpStation(),
+            savedSection.getDistance() - section.getDistance()
+        ));
+    }
+
+    private void addDownAndMiddleSection(Section section, Section savedSection) {
+        checkDistance(section, savedSection);
+        addNewSection(section);
+
+        this.sections.add(new Section(
+            section.getDownStation(),
+            savedSection.getDownStation(),
+            savedSection.getDistance() - section.getDistance()
+        ));
+    }
+
+    private void addNewSection(Section section) {
+        this.sections.add(new Section(
+            section.getUpStation(),
+            section.getDownStation(),
+            section.getDistance()
+        ));
+    }
+
+    private void checkDistance(Section section, Section savedSection) {
+        if (section.getDistance() <= savedSection.getDistance()) {
+            throw new NotAddableSectionException();
+        }
+        this.sections.remove(savedSection);
+    }
+
+    private void checkAlreadyExistSection(Section section) {
+        List<Station> stations = getStations();
+        if (stations.contains(section.getUpStation()) &&
+            stations.contains(section.getDownStation())) {
+            throw new NotAddableSectionException();
+        }
+    }
+
+    private void checkExistStation(Section section) {
+        List<Station> stations = getStations();
+        if (!stations.contains(section.getUpStation()) &&
+            !stations.contains(section.getDownStation())) {
+            throw new NotAddableSectionException();
+        }
     }
 }

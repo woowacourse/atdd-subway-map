@@ -1,14 +1,17 @@
 package wooteco.subway.domain.line;
 
 import java.util.Deque;
+import java.util.List;
+import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
+import wooteco.subway.domain.station.Station;
 
 public class Line {
 
     private long id;
     private String name;
     private String color;
-    private Sections sections;
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -51,8 +54,12 @@ public class Line {
         this.sections = sections;
     }
 
-    public Deque<Long> getStations() {
-        return sections.getSortedId();
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
     }
 }
 

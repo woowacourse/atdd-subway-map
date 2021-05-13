@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
@@ -43,14 +42,12 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = lineService.createLine(lineRequest.toLine());
-        Section section = sectionService.createSection(lineRequest, line.getId());
+        Line line = lineService.createLine(lineRequest);
         LineResponse lineResponse = new LineResponse(
             line,
-            Arrays.asList(
-                new StationResponse(section.getUpStation()),
-                new StationResponse(section.getDownStation())
-            )
+            line.getStations().stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList())
         );
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
     }
@@ -62,7 +59,6 @@ public class LineController {
             .map(line -> new LineResponse(
                 line,
                 line.getStations().stream()
-                    .map(stationService::findById)
                     .map(StationResponse::new)
                     .collect(Collectors.toList())
             ))
@@ -73,10 +69,11 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
+        System.out.println(line + "@@@@@@@@@@@@@");
         List<StationResponse> stations = line.getStations().stream()
-            .map(stationService::findById)
             .map(StationResponse::new)
             .collect(Collectors.toList());
+        System.out.println(stations + "############");
         LineResponse lineResponse = new LineResponse(line, stations);
         return ResponseEntity.ok(lineResponse);
     }

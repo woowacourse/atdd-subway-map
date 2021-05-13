@@ -18,17 +18,6 @@ public class SectionService {
         this.stationService = stationService;
     }
 
-    public Section createSection(LineRequest lineRequest, Long lindId) {
-        Section section = new Section(
-            stationService.findById(lineRequest.getUpStationId()),
-            stationService.findById(lineRequest.getDownStationId()),
-            lineRequest.getDistance()
-        );
-        Long sectionId = sectionDao.save(section, lindId);
-        section.setId(sectionId);
-        return section;
-    }
-
     public Section createSection(SectionRequest sectionRequest, Long lineId) {
         Section section = new Section(
             stationService.findById(sectionRequest.getUpStationId()),

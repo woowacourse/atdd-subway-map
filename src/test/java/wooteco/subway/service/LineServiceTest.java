@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.section.Sections;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.repository.LineDao;
 import wooteco.subway.repository.SectionDao;
 
@@ -39,7 +40,8 @@ class LineServiceTest {
         given(lineDao.save(any())).willReturn(1L);
 
         // when
-        Line line2 = lineService.createLine(line);
+        LineRequest lineRequest = new LineRequest(line.getName(), line.getColor(), 1L, 2L, 3);
+        Line line2 = lineService.createLine(lineRequest);
 
         // then
         assertThat(line2).isEqualTo(line);

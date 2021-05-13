@@ -1,6 +1,8 @@
 package wooteco.subway.domain.section;
 
+import java.util.stream.Stream;
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.exceptions.StationNotFoundException;
 
 public class Section {
 
@@ -48,5 +50,12 @@ public class Section {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Station getStationById(Long id) {
+        return Stream.of(upStation, downStation)
+            .filter(station -> id.equals(station.getId()))
+            .findFirst()
+            .orElseThrow(StationNotFoundException::new);
     }
 }
