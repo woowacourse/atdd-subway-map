@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.line.api.dto.LineRequest;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.model.Line;
 import wooteco.subway.section.model.Section;
@@ -16,7 +15,6 @@ import wooteco.subway.station.model.Station;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.Constants.*;
 
 @JdbcTest
 class SectionDaoTest {
@@ -43,10 +41,12 @@ class SectionDaoTest {
         Long stationId2 = stationDao.save(new Station("잠실역"));
         Long lineId = lineDao.save(new Line("2호선", "green"));
 
-        sectionDao.save(new Section(lineDao.findLineById(lineId),
-                stationDao.findStationById(stationId1),
-                stationDao.findStationById(stationId2),
-                10));
+        sectionDao.save(Section.builder()
+                        .line(lineDao.findLineById(lineId))
+                        .upStation(stationDao.findStationById(stationId1))
+                        .downStation(stationDao.findStationById(stationId2))
+                        .distance(10)
+                        .build());
         //when
         List<Section> sections = sectionDao.findSectionsByLineId(lineId);
         //then

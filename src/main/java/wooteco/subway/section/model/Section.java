@@ -1,5 +1,6 @@
 package wooteco.subway.section.model;
 
+import lombok.Builder;
 import wooteco.subway.exception.DuplicationException;
 import wooteco.subway.exception.sectionexception.WrongDistanceException;
 import wooteco.subway.line.model.Line;
@@ -7,6 +8,7 @@ import wooteco.subway.station.model.Station;
 
 import java.util.Objects;
 
+@Builder
 public class Section {
 
     private final Line line;
@@ -14,26 +16,26 @@ public class Section {
     private final Station downStation;
     private final int distance;
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
-        validateSection(upStation, downStation, distance);
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+    public static class SectionBuilder {
+
+        public SectionBuilder stations(Station upStation, Station downStation, int distance) {
+            validateSection(upStation, downStation, distance);
+            return this;
+        }
     }
 
-    private void validateSection(Station upStation, Station downStation, int distance) throws WrongDistanceException {
+    private static void validateSection(Station upStation, Station downStation, int distance) throws WrongDistanceException {
         validateSameStations(upStation, downStation);
         validateDistance(distance);
     }
 
-    private void validateSameStations(Station upStationId, Station downStationId) {
+    private static void validateSameStations(Station upStationId, Station downStationId) {
         if (upStationId.equals(downStationId)) {
             throw new DuplicationException("상행역과 하행역은 동일할 수 없습니다.");
         }
     }
 
-    private void validateDistance(int distance) throws WrongDistanceException {
+    private static void validateDistance(int distance) throws WrongDistanceException {
         if (distance <= 0) {
             throw new WrongDistanceException("거리는 1 이상이어야 합니다.");
         }

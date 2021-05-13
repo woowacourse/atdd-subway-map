@@ -3,7 +3,6 @@ package wooteco.subway.section.dao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.line.api.dto.LineRequest;
 import wooteco.subway.line.model.Line;
 import wooteco.subway.section.model.Section;
 import wooteco.subway.station.model.Station;
@@ -24,21 +23,17 @@ public class SectionDao {
         Long downStationId = rs.getLong("down_station_id");
         String downStationName = rs.getString("down_station_name");
         int distance = rs.getInt("distance");
-        return new Section(new Line(lineId, lineName, lineColor),
-                new Station(upStationId, upStationName),
-                new Station(downStationId, downStationName),
-                distance);
+        return Section.builder()
+                .line(new Line(lineId, lineName,lineColor))
+                .upStation(new Station(upStationId, upStationName))
+                .downStation(new Station(downStationId, downStationName))
+                .distance(distance)
+                .build();
     };
 
     public SectionDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
-//    public void save(Long lineId, LineRequest lineRequest) {
-//        String sql = "INSERT INTO `section` (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
-//        jdbcTemplate.update(sql, lineId, lineRequest.getUpStationId(),
-//                lineRequest.getDownStationId(), lineRequest.getDistance());
-//    }
 
     public void save(Section section) {
         String sql = "INSERT INTO `section` (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";

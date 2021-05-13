@@ -45,20 +45,22 @@ public class LineService {
     }
 
     private Section sectionFromLineRequest(LineRequest lineRequest, long createdId) {
-        return new Section(new Line(createdId, lineRequest.getName(), lineRequest.getColor()),
-                stationDao.findStationById(lineRequest.getUpStationId()),
-                stationDao.findStationById(lineRequest.getDownStationId()),
-                lineRequest.getDistance());
+        return Section.builder()
+                .line(new Line(createdId, lineRequest.getName(), lineRequest.getColor()))
+                .upStation(stationDao.findStationById(lineRequest.getUpStationId()))
+                .downStation(stationDao.findStationById(lineRequest.getDownStationId()))
+                .distance(lineRequest.getDistance())
+                .build();
     }
 
-    private List<Section> mapToSections(List<SectionDto> sectionDtos) {
-        return sectionDtos.stream()
-                .map(sectionDto -> new Section(lineDao.findLineById(sectionDto.getLineId()),
-                        stationDao.findStationById(sectionDto.getUpStationId()),
-                        stationDao.findStationById(sectionDto.getDownStationId()),
-                        sectionDto.getDistance()))
-                .collect(Collectors.toList());
-    }
+//    private List<Section> mapToSections(List<SectionDto> sectionDtos) {
+//        return sectionDtos.stream()
+//                .map(sectionDto -> new Section(lineDao.findLineById(sectionDto.getLineId()),
+//                        stationDao.findStationById(sectionDto.getUpStationId()),
+//                        stationDao.findStationById(sectionDto.getDownStationId()),
+//                        sectionDto.getDistance()))
+//                .collect(Collectors.toList());
+//    }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAll() {

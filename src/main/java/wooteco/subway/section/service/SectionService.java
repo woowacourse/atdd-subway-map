@@ -34,20 +34,13 @@ public class SectionService {
         updateSections(lineId, sections);
     }
 
-    private List<Section> mapToSections(List<SectionDto> sectionDtos) {
-        return sectionDtos.stream()
-                .map(sectionDto -> new Section(lineDao.findLineById(sectionDto.getLineId()),
-                        stationDao.findStationById(sectionDto.getUpStationId()),
-                        stationDao.findStationById(sectionDto.getDownStationId()),
-                        sectionDto.getDistance()))
-                .collect(Collectors.toList());
-    }
-
     private Section convertToSection(Long lineId, SectionRequest sectionRequest) {
-        return new Section(lineDao.findLineById(lineId),
-                stationDao.findStationById(sectionRequest.getUpStationId()),
-                stationDao.findStationById(sectionRequest.getDownStationId()),
-                sectionRequest.getDistance());
+        return Section.builder()
+                .line(lineDao.findLineById(lineId))
+                .upStation(stationDao.findStationById(sectionRequest.getUpStationId()))
+                .downStation(stationDao.findStationById(sectionRequest.getDownStationId()))
+                .distance(sectionRequest.getDistance())
+                .build();
     }
 
     @Transactional
