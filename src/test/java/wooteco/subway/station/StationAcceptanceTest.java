@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 
 import java.util.Arrays;
@@ -16,16 +17,17 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
+@Transactional
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 생성한다.")
     @Test
     void create_성공() {
         // given
-        StationRequest 강남역 = new StationRequest("강남역");
+        StationRequest 잠실역 = new StationRequest("잠실역");
 
         // when
-        ExtractableResponse<Response> result = 역_생성(강남역);
+        ExtractableResponse<Response> result = 역_생성(잠실역);
 
         // then
         assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -50,13 +52,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void read_성공() {
-        /// given
-        StationRequest 강남역 = new StationRequest("강남역");
-        ExtractableResponse<Response> 강남역_생성 = 역_생성(강남역);
+        // given
+        StationRequest 병점역 = new StationRequest("병점역");
+        ExtractableResponse<Response> 병점역_생성 = 역_생성(병점역);
 
         StationRequest 역삼역 = new StationRequest("역삼역");
         ExtractableResponse<Response> 역삼역_생성 = 역_생성(역삼역);
-        List<Long> expectedLineIds = Arrays.asList(강남역_생성, 역삼역_생성).stream()
+        List<Long> expectedLineIds = Arrays.asList(병점역_생성, 역삼역_생성).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
 

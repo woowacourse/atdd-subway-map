@@ -11,3 +11,12 @@ spring:
   h2:
     console:
       enabled: true     # h2 console 설정
+
+server:
+  tomcat:
+    uri-encoding: UTF-8
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+

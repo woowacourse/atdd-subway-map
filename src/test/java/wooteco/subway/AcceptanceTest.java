@@ -14,40 +14,9 @@ public class AcceptanceTest {
 
     @LocalServerPort
     int port;
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
-
-        jdbcTemplate.execute(
-                "DROP TABLE IF EXISTS STATION;" +
-                        "DROP TABLE IF EXISTS LINE;" +
-                        "DROP TABLE IF EXISTS SECTION;" +
-                        "create table if not exists STATION\n" +
-                        "(\n" +
-                        "    id bigint auto_increment not null,\n" +
-                        "    name varchar(255) not null unique,\n" +
-                        "    primary key(id)\n" +
-                        "    );\n" +
-                        "\n" +
-                        "create table if not exists LINE\n" +
-                        "(\n" +
-                        "    id bigint auto_increment not null,\n" +
-                        "    name varchar(255) not null unique,\n" +
-                        "    color varchar(20) not null,\n" +
-                        "    primary key(id)\n" +
-                        "    );\n" +
-                        "\n" +
-                        "create table if not exists SECTION\n" +
-                        "(\n" +
-                        "    id bigint auto_increment not null,\n" +
-                        "    line_id bigint not null,\n" +
-                        "    up_station_id bigint not null,\n" +
-                        "    down_station_id bigint not null,\n" +
-                        "    distance int,\n" +
-                        "    primary key(id)\n" +
-                        "    );");
     }
 }
