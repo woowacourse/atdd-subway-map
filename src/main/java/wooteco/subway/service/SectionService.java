@@ -31,36 +31,8 @@ public class SectionService {
                 sectionRequest.getUpStationId(),
                 sectionRequest.getDownStationId());
 
-        priorSection.ifPresent(prior -> updatePriorSection(prior, sectionRequest));
+        priorSection.ifPresent(prior -> updatePriorSection(lineId, prior, sectionRequest));
         sectionDao.save(new Section(lineId, sectionRequest.toEntity()));
-    }
-
-    private void updatePriorSection(Section priorSection, SectionRequest sectionRequest) {
-        validateDistance(priorSection, sectionRequest);
-        sectionDao.delete(priorSection.getId());
-        addUpdatedPrior(priorSection, sectionRequest);
-    }
-
-    private void addUpdatedPrior(Section priorSection, SectionRequest sectionRequest) {
-        Long priorUpId = priorSection.getUpStationId();
-        Long priorDownId = priorSection.getDownStationId();
-        Long requestUpId = sectionRequest.getUpStationId();
-        Long requestDownId = sectionRequest.getDownStationId();
-
-        int updatedDistance = priorSection.getDistance() - sectionRequest.getDistance();
-
-        if (priorUpId.equals(requestUpId)) {
-            sectionDao.save(new Section(requestUpId, priorDownId, updatedDistance));
-        }
-        if (priorDownId.equals(requestDownId)) {
-            sectionDao.save(new Section(priorDownId, requestUpId, updatedDistance));
-        }
-    }
-
-    private void validateDistance(Section priorSection, SectionRequest sectionRequest) {
-        if (priorSection.getDistance() <= sectionRequest.getDistance()) {
-            throw new SubwayHttpException("추가하려는 구간의 거리가 기존 구간거리보다 크거나 같음");
-        }
     }
 
     private void validateOnlyOneStationExists(Long lineId, SectionRequest sectionRequest) {
@@ -75,6 +47,34 @@ public class SectionService {
 
         if (sectionCountOfSameDown == 0 && sectionCountOfSameUp == 0) {
             throw new SubwayHttpException("");
+        }
+    }
+
+    private void updatePriorSection(Long lineId, Section priorSection,
+            SectionRequest sectionRequest) {
+        validateDistance(priorSection, sectionRequest);
+        sectionDao.delete(priorSection.getId());
+        addUpdatedPrior(lineId, priorSection, sectionRequest);
+    }
+
+    private void validateDistance(Section priorSection, SectionRequest sectionRequest) {
+        if (priorSection.getDistance() <= sectionRequest.getDistance()) {
+            throw new SubwayHttpException("추가하려는 구간의 거리가 기존 구간거리보다 크거나 같음");
+        }
+    }
+
+    private void addUpdatedPrior(Long lineId, Section priorSection, SectionRequest sectionRequest) {
+        Long priorUpId = priorSection.getUpStationId();
+        Long priorDownId = priorSection.getDownStationId();
+        Long requestUpId = sectionRequest.getUpStationId();
+        Long requestDownId = sectionRequest.getDownStationId();
+
+        int updatedDistance = priorSection.getDistance() - sectionRequest.getDistance();
+
+        if (priorUpId.equals(requestUpId)) {
+            sectionDao.save(new Section(lineId, requestDownId, priorDownId, updatedDistance));
+        } else if (priorDownId.equals(requestDownId)) {
+            sectionDao.save(new Section(lineId, priorUpId, requestUpId, updatedDistance));
         }
     }
 

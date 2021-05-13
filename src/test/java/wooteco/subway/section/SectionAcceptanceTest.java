@@ -144,11 +144,43 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("중간 구간 추가: 상행역 기준")
     void create_between_up() {
+        // given
+        Map<String, Object> sectionData = sectionData(stationA, newStationId, 2);
+
+        // when
+        ExtractableResponse<Response> response = postSection(sectionData, lineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        ExtractableResponse<Response> findResponse = getLine(lineId);
+        List<StationResponse> stations = findResponse.as(LineResponse.class).getStations();
+
+        assertThat(stations).size().isEqualTo(4);
+
+        StationResponse stationResponse = stations.get(1);
+        assertThat(stationResponse.getId()).isEqualTo(newStationId);
     }
 
     @Test
     @DisplayName("중간 구간 추가: 하행역 기준")
     void create_between_down() {
+        // given
+        Map<String, Object> sectionData = sectionData(newStationId, stationB, 2);
+
+        // when
+        ExtractableResponse<Response> response = postSection(sectionData, lineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        ExtractableResponse<Response> findResponse = getLine(lineId);
+        List<StationResponse> stations = findResponse.as(LineResponse.class).getStations();
+
+        assertThat(stations).size().isEqualTo(4);
+
+        StationResponse stationResponse = stations.get(1);
+        assertThat(stationResponse.getId()).isEqualTo(newStationId);
     }
 
     @Test

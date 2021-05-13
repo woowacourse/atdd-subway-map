@@ -2,7 +2,6 @@ package wooteco.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -17,13 +16,18 @@ public class SortedStationsTest {
     @Test
     void sortTest() {
         final List<Long> ids = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L);
-
-        List<StationResponse> stations = ids.stream()
-                .map(id -> new StationResponse(id, "역"))
-                .collect(Collectors.toList());
+        final List<StationResponse> stations = inputStations(ids);
 
         SortedStations sortedStations = new SortedStations(inputSections(), stations);
         assertThat(sortedStations.get()).containsAll(stations);
+    }
+
+    private List<StationResponse> inputStations(List<Long> ids) {
+        List<StationResponse> stations = ids.stream()
+                .map(id -> new StationResponse(id, "역"))
+                .collect(Collectors.toList());
+        Collections.shuffle(stations);
+        return stations;
     }
 
     private List<Section> inputSections() {

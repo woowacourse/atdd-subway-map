@@ -30,21 +30,12 @@ public class LineService {
 
     public LineResponse add(Line line, SectionRequest request) {
         Long lineId = addLine(line);
-        addSection(new Section(
-                lineId,
-                request.getUpStationId(),
-                request.getDownStationId(),
-                request.getDistance()
-        ));
+        sectionDao.save(new Section(lineId, request.toEntity()));
         return findById(lineId);
     }
 
     private Long addLine(Line line) {
         return lineDao.save(line);
-    }
-
-    private Long addSection(Section section) {
-        return sectionDao.save(section);
     }
 
     public List<Line> findAll() {
@@ -72,10 +63,9 @@ public class LineService {
             stationIds.add(section.getUpStationId());
             stationIds.add(section.getDownStationId());
         }
-        List<Long> distinctStationIds = stationIds.stream()
+        return stationIds.stream()
                 .distinct()
                 .collect(Collectors.toList());
-        return distinctStationIds;
     }
 
     public void update(Long id, Line line) {
