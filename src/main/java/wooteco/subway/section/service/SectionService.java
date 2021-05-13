@@ -26,17 +26,25 @@ public class SectionService {
     }
 
     @Transactional
-    public void save(Long lineId, Long upStationId, Long downStationId, int distance) {
-        OrderedSections lineSections = convert(sectionDao.findByLineId(lineId));
-        Section section = create(lineId, upStationId, downStationId, distance);
-        sectionDao.save(lineId, lineSections.addSection(section));
+    public void add(Long lineId, Long upStationId, Long downStationId, int distance) {
+        Section section = save(lineId, upStationId, downStationId, distance);
+        OrderedSections lineSections = findSections(lineId);
+        sectionDao.saveAll(lineId, lineSections.addSection(section));
     }
 
-    public Section create(Long lineId, Long upStationId, Long downStationId, int distance) {
+    private Section save(Long lineId, Long upStationId, Long downStationId, int distance) {
         Station upStation = stationService.findById(upStationId);
         Station downStation = stationService.findById(downStationId);
 
         return sectionDao.save(lineId, new Section(upStation, downStation, distance));
+    }
+
+    @Transactional
+    public void remove(Long lineId, Long stationId) {
+        Station byId = stationService.findById(stationId);
+        OrderedSections sections = findSections(lineId);
+
+        sectionDao.saveAll(lineId, sections.removeSection(byId));
     }
 
     public OrderedSections findSections(Long lineId) {
@@ -52,18 +60,8 @@ public class SectionService {
                 .collect(collectingAndThen(toList(), OrderedSections::new));
     }
 
-    public void delete(Long lineId, Long stationId) {
-        Station byId = stationService.findById(stationId);
-        OrderedSections sections = convert(sectionDao.findByLineId(lineId));
-
-        sectionDao.save(lineId, sections.removeSection(byId));
-    }
-
-    public void deleteLine(Long lineId) {
+    @Transactional
+    public void removeLine(Long lineId) {
         sectionDao.deleteLine(lineId);
-    }
-
-    public boolean isExist(Long lineId) {
-        return sectionDao.count(lineId) > 0;
     }
 }

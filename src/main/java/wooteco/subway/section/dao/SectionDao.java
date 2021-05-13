@@ -58,7 +58,7 @@ public class SectionDao {
         );
     }
 
-    public void save(Long lineId, OrderedSections lineSections) {
+    public void saveAll(Long lineId, OrderedSections lineSections) {
         deleteLine(lineId);
 
         String sql = "INSERT INTO " +
