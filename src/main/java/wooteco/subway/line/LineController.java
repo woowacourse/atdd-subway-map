@@ -66,7 +66,7 @@ public class LineController {
         sectionDao.findStationsByLineId(id);
 
         return ResponseEntity.ok()
-            .body(new StationsInLineResponse(line, sectionService.findStationsInSection(id)));
+            .body(new StationsInLineResponse(line, sectionService.findStationsInLine(id)));
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -79,7 +79,7 @@ public class LineController {
     @PostMapping(value = "/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> createSection(@PathVariable Long id,
         @RequestBody SectionRequest sectionRequest) {
-        sectionDao.save(new Section(id, sectionRequest));
+        sectionService.insertSection(id, sectionRequest);
 
         return ResponseEntity.ok().build();
     }

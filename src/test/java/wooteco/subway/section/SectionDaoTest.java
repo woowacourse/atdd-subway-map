@@ -75,7 +75,7 @@ public class SectionDaoTest {
     @Test
     void findAllStationSize() {
         sectionDao.save(new Section(1L, 2L, 3L, 20));
-        List<RouteInSection> stations = sectionDao.findStationsByLineId(1L);
+        List<Section> stations = sectionDao.findStationsByLineId(1L);
         assertThat(stations).hasSize(2);
         System.out.println(stations);
     }
@@ -93,14 +93,13 @@ public class SectionDaoTest {
     @Test
     void findAllStationInSection() {
         sectionDao.save(new Section(1L, 2L, 3L, 20));
-        List<Station> stations = sectionService.findStationsInSection(1L);
+        List<Station> stations = sectionService.findStationsInLine(1L);
 
         assertThat(stations).hasSize(3);
 
         assertThat(stations.get(0)).isEqualTo(new Station("테스트 역1"));
         assertThat(stations.get(1)).isEqualTo(new Station("테스트 역2"));
         assertThat(stations.get(2)).isEqualTo(new Station("테스트 역3"));
-
     }
 
 }

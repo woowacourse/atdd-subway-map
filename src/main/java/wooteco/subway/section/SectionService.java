@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.LineDao;
+import wooteco.subway.line.SectionRequest;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
@@ -29,18 +30,18 @@ public class SectionService {
 
     public RouteInSection findSectionEndPoint(long lineId) {
 
-        List<RouteInSection> stations = sectionDao.findStationsByLineId(lineId);
-        return findEndPoint(stations);
+        List<Section> sections = sectionDao.findStationsByLineId(lineId);
+        return findEndPointInLine(sections);
     }
 
-    private RouteInSection findEndPoint(List<RouteInSection> stations) {
+    private RouteInSection findEndPointInLine(List<Section> sections) {
         Map<Long, Long> route = new HashMap<>();
-        for (RouteInSection routeInSection : stations) {
-            route.put(routeInSection.getUpStationId(),
-                route.getOrDefault(routeInSection.getUpStationId(), 0L) + 1);
+        for (Section section : sections) {
+            route.put(section.getUpStationId(),
+                route.getOrDefault(section.getUpStationId(), 0L) + 1);
 
-            route.put(routeInSection.getDownStationId(),
-                route.getOrDefault(routeInSection.getDownStationId(), 0L) - 1);
+            route.put(section.getDownStationId(),
+                route.getOrDefault(section.getDownStationId(), 0L) - 1);
         }
         return calcStationInfo(route);
     }
@@ -61,14 +62,14 @@ public class SectionService {
     }
 
 
-    public List<Station> findStationsInSection(long lineId) {
+    public List<Station> findStationsInLine(long lineId) {
         RouteInSection sectionEndPoint = findSectionEndPoint(lineId);
 
         List<Station> stations = new ArrayList<>();
 
         Map<Long, Long> sectionEndToEndRoute = sectionDao.findStationsByLineId(lineId)
-            .stream().collect(Collectors.toMap(RouteInSection::getUpStationId,
-                RouteInSection::getDownStationId));
+            .stream().collect(Collectors.toMap(Section::getUpStationId,
+                Section::getDownStationId));
 
         long targetStationId = sectionEndPoint.getUpStationId();
         while (sectionEndPoint.isNotDownStationId(targetStationId)) {
@@ -77,5 +78,14 @@ public class SectionService {
         }
         stations.add(stationDao.findById(targetStationId));
         return stations;
+    }
+
+    public void insertSection(Long lineId, SectionRequest sectionRequest) {
+//        sectionDao.findSectionByUpStationId(sectionRequest.getUpStationId());
+//        sectionDao.findSectionByDownStationId(sectionRequest.getDownStationId());
+//
+//        findSectionByUpStationId();
+
+        sectionDao.save(new Section(lineId, sectionRequest));
     }
 }

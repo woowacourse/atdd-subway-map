@@ -50,15 +50,15 @@ public class SectionDao {
         }, lineId);
     }
 
-    public List<RouteInSection> findStationsByLineId(long lineId) {
-        String query = "SELECT up_station_id, down_station_id FROM section WHERE line_id = (?)";
+    public List<Section> findStationsByLineId(long lineId) {
+        String query = "SELECT * FROM section WHERE line_id = (?)";
 
-        return jdbcTemplate.query(query, (resultSet, rowNum) -> {
-            return new RouteInSection(
-                resultSet.getLong("up_station_id"),
-                resultSet.getLong("down_station_id")
-            );
-        }, lineId);
+        return jdbcTemplate.query(query, (resultSet, rowNum) -> new Section(
+            resultSet.getLong("line_id"),
+            resultSet.getLong("up_station_id"),
+            resultSet.getLong("down_station_id"),
+            resultSet.getInt("distance")
+        ), lineId);
     }
 
     public void delete(Long stationId) {

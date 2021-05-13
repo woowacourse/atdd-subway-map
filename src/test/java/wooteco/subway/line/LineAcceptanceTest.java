@@ -105,7 +105,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("하나의 지하철 노선을 상세 조회한다.")
     @Test
     void getLineDetail() {
-        lineDao.save(new Line(1L, "name", "yellow darken-4"));
+        lineDao.save(new Line(1L, "2호선", "black"));
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .contentType(DEFAULT_MEDIA_TYPE)
             .when()
