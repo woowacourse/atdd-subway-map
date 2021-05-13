@@ -7,6 +7,7 @@ import wooteco.subway.line.controller.dto.LineRequest;
 import wooteco.subway.line.controller.dto.LineResponse;
 import wooteco.subway.line.repository.dto.LineDto;
 import wooteco.subway.line.service.LineService;
+import wooteco.subway.line.service.dto.LineSaveDto;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -27,8 +28,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
-        LineDto line = new LineDto();
-        LineDto newLine = lineService.save(line);
+        LineDto newLine = lineService.saveLineAndSection(modelMapper.map(lineRequest, LineSaveDto.class));
         LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
@@ -44,7 +44,8 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
         LineDto lineDto = lineService.findById(id);
-        LineResponse lineResponse = new LineResponse(lineDto.getId(), lineDto.getName(), lineDto.getColor(), new ArrayList<>());
+        LineResponse lineResponse = new LineResponse(lineDto.getId(), lineDto.getName(), lineDto.getColor(),
+                new ArrayList<>());
         return ResponseEntity.ok().body(lineResponse);
     }
 

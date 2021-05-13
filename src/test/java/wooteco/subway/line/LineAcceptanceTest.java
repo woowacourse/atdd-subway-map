@@ -25,7 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        LineRequest lineRequest = new LineRequest("2호선", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("2호선", "bg-red-600", 1L, 2L, 10);
 
         //when
         ExtractableResponse<Response> response = saveLine(lineRequest);
@@ -39,8 +39,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLines() {
         // given
-        ExtractableResponse<Response> createResponse1 = saveLine(new LineRequest("2호선", "bg-red-600"));
-        ExtractableResponse<Response> createResponse2 = saveLine(new LineRequest("3호선", "bg-blue-600"));
+        ExtractableResponse<Response> createResponse1 = saveLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+        ExtractableResponse<Response> createResponse2 = saveLine(new LineRequest("3호선", "bg-blue-600", 2L, 3L, 10));
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -60,7 +60,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLine() {
         // given
-        LineRequest lineRequest = new LineRequest("2호선", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("2호선", "bg-red-600", 1L, 2L, 10);
         ExtractableResponse<Response> createResponse = saveLine(lineRequest);
 
         // when
@@ -82,10 +82,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineRequest lineRequest1 = new LineRequest("2호선", "bg-red-600");
+        LineRequest lineRequest1 = new LineRequest("2호선", "bg-red-600", 1L, 2L, 10);
         saveLine(lineRequest1);
 
-        LineRequest lineRequest2 = new LineRequest("3호선", "bg-blue-600");
+        LineRequest lineRequest2 = new LineRequest("3호선", "bg-blue-600", 2L, 3L, 10);
         ExtractableResponse<Response> createResponse = saveLine(lineRequest2);
 
         // when
@@ -110,11 +110,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineRequest lineRequest = new LineRequest("2호선", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("2호선", "bg-red-600", 1L, 2L, 10);
         ExtractableResponse<Response> createResponse = saveLine(lineRequest);
 
         // when
-        LineRequest updateRequest = new LineRequest("3호선", "bg-red-600");
+        LineRequest updateRequest = new LineRequest("3호선", "bg-red-600", 2L, 3L, 20);
 
         String uri = getUri(createResponse);
         ExtractableResponse<Response> response = RestAssured.given().log().all()

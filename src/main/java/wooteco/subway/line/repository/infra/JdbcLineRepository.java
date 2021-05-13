@@ -1,5 +1,6 @@
 package wooteco.subway.line.repository.infra;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class JDBCLineRepository implements LineRepository {
+public class JdbcLineRepository implements LineRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
@@ -27,7 +28,7 @@ public class JDBCLineRepository implements LineRepository {
                     new ArrayList<>()
             );
 
-    public JDBCLineRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcLineRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -50,8 +51,12 @@ public class JDBCLineRepository implements LineRepository {
 
     @Override
     public Optional<Line> findById(final Long id) {
-        String query = "SELECT * FROM line WHERE id = ?";
-        return Optional.ofNullable(this.jdbcTemplate.queryForObject(query, lineRowMapper, id));
+        try {
+            String query = "SELECT * FROM line WHERE id = ?";
+            return Optional.ofNullable(this.jdbcTemplate.queryForObject(query, lineRowMapper, id));
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

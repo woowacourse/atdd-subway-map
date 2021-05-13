@@ -6,7 +6,7 @@ import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.repository.infra.JDBCLineRepository;
+import wooteco.subway.line.repository.infra.JdbcLineRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +16,13 @@ import static org.springframework.test.context.TestConstructor.AutowireMode;
 
 @DataJdbcTest
 @TestConstructor(autowireMode = AutowireMode.ALL)
-class JDBCLineRepositoryTest {
+class JdbcLineRepositoryTest {
 
     private final LineRepository lineRepository;
     private Line featureLine;
 
-    public JDBCLineRepositoryTest(JdbcTemplate jdbcTemplate) {
-        this.lineRepository = new JDBCLineRepository(jdbcTemplate);
+    public JdbcLineRepositoryTest(JdbcTemplate jdbcTemplate) {
+        this.lineRepository = new JdbcLineRepository(jdbcTemplate);
     }
 
     @BeforeEach
