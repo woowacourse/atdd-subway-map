@@ -58,7 +58,7 @@ public class SectionTest {
     void insertNewUpStation() {
         sectionService.insertSection(1L, new SectionRequest(4L, 1L, 10));
 
-        assertThat(sectionService.findStationsInLine(1L)).hasSize(4);
+        assertThat(sectionService.findStationsByLineId(1L)).hasSize(4);
         assertThat(sectionService.findSectionEndPoint(1L).getUpStationId()).isEqualTo(4L);
     }
 
@@ -67,7 +67,7 @@ public class SectionTest {
     void insertNewDownStation() {
         sectionService.insertSection(1L, new SectionRequest(3L, 4L, 10));
 
-        assertThat(sectionService.findStationsInLine(1L)).hasSize(4);
+        assertThat(sectionService.findStationsByLineId(1L)).hasSize(4);
         assertThat(sectionService.findSectionEndPoint(1L).getDownStationId()).isEqualTo(4L);
     }
 
@@ -76,10 +76,10 @@ public class SectionTest {
     void insertMidExistUpStation() {
         sectionService.insertSection(1L, new SectionRequest(2L, 4L, 5));
 
-        assertThat(sectionService.findStationsInLine(1L)).hasSize(4);
+        assertThat(sectionService.findStationsByLineId(1L)).hasSize(4);
 
         List<Long> stationId = new ArrayList<>();
-        for (Station station : sectionService.findStationsInLine(1L)) {
+        for (Station station : sectionService.findStationsByLineId(1L)) {
             stationId.add(station.getId());
         }
         System.out.println(stationId.toString());
@@ -100,13 +100,13 @@ public class SectionTest {
     void insertMidExistDownStation() {
         sectionService.insertSection(1L, new SectionRequest(4L, 2L, 5));
 
-        assertThat(sectionService.findStationsInLine(1L)).hasSize(4);
+        assertThat(sectionService.findStationsByLineId(1L)).hasSize(4);
 
-        List<Long> stationId = new ArrayList<>();
-        for (Station station : sectionService.findStationsInLine(1L)) {
-            stationId.add(station.getId());
+        List<Long> stationIds = new ArrayList<>();
+        for (Station station : sectionService.findStationsByLineId(1L)) {
+            stationIds.add(station.getId());
         }
-        assertThat(stationId).isEqualTo(Arrays.asList(1L, 4L, 2L, 3L));
+        assertThat(stationIds).isEqualTo(Arrays.asList(1L, 4L, 2L, 3L));
     }
 
     @DisplayName("구간 중간에 삽입되며 하행이 이미 존재하는 경우 거리값 변경 확인")
@@ -140,5 +140,33 @@ public class SectionTest {
         assertThatThrownBy(() ->
             sectionService.insertSection(1L, new SectionRequest(1L, 3L, 5))
         ).isInstanceOf(SectionInsertExistStationsException.class);
+    }
+
+    @DisplayName("노선의 상행을 지우는 경우")
+    @Test
+    void deleteFirstStation() {
+        sectionService.deleteByUpStationId(1L, 1L);
+
+        List<Long> stationIds = new ArrayList<>();
+        for (Station station : sectionService.findStationsByLineId(1L)) {
+            stationIds.add(station.getId());
+        }
+
+        assertThat(sectionService.findStationsByLineId(1L)).hasSize(2);
+        assertThat(stationIds).isEqualTo(Arrays.asList(2L, 3L));
+    }
+
+    @DisplayName("노선의 하행을 지우는 경우")
+    @Test
+    void deleteLastStation() {
+        sectionService.deleteByUpStationId(1L, 3L);
+
+        List<Long> stationIds = new ArrayList<>();
+        for (Station station : sectionService.findStationsByLineId(1L)) {
+            stationIds.add(station.getId());
+        }
+
+        assertThat(sectionService.findStationsByLineId(1L)).hasSize(2);
+        assertThat(stationIds).isEqualTo(Arrays.asList(1L, 2L));
     }
 }

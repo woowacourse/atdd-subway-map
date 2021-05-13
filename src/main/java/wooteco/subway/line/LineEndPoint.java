@@ -1,13 +1,13 @@
-package wooteco.subway.section;
+package wooteco.subway.line;
 
 import java.util.Objects;
 
-public class endPointInSection {
+public class LineEndPoint {
 
     private long upStationId;
     private long downStationId;
 
-    public endPointInSection(long upStationId, long downStationId) {
+    public LineEndPoint(long upStationId, long downStationId) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
     }
@@ -19,6 +19,18 @@ public class endPointInSection {
 
     public long getDownStationId() {
         return downStationId;
+    }
+
+    public boolean isNotDownStationId(long targetStationId) {
+        return this.downStationId != targetStationId;
+    }
+
+    public boolean isSameUpStationId(long upStationId) {
+        return this.upStationId == upStationId;
+    }
+
+    public boolean isSameDownStationId(long upStationId) {
+        return this.downStationId == upStationId;
     }
 
     @Override
@@ -34,10 +46,10 @@ public class endPointInSection {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof endPointInSection)) {
+        if (!(o instanceof LineEndPoint)) {
             return false;
         }
-        endPointInSection that = (endPointInSection) o;
+        LineEndPoint that = (LineEndPoint) o;
         return upStationId == that.upStationId &&
             downStationId == that.downStationId;
     }
@@ -45,9 +57,5 @@ public class endPointInSection {
     @Override
     public int hashCode() {
         return Objects.hash(upStationId, downStationId);
-    }
-
-    public boolean isNotDownStationId(long targetStationId) {
-        return this.downStationId != targetStationId;
     }
 }

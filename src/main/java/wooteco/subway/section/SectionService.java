@@ -13,6 +13,7 @@ import wooteco.subway.exception.NoSuchDataException;
 import wooteco.subway.exception.SectionInsertExistStationsException;
 import wooteco.subway.exception.ShortDistanceException;
 import wooteco.subway.line.LineDao;
+import wooteco.subway.line.LineEndPoint;
 import wooteco.subway.line.SectionRequest;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
@@ -32,13 +33,13 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public endPointInSection findSectionEndPoint(long lineId) {
+    public LineEndPoint findSectionEndPoint(long lineId) {
 
         List<Section> sections = sectionDao.findSectionsByLineId(lineId);
         return findEndPointInSections(sections);
     }
 
-    private endPointInSection findEndPointInSections(List<Section> sections) {
+    private LineEndPoint findEndPointInSections(List<Section> sections) {
         Map<Long, Long> route = new HashMap<>();
         for (Section section : sections) {
             route.put(section.getUpStationId(),
@@ -50,7 +51,7 @@ public class SectionService {
         return findEndPointInRoute(route);
     }
 
-    private endPointInSection findEndPointInRoute(Map<Long, Long> route) {
+    private LineEndPoint findEndPointInRoute(Map<Long, Long> route) {
         long upStationId = 0L;
         long downStationId = 0L;
 
@@ -62,12 +63,12 @@ public class SectionService {
                 downStationId = entry.getKey();
             }
         }
-        return new endPointInSection(upStationId, downStationId);
+        return new LineEndPoint(upStationId, downStationId);
     }
 
 
-    public List<Station> findStationsInLine(long lineId) {
-        endPointInSection sectionEndPoint = findSectionEndPoint(lineId);
+    public List<Station> findStationsByLineId(long lineId) {
+        LineEndPoint sectionEndPoint = findSectionEndPoint(lineId);
 
         List<Station> stations = new ArrayList<>();
 
@@ -86,8 +87,8 @@ public class SectionService {
 
     @Transactional
     public void insertSection(Long lineId, SectionRequest sectionRequest) {
-        List<Station> stationsInLine = findStationsInLine(lineId);
-        endPointInSection sectionEndPoint = findSectionEndPoint(lineId);
+        List<Station> stationsInLine = findStationsByLineId(lineId);
+        LineEndPoint sectionEndPoint = findSectionEndPoint(lineId);
 
         if (sectionDao.hasStation(lineId, sectionRequest.getUpStationId()) &&
             sectionDao.hasStation(lineId, sectionRequest.getDownStationId())) {
@@ -142,7 +143,7 @@ public class SectionService {
     }
 
     private boolean isInsertPointIsEnd(SectionRequest sectionRequest,
-        endPointInSection sectionEndPoint) {
+        LineEndPoint sectionEndPoint) {
         return sectionEndPoint.getUpStationId() == sectionRequest.getDownStationId()
             || sectionEndPoint.getDownStationId() == sectionRequest.getUpStationId();
     }
@@ -157,5 +158,21 @@ public class SectionService {
 
     public Section findByDownStationId(long lineId, long upStationId) {
         return sectionDao.findByUpStationId(lineId, upStationId);
+    }
+
+    @Transactional
+    public void deleteByUpStationId(long lineId, long upStationId) {
+        LineEndPoint sectionEndPoint = findSectionEndPoint(lineId);
+
+        if (sectionEndPoint.isSameUpStationId(upStationId)) {
+            sectionDao.delete(lineId, upStationId);
+            return;
+        }
+        if (sectionEndPoint.isSameDownStationId(upStationId)) {
+            sectionDao.delete(lineId,
+                sectionDao.findByDownStationId(lineId, upStationId).getUpStationId());
+            return;
+        }
+
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineDao;
+import wooteco.subway.line.LineEndPoint;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
@@ -84,16 +85,16 @@ public class SectionDaoTest {
     @Test
     void findUpAndDownStation() {
         sectionDao.save(new Section(1L, 2L, 3L, 20));
-        endPointInSection sectionEndPoint = sectionService.findSectionEndPoint(1L);
+        LineEndPoint sectionEndPoint = sectionService.findSectionEndPoint(1L);
 
-        assertThat(sectionEndPoint).isEqualTo(new endPointInSection(1L, 3L));
+        assertThat(sectionEndPoint).isEqualTo(new LineEndPoint(1L, 3L));
     }
 
     @DisplayName("구간에 속한 모든 역 찾기 테스트")
     @Test
     void findAllStationInSection() {
         sectionDao.save(new Section(1L, 2L, 3L, 20));
-        List<Station> stations = sectionService.findStationsInLine(1L);
+        List<Station> stations = sectionService.findStationsByLineId(1L);
 
         assertThat(stations).hasSize(3);
 
@@ -106,5 +107,14 @@ public class SectionDaoTest {
     @Test
     void findExistStation() {
         sectionDao.hasStation(1L, 1L);
+    }
+
+    @DisplayName("구간 삭제 테스트")
+    @Test
+    void deleteStationInSection() {
+        sectionDao.delete(1L, 1L);
+
+        assertThat(sectionDao.findSectionsByLineId(1L)).hasSize(0);
+
     }
 }

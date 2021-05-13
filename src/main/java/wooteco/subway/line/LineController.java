@@ -66,7 +66,7 @@ public class LineController {
         sectionDao.findSectionsByLineId(id);
 
         return ResponseEntity.ok()
-            .body(new StationsInLineResponse(line, sectionService.findStationsInLine(id)));
+            .body(new StationsInLineResponse(line, sectionService.findStationsByLineId(id)));
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
