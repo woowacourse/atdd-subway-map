@@ -28,8 +28,8 @@ public class SectionService {
 
     @Transactional
     public void save(Long lineId, SectionRequest sectionRequest) {
-        List<SectionDto> sectionDtos = sectionDao.findSectionsByLineId(lineId);
-        Sections sections = new Sections(mapToSections(sectionDtos));
+        List<Section> currentSections = sectionDao.findSectionsByLineId(lineId);
+        Sections sections = new Sections(currentSections);
         sections.add(convertToSection(lineId, sectionRequest));
         updateSections(lineId, sections);
     }
@@ -52,8 +52,8 @@ public class SectionService {
 
     @Transactional
     public void deleteById(Long lineId, Long stationId) {
-        List<SectionDto> sectionDtos = sectionDao.findSectionsByLineId(lineId);
-        Sections sections = new Sections(mapToSections(sectionDtos));
+        List<Section> currentSections = sectionDao.findSectionsByLineId(lineId);
+        Sections sections = new Sections(currentSections);
         sections.delete(stationId);
         updateSections(lineId, sections);
     }

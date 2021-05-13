@@ -15,6 +15,7 @@ import wooteco.subway.section.model.Section;
 import wooteco.subway.section.model.Sections;
 import wooteco.subway.station.api.dto.StationResponse;
 import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.model.Station;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -38,8 +39,16 @@ public class LineService {
     public LineDetailsResponse createLine(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         long createdId = lineDao.save(line);
-        sectionDao.save(createdId, lineRequest);
+        Section section = sectionFromLineRequest(lineRequest, createdId);
+        sectionDao.save(section);
         return getLineDetailsResponse(createdId);
+    }
+
+    private Section sectionFromLineRequest(LineRequest lineRequest, long createdId) {
+        return new Section(new Line(createdId, lineRequest.getName(), lineRequest.getColor()),
+                stationDao.findStationById(lineRequest.getUpStationId()),
+                stationDao.findStationById(lineRequest.getDownStationId()),
+                lineRequest.getDistance());
     }
 
     private List<Section> mapToSections(List<SectionDto> sectionDtos) {
@@ -74,8 +83,8 @@ public class LineService {
 
     private LineDetailsResponse getLineDetailsResponse(long createdId) {
         Line newLine = lineDao.findLineById(createdId);
-        List<SectionDto> sectionDtos = sectionDao.findSectionsByLineId(createdId);
-        Sections sections = new Sections(mapToSections(sectionDtos));
+        List<Section> foundSections = sectionDao.findSectionsByLineId(createdId);
+        Sections sections = new Sections(foundSections);
 
         return new LineDetailsResponse(newLine, StationResponse.listOf(sections.sortedStations()));
     }

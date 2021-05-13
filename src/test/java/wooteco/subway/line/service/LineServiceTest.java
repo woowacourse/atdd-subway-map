@@ -83,8 +83,8 @@ class LineServiceTest {
         //given
         Long stationId1 = stationDao.save(new Station("강남역"));
         Long stationId2 = stationDao.save(new Station("잠실역"));
-        Long lineId = lineDao.save(new Line("2호선", "GREEN"));
-        sectionDao.save(lineId, new LineRequest("2호선","GREEN", stationId1, stationId2, 10));
+        LineRequest request = new LineRequest("2호선", "GREEN", stationId1, stationId2, 10);
+        Long lineId = lineService.createLine(request).getId();
 
         //when
         LineDetailsResponse lineDetailsResponse = lineService.showLineById(lineId);
@@ -102,7 +102,7 @@ class LineServiceTest {
         Long stationId1 = stationDao.save(new Station("강남역"));
         Long stationId2 = stationDao.save(new Station("잠실역"));
         Long lineId = lineDao.save(new Line("2호선", "GREEN"));
-        sectionDao.save(lineId, new LineRequest("2호선","GREEN", stationId1, stationId2, 10));
+//        sectionDao.save(lineId, new LineRequest("2호선","GREEN", stationId1, stationId2, 10));
         //when
         lineService.deleteById(lineId);
         //then
