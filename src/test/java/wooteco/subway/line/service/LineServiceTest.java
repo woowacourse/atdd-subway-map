@@ -18,7 +18,6 @@ import wooteco.subway.line.dto.response.LineResponse;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,13 +59,13 @@ class LineServiceTest {
         // given
         LineCreateRequest 분당선 =
                 new LineCreateRequest("분당선", "red", 1L, 2L, 3);
-        given(lineDao.findByName(any(String.class)))
+        given(lineDao.existByName(any(String.class)))
                 .willThrow(LineDuplicatedNameException.class);
 
         // when & then
         assertThatThrownBy(() -> lineService.save(분당선))
                 .isInstanceOf(LineDuplicatedNameException.class);
-        verify(lineDao).findByName(any(String.class));
+        verify(lineDao).existByName(any(String.class));
     }
 
     @DisplayName("노선 하나 조회")
@@ -74,7 +73,7 @@ class LineServiceTest {
     void findBy() {
         // given
         given(lineDao.findById(1L))
-                .willReturn(Optional.of(new Line(1L, "분당선", "red")));
+                .willReturn(new Line(1L, "분당선", "red"));
 
         // when
         LineResponse result = lineService.findBy(1L);
@@ -90,7 +89,7 @@ class LineServiceTest {
     void LineNotFoundException() {
         // given
         given(lineDao.findById(1L))
-                .willReturn(Optional.empty());
+                .willThrow(LineNotFoundException.class);
 
         // when & then
         assertThatThrownBy(() -> lineService.findBy(1L))
@@ -130,9 +129,9 @@ class LineServiceTest {
     void update() {
         // given
         given(lineDao.findById(1L))
-                .willReturn(Optional.of(new Line(1L, "분당선", "red")));
-        given(lineDao.findByNameAndNotInOriginalName("2호선", "분당선"))
-                .willReturn(Optional.empty());
+                .willReturn(new Line(1L, "분당선", "red"));
+        given(lineDao.existByNameAndNotInOriginalName("2호선", "분당선"))
+                .willReturn(false);
 
         // when
         lineService.update(1L, new LineUpdateRequest("2호선", "green"));
@@ -158,9 +157,9 @@ class LineServiceTest {
     void updateDuplicatedName() {
         // given
         given(lineDao.findById(1L))
-                .willReturn(Optional.of(new Line(1L, "분당선", "red")));
-        given(lineDao.findByNameAndNotInOriginalName("2호선", "분당선"))
-                .willReturn(Optional.of("2호선"));
+                .willReturn(new Line(1L, "분당선", "red"));
+        given(lineDao.existByNameAndNotInOriginalName("2호선", "분당선"))
+                .willReturn(true);
 
         // when & then
         assertThatThrownBy(() -> lineService.update(1L, new LineUpdateRequest("2호선", "green")))

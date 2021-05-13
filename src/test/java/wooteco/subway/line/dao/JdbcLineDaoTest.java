@@ -12,7 +12,6 @@ import wooteco.subway.line.Line;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -79,26 +78,11 @@ class JdbcLineDaoTest {
 
         // when
         jdbcLineDao.save(분당선);
-        Optional<Line> line = jdbcLineDao.findById(id);
+        Line line = jdbcLineDao.findById(id);
 
         // then
-        assertThat(line.get()).usingRecursiveComparison()
+        assertThat(line).usingRecursiveComparison()
                 .isEqualTo(new Line(id, "분당선", "red"));
-    }
-
-    @DisplayName("이름으로 지하철 노선 조회")
-    @Test
-    void findByName() {
-        // given
-        Line 분당선 = new Line("분당선", "red");
-
-        // when
-        jdbcLineDao.save(분당선);
-        Optional<Line> line = jdbcLineDao.findByName(분당선.getName());
-
-        // then
-        assertThat(line.get()).usingRecursiveComparison()
-                .isEqualTo(new Line(1L, "분당선", "red"));
     }
 
     @DisplayName("지하철 노선 정보 수정")
@@ -112,7 +96,7 @@ class JdbcLineDaoTest {
         jdbcLineDao.update(new Line(1L, "2호선", "green"));
 
         // then
-        assertThat(jdbcLineDao.findById(1L).get()).usingRecursiveComparison()
+        assertThat(jdbcLineDao.findById(1L)).usingRecursiveComparison()
                 .isEqualTo(new Line(1L, "2호선", "green"));
     }
 
@@ -130,21 +114,5 @@ class JdbcLineDaoTest {
 
         // then
         assertThat(jdbcLineDao.findAll().size()).isEqualTo(originalSize - 1);
-    }
-
-    @DisplayName("원래 이름을 제외하고 이름으로 지하철 노선 이름 조회")
-    @Test
-    void findByNameAndNotInOriginalName() {
-        // given
-        String 분당선 = "분당선";
-
-        // when
-        jdbcLineDao.save(new Line(분당선, "red"));
-        Optional<String> searchOtherName = jdbcLineDao.findByNameAndNotInOriginalName(분당선, "2호선");
-        Optional<String> searchOriginalName = jdbcLineDao.findByNameAndNotInOriginalName(분당선, 분당선);
-
-        // then
-        assertThat(searchOtherName.isPresent()).isTrue();
-        assertThat(searchOriginalName.isPresent()).isFalse();
     }
 }

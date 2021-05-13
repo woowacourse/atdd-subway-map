@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.line.LineDuplicatedNameException;
-import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.request.LineCreateRequest;
@@ -35,24 +34,17 @@ public class LineService {
         return new LineCreateResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
-    // TODO exist 쿼리로 변경
     private void validatesNameDuplication(LineCreateRequest lineCreateRequest) {
-        lineDao.findByName(lineCreateRequest.getName())
-//                .orElseThrow(LineDuplicatedNameException::new);
-                .ifPresent(l -> {
-                    throw new LineDuplicatedNameException();
-                });
+        boolean isExist = lineDao.existByName(lineCreateRequest.getName());
+        if (isExist) {
+            throw new LineDuplicatedNameException();
+        }
     }
 
     public LineResponse findBy(Long id) {
-        Line newLine = findById(id);
+        Line newLine = lineDao.findById(id);
         log.info("{} 노선 조회 성공", newLine.getName());
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
-    }
-
-    private Line findById(Long id) {
-        return lineDao.findById(id)
-                .orElseThrow(LineNotFoundException::new);
     }
 
     public List<LineResponse> findAll() {
@@ -65,7 +57,7 @@ public class LineService {
 
     @Transactional
     public void update(Long id, LineUpdateRequest lineUpdateRequest) {
-        Line line = findById(id);
+        Line line = lineDao.findById(id);
 
         validatesNameDuplicationExceptOriginalName(lineUpdateRequest, line);
 
@@ -76,10 +68,10 @@ public class LineService {
     }
 
     private void validatesNameDuplicationExceptOriginalName(LineUpdateRequest lineUpdateRequest, Line line) {
-        lineDao.findByNameAndNotInOriginalName(lineUpdateRequest.getName(), line.getName())
-                .ifPresent(l -> {
-                    throw new LineDuplicatedNameException();
-                });
+        boolean isExist = lineDao.existByNameAndNotInOriginalName(lineUpdateRequest.getName(), line.getName());
+        if (isExist) {
+            throw new LineDuplicatedNameException();
+        }
     }
 
     @Transactional

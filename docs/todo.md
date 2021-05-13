@@ -1,5 +1,5 @@
 ## TODO
-- [ ] DAO 단일 검색 Optional -> Entity
+- [x] DAO 단일 검색 Optional -> Entity
 - [ ] null 허용하지 않아도 되는 곳 Wrapper -> primitive
 - [ ] Section entity 필드 id -> 도메인
 - [ ] 거리 계산 로직 도메인에서

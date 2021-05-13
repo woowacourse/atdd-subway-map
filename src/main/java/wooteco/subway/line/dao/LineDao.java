@@ -3,20 +3,23 @@ package wooteco.subway.line.dao;
 import wooteco.subway.line.Line;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface LineDao {
     Line save(Line line);
 
     List<Line> findAll();
 
-    Optional<Line> findById(Long id);
+    Line findById(Long id);
 
-    Optional<Line> findByName(String name);
+//    Line findByName(String name);
 
     void update(Line updatedLine);
 
     void delete(Long id);
 
-    Optional<String> findByNameAndNotInOriginalName(String name, String originalName);
+//    String findByNameAndNotInOriginalName(String name, String originalName);
+
+    boolean existByName(String name);
+
+    boolean existByNameAndNotInOriginalName(String name, String originalName);
 }
