@@ -9,6 +9,7 @@ import io.restassured.specification.RequestSpecification;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,16 +31,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private static final String DOWN_STATION_ID = "downStationId";
     private static final String DISTANCE = "distance";
 
-    private static final String EMPTY_STRING = " ";
-    private static final long ZERO = 0L;
-    private static final long INVALID_ID = Long.MAX_VALUE;
-
     private Long stationA;
     private Long stationB;
     private Long stationC;
-    private Long newStationId;
-
+    private Long newStationId1;
+    private Long newStationId2;
     private Long lineId;
+    private Long lineId_hasOneSection;
 
     @BeforeEach
     public void setUp() {
@@ -48,11 +46,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         stationA = createStationAndGetId("A역");
         stationB = createStationAndGetId("B역");
         stationC = createStationAndGetId("C역");
-        newStationId = createStationAndGetId("NEW역");
+        newStationId1 = createStationAndGetId("NEW1역");
+        newStationId2 = createStationAndGetId("NEW2역");
 
         // set line
-        Map<String, Object> lineData = lineData("1호선", "bg-red-600", stationA, stationB, 3);
+        Map<String, Object> lineData = lineData("1호선", stationA, stationB);
+        Map<String, Object> lineData2 = lineData("2호선", stationA, stationB);
         lineId = postLine(lineData);
+        lineId_hasOneSection = postLine(lineData2);
 
         // set section
         Map<String, Object> sectionData = sectionData(stationB, stationC, 3);
@@ -87,111 +88,171 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return data;
     }
 
-    private static Map<String, Object> lineData(String name, String color, Long upStationId,
-            Long downStationId, Integer distance) {
+    private static Map<String, Object> lineData(String name, Long upStationId, Long downStationId) {
         Map<String, Object> data = new HashMap<>();
 
         data.put(NAME, name);
-        data.put(COLOR, color);
+        data.put(COLOR, "bg-red-600");
         data.put(UP_STATION_ID, upStationId);
         data.put(DOWN_STATION_ID, downStationId);
-        data.put(DISTANCE, distance);
+        data.put(DISTANCE, 3);
 
         return data;
     }
 
     @Test
     @DisplayName("구간 추가: 상행 종점")
-    void create_upLastStation() {
+    void create_last_up() {
         // given
-        Map<String, Object> sectionData = sectionData(newStationId, stationA, 2);
+        Map<String, Object> sectionData = sectionData(newStationId1, stationA, 2);
 
         // when
         ExtractableResponse<Response> response = postSection(sectionData, lineId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        ExtractableResponse<Response> findResponse = getLine(lineId);
-        List<StationResponse> stations = findResponse.as(LineResponse.class).getStations();
-        assertThat(stations).size().isEqualTo(4);
-
-        StationResponse stationResponse = stations.get(0);
-        assertThat(stationResponse.getId()).isEqualTo(newStationId);
+        assertLinesStations(lineId, newStationId1, stationA, stationB, stationC);
     }
 
     @Test
     @DisplayName("구간 추가: 하행 종점")
-    void create_downLastStation() {
+    void create_last_down() {
         // given
-        Map<String, Object> sectionData = sectionData(stationC, newStationId, 2);
+        Map<String, Object> sectionData = sectionData(stationC, newStationId1, 2);
 
         // when
         ExtractableResponse<Response> response = postSection(sectionData, lineId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        ExtractableResponse<Response> findResponse = getLine(lineId);
-        LineResponse result = findResponse.as(LineResponse.class);
-        List<StationResponse> stations = result.getStations();
-        assertThat(result.getStations()).size().isEqualTo(4);
-
-        StationResponse stationResponse = stations.get(3);
-        assertThat(stationResponse.getId()).isEqualTo(newStationId);
+        assertLinesStations(lineId, stationA, stationB, stationC, newStationId1);
     }
 
     @Test
-    @DisplayName("중간 구간 추가: 상행역 기준")
+    @DisplayName("구간 추가: 중간 - 상행역 기준")
     void create_between_up() {
         // given
-        Map<String, Object> sectionData = sectionData(stationA, newStationId, 2);
+        Map<String, Object> sectionData = sectionData(stationA, newStationId1, 2);
 
         // when
         ExtractableResponse<Response> response = postSection(sectionData, lineId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        ExtractableResponse<Response> findResponse = getLine(lineId);
-        List<StationResponse> stations = findResponse.as(LineResponse.class).getStations();
-
-        assertThat(stations).size().isEqualTo(4);
-
-        StationResponse stationResponse = stations.get(1);
-        assertThat(stationResponse.getId()).isEqualTo(newStationId);
+        assertLinesStations(lineId, stationA, newStationId1, stationB, stationC);
     }
 
     @Test
-    @DisplayName("중간 구간 추가: 하행역 기준")
+    @DisplayName("구간 추가: 중간 - 하행역 기준")
     void create_between_down() {
         // given
-        Map<String, Object> sectionData = sectionData(newStationId, stationB, 2);
+        Map<String, Object> sectionData = sectionData(newStationId1, stationB, 2);
 
         // when
         ExtractableResponse<Response> response = postSection(sectionData, lineId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        ExtractableResponse<Response> findResponse = getLine(lineId);
-        List<StationResponse> stations = findResponse.as(LineResponse.class).getStations();
-
-        assertThat(stations).size().isEqualTo(4);
-
-        StationResponse stationResponse = stations.get(1);
-        assertThat(stationResponse.getId()).isEqualTo(newStationId);
+        assertLinesStations(lineId, stationA, newStationId1, stationB, stationC);
     }
 
     @Test
-    @DisplayName("up/down 둘다 노선에 존재: 구간 추가불가")
+    @DisplayName("구간 추가 실패: 상/하행역 둘다 노선에 존재")
     void createFail_bothStationExists() {
+        // given
+        Map<String, Object> sectionData = sectionData(stationA, stationB, 2);
+
+        // when
+        ExtractableResponse<Response> response = postSection(sectionData, lineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertLinesStations(lineId, stationA, stationB, stationC);
     }
 
     @Test
-    @DisplayName("구간 삭제")
-    void delete() {
-        deleteSection(lineId, stationA);
+    @DisplayName("구간 추가 실패: 상/하행역 둘다 노선에 없음")
+    void createFail_bothStationNotExists() {
+        // given
+        Map<String, Object> sectionData = sectionData(newStationId1, newStationId2, 2);
+
+        // when
+        ExtractableResponse<Response> response = postSection(sectionData, lineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertLinesStations(lineId, stationA, stationB, stationC);
+    }
+
+    @Test
+    @DisplayName("구간 삭제: 상행 종점")
+    void delete_last_up() {
+        // when
+        ExtractableResponse<Response> response = deleteSection(lineId, stationA);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertLinesStations(lineId, stationB, stationC);
+    }
+
+    @Test
+    @DisplayName("구간 삭제: 하행 종점")
+    void delete_last_down() {
+        // when
+        ExtractableResponse<Response> response = deleteSection(lineId, stationA);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertLinesStations(lineId, stationB, stationC);
+    }
+
+    @Test
+    @DisplayName("구간 삭제: 중간")
+    void delete_between() {
+        // when
+        ExtractableResponse<Response> response = deleteSection(lineId, stationB);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertLinesStations(lineId, stationA, stationC);
+    }
+
+    @Test
+    @DisplayName("구간 삭제 실패: 노선에 구간이 하나밖에 없음")
+    void deleteFail_lineHasOnlyOneSection() {
+        // when
+        ExtractableResponse<Response> response = deleteSection(lineId_hasOneSection, stationA);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertLinesStations(lineId_hasOneSection, stationA, stationB);
+    }
+
+    @Test
+    @DisplayName("구간 삭제 실패: 역이 노선에 없음")
+    void deleteFail_stationNotExist() {
+        // when
+        ExtractableResponse<Response> response = deleteSection(lineId, newStationId1);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertLinesStations(lineId, stationA, stationB, stationC);
+    }
+
+    private void assertLinesStations(Long lineId, Long... stationIds) {
+        List<StationResponse> stations = getStationsByLineId(lineId);
+        assertThat(toIds(stations)).containsExactly(stationIds);
+    }
+
+    private List<Long> toIds(List<StationResponse> stations) {
+        return stations.stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+    }
+
+    private List<StationResponse> getStationsByLineId(Long lineId) {
+        ExtractableResponse<Response> findResponse = getLine(lineId);
+        return findResponse.as(LineResponse.class).getStations();
     }
 
     private ExtractableResponse<Response> postSection(Map<String, Object> data, Long lineId) {
@@ -226,6 +287,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private static String sectionPathForDelete(Long lineId, Long stationId) {
-        return String.format(LINES_PATH + "%d" + SECTIONS_PATH + "?stationId%d", lineId, stationId);
+        return String.format(LINES_PATH + "%d" + SECTIONS_PATH + "?stationId=%d",
+                lineId, stationId);
     }
 }

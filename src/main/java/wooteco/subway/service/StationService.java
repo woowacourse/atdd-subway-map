@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.domain.station.StationDao;
 import wooteco.subway.web.exception.NotFoundException;
-import wooteco.subway.web.exception.SubwayHttpException;
 
 @Service
 public class StationService {
@@ -22,8 +21,7 @@ public class StationService {
     }
 
     private Long addStation(Station station) {
-        return stationDao.save(station)
-                .orElseThrow(() -> new SubwayHttpException("중복된 역 이름입니다"));
+        return stationDao.save(station);
     }
 
     public List<Station> findAll() {

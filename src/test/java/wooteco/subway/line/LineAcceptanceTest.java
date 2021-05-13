@@ -93,7 +93,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        // todo nested하게 들어있는 stations까지 한번에 변환하려고 InnerClass로 만드뮤ㅠㅠ (LineResponse.StationResponse)
         LineResponse lineResponse = response.as(LineResponse.class);
         assertLineResponse(lineResponse, DATA1);
 

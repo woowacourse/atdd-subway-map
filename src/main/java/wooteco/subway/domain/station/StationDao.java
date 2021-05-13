@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.web.exception.SubwayException;
 
 @Repository
 public class StationDao {
@@ -26,7 +27,7 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Optional<Long> save(Station station) {
+    public Long save(Station station) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         final String sql = "INSERT INTO station (name) VALUES (?)";
 
@@ -37,11 +38,10 @@ public class StationDao {
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            // todo 저장실패 시 예외발생
-            return Optional.empty();
+            throw new SubwayException("중복된 역 이름입니다");
         }
 
-        return Optional.of(keyHolder.getKey().longValue());
+        return keyHolder.getKey().longValue();
     }
 
     public List<Station> findAll() {
