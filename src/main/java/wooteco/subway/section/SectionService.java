@@ -107,37 +107,47 @@ public class SectionService {
 
         for (Station station : stationsInLine) {
             if (station.isSameStationId(sectionRequest.getUpStationId())) {
-                upSection = sectionDao.findByUpStationId(lineId, sectionRequest.getUpStationId());
-                if (upSection.getDistance() <= sectionRequest.getDistance()) {
-                    throw new ShortDistanceException("삽입하려는 구간의 거리가 너무 짧습니다.");
-                }
-                int newDistance = upSection.getDistance() - sectionRequest.getDistance();
-                sectionDao.delete(lineId, upSection.getUpStationId());
-                sectionDao.save(new Section(lineId,
-                    sectionRequest.getDownStationId(),
-                    upSection.getDownStationId(),
-                    newDistance));
-                sectionDao.save(new Section(lineId, sectionRequest));
+                upStationBasedInsert(lineId, sectionRequest);
                 return;
             }
             if (station.isSameStationId(sectionRequest.getDownStationId())) {
-                upSection = sectionDao
-                    .findByDownStationId(lineId, sectionRequest.getDownStationId());
-                if (upSection.getDistance() <= sectionRequest.getDistance()) {
-                    throw new ShortDistanceException("삽입하려는 구간의 거리가 너무 짧습니다.");
-                }
-                int newDistance = upSection.getDistance() - sectionRequest.getDistance();
-                sectionDao.delete(lineId, upSection.getUpStationId());
-                sectionDao.save(new Section(lineId,
-                    upSection.getUpStationId(),
-                    sectionRequest.getUpStationId(),
-                    newDistance));
-                sectionDao.save(new Section(lineId, sectionRequest));
+                downStationBasedInsert(lineId, sectionRequest);
                 return;
             }
         }
 
         throw new NoSuchDataException("노선에 역이 존재하지 않습니다.");
+    }
+
+    private void downStationBasedInsert(Long lineId, SectionRequest sectionRequest) {
+        Section upSection;
+        upSection = sectionDao
+            .findByDownStationId(lineId, sectionRequest.getDownStationId());
+        if (upSection.getDistance() <= sectionRequest.getDistance()) {
+            throw new ShortDistanceException("삽입하려는 구간의 거리가 너무 짧습니다.");
+        }
+        int newDistance = upSection.getDistance() - sectionRequest.getDistance();
+        sectionDao.delete(lineId, upSection.getUpStationId());
+        sectionDao.save(new Section(lineId,
+            upSection.getUpStationId(),
+            sectionRequest.getUpStationId(),
+            newDistance));
+        sectionDao.save(new Section(lineId, sectionRequest));
+    }
+
+    private void upStationBasedInsert(Long lineId, SectionRequest sectionRequest) {
+        Section upSection;
+        upSection = sectionDao.findByUpStationId(lineId, sectionRequest.getUpStationId());
+        if (upSection.getDistance() <= sectionRequest.getDistance()) {
+            throw new ShortDistanceException("삽입하려는 구간의 거리가 너무 짧습니다.");
+        }
+        int newDistance = upSection.getDistance() - sectionRequest.getDistance();
+        sectionDao.delete(lineId, upSection.getUpStationId());
+        sectionDao.save(new Section(lineId,
+            sectionRequest.getDownStationId(),
+            upSection.getDownStationId(),
+            newDistance));
+        sectionDao.save(new Section(lineId, sectionRequest));
     }
 
     private boolean isInsertPointIsEnd(SectionRequest sectionRequest,
