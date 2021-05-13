@@ -54,7 +54,7 @@ public class LineApiController {
         List<LineResponse> lineResponses = lines.stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(lineResponses);
+        return ResponseEntity.ok(lineResponses);
     }
 
     @GetMapping("/{lineId}")
