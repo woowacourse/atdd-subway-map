@@ -6,8 +6,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.repository.StationRepository;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -21,22 +23,22 @@ class StationServiceTest {
     private StationService stationService;
 
     @Mock
-    private StationDao stationDao;
+    private StationRepository stationRepository;
 
     @DisplayName("역을 생성한다.")
     @Test
     void createStation() {
         String name = "testStation";
         Station station = new Station(name);
-        Station retrivedStation = new Station(1L, name);
+        Station retrievedStation = new Station(1L, name);
 
-        given(stationDao.save(station)).willReturn(1L);
-        given(stationDao.findById(1L)).willReturn(retrivedStation);
+        given(stationRepository.save(station)).willReturn(1L);
+        given(stationRepository.findById(1L)).willReturn(Optional.of(retrievedStation));
 
         Station savedStation = stationService.createStation(name);
 
-        assertThat(savedStation).isEqualTo(retrivedStation);
-        verify(stationDao, times(1)).save(station);
-        verify(stationDao, times(1)).findById(1L);
+        assertThat(savedStation).isEqualTo(retrievedStation);
+        verify(stationRepository, times(1)).save(station);
+        verify(stationRepository, times(1)).findById(1L);
     }
 }

@@ -1,7 +1,14 @@
-package wooteco.subway.dto;
+package wooteco.subway.controller.request;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 public class LineRequest {
+
+    @NotBlank(message = "이름은 입력해주세요.")
+    @Pattern(regexp = "^[가-힣|0-9]*선$")
     private String name;
+    @NotBlank(message = "색상을 선택해주세요.")
     private String color;
     private Long upStationId;
     private Long downStationId;

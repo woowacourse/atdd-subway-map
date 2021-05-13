@@ -1,9 +1,10 @@
-package wooteco.subway.dto;
+package wooteco.subway.controller.response;
 
 import wooteco.subway.domain.line.Line;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
@@ -21,12 +22,18 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public LineResponse(Long id, String name, String color) {
-        this(id, name, color, new ArrayList<>());
+    public static LineResponse writeWithStationList(Line line, List<StationResponse> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }
 
-    public static LineResponse from(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+    public static LineResponse writeWithoutStationList(Line line) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), Collections.emptyList());
+    }
+
+    public static List<LineResponse> fromList(List<Line> lines) {
+        return lines.stream()
+                .map(LineResponse::writeWithoutStationList)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {

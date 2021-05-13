@@ -11,7 +11,9 @@ import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.ExceptionStatus;
 import wooteco.subway.exception.SubwayException;
 
+import javax.sql.DataSource;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -25,9 +27,12 @@ class StationDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private DataSource dataSource;
+
     @BeforeEach
     void setUp() {
-        stationDao = new StationDao(jdbcTemplate);
+        stationDao = new StationDao(dataSource);
         String schemaQuery = "create table if not exists STATION ( id bigint auto_increment not null, nam varchar(255) " +
                 "not null unique, primary key(id))";
         jdbcTemplate.execute(schemaQuery);
@@ -82,7 +87,8 @@ class StationDaoTest {
             @DisplayName("역 조회에 성공한다.")
             @Test
             void findById() {
-                Station station = stationDao.findById(testStationId);
+                Station station = stationDao.findById(testStationId)
+                        .get();
 
                 assertThat(station).isEqualTo(new Station(testStationId, "testStation"));
             }
@@ -95,9 +101,9 @@ class StationDaoTest {
             @DisplayName("역 조회에 실패한다.")
             @Test
             void cannotFindById() {
-                assertThatCode(() -> stationDao.findById(6874))
-                        .isInstanceOf(SubwayException.class)
-                        .hasMessage(ExceptionStatus.ID_NOT_FOUND.getMessage());
+                Optional<Station> station = stationDao.findById(68954);
+
+                assertThat(station).isEmpty();
             }
         }
     }

@@ -11,7 +11,9 @@ import wooteco.subway.domain.line.Line;
 import wooteco.subway.exception.ExceptionStatus;
 import wooteco.subway.exception.SubwayException;
 
+import javax.sql.DataSource;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -25,9 +27,12 @@ class LineDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private DataSource dataSource;
+
     @BeforeEach
     void setUp() {
-        lineDao = new LineDao(jdbcTemplate);
+        lineDao = new LineDao(dataSource);
         String schemaQuery = "create table if not exists LINE (id bigint auto_increment not null, name varchar(255) " +
                 "not null unique, color varchar(20) not null, primary key(id))";
         jdbcTemplate.execute(schemaQuery);
@@ -82,7 +87,8 @@ class LineDaoTest {
             @DisplayName("노선 조회에 성공한다.")
             @Test
             void findById() {
-                Line line = lineDao.findById(testLineId);
+                Line line = lineDao.findById(testLineId)
+                        .get();
 
                 assertThat(line).isEqualTo(new Line(testLineId, "testLine", "white"));
             }
@@ -95,9 +101,9 @@ class LineDaoTest {
             @DisplayName("노선 조회에 실패한다.")
             @Test
             void cannotFindById() {
-                assertThatCode(() -> lineDao.findById(6874))
-                        .isInstanceOf(SubwayException.class)
-                        .hasMessage(ExceptionStatus.ID_NOT_FOUND.getMessage());
+                Optional<Line> line = lineDao.findById(6874);
+
+                assertThat(line).isEmpty();
             }
         }
     }
@@ -113,9 +119,11 @@ class LineDaoTest {
             @DisplayName("노선 수정에 성공한다.")
             @Test
             void update() {
-                lineDao.update(testLineId, "changedName", "grey");
+                Line requestLine = new Line(testLineId, "changedName", "grey");
+                lineDao.update(requestLine);
 
-                Line line = lineDao.findById(testLineId);
+                Line line = lineDao.findById(testLineId)
+                        .get();
 
                 assertThat(line.getName()).isEqualTo("changedName");
                 assertThat(line.getColor()).isEqualTo("grey");
@@ -126,8 +134,9 @@ class LineDaoTest {
             void duplicatedKey() {
                 String duplicatedName = "dup";
                 lineDao.save(new Line(duplicatedName, "grey"));
+                Line requestLine = new Line(testLineId, duplicatedName, "white");
 
-                assertThatCode(() -> lineDao.update(testLineId, duplicatedName, "white"))
+                assertThatCode(() -> lineDao.update(requestLine))
                         .isInstanceOf(SubwayException.class)
                         .hasMessage(ExceptionStatus.DUPLICATED_NAME.getMessage());
             }
@@ -140,7 +149,9 @@ class LineDaoTest {
             @DisplayName("노선 수정에 실패한다.")
             @Test
             void cannotUpdate() {
-                assertThatCode(() -> lineDao.update(6874, "rrr", "yellow"))
+                Line requestLine = new Line(6985L, "1호선", "black");
+
+                assertThatCode(() -> lineDao.update(requestLine))
                         .isInstanceOf(SubwayException.class)
                         .hasMessage(ExceptionStatus.ID_NOT_FOUND.getMessage());
             }

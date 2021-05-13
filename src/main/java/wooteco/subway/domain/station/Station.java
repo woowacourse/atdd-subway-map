@@ -1,31 +1,28 @@
 package wooteco.subway.domain.station;
 
+import lombok.Builder;
+import lombok.Getter;
+
 import java.util.Objects;
 
+@Builder
+@Getter
 public class Station {
 
     private Long id;
     private String name;
+
+    public Station(String name) {
+        this(null, name);
+    }
 
     public Station(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Station(String name) {
-        this(null, name);
-    }
-
-    public boolean hasSameName(String name) {
-        return this.name.equals(name);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
+    public boolean notEquals(Station station) {
+        return !this.equals(station);
     }
 
     @Override
@@ -33,7 +30,7 @@ public class Station {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Station station = (Station) o;
-        return id == station.id && name.equals(station.name);
+        return Objects.equals(id, station.id) && Objects.equals(name, station.name);
     }
 
     @Override
