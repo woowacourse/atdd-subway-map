@@ -4,15 +4,15 @@ import wooteco.subway.section.Section;
 import wooteco.subway.station.dto.StationResponse;
 
 public class AddSectionForm {
-    private Long id;
+    private long id;
     private StationResponse upStation;
     private StationResponse downStation;
-    private Integer distance;
+    private int distance;
 
     public AddSectionForm() {
     }
 
-    public AddSectionForm(Long id, StationResponse upStation, StationResponse downStation, Integer distance) {
+    public AddSectionForm(long id, StationResponse upStation, StationResponse downStation, int distance) {
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -35,7 +35,7 @@ public class AddSectionForm {
         return downStation;
     }
 
-    public Integer getDistance() {
+    public int getDistance() {
         return distance;
     }
 }

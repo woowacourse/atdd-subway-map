@@ -86,7 +86,7 @@ class SectionServiceTest {
                         new Section(2L, 1L, 2L, 3L, 5)
                 ));
         given(sectionDao.save(any(Section.class)))
-                .willReturn(new Section());
+                .willReturn(new Section(3L, 1L, 3L, 4L, 5));
 
         // when
         sectionService.addSection(new AddSectionForm(1L,
@@ -107,7 +107,7 @@ class SectionServiceTest {
                         new Section(2L, 1L, 2L, 3L, 5)
                 ));
         given(sectionDao.save(any(Section.class)))
-                .willReturn(new Section());
+                .willReturn(new Section(3L, 1L, 1L, 4L, 1));
 
         // when
         sectionService.addSection(new AddSectionForm(1L,

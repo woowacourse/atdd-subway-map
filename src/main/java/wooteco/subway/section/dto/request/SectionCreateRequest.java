@@ -6,11 +6,11 @@ import javax.validation.constraints.NotNull;
 
 public class SectionCreateRequest {
     @NotNull
-    private Long upStationId;
+    private long upStationId;
     @NotNull
-    private Long downStationId;
+    private long downStationId;
     @NotNull
-    private Integer distance;
+    private int distance;
 
     public SectionCreateRequest() {
     }
@@ -19,21 +19,21 @@ public class SectionCreateRequest {
         this(lineCreateRequest.getUpStationId(), lineCreateRequest.getDownStationId(), lineCreateRequest.getDistance());
     }
 
-    public SectionCreateRequest(Long upStationId, Long downStationId, Integer distance) {
+    public SectionCreateRequest(long upStationId, long downStationId, int distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
     }
 
-    public Long getUpStationId() {
+    public long getUpStationId() {
         return upStationId;
     }
 
-    public Long getDownStationId() {
+    public long getDownStationId() {
         return downStationId;
     }
 
-    public Integer getDistance() {
+    public int getDistance() {
         return distance;
     }
 }

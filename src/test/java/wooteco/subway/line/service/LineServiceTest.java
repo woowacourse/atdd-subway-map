@@ -103,9 +103,9 @@ class LineServiceTest {
         // given
         given(lineDao.findAll())
                 .willReturn(Arrays.asList(
-                        new Line("분당선", "red"),
-                        new Line("신분당선", "green"),
-                        new Line("2호선", "blue")
+                        new Line(1L, "분당선", "red"),
+                        new Line(2L, "신분당선", "green"),
+                        new Line(3L, "2호선", "blue")
                 ));
 
         // when

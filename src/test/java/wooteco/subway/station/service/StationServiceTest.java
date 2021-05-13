@@ -73,9 +73,9 @@ class StationServiceTest {
         // given
         given(stationDao.findAll())
                 .willReturn(Arrays.asList(
-                        new Station("왕십리"),
-                        new Station("잠실"),
-                        new Station("강남")
+                        new Station(1L, "왕십리"),
+                        new Station(2L, "잠실"),
+                        new Station(3L, "강남")
                 ));
 
         // when

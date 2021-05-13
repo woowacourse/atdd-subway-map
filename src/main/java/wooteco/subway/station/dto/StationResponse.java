@@ -3,7 +3,7 @@ package wooteco.subway.station.dto;
 import wooteco.subway.station.Station;
 
 public class StationResponse {
-    private Long id;
+    private long id;
     private String name;
 
     public StationResponse() {
@@ -14,12 +14,12 @@ public class StationResponse {
         this.name = station.getName();
     }
 
-    public StationResponse(Long id, String name) {
+    public StationResponse(long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 

@@ -3,12 +3,12 @@ package wooteco.subway.line.dto.response;
 import wooteco.subway.section.dto.response.SectionCreateResponse;
 
 public class LineSectionResponse {
-    private Long id;
+    private long id;
     private String name;
     private String color;
-    private Long upStationId;
-    private Long downStationId;
-    private Integer distance;
+    private long upStationId;
+    private long downStationId;
+    private int distance;
 
     public LineSectionResponse() {
     }
@@ -17,7 +17,7 @@ public class LineSectionResponse {
         this(line.getId(), line.getName(), line.getColor(), section.getUpStationId(), section.getDownStationId(), section.getDistance());
     }
 
-    public LineSectionResponse(Long id, String name, String color, Long upStationId, Long downStationId, Integer distance) {
+    public LineSectionResponse(long id, String name, String color, long upStationId, long downStationId, int distance) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -26,7 +26,7 @@ public class LineSectionResponse {
         this.distance = distance;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
@@ -38,15 +38,15 @@ public class LineSectionResponse {
         return color;
     }
 
-    public Long getUpStationId() {
+    public long getUpStationId() {
         return upStationId;
     }
 
-    public Long getDownStationId() {
+    public long getDownStationId() {
         return downStationId;
     }
 
-    public Integer getDistance() {
+    public int getDistance() {
         return distance;
     }
 }
