@@ -1,4 +1,4 @@
-package wooteco.subway.application;
+package wooteco.subway.application.line;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

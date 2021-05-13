@@ -1,4 +1,4 @@
-package wooteco.subway.infrastructure;
+package wooteco.subway.infrastructure.line;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.infrastructure.line.LineDao;
 import wooteco.util.LineFactory;
@@ -17,6 +18,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@Sql("classpath:/line/lineQueryInit.sql")
 @JdbcTest
 class LineDaoTest {
 
@@ -28,9 +30,6 @@ class LineDaoTest {
     @BeforeEach
     void setUp() {
         lineDao = new LineDao(jdbcTemplate);
-
-        jdbcTemplate.update("ALTER TABLE LINE ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.update("DELETE FROM LINE");
     }
 
     @Test
