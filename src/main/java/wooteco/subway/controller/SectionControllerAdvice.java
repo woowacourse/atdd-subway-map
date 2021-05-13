@@ -9,8 +9,7 @@ public class SectionControllerAdvice {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleEmptyResultException(Exception e) {
-        return ResponseEntity
-                .badRequest()
+        return ResponseEntity.badRequest()
                 .body(e.getMessage());
     }
 }

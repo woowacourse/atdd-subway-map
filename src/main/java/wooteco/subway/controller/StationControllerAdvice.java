@@ -11,15 +11,13 @@ public class StationControllerAdvice {
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<String> handleEmptyResultException(Exception e) {
-        return ResponseEntity
-                .badRequest()
+        return ResponseEntity.badRequest()
                 .body(e.getMessage());
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<String> handleDuplicateUniqueColumnException(Exception e) {
-        return ResponseEntity
-                .badRequest()
+        return ResponseEntity.badRequest()
                 .body("이미 존재하는 역 이름입니다.");
     }
 }
