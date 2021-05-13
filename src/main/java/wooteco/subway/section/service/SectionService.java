@@ -67,6 +67,7 @@ public class SectionService {
         throw new SubwayException("추가할 수 없는 구간입니다!");
     }
 
+    // TODO 중복 줄이기 & section을 업데이트하고 section을 통해 update(Section section)
     private SectionCreateResponse updateUpStation(Sections sections, Section newSection) {
         Section section = sections.findByUpStationId(newSection.getUpStationId());
         section.updateDistance(newSection.getDistance());
@@ -81,6 +82,7 @@ public class SectionService {
         return save(newSection);
     }
 
+    // TODO sections에서 객체 삭제하기
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
@@ -99,6 +101,7 @@ public class SectionService {
         rearrangeSection(lineId, stationId, sections);
     }
 
+    // TODO 계산 로직 도메인에서
     private void rearrangeSection(Long lineId, Long stationId, Sections sections) {
         Section downStationSection = sections.findByDownStationId(stationId);
         Section upStationSection = sections.findByUpStationId(stationId);
