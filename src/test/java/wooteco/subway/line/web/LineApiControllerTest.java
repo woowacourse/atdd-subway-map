@@ -1,197 +1,169 @@
 package wooteco.subway.line.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.ApiControllerTest;
-import wooteco.subway.domain.Line;
+import wooteco.subway.AcceptanceTest;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.line.dao.LineDao;
-import wooteco.subway.section.SectionService;
-import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.StationRequest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @Transactional
-@DisplayName("노선 관련 테스트")
-class LineApiControllerTest extends ApiControllerTest {
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private StationDao stationDao;
-    @Autowired
-    private LineDao lineDao;
-    @Autowired
-    private SectionService sectionService;
+@DisplayName("[API] 노선 관련 테스트")
+class LineApiControllerTest extends AcceptanceTest {
+    private static final StationRequest 잠실역 = new StationRequest("잠실역");
+    private static final StationRequest 잠실새내역 = new StationRequest("잠실새내역");
+    private static final StationRequest 노원역 = new StationRequest("노원역");
 
     @Test
     @DisplayName("노선 생성 - 성공")
-    void create_성공() throws Exception {
+    void create_성공() {
         // given
-        Long 잠실역_id = stationDao.create(Station.create("잠실역")).getId();
-        Long 잠실새내_id = stationDao.create(Station.create("잠실새내역")).getId();
+        Long 잠실역_id = postStationAndGetId(잠실역);
+        Long 잠실새내_id = postStationAndGetId(잠실새내역);
 
         final LineRequest 이호선 =
                 new LineRequest("2호선", "bg-green-600", 잠실역_id, 잠실새내_id, 10);
 
         // when
-        ResultActions result = 노선_생성(이호선);
+
+        ExtractableResponse<Response> result = postLine(이호선);
 
         // then
-        result.andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(header().exists("Location"))
-                .andExpect(jsonPath("id").exists())
-                .andExpect(jsonPath("name").value("2호선"))
-                .andExpect(jsonPath("color").value("bg-green-600"))
-                .andExpect(jsonPath("stations").isArray())
-                .andExpect(jsonPath("stations[0].name").value("잠실역"))
-                .andExpect(jsonPath("stations[1].name").value("잠실새내역"));
+        assertThat(result.header("Location")).isNotNull();
+        assertThat(result.jsonPath().getLong("id")).isNotNull();
+        assertThat(result.jsonPath().getString("name")).isEqualTo("2호선");
+        assertThat(result.jsonPath().getString("color")).isEqualTo("bg-green-600");
+        assertThat(result.jsonPath().getList("stations")).hasSize(2);
+        assertThat(result.jsonPath().getString("stations[0].name")).isEqualTo("잠실역");
+        assertThat(result.jsonPath().getString("stations[1].name")).isEqualTo("잠실새내역");
     }
 
     @Test
     @DisplayName("노선 생성 - 실패(노선 중복 이름)")
-    void create_실패_중복이름() throws Exception {
+    void create_실패_중복이름() {
         // given
-        lineDao.create(Line.create("1호선", "bg-red-600"));
-
-        Long 잠실역_id = stationDao.create(Station.create("잠실역")).getId();
-        Long 석촌역_id = stationDao.create(Station.create("석촌역")).getId();
-
-        final LineRequest 일호선 =
-                new LineRequest("1호선", "bg-green-600", 잠실역_id, 석촌역_id, 10);
+        Long 잠실역_id = postStationAndGetId(잠실역);
+        Long 잠실새내_id = postStationAndGetId(잠실새내역);
+        Long 노원_id = postStationAndGetId(노원역);
+        final LineRequest 이호선 =
+                new LineRequest("2호선", "bg-green-600", 잠실역_id, 잠실새내_id, 10);
+        postLine(이호선);
 
         // when
-        ResultActions result = 노선_생성(일호선);
+        final LineRequest 중복노선 =
+                new LineRequest("2호선", "bg-green-600", 잠실역_id, 노원_id, 10);
+        ExtractableResponse<Response> result = postLine(중복노선);
 
         // then
-        result.andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("중복되는 라인 정보가 존재합니다."));
+        assertThat(result.statusCode()).isEqualTo(BAD_REQUEST);
+        assertThat(result.body().asString()).isEqualTo("중복되는 라인 정보가 존재합니다.");
     }
 
     @Test
     @DisplayName("노선 생성 - 실패(노선 중복 컬러)")
-    void create_실패_중복색상() throws Exception {
+    void create_실패_중복색상() {
         // given
-        lineDao.create(Line.create("1호선", "bg-green-600"));
-
-        Long 잠실역_id = stationDao.create(Station.create("잠실역")).getId();
-        Long 석촌역_id = stationDao.create(Station.create("석촌역")).getId();
-
-        final LineRequest 이호선 =
-                new LineRequest("2호선", "bg-green-600", 잠실역_id, 석촌역_id, 10);
+        Long 잠실역_id = postStationAndGetId(잠실역);
+        Long 잠실새내_id = postStationAndGetId(잠실새내역);
+        Long 노원_id = postStationAndGetId(노원역);
+        LineRequest 이호선 =
+                new LineRequest("2호선", "bg-green-600", 잠실역_id, 잠실새내_id, 10);
+        postLine(이호선);
+        LineRequest 일호선 =
+                new LineRequest("1호선", "bg-green-600", 잠실역_id, 노원_id, 10);
 
         // when
-        ResultActions result = 노선_생성(이호선);
+        ExtractableResponse<Response> result = postLine(일호선);
 
         // then
-        result.andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("중복되는 라인 정보가 존재합니다."));
+        assertThat(result.statusCode()).isEqualTo(BAD_REQUEST);
+        assertThat(result.body().asString()).isEqualTo("중복되는 라인 정보가 존재합니다.");
     }
 
     @Test
     @DisplayName("노선 생성 - 실패(request 필수값 누락)")
-    void create_실패_입력값이상() throws Exception {
+    void create_실패_입력값이상() {
         // given
+        Long 잠실역_id = postStationAndGetId(잠실역);
+        Long 잠실새내_id = postStationAndGetId(잠실새내역);
         LineRequest 이름없는노선 =
-                new LineRequest("", "bg-green-600", 1L, 2L, 10);
+                new LineRequest("", "bg-green-600", 잠실역_id, 잠실새내_id, 10);
 
         // when
-        ResultActions result = 노선_생성(이름없는노선);
+        ExtractableResponse<Response> result = postLine(이름없는노선);
 
         // then
-        result.andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("필수값이 잘못 되었습니다."));
+        assertThat(result.statusCode()).isEqualTo(BAD_REQUEST);
+        assertThat(result.body().asString()).isEqualTo("필수값이 잘못 되었습니다.");
     }
 
     @Test
     @DisplayName("노선 생성 - 실패(등록되지 않는 역을 노선 종점역에 등록할 때)")
-    void create_실패_없는역() throws Exception {
+    void create_실패_없는역() {
         // given
         LineRequest 삼호선 =
                 new LineRequest("3호선", "bg-green-600", 1L, 2L, 10);
 
         // when
-        ResultActions result = 노선_생성(삼호선);
+        ExtractableResponse<Response> result = postLine(삼호선);
 
         // then
-        result.andDo(print())
-                .andExpect(status().isNotFound());
+        assertThat(result.statusCode()).isEqualTo(NOT_FOUND);
     }
 
     @Test
     @DisplayName("노선 생성 - 실패(상행선과 하행선 역이 같을 경우)")
-    void create_실패_같은역() throws Exception {
+    void create_실패_같은역() {
         // given
-        Long 잠실역_id = stationDao.create(Station.create("잠실역")).getId();
-
-        final LineRequest 이호선 =
+        Long 잠실역_id = postStationAndGetId(잠실역);
+        LineRequest 이호선 =
                 new LineRequest("2호선", "bg-green-600", 잠실역_id, 잠실역_id, 10);
 
         // when
-        ResultActions result = 노선_생성(이호선);
+        ExtractableResponse<Response> result = postLine(이호선);
 
         // then
-        result.andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("필수값이 잘못 되었습니다."));
-    }
-
-    @DisplayName("노선 조회 - 성공")
-    @Test
-    void read_성공() throws Exception {
-        //given
-        Station 강남역 = stationDao.create(Station.create("강남역"));
-        Station 잠실역 = stationDao.create(Station.create("잠실역"));
-        Station 석촌역 = stationDao.create(Station.create("석촌역"));
-        LineRequest 사호선 = new LineRequest("4호선", "bg-blue-600", 강남역.getId(), 잠실역.getId(), 10);
-        ResultActions createdLineResult = 노선_생성(사호선);
-        LineResponse lineResponse = 응답(createdLineResult);
-        sectionService.create(Section.create(강남역, 석촌역, 5), lineResponse.getId());
-
-        //when
-        ResultActions result = mockMvc.perform(get("/lines/" + lineResponse.getId()));
-
-        //then
-        result.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("stations[*].name", Matchers.containsInRelativeOrder("강남역", "석촌역", "잠실역")));
+        assertThat(result.statusCode()).isEqualTo(BAD_REQUEST);
+        assertThat(result.body().asString()).isEqualTo("필수값이 잘못 되었습니다.");
     }
 
     @Test
     @DisplayName("노선 조회 - 실패(해당 노선이 없을 경우)")
-    void read_실패_없는노선() throws Exception {
+    void read_실패_없는노선() {
         // given & when
-        ResultActions result = mockMvc.perform(get("/lines/" + Long.MAX_VALUE));
+        ExtractableResponse<Response> result = get("/lines/" + Long.MAX_VALUE);
 
         //then
-        result.andDo(print())
-                .andExpect(status().isNotFound());
+        assertThat(result.statusCode()).isEqualTo(NOT_FOUND);
     }
 
-    private LineResponse 응답(ResultActions createdLineResult) throws Exception {
-        return objectMapper.readValue(createdLineResult.andReturn().getResponse().getContentAsString(), LineResponse.class);
+    @DisplayName("노선 조회 - 성공")
+    @Test
+    void read_성공() {
+        // given
+        Long 잠실역_id = postStationAndGetId(잠실역);
+        Long 잠실새내_id = postStationAndGetId(잠실새내역);
+
+        // when
+        LineRequest 사호선 = new LineRequest("4호선", "bg-blue-600", 잠실역_id, 잠실새내_id, 10);
+        Long lineId = postLineAndGetId(사호선);
+        ExtractableResponse<Response> result = get("/lines/" + lineId);
+
+        // then
+        assertThat(result.statusCode()).isEqualTo(OK);
+        assertThat(result.jsonPath().getString("stations[0].name")).isEqualTo("잠실역");
+        assertThat(result.jsonPath().getString("stations[1].name")).isEqualTo("잠실새내역");
     }
 
-    private ResultActions 노선_생성(LineRequest lineRequest) throws Exception {
-        return mockMvc.perform(post("/lines")
-                .content(objectMapper.writeValueAsString(lineRequest))
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-        );
-    }
 }

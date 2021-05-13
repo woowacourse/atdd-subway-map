@@ -1,12 +1,10 @@
 package wooteco.subway.station;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 
@@ -16,11 +14,11 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("지하철역 관련 기능")
+@DisplayName("[API] 지하철역 관련 기능")
 @Transactional
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("지하철역을 생성한다.")
+    @DisplayName("생성 - 성공")
     @Test
     void create_성공() {
         // given
@@ -35,7 +33,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("생성 - 실패(기존에 존재하는 지하철역 이름으로 지하철역을 생성)")
     @Test
     void create_실패_중복이름() {
         // given
@@ -49,7 +47,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("조회 - 성공")
     @Test
     void read_성공() {
         // given
@@ -58,6 +56,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         StationRequest 역삼역 = new StationRequest("역삼역");
         ExtractableResponse<Response> 역삼역_생성 = 역_생성(역삼역);
+
         List<Long> expectedLineIds = Arrays.asList(병점역_생성, 역삼역_생성).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
@@ -74,7 +73,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
 
-    @DisplayName("지하철역을 제거한다.")
+    @DisplayName("제거 - 성공")
     @Test
     void delete_성공() {
         // given
@@ -90,28 +89,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 역_불러오기() {
-        return RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
+        return get("/stations");
     }
 
     private ExtractableResponse<Response> 역_생성(StationRequest 강남역) {
-        return RestAssured.given().log().all()
-                .body(강남역)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        return postStation(강남역);
     }
 
     private ExtractableResponse<Response> 역_삭제(String uri) {
-        return RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
+        return delete(uri);
     }
 }
