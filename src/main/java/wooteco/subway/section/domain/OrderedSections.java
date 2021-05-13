@@ -7,7 +7,6 @@ import wooteco.subway.section.exception.SectionsIllegalArgumentException;
 import wooteco.subway.section.exception.SectionsSizeTooSmallException;
 import wooteco.subway.station.domain.Station;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -109,29 +108,29 @@ public class OrderedSections {
                 .collect(toSet());
     }
 
-    private List<Section> sortUpToDown(List<Section> sections, Section beforeSection) {
-        List<Section> sorted = new ArrayList<>();
+    private List<Section> sortUpToDown(List<Section> sections, final Section firstSection) {
+        List<Section> sorted = new LinkedList<>();
+        sorted.add(firstSection);
 
-        while (!sections.isEmpty()) {
-            Station downStation = beforeSection.getDownStation();
-            sections.remove(beforeSection);
-            sorted.add(beforeSection);
-
-            Optional<Section> sectionByStation = findSectionByStation(sections, downStation);
-            if (sectionByStation.isPresent()) {
-                beforeSection = sectionByStation.get();
-            }
-
-            validateSectionsIsSequential(sections, sectionByStation);
+        Section beforeSection = firstSection;
+        while (sections.size() > sorted.size()) {
+            Section nextSection = findNextSection(sections, beforeSection);
+            sorted.add(nextSection);
+            beforeSection = nextSection;
         }
 
         return sorted;
     }
 
-    private void validateSectionsIsSequential(List<Section> sections, Optional<Section> sectionByStation) {
-        if (!sectionByStation.isPresent() && !sections.isEmpty()) {
-            throw new SectionsIllegalArgumentException(String.format("역이 연속되지 않습니다. 연속되지 않은 구간 : " + sections.toString()));
-        }
+    private Section findNextSection(List<Section> sections, Section beforeSection) {
+        Station downStation = beforeSection.getDownStation();
+        Optional<Section> sectionByStation = findSectionByStation(sections, downStation);
+        beforeSection = sectionByStation
+                .orElseThrow(() ->
+                        new SectionsIllegalArgumentException(
+                                String.format("역이 연속되지 않습니다. 연속되지 않은 구간 : %s", sections.toString()))
+                );
+        return beforeSection;
     }
 
     public OrderedSections addSection(Section section) {
