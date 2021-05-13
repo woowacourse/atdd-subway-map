@@ -20,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 
-
 public class LineAcceptanceTest extends AcceptanceTest {
 
     static Map<String, String> defaultLineParams;
@@ -41,7 +40,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
-    void createLine() {
+    public void createLine() {
         // given
 
         // when
@@ -76,7 +75,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             "/lines");
 
         Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "서초역");
+        params2.put("name", "1호선");
         params2.put("color", "bg-red-600");
         params2.put("upStationId", "1");
         params2.put("downStationId", "2");
@@ -105,7 +104,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("하나의 지하철 노선을 상세 조회한다.")
     @Test
     void getLineDetail() {
-        lineDao.save(new Line(1L, "2호선", "black"));
+        createStation("강남역");
+        createStation("서초역");
+        getLines();
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .contentType(DEFAULT_MEDIA_TYPE)
             .when()
@@ -175,4 +176,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    private void createStation(String stationName) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", stationName);
+        ExtractableResponse<Response> response = testResponse(params, DEFAULT_MEDIA_TYPE,
+            "/stations");
+        // when
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+    }
 }
