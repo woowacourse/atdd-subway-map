@@ -102,4 +102,9 @@ public class SectionDaoTest {
         assertThat(stations.get(2)).isEqualTo(new Station("테스트 역3"));
     }
 
+    @DisplayName("구간에 존재하는 역 확인 테스트")
+    @Test
+    void findExistStation() {
+        sectionDao.hasStation(1L, 1L);
+    }
 }

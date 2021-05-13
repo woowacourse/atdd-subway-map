@@ -92,17 +92,20 @@ public class SectionDao {
         ), lineId, downStationId);
     }
 
-    public void update(long sectionId, long nextSectionId, int newDistance) {
-        String query = "UPDATE section SET down_station_id = (?), new_distance = (?)  WHERE id = (?)";
-        int affectedRowNumber = jdbcTemplate
-            .update(query, nextSectionId, newDistance, sectionId);
-        if (affectedRowNumber == 0) {
-            throw new NoSuchDataException("존재하지 않아 변경할 수 없습니다.");
-        }
+    public boolean hasStation(Long lineId, Long stationId) {
+        String query = "SELECT id FROM section WHERE line_id = (?) AND (up_station_id = (?) OR down_station_id = (?))";
+        Integer affectedRow = jdbcTemplate
+            .queryForObject(query, Integer.class, lineId, stationId, stationId);
+        return affectedRow != null && affectedRow > 0;
     }
 
-    public Long findIdByStationIds(Long lineId, long upStationId, long downStationId) {
-        String query = "SELECT id FROM section WHERE up_station_id = (?) AND down_station_id = (?) AND line_id = (?)";
-        return jdbcTemplate.queryForObject(query, Long.class, upStationId, downStationId, lineId);
-    }
+//    public void update(long sectionId, long nextSectionId, int newDistance) {
+//        String query = "UPDATE section SET down_station_id = (?), new_distance = (?)  WHERE id = (?)";
+//        int affectedRowNumber = jdbcTemplate
+//            .update(query, nextSectionId, newDistance, sectionId);
+//        if (affectedRowNumber == 0) {
+//            throw new NoSuchDataException("존재하지 않아 변경할 수 없습니다.");
+//        }
+//    }
+
 }

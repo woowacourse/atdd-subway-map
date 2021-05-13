@@ -14,6 +14,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import wooteco.subway.exception.NoSuchDataException;
+import wooteco.subway.exception.SectionInsertExistStationsException;
 import wooteco.subway.exception.ShortDistanceException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineDao;
@@ -116,7 +118,7 @@ public class SectionTest {
         assertThat(sectionService.findByDownStationId(1L, 4L).getDistance()).isEqualTo(4);
     }
 
-    @DisplayName("구간 중간 삽입 시 거리가 모자라는 경우")
+    @DisplayName("구간 중간 삽입 시 거리가 충분하지 않은 경우")
     @Test
     void failInsertDistance() {
         assertThatThrownBy(() ->
@@ -124,5 +126,19 @@ public class SectionTest {
         ).isInstanceOf(ShortDistanceException.class);
     }
 
+    @DisplayName("노선이 존재하지 않을 경우")
+    @Test
+    void noExistStation() {
+        assertThatThrownBy(() ->
+            sectionService.insertSection(1L, new SectionRequest(4L, 4L, 10))
+        ).isInstanceOf(NoSuchDataException.class);
+    }
 
+    @DisplayName("두 역 모두 해당 노선에 존재하는 경우")
+    @Test
+    void towStationIsExistLine() {
+        assertThatThrownBy(() ->
+            sectionService.insertSection(1L, new SectionRequest(1L, 3L, 5))
+        ).isInstanceOf(SectionInsertExistStationsException.class);
+    }
 }

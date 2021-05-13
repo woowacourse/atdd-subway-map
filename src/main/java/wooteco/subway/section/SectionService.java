@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.exception.NoSuchDataException;
+import wooteco.subway.exception.SectionInsertExistStationsException;
 import wooteco.subway.exception.ShortDistanceException;
 import wooteco.subway.line.LineDao;
 import wooteco.subway.line.SectionRequest;
@@ -86,6 +88,12 @@ public class SectionService {
     public void insertSection(Long lineId, SectionRequest sectionRequest) {
         List<Station> stationsInLine = findStationsInLine(lineId);
         endPointInSection sectionEndPoint = findSectionEndPoint(lineId);
+
+        if (sectionDao.hasStation(lineId, sectionRequest.getUpStationId()) &&
+            sectionDao.hasStation(lineId, sectionRequest.getDownStationId())) {
+            throw new SectionInsertExistStationsException("이미 존재하는 역입니다");
+        }
+
         if (isInsertPointIsEnd(sectionRequest, sectionEndPoint)) {
             sectionDao.save(new Section(lineId, sectionRequest));
             return;
@@ -97,7 +105,6 @@ public class SectionService {
     private void sectionIsNoEndPoint(List<Station> stationsInLine, Long lineId,
         SectionRequest sectionRequest) {
         Section upSection;
-        Section downSection;
 
         for (Station station : stationsInLine) {
             if (station.isSameStationId(sectionRequest.getUpStationId())) {
@@ -130,6 +137,8 @@ public class SectionService {
                 return;
             }
         }
+
+        throw new NoSuchDataException("노선에 역이 존재하지 않습니다.");
     }
 
     private boolean isInsertPointIsEnd(SectionRequest sectionRequest,
