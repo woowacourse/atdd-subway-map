@@ -32,9 +32,7 @@ public class StationController {
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
 
         URI location = URI.create("/stations/" + stationResponse.getId());
-        return ResponseEntity
-                .created(location)
-                .body(stationResponse);
+        return ResponseEntity.created(location).build();
     }
 
     private void validateDuplicateStationName(String name) {
@@ -49,16 +47,13 @@ public class StationController {
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());
 
-        return ResponseEntity
-                .ok()
-                .body(stationResponses);
+        return ResponseEntity.ok(stationResponses);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationRepository.delete(id);
-        return ResponseEntity
-                .noContent()
+        return ResponseEntity.noContent()
                 .build();
     }
 }

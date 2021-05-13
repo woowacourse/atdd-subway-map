@@ -22,17 +22,14 @@ public class SectionController {
         LineResponse lineResponse = this.sectionService.createSection(lineId, sectionRequest);
 
         URI location = URI.create("/lines/" + lineResponse.getId());
-        return ResponseEntity
-                .created(location)
-                .body(lineResponse);
+        return ResponseEntity.created(location).build();
     }
 
     @DeleteMapping("/{lineId}/sections")
     public ResponseEntity<LineResponse> deleteSection(@PathVariable long lineId, @RequestParam("stationId") long stationId) {
         this.sectionService.deleteSection(lineId, stationId);
 
-        return ResponseEntity
-                .noContent()
+        return ResponseEntity.noContent()
                 .build();
     }
 }
