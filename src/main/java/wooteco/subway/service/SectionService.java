@@ -18,6 +18,8 @@ import java.util.Optional;
 @Service
 public class SectionService {
 
+    private static final int MIN_SECTION_COUNT = 1;
+
     private final StationDao stationDao;
     private final LineDao lineDao;
     private final SectionDao sectionDao;
@@ -45,11 +47,7 @@ public class SectionService {
     }
 
     public void delete(Long lineId, Long stationId) {
-        lineDao.findById(lineId).orElseThrow(LineNotFoundException::new);
-        stationDao.findById(stationId).orElseThrow(StationNotFoundException::new);
-        if (sectionDao.findById(lineId).hasSize(1)) {
-            throw new NotEnoughSectionException();
-        }
+        validate(lineId, stationId);
 
         List<Section> sections = sectionDao.findContainsStationId(lineId, stationId);
         final Sections foundSections = Sections.from(sections);
@@ -57,5 +55,13 @@ public class SectionService {
         sectionDao.deleteStations(lineId, sections);
         Optional<Section> affectedSection = foundSections.transformSection(stationId);
         affectedSection.ifPresent(section -> sectionDao.insertSection(section, lineId));
+    }
+
+    private void validate(Long lineId, Long stationId) {
+        lineDao.findById(lineId).orElseThrow(LineNotFoundException::new);
+        stationDao.findById(stationId).orElseThrow(StationNotFoundException::new);
+        if (sectionDao.findById(lineId).hasSize(MIN_SECTION_COUNT)) {
+            throw new NotEnoughSectionException();
+        }
     }
 }
