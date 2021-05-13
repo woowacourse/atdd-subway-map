@@ -82,7 +82,10 @@ public class Sections {
     }
 
     private Section findJoinMiddleSection(Section addSection) {
-        Optional<Section> upEqualStation = sections.stream().filter(addSection::isUpEqualUp).findFirst();
+        Optional<Section> upEqualStation = sections.stream()
+            .filter(addSection::isUpEqualUp)
+            .findFirst();
+
         if (upEqualStation.isPresent()) {
             Section section = upEqualStation.get();
             validateDistance(upEqualStation.get(), addSection);
@@ -90,7 +93,10 @@ public class Sections {
                 section.getDownStationId(), section.getDiffDistance(addSection));
         }
 
-        Optional<Section> downEqualStation = sections.stream().filter(addSection::isDownEqualDown).findFirst();
+        Optional<Section> downEqualStation = sections.stream()
+            .filter(addSection::isDownEqualDown)
+            .findFirst();
+
         if (downEqualStation.isPresent()) {
             Section section = downEqualStation.get();
             validateDistance(downEqualStation.get(), addSection);
@@ -129,5 +135,44 @@ public class Sections {
         if (section.getDiffDistance(addSection) <= 0) {
             throw new IllegalUserInputException();
         }
+    }
+
+    public Section findDeleteResultSection(Long deleteStationId) {
+        validateDeleteSize();
+        Section lastSection = sections.get(sections.size() - 1);
+
+        if (lastSection.getDownStationId().equals(deleteStationId)) {
+            return lastSection;
+        }
+
+        return sections.stream()
+            .filter(section -> section.getUpStationId().equals(deleteStationId))
+            .findFirst()
+            .orElseThrow(IllegalUserInputException::new);
+    }
+
+    private void validateDeleteSize() {
+        if (sections.size() <= 1) {
+            throw new IllegalUserInputException();
+        }
+    }
+
+    public Section findDeleteUpdateResultSection(Long stationId, Section deleteSection) {
+        Section firstSection = sections.get(0);
+        Section lastSection = sections.get(sections.size() - 1);
+
+        if (firstSection.getUpStationId().equals(stationId)
+            || lastSection.getDownStationId().equals(stationId)) {
+            return null;
+        }
+
+        int index = sections.indexOf(deleteSection);
+        Section section = sections.get(index - 1);
+
+        return new Section(
+            section.getId(),
+            section.getUpStationId(),
+            deleteSection.getDownStationId(),
+            section.getDistance() + deleteSection.getDistance());
     }
 }

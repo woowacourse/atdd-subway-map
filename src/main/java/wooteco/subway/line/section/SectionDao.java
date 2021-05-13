@@ -3,17 +3,23 @@ package wooteco.subway.line.section;
 import java.sql.PreparedStatement;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class SectionDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Section> sectionRowMapper = (resultSet, rowNumber) -> new Section(
+        resultSet.getLong("id"),
+        resultSet.getLong("up_station_id"),
+        resultSet.getLong("down_station_id"),
+        resultSet.getInt("distance")
+    );
 
     public SectionDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
 
     public void save(Long lineId, Section section) {
         String sql = "insert into SECTION (line_id, up_station_id, down_station_id, distance) values (?, ?, ?, ?)";
@@ -27,20 +33,14 @@ public class SectionDao {
         });
     }
 
-    public void deleteByLineId(Long id) {
+    public void deleteByLineId(Long lineId) {
         String sql = "delete from SECTION where line_id = ?";
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, lineId);
     }
 
     public List<Section> findByLineId(Long lineId) {
         String sql = "select * from SECTION where line_id = ?";
-        return jdbcTemplate.query(sql, (resultSet, rowNumber) ->
-                new Section(
-                    resultSet.getLong("id"),
-                    resultSet.getLong("up_station_id"),
-                    resultSet.getLong("down_station_id"),
-                    resultSet.getInt("distance"))
-            , lineId);
+        return jdbcTemplate.query(sql, sectionRowMapper, lineId);
     }
 
     public void update(Long lineId, Section resultSection) {
@@ -51,5 +51,15 @@ public class SectionDao {
             resultSection.getDownStationId(),
             resultSection.getDistance(),
             lineId);
+    }
+
+    public Section findById(Long lineId, Long sectionId) {
+        String sql = "select * from SECTION where line_id = ? and id = ?";
+        return jdbcTemplate.queryForObject(sql, sectionRowMapper, lineId, sectionId);
+    }
+
+    public void deleteById(Long lineId, Long sectionId) {
+        String sql = "delete from SECTION where line_id = ? and id = ?";
+        jdbcTemplate.update(sql, lineId, sectionId);
     }
 }

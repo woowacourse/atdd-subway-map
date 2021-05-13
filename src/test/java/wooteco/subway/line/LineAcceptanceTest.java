@@ -363,7 +363,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         createLineAPI(line2Request);
         SectionRequest sectionRequest = new SectionRequest(2L, 1L, 5);
-        createSectionAPI(sectionRequest);
 
         List<StationResponse> stations = Arrays.asList(
             new StationResponse(2L, jamsilStation.getName()),
@@ -372,31 +371,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
 
         //when
-        ExtractableResponse<Response> response = getLineAPI();
-
-        //then
-        thenAddSection(stations, response);
-    }
-
-    @Test
-    @DisplayName("Section 중간에 추가하면 관계와 거리가 맞아야 한다.")
-    void getLineWithAddSectionAtMiddleLocation() {
-        //given
-        createLineAPI(line2Request);
-        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 5);
         createSectionAPI(sectionRequest);
-
-        List<StationResponse> stations = Arrays.asList(
-            new StationResponse(1L, gangnamStation.getName()),
-            new StationResponse(2L, jamsilStation.getName()),
-            new StationResponse(4L, sillimStation.getName())
-        );
-
-        //when
         ExtractableResponse<Response> response = getLineAPI();
 
         //then
-        thenAddSection(stations, response);
+        thenCheckSection(stations, response);
     }
 
     @Test
@@ -405,19 +384,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         createLineAPI(line2Request);
         SectionRequest sectionRequest = new SectionRequest(4L, 2L, 5);
-        createSectionAPI(sectionRequest);
 
         List<StationResponse> stations = Arrays.asList(
-            new StationResponse(1L, gangnamStation.getName()),
-            new StationResponse(4L, sillimStation.getName()),
-            new StationResponse(2L, jamsilStation.getName())
+            new StationResponse(gangnamStation),
+            new StationResponse(sillimStation),
+            new StationResponse(jamsilStation)
         );
 
         //when
+        createSectionAPI(sectionRequest);
         ExtractableResponse<Response> response = getLineAPI();
 
         //then
-        thenAddSection(stations, response);
+        thenCheckSection(stations, response);
     }
 
     @Test
@@ -475,6 +454,89 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //when
         ExtractableResponse<Response> response = createSectionAPI(sectionRequest);
+
+        //then
+        thenBadRequestException(response, IllegalUserInputMessage);
+    }
+
+    @Test
+    @DisplayName("노선에 포함된 상행역을 삭제하면 다음역이 상행역이 되어야 한다.")
+    void DeleteStationOnTheLinenWithDeleteUpStation() {
+        //given
+        createLineAPI(line2Request);
+        createSectionAPI(new SectionRequest(1L, 3L, 5));
+        int deleteSectionId = 1;
+
+        List<StationResponse> stations = Arrays.asList(
+            new StationResponse(yeoksamStation),
+            new StationResponse(sillimStation)
+        );
+
+        //when
+        ExtractableResponse<Response> response = deleteSectionAPI(deleteSectionId);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        ExtractableResponse<Response> lineResponse = getLineAPI();
+
+        thenCheckSection(stations, lineResponse);
+    }
+
+    @Test
+    @DisplayName("노선에 포함된 하행역을 삭제하면 이전역이 하행역이 되어야 한다.")
+    void DeleteStationOnTheLinenWithDeleteDownStation() {
+        //given
+        createLineAPI(line2Request);
+        createSectionAPI(new SectionRequest(1L, 3L, 5));
+        int deleteSectionId = 4;
+
+        List<StationResponse> stations = Arrays.asList(
+            new StationResponse(gangnamStation),
+            new StationResponse(yeoksamStation)
+        );
+
+        //when
+        ExtractableResponse<Response> response = deleteSectionAPI(deleteSectionId);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        ExtractableResponse<Response> lineResponse = getLineAPI();
+
+        thenCheckSection(stations, lineResponse);
+    }
+
+    @Test
+    @DisplayName("노선에 포함된 상행,하행이 아닌 역을 삭제하면 앞뒤 역이 연결되어야 한다..")
+    void DeleteStationOnTheLinenWithDeleteOtherStation() {
+        //given
+        createLineAPI(line2Request);
+        createSectionAPI(new SectionRequest(1L, 3L, 5));
+        int deleteSectionId = 3;
+
+        List<StationResponse> stations = Arrays.asList(
+            new StationResponse(gangnamStation),
+            new StationResponse(sillimStation)
+        );
+
+        //when
+        ExtractableResponse<Response> response = deleteSectionAPI(deleteSectionId);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        ExtractableResponse<Response> lineResponse = getLineAPI();
+
+        thenCheckSection(stations, lineResponse);
+    }
+
+    @Test
+    @DisplayName("노선에 포함된 구간이 1개일때 구간을을 삭제하면 에러가 발생한다.")
+    void DeleteSectionWithSectionSizeOne() {
+        //given
+        createLineAPI(line2Request);
+        int deleteStationId = 1;
+
+        //when
+        ExtractableResponse<Response> response = deleteSectionAPI(deleteStationId);
 
         //then
         thenBadRequestException(response, IllegalUserInputMessage);
@@ -554,7 +616,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private void thenAddSection(List<StationResponse> stations,
+    private void thenCheckSection(List<StationResponse> stations,
         ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         LineResponse lineResponse = response.as(LineResponse.class);
@@ -562,5 +624,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getStations())
             .usingRecursiveComparison()
             .isEqualTo(stations);
+    }
+
+    private ExtractableResponse<Response> deleteSectionAPI(int deleteStationId) {
+        return RestAssured.given()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete("/lines/1/sections?stationId=" + deleteStationId)
+            .then()
+            .extract();
     }
 }
