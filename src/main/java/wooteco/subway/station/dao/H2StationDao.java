@@ -5,12 +5,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.common.exception.not_found.NotFoundStationInfoException;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationName;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Repository
 public class H2StationDao implements StationDao {
@@ -62,7 +62,7 @@ public class H2StationDao implements StationDao {
         );
 
         if (queryResult.isEmpty()) {
-            throw new NoSuchElementException(String.format("데이터베이스에 해당 ID의 역이 없습니다. ID : %d", id));
+            throw new NotFoundStationInfoException(String.format("데이터베이스에 해당 ID의 역이 없습니다. ID : %d", id));
         }
 
         return queryResult.get(0);
@@ -76,16 +76,6 @@ public class H2StationDao implements StationDao {
 
         int countOfName = jdbcTemplate.queryForObject(sql, Integer.class, name.text());
         return countOfName > 0;
-    }
-
-    @Override
-    public boolean checkExistId(Long id) {
-        String sql = "SELECT COUNT(*) " +
-                "FROM STATION " +
-                "WHERE ID = ?";
-
-        int countOfColor = jdbcTemplate.queryForObject(sql, Integer.class, id.toString());
-        return countOfColor > 0;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package wooteco.subway.line.dao;
 
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.common.exception.not_found.NotFoundLineInfoException;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineColor;
 import wooteco.subway.line.domain.LineName;
@@ -30,7 +31,7 @@ public class InMemoryLineDao implements LineDao {
         return lines.stream()
                 .filter(line -> line.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("ID에 해당하는 노선이 없습니다. ID : %d", id)));
+                .orElseThrow(() -> new NotFoundLineInfoException(String.format("ID에 해당하는 노선이 없습니다. ID : %d", id)));
     }
 
     @Override

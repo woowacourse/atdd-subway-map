@@ -3,26 +3,25 @@ package wooteco.subway.station.controller;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.station.dto.StationRequest;
-import wooteco.subway.station.dto.StationResponse;
-import wooteco.subway.station.service.StationService;
+import wooteco.subway.station.controller.dto.StationRequest;
+import wooteco.subway.station.controller.dto.StationResponse;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.service.StationService;
 
 import java.net.URI;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/stations")
 public class StationController {
-
     private final StationService stationService;
 
     public StationController(StationService stationService) {
         this.stationService = stationService;
     }
 
-    @PostMapping("/stations")
+    @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
         Station newStation = stationService.save(station);
@@ -30,7 +29,7 @@ public class StationController {
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
     }
 
-    @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
         List<Station> stations = stationService.findAll();
         List<StationResponse> stationResponses = stations.stream()
@@ -39,15 +38,10 @@ public class StationController {
         return ResponseEntity.ok().body(stationResponses);
     }
 
-    @DeleteMapping("/stations/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         Station station = stationService.findById(id);
         stationService.delete(station);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class})
-    public ResponseEntity<Void> exceptionHandler() {
-        return ResponseEntity.badRequest().build();
     }
 }

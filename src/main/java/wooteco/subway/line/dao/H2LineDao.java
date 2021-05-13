@@ -5,13 +5,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.common.exception.not_found.NotFoundLineInfoException;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineColor;
 import wooteco.subway.line.domain.LineName;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Repository
 public class H2LineDao implements LineDao {
@@ -65,7 +65,7 @@ public class H2LineDao implements LineDao {
         );
 
         if (queryResult.isEmpty()) {
-            throw new NoSuchElementException(String.format("데이터베이스에 해당 ID의 노선이 없습니다. ID : %d", id));
+            throw new NotFoundLineInfoException(String.format("데이터베이스에 해당 ID의 노선이 없습니다. ID : %d", id));
         }
 
         return queryResult.get(0);

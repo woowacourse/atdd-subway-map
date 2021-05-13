@@ -1,6 +1,7 @@
 package wooteco.subway.station.dao;
 
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.common.exception.not_found.NotFoundStationInfoException;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationName;
 
@@ -37,19 +38,13 @@ public class InMemoryStationDao implements StationDao {
         return stations.stream()
                 .filter(station -> station.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("ID에 해당하는 역이 없습니다. ID : %d", id)));
+                .orElseThrow(() -> new NotFoundStationInfoException(String.format("ID에 해당하는 역이 없습니다. ID : %d", id)));
     }
 
     @Override
     public boolean checkExistName(StationName name) {
         return stations.stream()
                 .anyMatch(station -> station.getName().equals(name));
-    }
-
-    @Override
-    public boolean checkExistId(Long id) {
-        return stations.stream()
-                .anyMatch(station -> station.getId().equals(id));
     }
 
     private Station setId(Station station) {
@@ -61,7 +56,6 @@ public class InMemoryStationDao implements StationDao {
 
     @Override
     public void delete(Station station) {
-        ifAbsent(station);
         stations.remove(station);
     }
 
@@ -69,11 +63,5 @@ public class InMemoryStationDao implements StationDao {
     public void deleteAll() {
         seq = 0L;
         stations = new ArrayList<>();
-    }
-
-    private void ifAbsent(Station station) {
-        if (!stations.contains(station)) {
-            throw new IllegalArgumentException("역이 존재하지 않습니다.");
-        }
     }
 }
