@@ -1,6 +1,7 @@
 package wooteco.subway.section.model;
 
 import java.util.Objects;
+import lombok.Builder;
 import wooteco.subway.exception.DuplicationException;
 import wooteco.subway.exception.WrongDistanceException;
 import wooteco.subway.line.model.Line;
@@ -15,6 +16,7 @@ public class Section {
     private final Station downStation;
     private final int distance;
 
+    @Builder
     public Section(Line line, Station upStation, Station downStation, int distance) {
         validateSection(upStation, downStation, distance);
         this.line = line;

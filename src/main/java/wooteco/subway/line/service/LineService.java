@@ -35,7 +35,13 @@ public class LineService {
     public LineDetailsResponse createLine(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineDao.save(line);
-        sectionDao.save(newLine.getId(), lineRequest);
+        Section section = Section.builder()
+            .line(newLine)
+            .upStation(stationDao.findStationById(lineRequest.getUpStationId()))
+            .downStation(stationDao.findStationById(lineRequest.getDownStationId()))
+            .distance(lineRequest.getDistance())
+            .build();
+        sectionDao.save(section);
         return getLineDetailsResponse(newLine.getId());
     }
 

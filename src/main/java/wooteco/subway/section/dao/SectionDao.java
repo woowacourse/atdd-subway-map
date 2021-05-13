@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.line.api.dto.LineRequest;
 import wooteco.subway.section.api.dto.SectionDto;
 import wooteco.subway.section.model.Section;
 
@@ -18,10 +17,10 @@ public class SectionDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void save(Long lineId, LineRequest lineRequest) {
+    public void save(Section section) { //todo: DTO 대신 Domain 받는 구조로 변경!
         String sql = "INSERT INTO `section` (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, lineId, lineRequest.getUpStationId(),
-            lineRequest.getDownStationId(), lineRequest.getDistance());
+        jdbcTemplate.update(sql, section.getLineId(), section.getUpStationId(),
+            section.getDownStationId(), section.getDistance());
     }
 
     public void saveAll(List<Section> sections) {

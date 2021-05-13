@@ -17,6 +17,7 @@ import wooteco.subway.line.api.dto.LineResponse;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.model.Line;
 import wooteco.subway.section.dao.SectionDao;
+import wooteco.subway.section.model.Section;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.model.Station;
 
@@ -83,8 +84,15 @@ class LineServiceTest {
         Station station1 = stationDao.save(new Station("강남역"));
         Station station2 = stationDao.save(new Station("잠실역"));
         Line line = lineDao.save(new Line("2호선", "GREEN"));
-        sectionDao.save(line.getId(), new LineRequest("2호선","GREEN", station1.getId(),
-            station2.getId(), 10));
+
+        Section section = Section.builder()
+            .line(line)
+            .upStation(station1)
+            .downStation(station2)
+            .distance(10)
+            .build();
+
+        sectionDao.save(section);
 
         //when
         LineDetailsResponse lineDetailsResponse = lineService.showLineById(line.getId());
@@ -102,8 +110,15 @@ class LineServiceTest {
         Station station1 = stationDao.save(new Station("강남역"));
         Station station2 = stationDao.save(new Station("잠실역"));
         Line line = lineDao.save(new Line("2호선", "GREEN"));
-        sectionDao.save(line.getId(), new LineRequest("2호선","GREEN", station1.getId(),
-            station2.getId(), 10));
+
+        Section section = Section.builder()
+            .line(line)
+            .upStation(station1)
+            .downStation(station2)
+            .distance(10)
+            .build();
+
+        sectionDao.save(section);
 
         //when
         lineService.deleteById(line.getId());
