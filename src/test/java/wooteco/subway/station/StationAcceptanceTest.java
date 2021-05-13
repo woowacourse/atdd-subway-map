@@ -8,11 +8,14 @@ import io.restassured.response.Response;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.section.dto.SectionRequest;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
@@ -99,22 +102,38 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
+    @Test
+    @DisplayName("지하철역이 구간에 포함되어 있을때 역을 제거하면 에러가 발생한다.")
+    void deleteStationWithUseStation() {
+        // given
+        createStationAPI("강남역");
+        createStationAPI("잠실역");
+        createLineAPI(new LineRequest("2호선", "green", 1L, 2L, 10));
+
+        // when
+        ExtractableResponse<Response> response = deleteStationAPI("/stations/1");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("[ERROR] 현재 사용중인 아이템이어서 삭제할 수 없습니다.");
+    }
+
     private ExtractableResponse<Response> createStationAPI(String name) {
         StationRequest stationRequest = new StationRequest(name);
-        return RestAssured.given().log().all()
+        return RestAssured.given()
             .body(stationRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/stations")
-            .then().log().all()
+            .then()
             .extract();
     }
 
     private ExtractableResponse<Response> deleteStationAPI(String uri) {
-        return RestAssured.given().log().all()
+        return RestAssured.given()
             .when()
             .delete(uri)
-            .then().log().all()
+            .then()
             .extract();
     }
 
@@ -132,10 +151,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> getStationAllAPI() {
-        return RestAssured.given().log().all()
+        return RestAssured.given()
             .when()
             .get("/stations")
-            .then().log().all()
+            .then()
             .extract();
     }
 }

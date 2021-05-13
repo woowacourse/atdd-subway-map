@@ -7,6 +7,7 @@ import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.IllegalUserInputException;
 import wooteco.subway.exception.NotExistItemException;
 import wooteco.subway.exception.NotInputDataException;
+import wooteco.subway.exception.UseForeignKeyException;
 
 @ControllerAdvice
 public class SubwayAdvice {
@@ -28,6 +29,11 @@ public class SubwayAdvice {
 
     @ExceptionHandler(IllegalUserInputException.class)
     public ResponseEntity<String> handleIllegalUserInputException(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(UseForeignKeyException.class)
+    public ResponseEntity<String> handleUseForeignKeyException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

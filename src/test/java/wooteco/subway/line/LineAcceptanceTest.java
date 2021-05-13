@@ -562,16 +562,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         thenBadRequestException(response, IllegalUserInputMessage);
     }
 
-    private ExtractableResponse<Response> createLineAPI(LineRequest lineRequest) {
-        return RestAssured.given()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then()
-            .extract();
-    }
-
     private ExtractableResponse<Response> deleteLineAPI(String uri) {
         return RestAssured.given()
             .when()
@@ -624,16 +614,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private void thenBadRequestException(ExtractableResponse<Response> response, String message) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString()).isEqualTo(message);
-    }
-
-    private ExtractableResponse<Response> createSectionAPI(SectionRequest sectionRequest) {
-        return RestAssured.given()
-            .body(sectionRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines/1/sections")
-            .then()
-            .extract();
     }
 
     private void thenCheckSection(List<StationResponse> stations,

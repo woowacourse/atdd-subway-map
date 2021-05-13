@@ -4,18 +4,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DataIntegrityViolationException;
 import wooteco.subway.UnitTest;
 import wooteco.subway.exception.DuplicateException;
+import wooteco.subway.exception.UseForeignKeyException;
+import wooteco.subway.line.Line;
+import wooteco.subway.line.LineDao;
+import wooteco.subway.line.section.Section;
+import wooteco.subway.line.section.SectionDao;
 
 @DisplayName("지하철역 DAO 관련 기능")
 class StationDaoTest extends UnitTest {
 
     private final StationDao stationDao;
+    private final LineDao lineDao;
+    private final SectionDao sectionDao;
 
-    public StationDaoTest(StationDao stationDao) {
+    public StationDaoTest(StationDao stationDao, LineDao lineDao,
+        SectionDao sectionDao) {
         this.stationDao = stationDao;
+        this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
     @Test
@@ -58,5 +70,21 @@ class StationDaoTest extends UnitTest {
 
         //then
         assertThat(stationDao.findAll()).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("Station이 구간에 포함되어 있을때 역을 삭제하면 에러가 발생한다.")
+    void deleteWithUseStation() {
+        //given
+        stationDao.save(new Station("잠실역"));
+        stationDao.save(new Station("역삼역"));
+        lineDao.save(new Line("2호선", "green"));
+        sectionDao.save(1L, new Section(1L, 2L, 10));
+
+        //when
+         ThrowableAssert.ThrowingCallable callable = () -> stationDao.delete(1L);
+
+        //then
+        assertThatThrownBy(callable).isInstanceOf(UseForeignKeyException.class);
     }
 }
