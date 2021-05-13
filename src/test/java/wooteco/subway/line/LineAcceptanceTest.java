@@ -12,6 +12,7 @@ import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.controller.dto.LineRequest;
 import wooteco.subway.line.controller.dto.LineResponse;
 import wooteco.subway.station.controller.dto.StationRequest;
+import wooteco.subway.station.domain.Station;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,14 +25,15 @@ import static org.hamcrest.CoreMatchers.is;
 @Transactional
 public class LineAcceptanceTest extends AcceptanceTest {
 
-
     private final LineRequest line2Request;
     private final LineRequest line3Request;
+    private final StationRequest gangnamStationRequest;
     private final StationRequest yeoksamStationRequest;
 
     public LineAcceptanceTest() {
-        this.line2Request = new LineRequest("2호선", "bg-red-600", 0L, 0L, 0);
-        this.line3Request = new LineRequest("3호선", "bg-red-600", 0L, 0L, 0);
+        this.line2Request = new LineRequest("2호선", "bg-red-600", 1L, 2L, 4);
+        this.line3Request = new LineRequest("3호선", "bg-red-600", 1L, 2L, 5);
+        this.gangnamStationRequest = new StationRequest("강남역");
         this.yeoksamStationRequest = new StationRequest("역삼역");
     }
 
@@ -39,6 +41,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
+        createStation(gangnamStationRequest);
+        createStation(yeoksamStationRequest);
 
         //when
         ExtractableResponse<Response> response = createLine(line2Request);
@@ -52,8 +56,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록을 보여준다.")
     void showLines() {
         // given
-        ExtractableResponse<Response> createResponse1 = createLine(line2Request);
+        ExtractableResponse<Response> createResponse1 = createStation(gangnamStationRequest);
         ExtractableResponse<Response> createResponse2 = createStation(yeoksamStationRequest);
+        ExtractableResponse<Response> createResponse3 = createLine(line2Request);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -64,7 +69,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
+        List<Long> expectedLineIds = Stream.of(createResponse1)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
@@ -77,6 +82,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLine() {
         // given
+        createStation(gangnamStationRequest);
+        createStation(yeoksamStationRequest);
         ExtractableResponse<Response> createResponse = createLine(line2Request);
 
         // when
@@ -99,6 +106,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
 
         // given
+        createStation(gangnamStationRequest);
+        createStation(yeoksamStationRequest);
         createLine(line2Request);
         ExtractableResponse<Response> createResponse = createLine(line3Request);
 
@@ -124,6 +133,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
+        createStation(gangnamStationRequest);
+        createStation(yeoksamStationRequest);
         ExtractableResponse<Response> createResponse = createLine(line2Request);
 
         // when
@@ -159,5 +170,4 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
-
 }
