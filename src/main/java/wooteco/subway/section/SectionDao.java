@@ -93,19 +93,23 @@ public class SectionDao {
     }
 
     public boolean hasStation(Long lineId, Long stationId) {
-        String query = "SELECT id FROM section WHERE line_id = (?) AND (up_station_id = (?) OR down_station_id = (?))";
-        Integer affectedRow = jdbcTemplate
+        String query = "SELECT count(id) FROM section WHERE line_id = (?) AND (up_station_id = (?) OR down_station_id = (?))";
+        Integer selectedCount = jdbcTemplate
             .queryForObject(query, Integer.class, lineId, stationId, stationId);
-        return affectedRow != null && affectedRow > 0;
+        return selectedCount != null && selectedCount > 0;
     }
 
-//    public void update(long sectionId, long nextSectionId, int newDistance) {
-//        String query = "UPDATE section SET down_station_id = (?), new_distance = (?)  WHERE id = (?)";
-//        int affectedRowNumber = jdbcTemplate
-//            .update(query, nextSectionId, newDistance, sectionId);
-//        if (affectedRowNumber == 0) {
-//            throw new NoSuchDataException("존재하지 않아 변경할 수 없습니다.");
-//        }
-//    }
+    public void update(long sectionId, long newDownStationId, int newDistance) {
+        String query = "UPDATE section SET down_station_id = (?), distance = (?)  WHERE id = (?)";
+        int affectedRowNumber = jdbcTemplate
+            .update(query, newDownStationId, newDistance, sectionId);
+        if (affectedRowNumber == 0) {
+            throw new NoSuchDataException("존재하지 않아 변경할 수 없습니다.");
+        }
+    }
 
+    public Long findSectionId(long lineId, long upStationId, Long downStationId) {
+        String query = "SELECT id FROM section WHERE line_id = (?) AND up_station_id = (?) AND down_station_id = (?)";
+        return jdbcTemplate.queryForObject(query, Long.class, lineId, upStationId, downStationId);
+    }
 }

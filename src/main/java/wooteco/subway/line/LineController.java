@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.exception.DeleteMinimumSizeException;
+import wooteco.subway.exception.ShortDistanceException;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.SectionDao;
 import wooteco.subway.section.SectionService;
@@ -103,6 +105,16 @@ public class LineController {
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity handleNoSuchLine() {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(DeleteMinimumSizeException.class)
+    public ResponseEntity handleNoDelete() {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(ShortDistanceException.class)
+    public ResponseEntity handleShortDistance() {
         return ResponseEntity.badRequest().build();
     }
 }

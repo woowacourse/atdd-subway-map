@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.exception.DeleteMinimumSizeException;
 import wooteco.subway.exception.NoSuchDataException;
 import wooteco.subway.exception.SectionInsertExistStationsException;
 import wooteco.subway.exception.ShortDistanceException;
@@ -164,6 +165,9 @@ public class SectionService {
     public void deleteByUpStationId(long lineId, long upStationId) {
         LineEndPoint sectionEndPoint = findSectionEndPoint(lineId);
 
+        if (sectionDao.findSectionsByLineId(lineId).size() < 2) {
+            throw new DeleteMinimumSizeException("구간이 두 개 이상일 때에만 삭제할 수 있습니다.");
+        }
         if (sectionEndPoint.isSameUpStationId(upStationId)) {
             sectionDao.delete(lineId, upStationId);
             return;
@@ -173,6 +177,25 @@ public class SectionService {
                 sectionDao.findByDownStationId(lineId, upStationId).getUpStationId());
             return;
         }
+        if (sectionDao.hasStation(lineId, upStationId)) {
+            deleteMiddleSection(lineId, upStationId);
+            return;
+        }
+        throw new NoSuchDataException("존재하지 않는 역입니다");
+    }
 
+    private void deleteMiddleSection(long lineId, long upStationId) {
+        Section expectedDeleteSection = sectionDao.findByUpStationId(lineId, upStationId);
+
+        sectionDao.delete(lineId, upStationId);
+
+        Section prevDeleteSection = sectionDao
+            .findByDownStationId(lineId, expectedDeleteSection.getUpStationId());
+        sectionDao.update(sectionDao.findSectionId(lineId,
+            prevDeleteSection.getUpStationId(),
+            prevDeleteSection.getDownStationId()),
+            expectedDeleteSection.getDownStationId(),
+            expectedDeleteSection.getDistance() + prevDeleteSection
+                .getDistance());
     }
 }

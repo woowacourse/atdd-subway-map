@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import wooteco.subway.exception.DeleteMinimumSizeException;
 import wooteco.subway.exception.NoSuchDataException;
 import wooteco.subway.exception.SectionInsertExistStationsException;
 import wooteco.subway.exception.ShortDistanceException;
@@ -25,7 +26,7 @@ import wooteco.subway.station.StationDao;
 
 @JdbcTest
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
-public class SectionTest {
+public class SectionServiceTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -168,5 +169,36 @@ public class SectionTest {
 
         assertThat(sectionService.findStationsByLineId(1L)).hasSize(2);
         assertThat(stationIds).isEqualTo(Arrays.asList(1L, 2L));
+    }
+
+    @DisplayName("노선의 중간을 지우는 경우")
+    @Test
+    void deleteMiddleStation() {
+        sectionService.deleteByUpStationId(1L, 2L);
+
+        List<Long> stationIds = new ArrayList<>();
+        for (Station station : sectionService.findStationsByLineId(1L)) {
+            stationIds.add(station.getId());
+        }
+
+        assertThat(sectionService.findStationsByLineId(1L)).hasSize(2);
+        assertThat(stationIds).isEqualTo(Arrays.asList(1L, 3L));
+    }
+
+    @DisplayName("지우려는 역이 없는 경우")
+    @Test
+    void deleteValidStation() {
+        assertThatThrownBy(() ->
+            sectionService.deleteByUpStationId(1L, 4L)
+        ).isInstanceOf(NoSuchDataException.class);
+    }
+
+    @DisplayName("노선이 두 개일 경우는 삭제에 실패한다")
+    @Test
+    void deleteRemainTwoStation() {
+        sectionService.deleteByUpStationId(1L, 2L);
+        assertThatThrownBy(() ->
+            sectionService.deleteByUpStationId(1L, 1L)
+        ).isInstanceOf(DeleteMinimumSizeException.class);
     }
 }
