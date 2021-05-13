@@ -35,7 +35,7 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = Line.from(lineRequest);
         Line newLine = lineService.save(line);
-        Section section = new Section(newLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        Section section = new Section(newLine.getId(), stationService.findById(lineRequest.getUpStationId()), stationService.findById(lineRequest.getDownStationId()), lineRequest.getDistance());
         sectionService.save(section);
         LineResponse lineResponse = LineResponse.from(newLine);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
@@ -73,7 +73,7 @@ public class LineController {
 
     @PostMapping("/{id}/sections")
     public ResponseEntity<Void> addSection(@RequestBody LineRequest lineRequest, @PathVariable Long id) {
-        Section section = new Section(id, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        Section section = new Section(id, stationService.findById(lineRequest.getUpStationId()), stationService.findById(lineRequest.getDownStationId()), lineRequest.getDistance());
         Sections sections = sectionService.findByLineId(id);
         sectionService.addSection(sections, section);
         return ResponseEntity.ok().build();
@@ -82,7 +82,7 @@ public class LineController {
     @DeleteMapping("/{id}/sections")
     public ResponseEntity<Void> deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
         Sections sections = sectionService.findByLineId(id);
-        sectionService.deleteSection(sections, id, stationId);
+        sectionService.deleteSection(sections, id, stationService.findById(stationId));
         return ResponseEntity.ok().build();
     }
 }

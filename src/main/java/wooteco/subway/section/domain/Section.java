@@ -1,34 +1,35 @@
 package wooteco.subway.section.domain;
 
 import wooteco.subway.exception.IllegalSectionArgumentException;
+import wooteco.subway.station.domain.Station;
 
 public class Section {
 
     private final Long id;
     private final Long lineId;
-    private final Long upStationId;
-    private final Long downStationId;
+    private final Station upStation;
+    private final Station downStation;
     private final int distance;
 
-    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
-        validateSection(upStationId, downStationId);
+    public Section(Long id, Long lineId, Station upStation, Station downStation, int distance) {
+        validateSection(upStation, downStation);
         this.id = id;
         this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
-    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
-        this(0L, lineId, upStationId, downStationId, distance);
+    public Section(Long lineId, Station upStation, Station downStation, int distance) {
+        this(0L, lineId, upStation, downStation, distance);
     }
 
-    public boolean isUpStationId(Long id) {
-        return this.upStationId.equals(id);
+    public boolean isUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 
-    public boolean isDownStationId(Long id) {
-        return this.downStationId.equals(id);
+    public boolean isDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 
     public boolean compareDistance(int distance) {
@@ -43,12 +44,12 @@ public class Section {
         return lineId;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
+    public Station getDownStation() {
+        return downStation;
     }
 
     public int getDistance() {
@@ -65,21 +66,21 @@ public class Section {
         if (getDistance() != section.getDistance()) return false;
         if (!getId().equals(section.getId())) return false;
         if (!getLineId().equals(section.getLineId())) return false;
-        if (!getUpStationId().equals(section.getUpStationId())) return false;
-        return getDownStationId().equals(section.getDownStationId());
+        if (!getUpStation().equals(section.getUpStation())) return false;
+        return getDownStation().equals(section.getDownStation());
     }
 
     @Override
     public int hashCode() {
         int result = getId().hashCode();
         result = 31 * result + getLineId().hashCode();
-        result = 31 * result + getUpStationId().hashCode();
-        result = 31 * result + getDownStationId().hashCode();
+        result = 31 * result + getUpStation().hashCode();
+        result = 31 * result + getDownStation().hashCode();
         result = 31 * result + getDistance();
         return result;
     }
 
-    private void validateSection(Long upStationId, Long downStationId) {
+    private void validateSection(Station upStationId, Station downStationId) {
         if(upStationId.equals(downStationId)) {
             throw new IllegalSectionArgumentException();
         }

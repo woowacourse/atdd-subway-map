@@ -2,6 +2,7 @@ package wooteco.subway.section.dao;
 
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
+import wooteco.subway.station.domain.Station;
 
 public interface SectionDao {
 
@@ -11,6 +12,6 @@ public interface SectionDao {
 
     void update(Section updateSection);
 
-    void delete(Long lineId, Long stationId);
+    void delete(Long lineId, Station station);
 
 }

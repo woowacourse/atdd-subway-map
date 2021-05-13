@@ -31,6 +31,10 @@ public class StationService {
            .collect(Collectors.toList());
     }
 
+    public Station findById(Long id) {
+        return stationDao.findById(id).orElseThrow(NotFoundStationException::new);
+    }
+
     public List<Station> findAll() {
         return stationDao.findAll();
     }
