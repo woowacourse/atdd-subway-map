@@ -28,7 +28,7 @@ public class StationApiController {
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<StationResponse>> showStations() {
+    public ResponseEntity<List<StationResponse>> readStations() {
         List<Station> stations = stationService.findAll();
         List<StationResponse> stationResponses = stations.stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))

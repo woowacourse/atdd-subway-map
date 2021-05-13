@@ -15,11 +15,11 @@ public class SectionResponse {
     private StationResponse downStation;
     private int distance;
 
-    public static SectionResponse create(Section section) {
+    public static SectionResponse of(Section section) {
         return new SectionResponse(
                 section.getId(),
-                StationResponse.create(section.getUpStation()),
-                StationResponse.create(section.getDownStation()),
+                StationResponse.of(section.getUpStation()),
+                StationResponse.of(section.getDownStation()),
                 section.getDistance()
         );
     }

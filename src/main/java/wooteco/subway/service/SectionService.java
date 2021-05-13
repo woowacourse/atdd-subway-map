@@ -44,7 +44,7 @@ public class SectionService {
         return sectionDao.save(section, section.getLineId());
     }
 
-    public void removeSection(Long lineId, Long stationId) {
+    public void deleteSection(Long lineId, Long stationId) {
         lineDao.findById(lineId).orElseThrow(LineNotFoundException::new);
         stationDao.findById(stationId).orElseThrow(StationNotFoundException::new);
         if (sectionDao.findByLineId(lineId).hasSize(1)) {

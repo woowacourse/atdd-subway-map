@@ -11,7 +11,7 @@ import java.util.Optional;
 public class InMemoryLineDao implements LineDao {
 
     private Long seq = 0L;
-    private List<Line> lines = new ArrayList<>();
+    private final List<Line> lines = new ArrayList<>();
 
     private Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
@@ -28,7 +28,7 @@ public class InMemoryLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findByNameAndColor(String name, String color) {
+    public Optional<Line> findByNameOrColor(String name, String color) {
         return lines.stream()
                 .filter(line -> line.isSameName(name) || line.isSameColor(color))
                 .findAny();

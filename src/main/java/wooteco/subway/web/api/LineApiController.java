@@ -44,15 +44,15 @@ public class LineApiController {
         Station downStation = stationService.findStation(lineRequest.getDownStationId());
 
         Line line = lineService.createLine(lineRequest, upStation, downStation);
-        LineResponse lineResponse = LineResponse.create(line);
+        LineResponse lineResponse = LineResponse.of(line);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<LineResponse>> showLines() {
+    public ResponseEntity<List<LineResponse>> readLines() {
         List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
-                .map(LineResponse::create)
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
@@ -60,7 +60,7 @@ public class LineApiController {
     @GetMapping("/{lineId}")
     public ResponseEntity<LineResponse> readLine(@PathVariable Long lineId) {
         Line line = lineService.findLine(lineId);
-        return ResponseEntity.ok(LineResponse.create(line));
+        return ResponseEntity.ok(LineResponse.of(line));
     }
 
     @DeleteMapping("/{lineId}")

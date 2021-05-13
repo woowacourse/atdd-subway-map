@@ -34,12 +34,12 @@ public class SectionApiController {
         Section section =
                 sectionService.createSection(Section.of(upStation, downStation, sectionRequest.getDistance()), lineId);
 
-        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/" + section.getId())).body(SectionResponse.create(section));
+        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/" + section.getId())).body(SectionResponse.of(section));
     }
 
     @DeleteMapping
-    public ResponseEntity removeSection(@PathVariable Long lineId, @RequestParam Long stationId) {
-        sectionService.removeSection(lineId, stationId);
+    public ResponseEntity deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+        sectionService.deleteSection(lineId, stationId);
         return ResponseEntity.noContent().build();
     }
 }

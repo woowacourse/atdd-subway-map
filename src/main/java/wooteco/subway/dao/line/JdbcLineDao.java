@@ -34,7 +34,7 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findByNameAndColor(String name, String color) {
+    public Optional<Line> findByNameOrColor(String name, String color) {
         String sql = "SELECT * FROM line WHERE (name = ? OR color = ?)";
         return jdbcTemplate.query(sql, getRowMapper(), name, color).stream().findAny();
     }

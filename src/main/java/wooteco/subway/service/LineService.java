@@ -27,7 +27,7 @@ public class LineService {
     }
 
     public Line createLine(String name, String color, Station upStation, Station downStation, int distance) {
-        if (lineDao.findByNameAndColor(name, color).isPresent()) {
+        if (lineDao.findByNameOrColor(name, color).isPresent()) {
             throw new DuplicatedLineInformationException();
         }
         Line line = lineDao.save(Line.of(name, color));
