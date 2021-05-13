@@ -38,4 +38,5 @@ public class LineDtoAssembler {
                 .map(this::station)
                 .collect(toList());
     }
+
 }

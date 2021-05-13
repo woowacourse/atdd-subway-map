@@ -87,10 +87,15 @@ public class LineController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+<<<<<<< HEAD
     public ResponseEntity<Void> modifyById(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
 <<<<<<< HEAD
         final Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
 =======
+=======
+    public ResponseEntity<Void> modifyById(@PathVariable Long id,
+                                           @RequestBody LineRequest lineRequest) {
+>>>>>>> b90a38e... refactor: section 삭제 및 추가 로직 분리
         final Line line = new Line(
                 new LineId(id),
                 new LineName(lineRequest.getName()),
@@ -111,7 +116,8 @@ public class LineController {
     }
 
     @DeleteMapping("{lineId}/sections")
-    public ResponseEntity<Void> deleteSectionByStationId(@PathVariable Long lineId, @RequestParam("stationId") Long stationId) {
+    public ResponseEntity<Void> deleteSectionByStationId(@PathVariable Long lineId,
+                                                         @RequestParam("stationId") Long stationId) {
         Line line = lineService.findById(lineId);
         line.deleteSectionByStationId(stationId);
 
@@ -119,7 +125,8 @@ public class LineController {
     }
 
     @PostMapping(value = "/{lineId}/sections")
-    public ResponseEntity<LineResponse> addNewSection(@RequestBody SectionRequest sectionRequest, @PathVariable Long lineId) {
+    public ResponseEntity<LineResponse> addNewSection(@RequestBody SectionRequest sectionRequest,
+                                                      @PathVariable Long lineId) {
         Section section = new Section(
                 new LineId(lineId),
                 new StationId(sectionRequest.getUpStationId()),

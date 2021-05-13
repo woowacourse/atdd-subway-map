@@ -104,10 +104,14 @@ class LineAcceptanceTest {
         stations = new ArrayList<>(stations);
         stations.sort(comparingInt(station -> Math.toIntExact(station.getId())));
 
-        assertThat(stations.get(0).getId()).isEqualTo(1L);
-        assertThat(stations.get(0).getName()).isEqualTo("dummy1");
-        assertThat(stations.get(1).getId()).isEqualTo(2L);
-        assertThat(stations.get(1).getName()).isEqualTo("dummy2");
+        assertThat(stations)
+                .usingRecursiveComparison()
+                .isEqualTo(
+                        Arrays.asList(
+                                new StationResponse(1L, "dummy1"),
+                                new StationResponse(2L, "dummy2")
+                        )
+                );
     }
 
     @DisplayName("모든 노선을 조회한다.")

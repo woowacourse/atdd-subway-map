@@ -77,4 +77,5 @@ public class StationDao {
 
         return jdbcTemplate.queryForObject(sql, Long.class, id, id) != 0;
     }
+
 }
