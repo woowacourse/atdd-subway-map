@@ -12,41 +12,10 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
-<<<<<<< HEAD
-<<<<<<< HEAD:src/test/java/wooteco/subway/ui/LineControllerTest.java
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD:src/test/java/wooteco/subway/line/ui/LineControllerTest.java
-import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.domain.LineRepository;
-import wooteco.subway.line.domain.section.Sections;
-import wooteco.subway.line.domain.value.LineColor;
-import wooteco.subway.line.domain.value.LineName;
-import wooteco.subway.line.ui.dto.LineRequest;
-=======
-import wooteco.subway.domain.line.Line;
-=======
->>>>>>> d2a85ea... refactor: 테스트 및 버그 수정
-=======
-import org.springframework.web.bind.annotation.PostMapping;
->>>>>>> 110acd7... feat: 섹션 삭제 기능 추가
-=======
->>>>>>> 0d2741d... refactor: 페키지 구조 변경:src/test/java/wooteco/subway/presentation/LineControllerTest.java
-import wooteco.subway.domain.line.LineRepository;
-import wooteco.subway.domain.station.StationRepository;
-import wooteco.subway.presentation.line.dto.SectionRequest;
-=======
->>>>>>> 3677b8f... refactor: custom exception으로 변경
 import wooteco.subway.presentation.line.dto.LineRequest;
 import wooteco.subway.presentation.line.dto.SectionRequest;
 import wooteco.subway.presentation.station.dto.StationRequest;
 import wooteco.subway.presentation.station.dto.StationResponse;
-<<<<<<< HEAD
-import wooteco.util.StationFactory;
->>>>>>> e735a30... refactor: 지하철 노선 추가 API 수정 및 페키지 구조 변경:src/test/java/wooteco/subway/ui/LineControllerTest.java
-=======
->>>>>>> 3677b8f... refactor: custom exception으로 변경
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 
-@Sql("classpath:line/lineQueryInit.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineAcceptanceTest {
 
@@ -86,19 +54,19 @@ class LineAcceptanceTest {
 
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
-                    .accept(MediaType.ALL_VALUE)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.ALL_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                    .body(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10L))
-                    .post("/lines")
+                .body(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10L))
+                .post("/lines")
                 .then().log().all()
-                    .statusCode(HttpStatus.CREATED.value())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .header("Location", "/lines/1")
-                    .body("id", is(1))
-                    .body("name", is("신분당선"))
-                    .body("color", is("bg-red-600"))
-                    .extract();
+                .statusCode(HttpStatus.CREATED.value())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header("Location", "/lines/1")
+                .body("id", is(1))
+                .body("name", is("신분당선"))
+                .body("color", is("bg-red-600"))
+                .extract();
 
         List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
         stations = new ArrayList<>(stations);
@@ -121,14 +89,14 @@ class LineAcceptanceTest {
 
         RestAssured
                 .given().log().all()
-                    .accept(MediaType.APPLICATION_JSON_VALUE)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                    .get("/lines")
+                .get("/lines")
                 .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .body("id", contains(1, 2));
+                .statusCode(HttpStatus.OK.value())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body("id", contains(1, 2));
     }
 
     @DisplayName("노선을 검색한다")
@@ -141,16 +109,16 @@ class LineAcceptanceTest {
 
         RestAssured
                 .given().log().all()
-                    .accept(MediaType.APPLICATION_JSON_VALUE)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                    .get("/lines/1")
+                .get("/lines/1")
                 .then().log().all()
-                    .statusCode(HttpStatus.OK.value())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .body("id", is(1))
-                    .body("name", is("신분당선"))
-                    .body("color", is("bg-red-600"));
+                .statusCode(HttpStatus.OK.value())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body("id", is(1))
+                .body("name", is("신분당선"))
+                .body("color", is("bg-red-600"));
     }
 
     @DisplayName("노선이 없다면 400에러 발생")
@@ -158,12 +126,12 @@ class LineAcceptanceTest {
     void findById_canNotFindLineById() {
         RestAssured
                 .given().log().all()
-                    .accept(MediaType.APPLICATION_JSON_VALUE)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                    .get("/lines/1")
+                .get("/lines/1")
                 .then()
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("노션을 수정한다.")
@@ -175,13 +143,13 @@ class LineAcceptanceTest {
 
         RestAssured
                 .given().log().all()
-                    .accept(MediaType.ALL_VALUE)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.ALL_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                    .body(new LineRequest("구분당선", "bg-red-600", 1L, 2L, 10L))
-                    .put("/lines/" + 1)
+                .body(new LineRequest("구분당선", "bg-red-600", 1L, 2L, 10L))
+                .put("/lines/" + 1)
                 .then().log().all()
-                    .statusCode(HttpStatus.OK.value());
+                .statusCode(HttpStatus.OK.value());
     }
 
     @DisplayName("노션을 삭제한다.")
@@ -191,11 +159,11 @@ class LineAcceptanceTest {
 
         RestAssured
                 .given().log().all()
-                    .accept(MediaType.ALL_VALUE)
+                .accept(MediaType.ALL_VALUE)
                 .when()
-                    .delete("/lines/1")
+                .delete("/lines/1")
                 .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
+                .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     @DisplayName("새로운 구간을 추가한다")
@@ -208,16 +176,16 @@ class LineAcceptanceTest {
 
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .accept(MediaType.ALL_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.ALL_VALUE)
                 .when()
-                    .body(new SectionRequest(1L, 3L, 4L))
-                    .post("/lines/1/sections")
+                .body(new SectionRequest(1L, 3L, 4L))
+                .post("/lines/1/sections")
                 .then().log().all()
-                    .body("id", is(1))
-                    .body("name", is("바보선"))
-                    .body("color", is("빨강:)"))
-                    .extract();
+                .body("id", is(1))
+                .body("name", is("바보선"))
+                .body("color", is("빨강:)"))
+                .extract();
 
         List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
         assertThat(stations).
@@ -234,20 +202,20 @@ class LineAcceptanceTest {
     private void insertLine(String name, String color, Long upStationId, Long downStationId, Long distance) {
         RestAssured
                 .given()
-                    .accept(MediaType.ALL_VALUE)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.ALL_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                    .body(new LineRequest(name, color, upStationId, downStationId, distance))
-                    .post("/lines");
+                .body(new LineRequest(name, color, upStationId, downStationId, distance))
+                .post("/lines");
     }
 
     private void insertStation(String name) {
         RestAssured
                 .given()
-                    .accept(MediaType.ALL_VALUE)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.ALL_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                    .body(new StationRequest(name))
-                    .post("/stations");
+                .body(new StationRequest(name))
+                .post("/stations");
     }
 }

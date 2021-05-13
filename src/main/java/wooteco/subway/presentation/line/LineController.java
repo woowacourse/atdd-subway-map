@@ -1,11 +1,5 @@
 package wooteco.subway.presentation.line;
 
-<<<<<<< HEAD
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.http.HttpStatus;
-=======
->>>>>>> 3677b8f... refactor: custom exception으로 변경
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -87,21 +81,13 @@ public class LineController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-<<<<<<< HEAD
-    public ResponseEntity<Void> modifyById(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-<<<<<<< HEAD
-        final Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
-=======
-=======
     public ResponseEntity<Void> modifyById(@PathVariable Long id,
                                            @RequestBody LineRequest lineRequest) {
->>>>>>> b90a38e... refactor: section 삭제 및 추가 로직 분리
         final Line line = new Line(
                 new LineId(id),
                 new LineName(lineRequest.getName()),
                 new LineColor(lineRequest.getColor())
         );
->>>>>>> d2a85ea... refactor: 테스트 및 버그 수정
 
         lineService.update(line);
 
@@ -140,24 +126,4 @@ public class LineController {
         return ResponseEntity.ok(lineDtoAssembler.line(line));
     }
 
-<<<<<<< HEAD
-    @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<String> duplicationKeyExceptionHandle(Exception e) {
-        System.out.println(e.getMessage());
-        return ResponseEntity.badRequest().body("동일한 라인을 등록할 수 없습니다");
-    }
-
-    @ExceptionHandler(DataAccessException.class)
-    private ResponseEntity<String> handleDatabaseExceptions(Exception e) {
-        System.out.println(e.getMessage());
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> exceptionHandle(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    }
-
-=======
->>>>>>> 3677b8f... refactor: custom exception으로 변경
 }

@@ -1,11 +1,5 @@
 package wooteco.subway.presentation.station;
 
-<<<<<<< HEAD
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.http.HttpStatus;
-=======
->>>>>>> 3677b8f... refactor: custom exception으로 변경
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,27 +48,10 @@ public class StationController {
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+    @SuppressWarnings({"rawtypes"})
+    public ResponseEntity deleteStation(@PathVariable Long id) {
         stationService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-<<<<<<< HEAD
-    @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<String> duplicationKeyExceptionHandle(Exception e) {
-        return ResponseEntity.badRequest().body("동일한 역을 등록할 수 없습니다");
-    }
-
-    @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<String> databaseExceptionHandle(Exception e) {
-        return ResponseEntity.badRequest().body("데이터베이스 에러입니다.");
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> exceptionHandle(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    }
-
-=======
->>>>>>> 3677b8f... refactor: custom exception으로 변경
 }

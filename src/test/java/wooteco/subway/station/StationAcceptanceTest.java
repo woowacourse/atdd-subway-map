@@ -12,21 +12,9 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.station.ui.dto.StationResponse;
-=======
-import wooteco.subway.ui.dto.station.StationResponse;
->>>>>>> e735a30... refactor: 지하철 노선 추가 API 수정 및 페키지 구조 변경
-=======
-=======
 import wooteco.subway.presentation.line.dto.LineRequest;
 import wooteco.subway.presentation.station.dto.StationRequest;
->>>>>>> 6ebd445... feat: 역 삭제시 참조되는 역은 삭제 불가능 구현
 import wooteco.subway.presentation.station.dto.StationResponse;
->>>>>>> 0d2741d... refactor: 페키지 구조 변경
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -35,7 +23,6 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-@Sql("classpath:station/stationQueryInit.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
 
@@ -48,6 +35,8 @@ public class StationAcceptanceTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        jdbcTemplate.update("ALTER TABLE STATION ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.update("DELETE FROM STATION");
     }
 
     @DisplayName("참조중인 역을 지울 수 없다")
@@ -62,13 +51,13 @@ public class StationAcceptanceTest {
         String uri = 강남역.header("Location");
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
-                    .accept(MediaType.ALL_VALUE)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.ALL_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                    .delete(uri)
+                .delete(uri)
                 .then().log().all()
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .extract();
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .extract();
     }
 
     private void insertLine(String name, String color, Long upStationId, Long downStationId, Long distance) {
@@ -113,13 +102,13 @@ public class StationAcceptanceTest {
 
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
-                    .accept(MediaType.ALL_VALUE)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.ALL_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                    .get("/stations")
+                .get("/stations")
                 .then().log().all()
-                    .statusCode(HttpStatus.OK.value())
-                    .extract();
+                .statusCode(HttpStatus.OK.value())
+                .extract();
 
         List<Long> expectedLineIds = extractLineIdsFromDummyResponse(강남역_response, 역삼역_response);
         List<Long> resultLineIds = extractLineIdsFromResponse(response);
@@ -144,13 +133,13 @@ public class StationAcceptanceTest {
     private ExtractableResponse<Response> createNewStation(String name) {
         return RestAssured
                 .given()
-                    .accept(MediaType.ALL_VALUE)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.ALL_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                    .body(new StationRequest(name))
-                    .post("/stations")
+                .body(new StationRequest(name))
+                .post("/stations")
                 .then()
-                    .extract();
+                .extract();
     }
 
     @DisplayName("지하철역을 제거한다.")
@@ -161,12 +150,12 @@ public class StationAcceptanceTest {
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
-                    .accept(MediaType.ALL_VALUE)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.ALL_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                    .delete(uri)
+                .delete(uri)
                 .then().log().all()
-                    .statusCode(HttpStatus.NO_CONTENT.value())
-                    .extract();
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .extract();
     }
 }
