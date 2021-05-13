@@ -41,7 +41,7 @@ public class SectionServiceTest {
         this.sectionDao = new SectionDao(jdbcTemplate);
         this.lineDao = new LineDao(jdbcTemplate);
         this.stationDao = new StationDao(jdbcTemplate);
-        this.sectionService = new SectionService(stationDao, lineDao, sectionDao);
+        this.sectionService = new SectionService(stationDao, sectionDao);
 
         stationDao.save(new Station("테스트 역1"));
         stationDao.save(new Station("테스트 역2"));

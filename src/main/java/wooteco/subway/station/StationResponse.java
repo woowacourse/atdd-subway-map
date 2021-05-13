@@ -4,7 +4,7 @@ public class StationResponse {
     private Long id;
     private String name;
 
-    public StationResponse() {
+    public StationResponse(Station 강남역) {
     }
 
     public StationResponse(Long id, String name) {

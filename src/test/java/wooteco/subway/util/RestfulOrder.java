@@ -22,8 +22,7 @@ public class RestfulOrder {
     }
 
     public static ExtractableResponse<Response> testResponse(Map<String, String> params,
-        String mediaType,
-        String path) {
+        String mediaType, String path) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .body(params)
             .contentType(mediaType)

@@ -23,7 +23,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 생성한다.")
     @Test
-    void createStation() {
+    public void createStation() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");

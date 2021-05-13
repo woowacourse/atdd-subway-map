@@ -13,7 +13,6 @@ import wooteco.subway.exception.DeleteMinimumSizeException;
 import wooteco.subway.exception.NoSuchDataException;
 import wooteco.subway.exception.SectionInsertExistStationsException;
 import wooteco.subway.exception.ShortDistanceException;
-import wooteco.subway.line.LineDao;
 import wooteco.subway.line.LineEndPoint;
 import wooteco.subway.line.SectionRequest;
 import wooteco.subway.station.Station;
@@ -23,14 +22,12 @@ import wooteco.subway.station.StationDao;
 public class SectionService {
 
     private StationDao stationDao;
-    private LineDao lineDao;
     private SectionDao sectionDao;
 
     @Autowired
-    public SectionService(StationDao stationDao, LineDao lineDao,
+    public SectionService(StationDao stationDao,
         SectionDao sectionDao) {
         this.stationDao = stationDao;
-        this.lineDao = lineDao;
         this.sectionDao = sectionDao;
     }
 
@@ -149,7 +146,7 @@ public class SectionService {
             || sectionEndPoint.getDownStationId() == sectionRequest.getUpStationId();
     }
 
-    public List<Section> findSectionsInLine(long lineId) {
+    public List<Section> findSectionsInLineId(long lineId) {
         return sectionDao.findSectionsByLineId(lineId);
     }
 
@@ -191,9 +188,10 @@ public class SectionService {
 
         Section prevDeleteSection = sectionDao
             .findByDownStationId(lineId, expectedDeleteSection.getUpStationId());
-        sectionDao.update(sectionDao.findSectionId(lineId,
-            prevDeleteSection.getUpStationId(),
-            prevDeleteSection.getDownStationId()),
+        Long prevDeleteSectionId = sectionDao.findSectionId(lineId,
+            prevDeleteSection.getUpStationId(), prevDeleteSection.getDownStationId());
+
+        sectionDao.update(prevDeleteSectionId,
             expectedDeleteSection.getDownStationId(),
             expectedDeleteSection.getDistance() + prevDeleteSection
                 .getDistance());

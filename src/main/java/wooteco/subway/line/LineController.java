@@ -65,7 +65,6 @@ public class LineController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StationsInLineResponse> showLineDetail(@PathVariable Long id) {
         Line line = lineDao.findById(id);
-        sectionDao.findSectionsByLineId(id);
 
         return ResponseEntity.ok()
             .body(new StationsInLineResponse(line, sectionService.findStationsByLineId(id)));
@@ -83,7 +82,7 @@ public class LineController {
         @RequestBody SectionRequest sectionRequest) {
         sectionService.insertSection(id, sectionRequest);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.created(URI.create("/lines/" + id)).build();
     }
 
     @DeleteMapping("/{id}")
@@ -94,7 +93,7 @@ public class LineController {
 
     @DeleteMapping("/{id}/sections")
     public ResponseEntity deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
-        sectionDao.delete(id, stationId);
+        sectionService.deleteByUpStationId(id, stationId);
         return ResponseEntity.noContent().build();
     }
 
