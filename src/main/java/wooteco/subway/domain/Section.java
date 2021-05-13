@@ -49,13 +49,13 @@ public class Section {
         return upStation.isSameId(stationId);
     }
 
-    public void updateUpStation(Section section) {
+    public void updateUpStationFromDownStation(Section section) {
         int difference = distanceDifference(section);
         upStation = section.downStation;
         distance = difference;
     }
 
-    public void updateDownStation(Section section) {
+    public void updateDownStationFromUpStation(Section section) {
         int difference = distanceDifference(section);
         downStation = section.upStation;
         distance = difference;

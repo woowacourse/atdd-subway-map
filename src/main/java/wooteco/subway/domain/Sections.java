@@ -94,13 +94,13 @@ public class Sections {
         if (existsUpStation) {
             foundSection = sections.stream()
                 .filter(section -> section.isUpStation(newSection.getUpStation())).findAny();
-            foundSection.ifPresent(section -> section.updateUpStation(newSection));
+            foundSection.ifPresent(section -> section.updateUpStationFromDownStation(newSection));
             return foundSection;
         }
 
         foundSection = sections.stream()
             .filter(section -> section.isDownStation(newSection.getDownStation())).findAny();
-        foundSection.ifPresent(section -> section.updateDownStation(newSection));
+        foundSection.ifPresent(section -> section.updateDownStationFromUpStation(newSection));
         return foundSection;
     }
 
@@ -133,5 +133,9 @@ public class Sections {
 
     private boolean isEndStation(List<Section> sections) {
         return sections.size() == 1;
+    }
+
+    public List<Section> value() {
+        return sections;
     }
 }
