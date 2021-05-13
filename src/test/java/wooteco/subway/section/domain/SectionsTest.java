@@ -1,20 +1,33 @@
 package wooteco.subway.section.domain;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.SectionDeleteException;
 import wooteco.subway.exception.SectionUpdateException;
+import wooteco.subway.station.domain.Station;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 class SectionsTest {
 
-    @Test
-    void getSections() {
+    private Station station1;
+    private Station station2;
+    private Station station3;
+    private Station station4;
+    private Station station5;
+
+    @BeforeEach
+    void setUp() {
+        station1 = new Station(1L, "station1");
+        station2 = new Station(2L, "station2");
+        station3 = new Station(3L, "station3");
+        station4 = new Station(4L, "station4");
+        station5 = new Station(5L, "station5");
     }
 
     @Test
@@ -22,17 +35,16 @@ class SectionsTest {
     void sortSections() {
         List<Section> sectionList = new ArrayList<>();
 
-        sectionList.add(new Section(1L, 1L, 3L, 4L, 5));
-        sectionList.add(new Section(2L, 1L, 1L, 2L, 5));
-        sectionList.add(new Section(3L, 1L, 5L, 6L, 5));
-        sectionList.add(new Section(4L, 1L, 2L, 3L, 5));
-        sectionList.add(new Section(4L, 1L, 4L, 5L, 5));
+        Section section1 = new Section(2L, 1L, station1, station2, 5);
+        Section section2 = new Section(3L, 1L, station2, station3, 5);
+        Section section3 = new Section(1L, 1L, station3, station4, 5);
+        sectionList.add(section3);
+        sectionList.add(section1);
+        sectionList.add(section2);
 
         Sections sections = new Sections(sectionList);
-        System.out.println(sections.getSections().get(0).getUpStationId());
-        System.out.println(sections.getSections().get(0).getDownStationId());
-        System.out.println(sections.getSections().get(4).getUpStationId());
-        System.out.println(sections.getSections().get(4).getDownStationId());
+
+        assertThat(sections.getSections()).containsExactly(section1, section2, section3);
     }
 
     @Test
@@ -40,14 +52,14 @@ class SectionsTest {
     void addSectionDuplicatedSection() {
         List<Section> sectionList = new ArrayList<>();
 
-        sectionList.add(new Section(1L, 1L, 1L, 2L, 5));
-        sectionList.add(new Section(2L, 1L, 2L, 3L, 5));
+        sectionList.add(new Section(1L, 1L, station1, station2, 5));
+        sectionList.add(new Section(2L, 1L, station2, station3, 5));
 
         Sections sections = new Sections(sectionList);
 
-        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, 1L, 2L, 1)))
+        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, station1, station2, 1)))
                 .isInstanceOf(SectionUpdateException.class);
-        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, 2L, 1L, 1)))
+        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, station2, station1, 1)))
                 .isInstanceOf(SectionUpdateException.class);
     }
 
@@ -56,11 +68,11 @@ class SectionsTest {
     void addSectionNotContainStation() {
         List<Section> sectionList = new ArrayList<>();
 
-        sectionList.add(new Section(1L, 1L, 1L, 2L, 5));
-        sectionList.add(new Section(2L, 1L, 2L, 3L, 5));
+        sectionList.add(new Section(1L, 1L, station1, station2, 5));
+        sectionList.add(new Section(2L, 1L, station2, station3, 5));
 
         Sections sections = new Sections(sectionList);
-        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, 4L, 5L, 1)))
+        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, station4, station5, 1)))
                 .isInstanceOf(SectionUpdateException.class);
     }
 
@@ -69,19 +81,49 @@ class SectionsTest {
     void addSectionLongerThanExistSection() {
         List<Section> sectionList = new ArrayList<>();
 
-        sectionList.add(new Section(1L, 1L, 1L, 2L, 1));
-        sectionList.add(new Section(2L, 1L, 2L, 3L, 1));
+        sectionList.add(new Section(1L, 1L, station1, station2, 1));
+        sectionList.add(new Section(2L, 1L, station2, station3, 1));
 
         Sections sections = new Sections(sectionList);
-        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, 1L, 4L, 2)))
+        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, station1, station4, 2)))
                 .isInstanceOf(SectionUpdateException.class);
-        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, 1L, 4L, 1)))
+        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, station1, station4, 1)))
                 .isInstanceOf(SectionUpdateException.class);
-        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, 5L, 3L, 2)))
+        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, station5, station3, 2)))
                 .isInstanceOf(SectionUpdateException.class);
     }
 
     @Test
-    void getStationsId() {
+    @DisplayName("구간 삭제 테스트")
+    void deleteSection() {
+        List<Section> sectionList = new ArrayList<>();
+
+        Section section1 = new Section(1L, 1L, station1, station2, 5);
+        Section section2 = new Section(2L, 1L, station2, station3, 5);
+        Section section3 = new Section(3L, 1L, station3, station4, 5);
+        sectionList.add(section1);
+        sectionList.add(section2);
+        sectionList.add(section3);
+
+        Sections sections = new Sections(sectionList);
+
+        sections.deleteSection(section3.getLineId(), section3.getDownStation());
+
+        assertThat(sections.getSections()).hasSize(2);
+        assertThat(sections.getSections()).containsExactly(section1, section2);
+    }
+
+    @Test
+    @DisplayName("구간이 하나일 경우 삭제 에러")
+    void deleteSectionFail() {
+        List<Section> sectionList = new ArrayList<>();
+
+        Section section1 = new Section(1L, 1L, station1, station2, 5);
+        sectionList.add(section1);
+
+        Sections sections = new Sections(sectionList);
+
+        assertThatThrownBy(() -> sections.deleteSection(section1.getLineId(), station1))
+                .isInstanceOf(SectionDeleteException.class);
     }
 }
