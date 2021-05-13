@@ -16,10 +16,6 @@ public class Section {
         this(null, upStation, downStation, new SectionDistance(distance));
     }
 
-    public Section(Station upStation, Station downStation, SectionDistance distance) {
-        this(null, upStation, downStation, distance);
-    }
-
     public Section(Long id, Station upStation, Station downStation, long distance) {
         this(id, upStation, downStation, new SectionDistance(distance));
     }

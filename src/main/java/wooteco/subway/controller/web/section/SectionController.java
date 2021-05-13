@@ -36,7 +36,7 @@ public class SectionController {
 
     @DeleteMapping
     public ResponseEntity<Void> deleteLine(@PathVariable Long lineId, @RequestParam long stationId) {
-        sectionService.remove(lineId, stationId);
+        sectionService.delete(lineId, stationId);
         return ResponseEntity.noContent().build();
     }
 }

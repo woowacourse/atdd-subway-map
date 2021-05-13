@@ -64,13 +64,7 @@ public class InMemoryLineDao implements LineDao {
     }
 
     @Override
-    public void delete(Line line) {
-        lines.remove(line);
-    }
-
-    @Override
-    public void deleteAll() {
-        seq = 0L;
-        lines = new ArrayList<>();
+    public void delete(Long lineId) {
+        lines.remove(findById(lineId));
     }
 }

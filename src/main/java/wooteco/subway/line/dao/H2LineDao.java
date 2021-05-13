@@ -9,6 +9,7 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineColor;
 import wooteco.subway.line.domain.LineName;
 import wooteco.subway.line.exception.WrongLineIdException;
+import wooteco.subway.section.domain.EmptySections;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -21,7 +22,7 @@ public class H2LineDao implements LineDao {
         long id = rs.getLong("id");
         String name = rs.getString("name");
         String color = rs.getString("color");
-        return new Line(id, name, color);
+        return new Line(id, name, color, new EmptySections());
     };
 
     public H2LineDao(JdbcTemplate jdbcTemplate) {
@@ -40,7 +41,7 @@ public class H2LineDao implements LineDao {
             return ps;
         }, keyHolder);
         long lineId = keyHolder.getKey().longValue();
-        return new Line(lineId, line.getName(), line.getColor());
+        return new Line(lineId, line.getName(), line.getColor(), new EmptySections());
     }
 
     @Override
@@ -111,19 +112,11 @@ public class H2LineDao implements LineDao {
     }
 
     @Override
-    public void delete(Line line) {
+    public void delete(Long lineId) {
         String sql = "DELETE " +
                 "FROM LINE " +
                 "WHERE ID = ?";
 
-        jdbcTemplate.update(sql, line.getId());
-    }
-
-    @Override
-    public void deleteAll() {
-        String sql = "DELETE " +
-                "FROM LINE";
-
-        jdbcTemplate.update(sql);
+        jdbcTemplate.update(sql, lineId);
     }
 }

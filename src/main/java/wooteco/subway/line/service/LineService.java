@@ -1,59 +1,93 @@
 package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.controller.web.line.LineResponse;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.LineColor;
+import wooteco.subway.line.domain.LineName;
 import wooteco.subway.line.exception.InvalidLineNameException;
 import wooteco.subway.line.exception.WrongLineIdException;
+import wooteco.subway.section.domain.EmptySections;
+import wooteco.subway.section.domain.OrderedSections;
+import wooteco.subway.section.service.SectionService;
 
 import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
+@Transactional
 public class LineService {
     private final LineDao lineDao;
+    private final SectionService sectionService;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SectionService sectionService) {
         this.lineDao = lineDao;
+        this.sectionService = sectionService;
     }
 
-    public Line save(Line line) {
-        if (isDuplicatedName(line)) {
-            throw new InvalidLineNameException(String.format("노선 이름이 중복되었습니다. 중복된 노선 이름 : %s", line.getName()));
+    public LineResponse save(String lineName, String color, Long upStationId, Long downStationId, Long distance) {
+        if (isDuplicatedName(new LineName(lineName))) {
+            throw new InvalidLineNameException(String.format("노선 이름이 중복되었습니다. 중복된 노선 이름 : %s", lineName));
         }
-        if (isDuplicatedColor(line)) {
-            throw new InvalidLineNameException(String.format("노선 색상이 중복되었습니다. 중복된 노선 색상 : %s", line.getColor()));
+        if (isDuplicatedColor(new LineColor(color))) {
+            throw new InvalidLineNameException(String.format("노선 색상이 중복되었습니다. 중복된 노선 색상 : %s", color));
         }
-        return lineDao.save(line);
+        Line nonIdLine = new Line(lineName, color, new EmptySections());
+        Line idLine = lineDao.save(nonIdLine);
+        OrderedSections lineSections = sectionService.add(idLine.getId(), upStationId, downStationId, distance);
+
+        Line entity = Line.createEntity(idLine, lineSections);
+        return LineResponse.of(entity);
     }
 
-    private boolean isDuplicatedName(Line line) {
-        return lineDao.checkExistName(line.getName());
+    private boolean isDuplicatedName(LineName lineName) {
+        return lineDao.checkExistName(lineName);
     }
 
-    private boolean isDuplicatedColor(Line line) {
-        return lineDao.checkExistColor(line.getColor());
+    private boolean isDuplicatedColor(LineColor lineColor) {
+        return lineDao.checkExistColor(lineColor);
     }
 
-    public List<Line> findAll() {
-        return lineDao.findAll();
+    public List<LineResponse> findAll() {
+        List<Line> lines = lineDao.findAll();
+        List<Line> withSections = createWithSections(lines);
+        List<LineResponse> lineResponses = withSections.stream()
+                .map(line -> new LineResponse(line.getId(), line.getName().text(), line.getColor().text()))
+                .collect(toList());
+        return lineResponses;
     }
 
-    public Line findById(Long id) {
-        return lineDao.findById(id);
+    private List<Line> createWithSections(List<Line> lines) {
+        Map<Long, OrderedSections> sectionsAllWithId = sectionService.findSectionsAllWithId();
+        return lines.stream()
+                .map(line -> Line.createEntity(line, sectionsAllWithId.get(line.getId())))
+                .collect(toList());
     }
 
-    public void update(Line line) {
-        ifAbsent(line);
-        lineDao.update(line);
+    public LineResponse findById(Long id) {
+        Line byId = lineDao.findById(id);
+        OrderedSections sections = sectionService.findSections(byId.getId());
+        Line entity = Line.createEntity(byId, sections);
+        return LineResponse.of(entity);
     }
 
-    public void delete(Line line) {
-        ifAbsent(line);
-        lineDao.delete(line);
+    public void update(Long lineId, String lineName, String color) {
+        ifAbsent(lineId);
+        lineDao.update(new Line(lineId, lineName, color, new EmptySections()));
     }
 
-    private void ifAbsent(Line line) {
-        if (!lineDao.checkExistId(line.getId())) {
+    public void delete(Long lineId) {
+        ifAbsent(lineId);
+        lineDao.delete(lineId);
+        sectionService.deleteLine(lineId);
+    }
+
+    private void ifAbsent(Long lindId) {
+        if (!lineDao.checkExistId(lindId)) {
             throw new WrongLineIdException("노선이 존재하지 않습니다.");
         }
     }

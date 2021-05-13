@@ -47,7 +47,7 @@ class SectionControllerTest extends AcceptanceTest {
     @Test
     void createSection() {
         // given
-        SectionRequest sectionRequest = new SectionRequest(JAM_SIL_ID, YEOK_SAM_ID, 10);
+        SectionRequest sectionRequest = new SectionRequest(JAM_SIL_ID, YEOK_SAM_ID, 10L);
         // when
         ExtractableResponse<Response> response = 구간을_생성한다(LINE_ID, sectionRequest);
         // then
@@ -69,7 +69,7 @@ class SectionControllerTest extends AcceptanceTest {
     @Test
     void deleteSectionTest() {
         // given
-        SectionRequest sectionRequest = new SectionRequest(JAM_SIL_ID, YEOK_SAM_ID, 10);
+        SectionRequest sectionRequest = new SectionRequest(JAM_SIL_ID, YEOK_SAM_ID, 10L);
         // when
         ExtractableResponse<Response> response = 구간을_생성한다(LINE_ID, sectionRequest);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());

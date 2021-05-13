@@ -10,11 +10,13 @@ import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.service.StationService;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 @Service
+@Transactional
 public class SectionService {
     private final StationService stationService;
 
@@ -25,22 +27,21 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    @Transactional
-    public void add(Long lineId, Long upStationId, Long downStationId, int distance) {
-        Section section = save(lineId, upStationId, downStationId, distance);
+    public OrderedSections add(Long lineId, Long upStationId, Long downStationId, Long distance) {
+        save(lineId, upStationId, downStationId, distance);
         OrderedSections lineSections = findSections(lineId);
-        sectionDao.saveAll(lineId, lineSections.addSection(section));
+        sectionDao.saveAll(lineId, lineSections);
+        return lineSections;
     }
 
-    private Section save(Long lineId, Long upStationId, Long downStationId, int distance) {
+    private Section save(Long lineId, Long upStationId, Long downStationId, Long distance) {
         Station upStation = stationService.findById(upStationId);
         Station downStation = stationService.findById(downStationId);
 
         return sectionDao.save(lineId, new Section(upStation, downStation, distance));
     }
 
-    @Transactional
-    public void remove(Long lineId, Long stationId) {
+    public void delete(Long lineId, Long stationId) {
         Station byId = stationService.findById(stationId);
         OrderedSections sections = findSections(lineId);
 
@@ -49,6 +50,22 @@ public class SectionService {
 
     public OrderedSections findSections(Long lineId) {
         return convert(sectionDao.findByLineId(lineId));
+    }
+
+    public Map<Long, OrderedSections> findSectionsAllWithId() {
+        Map<Long, List<SectionDto>> all = sectionDao.findAll();
+        Map<Long, OrderedSections> lineIdAndSections = all.keySet().stream()
+                .collect(toMap(Function.identity(), lineId -> convert(all.get(lineId))));
+
+        return lineIdAndSections;
+    }
+
+    public List<OrderedSections> findSectionsAll() {
+        Map<Long, List<SectionDto>> all = sectionDao.findAll();
+        return all.entrySet().stream()
+                .map(Map.Entry::getValue)
+                .map(this::convert)
+                .collect(toList());
     }
 
     private OrderedSections convert(List<SectionDto> sectionDtos) {
@@ -60,8 +77,7 @@ public class SectionService {
                 .collect(collectingAndThen(toList(), OrderedSections::new));
     }
 
-    @Transactional
-    public void removeLine(Long lineId) {
+    public void deleteLine(Long lineId) {
         sectionDao.deleteLine(lineId);
     }
 }

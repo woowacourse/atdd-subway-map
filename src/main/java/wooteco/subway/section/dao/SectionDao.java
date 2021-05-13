@@ -12,6 +12,9 @@ import wooteco.subway.section.domain.Section;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.groupingBy;
 
 @Repository
 public class SectionDao {
@@ -56,6 +59,15 @@ public class SectionDao {
                 SECTION_DTO_ROW_MAPPER,
                 id
         );
+    }
+
+    public Map<Long, List<SectionDto>> findAll() {
+        String sql = "SELECT * " +
+                "FROM SECTION";
+
+        List<SectionDto> unorderedSections = jdbcTemplate.query(sql, SECTION_DTO_ROW_MAPPER);
+        return unorderedSections.stream()
+                .collect(groupingBy(SectionDto::getId));
     }
 
     public void saveAll(Long lineId, OrderedSections lineSections) {

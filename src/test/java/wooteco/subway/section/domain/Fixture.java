@@ -30,7 +30,7 @@ public class Fixture {
     //removeTest
     public static final Section FIRST_AND_SECOND_MERGED_SECTION = new Section(FIRST_SECTION.getId(), FIRST_SECTION.getUpStation(), SECOND_SECTION.getDownStation(), FIRST_SECTION.getDistance() + SECOND_SECTION.getDistance());
 
-    public static final int TEST_DISTANCE = 10;
+    public static final Long TEST_DISTANCE = 10L;
 
     public OrderedSections getFirstToFourthSections() {
         return firstToFourthSections;

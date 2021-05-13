@@ -11,26 +11,21 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.exception.WrongLineInformationException;
 import wooteco.subway.line.service.LineService;
-import wooteco.subway.section.domain.OrderedSections;
 import wooteco.subway.section.service.SectionService;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;
-    private final SectionService sectionService;
 
     public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
-        this.sectionService = sectionService;
     }
 
     @PostMapping
@@ -38,43 +33,34 @@ public class LineController {
         if (bindingResult.hasErrors()) {
             throw new WrongLineInformationException("요청이 올바르지 않습니다.");
         }
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = lineService.save(line);
-        sectionService.add(newLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        LineResponse lineResponse = lineService.save(lineRequest.getName(), lineRequest.getColor(),
+                lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
 
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName().text(), newLine.getColor().text());
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line line = lineService.findById(id);
-        OrderedSections sections = sectionService.findSections(id);
-        return ResponseEntity.ok().body(new LineResponse(line, sections));
+         lineService.findById(id);
+        LineResponse byId = lineService.findById(id);
+        return ResponseEntity.ok().body(byId);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineService.findAll();
-        List<LineResponse> lineResponses = lines.stream()
-                .map(line -> new LineResponse(line.getId(), line.getName().text(), line.getColor().text()))
-                .collect(Collectors.toList());
+        List<LineResponse> lineResponses = lineService.findAll();
         return ResponseEntity.ok().body(lineResponses);
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
-        lineService.update(line);
-
+        lineService.update(id, lineRequest.getName(), lineRequest.getColor());
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        Line line = lineService.findById(id);
-        sectionService.removeLine(id);
-        lineService.delete(line);
+        lineService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

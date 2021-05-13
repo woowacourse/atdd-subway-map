@@ -20,7 +20,7 @@ import java.util.function.Function;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.*;
 
-public class OrderedSections {
+public class OrderedSections implements Sections {
     private static final int SECTIONS_MINIMUM_SIZE = 1;
     private static final int END_TERMINAL_SIZE = 1;
     private static final int CAN_DUPLICATE_MINIMUM_SIZE = 0;
@@ -133,6 +133,7 @@ public class OrderedSections {
         return beforeSection;
     }
 
+    @Override
     public OrderedSections addSection(Section section) {
         List<Section> upStationSequences = findSequentialSections(section.getUpStation());
         List<Section> downStationSequences = findSequentialSections(section.getDownStation());
@@ -188,6 +189,7 @@ public class OrderedSections {
                 .collect(toList());
     }
 
+    @Override
     public OrderedSections removeSection(Station station) {
         List<Section> sequences = findSequentialSectionsAndCheckPresent(station);
         this.sections.removeAll(sequences);
@@ -210,10 +212,12 @@ public class OrderedSections {
         return sequentialSections;
     }
 
+    @Override
     public List<Section> getSections() {
         return Collections.unmodifiableList(sections);
     }
 
+    @Override
     public List<Section> getReverseSections() {
         List<Section> copy = new LinkedList<>(this.sections);
         Collections.reverse(copy);
