@@ -101,7 +101,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .body("size()", is(1));
     }
 
-    private ExtractableResponse<Response> saveStation(StationRequest stationRequest) {
+    public ExtractableResponse<Response> saveStation(StationRequest stationRequest) {
         return RestAssured.given().log().all()
                 .body(stationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

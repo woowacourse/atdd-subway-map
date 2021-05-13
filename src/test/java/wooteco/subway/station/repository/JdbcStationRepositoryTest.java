@@ -6,7 +6,7 @@ import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.repository.infra.JDBCStationRepository;
+import wooteco.subway.station.repository.infra.JdbcStationRepository;
 
 import java.util.List;
 
@@ -14,13 +14,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJdbcTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-class JDBCStationRepositoryTest {
+class JdbcStationRepositoryTest {
 
     private Station station;
     private StationRepository stationRepository;
 
-    public JDBCStationRepositoryTest(JdbcTemplate jdbcTemplate) {
-        this.stationRepository = new JDBCStationRepository(jdbcTemplate);
+    public JdbcStationRepositoryTest(JdbcTemplate jdbcTemplate) {
+        this.stationRepository = new JdbcStationRepository(jdbcTemplate);
     }
 
     @BeforeEach
