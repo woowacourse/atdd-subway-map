@@ -7,23 +7,18 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.UnitTest;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotExistItemException;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
-@SpringBootTest
-@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@Sql("classpath:tableInit.sql")
 @DisplayName("노선 DAO 관련 기능")
-class LineDaoTest {
+class LineDaoTest extends UnitTest {
 
     private final LineDao lineDao;
     private final StationDao stationDao;
-    private final Line line2 = new Line(1L,"2호선", "bg-green-600");
+    private final Line line2 = new Line(1L, "2호선", "bg-green-600");
     private final Line line3 = new Line(2L, "3호선", "bg-orange-600");
     private final Line line4 = new Line(3L, "4호선", "bg-skyBlue-600");
 

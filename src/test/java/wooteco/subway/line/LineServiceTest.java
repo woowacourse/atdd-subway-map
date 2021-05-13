@@ -11,9 +11,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.UnitTest;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotExistItemException;
 import wooteco.subway.line.dto.LineRequest;
@@ -22,21 +20,19 @@ import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
-@SpringBootTest()
-@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@Sql("classpath:tableInit.sql")
 @DisplayName("LineService 테스트")
-class LineServiceTest {
+class LineServiceTest extends UnitTest {
+
+    private static final Station GANGNAM_STATION = new Station(1L, "강남역");
+    private static final Station JAMSIL_STATION = new Station(2L, "잠실역");
+    private static final Station YEOKSAM_STATION = new Station(3L, "역삼역");
+    private static final Station SILLIM_STATION = new Station(4L, "신림역");
+    private static final Map<Long, StationResponse> NUMBER_TO_STATION = new HashMap<>();
 
     private final LineService lineService;
     private final StationDao stationDao;
     private final LineRequest line2Request = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
     private final LineRequest line3Request = new LineRequest("3호선", "bg-orange-600", 1L, 3L, 13);
-    private static final Station gangnamStation = new Station(1L, "강남역");
-    private static final Station jamsilStation = new Station(2L, "잠실역");
-    private static final Station yeoksamStation = new Station(3L, "역삼역");
-    private static final Station sillimStation = new Station(4L, "신림역");
-    private static final Map<Long, StationResponse> numberToStation = new HashMap<>();
 
     public LineServiceTest(LineService lineService, StationDao stationDao) {
         this.lineService = lineService;
@@ -45,18 +41,18 @@ class LineServiceTest {
 
     @BeforeAll
     static void BeforeAllSetUp() {
-        numberToStation.put(1L, new StationResponse(gangnamStation));
-        numberToStation.put(2L, new StationResponse(jamsilStation));
-        numberToStation.put(3L, new StationResponse(yeoksamStation));
-        numberToStation.put(4L, new StationResponse(sillimStation));
+        NUMBER_TO_STATION.put(1L, new StationResponse(GANGNAM_STATION));
+        NUMBER_TO_STATION.put(2L, new StationResponse(JAMSIL_STATION));
+        NUMBER_TO_STATION.put(3L, new StationResponse(YEOKSAM_STATION));
+        NUMBER_TO_STATION.put(4L, new StationResponse(SILLIM_STATION));
     }
 
     @BeforeEach
     void setUp() {
-        stationDao.save(gangnamStation);
-        stationDao.save(jamsilStation);
-        stationDao.save(yeoksamStation);
-        stationDao.save(sillimStation);
+        stationDao.save(GANGNAM_STATION);
+        stationDao.save(JAMSIL_STATION);
+        stationDao.save(YEOKSAM_STATION);
+        stationDao.save(SILLIM_STATION);
     }
 
     @Test
@@ -173,8 +169,8 @@ class LineServiceTest {
         assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName());
         assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor());
         List<StationResponse> stations = Arrays.asList(
-            numberToStation.get(lineRequest.getUpStationId()),
-            numberToStation.get(lineRequest.getDownStationId())
+            NUMBER_TO_STATION.get(lineRequest.getUpStationId()),
+            NUMBER_TO_STATION.get(lineRequest.getDownStationId())
         );
         assertThat(lineResponse.getStations()).usingRecursiveComparison().isEqualTo(stations);
     }

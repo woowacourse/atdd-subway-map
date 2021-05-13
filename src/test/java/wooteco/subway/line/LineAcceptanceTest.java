@@ -16,8 +16,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
@@ -27,8 +25,6 @@ import wooteco.subway.station.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
-@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@Sql("classpath:tableInit.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
 
     private final StationDao stationDao;
@@ -38,10 +34,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private final String IllegalUserInputMessage = "[ERROR] 잘못된 입력입니다.";
     private final LineRequest line2Request = new LineRequest("2호선", "bg-green-600", 1L, 4L, 10);
     private final LineRequest line3Request = new LineRequest("3호선", "bg-orange-600", 1L, 3L, 13);
-    private static final Station gangnamStation = new Station(1L, "강남역");
-    private static final Station jamsilStation = new Station(2L, "잠실역");
-    private static final Station yeoksamStation = new Station(3L, "역삼역");
-    private static final Station sillimStation = new Station(4L, "신림역");
+    private final Station gangnamStation = new Station(1L, "강남역");
+    private final Station jamsilStation = new Station(2L, "잠실역");
+    private final Station yeoksamStation = new Station(3L, "역삼역");
+    private final Station sillimStation = new Station(4L, "신림역");
 
     public LineAcceptanceTest(StationDao stationDao) {
         this.stationDao = stationDao;
@@ -400,6 +396,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("노선에 하행 앞에 구간이 추가되면 순서가 변경되어야 한다.")
+    void getLineWithAddSectionAtLastLocation2() {
+        //given
+        createLineAPI(line2Request);
+        createSectionAPI(new SectionRequest(1L, 2L, 5));
+
+        List<StationResponse> stations = Arrays.asList(
+            new StationResponse(gangnamStation),
+            new StationResponse(jamsilStation),
+            new StationResponse(yeoksamStation),
+            new StationResponse(sillimStation)
+        );
+
+        //when
+        createSectionAPI(new SectionRequest(3L, 4L, 3));
+        ExtractableResponse<Response> response = getLineAPI();
+
+        //then
+        System.out.println(response.body().asString());
+        thenCheckSection(stations, response);
+    }
+
+    @Test
     @DisplayName("같은 구간을 추가하면 에러가 발생한다.")
     void addSectionWithEqualSection() {
         //given
@@ -465,7 +484,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         createLineAPI(line2Request);
         createSectionAPI(new SectionRequest(1L, 3L, 5));
-        int deleteSectionId = 1;
+        int stationId = 1;
 
         List<StationResponse> stations = Arrays.asList(
             new StationResponse(yeoksamStation),
@@ -473,7 +492,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
 
         //when
-        ExtractableResponse<Response> response = deleteSectionAPI(deleteSectionId);
+        ExtractableResponse<Response> response = deleteSectionAPI(stationId);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -488,7 +507,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         createLineAPI(line2Request);
         createSectionAPI(new SectionRequest(1L, 3L, 5));
-        int deleteSectionId = 4;
+        int stationId = 4;
 
         List<StationResponse> stations = Arrays.asList(
             new StationResponse(gangnamStation),
@@ -496,7 +515,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
 
         //when
-        ExtractableResponse<Response> response = deleteSectionAPI(deleteSectionId);
+        ExtractableResponse<Response> response = deleteSectionAPI(stationId);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -506,12 +525,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("노선에 포함된 상행,하행이 아닌 역을 삭제하면 앞뒤 역이 연결되어야 한다..")
+    @DisplayName("노선에 포함된 상행,하행이 아닌 역을 삭제하면 앞뒤 역이 연결되어야 한다.")
     void DeleteStationOnTheLinenWithDeleteOtherStation() {
         //given
         createLineAPI(line2Request);
         createSectionAPI(new SectionRequest(1L, 3L, 5));
-        int deleteSectionId = 3;
+        int stationId = 3;
 
         List<StationResponse> stations = Arrays.asList(
             new StationResponse(gangnamStation),
@@ -519,12 +538,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
 
         //when
-        ExtractableResponse<Response> response = deleteSectionAPI(deleteSectionId);
+        ExtractableResponse<Response> response = deleteSectionAPI(stationId);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         ExtractableResponse<Response> lineResponse = getLineAPI();
 
+        System.out.println(lineResponse.body().asString());
         thenCheckSection(stations, lineResponse);
     }
 
@@ -533,10 +553,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void DeleteSectionWithSectionSizeOne() {
         //given
         createLineAPI(line2Request);
-        int deleteStationId = 1;
+        int stationId = 1;
 
         //when
-        ExtractableResponse<Response> response = deleteSectionAPI(deleteStationId);
+        ExtractableResponse<Response> response = deleteSectionAPI(stationId);
 
         //then
         thenBadRequestException(response, IllegalUserInputMessage);

@@ -8,10 +8,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import wooteco.subway.UnitTest;
 import wooteco.subway.exception.NotInputDataException;
 
 @DisplayName("Section 관련 기능")
-class SectionTest {
+class SectionTest extends UnitTest {
 
     @Test
     @DisplayName("모든 인자가 정상적으로 입력되면 생성된다.")

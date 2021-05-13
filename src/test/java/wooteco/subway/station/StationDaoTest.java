@@ -6,16 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.UnitTest;
 import wooteco.subway.exception.DuplicateException;
 
-@SpringBootTest
-@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@Sql("classpath:tableInit.sql")
-@DisplayName("역 DAO 관련 기능")
-class StationDaoTest {
+@DisplayName("지하철역 DAO 관련 기능")
+class StationDaoTest extends UnitTest {
 
     private final StationDao stationDao;
 

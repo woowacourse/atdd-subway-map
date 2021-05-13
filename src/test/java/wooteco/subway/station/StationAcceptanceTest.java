@@ -12,15 +12,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
-@DisplayName("지하철역 관련 기능")
-@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@Sql("classpath:tableInit.sql")
+@DisplayName("지하철역 E2E 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
     private final String notInputMessage = "[ERROR] 입력값이 존재하지 않습니다.";
