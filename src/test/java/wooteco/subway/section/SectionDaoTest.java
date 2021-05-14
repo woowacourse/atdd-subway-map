@@ -29,10 +29,15 @@ class SectionDaoTest {
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.execute("SET foreign_key_checks=0;");
         jdbcTemplate.execute("truncate table SECTION");
         jdbcTemplate.execute("alter table SECTION alter column ID restart with 1");
         jdbcTemplate.execute("truncate table STATION");
         jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
+        jdbcTemplate.execute("truncate table LINE");
+        jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
+        jdbcTemplate.execute("insert into LINE (name, color) values ('9호선', '황토')");
+        jdbcTemplate.execute("SET foreign_key_checks=1;");
         firstStation = stationDao.save("FirstStation");
         secondStation = stationDao.save("SecondStation");
         thirdStation = stationDao.save("ThirdStation");

@@ -35,10 +35,14 @@ class SectionServiceTest {
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.execute("SET foreign_key_checks=0;");
         jdbcTemplate.execute("truncate table SECTION");
         jdbcTemplate.execute("alter table SECTION alter column ID restart with 1");
         jdbcTemplate.execute("truncate table STATION");
         jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
+        jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
+        jdbcTemplate.execute("insert into LINE (name, color) values ('9호선', '황토')");
+        jdbcTemplate.execute("SET foreign_key_checks=1;");
         firstStation = stationDao.save("first");
         secondStation = stationDao.save("second");
         thirdStation = stationDao.save("third");

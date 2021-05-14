@@ -29,8 +29,10 @@ class LineServiceTest {
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.execute("SET foreign_key_checks=0;");
         jdbcTemplate.execute("truncate table LINE");
         jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
+        jdbcTemplate.execute("SET foreign_key_checks=1;");
         jdbcTemplate.execute("truncate table STATION");
         jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
 
