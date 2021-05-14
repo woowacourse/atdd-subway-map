@@ -71,8 +71,8 @@ class SectionServiceTest {
     public void saveSectionWithDistanceExceptionCase() {
         sectionDao.save(1L, 1L, 2L, 10);
         sectionDao.save(1L, 2L, 3L, 10);
-        SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(2L, 4L, 10));
-        SectionDto sectionDto2 = SectionDto.of(1L, new SectionRequest(2L, 4L, 11));
+        SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(2L, 4L, 11));
+        SectionDto sectionDto2 = SectionDto.of(1L, new SectionRequest(4L, 2L, 11));
 
         assertThatThrownBy(() -> sectionService.save(sectionDto))
                 .isInstanceOf(SectionDistanceException.class);
