@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.section.SectionSortedException;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,35 +28,36 @@ public class Sections {
     }
 
     public List<SimpleStation> sortSectionsByOrder() {
-        Deque<Long> sortedStationIds = new ArrayDeque<>();
-        Map<Long, Long> upStationIds = new LinkedHashMap<>();
-        Map<Long, Long> downStationIds = new LinkedHashMap<>();
-
-        init(sortedStationIds, upStationIds, downStationIds);
-        sortByOrder(sortedStationIds, upStationIds, downStationIds);
-        return wrapToSimpleStation(new ArrayList<>(sortedStationIds));
+        final Map<Long, Long> stations = initialize();
+        final Long firstUpStationId = findFirstUpStation(stations);
+        return sortByOrder(stations, firstUpStationId);
     }
 
-    private void init(Deque<Long> sortedStationIds, Map<Long, Long> upStationIds, Map<Long, Long> downStationIds) {
+    private Map<Long, Long> initialize() {
+        Map<Long, Long> stations = new LinkedHashMap<>();
         for (Section section : sections) {
-            upStationIds.put(section.getUpStationId(), section.getDownStationId());
-            downStationIds.put(section.getDownStationId(), section.getUpStationId());
+            stations.put(section.getUpStationId(), section.getDownStationId());
         }
-
-        Section randomSection = sections.get(0);
-        sortedStationIds.addFirst(randomSection.getUpStationId());
-        sortedStationIds.addLast(randomSection.getDownStationId());
+        return stations;
     }
 
-    private void sortByOrder(Deque<Long> sortedStationIds, Map<Long, Long> upStationIds, Map<Long, Long> downStationIds) {
-        while (downStationIds.containsKey(sortedStationIds.peekFirst())) {
-            final Long id = sortedStationIds.peekFirst();
-            sortedStationIds.addFirst(downStationIds.get(id));
+    private Long findFirstUpStation(Map<Long, Long> stations) {
+        return stations.keySet().stream()
+                .filter(upStationId -> !stations.containsValue(upStationId))
+                .findFirst()
+                .orElseThrow(SectionSortedException::new);
+    }
+
+    private List<SimpleStation> sortByOrder(Map<Long, Long> stations, Long firstUpStationId) {
+        List<Long> sortedStations = new ArrayList<>();
+        sortedStations.add(firstUpStationId);
+
+        for (int i = 0; i < stations.size(); i++) {
+            final Long now = sortedStations.get(i);
+            final Long next = stations.get(now);
+            sortedStations.add(next);
         }
-        while (upStationIds.containsKey(sortedStationIds.peekLast())) {
-            final Long id = sortedStationIds.peekLast();
-            sortedStationIds.addLast(upStationIds.get(id));
-        }
+        return wrapToSimpleStation(sortedStations);
     }
 
     private List<SimpleStation> wrapToSimpleStation(List<Long> stationIds) {

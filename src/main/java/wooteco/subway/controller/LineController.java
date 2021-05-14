@@ -8,7 +8,6 @@ import wooteco.subway.controller.request.SectionInsertRequest;
 import wooteco.subway.controller.response.LineCreateResponse;
 import wooteco.subway.controller.response.LineWithAllSectionsResponse;
 import wooteco.subway.exception.line.LineNotFoundException;
-import wooteco.subway.service.LineService;
 import wooteco.subway.service.SubwayFacade;
 import wooteco.subway.service.dto.LineDto;
 
@@ -43,8 +42,7 @@ public class LineController {
     }
 
     @GetMapping(value = "/{lineId}")
-    public ResponseEntity<LineWithAllSectionsResponse> showSubwayLineInformation(@PathVariable Long lineId)
-            throws LineNotFoundException {
+    public ResponseEntity<LineWithAllSectionsResponse> showSubwayLineInformation(@PathVariable Long lineId) {
         LineWithAllSectionsResponse lineWithAllSectionsResponse = new LineWithAllSectionsResponse(subwayFacade.findAllInfoByLineId(lineId));
         return ResponseEntity.ok().body(lineWithAllSectionsResponse);
     }
