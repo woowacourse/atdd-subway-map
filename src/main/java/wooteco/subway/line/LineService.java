@@ -12,6 +12,7 @@ import wooteco.subway.line.section.SectionRequest;
 import wooteco.subway.line.section.SectionResponse;
 import wooteco.subway.line.section.Sections;
 import wooteco.subway.station.Station;
+import wooteco.subway.station.StationDao;
 import wooteco.subway.station.StationService;
 import wooteco.subway.station.Stations;
 
@@ -21,12 +22,12 @@ public class LineService {
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
-    private final StationService stationService;
+    private final StationDao stationDao;
 
-    public LineService(final LineDao lineDao, final SectionDao sectionDao, final StationService stationService) {
+    public LineService(final LineDao lineDao, final SectionDao sectionDao, final StationDao stationDao) {
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
-        this.stationService = stationService;
+        this.stationDao = stationDao;
     }
 
     public LineResponse createLine(final LineRequest lineRequest) {
@@ -74,9 +75,7 @@ public class LineService {
         final Line line = lineDao.findById(lineId).orElseThrow(() ->
             new DataNotFoundException("해당 Id의 노선이 없습니다."));
         final Sections sections = new Sections(sectionDao.findByLineId(lineId));
-        final List<Station> stationsGroup = sections.distinctStationIds().stream()
-            .map(stationService::findById)
-            .collect(Collectors.toList());
+        final List<Station> stationsGroup = stationDao.findByIds(sections.distinctStationIds());
         return new Line(line.getId(), line.getName(), line.getColor(), sections, new Stations(stationsGroup));
     }
 

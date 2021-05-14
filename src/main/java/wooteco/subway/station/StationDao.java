@@ -2,6 +2,7 @@ package wooteco.subway.station;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
@@ -68,5 +69,15 @@ public class StationDao {
         final String sql = "SELECT * FROM station WHERE name = ?";
         final List<Station> stations = jdbcTemplate.query(sql, stationRowMapper, name);
         return Optional.ofNullable(DataAccessUtils.singleResult(stations));
+    }
+
+    public List<Station> findByIds(final List<Long> stationIds) {
+        final List<Station> stations = new ArrayList<>();
+        for (final Long id : stationIds) {
+            final Station station = findById(id)
+                .orElseThrow(() -> new DataNotFoundException("해당 Id의 노선이 없습니다."));
+            stations.add(station);
+        }
+        return stations;
     }
 }
