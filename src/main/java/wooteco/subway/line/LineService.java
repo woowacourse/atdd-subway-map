@@ -27,19 +27,25 @@ public class LineService {
 
     @Transactional
     public LineResponse save(LineRequest lineRequest) {
-        if (lineDao.existsByNameOrColor(lineRequest.getName(), lineRequest.getColor())) {
-            throw new IllegalArgumentException("노선 이름 또는 색이 이미 존재합니다.");
-        }
+        validateNameAndColor(lineRequest);
+        Section section = findSection(lineRequest);
+        Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        sectionDao.save(line.getId(), new Sections(section));
+        return new LineResponse(line.getId(), line.getName(), line.getColor());
+    }
+
+    private Section findSection(LineRequest lineRequest) {
         Station upStation = stationDao.findById(lineRequest.getUpStationId())
                 .orElseThrow(() -> new IllegalArgumentException("역 ID가 존재하지 않습니다."));
         Station downStation = stationDao.findById(lineRequest.getDownStationId())
                 .orElseThrow(() -> new IllegalArgumentException("역 ID가 존재하지 않습니다."));
-        Section section = new Section(upStation, downStation, Distance.of(lineRequest.getDistance()));
+        return new Section(upStation, downStation, Distance.of(lineRequest.getDistance()));
+    }
 
-        Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-        sectionDao.save(line.getId(), new Sections(section));
-
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+    private void validateNameAndColor(LineRequest lineRequest) {
+        if (lineDao.existsByNameOrColor(lineRequest.getName(), lineRequest.getColor())) {
+            throw new IllegalArgumentException("노선 이름 또는 색이 이미 존재합니다.");
+        }
     }
 
     @Transactional
@@ -63,14 +69,21 @@ public class LineService {
 
     private Line lineWithSectionsById(Long id) {
         Line line = lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("노선 ID가 존재하지 않습니다."));
+        Set<Section> sections = findSections(id);
+        return new Line(line.getId(), line.getName(), line.getColor(), new Sections(sections));
+    }
+
+    private Set<Section> findSections(Long id) {
         List<SectionEntity> sectionEntities = sectionDao.findAllByLineId(id);
         Set<Section> sections = new HashSet<>();
         for (SectionEntity sectionEntity : sectionEntities) {
-            Station upStation = stationDao.findById(sectionEntity.getUpStationId()).get();
-            Station downStation = stationDao.findById(sectionEntity.getDownStationId()).get();
+            Station upStation = stationDao.findById(sectionEntity.getUpStationId())
+                    .orElseThrow(() -> new IllegalArgumentException("역 ID가 존재하지 않습니다."));
+            Station downStation = stationDao.findById(sectionEntity.getDownStationId())
+                    .orElseThrow(() -> new IllegalArgumentException("역 ID가 존재하지 않습니다."));
             sections.add(new Section(upStation, downStation, Distance.of(sectionEntity.getDistance())));
         }
-        return new Line(line.getId(), line.getName(), line.getColor(), new Sections(sections));
+        return sections;
     }
 
     @Transactional
@@ -91,22 +104,25 @@ public class LineService {
     @Transactional
     public void addSection(Long id, SectionRequest sectionRequest) {
         Line line = lineWithSectionsById(id);
-        Station upStation = stationDao.findById(sectionRequest.getUpStationId())
-                .orElseThrow(() -> new IllegalArgumentException("역 ID가 존재하지 않습니다."));
-        Station downStation = stationDao.findById(sectionRequest.getDownStationId())
-                .orElseThrow(() -> new IllegalArgumentException("역 ID가 존재하지 않습니다."));
-        Section section = new Section(upStation, downStation, Distance.of(sectionRequest.getDistance()));
-
+        Section section = findSection(sectionRequest);
         line.addSection(section);
         sectionDao.deleteAllByLineId(id);
         sectionDao.save(id, line.sections());
     }
 
+    private Section findSection(SectionRequest sectionRequest) {
+        Station upStation = stationDao.findById(sectionRequest.getUpStationId())
+                .orElseThrow(() -> new IllegalArgumentException("역 ID가 존재하지 않습니다."));
+        Station downStation = stationDao.findById(sectionRequest.getDownStationId())
+                .orElseThrow(() -> new IllegalArgumentException("역 ID가 존재하지 않습니다."));
+        return new Section(upStation, downStation, Distance.of(sectionRequest.getDistance()));
+    }
+
     @Transactional
     public void deleteSection(Long id, Long stationId) {
         Line line = lineWithSectionsById(id);
-        Station station = stationDao.findById(stationId).orElseThrow(() -> new IllegalArgumentException("역 ID가 존재하지 않습니다."));
-
+        Station station = stationDao.findById(stationId)
+                .orElseThrow(() -> new IllegalArgumentException("역 ID가 존재하지 않습니다."));
         line.deleteSection(station);
         sectionDao.deleteAllByLineId(id);
         sectionDao.save(id, line.sections());
