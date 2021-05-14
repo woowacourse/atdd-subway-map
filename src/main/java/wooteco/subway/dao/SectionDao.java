@@ -11,10 +11,10 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 @Repository
-public class SectionH2Dao implements SectionRepository {
+public class SectionDao implements SectionRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    public SectionH2Dao(JdbcTemplate jdbcTemplate) {
+    public SectionDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
