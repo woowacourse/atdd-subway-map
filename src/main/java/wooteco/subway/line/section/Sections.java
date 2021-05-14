@@ -118,16 +118,16 @@ public class Sections {
         return sectionGroup.get(sectionGroup.size() - 1);
     }
 
-    public Section findSectionHasUpStation(long existentStationId) {
+    public Section findSectionHasUpStation(Long existentStationId) {
         return sectionGroup.stream()
-            .filter(section -> section.getUpStationId() == existentStationId)
+            .filter(section -> section.getUpStationId().equals(existentStationId))
             .findAny()
             .orElseThrow(() -> new InvalidSectionException("존재하지 않는 구간입니다."));
     }
 
-    public Section findSectionHasDownStation(long existentStationId) {
+    public Section findSectionHasDownStation(Long existentStationId) {
         return sectionGroup.stream()
-            .filter(section -> section.getDownStationId() == existentStationId)
+            .filter(section -> section.getDownStationId().equals(existentStationId))
             .findAny()
             .orElseThrow(() -> new InvalidSectionException("존재하지 않는 구간입니다."));
     }

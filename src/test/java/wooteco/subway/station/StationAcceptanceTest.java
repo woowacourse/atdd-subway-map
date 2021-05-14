@@ -46,7 +46,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(stationResponse.getName()).isEqualTo(stationRequest.getName());
     }
 
-    private long getCreatedId(final ExtractableResponse<Response> response) {
+    private Long getCreatedId(final ExtractableResponse<Response> response) {
         return Long.parseLong(response.header("Location").split("/")[2]);
     }
 

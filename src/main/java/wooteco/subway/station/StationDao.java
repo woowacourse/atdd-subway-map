@@ -38,14 +38,14 @@ public class StationDao {
                 return preparedStatement;
             };
             jdbcTemplate.update(preparedStatementCreator, keyHolder);
-            final long id = keyHolder.getKey().longValue();
+            final Long id = keyHolder.getKey().longValue();
             return findById(id).orElseThrow(() -> new DataNotFoundException("해당 Id의 지하철역이 없습니다."));
         } catch (DuplicateKeyException e) {
             throw new DuplicatedNameException("중복된 이름의 지하철역입니다.");
         }
     }
 
-    public void deleteById(final long id) {
+    public void deleteById(final Long id) {
         final String sql = "DELETE FROM station WHERE id = ?";
         int deletedCnt = jdbcTemplate.update(sql, id);
 
