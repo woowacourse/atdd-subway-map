@@ -22,11 +22,11 @@ import wooteco.subway.station.dao.StationDao;
 @SpringBootTest
 public class SectionServiceTest {
 
-    private Long lineId;
-    private Long stationSinSeolId;
-    private Long stationDongMyoId;
-    private Long stationDongDaeMoonId;
-    private int distance;
+    private final Long lineId = 1L;
+    private final Long stationSinSeolId = 1L;
+    private final Long stationDongMyoId = 2L;
+    private final Long stationDongDaeMoonId = 3L;
+    private final int distance = 10;
 
     @Autowired
     private SectionDao sectionDao;
@@ -37,12 +37,6 @@ public class SectionServiceTest {
 
     @BeforeEach
     void setUp() {
-        lineId = 1L;
-        stationSinSeolId = 1L;
-        stationDongMyoId = 2L;
-        stationDongDaeMoonId = 3L;
-        distance = 10;
-
         SectionServiceDto sinSeolAndDongMyoDto = new SectionServiceDto(lineId, stationSinSeolId,
             stationDongMyoId, distance);
         SectionServiceDto dongMyoAndDongDaeMoonDto = new SectionServiceDto(lineId, stationDongMyoId,
