@@ -98,7 +98,7 @@ public class SectionService {
         Section downSection = sectionDao.findByLineIdAndUpStationId(dto.getLineId(), dto.getStationId())
             .orElseThrow(InvalidSectionOnLineException::new);
 
-        Section updatedSection = upSection.combinedSectinoForDelete(downSection);
+        Section updatedSection = upSection.assembledSectionForDelete(downSection);
         sectionDao.delete(upSection);
         sectionDao.delete(downSection);
         sectionDao.save(updatedSection);
