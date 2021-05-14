@@ -23,7 +23,7 @@ public class SectionDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private SectionDao sectionDao;
-    private long lineId = 1L;
+    private final long lineId = 1L;
 
     @BeforeEach
     void setUp() {
@@ -106,8 +106,8 @@ public class SectionDaoTest {
 
     @DisplayName("해당 라인에 존재하는 모든 상행역과 하행역 짝을 Map에 담아 반환한다")
     @Test
-    void getAllUpAndDownStations() {
-        Sections sections = sectionDao.findAllSections(lineId);
+    void findAllByLineId() {
+        Sections sections = sectionDao.findAllByLineId(lineId);
         Stations expectedUpAndDownStations = new Stations(
                 Arrays.asList(
                         new Station(1L, "잠실역"),
@@ -118,6 +118,15 @@ public class SectionDaoTest {
         );
 
         assertThat(sections.getOrderedStations()).isEqualTo(expectedUpAndDownStations);
+    }
+
+    @DisplayName("섹션이 존재하지 않으면 빈 Sections를 반환한다")
+    @Test
+    void findAllByLineId_noSectionExists_emptySections() {
+        jdbcTemplate.update("TRUNCATE TABLE section");
+
+        Sections sections = sectionDao.findAllByLineId(lineId);
+        assertThat(sections.isEmpty()).isTrue();
     }
 
     @DisplayName("주어진 구간 정보대로 해당 구간을 업데이트 한다")
