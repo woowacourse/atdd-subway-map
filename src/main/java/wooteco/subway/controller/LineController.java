@@ -7,7 +7,6 @@ import wooteco.subway.controller.request.LineAndSectionCreateRequest;
 import wooteco.subway.controller.request.SectionInsertRequest;
 import wooteco.subway.controller.response.LineCreateResponse;
 import wooteco.subway.controller.response.LineWithAllSectionsResponse;
-import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.service.SubwayFacade;
 import wooteco.subway.service.dto.LineDto;
 

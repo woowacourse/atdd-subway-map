@@ -58,5 +58,7 @@ public class LineAndSectionCreateRequest {
         return new SimpleSection(upStationId, downStationId, distance);
     }
 
-    public SimpleLine toSimpleLine() { return new SimpleLine(color, name);}
+    public SimpleLine toSimpleLine() {
+        return new SimpleLine(color, name);
+    }
 }

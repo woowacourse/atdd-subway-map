@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.controller.request.LineAndSectionCreateRequest;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;

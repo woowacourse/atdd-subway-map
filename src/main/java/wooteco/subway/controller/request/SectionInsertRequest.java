@@ -1,6 +1,5 @@
 package wooteco.subway.controller.request;
 
-import wooteco.subway.domain.Section;
 import wooteco.subway.domain.SimpleSection;
 
 import javax.validation.constraints.NotNull;

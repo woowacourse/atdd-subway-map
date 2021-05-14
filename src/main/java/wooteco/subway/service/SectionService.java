@@ -5,7 +5,10 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.SimpleSection;
-import wooteco.subway.exception.section.*;
+import wooteco.subway.exception.section.DeleteSectionIsNotPermittedException;
+import wooteco.subway.exception.section.NoneOfSectionIncludedInLine;
+import wooteco.subway.exception.section.SectionCanNotInsertException;
+import wooteco.subway.exception.section.SectionsAlreadyExistException;
 
 import java.util.List;
 import java.util.Optional;
