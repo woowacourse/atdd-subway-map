@@ -53,21 +53,21 @@ public class SectionServiceTest {
         String query = "DELETE FROM section WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
         jdbcTemplate.update(query, lineId, 4L, 4L);
 
-        assertThatThrownBy(() -> sectionService.deleteSection(lineId, 1L))
+        assertThatThrownBy(() -> sectionService.delete(lineId, 1L))
                 .isInstanceOf(UnavailableSectionDeleteException.class);
     }
 
     @DisplayName("stationId가 구간들 내에 존재하지 않을 때, NoSuchStationException 반환한다")
     @Test
     void deleteSection_stationDoesNotExistInSections_throwException() {
-        assertThatThrownBy(() -> sectionService.deleteSection(lineId, 5L))
+        assertThatThrownBy(() -> sectionService.delete(lineId, 5L))
                 .isInstanceOf(NoSuchStationException.class);
     }
 
     @DisplayName("종점역 삭제할때, 삭제되는 역과 연결되어있던 역이 종점이 된다")
     @Test
     void deleteSection_endStation_newEndStation() {
-        sectionService.deleteSection(lineId, 3L);
+        sectionService.delete(lineId, 3L);
 
         List<Section> sections = getSections();
         List<Section> expectedSections = Arrays.asList(
@@ -81,7 +81,7 @@ public class SectionServiceTest {
     @DisplayName("종점역이 아닌 역을 삭제할때, 삭제되는 역과 연결되어 있던 두 역을 통합하여 새로운 구간을 형성한다")
     @Test
     void deleteSection_nonEndStation_combineTwoStations() {
-        sectionService.deleteSection(lineId, 4L);
+        sectionService.delete(lineId, 4L);
 
         List<Section> sections = getSections();
         List<Section> expectedSections = Arrays.asList(

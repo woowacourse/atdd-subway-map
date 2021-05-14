@@ -67,7 +67,7 @@ public class SectionService {
     }
 
     @Transactional
-    public void deleteSection(final Long lineId, final Long stationId) {
+    public void delete(final Long lineId, final Long stationId) {
         validateStationExistence(lineId, stationId);
         validateSectionCount(lineId);
 
@@ -102,7 +102,7 @@ public class SectionService {
                 newDistance);
     }
 
-    public Sections getAllSections(final Long lineId) {
+    public Sections findAll(final Long lineId) {
         return sectionRepository.findAllSections(lineId);
     }
 }

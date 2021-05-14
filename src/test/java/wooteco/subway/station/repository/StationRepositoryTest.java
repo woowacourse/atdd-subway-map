@@ -36,8 +36,8 @@ public class StationRepositoryTest {
     void saveStation() {
         Station station = new Station("석촌역");
 
-        Station savedStation = stationRepository.save(station);
-        assertThat(savedStation.getId()).isEqualTo(3L);
+        long stationId = stationRepository.save(station);
+        assertThat(stationId).isEqualTo(3L);
     }
 
     @DisplayName("DB에 있는 station들을 조회하면, station을 담은 리스트를 반환한다.")

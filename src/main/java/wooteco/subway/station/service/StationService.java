@@ -18,7 +18,7 @@ public class StationService {
     }
 
     @Transactional
-    public StationResponse createStation(final String name) {
+    public StationResponse save(final String name) {
         Station station = new Station(name);
         if (stationRepository.doesNameExist(station)) {
             throw new DuplicateStationNameException();
@@ -41,15 +41,7 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public Station findStationById(final Long stationId) {
-        String stationName = findNameById(stationId);
-        return new Station(stationId, stationName);
-    }
-
-    private String findNameById(final Long id) {
-        if (stationRepository.doesIdNotExist(id)) {
-            throw new NoSuchStationException();
-        }
-        return stationRepository.findNameById(id);
+    public Station findById(final Long stationId) {
+        return stationRepository.findById(stationId).orElseThrow(NoSuchStationException::new);
     }
 }

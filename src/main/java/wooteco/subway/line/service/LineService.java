@@ -29,7 +29,7 @@ public class LineService {
     public List<LineResponse> getLines() {
         List<Line> lines = lineRepository.findAll();
         for (Line line : lines) {
-            Sections sections = sectionService.getAllSections(line.getId());
+            Sections sections = sectionService.findAll(line.getId());
             line.setSections(sections);
         }
         return LineResponse.toDtos(lines);
@@ -50,8 +50,8 @@ public class LineService {
     }
 
     private Sections getSections(final Long sectionId, final long lineId, final LineRequest lineRequest) {
-        Station upStation = stationService.findStationById(lineRequest.getUpStationId());
-        Station downStation = stationService.findStationById(lineRequest.getDownStationId());
+        Station upStation = stationService.findById(lineRequest.getUpStationId());
+        Station downStation = stationService.findById(lineRequest.getDownStationId());
 
         Sections sections = new Sections();
         sections.add(new Section(sectionId, lineId, upStation, downStation, lineRequest.getDistance()));
@@ -60,7 +60,7 @@ public class LineService {
 
     public LineResponse getLine(final Long id) {
         Line line = lineRepository.findById(id).orElseThrow(NoSuchLineException::new);
-        Sections sections = sectionService.getAllSections(id);
+        Sections sections = sectionService.findAll(id);
         line.setSections(sections);
 
         return LineResponse.toDto(line);

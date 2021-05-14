@@ -11,6 +11,7 @@ import wooteco.subway.station.domain.Stations;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class StationRepository {
@@ -48,9 +49,11 @@ public class StationRepository {
         jdbcTemplate.update(query, id);
     }
 
-    public String findNameById(final Long id) {
-        String query = "SELECT name FROM station WHERE id = ?";
-        return jdbcTemplate.queryForObject(query, String.class, id);
+    public Optional<Station> findById(final Long id) {
+        String query = "SELECT id, name FROM station WHERE id = ?";
+        return jdbcTemplate.query(query, stationRowMapper, id)
+                .stream()
+                .findFirst();
     }
 
     public boolean doesNameExist(final Station station) {
