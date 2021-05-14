@@ -1,5 +1,6 @@
 package wooteco.subway.line;
 
+import java.util.Objects;
 import wooteco.subway.domain.Id;
 
 public class Line {
@@ -38,5 +39,22 @@ public class Line {
 
     public String getColor() {
         return color.getValue();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Line line = (Line) o;
+        return Objects.equals(id, line.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

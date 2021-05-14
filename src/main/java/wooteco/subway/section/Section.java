@@ -1,5 +1,6 @@
 package wooteco.subway.section;
 
+import java.util.Objects;
 import wooteco.subway.domain.Id;
 import wooteco.subway.exception.section.DuplicateStationException;
 
@@ -48,7 +49,6 @@ public class Section {
 
     public Section dividedSectionForSave(final Section section) {
         Distance updateDistance = this.distance.subtract(section.distance);
-
         if (upStationId.equals(section.upStationId)) {
             return new Section(null, lineId, section.downStationId, downStationId, updateDistance);
         }
@@ -88,4 +88,20 @@ public class Section {
         return distance.getValue();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(id, section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
