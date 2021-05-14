@@ -17,6 +17,7 @@ import wooteco.subway.section.dto.DeleteStationDto;
 import wooteco.subway.section.dto.SectionServiceDto;
 import wooteco.subway.station.dto.StationResponse;
 
+@Transactional
 @Service
 public class LineService {
 

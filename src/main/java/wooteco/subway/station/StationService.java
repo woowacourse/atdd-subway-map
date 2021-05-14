@@ -3,11 +3,13 @@ package wooteco.subway.station;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.station.DuplicatedStationTitleException;
 import wooteco.subway.exception.station.NotFoundStationException;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.dto.StationServiceDto;
 
+@Transactional
 @Service
 public class StationService {
 
