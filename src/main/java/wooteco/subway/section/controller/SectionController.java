@@ -11,7 +11,7 @@ import wooteco.subway.section.service.SectionService;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/lines")
+@RequestMapping("/lines/{lineId}/sections")
 public class SectionController {
 
     private final LineService lineService;
@@ -22,7 +22,7 @@ public class SectionController {
         this.sectionService = sectionService;
     }
 
-    @PostMapping("/{lineId}/sections")
+    @PostMapping
     public ResponseEntity<SectionResponse> createSection(@RequestBody SectionRequest sectionRequest, @PathVariable Long lineId) {
         lineService.validateId(lineId);
         Section addedSection = sectionService.add(lineId, sectionRequest);
@@ -30,7 +30,7 @@ public class SectionController {
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/" + addedSection.getId())).body(sectionResponse);
     }
 
-    @DeleteMapping("/{lineId}/sections")
+    @DeleteMapping
     public ResponseEntity<Void> deleteSection(@PathVariable Long lineId, @RequestParam(value = "stationId") Long stationId) {
         lineService.validateId(lineId);
         sectionService.delete(lineId, stationId);
