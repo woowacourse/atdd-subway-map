@@ -2,6 +2,7 @@ package wooteco.subway.line;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import wooteco.subway.section.Section;
 import wooteco.subway.section.SectionDao;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
@@ -23,11 +24,11 @@ public class LineService {
         this.sectionDao = sectionDao;
     }
 
-    public Line createLine(long upStationId, long downStationId, String lineName, String lineColor, int distance) {
-        long lineId = lineDao.save(lineName, lineColor);
-        sectionDao.save(lineId, upStationId, downStationId, distance);
+    public Line createLine(Line line, Section section) {
+        long lineId = lineDao.save(line.getName(), line.getColor());
+        sectionDao.save(lineId, section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
 
-        return new Line(lineId, lineName, lineColor, Collections.emptyList());
+        return new Line(lineId, line.getName(), line.getColor(), Collections.emptyList());
     }
 
     public List<Line> showLines() {

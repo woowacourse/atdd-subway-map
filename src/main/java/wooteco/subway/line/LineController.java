@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.section.Section;
 import wooteco.subway.section.SectionRequest;
 import wooteco.subway.section.SectionService;
 
@@ -32,7 +33,7 @@ public class LineController {
         String lineColor = lineRequest.getColor();
         int distance = lineRequest.getDistance();
 
-        Line line = lineService.createLine(upStationId, downStationId, lineName, lineColor, distance);
+        Line line = lineService.createLine(new Line(lineName, lineColor), new Section(upStationId, downStationId, distance));
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(new LineResponse(line));
     }
 
