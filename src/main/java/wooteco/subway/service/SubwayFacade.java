@@ -1,6 +1,6 @@
 package wooteco.subway.service;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import wooteco.subway.controller.request.LineAndSectionCreateRequest;
 import wooteco.subway.controller.request.SectionInsertRequest;
 import wooteco.subway.controller.response.StationResponse;
@@ -12,14 +12,14 @@ import wooteco.subway.service.dto.LineWithStationsDto;
 
 import java.util.List;
 
-@Service
-public class SubwayService {
+@Component
+public class SubwayFacade {
 
     private final LineService lineService;
     private final SectionService sectionService;
     private final StationService stationService;
 
-    public SubwayService(LineService lineService, SectionService sectionService, StationService stationService) {
+    public SubwayFacade(LineService lineService, SectionService sectionService, StationService stationService) {
         this.lineService = lineService;
         this.sectionService = sectionService;
         this.stationService = stationService;
@@ -58,5 +58,13 @@ public class SubwayService {
 
     private List<StationResponse> makeStationResponse(List<SimpleStation> stationIds) {
         return stationService.makeStationResponses(stationIds);
+    }
+
+    public List<LineDto> findAllLines() {
+        return lineService.findAll();
+    }
+
+    public void updateLineById(Long id, LineAndSectionCreateRequest lineAndSectionCreateRequest) {
+        lineService.updateById(id, lineAndSectionCreateRequest.toSimpleLine());
     }
 }

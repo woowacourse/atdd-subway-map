@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.controller.request.LineAndSectionCreateRequest;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.SimpleLine;
 import wooteco.subway.exception.line.LineColorDuplicateException;
 import wooteco.subway.exception.line.LineNameDuplicateException;
 import wooteco.subway.exception.line.LineNotFoundException;
@@ -49,8 +50,8 @@ public class LineService {
         }
     }
 
-    public void updateById(Long id, LineAndSectionCreateRequest lineAndSectionCreateRequest) {
-        lineDao.update(id, lineAndSectionCreateRequest.toLine());
+    public void updateById(Long id, SimpleLine simpleLine) {
+        lineDao.update(id, simpleLine.toLine());
     }
 
     public void deleteById(Long id) {
