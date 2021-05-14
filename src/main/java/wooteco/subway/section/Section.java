@@ -31,14 +31,14 @@ public class Section {
             new Distance(distance));
     }
 
-    public Section(final Id id, final Id lineId, final Id upStatinoId, final Id downStationId,
+    public Section(final Id id, final Id lineId, final Id upStationId, final Id downStationId,
         final Distance distance) {
+        validateDuplicateStations(upStationId, downStationId);
         this.id = id;
         this.lineId = lineId;
-        this.upStationId = upStatinoId;
+        this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-        validateDuplicateStations(this.upStationId, this.downStationId);
     }
 
     private void validateDuplicateStations(final Id upStationId, final Id downStationId) {
