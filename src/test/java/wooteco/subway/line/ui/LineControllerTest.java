@@ -29,7 +29,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.is;
-import static wooteco.subway.line.domain.Sections.ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE;
+import static wooteco.subway.line.domain.Section.ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE;
 import static wooteco.subway.line.domain.Sections.ERROR_SECTION_HAVE_TO_ONE_STATION_IN_LINE;
 import static wooteco.subway.line.service.LineService.ERROR_DUPLICATED_LINE_NAME;
 

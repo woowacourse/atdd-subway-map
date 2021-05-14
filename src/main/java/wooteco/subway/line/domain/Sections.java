@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 public class Sections {
 
-    public static final String ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE = "구간의 길이가 기존 구간 길이보다 크거나 같을 수 없습니다.";
     public static final String ERROR_SECTION_HAVE_TO_ONE_STATION_IN_LINE = "상행역과 하행역 둘 중 하나만 노선에 존재해야 합니다.";
 
     private final LinkedList<Section> sections;
@@ -100,24 +99,6 @@ public class Sections {
         return sections.stream()
                 .map(Section::getDownStationId)
                 .collect(Collectors.toList());
-    }
-
-    public Section generateUpdateWhenAdd(final Section newSection, final Section deleteSection) {
-        int distance = deleteSection.getDistance() - newSection.getDistance();
-
-        if (distance <= 0) {
-            throw new IllegalArgumentException(ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE);
-        }
-
-        if (newSection.getUpStationId().equals(deleteSection.getUpStationId())) {
-            return new Section(newSection.getDownStationId(), deleteSection.getDownStationId(), distance);
-        }
-
-        if (newSection.getDownStationId().equals(deleteSection.getDownStationId())) {
-            return new Section(deleteSection.getUpStationId(), newSection.getUpStationId(), distance);
-        }
-
-        throw new IllegalArgumentException("노선의 상행역 혹은 하행역을 찾을 수 없습니다.");
     }
 
     public List<Section> deleteSection(final Long stationId) {

@@ -40,7 +40,6 @@ public class LineService {
         stations.add(stationRepository.findById(lastStationId));
 
         return stations;
-
     }
 
     public Lines allLines() {
@@ -76,7 +75,7 @@ public class LineService {
         List<FindSectionRule> findSectionRules = Arrays.asList(new FindSectionHaveSameUpRule(),
                 new FindSectionHaveSameDownRule());
         Section deleteSection = sections.findDeleteByAdding(section, findSectionRules);
-        Section updateSection = sections.generateUpdateWhenAdd(section, deleteSection);
+        Section updateSection = deleteSection.updateWhenAdd(section);
 
         lineRepository.deleteSection(id, deleteSection);
         lineRepository.addSection(id, updateSection);
