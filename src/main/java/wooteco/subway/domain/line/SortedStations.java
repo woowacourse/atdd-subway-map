@@ -1,6 +1,7 @@
 package wooteco.subway.domain.line;
 
 import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,16 +11,15 @@ import wooteco.subway.web.dto.StationResponse;
 
 public class SortedStations {
 
-    Map<Long, Long> up = new HashMap<>();
-    Map<Long, Long> down = new HashMap<>();
-    ArrayDeque<Long> result = new ArrayDeque<>();
+    private final Map<Long, Long> downToUp = new HashMap<>();
+    private final Map<Long, Long> upToDown = new HashMap<>();
 
     private final List<Section> sections;
-    private final Map<Long, StationResponse> stationMap;
+    private final Map<Long, StationResponse> stationMap = new HashMap<>();
 
     public SortedStations(List<Section> sections, List<StationResponse> stations) {
         this.sections = sections;
-        this.stationMap = new HashMap<>();
+
         for (StationResponse station : stations) {
             stationMap.put(station.getId(), station);
         }
@@ -27,28 +27,34 @@ public class SortedStations {
 
     public List<StationResponse> get() {
         init(sections);
-        sort();
-
-        return result.stream()
-                .map(stationMap::get)
-                .collect(Collectors.toList());
+        Deque<Long> sortedIds = sort();
+        return idsToStationResponses(sortedIds);
     }
 
     private void init(List<Section> sections) {
         for (Section section : sections) {
-            up.put(section.getDownStationId(), section.getUpStationId());
-            down.put(section.getUpStationId(), section.getDownStationId());
+            downToUp.put(section.getDownStationId(), section.getUpStationId());
+            upToDown.put(section.getUpStationId(), section.getDownStationId());
         }
-
-        result.addFirst(sections.get(0).getUpStationId());
     }
 
-    private void sort() {
-        while (up.containsKey(result.peekFirst())) {
-            result.addFirst(up.get(result.peekFirst()));
+    private Deque<Long> sort() {
+        Deque<Long> result = new ArrayDeque<>();
+        result.addFirst(sections.get(0).getUpStationId());
+
+        while (downToUp.containsKey(result.peekFirst())) {
+            result.addFirst(downToUp.get(result.peekFirst()));
         }
-        while (down.containsKey(result.peekLast())) {
-            result.addLast(down.get(result.peekLast()));
+        while (upToDown.containsKey(result.peekLast())) {
+            result.addLast(upToDown.get(result.peekLast()));
         }
+
+        return result;
+    }
+
+    private List<StationResponse> idsToStationResponses(Deque<Long> result) {
+        return result.stream()
+                .map(stationMap::get)
+                .collect(Collectors.toList());
     }
 }
