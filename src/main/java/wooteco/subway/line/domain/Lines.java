@@ -10,15 +10,15 @@ public class Lines {
         this.lines = lines;
     }
 
-    public List<Line> toList() {
-        return Collections.unmodifiableList(lines);
-    }
-
     public boolean doesNameExist(final String name) {
         return lines.stream().anyMatch(thisLine -> thisLine.hasName(name));
     }
 
     public boolean doesIdNotExist(final Long id) {
         return lines.stream().noneMatch(line -> line.hasId(id));
+    }
+
+    public List<Line> toList() {
+        return Collections.unmodifiableList(lines);
     }
 }

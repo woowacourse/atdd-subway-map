@@ -19,6 +19,14 @@ public class Station {
         this.name = name;
     }
 
+    public boolean hasId(final Long stationId) {
+        return this.id.equals(stationId);
+    }
+
+    public boolean hasName(final String name) {
+        return this.name.equals(name);
+    }
+
     public Long getId() {
         return id;
     }
@@ -29,14 +37,6 @@ public class Station {
 
     public void setId(final long id) {
         this.id = id;
-    }
-
-    public boolean hasId(final Long stationId) {
-        return this.id.equals(stationId);
-    }
-
-    public boolean hasName(final String name) {
-        return this.name.equals(name);
     }
 
     @Override

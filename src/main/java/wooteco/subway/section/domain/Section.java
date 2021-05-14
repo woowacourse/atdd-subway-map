@@ -28,6 +28,56 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section adjustBy(final Section section) {
+        validateDistance(section);
+        int newSectionDistance = getDistanceGap(section);
+
+        if (this.hasSameUpStation(section)) {
+            return new Section(
+                    this.getId(),
+                    section.getLineId(),
+                    new Station(section.getDownStationId()),
+                    new Station(this.getDownStationId()),
+                    newSectionDistance);
+        }
+        return new Section(
+                this.getId(),
+                section.getLineId(),
+                new Station(this.getUpStationId()),
+                new Station(section.getUpStationId()),
+                newSectionDistance);
+    }
+
+    private void validateDistance(final Section that) {
+        if (this.distance <= that.distance) {
+            throw new IllegalSectionDistanceException();
+        }
+    }
+
+    private int getDistanceGap(final Section that) {
+        return Math.abs(this.distance - that.distance);
+    }
+
+    public boolean hasSameUpStation(final Section that) {
+        return this.upStation.equals(that.upStation);
+    }
+
+    public boolean hasSameDownStation(final Section that) {
+        return this.downStation.equals(that.downStation);
+    }
+
+    public boolean hasUpStation(final Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean hasDownStation(final Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean hasStation(final Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
     public Long getId() {
         return id;
     }
@@ -54,60 +104,6 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    public Section adjustBy(final Section section) {
-        validateDistance(section);
-        int newSectionDistance = this.getDistanceGap(section);
-
-        if (this.hasSameUpStation(section)) {
-            return new Section(
-                    this.getId(),
-                    section.getLineId(),
-                    new Station(section.getDownStationId()),
-                    new Station(this.getDownStationId()),
-                    newSectionDistance);
-        }
-        return new Section(
-                this.getId(),
-                section.getLineId(),
-                new Station(this.getUpStationId()),
-                new Station(section.getUpStationId()),
-                newSectionDistance);
-    }
-
-    public boolean hasSameUpStation(final Section that) {
-        return this.upStation.equals(that.upStation);
-    }
-
-    public boolean hasSameDownStation(final Section that) {
-        return this.downStation.equals(that.downStation);
-    }
-
-    public boolean hasUpStation(final Station station) {
-        return this.upStation.equals(station);
-    }
-
-    public boolean hasDownStation(final Station station) {
-        return this.downStation.equals(station);
-    }
-
-    private void validateDistance(final Section section) {
-        if (this.isShorterOrEqualTo(section)) {
-            throw new IllegalSectionDistanceException();
-        }
-    }
-
-    public boolean hasStation(final Station station) {
-        return upStation.equals(station) || downStation.equals(station);
-    }
-
-    private boolean isShorterOrEqualTo(final Section that) {
-        return this.distance <= that.distance;
-    }
-
-    private int getDistanceGap(final Section that) {
-        return Math.abs(this.distance - that.distance);
     }
 
     @Override

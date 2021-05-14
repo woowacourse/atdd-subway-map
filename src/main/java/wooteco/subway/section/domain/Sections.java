@@ -80,16 +80,20 @@ public class Sections {
         return getOriginalSectionByDownStation(section);
     }
 
-    private Section getOriginalSectionByDownStation(final Section section) {
-        return sections.stream()
-                .filter(thisSection -> thisSection.hasSameDownStation(section))
-                .findFirst()
-                .orElseThrow(NoSuchStationException::new);
+    private boolean doesExistInUpStation(final Station station) {
+        return sections.stream().anyMatch(thisSection -> thisSection.hasUpStation(station));
     }
 
     private Section getOriginalSectionByUpStation(final Section section) {
         return sections.stream()
                 .filter(thisSection -> thisSection.hasSameUpStation(section))
+                .findFirst()
+                .orElseThrow(NoSuchStationException::new);
+    }
+
+    private Section getOriginalSectionByDownStation(final Section section) {
+        return sections.stream()
+                .filter(thisSection -> thisSection.hasSameDownStation(section))
                 .findFirst()
                 .orElseThrow(NoSuchStationException::new);
     }
@@ -105,10 +109,6 @@ public class Sections {
                 .count();
 
         return count == 1;
-    }
-
-    private boolean doesExistInUpStation(final Station station) {
-        return sections.stream().anyMatch(thisSection -> thisSection.hasUpStation(station));
     }
 
     private boolean doesExistInDownStation(final Station station) {
