@@ -66,7 +66,7 @@ public class Section {
         return distance.getValue();
     }
 
-    public Section updateForSave(final Section section) {
+    public Section dividedSectionForSave(final Section section) {
         Distance updateDistance = this.distance.subtract(section.distance);
 
         if (upStationId.equals(section.upStationId)) {
@@ -75,7 +75,7 @@ public class Section {
         return new Section(null, lineId, upStationId, section.upStationId, updateDistance);
     }
 
-    public Section updateForDelete(final Section section) {
+    public Section combinedSectinoForDelete(final Section section) {
         Distance updateDistance = section.distance.add(this.distance);
         return new Section(null, lineId, upStationId, section.downStationId, updateDistance);
     }

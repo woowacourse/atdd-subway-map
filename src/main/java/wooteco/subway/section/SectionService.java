@@ -68,7 +68,7 @@ public class SectionService {
 
     private SectionServiceDto saveSectionAtMiddle(final Section section, final Sections sections) {
         Section legacySection = sections.findByOverlappedStation(section);
-        sectionDao.save(legacySection.updateForSave(section));
+        sectionDao.save(legacySection.dividedSectionForSave(section));
         sectionDao.delete(legacySection);
         return SectionServiceDto.from(sectionDao.save(section));
     }
@@ -98,7 +98,7 @@ public class SectionService {
         Section downSection = sectionDao.findByLineIdAndUpStationId(dto.getLineId(), dto.getStationId())
             .orElseThrow(InvalidSectionOnLineException::new);
 
-        Section updatedSection = upSection.updateForDelete(downSection);
+        Section updatedSection = upSection.combinedSectinoForDelete(downSection);
         sectionDao.delete(upSection);
         sectionDao.delete(downSection);
         sectionDao.save(updatedSection);
