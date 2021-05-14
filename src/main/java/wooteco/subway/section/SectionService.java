@@ -42,7 +42,10 @@ public class SectionService {
         validateIsLastRemainedSection(lineId);
 
         Station station = stationDao.findById(stationId);
-        List<Section> effectiveSections = sectionDao.findAdjacentByStationId(lineId, stationId);
+
+        List<SectionTable> sectionTables = sectionDao.findAdjacentByStationId1111(lineId, stationId);
+        List<Section> effectiveSections = convertToSections(sectionTables);
+
         sectionDao.removeSections(lineId, effectiveSections);
 
         if (effectiveSections.size() == WHEN_BETWEEN_SECTIONS) {
@@ -58,15 +61,20 @@ public class SectionService {
     }
 
     public Sections findAllByLineId(Long lineId){
-        List<Section> sections = new ArrayList<>();
         List<SectionTable> sectionTables = sectionDao.findAllByLineId(lineId);
+        List<Section> sections = convertToSections(sectionTables);
+        return Sections.create(sections);
+
+    }
+
+    private List<Section> convertToSections(List<SectionTable> sectionTables) {
+        List<Section> sections = new ArrayList<>();
         for(SectionTable sectionTable : sectionTables){
             Station upStation = stationDao.findById(sectionTable.getUpStationId());
             Station downStation = stationDao.findById(sectionTable.getDownStationId());
             sections.add(Section.create(sectionTable.getId(), upStation,downStation, sectionTable.getDistance()));
         }
-        return Sections.create(sections);
-
+        return sections;
     }
 
     private void validateExistStation(Long stationId) {
