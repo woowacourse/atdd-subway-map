@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.DuplicatedNameException;
+import wooteco.subway.exception.InvalidInsertException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
@@ -70,7 +71,7 @@ public class LineService {
 
     private void validateUsableName(String newName, String oldName) {
         if (lineRepository.validateUsableName(newName, oldName)) {
-            throw new DuplicatedNameException("변경할 수 없는 이름입니다.");
+            throw new InvalidInsertException("변경할 수 없는 이름입니다.");
         }
     }
 

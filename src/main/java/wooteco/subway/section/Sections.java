@@ -1,5 +1,7 @@
 package wooteco.subway.section;
 
+import wooteco.subway.exception.InvalidInsertException;
+import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.exception.SubWayException;
 
 import java.util.*;
@@ -7,6 +9,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Sections {
+    private static final int ALL_SECTION_EXIST_COUNT = 2;
+    private static final int NONE_EXIST_SECTION_COUNT = 0;
+    private static final int DELETABLE_COUNT = 2;
     private List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -46,8 +51,8 @@ public class Sections {
                 .filter(id -> id.equals(section.getUpStationId()) || id.equals(section.getDownStationId()))
                 .count();
 
-        if (matchCount == 2 || matchCount == 0) {
-            throw new SubWayException("등록 불가능한 구간입니다.");
+        if (matchCount == ALL_SECTION_EXIST_COUNT || matchCount == NONE_EXIST_SECTION_COUNT) {
+            throw new InvalidInsertException("해당 구간에는 등록할 수 없습니다.");
         }
     }
 
@@ -130,30 +135,22 @@ public class Sections {
     }
 
     public void validateDeletable() {
-        if (sections.size() <= 1) {
-            throw new SubWayException("구간이 한 개 이하라 삭제할 수 없습니다.");
+        if (sections.size() < DELETABLE_COUNT) {
+            throw new InvalidInsertException("구간이 한 개 이하라 삭제할 수 없습니다.");
         }
-    }
-
-    public void deleteFirstSection() {
-        sections.remove(0);
-    }
-
-    public void deleteLastSection() {
-        sections.remove(sections.size()-1);
     }
 
     public Section findSectionByDown(Long stationId) {
         return sections.stream()
                 .filter(section -> section.isSameDown(stationId))
                 .findFirst()
-                .orElseThrow(() -> new SubWayException("일치하는 하행역이 없습니다."));
+                .orElseThrow(() -> new NotFoundException("일치하는 하행역이 없습니다."));
     }
 
     public Section findSectionByUp(Long stationId) {
         return sections.stream()
                 .filter(section -> section.isSameUp(stationId))
                 .findFirst()
-                .orElseThrow(() -> new SubWayException("일치하는 상행역이 없습니다."));
+                .orElseThrow(() -> new NotFoundException("일치하는 상행역이 없습니다."));
     }
 }

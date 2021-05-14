@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.DuplicatedNameException;
-import wooteco.subway.exception.SubWayException;
+import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.section.dto.SectionResponse;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dto.StationRequest;
@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 @Service
 public class StationService {
     private static final Logger log = LoggerFactory.getLogger(StationService.class);
+    private static final int VALID_STATION_SIZE = 2;
 
     private JdbcStationDao stationRepository;
 
@@ -63,8 +64,8 @@ public class StationService {
 
     public void validateStations(Long upStationId, Long downStationId) {
         List<Station> stations = stationRepository.findTwoStations(upStationId, downStationId);
-        if (stations.size() != 2) {
-            throw new SubWayException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
+        if (stations.size() != VALID_STATION_SIZE) {
+            throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
         }
     }
 

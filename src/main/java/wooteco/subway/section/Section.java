@@ -1,6 +1,6 @@
 package wooteco.subway.section;
 
-import wooteco.subway.exception.SubWayException;
+import wooteco.subway.exception.InvalidInsertException;
 
 public class Section {
     private Long id;
@@ -28,7 +28,7 @@ public class Section {
 
     private void validateIfDownStationSameAsUpStation(Long upStationId, Long downStationId) {
         if (upStationId.equals(downStationId)) {
-            throw new SubWayException("구간의 상행과 하행이 같을 수 없습니다.");
+            throw new InvalidInsertException("구간의 상행과 하행이 같을 수 없습니다.");
         }
     }
 

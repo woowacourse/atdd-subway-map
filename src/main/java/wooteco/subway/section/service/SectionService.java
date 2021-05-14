@@ -1,7 +1,8 @@
 package wooteco.subway.section.service;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.exception.SubWayException;
+import wooteco.subway.exception.InvalidInsertException;
+import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.Sections;
 import wooteco.subway.section.dto.SectionRequest;
@@ -45,7 +46,7 @@ public class SectionService {
     private void validateExistStation(Section section) {
         List<Station> stations = jdbcSectionDao.findStationsBy(section.getUpStationId(), section.getDownStationId());
         if (stations.size() != 2) {
-            throw new SubWayException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
+            throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
         }
     }
 
@@ -63,7 +64,7 @@ public class SectionService {
             int changedDistance = compareDistanceWhenAppendToBottom(lineId, newSection);
             return new SectionResponse(jdbcSectionDao.appendBeforeDown(lineId, newSection, changedDistance));
         }
-        throw new SubWayException("구간 추가 불가능");
+        throw new InvalidInsertException("해당 구간에 추가할 수 없습니다.");
     }
 
     private int compareDistanceWhenAppendToBottom(Long lineId, Section newSection) {
@@ -83,7 +84,7 @@ public class SectionService {
 
     private void validatesDistance(Section oldSection, Section newSection) {
         if (newSection.hasLongerDistanceThan(oldSection)) {
-            throw new SubWayException("거리 때문에 등록할 수 없음");
+            throw new InvalidInsertException("추가하려는 구간의 거리는 기존 구간의 거리를 넘을 수 없습니다.");
         }
     }
 

@@ -4,7 +4,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.exception.SubWayException;
+import wooteco.subway.exception.InvalidInsertException;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.service.LineService;
@@ -24,8 +24,7 @@ public class LineController {
     private final SectionService sectionService;
     private final StationService stationService;
 
-    public LineController(LineService lineService,
-                          SectionService sectionService, StationService stationService) {
+    public LineController(LineService lineService, SectionService sectionService, StationService stationService) {
         this.lineService = lineService;
         this.sectionService = sectionService;
         this.stationService = stationService;
@@ -45,7 +44,7 @@ public class LineController {
 
     private void validateRequestValues(Errors error) {
         if (error.hasErrors()) {
-            throw new SubWayException("비어 있는 값은 있을 수 없습니다.");
+            throw new InvalidInsertException("비어 있는 값은 있을 수 없습니다.");
         }
     }
 
