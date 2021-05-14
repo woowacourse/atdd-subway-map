@@ -85,8 +85,6 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] 상행 종점 ~ 하행 종점의 역 목록을 응답할 것
 - [x] 구간 제거
     - [x] 구간이 하나인 노선에서는 구간 제거를 할 수 없음 
-- [ ] SectionRepository를 만들어 온전한 Section을 만들어 Service에 반환하기
-- [ ] StationService가 LineService를 호출하여 역 삭제시 필요한 구간 삭제토록 변경
 
 ## 리팩토링 중점 사안
 - [x] Dao에서 도메인을 반환하도록 반환
@@ -104,7 +102,8 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] if 안에서는 조건만 체크하고, 필요한 행위는 따로 메서드로 분``리하기
 - [x] Service Layer에서 toDB와 같은 계층 간 강한 결합의 네이밍은 변경하기
 - [x] Service Layer에서의 로직은 조회 -> 저장 순서로 바꾸기
-
+- [x] SectionRepository를 만들어 온전한 Section을 만들어 Service에 반환하기
+- [ ] StationService가 LineService를 호출하여 역 삭제시 필요한 구간 삭제토록 변경
 
 ## 질문 사항
 - findById 이후 CRUD 로직을 수행하면 DB를 한 번에 2번 찌르는 건데 병목이 발생하진 않을까?

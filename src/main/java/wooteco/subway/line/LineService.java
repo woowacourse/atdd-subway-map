@@ -106,6 +106,7 @@ public class LineService {
         Map<Section, Section> changedSections = line.insertSectionInBetween(newSection);
         final Section upperSection = changedSections.keySet().iterator().next();
         final Section lowerSection = changedSections.get(upperSection);
+
         saveSection(upperSection);
         saveSection(lowerSection);
         sectionRepository.deleteSection(lineId, upperSection.getUpStation().getId(), lowerSection.getDownStation().getId());
@@ -116,7 +117,7 @@ public class LineService {
         final Station station = sectionRepository.findStationById(stationId);
         if (line.checkSectionAtEdge(station)) {
             Section section = line.removeSectionAtEdge(station);
-            sectionRepository.deleteSection(lineId, section.getUpStation().getId(), section.getDownStation().getId());
+            deleteSection(section);
             return;
         }
         deleteSectionInBetween(line, station);
@@ -131,11 +132,11 @@ public class LineService {
         final Section lowerSectionToDelete = sectionsToDelete.get(upperSectionToDelete);
 
         saveSection(sectionToSave);
-        deleteSectionFromDB(upperSectionToDelete);
-        deleteSectionFromDB(lowerSectionToDelete);
+        deleteSection(upperSectionToDelete);
+        deleteSection(lowerSectionToDelete);
     }
 
-    private void deleteSectionFromDB(Section section) {
+    private void deleteSection(Section section) {
         final Long lineId = section.getLineId();
         final Long upStationId = section.getUpStation().getId();
         final Long downStationId = section.getDownStation().getId();
