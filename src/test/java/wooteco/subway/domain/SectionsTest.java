@@ -3,7 +3,6 @@ package wooteco.subway.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.exception.InternalLogicConflictException;
 import wooteco.subway.exception.section.SectionDuplicatedException;
 import wooteco.subway.exception.section.SectionHasSameUpAndDownException;
 import wooteco.subway.exception.section.SectionUnlinkedException;
@@ -63,7 +62,7 @@ class SectionsTest {
     void addAndThenGetModifiedAdjacent() {
         Sections sections = Sections.create(강남_수서);
 
-        Section modified = sections.modifyRelated(양재_수서);
+        Section modified = sections.modifyRelatedToAdd(양재_수서);
         sections.add(modified);
 
         assertThat(sections.sections()).hasSize(2);
@@ -75,7 +74,7 @@ class SectionsTest {
     void addAndThenGetModifiedAdjacent_1() {
         Sections sections = Sections.create(강남_수서);
 
-        Section modified = sections.modifyRelated(수서_잠실);
+        Section modified = sections.modifyRelatedToAdd(수서_잠실);
         sections.add(수서_잠실);
 
         assertThat(sections.sections()).hasSize(2);
@@ -87,10 +86,10 @@ class SectionsTest {
     void addAndThenGetModifiedAdjacent_꼬리베이스() {
         Sections sections = Sections.create(수서_잠실);
 
-        sections.modifyRelated(강남_수서);
+        sections.modifyRelatedToAdd(강남_수서);
         sections.add(강남_수서);
 
-        Section modified = sections.modifyRelated(양재_수서);
+        Section modified = sections.modifyRelatedToAdd(양재_수서);
         sections.add(양재_수서);
 
         assertThat(sections.sections()).hasSize(3);
@@ -101,9 +100,9 @@ class SectionsTest {
     @Test
     void addAndThenGetModifiedAdjacent_머리베이스() {
         Sections sections = Sections.create(수서_잠실);
-        sections.modifyRelated(강남_수서);
+        sections.modifyRelatedToAdd(강남_수서);
         sections.add(강남_수서);
-        Section modified = sections.modifyRelated(수서_양재);
+        Section modified = sections.modifyRelatedToAdd(수서_양재);
         sections.add(수서_양재);
 
         assertThat(sections.sections()).hasSize(3);
@@ -115,9 +114,9 @@ class SectionsTest {
     void addAndThenGetModifiedAdjacent_실패_같은구간() {
         Sections sections = Sections.create(강남_수서);
 
-        assertThatThrownBy(() -> sections.modifyRelated(수서_강남))
+        assertThatThrownBy(() -> sections.modifyRelatedToAdd(수서_강남))
                 .isInstanceOf(SectionDuplicatedException.class);
-        assertThatThrownBy(() -> sections.modifyRelated(강남_수서))
+        assertThatThrownBy(() -> sections.modifyRelatedToAdd(강남_수서))
                 .isInstanceOf(SectionDuplicatedException.class);
     }
 
@@ -126,7 +125,7 @@ class SectionsTest {
     void addAndThenGetModifiedAdjacent_실패_앞뒤같은구간() {
         Sections sections = Sections.create(강남_수서);
 
-        assertThatThrownBy(() -> sections.modifyRelated(Section.create(강남역, 강남역, 10)))
+        assertThatThrownBy(() -> sections.modifyRelatedToAdd(Section.create(강남역, 강남역, 10)))
                 .isInstanceOf(SectionHasSameUpAndDownException.class);
     }
 
@@ -137,7 +136,7 @@ class SectionsTest {
         Section section = Section.create(동탄역, 양재역, 10);
         Sections sections = Sections.create(setting);
 
-        assertThatThrownBy(() -> sections.modifyRelated(section))
+        assertThatThrownBy(() -> sections.modifyRelatedToAdd(section))
                 .isInstanceOf(SectionUnlinkedException.class);
     }
 

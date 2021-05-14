@@ -146,7 +146,6 @@ class SectionApiControllerTest extends AcceptanceTest {
         assertThat(stationsResult).containsExactly("잠실역", "강남역", "잠실새내역");
     }
 
-    //todo: 실패 왜 안되지!!??!?!?! 이거 통과 안되는지 왜 의문
     @Test
     @DisplayName("구간 등록 - 성공(중간 구간 등록 a-b-c-d --(b-k)--> a-b-k-c-d)")
     void create_성공_중간앞() {
@@ -178,7 +177,6 @@ class SectionApiControllerTest extends AcceptanceTest {
         assertThat(stationsResult).containsExactly("강남역", "잠실역", "수서역", "잠실새내역", "동탄역");
     }
 
-    //todo: 해야함
     @Test
     @DisplayName("구간 등록 - 성공(중간 구간 등록 a-b-c-d --(k-c)--> a-b-k-c-d)")
     void create_성공_중간뒤() {
@@ -312,7 +310,6 @@ class SectionApiControllerTest extends AcceptanceTest {
         assertThat(result.body().asString()).isEqualTo("사이클이 생기는 구간입니다.");
     }
 
-    // todo: 이상
     @Test
     @DisplayName("구간 제거 - 성공")
     void delete_성공() {
@@ -338,8 +335,6 @@ class SectionApiControllerTest extends AcceptanceTest {
         assertThat(stations).hasSize(2);
         assertThat(stations.get(0).getName()).isEqualTo("강남역");
         assertThat(stations.get(1).getName()).isEqualTo("잠실새내역");
-        // todo: 거리?!
-        //  assertThat(result.body().jsonPath().getInt("distance")).isEqualTo(14);
     }
 
     @Test

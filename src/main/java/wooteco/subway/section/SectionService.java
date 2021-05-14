@@ -25,10 +25,15 @@ public class SectionService {
     private final JdbcSectionDao sectionDao;
 
     @Transactional
+    public Section createInitial(Section section, Long lineId) {
+        return sectionDao.create(section, lineId);
+    }
+
+    @Transactional
     public Section create(Section newSection, Long lineId) {
         Sections sections = findAllByLineId(lineId);
 
-        Section modified = sections.modifyRelated(newSection);
+        Section modified = sections.modifyRelatedToAdd(newSection);
         sections.add(newSection);
 
         sectionDao.updateModified(modified);
@@ -36,15 +41,8 @@ public class SectionService {
     }
 
     @Transactional
-    public Section createInitial(Section section, Long lineId) {
-        return sectionDao.create(section, lineId);
-    }
-
-    @Transactional
     public void remove(Long lineId, Long stationId) {
-        validateExistLine(lineId);
-        validateExistStation(stationId);
-        validateIsLastRemainedSection(lineId);
+        validateRemovable(lineId, stationId);
 
         Station station = stationDao.findById(stationId);
         Sections sections = findAllByLineId(lineId);
@@ -58,6 +56,12 @@ public class SectionService {
             sectionDao.remove(lineId, upStationId, downStationId);
         }
         sectionDao.create(modified, lineId);
+    }
+
+    private void validateRemovable(Long lineId, Long stationId) {
+        validateExistLine(lineId);
+        validateExistStation(stationId);
+        validateIsLastRemainedSection(lineId);
     }
 
     private void validateIsLastRemainedSection(Long lineId) {

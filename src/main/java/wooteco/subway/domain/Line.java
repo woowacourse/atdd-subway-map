@@ -30,10 +30,6 @@ public class Line {
         return sections.convertToSortedStations();
     }
 
-    public boolean isSameName(String name) {
-        return this.name.equals(name);
-    }
-
     public boolean isSameColor(String color) {
         return this.color.equals(color);
     }
