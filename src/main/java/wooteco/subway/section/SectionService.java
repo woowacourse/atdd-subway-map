@@ -49,16 +49,16 @@ public class SectionService {
         Station station = stationDao.findById(stationId);
 
         List<SectionTable> sectionTables = sectionDao.findAdjacentByStationId1111(lineId, stationId);
-        List<Section> effectiveSections = convertToSections(sectionTables);
+        List<Section> relatedSections = convertToSections(sectionTables);
 
-        for (Section section : effectiveSections) {
+        for (Section section : relatedSections) {
             Long upStationId = section.getUpStation().getId();
             Long downStationId = section.getDownStation().getId();
             sectionDao.remove(lineId, upStationId, downStationId);
         }
 
-        if (effectiveSections.size() == WHEN_BETWEEN_SECTIONS) {
-            Section section = Sections.create(effectiveSections).removeStationInBetween(station);
+        if (relatedSections.size() == WHEN_BETWEEN_SECTIONS) {
+            Section section = Sections.create(relatedSections).removeStationInBetween(station);
             sectionDao.create(section, lineId);
         }
     }
