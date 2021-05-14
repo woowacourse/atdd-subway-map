@@ -8,10 +8,7 @@ import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,10 +28,10 @@ public class SubwayService {
 
     public LineResponse createLine(LineRequest lineRequest) {
         Line line = lineRequest.createLine();
-        Section section = lineRequest.createSection();
+        SectionRequest sectionRequest = lineRequest.createSectionRequest();
         Long lineId = lineDao.insert(line);
         // TODO: 추후SectionService로 이동
-        insertSection(lineId, section);
+        createSection(lineId, sectionRequest);
         return new LineResponse(lineId, line);
     }
 
@@ -88,8 +85,11 @@ public class SubwayService {
         stationDao.delete(id);
     }
 
-    public Long insertSection(Long lineId, Section section) {
-        return sectionDao.insert(lineId, section);
+    public SectionResponse createSection(Long lineId, SectionRequest sectionRequest) {
+        Section section = sectionRequest.createSection();
+        updateSection(lineId, sectionRequest);
+        Long sectionId = sectionDao.insert(lineId, section);
+        return new SectionResponse(sectionId, lineId, section);
     }
 
     public void deleteAdjacentSectionByStationId(Long lineId, Long stationId) {
@@ -116,7 +116,8 @@ public class SubwayService {
         }
     }
 
-    public void updateSection(Long lineId, Section section) {
+    private void updateSection(Long lineId, SectionRequest sectionRequest) {
+        Section section = sectionRequest.createSection();
         Sections sections = new Sections(sectionDao.selectAll(lineId));
         Line line = lineDao.select(lineId);
         sections.validateIfPossibleToInsert(section, line.getUpwardTerminalId(), line.getDownwardTerminalId());

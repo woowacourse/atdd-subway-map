@@ -30,8 +30,8 @@ public class LineRequest {
         return new Line(this.name, this.color, this.upStationId, this.downStationId);
     }
 
-    public Section createSection() {
-        return new Section(this.upStationId, this.downStationId, this.distance);
+    public SectionRequest createSectionRequest() {
+        return new SectionRequest(this.upStationId, this.downStationId, this.distance);
     }
 
     public String getName() {
