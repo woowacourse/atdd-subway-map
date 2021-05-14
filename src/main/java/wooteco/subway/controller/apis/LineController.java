@@ -69,11 +69,9 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
-        System.out.println(line + "@@@@@@@@@@@@@");
         List<StationResponse> stations = line.getStations().stream()
             .map(StationResponse::new)
             .collect(Collectors.toList());
-        System.out.println(stations + "############");
         LineResponse lineResponse = new LineResponse(line, stations);
         return ResponseEntity.ok(lineResponse);
     }

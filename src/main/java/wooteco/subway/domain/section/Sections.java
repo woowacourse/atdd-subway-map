@@ -1,9 +1,10 @@
 package wooteco.subway.domain.section;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import wooteco.subway.domain.station.Station;
@@ -26,7 +27,7 @@ public class Sections {
 
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
-        Deque<Long> stationIds = getSortedId();
+        List<Long> stationIds = getSortedId();
         for (long stationId : stationIds) {
             Station station = sections.stream()
                 .map(section -> section.getStationById(stationId))
@@ -36,23 +37,33 @@ public class Sections {
         return stations;
     }
 
-    private Deque<Long> getSortedId() {
+    private List<Long> getSortedId() {
+        if (sections.size() == 1) {
+            return Arrays.asList(
+                sections.get(0).getUpStationId(),
+                sections.get(0).getDownStationId()
+            );
+        }
+
         Map<Long, Long> upLineInfo = getUpLineInfo();
         Map<Long, Long> downLineInfo = getDownLineInfo();
-        Deque<Long> stationIds = new ArrayDeque<>();
+        List<Long> stationIds = new LinkedList<>();
 
-        Long initValue = upLineInfo.entrySet().iterator().next().getKey();
-        stationIds.add(initValue);
+        Long firstValue = upLineInfo.keySet().stream()
+            .filter(info -> !downLineInfo.containsValue(info))
+            .findAny().get();
+        Long lastValue = downLineInfo.keySet().stream()
+            .filter(info -> !upLineInfo.containsValue(info))
+            .findAny().get();
 
-        while (stationIds.size() < getSections().size() + 1) {
-            if (upLineInfo.get(stationIds.getLast()) != null) {
-                stationIds.addLast(upLineInfo.get(stationIds.getLast()));
-            }
-            if (downLineInfo.get(stationIds.getFirst()) != null) {
-                stationIds.addFirst(downLineInfo.get(stationIds.getFirst()));
-            }
+        stationIds.add(firstValue);
+        while (!stationIds.contains(lastValue)) {
+            stationIds.add(
+                upLineInfo.get(stationIds.get(stationIds.size() - 1)
+                )
+            );
         }
-        return new ArrayDeque<>(stationIds);
+        return new ArrayList<>(stationIds);
     }
 
     private Map<Long, Long> getUpLineInfo() {
@@ -134,7 +145,7 @@ public class Sections {
     }
 
     private void checkDistance(Section section, Section savedSection) {
-        if (section.getDistance() <= savedSection.getDistance()) {
+        if (section.getDistance() >= savedSection.getDistance()) {
             throw new NotAddableSectionException();
         }
         this.sections.remove(savedSection);
