@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.DataNotFoundException;
 
-@Transactional()
+@Transactional
 @Service
 public class StationService {
 
@@ -31,8 +31,8 @@ public class StationService {
 
     @Transactional(readOnly = true)
     public Station findById(final Long id) {
-        return stationDao.findById(id).
-            orElseThrow(() -> new DataNotFoundException("해당 Id의 지하철역이 없습니다."));
+        return stationDao.findById(id)
+            .orElseThrow(() -> new DataNotFoundException("해당 Id의 지하철역이 없습니다."));
     }
 
     public void deleteStation(final Long id) {
