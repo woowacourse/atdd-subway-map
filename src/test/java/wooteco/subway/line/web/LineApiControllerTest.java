@@ -216,6 +216,29 @@ class LineApiControllerTest {
     }
 
     @Test
+    @DisplayName("노선 삭제 - 성공, 해당 노선의 구간 제거 확인")
+    void deleteLine_successDeleteSection() throws Exception {
+        // given
+        Long upStationId = stationDao.save(Station.from("잠실역")).getId();
+        Long downStationId = stationDao.save(Station.from("잠실새내역")).getId();
+
+        final LineRequest lineRequest =
+                new LineRequest("2호선", "bg-green-600", upStationId, downStationId, 10);
+
+        ResultActions createdLine = 노선_생성(lineRequest);
+        LineResponse lineResponse =
+                objectMapper.readValue(createdLine.andReturn().getResponse().getContentAsString(), LineResponse.class);
+        mockMvc.perform(delete("/lines/" + lineResponse.getId()));
+        // when
+        ResultActions result = mockMvc.perform(get("/lines/" + lineResponse.getId()));
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("sections").doesNotExist());
+    }
+
+    @Test
     @DisplayName("노선 삭제 - 실패(해당 노선이 없을 경우)")
     void deleteLine_fail_notExistLine() throws Exception {
         // given & when
@@ -252,8 +275,7 @@ class LineApiControllerTest {
         // then
         result.andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(header().exists("Location"))
-                .andExpect(jsonPath("id").value(lineResponse.getId()));
+                .andExpect(content().string("1"));
     }
 
     private ResultActions 노선_생성(LineRequest lineRequest) throws Exception {

@@ -66,6 +66,7 @@ public class LineService {
         if (lineDao.findById(lineId).isEmpty()) {
             throw new LineNotFoundException();
         }
+        sectionDao.deleteByLineId(lineId);
         lineDao.delete(lineId);
     }
 

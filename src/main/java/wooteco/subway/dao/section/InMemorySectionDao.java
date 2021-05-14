@@ -72,6 +72,12 @@ public class InMemorySectionDao implements SectionDao {
         }
     }
 
+
+    @Override
+    public void deleteByLineId(Long lineId) {
+        sections.remove(lineId);
+    }
+
     @Override
     public void insertSection(Section affectedSection, Long lineId) {
         sections.get(lineId).add(affectedSection);
