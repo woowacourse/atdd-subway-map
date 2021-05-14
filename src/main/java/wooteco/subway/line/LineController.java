@@ -2,8 +2,6 @@ package wooteco.subway.line;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.section.SectionRequest;
-import wooteco.subway.section.SectionService;
 import wooteco.subway.station.StationResponse;
 import wooteco.subway.station.StationService;
 
@@ -65,7 +63,7 @@ public class LineController {
         return ResponseEntity.ok(lineResponse);
     }
 
-    private List<StationResponse> stationResponses(final Long lineId){
+    private List<StationResponse> stationResponses(final Long lineId) {
         final List<Long> stationIds = lineService.allStationIdInLine(lineId);
         return stationIds.stream()
                 .map(stationId -> new StationResponse(stationService.findById(stationId)))

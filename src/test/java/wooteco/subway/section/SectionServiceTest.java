@@ -112,7 +112,7 @@ class SectionServiceTest {
 
     @DisplayName("노선의 중간 역을 삭제한다.")
     @Test
-    public void deleteStationInLine(){
+    public void deleteStationInLine() {
         sectionService.addSection(testLine.getId(), cStation.getId(), dStation.getId(), insertDistance.value());
         sectionService.deleteSection(testLine.getId(), cStation.getId());
 
@@ -124,7 +124,7 @@ class SectionServiceTest {
 
     @DisplayName("노선의 상행 종점 역을 삭제한다.")
     @Test
-    public void deleteFrontStationInLine(){
+    public void deleteFrontStationInLine() {
         sectionService.addSection(testLine.getId(), cStation.getId(), dStation.getId(), insertDistance.value());
         sectionService.deleteSection(testLine.getId(), bStation.getId());
 
@@ -136,7 +136,7 @@ class SectionServiceTest {
 
     @DisplayName("노선의 하행 종점 역을 삭제한다.")
     @Test
-    public void deleteBackStationInLine(){
+    public void deleteBackStationInLine() {
         sectionService.addSection(testLine.getId(), cStation.getId(), dStation.getId(), insertDistance.value());
         sectionService.deleteSection(testLine.getId(), dStation.getId());
 
@@ -149,7 +149,7 @@ class SectionServiceTest {
     @DisplayName("노선이 종점 뿐 일 경우 역을 삭제할 수 없다.")
     @Test
     public void deleteFinalStation() {
-        assertThatThrownBy(()->{
+        assertThatThrownBy(() -> {
             sectionService.deleteSection(testLine.getId(), dStation.getId());
         }).isInstanceOf(LineException.class);
     }
@@ -157,7 +157,7 @@ class SectionServiceTest {
     @DisplayName("노선에 존재하지 않는 역을 삭제할 수 없다.")
     @Test
     public void deleteNonExistentStation() {
-        assertThatThrownBy(()->{
+        assertThatThrownBy(() -> {
             sectionService.deleteSection(testLine.getId(), aStation.getId());
         }).isInstanceOf(LineException.class);
     }
@@ -165,7 +165,7 @@ class SectionServiceTest {
     @DisplayName("노선에 둘 다 존재하지 않는 역으로 구간을 추가할 수 없다.")
     @Test
     public void addSectionWithNonExistentStations() {
-        assertThatThrownBy(()->{
+        assertThatThrownBy(() -> {
             sectionService.addSection(testLine.getId(), aStation.getId(), eStation.getId(), initialDistance.value());
         }).isInstanceOf(LineException.class);
     }
@@ -173,7 +173,7 @@ class SectionServiceTest {
     @DisplayName("이미 존재하는 구간으로 구간을 추가할 수 없다.")
     @Test
     public void addSectionWithExistentSection() {
-        assertThatThrownBy(()->{
+        assertThatThrownBy(() -> {
             sectionService.addSection(testLine.getId(), aStation.getId(), bStation.getId(), initialDistance.value());
             validateStationOrder(aStation, bStation, dStation);
             sectionService.addSection(testLine.getId(), aStation.getId(), bStation.getId(), initialDistance.value());
@@ -183,7 +183,7 @@ class SectionServiceTest {
     @DisplayName("상행 -> 중간역 삽입 시 상행 - 하행의 거리보다 같거나 큰 거리로 추가할 수 없다.")
     @Test
     public void addFrontSectionWithInvalidDistance() {
-        assertThatThrownBy(()->{
+        assertThatThrownBy(() -> {
             final Distance biggerThanInitial = initialDistance.add(1);
             sectionService.addSection(testLine.getId(), bStation.getId(), cStation.getId(), biggerThanInitial.value());
         }).isInstanceOf(LineException.class);
@@ -192,7 +192,7 @@ class SectionServiceTest {
     @DisplayName("중간역 -> 하행 삽입 시 상행 - 하행의 거리보다 같거나 큰 거리로 추가할 수 없다.")
     @Test
     public void addBackSectionWithInvalidDistance() {
-        assertThatThrownBy(()->{
+        assertThatThrownBy(() -> {
             final Distance biggerThanInitial = initialDistance.add(1);
             sectionService.addSection(testLine.getId(), cStation.getId(), dStation.getId(), biggerThanInitial.value());
         }).isInstanceOf(LineException.class);
@@ -207,15 +207,15 @@ class SectionServiceTest {
         }
     }
 
-    private void validateStationDistance(final Station upStation, final Station downStation, final Distance expectedDistance){
+    private void validateStationDistance(final Station upStation, final Station downStation, final Distance expectedDistance) {
         final Distance actualDistance = sectionService.distance(testLine.getId(), upStation.getId(), downStation.getId());
         assertThat(expectedDistance).isEqualTo(actualDistance);
     }
 
-    private void validateFinalStation(final Station expectedUpStation, final Station expectedDownStation){
+    private void validateFinalStation(final Station expectedUpStation, final Station expectedDownStation) {
         final List<Long> stations = lineService.allStationIdInLine(testLine.getId());
         final Long actualUpStationId = stations.get(0);
-        final Long actualDownStationId = stations.get(stations.size()-1);
+        final Long actualDownStationId = stations.get(stations.size() - 1);
 
         assertThat(actualUpStationId).isEqualTo(expectedUpStation.getId());
         assertThat(actualDownStationId).isEqualTo(expectedDownStation.getId());

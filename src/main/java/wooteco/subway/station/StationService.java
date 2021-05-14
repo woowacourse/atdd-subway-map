@@ -28,7 +28,7 @@ public class StationService {
     public void delete(final Long id) {
         final Optional optionalStation = stationDao.findById(id);
 
-        if(optionalStation.isPresent()){
+        if (optionalStation.isPresent()) {
             checkIsNotInLine(id);
             stationDao.delete(id);
             return;
@@ -52,8 +52,8 @@ public class StationService {
         }
     }
 
-    private void checkIsNotInLine(final Long id){
-        if(sectionDao.isExistingStation(id)){
+    private void checkIsNotInLine(final Long id) {
+        if (sectionDao.isExistingStation(id)) {
             throw new StationException("구간에 등록된 역은 삭제할 수 없습니다.");
         }
     }

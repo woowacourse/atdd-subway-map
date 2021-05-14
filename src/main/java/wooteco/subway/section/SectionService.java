@@ -19,7 +19,7 @@ public class SectionService {
         this.lineDao = lineDao;
     }
 
-    public void addSection(final Long lineId, final Section section){
+    public void addSection(final Long lineId, final Section section) {
         addSection(lineId, section.front(), section.back(), section.distance());
     }
 
@@ -64,7 +64,7 @@ public class SectionService {
         updateSectionFromBack(lineId, front, back, distance);
     }
 
-    private void updateSectionFromFront(final Long lineId, final Long front, final Long back, final int distance){
+    private void updateSectionFromFront(final Long lineId, final Long front, final Long back, final int distance) {
         final Section sectionToUpdate = sectionDao.findSectionByFrontStation(lineId, front);
         final Distance subDistance = new Distance(sectionToUpdate.distance()).sub(distance);
 
@@ -73,7 +73,7 @@ public class SectionService {
         sectionDao.save(lineId, front, back, distance);
     }
 
-    private void updateSectionFromBack(final Long lineId, final Long front, final Long back, final int distance){
+    private void updateSectionFromBack(final Long lineId, final Long front, final Long back, final int distance) {
         final Section sectionToUpdate = sectionDao.findSectionByBackStation(lineId, back);
         final Distance subDistance = new Distance(sectionToUpdate.distance()).sub(distance);
 
