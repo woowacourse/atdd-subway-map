@@ -100,4 +100,22 @@ class StationDaoTest {
         assertThat(station.getId()).isEqualTo(createdStation.getId());
         assertThat(station.getName()).isEqualTo(createdStation.getName());
     }
+
+    @DisplayName("여러 id의 지하철역들을 조회한다.")
+    @Test
+    void findByIds() {
+        final List<Station> actual = Arrays.asList(
+            new Station("강남역"),
+            new Station("역삼역"),
+            new Station("잠실역"),
+            new Station("교대역")
+        );
+        actual.forEach(station -> stationDao.save(station));
+        final List<Long> ids = Arrays.asList(1L, 2L, 3L, 4L);
+        List<Station> stations = stationDao.findByIds(ids);
+        assertThat(actual)
+            .usingRecursiveComparison()
+            .ignoringFields("id")
+            .isEqualTo(stations);
+    }
 }

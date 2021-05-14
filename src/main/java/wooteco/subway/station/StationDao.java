@@ -3,6 +3,7 @@ package wooteco.subway.station;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
@@ -72,12 +73,8 @@ public class StationDao {
     }
 
     public List<Station> findByIds(final List<Long> stationIds) {
-        final List<Station> stations = new ArrayList<>();
-        for (final Long id : stationIds) {
-            final Station station = findById(id)
-                .orElseThrow(() -> new DataNotFoundException("해당 Id의 노선이 없습니다."));
-            stations.add(station);
-        }
-        return stations;
+        final String parameters = String.join(", ", Collections.nCopies(stationIds.size(), "?"));
+        final String sql = String.format("SELECT * FROM STATION s WHERE s.id IN (%s)", parameters);
+        return jdbcTemplate.query(sql, stationRowMapper, stationIds.toArray());
     }
 }
