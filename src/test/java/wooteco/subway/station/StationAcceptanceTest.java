@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.station.StationRequest;
+import wooteco.subway.station.StationResponse;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +27,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest 잠실역 = new StationRequest("잠실역");
 
         // when
-        ExtractableResponse<Response> result = 역_생성(잠실역);
+        ExtractableResponse<Response> result = postStation(잠실역);
 
         // then
         assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -38,10 +40,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void create_실패_중복이름() {
         // given
         StationRequest 강남역 = new StationRequest("강남역");
-        역_생성(강남역);
+        postStation(강남역);
 
         // when
-        ExtractableResponse<Response> result = 역_생성(강남역);
+        ExtractableResponse<Response> result = postStation(강남역);
 
         // then
         assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -52,10 +54,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void read_성공() {
         // given
         StationRequest 병점역 = new StationRequest("병점역");
-        ExtractableResponse<Response> 병점역_생성 = 역_생성(병점역);
+        ExtractableResponse<Response> 병점역_생성 = postStation(병점역);
 
         StationRequest 역삼역 = new StationRequest("역삼역");
-        ExtractableResponse<Response> 역삼역_생성 = 역_생성(역삼역);
+        ExtractableResponse<Response> 역삼역_생성 = postStation(역삼역);
 
         List<Long> expectedLineIds = Arrays.asList(병점역_생성, 역삼역_생성).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
@@ -78,11 +80,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void delete_성공() {
         // given
         StationRequest 강남역 = new StationRequest("강남역");
-        ExtractableResponse<Response> 강남역_생성 = 역_생성(강남역);
+        ExtractableResponse<Response> 강남역_생성 = postStation(강남역);
 
         // when
         String uri = 강남역_생성.header("Location");
-        ExtractableResponse<Response> result = 역_삭제(uri);
+        ExtractableResponse<Response> result = delete(uri);
 
         // then
         assertThat(result.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -90,13 +92,5 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> 역_불러오기() {
         return get("/stations");
-    }
-
-    private ExtractableResponse<Response> 역_생성(StationRequest 강남역) {
-        return postStation(강남역);
-    }
-
-    private ExtractableResponse<Response> 역_삭제(String uri) {
-        return delete(uri);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.web.LineRequest;
 import wooteco.subway.section.web.SectionRequest;
 import wooteco.subway.station.StationRequest;

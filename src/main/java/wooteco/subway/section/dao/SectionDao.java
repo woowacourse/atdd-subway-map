@@ -10,7 +10,7 @@ public interface SectionDao {
 
     Sections findAllByLineId(Long lineId);
 
-    Section saveModified(Section section, Section affectedSection,
+    void saveModified( Section affectedSection,
                          Long lineId);
 
     List<Section> findAdjacentByStationId(Long lineId, Long stationId);

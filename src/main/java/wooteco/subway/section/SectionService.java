@@ -29,7 +29,8 @@ public class SectionService {
         Sections sections = sectionDao.findAllByLineId(lineId);
         Section modifiedSection = sections.addAndThenGetModifiedAdjacent(newSection);
 
-        return sectionDao.saveModified(newSection, modifiedSection, lineId);
+        sectionDao.saveModified(modifiedSection, lineId);
+        return sectionDao.create(newSection, lineId);
     }
 
     @Transactional

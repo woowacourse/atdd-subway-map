@@ -19,7 +19,9 @@ public class LineResponse {
     private List<StationResponse> stations;
 
     public static LineResponse create(Line line) {
-        List<StationResponse> stations = line.stations().stream()
+        List<StationResponse> stations = line
+                .stations()
+                .stream()
                 .map(StationResponse::create)
                 .collect(Collectors.toList());
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);

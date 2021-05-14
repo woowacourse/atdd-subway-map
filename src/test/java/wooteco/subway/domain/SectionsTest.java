@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.InternalLogicConflictException;
@@ -14,18 +15,35 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+
 @DisplayName("[도메인] Sections")
 class SectionsTest {
+    private Station 강남역;
+    private Station 수서역;
+    private Station 잠실역;
+    private Station 동탄역;
+    private Station 양재역;
+    private Section 강남_수서;
+    private Section 양재_수서;
+    private Section 수서_양재;
+    private Section 수서_강남;
+    private Section 수서_잠실;
+    private Section 잠실_동탄;
 
-    private static final Station 강남역 = Station.create(1L, "강남역");
-    private static final Station 수서역 = Station.create(2L, "수서역");
-    private static final Station 잠실역 = Station.create(3L, "잠실역");
-    private static final Station 동탄역 = Station.create(4L, "동탄역");
-    private static final Station 양재역 = Station.create(5L, "양재역");
-    private static final Section 강남_수서 = Section.create(강남역, 수서역, 10);
-    private static final Section 수서_강남 = Section.create(수서역, 강남역, 4);
-    private static final Section 수서_잠실 = Section.create(수서역, 잠실역, 10);
-    private static final Section 잠실_동탄 = Section.create(잠실역, 동탄역, 10);
+    @BeforeEach
+    void setUp() {
+        강남역 = Station.create(1L, "강남역");
+        수서역 = Station.create(2L, "수서역");
+        잠실역 = Station.create(3L, "잠실역");
+        동탄역 = Station.create(4L, "동탄역");
+        양재역 = Station.create(5L, "양재역");
+        강남_수서 = Section.create(강남역, 수서역, 10);
+        양재_수서 = Section.create(양재역, 수서역, 5);
+        수서_양재 = Section.create(수서역, 양재역, 5);
+        수서_강남 = Section.create(수서역, 강남역, 4);
+        수서_잠실 = Section.create(수서역, 잠실역, 10);
+        잠실_동탄 = Section.create(잠실역, 동탄역, 10);
+    }
 
     @DisplayName("구간 순서대로 역 보여주기")
     @Test
@@ -39,15 +57,48 @@ class SectionsTest {
         assertThat(stations).containsExactly(강남역, 수서역, 잠실역, 동탄역);
     }
 
-    @DisplayName("구간추가 - 성공")
+    @DisplayName("구간추가 - 성공(기존의 구간이 변경되는 경우)")
     @Test
-    void addAndThenGetModifiedAdjacen() {
+    void addAndThenGetModifiedAdjacent() {
+        Sections sections = Sections.create(강남_수서);
+
+        Section modifiedSection = sections.addAndThenGetModifiedAdjacent(양재_수서);
+
+        assertThat(sections.sections()).hasSize(2);
+        assertThat(modifiedSection).isEqualTo(Section.create(강남역, 양재역, 5));
+    }
+
+    @DisplayName("구간추가 - 성공(기존의 구간이 변경되지 않는 경우)")
+    @Test
+    void addAndThenGetModifiedAdjacent_1() {
         Sections sections = Sections.create(강남_수서);
 
         Section modifiedSection = sections.addAndThenGetModifiedAdjacent(수서_잠실);
 
         assertThat(sections.sections()).hasSize(2);
         assertThat(modifiedSection).isEqualTo(강남_수서);
+    }
+
+    @DisplayName("구간추가 - 성공(가운데 추가 경우, 베이스가 꼬리)")
+    @Test
+    void addAndThenGetModifiedAdjacent_꼬리베이스() {
+        Sections sections = Sections.create(수서_잠실);
+        sections.addAndThenGetModifiedAdjacent(강남_수서);
+        Section modifiedSection = sections.addAndThenGetModifiedAdjacent(양재_수서);
+
+        assertThat(sections.sections()).hasSize(3);
+        assertThat(modifiedSection).isEqualTo(Section.create(강남역, 양재역, 5));
+    }
+
+    @DisplayName("구간추가 - 성공(가운데 추가 경우, 베이스가 머리)")
+    @Test
+    void addAndThenGetModifiedAdjacent_머리베이스() {
+        Sections sections = Sections.create(수서_잠실);
+        sections.addAndThenGetModifiedAdjacent(강남_수서);
+        Section modifiedSection = sections.addAndThenGetModifiedAdjacent(수서_양재);
+
+        assertThat(sections.sections()).hasSize(3);
+        assertThat(modifiedSection).isEqualTo(Section.create(양재역, 잠실역, 5));
     }
 
     @DisplayName("구간추가 - 실패(의미상 같은 구간 추가)")

@@ -2,6 +2,7 @@ package wooteco.subway.section.web;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,12 +19,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 @DisplayName("[API] 구간관련 테스트")
 class SectionApiController222Test extends AcceptanceTest {
-    private static final StationRequest 잠실역 = new StationRequest("잠실역");
-    private static final StationRequest 잠실새내역 = new StationRequest("잠실새내역");
-    private static final StationRequest 강남역 = new StationRequest("강남역");
-    private static final StationRequest 동탄역 = new StationRequest("동탄역");
-    private static final StationRequest 수서역 = new StationRequest("수서역");
-    private static final int ORIGINAL_DISTANCE = 10;
+    private StationRequest 잠실역;
+    private StationRequest 잠실새내역;
+    private StationRequest 강남역;
+    private StationRequest 동탄역;
+    private StationRequest 수서역;
+    private int ORIGINAL_DISTANCE;
+
+    @BeforeEach
+    void setUpSectionTest() {
+        잠실역 = new StationRequest("잠실역");
+        잠실새내역 = new StationRequest("잠실새내역");
+        강남역 = new StationRequest("강남역");
+        동탄역 = new StationRequest("동탄역");
+        수서역 = new StationRequest("수서역");
+        ORIGINAL_DISTANCE = 10;
+    }
 
     @Test
     @DisplayName("구간 등록 - 성공(상행종점 등록)")
@@ -83,7 +94,7 @@ class SectionApiController222Test extends AcceptanceTest {
 
     @Test
     @DisplayName("구간 등록 - 성공(상행기준 중간구간 구간 등록)")
-    void create_성공_중간역상행기준() throws Exception {
+    void create_성공_중간역상행기준() {
         // given
         Long 잠실역_id = postStationAndGetId(잠실역);
         Long 잠실새내_id = postStationAndGetId(잠실새내역);

@@ -72,10 +72,10 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public Section saveModified(Section section, Section updateSection, Long lineId) {
-        jdbcTemplate.update(UPDATE, updateSection.getUpStation().getId(), updateSection.getDownStation().getId(), updateSection.getDistance(), lineId);
+    public void saveModified( Section updateSection, Long lineId) {
+        jdbcTemplate.update("UPDATE section SET up_station_id = ?, down_station_id = ?, distance = ? " +
+                "WHERE line_id = ?", updateSection.getUpStation().getId(), updateSection.getDownStation().getId(), updateSection.getDistance(), lineId);
 
-        return create(section, lineId);
     }
 
     @Override

@@ -39,8 +39,7 @@ public class InMemorySectionDao implements SectionDao {
 
     //todo: 삭제
     @Override
-    public Section saveModified(Section section, Section affectedSection,
-                                Long lineId) {
+    public void saveModified(Section affectedSection, Long lineId) {
 //        affectedSection.ifPresent(받아온것 -> {
 //            sections.get(lineId)
 //                    .stream()
@@ -52,7 +51,6 @@ public class InMemorySectionDao implements SectionDao {
 //                    });
 //        });
 
-        return create(section, lineId);
     }
 
     //todo: 삭제
