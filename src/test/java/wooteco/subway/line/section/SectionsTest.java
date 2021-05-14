@@ -14,7 +14,7 @@ import wooteco.subway.line.exception.NoneExistentStationException;
 
 public class SectionsTest {
 
-    public static Sections sections;
+    private Sections sections;
 
     @BeforeEach
     void setUp() {
