@@ -26,10 +26,13 @@ public class SectionService {
     }
 
     public void addInitial(Long lineId, Section section) {
+        validateStationId(section.getUpStationId(), section.getDownStationId());
         sectionDao.save(lineId, section);
     }
 
     public Section add(Long lineId, SectionRequest sectionRequest) {
+        validateStationId(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
+
         Section section = new Section(
             sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
@@ -41,6 +44,11 @@ public class SectionService {
         overlappedSection.ifPresent(updateIntermediate(newSection));
 
         return newSection;
+    }
+
+    private void validateStationId(Long upStationId, Long downStationId) {
+        stationService.validateId(upStationId);
+        stationService.validateId(downStationId);
     }
 
     private Consumer<Section> updateIntermediate(Section newSection) {

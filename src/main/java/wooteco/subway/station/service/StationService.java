@@ -43,7 +43,7 @@ public class StationService {
         stationDao.delete(id);
     }
 
-    private void validateId(Long stationId) {
+    public void validateId(Long stationId) {
         stationDao.findById(stationId)
             .orElseThrow(NoLineException::new);
     }
