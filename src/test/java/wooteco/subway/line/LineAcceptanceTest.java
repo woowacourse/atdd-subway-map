@@ -10,7 +10,7 @@ import wooteco.subway.AcceptanceTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static wooteco.subway.fixture.Fixture.*;
-import static wooteco.subway.fixture.LineAcceptanceTestFixture.createLineWithSection;
+import static wooteco.subway.fixture.LineAcceptanceTestFixture.*;
 
 @Sql("classpath:tableInit.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -26,18 +26,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.body().jsonPath().get("id").toString()).isEqualTo(uri.split("/")[2]);
-        assertThat(response.body().jsonPath().getString("name")).isEqualTo(LINE_NAME);
-        assertThat(response.body().jsonPath().getString("color")).isEqualTo(LINE_COLOR);
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo(LINE_NAME1);
+        assertThat(response.body().jsonPath().getString("color")).isEqualTo(LINE_COLOR1);
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
     @Test
     void createLineWithDuplicateName() {
         // given
-        extractResponseWhenPost(PARAMS1, LINE_URI);
+        extractResponseWhenPost(createLineWithSection(STATIONS1), LINE_URI);
 
         // when
-        ExtractableResponse<Response> response = extractResponseWhenPost(PARAMS1, LINE_URI);
+        ExtractableResponse<Response> response = extractResponseWhenPost(createLineWithExistName(STATIONS1), LINE_URI);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -47,10 +47,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateColor() {
         // given
-        extractResponseWhenPost(PARAMS1, LINE_URI);
+        extractResponseWhenPost(createLineWithSection(STATIONS1), LINE_URI);
 
         // when
-        ExtractableResponse<Response> response = extractResponseWhenPost(PARAMS_SAME_COLOR, LINE_URI);
+        ExtractableResponse<Response> response = extractResponseWhenPost(createLineWithExistColor(STATIONS1), LINE_URI);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

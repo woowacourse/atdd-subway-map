@@ -42,45 +42,19 @@ public class SectionService {
     }
 
     @Transactional
-    public void insertSections(Long lineId, SimpleSection simpleSection) {
+    public void insertSections(Long lineId, SimpleSection insertSection) {
         final Optional<Section> optionalSectionConversed =
-                sectionDao.findOneIfIncludeConversed(new Section(lineId, simpleSection));
+                sectionDao.findOneIfIncludeConversed(new Section(lineId, insertSection));
         if (optionalSectionConversed.isPresent()) {
-            sectionDao.insert(new Section(lineId, simpleSection));
+            sectionDao.insert(new Section(lineId, insertSection));
             return;
         }
 
-        final Section section = sectionDao.findOneIfInclude(new Section(lineId, simpleSection))
+        final Section section = sectionDao.findOneIfInclude(new Section(lineId, insertSection))
                 .orElseThrow(NoneOfSectionIncludedInLine::new);
-        validateCanBeInserted(section, simpleSection);
-        final SimpleSection updatedSection = updateOriginalSectionToMakeOneLine(section, simpleSection);
+        final SimpleSection updatedSection = section.makeSectionsToStraight(insertSection);
         sectionDao.update(new Section(lineId, updatedSection)); // 기존 섹션을 업데이트함. 삽입된 구간을 포함하여.
-        sectionDao.insert(new Section(lineId, simpleSection)); // 추가된 섹션을 삽입함.
-    }
-
-    private SimpleSection updateOriginalSectionToMakeOneLine(Section section, SimpleSection insertedSection) {
-        if (section.isEqualUpStationId(insertedSection)) {
-            return new SimpleSection(insertedSection.getDownStationId(),
-                    section.getDownStationId(),
-                    updateDistance(section, insertedSection));
-        }
-
-        // downStation 이 같다면
-        return new SimpleSection(section.getUpStationId(),
-                section.getUpStationId(),
-                updateDistance(section, insertedSection));
-    }
-
-    private int updateDistance(Section section, SimpleSection simpleSection) {
-        final int maxDistance = section.calculateMaxDistance(simpleSection);
-        final int minDistance = section.calculateMinDistance(simpleSection);
-        return maxDistance - minDistance;
-    }
-
-    private void validateCanBeInserted(Section section, SimpleSection simpleSection) {
-        if (!section.isLongerDistanceThan(simpleSection)) {
-            throw new SectionDistanceMismatchException();
-        }
+        sectionDao.insert(new Section(lineId, insertSection)); // 추가된 섹션을 삽입함.
     }
 
     public void deleteAllSectionByLineId(Long lineId) {

@@ -16,7 +16,19 @@ public class LineAcceptanceTestFixture {
     public static Map<String, String> createLineWithSection(List<Station> stations) {
         List<Station> sortedStations = sortStationById(stations);
         insertStations(sortedStations); // 역을 먼저 Station 테이블에 삽입함.
-        return createLineRequest(LINE_COLOR, LINE_NAME, sortedStations.get(0).getId(), sortedStations.get(1).getId(), DEFAULT_DISTANCE);
+        return createLineRequest(LINE_COLOR1, LINE_NAME1, sortedStations.get(0).getId(), sortedStations.get(1).getId(), DEFAULT_DISTANCE);
+    }
+
+    public static Map<String, String> createLineWithExistName(List<Station> stations) {
+        List<Station> sortedStations = sortStationById(stations);
+        insertStations(sortedStations); // 역을 먼저 Station 테이블에 삽입함.
+        return createLineRequest(LINE_COLOR2, LINE_NAME1, sortedStations.get(0).getId(), sortedStations.get(1).getId(), DEFAULT_DISTANCE);
+    }
+
+    public static Map<String, String> createLineWithExistColor(List<Station> stations) {
+        List<Station> sortedStations = sortStationById(stations);
+        insertStations(sortedStations); // 역을 먼저 Station 테이블에 삽입함.
+        return createLineRequest(LINE_COLOR1, LINE_NAME2, sortedStations.get(0).getId(), sortedStations.get(1).getId(), DEFAULT_DISTANCE);
     }
 
     // 역의 아이디로 정렬

@@ -21,8 +21,10 @@ public class Fixture {
     public static final List<Station> STATIONS1 = Arrays.asList(STATION1, STATION2);
     public static final List<Station> STATIONS2 = Arrays.asList(STATION3, STATION4);
     public static final List<Station> STATIONS_SAME = Arrays.asList(STATION1, STATION1);
-    public static final String LINE_NAME = "1호선";
-    public static final String LINE_COLOR = "bg-red-100";
+    public static final String LINE_NAME1 = "1호선";
+    public static final String LINE_NAME2 = "2호선";
+    public static final String LINE_COLOR1 = "bg-red-100";
+    public static final String LINE_COLOR2 = "bg-yellow-100";
     public static final int DEFAULT_DISTANCE = 7;
     public static final Map<String, String> PARAMS1 =
             createLineRequest("bg-red-600", "1호선", 1L, 2L, 7);

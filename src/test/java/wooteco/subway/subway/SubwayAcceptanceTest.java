@@ -27,8 +27,8 @@ public class SubwayAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.body().jsonPath().get("id").toString()).isEqualTo(uri.split("/")[2]);
-        assertThat(response.body().jsonPath().getString("name")).isEqualTo(LINE_NAME);
-        assertThat(response.body().jsonPath().getString("color")).isEqualTo(LINE_COLOR);
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo(LINE_NAME1);
+        assertThat(response.body().jsonPath().getString("color")).isEqualTo(LINE_COLOR1);
     }
 
     @Test
