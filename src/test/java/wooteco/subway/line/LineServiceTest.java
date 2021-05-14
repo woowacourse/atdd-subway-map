@@ -42,15 +42,15 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 정상 생성 테스트")
     void createStation() {
-        Line savedLine = lineService.createLine(lineRequest);
+        Line savedLine = lineService.create(lineRequest);
         assertThat("2호선").isEqualTo(savedLine.getName());
     }
 
     @Test
     @DisplayName("노선 이름 중복 생성 테스트")
     void createDuplicatedStation() {
-        lineService.createLine(lineRequest);
-        assertThatThrownBy(() -> lineService.createLine(lineRequest))
+        lineService.create(lineRequest);
+        assertThatThrownBy(() -> lineService.create(lineRequest))
                 .isInstanceOf(LineExistenceException.class);
     }
 
@@ -67,17 +67,17 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 삭제 테스트")
     public void deleteLine() {
-        Line savedLine = lineService.createLine(lineRequest);
+        Line savedLine = lineService.create(lineRequest);
         assertThat(lineService.findAll()).hasSize(1);
 
-        lineService.deleteLine(savedLine.getId());
+        lineService.delete(savedLine.getId());
         assertThat(lineService.findAll()).hasSize(0);
     }
 
     @Test
     @DisplayName("존재하지 않은 역 삭제 테스트")
     public void deleteNotExistingStation() {
-        assertThatThrownBy(() -> lineService.deleteLine(1L))
+        assertThatThrownBy(() -> lineService.delete(1L))
                 .isInstanceOf(LineNotFoundException.class);
     }
 }

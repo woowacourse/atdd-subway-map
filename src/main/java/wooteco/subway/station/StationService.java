@@ -14,7 +14,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station createStation(StationRequest stationRequest) {
+    public Station create(StationRequest stationRequest) {
         if (isExistingStation(stationRequest.getName())) {
             throw new StationExistenceException();
         }
@@ -25,7 +25,7 @@ public class StationService {
         return stationDao.findAll();
     }
 
-    public void deleteStation(Long id) {
+    public void delete(Long id) {
         if (stationDao.delete(id) == 0) {
             throw new StationNotFoundException();
         }

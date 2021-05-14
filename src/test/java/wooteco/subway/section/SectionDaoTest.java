@@ -53,10 +53,10 @@ class SectionDaoTest {
     @DisplayName("구간 삭제 확인")
     public void delete() {
         sectionDao.save(1L, 1L, 2L, 10);
-        assertThat(sectionDao.findSectionByUpStationId(1L, 1L).isPresent()).isTrue();
+        assertThat(sectionDao.findByUpStationId(1L, 1L).isPresent()).isTrue();
 
         sectionDao.delete(1L);
-        assertThat(sectionDao.findSectionByUpStationId(1L, 1L).isPresent()).isFalse();
+        assertThat(sectionDao.findByUpStationId(1L, 1L).isPresent()).isFalse();
     }
 
     @Test
@@ -76,11 +76,11 @@ class SectionDaoTest {
     public void findSectionByStationId() {
         sectionDao.save(1L, 1L, 2L, 10);
 
-        assertThat(sectionDao.findSectionByUpStationId(1L, 1L).isPresent()).isTrue();
-        assertThat(sectionDao.findSectionByUpStationId(1L, 2L).isPresent()).isFalse();
+        assertThat(sectionDao.findByUpStationId(1L, 1L).isPresent()).isTrue();
+        assertThat(sectionDao.findByUpStationId(1L, 2L).isPresent()).isFalse();
 
-        assertThat(sectionDao.findSectionByDownStationId(1L, 2L).isPresent()).isTrue();
-        assertThat(sectionDao.findSectionByDownStationId(1L, 1L).isPresent()).isFalse();
+        assertThat(sectionDao.findByDownStationId(1L, 2L).isPresent()).isTrue();
+        assertThat(sectionDao.findByDownStationId(1L, 1L).isPresent()).isFalse();
     }
 
     @Test
@@ -109,7 +109,7 @@ class SectionDaoTest {
     public void findSectionsByLineId() {
         sectionDao.save(1L, 1L, 2L, 10);
         sectionDao.save(1L, 2L, 3L, 10);
-        List<Section> sections = sectionDao.findSectionsByLineId(1L);
+        List<Section> sections = sectionDao.findByLineId(1L);
 
         assertThat(sections).containsExactlyInAnyOrderElementsOf(
                 Arrays.asList(

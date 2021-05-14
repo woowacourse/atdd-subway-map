@@ -153,7 +153,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     public void deleteSectionWithContainingEndStationCase() {
         ExtractableResponse<Response> response = deleteSectionResponse(1L);
 
-        assertThat(sectionDao.findSectionByUpStationId(1L, 1L).isPresent()).isFalse();
+        assertThat(sectionDao.findByUpStationId(1L, 1L).isPresent()).isFalse();
         assertThat(sectionDao.numberOfEnrolledSection(1L)).isEqualTo(1);
     }
 
@@ -162,7 +162,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     public void deleteSectionWithMiddleCase() {
         ExtractableResponse<Response> response = deleteSectionResponse(2L);
 
-        Section section = sectionDao.findSectionByUpStationId(1L, 1L).get();
+        Section section = sectionDao.findByUpStationId(1L, 1L).get();
         assertThat(section)
                 .usingRecursiveComparison()
                 .ignoringFields("id")

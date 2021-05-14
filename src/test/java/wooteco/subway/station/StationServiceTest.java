@@ -33,32 +33,32 @@ class StationServiceTest {
     @Test
     @DisplayName("역 정상 생성 테스트")
     void createStation() {
-        Station savedStation = stationService.createStation(stationRequest);
+        Station savedStation = stationService.create(stationRequest);
         assertThat(savedStation.getName()).isEqualTo(stationName);
     }
 
     @Test
     @DisplayName("역 이름 중복 생성 테스트")
     void createDuplicatedStation() {
-        stationService.createStation(stationRequest);
-        assertThatThrownBy(() -> stationService.createStation(stationRequest))
+        stationService.create(stationRequest);
+        assertThatThrownBy(() -> stationService.create(stationRequest))
                 .isInstanceOf(StationExistenceException.class);
     }
 
     @Test
     @DisplayName("역 삭제 테스트")
     public void deleteStation() {
-        Station savedStation = stationService.createStation(stationRequest);
+        Station savedStation = stationService.create(stationRequest);
         assertThat(stationService.findAll().size()).isEqualTo(1);
 
-        stationService.deleteStation(savedStation.getId());
+        stationService.delete(savedStation.getId());
         assertThat(stationService.findAll().size()).isEqualTo(0);
     }
 
     @Test
     @DisplayName("존재하지 않은 역 삭제 테스트")
     public void deleteNotExistingStation() {
-        assertThatThrownBy(() -> stationService.deleteStation(1L))
+        assertThatThrownBy(() -> stationService.delete(1L))
                 .isInstanceOf(StationNotFoundException.class);
     }
 }

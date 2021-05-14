@@ -21,7 +21,7 @@ public class LineService {
         this.sectionService = sectionService;
     }
 
-    public Line createLine(LineRequest lineRequest) {
+    public Line create(LineRequest lineRequest) {
         if (isExistingLine(lineRequest.getName())) {
             throw new LineExistenceException();
         }
@@ -40,13 +40,13 @@ public class LineService {
                 .orElseThrow(LineNotFoundException::new);
     }
 
-    public void modifyLine(Long id, LineRequest lineRequest) {
+    public void modify(Long id, LineRequest lineRequest) {
         if (lineDao.update(id, lineRequest.getName(), lineRequest.getColor()) == 0) {
             throw new LineNotFoundException();
         }
     }
 
-    public void deleteLine(Long id) {
+    public void delete(Long id) {
         if (lineDao.delete(id) == 0) {
             throw new LineNotFoundException();
         }

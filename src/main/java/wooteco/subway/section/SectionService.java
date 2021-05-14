@@ -6,7 +6,7 @@ import wooteco.subway.station.exception.StationNotFoundException;
 
 @Service
 public class SectionService {
-    private SectionDao sectionDao;
+    private final SectionDao sectionDao;
 
     public SectionService(SectionDao sectionDao) {
         this.sectionDao = sectionDao;
@@ -47,9 +47,9 @@ public class SectionService {
     }
 
     private void deleteAndConnectSection(Long lineId, Long stationId) {
-        Section frontSection = sectionDao.findSectionByDownStationId(lineId, stationId)
+        Section frontSection = sectionDao.findByDownStationId(lineId, stationId)
                 .orElseThrow(SectionNotFoundException::new);
-        Section backSection = sectionDao.findSectionByUpStationId(lineId, stationId)
+        Section backSection = sectionDao.findByUpStationId(lineId, stationId)
                 .orElseThrow(SectionNotFoundException::new);
 
         sectionDao.updateDistanceAndDownStation(
@@ -102,10 +102,10 @@ public class SectionService {
     private Section findSectionWithExistingStation(SectionDto sectionDto) {
         SectionStandard sectionStandard = calculateSectionStandard(sectionDto);
         if (sectionStandard == SectionStandard.FROM_UP_STATION) {
-            return sectionDao.findSectionByUpStationId(sectionDto.getLineId(), sectionDto.getUpStationId())
+            return sectionDao.findByUpStationId(sectionDto.getLineId(), sectionDto.getUpStationId())
                     .orElseThrow(SectionNotFoundException::new);
         }
-        return sectionDao.findSectionByDownStationId(sectionDto.getLineId(), sectionDto.getDownStationId())
+        return sectionDao.findByDownStationId(sectionDto.getLineId(), sectionDto.getDownStationId())
                 .orElseThrow(SectionNotFoundException::new);
     }
 

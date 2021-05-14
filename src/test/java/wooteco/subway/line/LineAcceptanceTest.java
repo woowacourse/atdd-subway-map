@@ -51,7 +51,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
 
-        assertThat(sectionDao.findSectionByUpStationId(1L, 1L).isPresent()).isTrue();
+        assertThat(sectionDao.findByUpStationId(1L, 1L).isPresent()).isTrue();
     }
 
     @Test

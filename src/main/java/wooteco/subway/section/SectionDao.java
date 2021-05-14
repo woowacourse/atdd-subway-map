@@ -51,7 +51,7 @@ public class SectionDao {
         return jdbcTemplate.update(sql, lineId, stationId, stationId);
     }
 
-    public List<Section> findSectionsByLineId(Long lineId) {
+    public List<Section> findByLineId(Long lineId) {
         String sql = "select ID, LINE_ID, UP_STATION_ID, DOWN_STATION_ID, DISTANCE from SECTION where LINE_ID = ?";
         return jdbcTemplate.query(sql, sectionRowMapper(), lineId);
     }
@@ -61,7 +61,7 @@ public class SectionDao {
         return jdbcTemplate.queryForObject(sql, Integer.class, lineId, stationId, stationId) != 0;
     }
 
-    public Optional<Section> findSectionByDownStationId(Long lineId, Long downStationId) {
+    public Optional<Section> findByDownStationId(Long lineId, Long downStationId) {
         String sql = "select * from SECTION where LINE_ID = ? and DOWN_STATION_ID = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper(), lineId, downStationId));
@@ -70,7 +70,7 @@ public class SectionDao {
         }
     }
 
-    public Optional<Section> findSectionByUpStationId(Long lineId, Long upStationId) {
+    public Optional<Section> findByUpStationId(Long lineId, Long upStationId) {
         String sql = "select * from SECTION where LINE_ID = ? and UP_STATION_ID = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper(), lineId, upStationId));
