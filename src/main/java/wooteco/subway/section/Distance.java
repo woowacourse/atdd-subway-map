@@ -9,8 +9,8 @@ public class Distance {
     private final int value;
 
     public Distance(final int value) {
+        validatePositive(value);
         this.value = value;
-        validatePositive(this.value);
     }
 
     private void validatePositive(final int value) {
