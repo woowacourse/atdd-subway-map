@@ -28,6 +28,15 @@ public class SimpleSection {
         return distance;
     }
 
+    public boolean isSameBetweenUpAndDownStation() {
+        return upStationId.equals(downStationId);
+    }
+
+
+    public boolean isDistanceMoreThanZero() {
+        return distance > 0;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

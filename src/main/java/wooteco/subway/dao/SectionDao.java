@@ -51,7 +51,7 @@ public class SectionDao {
         final int cnt = jdbcTemplate.queryForObject(
                 query,
                 Integer.class,
-                section.getId(),
+                section.getLineId(),
                 section.getUpStationId(),
                 section.getDownStationId()
         );
@@ -71,9 +71,9 @@ public class SectionDao {
 
     public void update(Section section) {
         String query = "UPDATE section SET up_station_id = ?, down_station_id = ?, distance = ? " +
-                "WHERE line_id = ?";
+                "WHERE line_id = ? AND id = ?";
         jdbcTemplate.update(query, section.getUpStationId(), section.getDownStationId(),
-                section.getDistance(), section.getLineId());
+                section.getDistance(), section.getLineId(), section.getId());
     }
 
     public Optional<Section> findOneIfIncludeConversed(Section section) {

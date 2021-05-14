@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.controller.request.LineAndSectionCreateRequest;
 import wooteco.subway.controller.request.SectionInsertRequest;
 import wooteco.subway.controller.response.StationResponse;
@@ -26,7 +25,6 @@ public class SubwayFacade {
         this.stationService = stationService;
     }
 
-    @Transactional
     public LineDto createLine(LineAndSectionCreateRequest lineAndSectionCreateRequest) {
         lineService.validate(lineAndSectionCreateRequest);
         final Line line = lineService.create(lineAndSectionCreateRequest);
@@ -43,7 +41,7 @@ public class SubwayFacade {
 
     public void insertSectionInLine(Long id, SectionInsertRequest sectionInsertRequest) {
         lineService.checkIfExistsById(id);
-        sectionService.validateEndStationsAreIncluded(id, sectionInsertRequest.toSimpleSection());
+        sectionService.validateCanBeInserted(id, sectionInsertRequest.toSimpleSection());
         sectionService.insertSections(id, sectionInsertRequest.toSimpleSection());
     }
 

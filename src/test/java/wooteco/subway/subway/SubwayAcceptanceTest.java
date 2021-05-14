@@ -149,6 +149,20 @@ public class SubwayAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("상행과 하행역이 모두 동일하므로 구간 추가가 불가능하다.")
+    void addSectionWhenSectionsAreSame() {
+        // given
+        ExtractableResponse<Response> createResponse = extractResponseWhenPost(createLineWithSection(STATIONS1), "/lines"); // 노선 등록
+        String uri = createResponse.header("Location") + "/sections";
+
+        // when
+        final ExtractableResponse<Response> response = extractResponseWhenPost(createAddSectionWithSameSectionsRequest(), uri);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
     @DisplayName("구간 추가 - 상행과 하행이 모두 노선에 포함되어있지 않은 역이므로 구간 추가가 불가능하다.")
     void addSectionWhenEndSectionsAreNotIncluded() {
         // given

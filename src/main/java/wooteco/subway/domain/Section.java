@@ -2,9 +2,6 @@ package wooteco.subway.domain;
 
 import wooteco.subway.exception.section.SectionDistanceMismatchException;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class Section {
     private Long id;
     private Long lineId;
@@ -79,24 +76,28 @@ public class Section {
         return distance.calculateMin(new Distance(simpleSection.getDistance()));
     }
 
-    public SimpleSection makeSectionsToStraight(SimpleSection insertSection) {
-        validateCanBeInserted(insertSection);
+    public Section makeSectionsToStraight(Long lineId, SimpleSection insertSection) {
+        validateCanBeInsertedByDistance(insertSection);
         if (isEqualUpStationId(insertSection)) {
-            return new SimpleSection(
+            return new Section(
+                    id,
+                    lineId,
                     insertSection.getDownStationId(),
                     downStationId,
                     updateDistance(this, insertSection)
             );
         }
 
-        return new SimpleSection(
+        return new Section(
+                id,
+                lineId,
                 insertSection.getUpStationId(),
                 upStationId,
                 updateDistance(this, insertSection)
         );
     }
 
-    private void validateCanBeInserted(SimpleSection insertSection) {
+    private void validateCanBeInsertedByDistance(SimpleSection insertSection) {
         if (!isLongerDistanceThan(insertSection)) {
             throw new SectionDistanceMismatchException();
         }
