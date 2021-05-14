@@ -1,5 +1,8 @@
 package wooteco.subway.section.domain;
 
+import wooteco.subway.exception.NullInputException;
+import wooteco.subway.exception.section.InvalidDistanceException;
+
 public class Section {
 
     private Long id;
@@ -11,6 +14,8 @@ public class Section {
     }
 
     public Section(Long id, Long upStationId, Long downStationId, int distance) {
+        validateNotNull(upStationId, downStationId);
+        validateDistanceSize(distance);
         this.id = id;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
@@ -19,6 +24,18 @@ public class Section {
 
     public Section(Long upStationId, Long downStationId, int distance) {
         this(null, upStationId, downStationId, distance);
+    }
+
+    private void validateNotNull(Long upStationId, Long downStationId) {
+        if (upStationId == null || downStationId == null) {
+            throw new NullInputException();
+        }
+    }
+
+    private void validateDistanceSize(int distance) {
+        if (distance <= 0) {
+            throw new InvalidDistanceException();
+        }
     }
 
     public boolean isUpStation(Long id) {

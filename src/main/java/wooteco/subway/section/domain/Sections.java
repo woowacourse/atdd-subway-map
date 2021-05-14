@@ -1,5 +1,7 @@
 package wooteco.subway.section.domain;
 
+import wooteco.subway.exception.EmptyInputException;
+import wooteco.subway.exception.NullInputException;
 import wooteco.subway.exception.section.InvalidAddSectionException;
 
 import java.util.*;
@@ -11,7 +13,21 @@ public class Sections {
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
+        validateNotNull(sections);
+        validateNotEmpty(sections);
         this.sections = sections;
+    }
+
+    private void validateNotNull(List<Section> sections) {
+        if (sections == null) {
+            throw new NullInputException();
+        }
+    }
+
+    private void validateNotEmpty(List<Section> sections) {
+        if (sections.size() == 0) {
+            throw new EmptyInputException();
+        }
     }
 
     public void validate(Section section) {
