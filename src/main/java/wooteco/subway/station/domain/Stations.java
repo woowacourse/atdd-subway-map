@@ -17,6 +17,22 @@ public class Stations {
         return Collections.unmodifiableList(stations);
     }
 
+    public boolean containsAll(final Section section) {
+        return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
+    }
+
+    public boolean containsNone(final Section section) {
+        return !stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation());
+    }
+
+    public boolean doesNameExist(final String name) {
+        return stations.stream().anyMatch(station -> station.hasName(name));
+    }
+
+    public boolean doesIdNotExist(final Long id) {
+        return stations.stream().noneMatch(station -> station.hasId(id));
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -28,13 +44,5 @@ public class Stations {
     @Override
     public int hashCode() {
         return Objects.hash(stations);
-    }
-
-    public boolean containsAll(final Section section) {
-        return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
-    }
-
-    public boolean containsNone(final Section section) {
-        return !stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation());
     }
 }

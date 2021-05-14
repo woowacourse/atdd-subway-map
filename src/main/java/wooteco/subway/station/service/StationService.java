@@ -20,12 +20,19 @@ public class StationService {
     @Transactional
     public StationResponse save(final String name) {
         Station station = new Station(name);
-        if (stationDao.doesNameExist(station)) {
-            throw new DuplicateStationNameException();
-        }
+        validateDuplicateName(station);
+
         long lineId = stationDao.save(station);
         station.setId(lineId);
+
         return StationResponse.toDto(station);
+    }
+
+    private void validateDuplicateName(final Station station) {
+        Stations stations = stationDao.findAll();
+        if (stations.doesNameExist(station.getName())) {
+            throw new DuplicateStationNameException();
+        }
     }
 
     public List<StationResponse> findAll() {
@@ -35,17 +42,18 @@ public class StationService {
 
     @Transactional
     public void delete(final Long id) {
-        if (stationDao.doesIdNotExist(id)) {
+        validateId(id);
+        stationDao.deleteById(id);
+    }
+
+    private void validateId(final Long id) {
+        Stations stations = stationDao.findAll();
+        if (stations.doesIdNotExist(id)) {
             throw new NoSuchStationException();
         }
-        stationDao.deleteById(id);
     }
 
     public Station findById(final Long stationId) {
         return stationDao.findById(stationId).orElseThrow(NoSuchStationException::new);
-    }
-
-    public List<Station> findByIds(final List<Long> ids) {
-        return stationDao.findByIds(ids);
     }
 }

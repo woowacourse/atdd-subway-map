@@ -38,21 +38,22 @@ public class LineService {
 
     @Transactional
     public LineResponse save(final LineRequest lineRequest) {
-        Line lineToSave = new Line(lineRequest.getColor(), lineRequest.getName());
+        Line line = new Line(lineRequest.getColor(), lineRequest.getName());
 
-        validateDuplicateName(lineToSave);
-        long lineId = lineDao.save(lineToSave);
+        validateDuplicateName(line);
+        long lineId = lineDao.save(line);
+        line.setId(lineId);
 
         Long sectionId = sectionService.save(lineId, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
         Sections sections = getSections(sectionId, lineId, lineRequest);
+        line.setSections(sections);
 
-        Line newLine = new Line(lineId, lineRequest.getColor(), lineRequest.getName(), sections);
-        return LineResponse.toDto(newLine);
+        return LineResponse.toDto(line);
     }
 
-    private void validateDuplicateName(final Line lineToSave) {
+    private void validateDuplicateName(final Line line) {
         Lines lines = lineDao.findAll();
-        if (lines.doesNameExist(lineToSave)) {
+        if (lines.doesNameExist(line.getName())) {
             throw new DuplicateLineNameException();
         }
     }

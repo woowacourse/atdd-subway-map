@@ -14,8 +14,8 @@ public class Lines {
         return Collections.unmodifiableList(lines);
     }
 
-    public boolean doesNameExist(final Line line) {
-        return lines.stream().anyMatch(thisLine -> thisLine.hasSameName(line));
+    public boolean doesNameExist(final String name) {
+        return lines.stream().anyMatch(thisLine -> thisLine.hasName(name));
     }
 
     public boolean doesIdNotExist(final Long id) {

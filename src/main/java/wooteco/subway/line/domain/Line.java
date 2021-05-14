@@ -6,7 +6,7 @@ import wooteco.subway.station.domain.Stations;
 import java.util.Objects;
 
 public class Line {
-    private final Long id;
+    private Long id;
     private final String color;
     private final String name;
     private Sections sections;
@@ -26,6 +26,18 @@ public class Line {
         this.sections = sections;
     }
 
+    public Stations getAllStations() {
+        return sections.getOrderedStations();
+    }
+
+    public boolean hasName(final String name) {
+        return this.name.equals(name);
+    }
+
+    public boolean hasId(final Long id) {
+        return this.id.equals(id);
+    }
+
     public Long getId() {
         return id;
     }
@@ -38,20 +50,12 @@ public class Line {
         return name;
     }
 
-    public Stations getAllStations() {
-        return sections.getOrderedStations();
+    public void setId(final Long id) {
+        this.id = id;
     }
 
     public void setSections(final Sections sections) {
         this.sections = sections;
-    }
-
-    public boolean hasSameName(final Line that) {
-        return this.name.equals(that.name);
-    }
-
-    public boolean hasId(final Long id) {
-        return this.id.equals(id);
     }
 
     @Override
