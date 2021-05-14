@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineRepository;
 import wooteco.subway.dao.SectionRepository;
@@ -78,5 +77,9 @@ public class LineService {
     public LineResponse updateLine(long id, String name, String color) {
         Line line = lineRepository.update(id, new Line(name, color));
         return LineResponse.from(line);
+    }
+
+    public void deleteLine(long id) {
+        lineRepository.delete(id);
     }
 }

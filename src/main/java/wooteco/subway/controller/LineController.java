@@ -1,6 +1,5 @@
 package wooteco.subway.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.dao.LineRepository;
@@ -61,7 +60,7 @@ public class LineController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<LineResponse> deleteLine(@PathVariable long id) {
-        lineRepository.delete(id);
+        lineService.deleteLine(id);
 
         return ResponseEntity
                 .noContent()
