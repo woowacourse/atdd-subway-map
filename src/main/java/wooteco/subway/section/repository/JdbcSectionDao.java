@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class JdbcSectionDao {
+public class JdbcSectionDao implements SectionDao {
     private JdbcTemplate jdbcTemplate;
     private final RowMapper<Station> stationMapper = (rs, rowNum) -> new Station (
             rs.getLong("id"),
@@ -31,6 +31,7 @@ public class JdbcSectionDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Section save(Long lineId, Section section) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String query = "INSERT INTO section (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
@@ -46,58 +47,69 @@ public class JdbcSectionDao {
         return new Section(id, lineId, section);
     }
 
+    @Override
     public List<Station> findStationsBy(Long stationId, Long downStationId) {
         String query = "SELECT * FROM station WHERE id in (?, ?)";
         return jdbcTemplate.query(query, stationMapper, stationId, downStationId);
     }
 
+    @Override
     public List<Section> findAllByLineId(Long lineId) {
         String query = "SELECT * FROM section WHERE line_id = ?";
         return jdbcTemplate.query(query, sectionMapper, lineId);
     }
 
+    @Override
     public Section findByUpStationId(Long lineId, Long upStationId) {
         String query = "SELECT * FROM section WHERE up_station_id = ? AND line_id = ?";
         return jdbcTemplate.query(query, sectionMapper, upStationId, lineId).get(0);
     }
 
+    @Override
     public Section findByDownStationId(Long lineId, Long downStationId) {
         String query = "SELECT * FROM section WHERE down_station_id = ? AND line_id = ?";
         return jdbcTemplate.query(query, sectionMapper, downStationId, lineId).get(0);
     }
 
+    @Override
+    public void delete(Section section) {
+        String query = "DELETE FROM section WHERE id = ?";
+        jdbcTemplate.update(query, section.getId());
+    }
+
+    @Override
     public Section appendToUp(Long lineId, Section newSection, int changedDistance) {
         updateAndAppendToUp(lineId, newSection, changedDistance);
         return save(lineId, newSection);
     }
 
+    @Override
     public Section appendBeforeDown(Long lineId, Section newSection, int changedDistance) {
         updateAndAppendBeforeDown(newSection, changedDistance);
         return save(lineId, newSection);
     }
 
-    private void updateAndAppendToUp(Long lineId, Section newSection, int changedDistance) {
+    @Override
+    public void updateAndAppendToUp(Long lineId, Section newSection, int changedDistance) {
         String query = "UPDATE section SET up_station_id = ?, distance = ? WHERE up_station_id = ? AND line_id = ?";
         jdbcTemplate.update(query, newSection.getDownStationId(), changedDistance, newSection.getUpStationId(), lineId);
     }
 
-    private void updateAndAppendBeforeDown(Section newSection, int changedDistance) {
+    @Override
+    public void updateAndAppendBeforeDown(Section newSection, int changedDistance) {
         String query = "UPDATE section SET down_station_id = ?, distance = ? WHERE down_station_id = ?";
         jdbcTemplate.update(query, newSection.getUpStationId(), changedDistance, newSection.getDownStationId());
     }
 
+    @Override
     public void deleteFirstSection(Long lineId, Long stationId) {
         String query = "DELETE FROM section WHERE line_id = ? AND up_station_id = ?";
         jdbcTemplate.update(query, lineId, stationId);
     }
 
+    @Override
     public void deleteLastSection(Long lineId, Long stationId) {
         String query = "DELETE FROM section WHERE line_id = ? AND down_station_id = ?";
         jdbcTemplate.update(query, lineId, stationId);
-    }
-
-    public void delete(Section section) {
-        String query = "DELETE FROM section WHERE id = ?";
-        jdbcTemplate.update(query, section.getId());
     }
 }

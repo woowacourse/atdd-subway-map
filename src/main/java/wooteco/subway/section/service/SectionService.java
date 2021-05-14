@@ -9,7 +9,7 @@ import wooteco.subway.section.Section;
 import wooteco.subway.section.Sections;
 import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.dto.SectionResponse;
-import wooteco.subway.section.repository.JdbcSectionDao;
+import wooteco.subway.section.repository.SectionDao;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
@@ -19,23 +19,23 @@ import java.util.List;
 @Service
 public class SectionService {
     private StationService stationService;
-    private JdbcSectionDao jdbcSectionDao;
+    private SectionDao sectionDao;
 
-    public SectionService(StationService stationService, JdbcSectionDao jdbcSectionDao) {
+    public SectionService(StationService stationService, SectionDao sectionDao) {
         this.stationService = stationService;
-        this.jdbcSectionDao = jdbcSectionDao;
+        this.sectionDao = sectionDao;
     }
 
     public void save(Line newLine, LineRequest lineRequest) {
         SectionRequest sectionReq = new SectionRequest(lineRequest);
         validateExistStation(sectionReq.toEntity());
 
-        jdbcSectionDao.save(newLine.getId(), sectionReq.toEntity());
+        sectionDao.save(newLine.getId(), sectionReq.toEntity());
     }
 
     public SectionResponse add(Long lineId, SectionRequest sectionReq) {
         Section newSection = sectionReq.toEntity();
-        Sections sections =  new Sections(jdbcSectionDao.findAllByLineId(lineId));
+        Sections sections =  new Sections(sectionDao.findAllByLineId(lineId));
         validateSavableSection(newSection, sections);
 
         if (sections.isOnEdge(newSection)) {
@@ -50,36 +50,36 @@ public class SectionService {
     }
 
     private void validateExistStation(Section section) {
-        List<Station> stations = jdbcSectionDao.findStationsBy(section.getUpStationId(), section.getDownStationId());
+        List<Station> stations = sectionDao.findStationsBy(section.getUpStationId(), section.getDownStationId());
         if (stations.size() != 2) {
             throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
         }
     }
 
     private SectionResponse saveAtEnd(Long lineId, Section newSection) {
-        Section savedSection = jdbcSectionDao.save(lineId, newSection);
+        Section savedSection = sectionDao.save(lineId, newSection);
         return new SectionResponse(savedSection);
     }
 
     private SectionResponse saveAtMiddle(Long lineId, Section newSection, Sections sections) {
         if (sections.appendToUp(newSection)) {
             int changedDistance = compareDistanceWhenAppendToUp(lineId, newSection);
-            return new SectionResponse(jdbcSectionDao.appendToUp(lineId, newSection, changedDistance));
+            return new SectionResponse(sectionDao.appendToUp(lineId, newSection, changedDistance));
         }
         if (sections.appendBeforeDown(newSection)) {
             int changedDistance = compareDistanceWhenAppendToBottom(lineId, newSection);
-            return new SectionResponse(jdbcSectionDao.appendBeforeDown(lineId, newSection, changedDistance));
+            return new SectionResponse(sectionDao.appendBeforeDown(lineId, newSection, changedDistance));
         }
         throw new InvalidInsertException("해당 구간에 추가할 수 없습니다.");
     }
 
     private int compareDistanceWhenAppendToBottom(Long lineId, Section newSection) {
-        Section oldSection = jdbcSectionDao.findByDownStationId(lineId, newSection.getDownStationId());
+        Section oldSection = sectionDao.findByDownStationId(lineId, newSection.getDownStationId());
         return differenceInDistance(newSection, oldSection);
     }
 
     private int compareDistanceWhenAppendToUp(Long lineId, Section newSection) {
-        Section oldSection = jdbcSectionDao.findByUpStationId(lineId, newSection.getUpStationId());
+        Section oldSection = sectionDao.findByUpStationId(lineId, newSection.getUpStationId());
         return differenceInDistance(newSection, oldSection);
     }
 
@@ -95,20 +95,20 @@ public class SectionService {
     }
 
     public List<Long> findAllSectionsId(Long lineId) {
-        Sections sections = new Sections(jdbcSectionDao.findAllByLineId(lineId));
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         return sections.toSortedStationIds();
     }
 
     public void deleteSection(Long lineId, Long stationId) {
-        Sections sections = new Sections(jdbcSectionDao.findAllByLineId(lineId));
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         sections.validateDeletable();
         if (sections.isOnUpEdge(stationId)) {
-            jdbcSectionDao.deleteFirstSection(lineId, stationId);
+            sectionDao.deleteFirstSection(lineId, stationId);
             return;
         }
 
         if (sections.isOnDownEdge(stationId)) {
-            jdbcSectionDao.deleteLastSection(lineId, stationId);
+            sectionDao.deleteLastSection(lineId, stationId);
             return;
         }
         deleteSectionInMiddle(lineId, stationId, sections);
@@ -120,9 +120,9 @@ public class SectionService {
 
         Section newSection = makeNewSection(before, after);
 
-        jdbcSectionDao.save(lineId, newSection);
-        jdbcSectionDao.delete(before);
-        jdbcSectionDao.delete(after);
+        sectionDao.save(lineId, newSection);
+        sectionDao.delete(before);
+        sectionDao.delete(after);
     }
 
     private Section makeNewSection(Section before, Section after) {

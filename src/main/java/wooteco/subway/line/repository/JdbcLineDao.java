@@ -12,7 +12,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 @Repository
-public class JdbcLineDao {
+public class JdbcLineDao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Line> lineRowMapper = (rs, rowNum) -> new Line(
             rs.getLong("id"),
@@ -24,6 +24,7 @@ public class JdbcLineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Line save(Line line) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String query = "INSERT INTO line (name, color) VALUES (?, ?)";
@@ -39,27 +40,20 @@ public class JdbcLineDao {
         return new Line(id, name, color);
     }
 
+    @Override
     public List<Line> findAll() {
         String query = "SELECT * FROM line";
         return jdbcTemplate.query(query, lineRowMapper);
     }
 
-    public boolean validateDuplicateName(String name) {
-        String query = "SELECT COUNT(*) FROM line WHERE name = (?)";
-        return jdbcTemplate.queryForObject(query, Integer.class, name) > 0;
-    }
-
-    public boolean validateUsableName(String newName, String oldName) {
-        String query = "SELECT COUNT(*) FROM line WHERE name IN (?) AND name NOT IN (?)";
-        return jdbcTemplate.queryForObject(query, Integer.class, newName, oldName) > 0;
-    }
-
+    @Override
     public Line findById(Long id) {
         String query = "SELECT * FROM line WHERE id = ?";
         List<Line> results = jdbcTemplate.query(query, lineRowMapper, id);
         return DataAccessUtils.singleResult(results);
     }
 
+    @Override
     public void update(Line updatedLine) {
         String query = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         String newName = updatedLine.getName();
@@ -67,8 +61,21 @@ public class JdbcLineDao {
         jdbcTemplate.update(query, newName, newColor, updatedLine.getId());
     }
 
+    @Override
     public void delete(Long id) {
         String query = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(query, id);
+    }
+
+    @Override
+    public boolean validateDuplicateName(String name) {
+        String query = "SELECT COUNT(*) FROM line WHERE name = (?)";
+        return jdbcTemplate.queryForObject(query, Integer.class, name) > 0;
+    }
+
+    @Override
+    public boolean validateUsableName(String newName, String oldName) {
+        String query = "SELECT COUNT(*) FROM line WHERE name IN (?) AND name NOT IN (?)";
+        return jdbcTemplate.queryForObject(query, Integer.class, newName, oldName) > 0;
     }
 }

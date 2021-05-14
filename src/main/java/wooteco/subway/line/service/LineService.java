@@ -6,7 +6,7 @@ import wooteco.subway.exception.InvalidInsertException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
-import wooteco.subway.line.repository.JdbcLineDao;
+import wooteco.subway.line.repository.LineDao;
 import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.dto.StationResponse;
 
@@ -16,16 +16,16 @@ import java.util.stream.Collectors;
 @Service
 public class LineService {
     private final SectionService sectionService;
-    private final JdbcLineDao lineRepository;
+    private final LineDao lineDao;
 
-    public LineService(SectionService sectionService, JdbcLineDao lineRepository) {
+    public LineService(SectionService sectionService, LineDao lineDao) {
         this.sectionService = sectionService;
-        this.lineRepository = lineRepository;
+        this.lineDao = lineDao;
     }
 
     public LineResponse save(LineRequest lineRequest) {
         validateLineName(lineRequest);
-        Line newLine = lineRepository.save(lineRequest.toLine());
+        Line newLine = lineDao.save(lineRequest.toLine());
         sectionService.save(newLine, lineRequest);
         return new LineResponse(newLine);
     }
@@ -37,18 +37,18 @@ public class LineService {
     }
 
     private boolean checkNameDuplicate(LineRequest lineRequest) {
-        return lineRepository.validateDuplicateName(lineRequest.getName());
+        return lineDao.validateDuplicateName(lineRequest.getName());
     }
 
     public LineResponse findById(Long id) {
-        Line line = lineRepository.findById(id);
+        Line line = lineDao.findById(id);
         List<Long> stationIds = sectionService.findAllSectionsId(id);
         List<StationResponse> stations = sectionService.findStationsByIds(stationIds);
         return new LineResponse(line, stations);
     }
 
     public List<LineResponse> findAll() {
-        List<Line> lines = lineRepository.findAll();
+        List<Line> lines = lineDao.findAll();
         return lines.stream()
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
@@ -56,23 +56,23 @@ public class LineService {
 
     public void update(Long id, LineRequest lineRequest) {
         Line updatedLine = validatesRequest(id, lineRequest);
-        lineRepository.update(updatedLine);
+        lineDao.update(updatedLine);
     }
 
     private Line validatesRequest(Long id, LineRequest lineRequest) {
-        Line currentLine = lineRepository.findById(id);
+        Line currentLine = lineDao.findById(id);
 
         validateUsableName(lineRequest.getName(), currentLine.getName());
         return new Line(id, lineRequest.getName(), lineRequest.getColor());
     }
 
     private void validateUsableName(String newName, String oldName) {
-        if (lineRepository.validateUsableName(newName, oldName)) {
+        if (lineDao.validateUsableName(newName, oldName)) {
             throw new InvalidInsertException("변경할 수 없는 이름입니다.");
         }
     }
 
     public void delete(Long id) {
-        lineRepository.delete(id);
+        lineDao.delete(id);
     }
 }

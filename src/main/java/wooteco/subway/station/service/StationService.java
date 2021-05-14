@@ -3,14 +3,12 @@ package wooteco.subway.station.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.exception.NotFoundException;
-import wooteco.subway.section.dto.SectionResponse;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
-import wooteco.subway.station.repository.JdbcStationDao;
+import wooteco.subway.station.repository.StationDao;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,16 +16,16 @@ import java.util.stream.Collectors;
 public class StationService {
     private static final int VALID_STATION_SIZE = 2;
 
-    private JdbcStationDao stationRepository;
+    private StationDao stationDao;
 
-    public StationService(JdbcStationDao stationRepository) {
-        this.stationRepository = stationRepository;
+    public StationService(StationDao stationDao) {
+        this.stationDao = stationDao;
     }
 
     public StationResponse save(StationRequest stationRequest) {
         validateStationName(stationRequest);
         Station station = stationRequest.toEntity();
-        Station newStation = stationRepository.save(station);
+        Station newStation = stationDao.save(station);
         return new StationResponse(newStation);
     }
 
@@ -38,44 +36,33 @@ public class StationService {
     }
 
     private boolean checkNameDuplicate(StationRequest stationRequest) {
-        return stationRepository.findByName(stationRequest.getName());
+        return stationDao.findByName(stationRequest.getName());
     }
 
     public List<StationResponse> findAllStations() {
-        List<Station> stations = stationRepository.findAll();
+        List<Station> stations = stationDao.findAll();
         return stations.stream()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());
     }
 
-    public StationResponse findBy(Long id) {
-        Station station = stationRepository.findBy(id);
-        return new StationResponse(station);
-    }
-
     public void delete(Long id) {
-        stationRepository.deleteById(id);
+        stationDao.deleteById(id);
     }
 
     public void validateStations(Long upStationId, Long downStationId) {
         List<Station> stations = new ArrayList<>();
-        stations.add(stationRepository.findBy(upStationId));
-        stations.add(stationRepository.findBy(downStationId));
+        stations.add(stationDao.findBy(upStationId));
+        stations.add(stationDao.findBy(downStationId));
 
         if (stations.size() != VALID_STATION_SIZE) {
             throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
         }
     }
 
-    public List<StationResponse> getStations(SectionResponse sectionRes) {
-        StationResponse up = findBy(sectionRes.getUpStationId());
-        StationResponse down = findBy(sectionRes.getDownStationId());
-        return Arrays.asList(up, down);
-    }
-
     public List<StationResponse> findStationsByIds(List<Long> stationIds) {
         return stationIds.stream()
-                .map(id -> stationRepository.findBy(id))
+                .map(id -> stationDao.findBy(id))
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
     }
