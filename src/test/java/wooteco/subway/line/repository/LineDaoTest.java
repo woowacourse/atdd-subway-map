@@ -17,15 +17,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @Sql("classpath:tableInit.sql")
-class LineRepositoryTest {
+class LineDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private LineRepository lineRepository;
+    private LineDao lineDao;
 
     @BeforeEach
     void setUp() {
-        lineRepository = new LineRepository(jdbcTemplate);
+        lineDao = new LineDao(jdbcTemplate);
         String query = "INSERT INTO line(color, name) VALUES(?, ?)";
         jdbcTemplate.update(query, "bg-red-600", "신분당선");
         jdbcTemplate.update(query, "bg-green-600", "2호선");
@@ -35,7 +35,7 @@ class LineRepositoryTest {
     @Test
     void save() {
         Line line = new Line("bg-blue-600", "1호선");
-        assertThat(lineRepository.save(line)).isEqualTo(3L);
+        assertThat(lineDao.save(line)).isEqualTo(3L);
     }
 
     @DisplayName("전체 line을 조회하면, DB에 존재하는 line 리스트를 반환한다.")
@@ -46,7 +46,7 @@ class LineRepositoryTest {
                 new Line(2L, "bg-green-600", "2호선")
         );
 
-        List<Line> lines = lineRepository.findAll();
+        List<Line> lines = lineDao.findAll();
         assertThat(lines).usingRecursiveComparison().isEqualTo(expectedLines);
     }
 
@@ -55,7 +55,7 @@ class LineRepositoryTest {
     void getLines_noLinesSaved_emptyList() {
         jdbcTemplate.update("DELETE FROM line");
 
-        List<Line> lines = lineRepository.findAll();
+        List<Line> lines = lineDao.findAll();
         assertThat(lines).isEmpty();
     }
 
@@ -63,14 +63,14 @@ class LineRepositoryTest {
     @Test
     void getLine() {
         Line expectedLine = new Line(1L, "bg-red-600", "신분당선");
-        assertThat(lineRepository.findById(1L).orElseThrow(NoSuchLineException::new)).isEqualTo(expectedLine);
+        assertThat(lineDao.findById(1L).orElseThrow(NoSuchLineException::new)).isEqualTo(expectedLine);
     }
 
     @DisplayName("id를 통해 line 수정 요청을 보내면, DB에있는 line정보를 수정한다")
     @Test
     void update() {
         Line bunDangLine = new Line(1L, "bg-white-600", "분당선");
-        lineRepository.update(bunDangLine);
+        lineDao.update(bunDangLine);
 
         String query = "SELECT id, color, name FROM line WHERE id = ?";
         Line line = jdbcTemplate.queryForObject(
@@ -92,7 +92,7 @@ class LineRepositoryTest {
         String query = "SELECT EXISTS(SELECT * FROM line WHERE id = ?)";
         assertThat(jdbcTemplate.queryForObject(query, Boolean.class, id)).isTrue();
 
-        lineRepository.deleteById(id);
+        lineDao.deleteById(id);
         assertThat(jdbcTemplate.queryForObject(query, Boolean.class, id)).isFalse();
     }
 }

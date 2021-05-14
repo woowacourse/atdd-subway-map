@@ -9,19 +9,20 @@ import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.Stations;
 
 import java.sql.PreparedStatement;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public class StationRepository {
+public class StationDao {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
             resultSet.getLong("id"),
             resultSet.getString("name")
     );
 
-    public StationRepository(final JdbcTemplate jdbcTemplate) {
+    public StationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -64,5 +65,12 @@ public class StationRepository {
     public boolean doesIdNotExist(final Long id) {
         String query = "SELECT NOT EXISTS(SELECT * FROM station WHERE id = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, id);
+    }
+
+    public List<Station> findByIds(final List<Long> ids) {
+        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
+
+        String query = String.format("SELECT id, name FROM station WHERE id IN (%s)", inSql);
+        return jdbcTemplate.query(query, stationRowMapper, ids);
     }
 }

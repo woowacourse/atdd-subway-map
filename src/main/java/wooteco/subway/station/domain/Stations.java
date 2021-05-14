@@ -1,5 +1,7 @@
 package wooteco.subway.station.domain;
 
+import wooteco.subway.section.domain.Section;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -26,5 +28,13 @@ public class Stations {
     @Override
     public int hashCode() {
         return Objects.hash(stations);
+    }
+
+    public boolean containsAll(final Section section) {
+        return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
+    }
+
+    public boolean containsNone(final Section section) {
+        return !stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation());
     }
 }

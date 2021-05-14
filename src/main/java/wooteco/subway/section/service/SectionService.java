@@ -4,105 +4,82 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
-import wooteco.subway.section.repository.SectionRepository;
+import wooteco.subway.section.repository.SectionDao;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.service.NoSuchStationException;
 
 @Service
 public class SectionService {
-    private final SectionRepository sectionRepository;
+    private final SectionDao sectionDao;
 
-    public SectionService(final SectionRepository sectionRepository) {
-        this.sectionRepository = sectionRepository;
+    public SectionService(final SectionDao sectionDao) {
+        this.sectionDao = sectionDao;
     }
 
     @Transactional
     public Long save(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
-        Section section = new Section(
+        Sections sections = sectionDao.findAllSections(lineId);
+        Section sectionToSave = new Section(
                 lineId,
                 new Station(upStationId),
                 new Station(downStationId),
                 distance);
-        if (sectionRepository.isInitialSave(section)) {
-            return sectionRepository.save(section);
+
+        if (sections.isEmpty()) {
+            return sectionDao.save(sectionToSave);
         }
-        validate(section);
-        return add(section);
+
+        validateSectionSave(sections, sectionToSave);
+        return add(sections, sectionToSave);
     }
 
-    private void validate(final Section section) {
-        if (bothStationsExist(section)) {
+    private void validateSectionSave(final Sections sections, final Section section) {
+        if (sections.bothStationsExist(section)) {
             throw new DuplicateSectionException();
         }
-        if (bothStationsDoNotExist(section)) {
+        if (sections.bothStationsDoNotExist(section)) {
             throw new NoSuchStationException();
         }
     }
 
-    private Long add(final Section section) {
-        if (isNotEndStationSave(section)) {
-            Section originalSection = sectionRepository.findByBaseStation(section);
-            Section adjustedSection = originalSection.adjustBy(section);
+    private long add(final Sections sections, final Section sectionToSave) {
+        if (sections.isNotEndStationSave(sectionToSave)) {
+            Section originalSection = sections.findOriginalSection(sectionToSave);
+            Section adjustedSection = originalSection.adjustBy(sectionToSave);
 
-            sectionRepository.update(adjustedSection);
+            sectionDao.update(adjustedSection);
         }
-        return sectionRepository.save(section);
-    }
-
-    private boolean bothStationsExist(final Section section) {
-        return sectionRepository.doesStationExist(section.getLineId(), section.getUpStationId()) &&
-                sectionRepository.doesStationExist(section.getLineId(), section.getDownStationId());
-    }
-
-    private boolean bothStationsDoNotExist(final Section section) {
-        return !sectionRepository.doesStationExist(section.getLineId(), section.getUpStationId()) &&
-                !sectionRepository.doesStationExist(section.getLineId(), section.getDownStationId());
-    }
-
-    private boolean isNotEndStationSave(final Section section) {
-        return !((sectionRepository.isEndStation(section.getLineId(), section.getDownStationId()) &&
-                sectionRepository.doesExistInUpStation(section.getLineId(), section.getDownStationId())) ||
-                (sectionRepository.isEndStation(section.getLineId(), section.getUpStationId()) &&
-                        sectionRepository.doesExistInDownStation(section.getLineId(), section.getUpStationId())));
+        return sectionDao.save(sectionToSave);
     }
 
     @Transactional
     public void delete(final Long lineId, final Long stationId) {
-        validateStationExistence(lineId, stationId);
-        validateSectionCount(lineId);
+        Sections sections = sectionDao.findAllSections(lineId);
+        Station stationToDelete = new Station(stationId);
 
-        if (!sectionRepository.isEndStation(lineId, stationId)) {
-            Section newSection = createNewSection(lineId, stationId);
-            sectionRepository.save(newSection);
+        validateStationExistence(sections, stationToDelete);
+        validateSectionCount(sections);
+
+        if (!sections.isEndStation(stationToDelete)) {
+            Section newSection = sections.createNewSection(lineId, stationToDelete);
+            sectionDao.save(newSection);
         }
-        sectionRepository.deleteByStationId(lineId, stationId);
+        sectionDao.deleteByStationId(lineId, stationId);
     }
 
-    private void validateStationExistence(final Long lineId, final Long stationId) {
-        if (!sectionRepository.doesStationExist(lineId, stationId)) {
+    private void validateStationExistence(final Sections sections, final Station station) {
+        if (!sections.doesStationExist(station)) {
             throw new NoSuchStationException();
         }
     }
 
-    private void validateSectionCount(final Long lineId) {
-        if (sectionRepository.isUnableToDelete(lineId)) {
+    private void validateSectionCount(final Sections sections) {
+        if (sections.isUnableToDelete()) {
             throw new UnavailableSectionDeleteException();
         }
     }
 
-    private Section createNewSection(final Long lineId, final Long stationId) {
-        long newUpStationId = sectionRepository.getNewUpStationId(lineId, stationId);
-        long newDownStationId = sectionRepository.getNewDownStationId(lineId, stationId);
-        int newDistance = sectionRepository.getNewDistance(lineId, stationId);
-
-        return new Section(
-                lineId,
-                new Station(newUpStationId),
-                new Station(newDownStationId),
-                newDistance);
-    }
-
     public Sections findAll(final Long lineId) {
-        return sectionRepository.findAllSections(lineId);
+        return sectionDao.findAllSections(lineId);
     }
 }

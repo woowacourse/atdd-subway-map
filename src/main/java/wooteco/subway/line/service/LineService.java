@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
-import wooteco.subway.line.repository.LineRepository;
+import wooteco.subway.line.repository.LineDao;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
 import wooteco.subway.section.service.SectionService;
@@ -16,18 +16,18 @@ import java.util.List;
 
 @Service
 public class LineService {
-    private final LineRepository lineRepository;
+    private final LineDao lineDao;
     private final SectionService sectionService;
     private final StationService stationService;
 
-    public LineService(final LineRepository lineRepository, final SectionService sectionService, final StationService stationService) {
-        this.lineRepository = lineRepository;
+    public LineService(final LineDao lineDao, final SectionService sectionService, final StationService stationService) {
+        this.lineDao = lineDao;
         this.sectionService = sectionService;
         this.stationService = stationService;
     }
 
     public List<LineResponse> getLines() {
-        List<Line> lines = lineRepository.findAll();
+        List<Line> lines = lineDao.findAll();
         for (Line line : lines) {
             Sections sections = sectionService.findAll(line.getId());
             line.setSections(sections);
@@ -38,10 +38,10 @@ public class LineService {
     @Transactional
     public LineResponse save(final LineRequest lineRequest) {
         Line line = new Line(lineRequest.getColor(), lineRequest.getName());
-        if (lineRepository.doesNameExist(line)) {
+        if (lineDao.doesNameExist(line)) {
             throw new DuplicateLineNameException();
         }
-        long lineId = lineRepository.save(line);
+        long lineId = lineDao.save(line);
         Long sectionId = sectionService.save(lineId, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
         Sections sections = getSections(sectionId, lineId, lineRequest);
 
@@ -59,7 +59,7 @@ public class LineService {
     }
 
     public LineResponse getLine(final Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(NoSuchLineException::new);
+        Line line = lineDao.findById(id).orElseThrow(NoSuchLineException::new);
         Sections sections = sectionService.findAll(id);
         line.setSections(sections);
 
@@ -69,17 +69,17 @@ public class LineService {
     @Transactional
     public void updateLine(final Long lineId, final LineRequest lineRequest) {
         Line line = new Line(lineId, lineRequest.getColor(), lineRequest.getName());
-        if (lineRepository.doesIdNotExist(line)) {
+        if (lineDao.doesIdNotExist(line)) {
             throw new NoSuchLineException();
         }
-        lineRepository.update(line);
+        lineDao.update(line);
     }
 
     @Transactional
     public void deleteById(final Long id) {
-        if (lineRepository.doesIdNotExist(id)) {
+        if (lineDao.doesIdNotExist(id)) {
             throw new NoSuchLineException();
         }
-        lineRepository.deleteById(id);
+        lineDao.deleteById(id);
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.section.domain.Section;
-import wooteco.subway.section.repository.SectionRepository;
+import wooteco.subway.section.repository.SectionDao;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.service.NoSuchStationException;
 
@@ -28,8 +28,8 @@ public class SectionServiceTest {
 
     @BeforeEach
     void setUp() {
-        SectionRepository sectionRepository = new SectionRepository(jdbcTemplate);
-        sectionService = new SectionService(sectionRepository);
+        SectionDao sectionDao = new SectionDao(jdbcTemplate);
+        sectionService = new SectionService(sectionDao);
 
         String lineQuery = "INSERT INTO line(color, name) VALUES(?, ?)";
         jdbcTemplate.update(lineQuery, "bg-red-600", "신분당선");

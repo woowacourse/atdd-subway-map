@@ -4,13 +4,12 @@ import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.Stations;
 import wooteco.subway.station.service.NoSuchStationException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Sections {
+    public static final int MINIMUM_SECTION_SIZE = 1;
+
     private final List<Section> sections;
 
     public Sections() {
@@ -49,5 +48,115 @@ public class Sections {
                 .filter(station -> !upAndDownStations.containsValue(station))
                 .findFirst()
                 .orElseThrow(NoSuchStationException::new);
+    }
+
+    public boolean isEmpty() {
+        return this.sections.isEmpty();
+    }
+
+    public boolean bothStationsExist(final Section section) {
+        Stations stations = getStations();
+        return stations.containsAll(section);
+    }
+
+    public boolean bothStationsDoNotExist(final Section section) {
+        Stations stations = getStations();
+        return stations.containsNone(section);
+    }
+
+    private Stations getStations() {
+        List<Station> stations = sections.stream()
+                .map(section -> Arrays.asList(section.getUpStation(), section.getDownStation()))
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+
+        return new Stations(stations);
+    }
+
+    public Section findOriginalSection(final Section section) {
+        if (doesExistInUpStation(section.getUpStation())) {
+            return getOriginalSectionByUpStation(section);
+        }
+        return getOriginalSectionByDownStation(section);
+    }
+
+    private Section getOriginalSectionByDownStation(final Section section) {
+        return sections.stream()
+                .filter(thisSection -> thisSection.hasSameDownStation(section))
+                .findFirst()
+                .orElseThrow(NoSuchStationException::new);
+    }
+
+    private Section getOriginalSectionByUpStation(final Section section) {
+        return sections.stream()
+                .filter(thisSection -> thisSection.hasSameUpStation(section))
+                .findFirst()
+                .orElseThrow(NoSuchStationException::new);
+    }
+
+    public boolean isNotEndStationSave(final Section section) {
+        return !((isEndStation(section.getDownStation()) && doesExistInUpStation(section.getDownStation())) ||
+                (isEndStation(section.getUpStation()) && doesExistInDownStation(section.getUpStation())));
+    }
+
+    public boolean isEndStation(final Station station) {
+        long count = sections.stream()
+                .filter(thisSection -> thisSection.hasStation(station))
+                .count();
+
+        return count == 1;
+    }
+
+    private boolean doesExistInUpStation(final Station station) {
+        return sections.stream().anyMatch(thisSection -> thisSection.hasUpStation(station));
+    }
+
+    private boolean doesExistInDownStation(final Station station) {
+        return sections.stream().anyMatch(thisSection -> thisSection.hasDownStation(station));
+    }
+
+    public boolean doesStationExist(final Station station) {
+        return sections.stream().anyMatch(section -> section.hasStation(station));
+    }
+
+    public boolean isUnableToDelete() {
+        return sections.size() <= MINIMUM_SECTION_SIZE;
+    }
+
+    public Section createNewSection(final Long lineId, final Station stationToDelete) {
+        Long newUpStationId = getNewUpStationId(stationToDelete);
+        Long newDownStationId = getNewDownStationId(stationToDelete);
+        Integer newDistance = getNewDistance(stationToDelete);
+
+        return new Section(
+                lineId,
+                new Station(newUpStationId),
+                new Station(newDownStationId),
+                newDistance);
+    }
+
+    private Long getNewUpStationId(final Station station) {
+        Section sectionWithNewUpStation = sections.stream()
+                .filter(section -> section.hasDownStation(station))
+                .findFirst()
+                .orElseThrow(NoSuchStationException::new);
+
+        return sectionWithNewUpStation.getUpStationId();
+    }
+
+    private Long getNewDownStationId(final Station station) {
+        Section sectionWithNewDownStation = sections.stream()
+                .filter(section -> section.hasUpStation(station))
+                .findFirst()
+                .orElseThrow(NoSuchStationException::new);
+
+        return sectionWithNewDownStation.getDownStationId();
+    }
+
+    private Integer getNewDistance(final Station station) {
+        return sections.stream()
+                .filter(section -> section.hasUpStation(station) || section.hasDownStation(station))
+                .mapToInt(Section::getDistance)
+                .sum();
     }
 }

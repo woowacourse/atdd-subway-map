@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public class LineRepository {
+public class LineDao {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
             resultSet.getLong("id"),
@@ -21,7 +21,7 @@ public class LineRepository {
             resultSet.getString("name")
     );
 
-    public LineRepository(final JdbcTemplate jdbcTemplate) {
+    public LineDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

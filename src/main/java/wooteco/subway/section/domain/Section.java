@@ -76,10 +76,30 @@ public class Section {
                 newSectionDistance);
     }
 
+    public boolean hasSameUpStation(final Section that) {
+        return this.upStation.equals(that.upStation);
+    }
+
+    public boolean hasSameDownStation(final Section that) {
+        return this.downStation.equals(that.downStation);
+    }
+
+    public boolean hasUpStation(final Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean hasDownStation(final Station station) {
+        return this.downStation.equals(station);
+    }
+
     private void validateDistance(final Section section) {
         if (this.isShorterOrEqualTo(section)) {
             throw new IllegalSectionDistanceException();
         }
+    }
+
+    public boolean hasStation(final Station station) {
+        return upStation.equals(station) || downStation.equals(station);
     }
 
     private boolean isShorterOrEqualTo(final Section that) {
@@ -88,10 +108,6 @@ public class Section {
 
     private int getDistanceGap(final Section that) {
         return Math.abs(this.distance - that.distance);
-    }
-
-    private boolean hasSameUpStation(final Section that) {
-        return this.upStation.equals(that.upStation);
     }
 
     @Override
