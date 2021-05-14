@@ -36,6 +36,11 @@ public class SectionService {
     }
 
     @Transactional
+    public Section createInitial(Section section, Long lineId) {
+        return sectionDao.create(section, lineId);
+    }
+
+    @Transactional
     public void remove(Long lineId, Long stationId) {
         validateExistLine(lineId);
         validateExistStation(stationId);

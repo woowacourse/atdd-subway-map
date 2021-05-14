@@ -12,7 +12,6 @@ import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.line.dao.JdbcLineDao;
 import wooteco.subway.line.web.LineRequest;
 import wooteco.subway.section.SectionService;
-import wooteco.subway.section.dao.JdbcSectionDao;
 import wooteco.subway.station.StationService;
 
 import java.util.List;
@@ -21,7 +20,6 @@ import java.util.List;
 @Service
 public class LineService {
     private final JdbcLineDao lineDao;
-    private final JdbcSectionDao sectionDao;
     private final SectionService sectionService;
     private final StationService stationService;
 
@@ -57,7 +55,7 @@ public class LineService {
         Station downStation = stationService.find(lineRequest.getDownStationId());
         Line line = lineDao.create(Line.create(name, color));
         Section section = Section.create(upStation, downStation, distance);
-        sectionDao.create(section, line.getId());
+        sectionService.createInitial(section, line.getId());
         line.setSections(Sections.create(section));
 
         return line;
@@ -69,7 +67,7 @@ public class LineService {
         }
     }
 
-    private void validateExistById(Long lineId) {
+    public void validateExistById(Long lineId) {
         if (!lineDao.existById(lineId)) {
             throw new LineNotFoundException();
         }
