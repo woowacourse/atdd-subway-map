@@ -22,7 +22,7 @@ public class SectionController {
         this.sectionService = sectionService;
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
     public ResponseEntity<Void> createSection(@PathVariable Long lineId, @RequestBody @Valid SectionRequest sectionRequest) {
         sectionService.insertSectionInLine(lineId, sectionRequest);
         return ResponseEntity.noContent().build();

@@ -27,26 +27,26 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineCreateRequest lineCreateRequest) {
         LineResponse lineResponse = lineService.save(lineCreateRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
             .body(lineResponse);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<List<LineResponse>> getAllLines() {
         List<LineResponse> lineResponses = lineService.findAll();
         return ResponseEntity.ok(lineResponses);
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
         LineResponse lineResponse = lineService.find(id);
         return ResponseEntity.ok(lineResponse);
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id,
         @RequestBody @Valid LineUpdateRequest lineUpdateRequest) {
         lineService.update(id, lineUpdateRequest);
