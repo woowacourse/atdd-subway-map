@@ -1,6 +1,8 @@
 package wooteco.subway.exception;
 
-public class DuplicatedNameException extends RuntimeException {
+import wooteco.subway.line.exception.ClientRuntimeException;
+
+public class DuplicatedNameException extends ClientRuntimeException {
 
     public DuplicatedNameException(final String message) {
         super(message);

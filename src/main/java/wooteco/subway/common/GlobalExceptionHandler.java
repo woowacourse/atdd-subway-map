@@ -16,11 +16,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
-    @ExceptionHandler(DuplicatedNameException.class)
-    public ResponseEntity<String> duplicatedNameExceptionHandler(final DuplicatedNameException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-
     @ExceptionHandler(DataNotFoundException.class)
     public ResponseEntity<String> dataNotFoundExceptionHandler(final DataNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
