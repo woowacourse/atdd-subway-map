@@ -46,6 +46,14 @@ public class Line {
         this.sections = sections;
     }
 
+    public boolean hasSameName(final Line that) {
+        return this.name.equals(that.name);
+    }
+
+    public boolean hasId(final Long id) {
+        return this.id.equals(id);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;

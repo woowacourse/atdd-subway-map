@@ -3,6 +3,7 @@ package wooteco.subway.line.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.Lines;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.repository.LineDao;
@@ -27,8 +28,8 @@ public class LineService {
     }
 
     public List<LineResponse> getLines() {
-        List<Line> lines = lineDao.findAll();
-        for (Line line : lines) {
+        Lines lines = lineDao.findAll();
+        for (Line line : lines.toList()) {
             Sections sections = sectionService.findAll(line.getId());
             line.setSections(sections);
         }
@@ -37,16 +38,23 @@ public class LineService {
 
     @Transactional
     public LineResponse save(final LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getColor(), lineRequest.getName());
-        if (lineDao.doesNameExist(line)) {
-            throw new DuplicateLineNameException();
-        }
-        long lineId = lineDao.save(line);
+        Line lineToSave = new Line(lineRequest.getColor(), lineRequest.getName());
+
+        validateDuplicateName(lineToSave);
+        long lineId = lineDao.save(lineToSave);
+
         Long sectionId = sectionService.save(lineId, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
         Sections sections = getSections(sectionId, lineId, lineRequest);
 
         Line newLine = new Line(lineId, lineRequest.getColor(), lineRequest.getName(), sections);
         return LineResponse.toDto(newLine);
+    }
+
+    private void validateDuplicateName(final Line lineToSave) {
+        Lines lines = lineDao.findAll();
+        if (lines.doesNameExist(lineToSave)) {
+            throw new DuplicateLineNameException();
+        }
     }
 
     private Sections getSections(final Long sectionId, final long lineId, final LineRequest lineRequest) {
@@ -67,19 +75,22 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLine(final Long lineId, final LineRequest lineRequest) {
-        Line line = new Line(lineId, lineRequest.getColor(), lineRequest.getName());
-        if (lineDao.doesIdNotExist(line)) {
-            throw new NoSuchLineException();
-        }
+    public void updateLine(final Long id, final LineRequest lineRequest) {
+        Line line = new Line(id, lineRequest.getColor(), lineRequest.getName());
+        validateId(id);
         lineDao.update(line);
     }
 
     @Transactional
     public void deleteById(final Long id) {
-        if (lineDao.doesIdNotExist(id)) {
+        validateId(id);
+        lineDao.deleteById(id);
+    }
+
+    private void validateId(final Long id) {
+        Lines lines = lineDao.findAll();
+        if (lines.doesIdNotExist(id)) {
             throw new NoSuchLineException();
         }
-        lineDao.deleteById(id);
     }
 }

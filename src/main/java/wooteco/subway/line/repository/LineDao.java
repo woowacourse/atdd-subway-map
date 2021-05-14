@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.Lines;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -39,9 +40,10 @@ public class LineDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public List<Line> findAll() {
+    public Lines findAll() {
         String query = "SELECT id, color, name FROM line ORDER BY id";
-        return jdbcTemplate.query(query, lineRowMapper);
+        List<Line> lines = jdbcTemplate.query(query, lineRowMapper);
+        return new Lines(lines);
     }
 
     public Optional<Line> findById(final Long id) {
@@ -59,20 +61,5 @@ public class LineDao {
     public void deleteById(final Long id) {
         String query = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(query, id);
-    }
-
-    public boolean doesNameExist(final Line line) {
-        String query = "SELECT EXISTS(SELECT * FROM Line WHERE name = ?)";
-        return jdbcTemplate.queryForObject(query, Boolean.class, line.getName());
-    }
-
-    public boolean doesIdNotExist(final Line line) {
-        String query = "SELECT NOT EXISTS(SELECT * FROM Line WHERE id = ?)";
-        return jdbcTemplate.queryForObject(query, Boolean.class, line.getId());
-    }
-
-    public boolean doesIdNotExist(final Long id) {
-        String query = "SELECT NOT EXISTS(SELECT * FROM Line WHERE id = ?)";
-        return jdbcTemplate.queryForObject(query, Boolean.class, id);
     }
 }
