@@ -26,6 +26,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("노선 관련 기능")
 @Sql("classpath:test.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
+    private static final long EXIST_GANGNAM = 1L;
+    private static final long EXIST_JAMSIL = 2L;
 
     @Autowired
     private JdbcLineDao lineRepository;
@@ -44,7 +46,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // given
         LineRequest 분당선 =
-                new LineRequest("분당선", "bg-red-600", 1L, 2L, 0);
+                new LineRequest("분당선", "bg-red-600", EXIST_GANGNAM, EXIST_JAMSIL, 0);
 
         // when
         ExtractableResponse<Response> response = createPostResponse(분당선);
@@ -59,7 +61,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWhenSameStations() {
         // given
         LineRequest 분당선 =
-                new LineRequest("분당선", "bg-red-600", 1L, 1L, 0);
+                new LineRequest("분당선", "bg-red-600", EXIST_GANGNAM, EXIST_GANGNAM, 0);
 
         // when
         ExtractableResponse<Response> response = createPostResponse(분당선);
@@ -73,9 +75,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWhenNotExistStations() {
         // given
         LineRequest 분당선 =
-                new LineRequest("분당선", "bg-red-600", 1L, 3L, 0);
+                new LineRequest("분당선", "bg-red-600", EXIST_GANGNAM, 3L, 0);
         LineRequest 신분당선 =
-                new LineRequest("신분당선", "bg-red-600", 3L, 1L, 0);
+                new LineRequest("신분당선", "bg-red-600", 3L, EXIST_GANGNAM, 0);
         LineRequest 이호선 =
                 new LineRequest("이호선", "bg-red-600", 3L, 4L, 0);
 
@@ -85,9 +87,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response3 = createPostResponse(이호선);
 
         // then
-        assertThat(response1.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response3.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response1.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response3.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test

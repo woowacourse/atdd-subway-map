@@ -3,28 +3,34 @@ package wooteco.subway.section.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.InvalidInsertException;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.line.Line;
+import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.Sections;
 import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.dto.SectionResponse;
 import wooteco.subway.section.repository.JdbcSectionDao;
 import wooteco.subway.station.Station;
+import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.service.StationService;
 
 import java.util.List;
 
 @Service
 public class SectionService {
+    private StationService stationService;
     private JdbcSectionDao jdbcSectionDao;
 
-    public SectionService(JdbcSectionDao jdbcSectionDao) {
+    public SectionService(StationService stationService, JdbcSectionDao jdbcSectionDao) {
+        this.stationService = stationService;
         this.jdbcSectionDao = jdbcSectionDao;
     }
 
-    public SectionResponse save(Long lineId, SectionRequest sectionReq) {
+    public void save(Line newLine, LineRequest lineRequest) {
+        SectionRequest sectionReq = new SectionRequest(lineRequest);
         validateExistStation(sectionReq.toEntity());
 
-        Section savedSection = jdbcSectionDao.save(lineId, sectionReq.toEntity());
-        return new SectionResponse(savedSection);
+        jdbcSectionDao.save(newLine.getId(), sectionReq.toEntity());
     }
 
     public SectionResponse add(Long lineId, SectionRequest sectionReq) {
@@ -126,5 +132,9 @@ public class SectionService {
 
         Section newSection = new Section(newUp, newDown, totalDistance);
         return newSection;
+    }
+
+    public List<StationResponse> findStationsByIds(List<Long> stationIds) {
+        return stationService.findStationsByIds(stationIds);
     }
 }

@@ -22,6 +22,10 @@ public class LineResponse {
         this(id, name, color, null);
     }
 
+    public LineResponse(Line line, List<StationResponse> stations) {
+        this(line.getId(), line.getName(), line.getColor(), stations);
+    }
+
     public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
         this.id = id;
         this.name = name;

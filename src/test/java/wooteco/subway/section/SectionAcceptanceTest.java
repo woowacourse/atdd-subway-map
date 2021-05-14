@@ -20,6 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Sql("classpath:test.sql")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
+    private static final long EXIST_GANGNAM = 1L;
+    private static final long EXIST_JAMSIL = 2L;
+
     @BeforeEach
     void beforeEach() {
         StationRequest 강남역 = new StationRequest("강남역");
@@ -28,7 +31,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         postResponse("/stations", 강남역);
         postResponse("/stations", 잠실역);
 
-        LineRequest 이호선 = new LineRequest("이호선", "green", 1L, 2L, 5);
+        LineRequest 이호선 = new LineRequest("이호선", "green", EXIST_GANGNAM, EXIST_JAMSIL, 5);
         postResponse("/lines", 이호선);
     }
 
@@ -39,7 +42,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationRequest 당산역 = new StationRequest("당산역");
         StationRequest 왕십리역 = new StationRequest("왕십리역");
 
-        SectionRequest 잠실에서당산 = new SectionRequest(2L, 3L, 5);
+        SectionRequest 잠실에서당산 = new SectionRequest(EXIST_JAMSIL, 3L, 5);
 
         // when
         postResponse("/stations", 당산역);
@@ -57,7 +60,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationRequest 당산역 = new StationRequest("당산역");
         StationRequest 왕십리역 = new StationRequest("왕십리역");
 
-        SectionRequest 당산에서강남 = new SectionRequest(3L, 1L, 5);
+        SectionRequest 당산에서강남 = new SectionRequest(3L, EXIST_GANGNAM, 5);
 
         // when
         postResponse("/stations", 당산역);
@@ -72,7 +75,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간 추가 - 이미 등록된 노선인 경우 예외를 던진다.")
     void createSectionWhenAlreadyRegistered() {
         // given
-        SectionRequest req = new SectionRequest(1L, 2L, 5);
+        SectionRequest req = new SectionRequest(EXIST_GANGNAM, EXIST_JAMSIL, 5);
 
         // when
         ExtractableResponse<Response> response = postResponse("/lines/1/sections", req);
@@ -88,7 +91,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationRequest 당산역 = new StationRequest("당산역"); // id = 3
         StationRequest 왕십리역 = new StationRequest("왕십리역"); // id = 4
         StationRequest 신림역 = new StationRequest("신림역"); // id = 5
-        SectionRequest 잠실에서당산 = new SectionRequest(2L, 3L, 5);
+        SectionRequest 잠실에서당산 = new SectionRequest(EXIST_JAMSIL, 3L, 5);
         SectionRequest 왕십리에서신림 = new SectionRequest(4L, 5L, 2);
 
         // when
@@ -113,14 +116,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = postResponse("/lines/1/sections", req);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
     @DisplayName("구간 추가 - 상행역과 하행역이 동일한 경우 예외를 발생한다.")
     void testSameStationsSection() {
         // given
-        SectionRequest req = new SectionRequest(1L, 1L, 5);
+        SectionRequest req = new SectionRequest(EXIST_GANGNAM, EXIST_GANGNAM, 5);
 
         // when
         ExtractableResponse<Response> response = postResponse("/lines/1/sections", req);
@@ -136,7 +139,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationRequest 당산역 = new StationRequest("당산역"); // id = 3
         StationRequest 왕십리역 = new StationRequest("왕십리역"); // id = 4
 
-        SectionRequest 잠실에서왕십리 = new SectionRequest(2L, 4L, 5);
+        SectionRequest 잠실에서왕십리 = new SectionRequest(EXIST_JAMSIL, 4L, 5);
         SectionRequest 당산에서왕십리 = new SectionRequest(3L, 4L, 3);
 
         // when
@@ -156,7 +159,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationRequest 당산역 = new StationRequest("당산역"); // id = 3
         StationRequest 왕십리역 = new StationRequest("왕십리역"); // id = 4
 
-        SectionRequest 잠실에서왕십리 = new SectionRequest(2L, 4L, 5);
+        SectionRequest 잠실에서왕십리 = new SectionRequest(EXIST_JAMSIL, 4L, 5);
         SectionRequest 당산에서왕십리 = new SectionRequest(3L, 4L, 6);
 
         // when
@@ -176,8 +179,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationRequest 당산역 = new StationRequest("당산역"); // id = 3
         StationRequest 왕십리역 = new StationRequest("왕십리역"); // id = 4
 
-        SectionRequest 잠실에서왕십리 = new SectionRequest(2L, 4L, 5);
-        SectionRequest 당산에서왕십리 = new SectionRequest(2L, 3L, 3);
+        SectionRequest 잠실에서왕십리 = new SectionRequest(EXIST_JAMSIL, 4L, 5);
+        SectionRequest 당산에서왕십리 = new SectionRequest(EXIST_JAMSIL, 3L, 3);
 
         // when
         postResponse("/stations", 당산역);
@@ -196,8 +199,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationRequest 당산역 = new StationRequest("당산역"); // id = 3
         StationRequest 왕십리역 = new StationRequest("왕십리역"); // id = 4
 
-        SectionRequest 잠실에서왕십리 = new SectionRequest(2L, 4L, 5);
-        SectionRequest 당산에서왕십리 = new SectionRequest(2L, 3L, 5);
+        SectionRequest 잠실에서왕십리 = new SectionRequest(EXIST_JAMSIL, 4L, 5);
+        SectionRequest 당산에서왕십리 = new SectionRequest(EXIST_JAMSIL, 3L, 5);
 
         // when
         postResponse("/stations", 당산역);
@@ -216,7 +219,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationRequest 당산역 = new StationRequest("당산역");
         StationRequest 왕십리역 = new StationRequest("왕십리역");
 
-        SectionRequest 잠실에서당산 = new SectionRequest(2L, 3L, 5);
+        SectionRequest 잠실에서당산 = new SectionRequest(EXIST_JAMSIL, 3L, 5);
 
         // when
         postResponse("/stations", 당산역);

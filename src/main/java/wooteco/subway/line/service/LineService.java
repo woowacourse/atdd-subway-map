@@ -1,7 +1,5 @@
 package wooteco.subway.line.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.exception.InvalidInsertException;
@@ -9,26 +7,26 @@ import wooteco.subway.line.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.repository.JdbcLineDao;
+import wooteco.subway.section.service.SectionService;
+import wooteco.subway.station.dto.StationResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class LineService {
-
-    private static final Logger log = LoggerFactory.getLogger(LineService.class);
-
+    private final SectionService sectionService;
     private final JdbcLineDao lineRepository;
 
-    public LineService(JdbcLineDao lineRepository) {
+    public LineService(SectionService sectionService, JdbcLineDao lineRepository) {
+        this.sectionService = sectionService;
         this.lineRepository = lineRepository;
     }
 
     public LineResponse save(LineRequest lineRequest) {
         validateLineName(lineRequest);
-        Line line = lineRequest.toLine();
-        Line newLine = lineRepository.save(line);
-        log.info("{} 노선 생성 성공", newLine.getName());
+        Line newLine = lineRepository.save(lineRequest.toLine());
+        sectionService.save(newLine, lineRequest);
         return new LineResponse(newLine);
     }
 
@@ -43,14 +41,14 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        Line newLine = lineRepository.findById(id);
-        log.info("{} 노선 조회 성공", newLine.getName());
-        return new LineResponse(newLine);
+        Line line = lineRepository.findById(id);
+        List<Long> stationIds = sectionService.findAllSectionsId(id);
+        List<StationResponse> stations = sectionService.findStationsByIds(stationIds);
+        return new LineResponse(line, stations);
     }
 
     public List<LineResponse> findAll() {
         List<Line> lines = lineRepository.findAll();
-        log.info("지하철 모든 노선 조회 성공");
         return lines.stream()
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
@@ -59,7 +57,6 @@ public class LineService {
     public void update(Long id, LineRequest lineRequest) {
         Line updatedLine = validatesRequest(id, lineRequest);
         lineRepository.update(updatedLine);
-        log.info("노선 정보 수정 완료");
     }
 
     private Line validatesRequest(Long id, LineRequest lineRequest) {
@@ -77,6 +74,5 @@ public class LineService {
 
     public void delete(Long id) {
         lineRepository.delete(id);
-        log.info("노선 삭제 성공");
     }
 }
