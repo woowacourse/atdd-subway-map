@@ -54,7 +54,6 @@ public class SubwayFacade {
 
     public void deleteSectionInLine(Long lineId, Long stationId) {
         lineService.checkIfExistsById(lineId);
-        sectionService.validateSectionCount(lineId);
         sectionService.deleteSection(lineId, stationId);
     }
 

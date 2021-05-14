@@ -83,24 +83,25 @@ public class SectionService {
         }
     }
 
-    public void validateSectionCount(Long lineId) {
-        final int counts = getSectionCountsByLineId(lineId);
-        if (counts <= 1) {
-            throw new DeleteSectionIsNotPermittedException();
-        }
-    }
-
     public void deleteAllSectionByLineId(Long lineId) {
         sectionDao.deleteAllByLineId(lineId);
     }
 
     public void deleteSection(Long lineId, Long stationId) {
+        validateSectionCount(lineId);
         final List<Section> sections = sectionDao.findAllSectionsIncludeStationId(lineId, stationId);
         if (sections.isEmpty()) {
             throw new DeleteSectionIsNotPermittedException();
         }
         Section section = adjustSection(lineId, new Sections(sections));
         sectionDao.delete(section);
+    }
+
+    private void validateSectionCount(Long lineId) {
+        final int counts = getSectionCountsByLineId(lineId);
+        if (counts <= 1) {
+            throw new DeleteSectionIsNotPermittedException();
+        }
     }
 
     private Section adjustSection(Long lineId, Sections sections) {
