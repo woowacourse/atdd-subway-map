@@ -29,6 +29,7 @@ public class LineService {
     }
 
     public LineResponse createLine(long upStationId, long downStationId, String lineName, String lineColor, int distance) {
+        validateStationId(upStationId, downStationId);
         validateDuplicateName(lineName);
         Line line = lineDao.save(lineName, lineColor);
 
@@ -40,6 +41,12 @@ public class LineService {
 
         line.setSections(sections);
         return LineResponse.from(line);
+    }
+
+    private void validateStationId(long upStationId, long downStationId) {
+        if (upStationId == downStationId) {
+            throw new IllegalArgumentException("상행역과 하행역은 같은 역이 될 수 없습니다.");
+        }
     }
 
     private void validateDuplicateName(String lineName) {
