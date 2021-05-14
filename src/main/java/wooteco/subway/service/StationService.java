@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.station.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.station.DuplicatedStationException;
@@ -10,6 +11,7 @@ import wooteco.subway.exception.station.StationNotFoundException;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Service
 public class StationService {
 

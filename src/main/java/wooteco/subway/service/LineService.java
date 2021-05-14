@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.dao.section.SectionDao;
 import wooteco.subway.domain.Line;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Service
 public class LineService {
 
