@@ -8,6 +8,8 @@ import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
@@ -27,20 +29,31 @@ public class SubwayService {
         this.stationDao = stationDao;
     }
 
-    public Long createLine(Line line) {
-        return lineDao.insert(line);
+    public LineResponse createLine(LineRequest lineRequest) {
+        Line line = lineRequest.createLine();
+        Section section = lineRequest.createSection();
+        Long lineId = lineDao.insert(line);
+        // TODO: 추후SectionService로 이동
+        insertSection(lineId, section);
+        return new LineResponse(lineId, line);
     }
 
-    public List<Line> showLines() {
-        return lineDao.selectAll();
+    public List<LineResponse> findLines() {
+        List<Line> lines = lineDao.selectAll();
+        return lines.stream()
+                .map(LineResponse::new)
+                .collect(Collectors.toList());
     }
 
-    public Line showLineDetail(Long id) {
+    public LineResponse findLineWithStations(Long id) {
         Line line = lineDao.select(id);
-        return line;
+        List<StationResponse> stationResponses = getStationsInLine(id).stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
+        return new LineResponse(line, stationResponses);
     }
 
-    public List<Station> getStationsInLine(Long id) {
+    private List<Station> getStationsInLine(Long id) {
         Sections sections = new Sections(sectionDao.selectAll(id));
         Line line = lineDao.select(id);
         List<Long> stationIds = sections.getStationIds(line.getUpwardTerminalId(), line.getDownwardTerminalId());
@@ -50,8 +63,8 @@ public class SubwayService {
                 .collect(Collectors.toList());
     }
 
-    public void modifyLine(Long id, Line line) {
-        lineDao.update(id, line);
+    public void modifyLine(Long id, LineRequest lineRequest) {
+        lineDao.update(id, lineRequest.createLine());
     }
 
     public void deleteLine(Long id) {
