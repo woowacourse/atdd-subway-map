@@ -22,13 +22,13 @@ public class SectionController {
         this.sectionService = sectionService;
     }
 
-    @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> createSection(@PathVariable Long lineId, @RequestBody @Valid SectionRequest sectionRequest) {
         sectionService.insertSectionInLine(lineId, sectionRequest);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping(value = "")
+    @DeleteMapping
     public ResponseEntity<Void> deleteStationInLine(@PathVariable Long lineId, @RequestParam Long stationId) {
         sectionService.delete(lineId, stationId);
         return ResponseEntity.ok().build();
