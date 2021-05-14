@@ -10,7 +10,8 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.exception.line.LineDuplicatedInformationException;
 import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.line.dao.LineDao;
-import wooteco.subway.section.dao.SectionDao;
+import wooteco.subway.section.SectionService;
+import wooteco.subway.section.dao.JdbcSectionDao;
 
 import java.util.List;
 
@@ -19,13 +20,14 @@ import java.util.List;
 public class LineService {
 
     private final LineDao lineDao;
-    private final SectionDao sectionDao;
+    private final JdbcSectionDao sectionDao;
+    private final SectionService sectionService;
 
     public Line find(Long lineId) {
         validateExistById(lineId);
 
         Line line = lineDao.findById(lineId);
-        Sections sections = sectionDao.findAllByLineId(lineId);
+        Sections sections = sectionService.findAllByLineId(lineId);
         line.setSections(sections);
 
         return line;

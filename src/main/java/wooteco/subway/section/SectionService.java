@@ -10,9 +10,11 @@ import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.exception.section.SectionLastRemainedException;
 import wooteco.subway.exception.station.StationNotFoundException;
 import wooteco.subway.line.dao.LineDao;
-import wooteco.subway.section.dao.SectionDao;
+import wooteco.subway.section.dao.JdbcSectionDao;
+import wooteco.subway.section.dao.SectionTable;
 import wooteco.subway.station.dao.StationDao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,7 +24,7 @@ public class SectionService {
     private static final int WHEN_BETWEEN_SECTIONS = 2;
     private final StationDao stationDao;
     private final LineDao lineDao;
-    private final SectionDao sectionDao;
+    private final JdbcSectionDao sectionDao;
 
     @Transactional
     public Section create(Section newSection, Long lineId) {
@@ -53,6 +55,18 @@ public class SectionService {
         if (sectionDao.findAllByLineId(lineId).hasSize(1)) {
             throw new SectionLastRemainedException();
         }
+    }
+
+    public Sections findAllByLineId(Long lineId){
+        List<Section> sections = new ArrayList<>();
+        List<SectionTable> sectionTables = sectionDao.findAllByLineId11111(lineId);
+        for(SectionTable sectionTable : sectionTables){
+            Station upStation = stationDao.findById(sectionTable.getUpStationId());
+            Station downStation = stationDao.findById(sectionTable.getDownStationId());
+            sections.add(Section.create(sectionTable.getId(), upStation,downStation, sectionTable.getDistance()));
+        }
+        return Sections.create(sections);
+
     }
 
     private void validateExistStation(Long stationId) {

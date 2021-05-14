@@ -14,7 +14,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Repository
-public class JdbcSectionDao implements SectionDao {
+public class JdbcSectionDao {
     private static final String READ = "select id, " +
             "(select name from station where station.id = section.up_station_id) as upStationName, " +
             "up_station_id as upStationId,  " +
@@ -32,7 +32,6 @@ public class JdbcSectionDao implements SectionDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Override
     public Section create(Section section, Long lineId) {
         String createSql = "INSERT INTO section (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
 
@@ -49,7 +48,6 @@ public class JdbcSectionDao implements SectionDao {
         return Section.create(keyHolder.getKey().longValue(), section.getUpStation(), section.getDownStation(), section.getDistance());
     }
 
-    @Override
     public Sections findAllByLineId(Long lineId) {
         List<Section> sections = jdbcTemplate.query(READ, (rs, rowNum) -> {
             Long id = rs.getLong("id");
@@ -68,14 +66,27 @@ public class JdbcSectionDao implements SectionDao {
         return Sections.create(sections);
     }
 
-    @Override
+    public List<SectionTable> findAllByLineId11111(Long targetLineId) {
+        String readSql = "SELECT * FROM section WHERE line_id = ?";
+
+        List<SectionTable> sectionTables = jdbcTemplate.query(readSql, (rs, rowNum) -> {
+            Long id = rs.getLong("id");
+            Long lineId = rs.getLong("line_id");
+            Long upStationId = rs.getLong("up_station_id");
+            Long downStationId = rs.getLong("down_station_id");
+            int distance = rs.getInt("distance");
+            return new SectionTable(id, lineId, upStationId, downStationId, distance);
+        }, targetLineId);
+
+        return sectionTables;
+    }
+
     public void saveModified(Section updateSection, Long lineId) {
         String updateSql = "UPDATE section SET up_station_id = ?, down_station_id = ?, distance = ? WHERE line_id = ?";
 
         jdbcTemplate.update(updateSql, updateSection.getUpStation().getId(), updateSection.getDownStation().getId(), updateSection.getDistance(), lineId);
     }
 
-    @Override
     public List<Section> findAdjacentByStationId(Long lineId, Long stationId) {
         List<Section> sections = this.jdbcTemplate.query(READ_BY_ID_AND_STATION, (rs, rowNum) -> {
             Long id = rs.getLong("id");
@@ -94,7 +105,6 @@ public class JdbcSectionDao implements SectionDao {
         return sections;
     }
 
-    @Override
     public void removeSections(Long lineId, List<Section> sections) {
         String deleteSql = "DELETE FROM section WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?";
 
@@ -105,7 +115,6 @@ public class JdbcSectionDao implements SectionDao {
         }
     }
 
-    @Override
     public void insertSection(Section affectedSection, Long lineId) {
         String createSql = "INSERT INTO section (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
 
