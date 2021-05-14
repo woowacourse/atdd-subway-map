@@ -132,7 +132,6 @@ class SectionServiceTest {
 
         assertEquals(1, sectionService.deleteSectionByStationId(1L, 4L));
         assertEquals(1, sectionService.deleteSectionByStationId(1L, 1L));
-
         assertThatThrownBy(() -> sectionService.deleteSectionByStationId(1L, 2L))
             .isInstanceOf(ImpossibleDeleteException.class);
     }

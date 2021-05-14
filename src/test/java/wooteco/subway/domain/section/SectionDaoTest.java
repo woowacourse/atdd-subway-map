@@ -10,14 +10,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.domain.line.StationsInLine;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dao.StationDao;
 
 @SpringBootTest
+@Transactional
 @Sql("classpath:test-schema.sql")
 class SectionDaoTest {
     private static final String stationName1 = "강남역";
@@ -46,15 +49,16 @@ class SectionDaoTest {
         assertEquals(sectionId + 1, sectionDao.save(section2));
     }
 
-    @DisplayName("같은 노선의 모든 구간을 조회해 map으로 반환한다.")
+    @DisplayName("같은 노선의 모든 구간을 조회해 StationsInLine으로 반환한다.")
     @Test
     void findSections() {
         save();
         Map<Station, Station> expectedSections = new HashMap<>();
         expectedSections.put(stationDao.findById(1L).get(), stationDao.findById(2L).get());
         expectedSections.put(stationDao.findById(2L).get(), stationDao.findById(3L).get());
+        StationsInLine stationsInLine = StationsInLine.from(expectedSections);
 
-        assertEquals(expectedSections, sectionDao.findSectionsByLineId(1L));
+        assertEquals(stationsInLine, sectionDao.findOrderedStationsByLineId(1L));
     }
 
     @DisplayName("UpStation이 같은 구간을 조회한다.")
@@ -100,13 +104,15 @@ class SectionDaoTest {
         long lineId = saveLine();
         Section section2 = saveSection(lineId, 1L, 2L, 100, 3L, 200);
 
+        int initSize = sectionDao.findOrderedStationsByLineId(lineId).getStations().size();
+
         assertEquals(1, sectionDao.deleteSection(section2));
-        assertEquals(1, sectionDao.findSectionsByLineId(lineId).size());
+        assertEquals(initSize - 1, sectionDao.findOrderedStationsByLineId(lineId).getStations().size());
     }
 
-    private Section saveSection(long lineId, long l, long l2, int i, long l3, int i2) {
-        Section section = new Section(lineId, l, l2, i);
-        Section section2 = new Section(lineId, l2, l3, i2);
+    private Section saveSection(long lineId, long upStationId, long downStationId, int distance, long downStationId2, int distance2) {
+        Section section = new Section(lineId, upStationId, downStationId, distance);
+        Section section2 = new Section(lineId, downStationId, downStationId2, distance2);
         sectionDao.save(section);
         sectionDao.save(section2);
         return section2;

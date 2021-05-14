@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import wooteco.subway.exception.nosuch.NoSuchStationInLineException;
 import wooteco.subway.domain.line.StationsInLine;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.domain.station.Station;
 
 @Service
 @Transactional
@@ -89,6 +87,10 @@ public class SectionService {
         Optional<Section> unKnownPreviousSection = sectionDao.findSectionBySameDownStation(lineId, stationId);
         Optional<Section> unknownNextSection = sectionDao.findSectionBySameUpStation(lineId, stationId);
 
+        if(makeStationsInLine(lineId).canNotDelete()) {
+            throw new ImpossibleDeleteException();
+        }
+
         if (unKnownPreviousSection.isPresent() && unknownNextSection.isPresent()) {
             Section nextSection = unknownNextSection.get();
             Section previousSection = unKnownPreviousSection.get();
@@ -109,17 +111,14 @@ public class SectionService {
     }
 
     private int deleteSection(Section nextSection) {
-        if (sectionDao.findSectionsByLineId(nextSection.getLineId()).size() == 1) {
-            throw new ImpossibleDeleteException();
-        }
         return sectionDao.deleteSection(nextSection);
     }
 
     public StationsInLine makeStationsInLine(long id) {
-        Map<Station, Station> sectionsInLine = sectionDao.findSectionsByLineId(id);
-        if (sectionsInLine.isEmpty()) {
+        StationsInLine sectionsInLine = sectionDao.findOrderedStationsByLineId(id);
+        if (sectionsInLine.getStations().isEmpty()) {
             throw new NoSuchStationInLineException();
         }
-        return StationsInLine.from(sectionsInLine);
+        return sectionsInLine;
     }
 }

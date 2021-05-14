@@ -13,6 +13,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import wooteco.subway.domain.line.StationsInLine;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.station.Station;
 
@@ -46,7 +47,7 @@ public class SectionDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public Map<Station, Station> findSectionsByLineId(long id) {
+    public StationsInLine findOrderedStationsByLineId(long id) {
         String sql = "SELECT UP_STATION_ID, DOWN_STATION_ID FROM SECTION WHERE LINE_ID = ?";
         List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sql, id);
         Map<Station, Station> sections = new HashMap<>();
@@ -61,7 +62,7 @@ public class SectionDao {
                     jdbcTemplate.queryForObject("SELECT NAME FROM STATION WHERE ID = ?", String.class,
                         down_station_id)));
         }
-        return sections;
+        return StationsInLine.from(sections);
     }
 
     public Optional<Section> findSectionBySameUpStation(long lineId, long upStationId) {

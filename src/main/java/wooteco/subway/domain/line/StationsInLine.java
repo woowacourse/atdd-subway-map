@@ -63,6 +63,10 @@ public class StationsInLine {
         return stationIds.contains(stationId);
     }
 
+    public boolean canNotDelete() {
+        return stations.size() == 2;
+    }
+
     public List<Station> getStations() {
         return stations;
     }
