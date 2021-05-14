@@ -101,8 +101,8 @@ public class Sections {
     public Section findByOverlappedStation(final Section section) {
         return sections.stream()
             .filter(
-                it -> section.getUpStationId().equals(it.getUpStationId()) ||
-                    section.getDownStationId().equals(it.getDownStationId())
+                it -> (section.isSameUpStation(it) ||
+                    section.isSameDownStation(it))
             )
             .findAny()
             .orElseThrow(InvalidSectionOnLineException::new);
