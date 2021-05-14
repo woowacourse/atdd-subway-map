@@ -1,41 +1,37 @@
 package wooteco.subway.section;
 
 import wooteco.subway.exception.SubwayException;
+import wooteco.subway.line.Line;
+import wooteco.subway.station.Station;
 
 public class Section {
-    // TODO null 허용 필요없으면 Wrapper 클래스 x
-    // TODO Long -> Station / Long -> Line
     private Long id;
-    private Long lineId;
-    private Long upStationId;
-    private Long downStationId;
-    private Integer distance;
+    private Line line;
+    private Station upStation;
+    private Station downStation;
+    private int distance;
 
     public Section() {
     }
 
     public Section(Long id, Section section) {
-        this(id, section.getLineId(), section.getUpStationId(), section.getDownStationId(), section.getDistance());
+        this(id, section.line, section.upStation, section.downStation, section.distance);
     }
 
-    public Section(Long lineId, Long upStationId, Long downStationId, Integer distance) {
-        this(null, lineId, upStationId, downStationId, distance);
-    }
-
-    public Section(Long id, Long lineId, Long upStationId, Long downStationId, Integer distance) {
+    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
         this.id = id;
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
-    public boolean isSameUpStation(Long stationId) {
-        return this.upStationId.equals(stationId);
+    public boolean isSameUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 
-    public boolean isSameDownStation(Long stationId) {
-        return this.downStationId.equals(stationId);
+    public boolean isSameDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 
     public void updateDistance(int distance) {
@@ -49,23 +45,35 @@ public class Section {
         }
     }
 
+    public Long lineId() {
+        return line.getId();
+    }
+
+    public Long upStationId() {
+        return upStation.getId();
+    }
+
+    public Long downStationId() {
+        return downStation.getId();
+    }
+
     public Long getId() {
         return id;
     }
 
-    public Long getLineId() {
-        return lineId;
+    public Line getLine() {
+        return line;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
+    public Station getDownStation() {
+        return downStation;
     }
 
-    public Integer getDistance() {
+    public int getDistance() {
         return distance;
     }
 }

@@ -1,6 +1,7 @@
 package wooteco.subway.section;
 
 import wooteco.subway.exception.SubwayException;
+import wooteco.subway.station.Station;
 
 import java.util.*;
 
@@ -27,11 +28,11 @@ public class Sections {
         Section section = waiting.poll();
         Section frontBase = result.peek();
         Section lastBase = result.peekLast();
-        if (section.isSameUpStation(lastBase.getDownStationId())) {
+        if (section.isSameUpStation(lastBase.getDownStation())) {
             result.addLast(section);
             return;
         }
-        if (section.isSameDownStation(frontBase.getUpStationId())) {
+        if (section.isSameDownStation(frontBase.getUpStation())) {
             result.addFirst(section);
             return;
         }
@@ -40,8 +41,8 @@ public class Sections {
 
 
     public void validatesEndPoints(Section section) {
-        boolean isUpStationExist = isExist(section.getUpStationId());
-        boolean isDownStationExist = isExist(section.getDownStationId());
+        boolean isUpStationExist = isExist(section.getUpStation());
+        boolean isDownStationExist = isExist(section.getDownStation());
         if (isUpStationExist && isDownStationExist) {
             throw new SubwayException("추가할 수 없는 구간입니다.");
         }
@@ -50,52 +51,52 @@ public class Sections {
         }
     }
 
-    private boolean isExist(Long stationId) {
+    private boolean isExist(Station station) {
         return sections.stream()
-                .anyMatch(section -> stationId.equals(section.getUpStationId())
-                        || stationId.equals(section.getDownStationId()));
+                .anyMatch(section -> section.isSameUpStation(station)
+                        || section.isSameDownStation(station));
     }
 
-    public Section findByUpStationId(Long upStationId) {
+    public Section findByUpStationId(Station upStation) {
         return sections.stream()
-                .filter(section -> upStationId.equals(section.getUpStationId()))
+                .filter(section -> section.isSameUpStation(upStation))
                 .findAny()
                 .orElseThrow(() -> new SubwayException("없는 구간입니다!"));
     }
 
-    public Section findByDownStationId(Long downStationId) {
+    public Section findByDownStationId(Station downStation) {
         return sections.stream()
-                .filter(section -> downStationId.equals(section.getDownStationId()))
+                .filter(section -> section.isSameDownStation(downStation))
                 .findAny()
                 .orElseThrow(() -> new SubwayException("없는 구간입니다!"));
     }
 
     public boolean isEndPoint(Section section) {
-        if (isUpEndPoint(section.getDownStationId())) {
+        if (isUpEndPoint(section.getDownStation())) {
             return true;
         }
-        return isDownEndPoint(section.getUpStationId());
+        return isDownEndPoint(section.getUpStation());
     }
 
-    public boolean isUpEndPoint(Long id) {
-        Long upStationId = sections.get(0).getUpStationId();
-        return upStationId.equals(id);
+    public boolean isUpEndPoint(Station station) {
+        Station upStation = sections.get(0).getUpStation();
+        return upStation.equals(station);
     }
 
-    public boolean isDownEndPoint(Long id) {
-        Long downStationId = sections.get(sections.size() - 1)
-                .getDownStationId();
-        return downStationId.equals(id);
+    public boolean isDownEndPoint(Station station) {
+        Station downStation = sections.get(sections.size() - 1)
+                .getDownStation();
+        return downStation.equals(station);
     }
 
     public boolean newUpStationInStartPoints(Section section) {
         return sections.stream()
-                .anyMatch(s -> s.isSameUpStation(section.getUpStationId()));
+                .anyMatch(s -> s.isSameUpStation(section.getUpStation()));
     }
 
     public boolean newDownStationInEndPoints(Section section) {
         return sections.stream()
-                .anyMatch(s -> s.isSameDownStation(section.getDownStationId()));
+                .anyMatch(s -> s.isSameDownStation(section.getDownStation()));
     }
 
     public void checkRemainSectionSize() {

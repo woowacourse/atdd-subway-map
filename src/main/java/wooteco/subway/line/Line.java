@@ -11,6 +11,10 @@ public class Line {
     private String color;
     private List<Station> stations;
 
+    public Line(long id) {
+        this(id, null, null, Collections.emptyList());
+    }
+
     public Line(String name, String color) {
         this(null, name, color, Collections.emptyList());
     }

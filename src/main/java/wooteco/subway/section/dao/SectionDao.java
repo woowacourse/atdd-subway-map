@@ -9,13 +9,7 @@ public interface SectionDao {
 
     List<Section> findAllByLineId(Long id);
 
-    void updateUpStationId(Section section, Long upStationId);
+    void update(Section section);
 
-    void updateDownStationId(Section section, Long downStationId);
-
-    void deleteByLineIdAndUpStationId(Long lineId, Long upStationId);
-
-    void deleteByLineIdAndDownStationId(Long lineId, Long downStationId);
-
-    void deleteBySection(Section section);
+    void deleteById(Long id);
 }

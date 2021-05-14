@@ -4,6 +4,10 @@ public class Station {
     private Long id;
     private String name;
 
+    public Station(long id) {
+        this(id, null);
+    }
+
     public Station(String name) {
         this(null, name);
     }
