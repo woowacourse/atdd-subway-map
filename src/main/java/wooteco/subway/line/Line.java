@@ -113,22 +113,21 @@ public class Line {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final Line line = (Line) o;
-        return Objects.equals(getId(), line.getId()) && Objects
-            .equals(getName(), line.getName()) && Objects.equals(getColor(), line.getColor())
-            && Objects.equals(getSections(), line.getSections()) && Objects
-            .equals(getStations(), line.getStations());
+        Line line = (Line) o;
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects
+            .equals(color, line.color) && Objects.equals(sections, line.sections) && Objects
+            .equals(stations, line.stations);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getColor(), getSections(), getStations());
+        return Objects.hash(id, name, color, sections, stations);
     }
 }
