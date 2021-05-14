@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.exception.section.InvalidDistanceException;
 import wooteco.subway.exception.station.NotFoundStationException;
-import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.dto.DeleteStationDto;
 import wooteco.subway.section.dto.SectionServiceDto;
@@ -31,8 +30,6 @@ public class SectionServiceTest {
 
     @Autowired
     private SectionDao sectionDao;
-    @Autowired
-    private LineDao lineDao;
     @Autowired
     private StationDao stationDao;
     @Autowired
