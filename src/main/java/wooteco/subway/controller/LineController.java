@@ -6,9 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import wooteco.subway.controller.request.LineAndSectionCreateRequest;
 import wooteco.subway.controller.request.SectionInsertRequest;
 import wooteco.subway.controller.response.LineCreateResponse;
-import wooteco.subway.controller.response.LineWithAllSectionsResponse;
+import wooteco.subway.controller.response.LineResponse;
 import wooteco.subway.service.SubwayFacade;
-import wooteco.subway.service.dto.LineDto;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -32,31 +31,30 @@ public class LineController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<LineWithAllSectionsResponse>> showLines() {
-        final List<LineDto> lines = subwayFacade.findAllLines();
-        final List<LineWithAllSectionsResponse> lineRetrieveResponses = lines.stream()
-                .map(LineWithAllSectionsResponse::new)
+    public ResponseEntity<List<LineResponse>> showLines() {
+        final List<LineResponse> lineRetrieveResponses = subwayFacade.findAllLines().stream()
+                .map(LineResponse::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineRetrieveResponses);
     }
 
-    @GetMapping(value = "/{lineId}")
-    public ResponseEntity<LineWithAllSectionsResponse> showSubwayLineInformation(@PathVariable Long lineId) {
-        LineWithAllSectionsResponse lineWithAllSectionsResponse = new LineWithAllSectionsResponse(subwayFacade.findAllInfoByLineId(lineId));
-        return ResponseEntity.ok().body(lineWithAllSectionsResponse);
-    }
-
     @PutMapping(value = "/{id}")
-    public ResponseEntity<LineWithAllSectionsResponse> update(@PathVariable Long id, @RequestBody LineAndSectionCreateRequest lineAndSectionCreateRequest) {
+    public ResponseEntity<LineResponse> update(@PathVariable Long id, @RequestBody LineAndSectionCreateRequest lineAndSectionCreateRequest) {
         subwayFacade.updateLineById(id, lineAndSectionCreateRequest);
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping(value = "/{lineId}")
+    public ResponseEntity<LineResponse> showSubwayLineInformation(@PathVariable Long lineId) {
+        LineResponse lineResponse = new LineResponse(subwayFacade.findAllInfoByLineId(lineId));
+        return ResponseEntity.ok().body(lineResponse);
+    }
+
     @PostMapping("/{lineId}/sections")
-    public ResponseEntity<LineWithAllSectionsResponse> insertSectionInLine(@PathVariable Long lineId, @RequestBody SectionInsertRequest sectionInsertRequest) {
+    public ResponseEntity<LineResponse> insertSectionInLine(@PathVariable Long lineId, @RequestBody SectionInsertRequest sectionInsertRequest) {
         subwayFacade.insertSectionInLine(lineId, sectionInsertRequest);
-        LineWithAllSectionsResponse lineWithAllSectionsResponse = new LineWithAllSectionsResponse(subwayFacade.findAllInfoByLineId(lineId));
-        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections")).body(lineWithAllSectionsResponse);
+        LineResponse lineResponse = new LineResponse(subwayFacade.findAllInfoByLineId(lineId));
+        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections")).body(lineResponse);
     }
 
     @DeleteMapping("/{lineId}/sections")

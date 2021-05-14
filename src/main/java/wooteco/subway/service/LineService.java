@@ -23,8 +23,8 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line create(LineAndSectionCreateRequest lineAndSectionCreateRequest) {
-        final Long id = lineDao.insert(lineAndSectionCreateRequest.toLine());
+    public Line create(SimpleLine simpleLine) {
+        final Long id = lineDao.insert(simpleLine.toLine());
         return lineDao.findById(id);
     }
 
