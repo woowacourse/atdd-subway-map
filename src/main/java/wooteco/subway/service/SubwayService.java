@@ -8,6 +8,8 @@ import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,12 +58,17 @@ public class SubwayService {
         lineDao.delete(id);
     }
 
-    public Long createStation(Station station) {
-        return stationDao.insert(station);
+    public StationResponse createStation(StationRequest stationRequest) {
+        Station station = stationRequest.createStation();
+        long stationId = stationDao.insert(station);
+        return new StationResponse(stationId, station);
     }
 
-    public List<Station> showStations() {
-        return stationDao.selectAll();
+    public List<StationResponse> findsStations() {
+        List<Station> stations = stationDao.selectAll();
+        return stations.stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
     }
 
     public void deleteStation(Long id) {
