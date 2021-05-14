@@ -7,6 +7,7 @@ import wooteco.subway.exception.InternalLogicConflictException;
 import wooteco.subway.exception.section.SectionDuplicatedException;
 import wooteco.subway.exception.section.SectionHasSameUpAndDownException;
 import wooteco.subway.exception.section.SectionUnlinkedException;
+import wooteco.subway.exception.station.StationNotFoundException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -62,10 +63,11 @@ class SectionsTest {
     void addAndThenGetModifiedAdjacent() {
         Sections sections = Sections.create(강남_수서);
 
-        Section modifiedSection = sections.addAndThenGetModifiedAdjacent(양재_수서);
+        Section modified = sections.modifyRelated(양재_수서);
+        sections.add(modified);
 
         assertThat(sections.sections()).hasSize(2);
-        assertThat(modifiedSection).isEqualTo(Section.create(강남역, 양재역, 5));
+        assertThat(modified).isEqualTo(Section.create(강남역, 양재역, 5));
     }
 
     @DisplayName("구간추가 - 성공(기존의 구간이 변경되지 않는 경우)")
@@ -73,32 +75,39 @@ class SectionsTest {
     void addAndThenGetModifiedAdjacent_1() {
         Sections sections = Sections.create(강남_수서);
 
-        Section modifiedSection = sections.addAndThenGetModifiedAdjacent(수서_잠실);
+        Section modified = sections.modifyRelated(수서_잠실);
+        sections.add(수서_잠실);
 
         assertThat(sections.sections()).hasSize(2);
-        assertThat(modifiedSection).isEqualTo(강남_수서);
+        assertThat(modified).isEqualTo(강남_수서);
     }
 
     @DisplayName("구간추가 - 성공(가운데 추가 경우, 베이스가 꼬리)")
     @Test
     void addAndThenGetModifiedAdjacent_꼬리베이스() {
         Sections sections = Sections.create(수서_잠실);
-        sections.addAndThenGetModifiedAdjacent(강남_수서);
-        Section modifiedSection = sections.addAndThenGetModifiedAdjacent(양재_수서);
+
+        sections.modifyRelated(강남_수서);
+        sections.add(강남_수서);
+
+        Section modified = sections.modifyRelated(양재_수서);
+        sections.add(양재_수서);
 
         assertThat(sections.sections()).hasSize(3);
-        assertThat(modifiedSection).isEqualTo(Section.create(강남역, 양재역, 5));
+        assertThat(modified).isEqualTo(Section.create(강남역, 양재역, 5));
     }
 
     @DisplayName("구간추가 - 성공(가운데 추가 경우, 베이스가 머리)")
     @Test
     void addAndThenGetModifiedAdjacent_머리베이스() {
         Sections sections = Sections.create(수서_잠실);
-        sections.addAndThenGetModifiedAdjacent(강남_수서);
-        Section modifiedSection = sections.addAndThenGetModifiedAdjacent(수서_양재);
+        sections.modifyRelated(강남_수서);
+        sections.add(강남_수서);
+        Section modified = sections.modifyRelated(수서_양재);
+        sections.add(수서_양재);
 
         assertThat(sections.sections()).hasSize(3);
-        assertThat(modifiedSection).isEqualTo(Section.create(양재역, 잠실역, 5));
+        assertThat(modified).isEqualTo(Section.create(양재역, 잠실역, 5));
     }
 
     @DisplayName("구간추가 - 실패(의미상 같은 구간 추가)")
@@ -106,9 +115,9 @@ class SectionsTest {
     void addAndThenGetModifiedAdjacent_실패_같은구간() {
         Sections sections = Sections.create(강남_수서);
 
-        assertThatThrownBy(() -> sections.addAndThenGetModifiedAdjacent(수서_강남))
+        assertThatThrownBy(() -> sections.modifyRelated(수서_강남))
                 .isInstanceOf(SectionDuplicatedException.class);
-        assertThatThrownBy(() -> sections.addAndThenGetModifiedAdjacent(강남_수서))
+        assertThatThrownBy(() -> sections.modifyRelated(강남_수서))
                 .isInstanceOf(SectionDuplicatedException.class);
     }
 
@@ -117,7 +126,7 @@ class SectionsTest {
     void addAndThenGetModifiedAdjacent_실패_앞뒤같은구간() {
         Sections sections = Sections.create(강남_수서);
 
-        assertThatThrownBy(() -> sections.addAndThenGetModifiedAdjacent(Section.create(강남역, 강남역, 10)))
+        assertThatThrownBy(() -> sections.modifyRelated(Section.create(강남역, 강남역, 10)))
                 .isInstanceOf(SectionHasSameUpAndDownException.class);
     }
 
@@ -128,7 +137,7 @@ class SectionsTest {
         Section section = Section.create(동탄역, 양재역, 10);
         Sections sections = Sections.create(setting);
 
-        assertThatThrownBy(() -> sections.addAndThenGetModifiedAdjacent(section))
+        assertThatThrownBy(() -> sections.modifyRelated(section))
                 .isInstanceOf(SectionUnlinkedException.class);
     }
 
@@ -143,14 +152,14 @@ class SectionsTest {
         assertThat(result).hasSize(3);
     }
 
-    @DisplayName("삭제 -실패(내부로직 이상 테스트)")
+    @DisplayName("삭제 -실패(포함되지 않는 역 삭제)")
     @Test
     void removeStationInBetween_내부구현로직이상() {
-        List<Section> setting = Arrays.asList(수서_잠실, 강남_수서, 잠실_동탄);
+        List<Section> setting = Arrays.asList(수서_잠실);
         Sections sections = Sections.create(setting);
 
-        assertThatThrownBy(() -> sections.removeStationInBetween(강남역))
-                .isInstanceOf(InternalLogicConflictException.class);
+        assertThatThrownBy(() -> sections.removeRelated(강남역))
+                .isInstanceOf(StationNotFoundException.class);
     }
 
     @DisplayName("삭제")
@@ -159,7 +168,8 @@ class SectionsTest {
         List<Section> setting = Arrays.asList(수서_잠실, 강남_수서);
         Sections sections = Sections.create(setting);
 
-        Section result = sections.removeStationInBetween(수서역);
+        List<Section> removed = sections.removeRelated(수서역);
+        Section result = sections.reflectRemoved(removed, 수서역);
 
         assertThat(result).isEqualTo((Section.create(강남역, 잠실역, 20)));
     }

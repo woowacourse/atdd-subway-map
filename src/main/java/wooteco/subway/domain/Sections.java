@@ -2,10 +2,12 @@ package wooteco.subway.domain;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import wooteco.subway.exception.InternalLogicConflictException;
 import wooteco.subway.exception.section.SectionCycleException;
 import wooteco.subway.exception.section.SectionDuplicatedException;
-import wooteco.subway.exception.section.SectionInternalRemovableConflictException;
+import wooteco.subway.exception.section.SectionLastRemainedException;
 import wooteco.subway.exception.section.SectionUnlinkedException;
+import wooteco.subway.exception.station.StationNotFoundException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,7 +19,8 @@ public class Sections {
     private static final int SECOND_ELEMENT = 1;
     private static final int EXPECTED_REMOVE_SITUATION = 2;
     private static final int TWO_ADJACENT_SECTIONS = 2;
-    private final List<Section> sections;
+
+    private List<Section> sections;
 
     public static Sections create(Section... sections) {
         return create(new ArrayList<>(Arrays.asList(sections)));
@@ -59,54 +62,47 @@ public class Sections {
         }
     }
 
-    private Section modifyAdjacent(Section newSection) {
-        List<Section> collect = sections.stream()
-                .filter(originalSection -> originalSection.isAdjacent(newSection))
-                .collect(Collectors.toList());
-
-        if (isMiddleSection(newSection, collect)) {
-            // 베이스가 head일 경우
-            if (sections.stream().anyMatch(section -> section.isUpStation(newSection.getUpStation()))) {
-                Section sameHead = sections.stream()
-                        .filter(section -> section.isUpStation(newSection.getUpStation()))
-                        .findAny().orElseThrow(SectionUnlinkedException::new);
-                return updateSection(sameHead, newSection);
-            }
-            // a - b b - c -> b - k
-            // 베이스가 tail일 경우
-            if (sections.stream().anyMatch(section -> section.isDownStation(newSection.getDownStation()))) {
-                Section sameTail = sections.stream()
-                        .filter(section -> section.isDownStation(newSection.getDownStation()))
-                        .findAny().orElseThrow(SectionUnlinkedException::new);
-                return updateSection(sameTail, newSection);
-            }
-        }
-        final Section originalSection = collect.get(FIRST_ELEMENT);
-        return updateSection(originalSection, newSection);
-    }
-
-    private boolean isMiddleSection(Section newSection, List<Section> sections) {
-        return sections.size() == TWO_ADJACENT_SECTIONS;
-//                && sections.stream()
-//                        .anyMatch(section -> section.isUpStation(newSection.getUpStation()));
-    }
-
     private boolean isCycleSection(Section newSection, List<Section> collect) {
         return collect.stream().anyMatch(section -> section.isUpStation(newSection.getUpStation())) &&
                 collect.stream().anyMatch(section -> section.isDownStation(newSection.getDownStation()));
     }
 
-    private Section updateSection(Section originalSection, Section newSection) {
-        return originalSection.updateByNewSection(newSection);
+//    private Section updateSection(Section originalSection, Section newSection) {
+//        return
+//    }
+
+    public Section modifyRelated(Section newSection) {
+        validateAddable(newSection);
+        List<Section> related = findRelated(newSection);
+
+        // 잠실 - 잠실새내 - 동탄  <-- 수서 - 잠실새내
+        if (related.size() == 2) {
+            if (related.stream().anyMatch(section -> section.isUpStation(newSection.getUpStation()))) {
+                Section sameHead = related.stream()
+                        .filter(section -> section.isUpStation(newSection.getUpStation()))
+                        .findAny().orElseThrow(InternalLogicConflictException::new);
+                return sameHead.updateByNewSection(newSection);
+            }
+            // 베이스가 tail일 경우
+            if (related.stream().anyMatch(section -> section.isDownStation(newSection.getDownStation()))) {
+                Section sameTail = related.stream()
+                        .filter(section -> section.isDownStation(newSection.getDownStation()))
+                        .findAny().orElseThrow(InternalLogicConflictException::new);
+                return sameTail.updateByNewSection(newSection);
+            }
+        }
+
+        if (related.size() == 1) {
+            final Section originalSection = related.get(FIRST_ELEMENT);
+            return originalSection.updateByNewSection(newSection);
+        }
+        throw new InternalLogicConflictException();
     }
 
-    public Section addAndThenGetModifiedAdjacent(Section section) {
-        validateAddable(section);
-
-        Section modifiedSection = modifyAdjacent(section);
-        sections.add(section);
-
-        return modifiedSection;
+    private List<Section> findRelated(Section newSection) {
+        return sections.stream()
+                .filter(section -> section.isAdjacent(newSection))
+                .collect(Collectors.toList());
     }
 
     private void validateAddable(Section target) {
@@ -135,36 +131,61 @@ public class Sections {
         return Collections.unmodifiableList(sections);
     }
 
-    public Section removeStationInBetween(Station station) {
-        validateIsSizeTwo(sections);
+    public List<Section> removeRelated(Station station) {
+        validateRemovable(station);
 
-        Section section = sections.get(FIRST_ELEMENT);
-        int distance = sections.stream()
-                .mapToInt(Section::getDistance)
-                .sum();
+        List<Section> related = findRelated(station);
+        sections = sections.stream()
+                .filter(section -> !related.contains(section))
+                .collect(Collectors.toList());
 
-        return mergeTwoIntoOne(station, section, distance);
+        return related;
     }
 
-    private Section mergeTwoIntoOne(Station station, Section section, int distance) {
-        if (section.isUpStation(station)) {
-            Station downStation = section.getDownStation();
-            Station upStation = sections.get(SECOND_ELEMENT).getUpStation();
-            return Section.create(upStation, downStation, distance);
+    public Section reflectRemoved(List<Section> related, Station station) {
+        if (related.size() == 2) {
+            Section firstRelated = related.get(0);
+            Section secondRelated = related.get(1);
+            int distance = firstRelated.getDistance() + secondRelated.getDistance();
+            if (firstRelated.isUpStation(station)) {
+                Station downStation = firstRelated.getDownStation();
+                Station upStation = secondRelated.getUpStation();
+                Section modified = Section.create(upStation, downStation, distance);
+                sections.add(modified);
+                return modified;
+            }
         }
-        Station upStation = section.getUpStation();
-        Station downStation = sections.get(SECOND_ELEMENT).getDownStation();
-        return Section.create(upStation, downStation, distance);
+        if (related.size() == 1) {
+            Section section = related.get(0);
+            sections.add(section);
+            return section;
+        }
+        throw new InternalLogicConflictException();
     }
 
-    private void validateIsSizeTwo(List<Section> sections) {
-        if (sections.size() != EXPECTED_REMOVE_SITUATION) {
-            throw new SectionInternalRemovableConflictException();
+    private List<Section> findRelated(Station station) {
+        return sections.stream()
+                .filter(section -> section.isAdjacent(station))
+                .collect(Collectors.toList());
+    }
+
+    private void validateRemovable(Station station) {
+        if (sections.stream().noneMatch(section -> section.isAdjacent(station))) {
+            throw new StationNotFoundException();
+        }
+
+        if (sections.size() == 1) {
+            throw new SectionLastRemainedException();
         }
     }
 
     public boolean hasSize(int size) {
         return sections.size() == size;
+    }
+
+
+    public void add(Section newSection) {
+        sections.add(newSection);
     }
 
 }

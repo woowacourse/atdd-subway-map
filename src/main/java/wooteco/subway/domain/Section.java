@@ -51,9 +51,10 @@ public class Section {
         if (downStation.equals(target.downStation)) {
             int difference = distance.subtract(target.distance).intValue();
             downStation = target.upStation;
-            distance = new SectionDistance(difference);
+            this.distance = new SectionDistance(difference);
             return this;
         }
+
         return this;
     }
 
@@ -70,6 +71,11 @@ public class Section {
                 isDownStation(target.getDownStation()) ||
                 isUpStation(target.getDownStation()) ||
                 isDownStation(target.getUpStation());
+    }
+
+    public boolean isAdjacent(Station target) {
+        return isUpStation(target) || isDownStation(target);
+
     }
 
     public int getDistance() {

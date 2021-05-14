@@ -51,18 +51,11 @@ public class JdbcSectionDao {
         };
     }
 
-    public void saveModified(Section updateSection, Long lineId) {
-        String updateSql = "UPDATE section SET up_station_id = ?, down_station_id = ?, distance = ? WHERE line_id = ?";
+    public void updateModified(Section section) {
+        String updateSql = "UPDATE section SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
 
-        jdbcTemplate.update(updateSql, updateSection.getUpStation().getId(), updateSection.getDownStation().getId(), updateSection.getDistance(), lineId);
+        jdbcTemplate.update(updateSql, section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance(), section.getId());
     }
-
-    public List<SectionTable> findAdjacentByStationId1111(Long lineId, Long stationId) {
-        String findAdjacentSql = "SELECT * FROM section WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
-        List<SectionTable> sectionTables = this.jdbcTemplate.query(findAdjacentSql, sectionRowMapper(), lineId, stationId, stationId);
-        return sectionTables;
-    }
-
 
     public void remove(Long lineId, Long upStationId, Long downStationId) {
         String deleteSql = "DELETE FROM section WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?";

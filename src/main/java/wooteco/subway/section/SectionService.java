@@ -20,8 +20,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SectionService {
-
-    private static final int WHEN_BETWEEN_SECTIONS = 2;
     private final JdbcStationDao stationDao;
     private final JdbcLineDao lineDao;
     private final JdbcSectionDao sectionDao;
@@ -29,9 +27,11 @@ public class SectionService {
     @Transactional
     public Section create(Section newSection, Long lineId) {
         Sections sections = findAllByLineId(lineId);
-        Section modifiedSection = sections.addAndThenGetModifiedAdjacent(newSection);
 
-        sectionDao.saveModified(modifiedSection, lineId);
+        Section modified = sections.modifyRelated(newSection);
+        sections.add(newSection);
+
+        sectionDao.updateModified(modified);
         return sectionDao.create(newSection, lineId);
     }
 
@@ -47,20 +47,17 @@ public class SectionService {
         validateIsLastRemainedSection(lineId);
 
         Station station = stationDao.findById(stationId);
+        Sections sections = findAllByLineId(lineId);
 
-        List<SectionTable> sectionTables = sectionDao.findAdjacentByStationId1111(lineId, stationId);
-        List<Section> relatedSections = convertToSections(sectionTables);
+        List<Section> removed = sections.removeRelated(station);
+        Section modified = sections.reflectRemoved(removed, station);
 
-        for (Section section : relatedSections) {
+        for (Section section : removed) {
             Long upStationId = section.getUpStation().getId();
             Long downStationId = section.getDownStation().getId();
             sectionDao.remove(lineId, upStationId, downStationId);
         }
-
-        if (relatedSections.size() == WHEN_BETWEEN_SECTIONS) {
-            Section section = Sections.create(relatedSections).removeStationInBetween(station);
-            sectionDao.create(section, lineId);
-        }
+        sectionDao.create(modified, lineId);
     }
 
     private void validateIsLastRemainedSection(Long lineId) {
