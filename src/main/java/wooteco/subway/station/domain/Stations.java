@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Stations {
-    private List<Station> stations;
+    private final List<Station> stations;
 
     public Stations(final List<Station> stations) {
         this.stations = stations;

@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.service.NoSuchLineException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -62,7 +63,7 @@ class LineRepositoryTest {
     @Test
     void getLine() {
         Line expectedLine = new Line(1L, "bg-red-600", "신분당선");
-        assertThat(lineRepository.findById(1L)).isEqualTo(expectedLine);
+        assertThat(lineRepository.findById(1L).orElseThrow(NoSuchLineException::new)).isEqualTo(expectedLine);
     }
 
     @DisplayName("id를 통해 line 수정 요청을 보내면, DB에있는 line정보를 수정한다")

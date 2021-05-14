@@ -10,6 +10,7 @@ import wooteco.subway.line.domain.Line;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class LineRepository {
@@ -43,9 +44,11 @@ public class LineRepository {
         return jdbcTemplate.query(query, lineRowMapper);
     }
 
-    public Line findById(final Long id) {
+    public Optional<Line> findById(final Long id) {
         String query = "SELECT id, color, name FROM line WHERE id = ?";
-        return jdbcTemplate.queryForObject(query, lineRowMapper, id);
+        return jdbcTemplate.query(query, lineRowMapper, id)
+                .stream()
+                .findFirst();
     }
 
     public void update(final Line line) {

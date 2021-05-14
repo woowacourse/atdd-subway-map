@@ -2,18 +2,14 @@ package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.section.domain.Section;
-import wooteco.subway.section.domain.Sections;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.Stations;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.repository.StationRepository;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
-@Transactional
 public class StationService {
     private final StationRepository stationRepository;
 
@@ -21,12 +17,14 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public StationResponse createStation(final String name) {
         Station station = new Station(name);
         if (stationRepository.doesNameExist(station)) {
             throw new DuplicateStationNameException();
         }
-        station = stationRepository.save(station);
+        long lineId = stationRepository.save(station);
+        station.setId(lineId);
         return StationResponse.toDto(station);
     }
 
@@ -35,6 +33,7 @@ public class StationService {
         return StationResponse.toDtos(stations);
     }
 
+    @Transactional
     public void delete(final Long id) {
         if (stationRepository.doesIdNotExist(id)) {
             throw new NoSuchStationException();

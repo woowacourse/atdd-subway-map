@@ -24,7 +24,7 @@ public class StationRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Station save(final Station station) {
+    public long save(final Station station) {
         String query = "INSERT INTO STATION(name) VALUES (?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -34,13 +34,9 @@ public class StationRepository {
             return ps;
         }, keyHolder);
 
-        return new Station(
-                Objects.requireNonNull(keyHolder.getKey()).longValue(),
-                station.getName()
-        );
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    //TODO: Stations 반환하기
     public Stations findAll() {
         String query = "SELECT id, name FROM station ORDER BY id";
         List<Station> stations = jdbcTemplate.query(query, stationRowMapper);

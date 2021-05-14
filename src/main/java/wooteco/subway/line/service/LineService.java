@@ -15,7 +15,6 @@ import wooteco.subway.station.service.StationService;
 import java.util.List;
 
 @Service
-@Transactional
 public class LineService {
     private final LineRepository lineRepository;
     private final SectionService sectionService;
@@ -36,6 +35,7 @@ public class LineService {
         return LineResponse.toDtos(lines);
     }
 
+    @Transactional
     public LineResponse save(final LineRequest lineRequest) {
         Line line = new Line(lineRequest.getColor(), lineRequest.getName());
         if (lineRepository.doesNameExist(line)) {
@@ -59,17 +59,14 @@ public class LineService {
     }
 
     public LineResponse getLine(final Long id) {
-        if (lineRepository.doesIdNotExist(id)) {
-            throw new NoSuchLineException();
-        }
-        Line line = lineRepository.findById(id);
-
+        Line line = lineRepository.findById(id).orElseThrow(NoSuchLineException::new);
         Sections sections = sectionService.getAllSections(id);
         line.setSections(sections);
 
         return LineResponse.toDto(line);
     }
 
+    @Transactional
     public void updateLine(final Long lineId, final LineRequest lineRequest) {
         Line line = new Line(lineId, lineRequest.getColor(), lineRequest.getName());
         if (lineRepository.doesIdNotExist(line)) {
@@ -78,6 +75,7 @@ public class LineService {
         lineRepository.update(line);
     }
 
+    @Transactional
     public void deleteById(final Long id) {
         if (lineRepository.doesIdNotExist(id)) {
             throw new NoSuchLineException();

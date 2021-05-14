@@ -9,7 +9,6 @@ import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.service.NoSuchStationException;
 
 @Service
-@Transactional
 public class SectionService {
     private final SectionRepository sectionRepository;
 
@@ -17,6 +16,7 @@ public class SectionService {
         this.sectionRepository = sectionRepository;
     }
 
+    @Transactional
     public Long save(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
         Section section = new Section(
                 lineId,
@@ -66,6 +66,7 @@ public class SectionService {
                         sectionRepository.doesExistInDownStation(section.getLineId(), section.getUpStationId())));
     }
 
+    @Transactional
     public void deleteSection(final Long lineId, final Long stationId) {
         validateStationExistence(lineId, stationId);
         validateSectionCount(lineId);
