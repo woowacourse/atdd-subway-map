@@ -96,12 +96,6 @@ public class Sections {
         throw new IllegalArgumentException("노선의 상행역을 찾을 수 없습니다.");
     }
 
-    private List<Long> getUpStationIdList(List<Section> sections) {
-        return sections.stream()
-                .map(Section::getUpStationId)
-                .collect(Collectors.toList());
-    }
-
     private List<Long> getDownStationIdList(List<Section> sections) {
         return sections.stream()
                 .map(Section::getDownStationId)
