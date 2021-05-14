@@ -26,7 +26,7 @@ public class SectionDao {
     }
 
     public Section save(Long lineId, Long upStationId, Long downStationId, int distance) {
-        String sql = "insert into SECTION (LINE_ID, UP_STATION_ID, DOWN_STATION_ID, DISTANCE) values(?,?,?,?)";
+        String sql = "insert into SECTION (line_id, up_station_id, down_station_id, distance) values(?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
@@ -47,22 +47,22 @@ public class SectionDao {
     }
 
     public int delete(Long lineId, Long stationId) {
-        String sql = "delete from SECTION where LINE_ID = ? and (UP_STATION_ID = ? or DOWN_STATION_ID = ?)";
+        String sql = "delete from SECTION where line_id = ? and (up_station_id = ? or down_station_id = ?)";
         return jdbcTemplate.update(sql, lineId, stationId, stationId);
     }
 
     public List<Section> findByLineId(Long lineId) {
-        String sql = "select ID, LINE_ID, UP_STATION_ID, DOWN_STATION_ID, DISTANCE from SECTION where LINE_ID = ?";
+        String sql = "select id, line_id, up_station_id, down_station_id, distance from SECTION where line_id = ?";
         return jdbcTemplate.query(sql, sectionRowMapper(), lineId);
     }
 
     public boolean isExistingStation(Long lineId, Long stationId) {
-        String sql = "select count(*) from SECTION where LINE_ID = ? and (UP_STATION_ID = ? or DOWN_STATION_ID = ?)";
+        String sql = "select count(*) from SECTION where line_id = ? and (up_station_id = ? or down_station_id = ?)";
         return jdbcTemplate.queryForObject(sql, Integer.class, lineId, stationId, stationId) != 0;
     }
 
     public Optional<Section> findByDownStationId(Long lineId, Long downStationId) {
-        String sql = "select * from SECTION where LINE_ID = ? and DOWN_STATION_ID = ?";
+        String sql = "select * from SECTION where line_id = ? and down_station_id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper(), lineId, downStationId));
         } catch (EmptyResultDataAccessException e) {
@@ -71,7 +71,7 @@ public class SectionDao {
     }
 
     public Optional<Section> findByUpStationId(Long lineId, Long upStationId) {
-        String sql = "select * from SECTION where LINE_ID = ? and UP_STATION_ID = ?";
+        String sql = "select * from SECTION where line_id = ? and up_station_id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper(), lineId, upStationId));
         } catch (EmptyResultDataAccessException e) {
@@ -84,8 +84,8 @@ public class SectionDao {
     }
 
     public boolean isEndStation(Long lineId, Long stationId) {
-        String upStationIdCondition = "select count(*) from SECTION where LINE_ID = ? and UP_STATION_ID = ?";
-        String downStationIdCondition = "select count(*) from SECTION where LINE_ID = ? and DOWN_STATION_ID = ?";
+        String upStationIdCondition = "select count(*) from SECTION where line_id = ? and up_station_id = ?";
+        String downStationIdCondition = "select count(*) from SECTION where line_id = ? and down_station_id = ?";
 
         boolean condition1 = jdbcTemplate.queryForObject(upStationIdCondition, Integer.class, lineId, stationId) == 1
                 && jdbcTemplate.queryForObject(downStationIdCondition, Integer.class, lineId, stationId) == 0;
@@ -96,12 +96,12 @@ public class SectionDao {
     }
 
     public void updateDistanceAndDownStation(Long lineId, Long upStationId, Long downStationId, int distance) {
-        String query = "update SECTION set DOWN_STATION_ID = ?, DISTANCE = ? where LINE_ID = ? and UP_STATION_ID = ?";
+        String query = "update SECTION set down_station_id = ?, distance = ? where line_id = ? and up_station_id = ?";
         jdbcTemplate.update(query, downStationId, distance, lineId, upStationId);
     }
 
     public int numberOfEnrolledSection(Long lineId) {
-        String query = "select count(*) from SECTION where LINE_ID = ?";
+        String query = "select count(*) from SECTION where line_id = ?";
         return jdbcTemplate.queryForObject(query, Integer.class, lineId);
     }
 
