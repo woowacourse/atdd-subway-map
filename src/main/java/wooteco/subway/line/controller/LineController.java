@@ -42,8 +42,13 @@ public class LineController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
-        List<StationResponse> sortedStations = lineService.sortedStationsByLineId(id);
-        LineResponse lineResponse = new LineResponse(line, sortedStations);
+        List<StationResponse> stationsByLine =
+            lineService.findStationsByLineId(id)
+                .stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
+
+        LineResponse lineResponse = new LineResponse(line, stationsByLine);
         return ResponseEntity.ok(lineResponse);
     }
 

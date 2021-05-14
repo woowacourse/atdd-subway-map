@@ -8,7 +8,7 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.service.SectionService;
-import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.domain.Station;
 
 import java.util.List;
 
@@ -70,7 +70,8 @@ public class LineService {
         lineDao.delete(id);
     }
 
-    public List<StationResponse> sortedStationsByLineId(Long id) {
+    public List<Station> findStationsByLineId(Long id) {
+        validateId(id);
         return sectionService.sortedStationIds(id);
     }
 

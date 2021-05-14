@@ -6,7 +6,7 @@ import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
 import wooteco.subway.section.dto.SectionRequest;
-import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.service.StationService;
 
 import java.util.List;
@@ -33,10 +33,13 @@ public class SectionService {
         Section section = new Section(
             sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
+
         sections.validate(section);
         Optional<Section> overlappedSection = sectionDao.findBySameUpOrDownId(lineId, section);
+
         Section newSection = sectionDao.save(lineId, section);
         overlappedSection.ifPresent(updateIntermediate(newSection));
+
         return newSection;
     }
 
@@ -74,7 +77,7 @@ public class SectionService {
         }
     }
 
-    public List<StationResponse> sortedStationIds(Long lineIds) {
+    public List<Station> sortedStationIds(Long lineIds) {
         Sections sections = new Sections(sectionDao.findByLineId(lineIds));
         List<Long> sortedStationIds = sections.sortedStationIds();
         return sortedStationIds.stream()
