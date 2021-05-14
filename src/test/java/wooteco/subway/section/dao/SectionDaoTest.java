@@ -17,23 +17,17 @@ import wooteco.subway.section.Section;
 @Sql("classpath:initializeTable.sql")
 public class SectionDaoTest {
 
-    private Long lineId;
-    private Long stationSinSeolId;
-    private Long stationDongMyoId;
-    private Long stationDongDaeMoonId;
-    private int distance;
+    private final Long lineId = 1L;
+    private final Long stationSinSeolId = 1L;
+    private final Long stationDongMyoId = 2L;
+    private final Long stationDongDaeMoonId = 3L;
+    private final int distance = 10;
 
     @Autowired
     private SectionDao sectionDao;
 
     @BeforeEach
     void setUp() {
-        lineId = 1L;
-        stationSinSeolId = 1L;
-        stationDongMyoId = 2L;
-        stationDongDaeMoonId = 3L;
-        distance = 10;
-
         Section sinSeolAndDongMyo = new Section(lineId, stationSinSeolId, stationDongMyoId,
             distance);
         Section dongMyoAndDongDaeMoon = new Section(lineId, stationDongMyoId, stationDongDaeMoonId,
