@@ -1,56 +1,75 @@
 package wooteco.subway.dao;
 
-import org.springframework.util.ReflectionUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dao.exception.NoSuchStationException;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class StationDao implements StationRepository {
-    private Long seq = 0L;
-    private final List<Station> stations = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
+
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    private final RowMapper<Station> stationRowMapper = (rs, rn) -> {
+        long id = rs.getLong("id");
+        String name = rs.getString("name");
+        return new Station(id, name);
+    };
 
     @Override
     public Station save(Station station) {
-        Station persistStation = createNewObject(station);
-        this.stations.add(persistStation);
-        return persistStation;
-    }
+        String query = "INSERT INTO STATION (name) VALUES (?)";
 
-    private Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        this.jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection
+                    .prepareStatement(query, new String[]{"id"});
+            ps.setString(1, station.getName());
+            return ps;
+        }, keyHolder);
+
+        return this.findById(keyHolder.getKey().longValue());
     }
 
     @Override
     public Station findById(long id) {
-        return this.stations.stream()
-                .filter(station -> station.getId().equals(id))
-                .findAny()
-                .orElseThrow(() -> new NoSuchStationException(1));
+        String query = "SELECT * FROM STATION WHERE id = ?";
+        return this.jdbcTemplate.queryForObject(query, stationRowMapper, id);
     }
 
     @Override
     public List<Station> findAll() {
-        return stations;
+        String query = "SELECT * FROM STATION";
+        return this.jdbcTemplate.query(query, stationRowMapper);
     }
 
     @Override
     public Optional<Station> findByName(String name) {
-        return this.stations.stream()
-                .filter(station -> station.getName().equals(name))
-                .findAny();
+        String query = "SELECT * FROM STATION WHERE name = ?";
+
+        return this.jdbcTemplate.query(query, (rs) -> {
+            if (rs.next()) {
+                long id = rs.getLong("id");
+                String stationName = rs.getString("name");
+                return Optional.of(new Station(id, stationName));
+            }
+            return Optional.empty();
+        }, name);
     }
 
     @Override
     public void delete(Long id) {
-        if (!stations.removeIf(station -> station.getId().equals(id))) {
-            throw new NoSuchStationException(1);
-        }
+        String query = "DELETE FROM STATION WHERE id = ?";
+        jdbcTemplate.update(query, id);
     }
 }

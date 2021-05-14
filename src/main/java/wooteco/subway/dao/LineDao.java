@@ -1,66 +1,84 @@
 package wooteco.subway.dao;
 
-import org.springframework.util.ReflectionUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dao.exception.NoSuchLineException;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class LineDao implements LineRepository {
-    private Long seq = 0L;
-    private final List<Line> lines = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
+
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    private final RowMapper<Line> lineRowMapper = (rs, rn) -> {
+        long id = rs.getLong("id");
+        String name = rs.getString("name");
+        String color = rs.getString("color");
+        return new Line(id, name, color);
+    };
 
     @Override
     public Line save(Line line) {
-        Line persistLine = createNewObject(line);
-        this.lines.add(persistLine);
-        return persistLine;
-    }
+        String query = "INSERT INTO LINE (name, color) VALUES (?, ?)";
 
-    private Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        this.jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection
+                    .prepareStatement(query, new String[]{"id"});
+            ps.setString(1, line.getName());
+            ps.setString(2, line.getColor());
+            return ps;
+        }, keyHolder);
+
+        return this.findById(keyHolder.getKey().longValue());
     }
 
     @Override
     public List<Line> findAll() {
-        return lines;
+        String query = "SELECT * FROM LINE";
+        return jdbcTemplate.query(query, lineRowMapper);
     }
 
     @Override
     public Line findById(Long id) {
-        return lines.stream()
-                .filter(line -> line.getId().equals(id))
-                .findAny()
-                .orElseThrow(() -> new NoSuchLineException(1));
+        String query = "SELECT * FROM LINE WHERE id = ?";
+        return jdbcTemplate.queryForObject(query, lineRowMapper, id);
     }
 
     @Override
     public Optional<Line> findByName(String name) {
-        return lines.stream()
-                .filter(line -> line.getName().equals(name))
-                .findAny();
+        String query = "SELECT * FROM LINE WHERE name = ?";
+        return this.jdbcTemplate.query(query, (rs) -> {
+            if (rs.next()) {
+                long id = rs.getLong("id");
+                String lineName = rs.getString("name");
+                String color = rs.getString("color");
+                return Optional.of(new Line(id, lineName, color));
+            }
+            return Optional.empty();
+        }, name);
     }
 
     @Override
     public Line update(Long id, Line newLine) {
-        delete(id);
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, newLine, id);
-        lines.add(newLine);
-        return newLine;
+        String query = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
+        this.jdbcTemplate.update(query, newLine.getName(), newLine.getColor(), id);
+        return this.findById(id);
     }
 
     @Override
     public void delete(Long id) {
-        if (!lines.removeIf(line -> line.getId().equals(id))) {
-            throw new NoSuchLineException(1);
-        }
+        String query = "DELETE FROM LINE WHERE id = ?";
+        jdbcTemplate.update(query, id);
     }
 }
