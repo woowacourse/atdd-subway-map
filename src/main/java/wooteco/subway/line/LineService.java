@@ -111,7 +111,8 @@ public class LineService {
         final Station downStation = findStationById(downStationId);
         final Section newSection = new Section(lineId, upStation, downStation, distance);
 
-        if (line.insertSectionAtEdge(newSection)) {
+        if (line.checkSectionAtEdge(newSection)) {
+            line.insertSectionAtEdge(newSection);
             sectionDao.save(lineId, upStationId, downStationId, distance);
             return;
         }

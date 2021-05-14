@@ -25,8 +25,8 @@ public class Line {
         this(id, name, color, new Sections());
     }
 
-    public boolean insertSectionAtEdge(Section section) {
-        return sections.insertSectionAtEdge(section);
+    public void insertSectionAtEdge(Section section) {
+        sections.insertSectionAtEdge(section);
     }
 
     public Map<Section, Section> insertSectionInBetween(Section section) {
@@ -35,6 +35,10 @@ public class Line {
 
     public boolean checkSectionAtEdge(Station station) {
         return sections.checkSectionAtEdge(station);
+    }
+
+    public boolean checkSectionAtEdge(Section section) {
+        return sections.checkSectionAtEdge(section);
     }
 
     public Section removeSectionAtEdge(Station station) {

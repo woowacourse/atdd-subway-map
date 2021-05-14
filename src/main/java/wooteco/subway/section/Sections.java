@@ -76,23 +76,24 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    public boolean checkSectionAtEdge(Section section) {
+        final List<Station> stations = lineUpStations();
+        return (stations.get(0).equals(section.getDownStation()) ||
+                stations.get(stations.size() - 1).equals(section.getUpStation()));
+    }
+
     public void insertSection(Section section) {
-        if (insertSectionAtEdge(section)) {
+        if (checkSectionAtEdge(section)) {
+            insertSectionAtEdge(section);
             return;
         }
         insertSectionInBetween(section);
     }
 
-    public boolean insertSectionAtEdge(Section section) {
+    public void insertSectionAtEdge(Section section) {
         final List<Station> stations = lineUpStations();
         validateConnection(stations, section);
-
-        if (stations.get(0).equals(section.getDownStation()) ||
-                stations.get(stations.size() - 1).equals(section.getUpStation())) {
-            sections.add(section);
-            return true;
-        }
-        return false;
+        sections.add(section);
     }
 
     private void validateConnection(List<Station> stationsInSection, Section section) {
