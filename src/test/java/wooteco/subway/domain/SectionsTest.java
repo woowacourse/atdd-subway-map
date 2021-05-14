@@ -27,7 +27,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("등록하려는 구간의 상행이 기존 구간의 상행으로 등록되어 있을 때")
+    @DisplayName("등록하려는 구간의 상행이 기존 구간의 상행으로 등록되어 있을 때 남성-이수-내방 순으로 나온다.")
     void addUpSectionTest() {
         Sections sections = new Sections(namSung, naebang, 10);
         sections.add(namSung, isu, 3);
@@ -36,7 +36,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("등록하려는 구간의 하행이 기존 구간의 하행으로 등록되어 있을 때")
+    @DisplayName("등록하려는 구간의 하행이 기존 구간의 하행으로 등록되어 있을 때 남성-이수-내방 순으로 나온다.")
     void addDownSectionTest() {
         Sections sections = new Sections(namSung, naebang, 10);
         sections.add(isu, naebang, 7);
@@ -45,7 +45,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("등록하려는 구간이 전체 구간의 최상단 구간일 때")
+    @DisplayName("등록하려는 구간이 전체 구간의 최상단 구간일 때 남성-이수-내방 순으로 나온다.")
     void addLeftSideTest() {
         Sections sections = new Sections(isu, naebang, 7);
         sections.add(namSung, isu, 3);
@@ -54,7 +54,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("등록하려는 구간이 전체 구간의 최하단 구간일 때")
+    @DisplayName("등록하려는 구간이 전체 구간의 최하단 구간일 때 남성-이수-내방 순으로 나온다.")
     void addRightSideTest() {
         Sections sections = new Sections(namSung, isu, 3);
         sections.add(isu, naebang, 7);
@@ -63,7 +63,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("구간 중간의 역을 삭제하려 할 때")
+    @DisplayName("구간 중간의 역을 삭제하려 할 때 남성-내방 순으로 나온다.")
     void deleteMiddleOfStationTest() {
         Sections expected = new Sections(namSung, naebang, 10);
         originalSections.delete(isu);
@@ -71,7 +71,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("최상단 역을 삭제하려 할 때")
+    @DisplayName("최상단 역을 삭제하려 할 때 이수-내방 순으로 나온다.")
     void deleteLeftSideStationTest() {
         Sections expected = new Sections(isu, naebang, 7);
         originalSections.delete(namSung);
@@ -79,7 +79,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("최하단 역을 삭제하려 할 때")
+    @DisplayName("최하단 역을 삭제하려 할 때 남성-이수 순으로 나온다.")
     void deleteRightSideStationTest() {
         Sections expected = new Sections(namSung, isu, 3);
         originalSections.delete(naebang);
