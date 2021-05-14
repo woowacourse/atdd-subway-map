@@ -29,7 +29,7 @@ public class SectionServiceDto {
         this.distance = distance;
     }
 
-    public static SectionServiceDto from(final Section section) {
+    public static SectionServiceDto from(Section section) {
         return new SectionServiceDto(
             section.getId(),
             section.getLineId(),

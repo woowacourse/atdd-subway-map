@@ -9,7 +9,7 @@ public class DeleteStationDto {
     @NotNull
     private final Long stationId;
 
-    public DeleteStationDto(final Long lineId, final Long stationId) {
+    public DeleteStationDto(Long lineId, Long stationId) {
         this.lineId = lineId;
         this.stationId = stationId;
     }

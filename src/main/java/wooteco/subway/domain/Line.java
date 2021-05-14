@@ -9,15 +9,15 @@ public class Line {
     public Line() {
     }
 
-    public Line(final String name, final String color) {
+    public Line(String name, String color) {
         this(null, new Name(name), new Color(color));
     }
 
-    public Line(final Long id, final String name, final String color) {
+    public Line(Long id, String name, String color) {
         this(new Id(id), new Name(name), new Color(color));
     }
 
-    public Line(final Id id, final Name name, final Color color) {
+    public Line(Id id, Name name, Color color) {
         this.id = id;
         this.name = name;
         this.color = color;

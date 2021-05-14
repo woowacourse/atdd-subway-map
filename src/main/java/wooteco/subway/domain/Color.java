@@ -7,12 +7,12 @@ public class Color {
 
     private final String value;
 
-    public Color(final String value) {
+    public Color(String value) {
         this.value = value;
         validateNull(this.value);
     }
 
-    private void validateNull(final String value) {
+    private void validateNull(String value) {
         if (Objects.isNull(value)) {
             throw new NullColorException();
         }

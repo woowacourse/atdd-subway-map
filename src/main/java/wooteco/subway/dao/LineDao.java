@@ -17,20 +17,20 @@ public class LineDao {
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Line> rowMapper;
 
-    public LineDao(final JdbcTemplate jdbcTemplate, final DataSource source) {
+    public LineDao(JdbcTemplate jdbcTemplate, DataSource source) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(source)
             .withTableName("LINE")
             .usingGeneratedKeyColumns("id");
         this.rowMapper = (rs, rowNum) -> {
-            final Long foundId = rs.getLong("id");
-            final String name = rs.getString("name");
-            final String color = rs.getString("color");
+            Long foundId = rs.getLong("id");
+            String name = rs.getString("name");
+            String color = rs.getString("color");
             return new Line(foundId, name, color);
         };
     }
 
-    public Line create(final Line line) {
+    public Line create(Line line) {
         Map<String, String> params = new HashMap<>();
         params.put("name", line.getName());
         params.put("color", line.getColor());
@@ -40,7 +40,7 @@ public class LineDao {
         return new Line(key, line.getName(), line.getColor());
     }
 
-    public Line show(final Long id) {
+    public Line show(Long id) {
         String sql = "SELECT * FROM LINE WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
@@ -50,12 +50,12 @@ public class LineDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public int update(final long id, final Line line) {
+    public int update(long id, Line line) {
         String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
         return jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
-    public int delete(final long id) {
+    public int delete(long id) {
         String sql = "DELETE FROM LINE WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }

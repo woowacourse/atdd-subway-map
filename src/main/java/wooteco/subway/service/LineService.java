@@ -3,12 +3,12 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.controller.dto.response.StationResponse;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
 import wooteco.subway.exception.line.NotFoundLineException;
 import wooteco.subway.service.dto.CreateLineDto;
 import wooteco.subway.service.dto.CreateSectionDto;
@@ -25,13 +25,13 @@ public class LineService {
     private final LineDao lineDao;
     private final SectionService sectionService;
 
-    public LineService(final LineDao lineDao, final SectionService sectionService) {
+    public LineService(LineDao lineDao, SectionService sectionService) {
         this.lineDao = lineDao;
         this.sectionService = sectionService;
     }
 
     @Transactional
-    public LineServiceDto createLine(@Valid final CreateLineDto createLineDto) {
+    public LineServiceDto createLine(@Valid CreateLineDto createLineDto) {
         Line line = createLineDto.toLineEntity();
         Line saveLine = lineDao.create(line);
         SectionServiceDto sectionServiceDto = SectionServiceDto.of(saveLine, createLineDto);
@@ -46,13 +46,13 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    public ReadLineDto findOne(@Valid final LineServiceDto lineServiceDto) {
+    public ReadLineDto findOne(@Valid LineServiceDto lineServiceDto) {
         Line line = lineDao.show(lineServiceDto.getId());
         List<StationResponse> stationResponses = sectionService.findAllbyLindId(line.getId());
         return ReadLineDto.of(line, stationResponses);
     }
 
-    public void update(@Valid final LineServiceDto lineServiceDto) {
+    public void update(@Valid LineServiceDto lineServiceDto) {
         Line line = lineServiceDto.toEntity();
 
         if (lineDao.update(lineServiceDto.getId(), line) == NOT_FOUND) {
@@ -60,18 +60,18 @@ public class LineService {
         }
     }
 
-    public void delete(@Valid final LineServiceDto lineServiceDto) {
+    public void delete(@Valid LineServiceDto lineServiceDto) {
         if (lineDao.delete(lineServiceDto.getId()) == NOT_FOUND) {
             throw new NotFoundLineException();
         }
     }
 
-    public void createSection(CreateSectionDto createSectionDto) {
+    public void createSection(@Valid CreateSectionDto createSectionDto) {
         SectionServiceDto sectionServiceDto = SectionServiceDto.from(createSectionDto);
         sectionService.save(sectionServiceDto);
     }
 
-    public void deleteStation(final long lineId, final long stationId) {
+    public void deleteStation(@NotNull Long lineId, @NotNull Long stationId) {
         DeleteStationDto deleteStationDto = new DeleteStationDto(lineId, stationId);
         sectionService.delete(deleteStationDto);
     }

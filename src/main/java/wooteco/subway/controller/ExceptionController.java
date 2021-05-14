@@ -22,59 +22,59 @@ import wooteco.subway.exception.station.NotFoundStationException;
 public class ExceptionController {
 
     @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<Void> duplicateExceptionResponse(final DuplicateKeyException e) {
+    public ResponseEntity<Void> duplicateExceptionResponse(DuplicateKeyException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
             .build();
     }
 
     @ExceptionHandler({NotFoundLineException.class, NotFoundStationException.class})
-    public ResponseEntity<Void> notFoundExceptionResponse(final NotFoundException e) {
+    public ResponseEntity<Void> notFoundExceptionResponse(NotFoundException e) {
         return ResponseEntity.notFound()
             .build();
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<Void> voidLineDeleteExceptionResponse(
-        final EmptyResultDataAccessException e) {
+        EmptyResultDataAccessException e) {
         return ResponseEntity.notFound()
             .build();
     }
 
     @ExceptionHandler(InvalidDistanceException.class)
-    public ResponseEntity<Void> invalidDistanceExceptionResponse(final InvalidDistanceException e) {
+    public ResponseEntity<Void> invalidDistanceExceptionResponse(InvalidDistanceException e) {
         return ResponseEntity.badRequest()
             .build();
     }
 
     @ExceptionHandler({NullIdException.class, NullNameException.class, NullColorException.class})
-    public ResponseEntity<Void> nullExceptionResponse(final NullException e) {
+    public ResponseEntity<Void> nullExceptionResponse(NullException e) {
         return ResponseEntity.badRequest()
             .build();
     }
 
     @ExceptionHandler(DuplicateStationException.class)
     public ResponseEntity<Void> duplicatedStationExceptionResponse(
-        final DuplicateStationException e) {
+        DuplicateStationException e) {
         return ResponseEntity.badRequest()
             .build();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Void> methodArgumentNotValidExceptionResponse(
-        final MethodArgumentNotValidException e) {
+        MethodArgumentNotValidException e) {
         return ResponseEntity.badRequest()
             .build();
     }
 
     @ExceptionHandler(InvalidSectionOnLineException.class)
     public ResponseEntity<Void> alreadyExistedStationsOnLineExceptionResponse(
-        final InvalidSectionOnLineException e) {
+        InvalidSectionOnLineException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .build();
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Void> illegalArgumentExceptionResponse(final IllegalArgumentException e) {
+    public ResponseEntity<Void> illegalArgumentExceptionResponse(IllegalArgumentException e) {
         return ResponseEntity.notFound()
             .build();
     }

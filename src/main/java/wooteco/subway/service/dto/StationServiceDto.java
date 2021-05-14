@@ -10,24 +10,24 @@ public class StationServiceDto {
     @NotEmpty
     private final String name;
 
-    public StationServiceDto(final Long id) {
+    public StationServiceDto(Long id) {
         this(id, null);
     }
 
-    public StationServiceDto(final String name) {
+    public StationServiceDto(String name) {
         this(null, name);
     }
 
-    public StationServiceDto(final Long id, final String name) {
+    public StationServiceDto(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public static StationServiceDto from(final StationRequest stationRequest) {
+    public static StationServiceDto from(StationRequest stationRequest) {
         return new StationServiceDto(stationRequest.getName());
     }
 
-    public static StationServiceDto from(final Station station) {
+    public static StationServiceDto from(Station station) {
         return new StationServiceDto(station.getId(), station.getName());
     }
 

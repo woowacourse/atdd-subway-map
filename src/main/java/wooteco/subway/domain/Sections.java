@@ -14,18 +14,18 @@ public class Sections {
     private static final int DELETABLE_COUNT = 2;
     private final List<Section> sections;
 
-    public Sections(final List<Section> sections) {
+    public Sections(List<Section> sections) {
         this.sections = sections;
     }
 
-    public boolean isBothEndSection(final Section section) {
+    public boolean isBothEndSection(Section section) {
         Deque<Long> ids = sortedStationIds();
 
         return Objects.equals(ids.peekFirst(), section.getDownStationId())
             || Objects.equals(ids.peekLast(), section.getUpStationId());
     }
 
-    public boolean isBothEndStation(final Long stationId) {
+    public boolean isBothEndStation(Long stationId) {
         return stationId.equals(sortedStationIds().peekFirst())
             || stationId.equals(sortedStationIds().peekLast());
     }
@@ -64,7 +64,7 @@ public class Sections {
         }
     }
 
-    public void insertAvailable(final Section section) {
+    public void insertAvailable(Section section) {
         boolean isUpStationExisted = isNotExistOnLine(section.getUpStationId());
         boolean isDownStationExisted = isNotExistOnLine(section.getDownStationId());
 
@@ -79,13 +79,13 @@ public class Sections {
         }
     }
 
-    public void validateExistStation(final Long stationId) {
+    public void validateExistStation(Long stationId) {
         if (isNotExistOnLine(stationId)) {
             throw new NotFoundStationException();
         }
     }
 
-    private boolean isNotExistOnLine(final Long stationId) {
+    private boolean isNotExistOnLine(Long stationId) {
         boolean isMatchedAtUpStation = sections.stream()
             .anyMatch(it -> stationId.equals(it.getUpStationId()));
         boolean isMatchedAtDownStation = sections.stream()
@@ -98,7 +98,7 @@ public class Sections {
         return !sections.isEmpty();
     }
 
-    public Section findByStationId(final Section section) {
+    public Section findByStationId(Section section) {
         return sections.stream()
             .filter(
                 it -> section.getUpStationId().equals(it.getUpStationId()) ||

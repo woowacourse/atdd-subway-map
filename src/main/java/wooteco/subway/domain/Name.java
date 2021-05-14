@@ -7,12 +7,12 @@ public class Name {
 
     private final String value;
 
-    public Name(final String value) {
+    public Name(String value) {
         this.value = value;
         validateNull(this.value);
     }
 
-    private void validateNull(final String value) {
+    private void validateNull(String value) {
         if (Objects.isNull(value)) {
             throw new NullNameException();
         }

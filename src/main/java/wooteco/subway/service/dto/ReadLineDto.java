@@ -1,6 +1,7 @@
 package wooteco.subway.service.dto;
 
 import java.util.List;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import wooteco.subway.controller.dto.response.StationResponse;
 import wooteco.subway.domain.Line;
@@ -10,7 +11,7 @@ public class ReadLineDto {
     private final Long id;
     @NotEmpty
     private final String name;
-    @NotEmpty
+    @NotBlank
     private final String color;
     private List<StationResponse> stationsResponses;
 
@@ -21,7 +22,7 @@ public class ReadLineDto {
         this.stationsResponses = stationsResponses;
     }
 
-    public static ReadLineDto of(final Line line, final List<StationResponse> stationResponses) {
+    public static ReadLineDto of(Line line, List<StationResponse> stationResponses) {
         return new ReadLineDto(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
 

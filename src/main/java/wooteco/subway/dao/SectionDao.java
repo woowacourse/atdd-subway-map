@@ -22,22 +22,22 @@ public class SectionDao {
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Section> rowMapper;
 
-    public SectionDao(final JdbcTemplate jdbcTemplate, final DataSource source) {
+    public SectionDao(JdbcTemplate jdbcTemplate, DataSource source) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(source)
             .withTableName("SECTION")
             .usingGeneratedKeyColumns("id");
         this.rowMapper = (rs, rowNum) -> {
-            final Long foundId = rs.getLong("id");
-            final Long lineId = rs.getLong("line_id");
-            final Long upStationId = rs.getLong("up_station_id");
-            final Long downStationId = rs.getLong("down_station_id");
-            final int distance = rs.getInt("distance");
+            Long foundId = rs.getLong("id");
+            Long lineId = rs.getLong("line_id");
+            Long upStationId = rs.getLong("up_station_id");
+            Long downStationId = rs.getLong("down_station_id");
+            int distance = rs.getInt("distance");
             return new Section(foundId, lineId, upStationId, downStationId, distance);
         };
     }
 
-    public Section save(final Section section) {
+    public Section save(Section section) {
         Map<String, Object> params = new HashMap<>();
         params.put("line_id", section.getLineId());
         params.put("up_station_id", section.getUpStationId());
@@ -49,12 +49,12 @@ public class SectionDao {
         return new Section(key, section);
     }
 
-    public List<Section> findAllByLineId(final Long lineId) {
+    public List<Section> findAllByLineId(Long lineId) {
         String sql = "SELECT * FROM section WHERE line_id = ?";
         return jdbcTemplate.query(sql, rowMapper, lineId);
     }
 
-    public Optional<Section> findByLineIdAndUpStationId(final Long lineId, final Long upStationId) {
+    public Optional<Section> findByLineIdAndUpStationId(Long lineId, Long upStationId) {
         try {
             String sql = "SELECT * FROM section WHERE line_id = ? AND up_station_id = ?";
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, upStationId));
@@ -63,7 +63,7 @@ public class SectionDao {
         }
     }
 
-    public Optional<Section> findByLineIdAndDownStationId(final Long lineId, final Long downStationId) {
+    public Optional<Section> findByLineIdAndDownStationId(Long lineId, Long downStationId) {
         try {
             String sql = "SELECT * FROM section WHERE line_id = ? AND down_station_id = ?";
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, downStationId));
@@ -72,17 +72,17 @@ public class SectionDao {
         }
     }
 
-    public int deleteByLineIdAndUpStationId(final Long lineId, final Long upStationId) {
+    public int deleteByLineIdAndUpStationId(Long lineId, Long upStationId) {
         String sql = "DELETE FROM section WHERE line_id = ? AND up_station_id = ?";
         return jdbcTemplate.update(sql, lineId, upStationId);
     }
 
-    public int deleteByLineIdAndDownStationId(final Long lineId, final Long downStationId) {
+    public int deleteByLineIdAndDownStationId(Long lineId, Long downStationId) {
         String sql = "DELETE FROM section WHERE line_id = ? AND down_station_id = ?";
         return jdbcTemplate.update(sql, lineId, downStationId);
     }
 
-    public int delete(final Section section) {
+    public int delete(Section section) {
         String sql = "DELETE FROM section WHERE id = ?";
         return jdbcTemplate.update(sql, section.getId());
     }

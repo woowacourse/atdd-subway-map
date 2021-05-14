@@ -8,15 +8,15 @@ public class Station {
     public Station() {
     }
 
-    public Station(final String name) {
+    public Station(String name) {
         this(null, new Name(name));
     }
 
-    public Station(final Long id, final String name) {
+    public Station(Long id, String name) {
         this(new Id(id), new Name(name));
     }
 
-    public Station(final Id id, final Name name) {
+    public Station(Id id, Name name) {
         this.id = id;
         this.name = name;
     }

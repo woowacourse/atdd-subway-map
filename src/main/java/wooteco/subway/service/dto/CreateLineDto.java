@@ -1,14 +1,16 @@
 package wooteco.subway.service.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import wooteco.subway.controller.dto.request.LineRequest;
 import wooteco.subway.domain.Line;
 
 public class CreateLineDto {
 
-    @NotNull
+    @NotEmpty
     private String name;
-    @NotNull
+    @NotBlank
     private String color;
     @NotNull
     private Long upStationId;
@@ -25,7 +27,7 @@ public class CreateLineDto {
         this.distance = distance;
     }
 
-    public static CreateLineDto from(final LineRequest dto) {
+    public static CreateLineDto from(LineRequest dto) {
         return new CreateLineDto(dto.getName(), dto.getColor(), dto.getUpStationId(), dto.getDownStationId(), dto.getDistance());
     }
 

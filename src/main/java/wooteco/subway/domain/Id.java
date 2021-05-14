@@ -7,12 +7,12 @@ public class Id {
 
     private final Long value;
 
-    public Id(final Long value) {
+    public Id(Long value) {
         this.value = value;
         validateNull(this.value);
     }
 
-    private void validateNull(final Long value) {
+    private void validateNull(Long value) {
         if (Objects.isNull(value)) {
             throw new NullIdException();
         }

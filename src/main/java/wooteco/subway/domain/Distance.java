@@ -8,12 +8,12 @@ public class Distance {
 
     private final int value;
 
-    public Distance(final int value) {
+    public Distance(int value) {
         this.value = value;
         validatePositive(this.value);
     }
 
-    private void validatePositive(final int value) {
+    private void validatePositive(int value) {
         if (value < MINIMUM_DISTANCE) {
             throw new InvalidDistanceException(MINIMUM_DISTANCE);
         }
@@ -23,11 +23,11 @@ public class Distance {
         return value;
     }
 
-    public Distance add(final Distance distance) {
+    public Distance add(Distance distance) {
         return new Distance(value + distance.getValue());
     }
 
-    public Distance subtract(final Distance distance) {
+    public Distance subtract(Distance distance) {
         return new Distance(value - distance.getValue());
     }
 }

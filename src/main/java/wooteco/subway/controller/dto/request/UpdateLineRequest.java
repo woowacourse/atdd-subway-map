@@ -1,15 +1,16 @@
 package wooteco.subway.controller.dto.request;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 public class UpdateLineRequest {
 
-    @NotNull
+    @NotEmpty
     private String name;
-    @NotNull
+    @NotBlank
     private String color;
 
-    public UpdateLineRequest(){
+    public UpdateLineRequest() {
     }
 
     public UpdateLineRequest(String name, String color) {

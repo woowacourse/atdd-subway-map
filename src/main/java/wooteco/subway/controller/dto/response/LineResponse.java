@@ -1,29 +1,31 @@
 package wooteco.subway.controller.dto.response;
 
 import java.util.List;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import wooteco.subway.service.dto.LineServiceDto;
 import wooteco.subway.service.dto.ReadLineDto;
 
 public class LineResponse {
 
-    @NotEmpty
+    @NotNull
     private Long id;
     @NotEmpty
     private String name;
-    @NotEmpty
+    @NotBlank
     private String color;
     private List<StationResponse> stations;
 
     public LineResponse() {
     }
 
-    public LineResponse(final Long id, final String name, final String color) {
+    public LineResponse(Long id, String name, String color) {
         this(id, name, color, null);
     }
 
-    public LineResponse(final Long id, final String name, final String color,
-        final List<StationResponse> stations) {
+    public LineResponse(Long id, String name, String color,
+        List<StationResponse> stations) {
 
         this.id = id;
         this.name = name;
@@ -31,7 +33,7 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public static LineResponse from(final LineServiceDto lineServiceDto) {
+    public static LineResponse from(LineServiceDto lineServiceDto) {
         return new LineResponse(lineServiceDto.getId(), lineServiceDto.getName(), lineServiceDto.getColor());
     }
 
