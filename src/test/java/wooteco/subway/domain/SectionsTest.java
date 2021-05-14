@@ -9,8 +9,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionsTest {
 
-    @DisplayName("구간을 생성한다.")
     @Test
+    @DisplayName("구간을 생성한다.")
     void create() {
         //given
         Section section = Section.of(Station.from("석촌역"), Station.from("강남역"), 20);
@@ -20,8 +20,8 @@ class SectionsTest {
         assertThat(sections.getSections()).hasSize(1);
     }
 
-    @DisplayName("구간을 정렬한 후 역을 반환한다.")
     @Test
+    @DisplayName("구간을 정렬한 후 역을 반환한다.")
     void sortedStations() {
         //given
         Station 석촌역 = Station.of(1L, "석촌역");

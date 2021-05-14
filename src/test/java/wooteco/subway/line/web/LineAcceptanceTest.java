@@ -12,6 +12,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import wooteco.subway.AcceptanceTest;
 import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.dao.station.StationDao;
 import wooteco.subway.domain.Line;
@@ -28,8 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@DisplayName("지하철 노선 관련 기능")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class LineApiControllerTest {
+class LineAcceptanceTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired

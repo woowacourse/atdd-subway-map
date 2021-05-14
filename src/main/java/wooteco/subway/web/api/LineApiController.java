@@ -81,6 +81,6 @@ public class LineApiController {
     @DeleteMapping("/{lineId}")
     public ResponseEntity<Long> delete(@PathVariable Long lineId) {
         lineService.delete(lineId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(lineId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
