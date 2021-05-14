@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.station.StationDuplicatedException;
 import wooteco.subway.exception.station.StationNotFoundException;
-import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.dao.JdbcStationDao;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 public class StationService {
 
-    private final StationDao stationDao;
+    private final JdbcStationDao stationDao;
 
     public Station find(Long id) {
         validateExistStation(id);

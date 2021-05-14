@@ -9,10 +9,10 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.exception.section.SectionLastRemainedException;
 import wooteco.subway.exception.station.StationNotFoundException;
-import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.dao.JdbcLineDao;
 import wooteco.subway.section.dao.JdbcSectionDao;
 import wooteco.subway.section.dao.SectionTable;
-import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.dao.JdbcStationDao;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +22,8 @@ import java.util.List;
 public class SectionService {
 
     private static final int WHEN_BETWEEN_SECTIONS = 2;
-    private final StationDao stationDao;
-    private final LineDao lineDao;
+    private final JdbcStationDao stationDao;
+    private final JdbcLineDao lineDao;
     private final JdbcSectionDao sectionDao;
 
     @Transactional
@@ -46,7 +46,7 @@ public class SectionService {
         List<SectionTable> sectionTables = sectionDao.findAdjacentByStationId1111(lineId, stationId);
         List<Section> effectiveSections = convertToSections(sectionTables);
 
-        for(Section section : effectiveSections){
+        for (Section section : effectiveSections) {
             Long upStationId = section.getUpStation().getId();
             Long downStationId = section.getDownStation().getId();
             sectionDao.remove(lineId, upStationId, downStationId);
@@ -64,19 +64,18 @@ public class SectionService {
         }
     }
 
-    public Sections findAllByLineId(Long lineId){
+    public Sections findAllByLineId(Long lineId) {
         List<SectionTable> sectionTables = sectionDao.findAllByLineId(lineId);
         List<Section> sections = convertToSections(sectionTables);
         return Sections.create(sections);
-
     }
 
     private List<Section> convertToSections(List<SectionTable> sectionTables) {
         List<Section> sections = new ArrayList<>();
-        for(SectionTable sectionTable : sectionTables){
+        for (SectionTable sectionTable : sectionTables) {
             Station upStation = stationDao.findById(sectionTable.getUpStationId());
             Station downStation = stationDao.findById(sectionTable.getDownStationId());
-            sections.add(Section.create(sectionTable.getId(), upStation,downStation, sectionTable.getDistance()));
+            sections.add(Section.create(sectionTable.getId(), upStation, downStation, sectionTable.getDistance()));
         }
         return sections;
     }

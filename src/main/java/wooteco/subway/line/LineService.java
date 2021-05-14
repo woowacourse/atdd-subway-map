@@ -9,7 +9,7 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.line.LineDuplicatedInformationException;
 import wooteco.subway.exception.line.LineNotFoundException;
-import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.dao.JdbcLineDao;
 import wooteco.subway.section.SectionService;
 import wooteco.subway.section.dao.JdbcSectionDao;
 
@@ -19,7 +19,7 @@ import java.util.List;
 @Service
 public class LineService {
 
-    private final LineDao lineDao;
+    private final JdbcLineDao lineDao;
     private final JdbcSectionDao sectionDao;
     private final SectionService sectionService;
 
