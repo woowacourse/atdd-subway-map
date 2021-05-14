@@ -28,7 +28,7 @@ public class SectionService {
 
     @Transactional
     public Section create(Section newSection, Long lineId) {
-        Sections sections = sectionDao.findAllByLineId(lineId);
+        Sections sections = findAllByLineId(lineId);
         Section modifiedSection = sections.addAndThenGetModifiedAdjacent(newSection);
 
         sectionDao.saveModified(modifiedSection, lineId);
@@ -52,14 +52,14 @@ public class SectionService {
     }
 
     private void validateIsLastRemainedSection(Long lineId) {
-        if (sectionDao.findAllByLineId(lineId).hasSize(1)) {
+        if (findAllByLineId(lineId).hasSize(1)) {
             throw new SectionLastRemainedException();
         }
     }
 
     public Sections findAllByLineId(Long lineId){
         List<Section> sections = new ArrayList<>();
-        List<SectionTable> sectionTables = sectionDao.findAllByLineId11111(lineId);
+        List<SectionTable> sectionTables = sectionDao.findAllByLineId(lineId);
         for(SectionTable sectionTable : sectionTables){
             Station upStation = stationDao.findById(sectionTable.getUpStationId());
             Station downStation = stationDao.findById(sectionTable.getDownStationId());

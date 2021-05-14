@@ -36,7 +36,7 @@ public class LineService {
     public List<Line> findAll() {
         List<Line> lines = lineDao.showAll();
         for (Line line : lines) {
-            Sections sections = sectionDao.findAllByLineId(line.getId());
+            Sections sections = sectionService.findAllByLineId(line.getId());
             line.setSections(sections);
         }
 
