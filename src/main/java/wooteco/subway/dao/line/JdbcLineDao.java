@@ -1,6 +1,7 @@
 package wooteco.subway.dao.line;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -36,13 +37,23 @@ public class JdbcLineDao implements LineDao {
     @Override
     public Optional<Line> findByNameOrColor(String name, String color) {
         String sql = "SELECT * FROM line WHERE (name = ? OR color = ?)";
-        return jdbcTemplate.query(sql, getRowMapper(), name, color).stream().findAny();
+        try {
+            return Optional.ofNullable((Line) jdbcTemplate.queryForObject(sql, getRowMapper(), name, color));
+        }
+        catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Line> findById(Long lineId) {
         String sql = "SELECT * FROM line WHERE id = ?";
-        return jdbcTemplate.query(sql, getRowMapper(), lineId).stream().findAny();
+        try {
+            return Optional.ofNullable((Line) jdbcTemplate.queryForObject(sql, getRowMapper(), lineId));
+        }
+        catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
