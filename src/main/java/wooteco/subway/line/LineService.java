@@ -4,13 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.section.Section;
-import wooteco.subway.section.SectionDao;
-import wooteco.subway.section.SectionDbDto;
+import wooteco.subway.section.SectionRepository;
 import wooteco.subway.section.Sections;
 import wooteco.subway.station.Station;
-import wooteco.subway.station.StationDao;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,27 +18,19 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private final LineDao lineDao;
-    private final StationDao stationDao;
-    private final SectionDao sectionDao;
+    private final SectionRepository sectionRepository;
 
     @Autowired
-    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
+    public LineService(LineDao lineDao, SectionRepository sectionRepository) {
         this.lineDao = lineDao;
-        this.stationDao = stationDao;
-        this.sectionDao = sectionDao;
+        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse createLine(long upStationId, long downStationId, String lineName, String lineColor, int distance) {
         validateStationId(upStationId, downStationId);
         validateDuplicateName(lineName);
-        Line line = lineDao.save(lineName, lineColor);
-
-        final Station upStation = findStationById(upStationId);
-        final Station downStation = findStationById(downStationId);
-        final SectionDbDto sectionDbDto = sectionDao.save(line.getId(), upStation.getId(), downStation.getId(), distance);
-        final Section section = generateSection(sectionDbDto);
-        final Sections sections = new Sections(line.getId(), Collections.singletonList(section));
-
+        final Line line = lineDao.save(lineName, lineColor);
+        final Sections sections = sectionRepository.save(line.getId(), upStationId, downStationId, distance);
         line.setSections(sections);
         return LineResponse.from(line);
     }
@@ -56,21 +48,10 @@ public class LineService {
         }
     }
 
-    private Station findStationById(long stationId) {
-        return stationDao.findById(stationId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
-    }
-
-    public Section generateSection(SectionDbDto sectionDbDto) {
-        final Station upStation = findStationById(sectionDbDto.getUpStationId());
-        final Station downStation = findStationById(sectionDbDto.getDownStationId());
-        return new Section(sectionDbDto.getLineId(), upStation, downStation, sectionDbDto.getDistance());
-    }
-
     public List<LineResponse> showLines() {
         final List<Line> lines = lineDao.findAll();
         for (Line line : lines) {
-            final Sections sections = findSectionsInLine(line.getId());
+            final Sections sections = sectionRepository.findByLineId(line.getId());
             line.setSections(sections);
         }
         return lines.stream()
@@ -86,19 +67,9 @@ public class LineService {
     private Line findLineById(long lineId) {
         final Line line = lineDao.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 id에 대응하는 노선이 없습니다."));
-        final Sections sections = findSectionsInLine(lineId);
+        final Sections sections = sectionRepository.findByLineId(lineId);
         line.setSections(sections);
         return line;
-    }
-
-    private Sections findSectionsInLine(long lineId) {
-        final List<Section> sectionList = new ArrayList<>();
-        final List<SectionDbDto> sectionDbDtoList = sectionDao.findByLineId(lineId);
-        for (SectionDbDto sectionDbDto : sectionDbDtoList) {
-            final Section section = generateSection(sectionDbDto);
-            sectionList.add(section);
-        }
-        return new Sections(lineId, sectionList);
     }
 
     public void updateLine(long lineId, String lineName, String lineColor) {
@@ -109,21 +80,26 @@ public class LineService {
     public void deleteLine(long lineId) {
         final Line line = findLineById(lineId);
         lineDao.delete(line.getId());
-        sectionDao.deleteLine(line.getId());
+        sectionRepository.deleteLine(line.getId());
     }
 
     public void createSection(long lineId, long upStationId, long downStationId, int distance) {
         final Line line = findLineById(lineId);
-        final Station upStation = findStationById(upStationId);
-        final Station downStation = findStationById(downStationId);
-        final Section newSection = new Section(lineId, upStation, downStation, distance);
-
+        final Section newSection = sectionRepository.createSection(line.getId(), upStationId, downStationId, distance);
         if (line.checkSectionAtEdge(newSection)) {
             line.insertSectionAtEdge(newSection);
-            sectionDao.save(lineId, upStationId, downStationId, distance);
+            saveSection(newSection);
             return;
         }
         createSectionInBetween(lineId, line, newSection);
+    }
+
+    private void saveSection(Section section) {
+        final Long lineId = section.getLineId();
+        final Long upStationId = section.getUpStation().getId();
+        final Long downStationId = section.getDownStation().getId();
+        final int distance = section.getDistance();
+        sectionRepository.save(lineId, upStationId, downStationId, distance);
     }
 
     private void createSectionInBetween(long lineId, Line line, Section newSection) {
@@ -132,23 +108,15 @@ public class LineService {
         final Section lowerSection = changedSections.get(upperSection);
         saveSection(upperSection);
         saveSection(lowerSection);
-        sectionDao.deleteSection(lineId, upperSection.getUpStation().getId(), lowerSection.getDownStation().getId());
-    }
-
-    private void saveSection(Section section) {
-        final Long lineId = section.getLineId();
-        final Long upStationId = section.getUpStation().getId();
-        final Long downStationId = section.getDownStation().getId();
-        final int distance = section.getDistance();
-        sectionDao.save(lineId, upStationId, downStationId, distance);
+        sectionRepository.deleteSection(lineId, upperSection.getUpStation().getId(), lowerSection.getDownStation().getId());
     }
 
     public void deleteSection(long lineId, long stationId) {
         final Line line = findLineById(lineId);
-        final Station station = findStationById(stationId);
+        final Station station = sectionRepository.findStationById(stationId);
         if (line.checkSectionAtEdge(station)) {
             Section section = line.removeSectionAtEdge(station);
-            sectionDao.deleteSection(lineId, section.getUpStation().getId(), section.getDownStation().getId());
+            sectionRepository.deleteSection(lineId, section.getUpStation().getId(), section.getDownStation().getId());
             return;
         }
         deleteSectionInBetween(line, station);
@@ -171,6 +139,6 @@ public class LineService {
         final Long lineId = section.getLineId();
         final Long upStationId = section.getUpStation().getId();
         final Long downStationId = section.getDownStation().getId();
-        sectionDao.deleteSection(lineId, upStationId, downStationId);
+        sectionRepository.deleteSection(lineId, upStationId, downStationId);
     }
 }
