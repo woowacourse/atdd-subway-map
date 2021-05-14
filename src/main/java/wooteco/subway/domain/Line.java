@@ -1,18 +1,28 @@
 package wooteco.subway.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
+import wooteco.subway.exception.line.InsufficientLineInformationException;
 
 import java.util.List;
+import java.util.Objects;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Line {
     private final Long id;
     private String name;
     private String color;
     private Sections sections;
+
+    private Line(Long id, String name, String color, Sections sections) {
+        if (StringUtils.isEmpty(name) || StringUtils.isEmpty(color) || Objects.isNull(sections)) {
+            throw new InsufficientLineInformationException();
+        }
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
+    }
 
     public static Line of(String name, String color) {
         return of(null, name, color, Sections.from());

@@ -11,7 +11,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import wooteco.subway.AcceptanceTest;
 import wooteco.subway.dao.section.SectionDao;
 import wooteco.subway.dao.station.StationDao;
 import wooteco.subway.domain.Line;

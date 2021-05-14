@@ -1,12 +1,13 @@
 package wooteco.subway.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import wooteco.subway.exception.line.InsufficientLineInformationException;
 import wooteco.subway.exception.section.InvalidDistanceException;
+import wooteco.subway.exception.section.NotPositiveDistanceException;
+
+import java.util.Objects;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Section {
 
     private Long id;
@@ -14,6 +15,20 @@ public class Section {
     private Station upStation;
     private Station downStation;
     private int distance;
+
+    private Section(Long id, Long lineId, Station upStation, Station downStation, int distance) {
+        if (Objects.isNull(upStation) || Objects.isNull(downStation)) {
+            throw new InsufficientLineInformationException();
+        }
+        if (distance <= 0) {
+            throw new NotPositiveDistanceException();
+        }
+        this.id = id;
+        this.lineId = lineId;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
 
     public static Section of(Section section, Long lineId) {
         return of(section.getId(), lineId, section.getUpStation(), section.getDownStation(), section.getDistance());
