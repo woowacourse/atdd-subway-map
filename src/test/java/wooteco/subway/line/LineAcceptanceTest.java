@@ -23,11 +23,11 @@ import wooteco.subway.station.dto.StationRequest;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private final StationRequest guroStationRequest = new StationRequest("구로디지털단지역");
+    private final StationRequest sangBongStationRequest = new StationRequest("상봉역");
+
     @BeforeEach
     void setUpLineTest() {
-        StationRequest guroStationRequest = new StationRequest("구로디지털단지역");
-        StationRequest sangBongStationRequest = new StationRequest("상봉역");
-
         ExtractableResponse<Response> response1 = RestAssured.given().log().all()
             .body(guroStationRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
