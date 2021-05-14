@@ -1,13 +1,18 @@
 package wooteco.subway.station.dao;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.naming.Name;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.station.domain.Station;
-
-import java.util.List;
-import java.util.Optional;
 
 @Primary
 @Repository
@@ -16,7 +21,7 @@ public class StationH2Dao implements StationDao {
     private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
-            Station.of(resultSet.getLong("id"), resultSet.getString("name"));
+        Station.of(resultSet.getLong("id"), resultSet.getString("name"));
 
 
     public StationH2Dao(JdbcTemplate jdbcTemplate) {
@@ -42,6 +47,13 @@ public class StationH2Dao implements StationDao {
     public Optional<Station> findByName(String stationName) {
         String findQuery = "SELECT * FROM station WHERE name = ?;";
         return jdbcTemplate.query(findQuery, stationRowMapper, stationName).stream().findAny();
+    }
+
+    @Override
+    public List<Station> findAllByIds(Set<Long> stationIds) {
+        String findAllByIdsQuery = "SELECT * FROM station WHERE id IN(%s);";
+        String inQuery = String.join(",", Collections.nCopies(stationIds.size(), "?"));
+        return jdbcTemplate.query(String.format(findAllByIdsQuery, inQuery), stationRowMapper, stationIds.toArray());
     }
 
     @Override

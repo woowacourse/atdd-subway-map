@@ -22,11 +22,11 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public static LineResponse from(Line line){
+    public static LineResponse from(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>());
     }
 
-    public static LineResponse of(Line line, List<StationResponse> stations){
+    public static LineResponse of(Line line, List<StationResponse> stations) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }
 
@@ -40,5 +40,9 @@ public class LineResponse {
 
     public String getColor() {
         return color;
+    }
+
+    public List<StationResponse> getStations() {
+        return stations;
     }
 }
