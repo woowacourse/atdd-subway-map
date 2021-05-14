@@ -98,6 +98,11 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 인수테스트 상태코드 말고도 내용 검증 할 것
     - [x] 노선 중복 테스트 진행
 - [x] Optional.orElseThrow를 통한 가독성 증대
+- [ ] Controller에서의 Validation 필요성 재고
+    - [ ] Controller는 무엇이고, 어떤 역할을 도맡는가?
+- [ ] if 안에서는 조건만 체크하고, 필요한 행위는 따로 메서드로 분리하기
+- [ ] Service Layer에서 toDB와 같은 계층 간 강한 결합의 네이밍은 변경하기
+- [ ] Service Layer에서의 로직은 조회 -> 저장 순서로 바꾸기
 
 
 ## 질문 사항
@@ -115,3 +120,4 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - 노선 수정할 때의 LineRequest와 생성할 때의 lineRequest가 다르네
     - 각각 Dto를 만들어줘야 할까?
     - 중복된 필드 값을 사용하는데 각각 필요한 validation이 다를 때 어찌하지?
+- Entity와 Domain의 차이점?
