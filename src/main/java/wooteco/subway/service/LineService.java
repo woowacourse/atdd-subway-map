@@ -52,16 +52,7 @@ public class LineService {
     }
 
     public List<Line> findAll() {
-        List<Line> lines = lineDao.findAll();
-        Map<Long, Sections> all = sectionDao.findAll();
-        return insertSections(lines, all);
-    }
-
-    private List<Line> insertSections(List<Line> lines, Map<Long, Sections> sectionDictionary) {
-        for (Line line : lines) {
-            line.insertSections(sectionDictionary.get(line.getId()));
-        }
-        return lines;
+        return lineDao.findAll();
     }
 
     public void delete(Long lineId) {
