@@ -26,7 +26,13 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line newLine = lineService.add(lineRequest);
-        LineResponse lineResponse = new LineResponse(newLine);
+        List<StationResponse> stationsByLine =
+            lineService.findStationsByLineId(newLine.getId())
+            .stream()
+            .map(StationResponse::new)
+            .collect(Collectors.toList());
+
+        LineResponse lineResponse = new LineResponse(newLine, stationsByLine);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
