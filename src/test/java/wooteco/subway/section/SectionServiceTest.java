@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Deque;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -75,24 +76,29 @@ public class SectionServiceTest {
         // given
         long targetUpStationId = 2L;
         long targetDownStationId = 9L;
-        int distance = 5;
+        int targetDistance = 5;
         String name = "회기역";
         stationDao.save(new Station(name));
 
+        List<Section> allByLineId = sectionDao.findAllByLineId(1L);
+
         // when
         SectionServiceDto dongDaeMoonAndHaegiDto = new SectionServiceDto(lineId, targetUpStationId,
-            targetDownStationId, distance);
+            targetDownStationId, targetDistance);
         SectionServiceDto savedDongDaeMoonAndHaegiDto = sectionService.save(dongDaeMoonAndHaegiDto);
         assertThat(savedDongDaeMoonAndHaegiDto).isNotNull();
         Section changedSection = sectionDao.findByLineIdAndDownStationId(lineId, 3L).get();
+
+        allByLineId = sectionDao.findAllByLineId(1L);
+
 
         // then
         assertThat(savedDongDaeMoonAndHaegiDto.getLineId()).isEqualTo(lineId);
         assertThat(savedDongDaeMoonAndHaegiDto.getUpStationId()).isEqualTo(targetUpStationId);
         assertThat(savedDongDaeMoonAndHaegiDto.getDownStationId()).isEqualTo(targetDownStationId);
-        assertThat(savedDongDaeMoonAndHaegiDto.getDistance()).isEqualTo(distance);
+        assertThat(savedDongDaeMoonAndHaegiDto.getDistance()).isEqualTo(targetDistance);
 
-        assertThat(changedSection.getDistance()).isEqualTo(5);
+        assertThat(changedSection.getDistance()).isEqualTo(10 - targetDistance);
         assertThat(changedSection.getUpStationId()).isEqualTo(9L);
     }
 

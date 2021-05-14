@@ -68,8 +68,8 @@ public class SectionService {
 
     private SectionServiceDto saveSectionAtMiddle(final Section section, final Sections sections) {
         Section legacySection = sections.findByOverlappedStation(section);
-        sectionDao.save(legacySection.dividedSectionForSave(section));
         sectionDao.delete(legacySection);
+        sectionDao.save(legacySection.dividedSectionForSave(section));
         return SectionServiceDto.from(sectionDao.save(section));
     }
 
