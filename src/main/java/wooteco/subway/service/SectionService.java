@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -40,6 +41,7 @@ public class SectionService {
         return sectionDao.countsByLineId(lineId);
     }
 
+    @Transactional
     public void insertSections(Long lineId, SimpleSection simpleSection) {
         final Optional<Section> optionalSectionConversed =
                 sectionDao.findOneIfIncludeConversed(new Section(lineId, simpleSection));
@@ -57,7 +59,7 @@ public class SectionService {
     }
 
     private SimpleSection updateOriginalSectionToMakeOneLine(Section section, SimpleSection insertedSection) {
-        if (section.getUpStationId().equals(insertedSection.getUpStationId())) {
+        if (section.isEqualUpStationId(insertedSection)) {
             return new SimpleSection(insertedSection.getDownStationId(),
                     section.getDownStationId(),
                     updateDistance(section, insertedSection));
@@ -70,13 +72,13 @@ public class SectionService {
     }
 
     private int updateDistance(Section section, SimpleSection simpleSection) {
-        final int maxDistance = Math.max(section.getDistance(), simpleSection.getDistance());
-        final int minDistance = Math.min(section.getDistance(), simpleSection.getDistance());
+        final int maxDistance = section.calculateMaxDistance(simpleSection);
+        final int minDistance = section.calculateMinDistance(simpleSection);
         return maxDistance - minDistance;
     }
 
     private void validateCanBeInserted(Section section, SimpleSection simpleSection) {
-        if (!section.compareDistance(simpleSection)) {
+        if (!section.isLongerDistanceThan(simpleSection)) {
             throw new SectionDistanceMismatchException();
         }
     }
