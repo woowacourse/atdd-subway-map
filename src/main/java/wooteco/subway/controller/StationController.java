@@ -24,26 +24,20 @@ public class StationController {
         String name = stationRequest.getName();
         StationResponse stationResponse = stationService.createStation(name);
         URI location = URI.create("/stations/" + stationResponse.getId());
-        return ResponseEntity
-                .created(location)
-                .body(stationResponse);
+        return ResponseEntity.created(location).body(stationResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
         List<StationResponse> stationResponses = stationService.findAllStations();
 
-        return ResponseEntity
-                .ok()
-                .body(stationResponses);
+        return ResponseEntity.ok().body(stationResponses);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationService.deleteStation(id);
 
-        return ResponseEntity
-                .noContent()
-                .build();
+        return ResponseEntity.noContent().build();
     }
 }
