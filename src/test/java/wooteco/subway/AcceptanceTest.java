@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.web.LineRequest;
 import wooteco.subway.section.web.SectionRequest;
 import wooteco.subway.station.StationRequest;
@@ -17,18 +16,12 @@ import wooteco.subway.station.StationRequest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
 
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        RestAssured.port = port;
-    }
-
     public static final int BAD_REQUEST = 400;
     public static final int NOT_FOUND = 404;
     public static final int OK = 200;
     public static final int CREATED = 201;
+    @LocalServerPort
+    int port;
 
     public static ExtractableResponse<Response> get(String path) {
         return RestAssured.given().log().all()
@@ -117,5 +110,10 @@ public class AcceptanceTest {
                 .delete(path)
                 .then().log().all()
                 .extract();
+    }
+
+    @BeforeEach
+    public void setUp() {
+        RestAssured.port = port;
     }
 }

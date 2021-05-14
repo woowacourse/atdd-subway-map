@@ -6,11 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.web.servlet.ResultActions;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Sections;
-import wooteco.subway.domain.Station;
 import wooteco.subway.line.web.LineRequest;
 import wooteco.subway.station.StationRequest;
 import wooteco.subway.station.StationResponse;
@@ -19,10 +15,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("[API] 구간관련 테스트")
 class SectionApiControllerTest extends AcceptanceTest {
@@ -352,7 +344,7 @@ class SectionApiControllerTest extends AcceptanceTest {
 
     @Test
     @DisplayName("구간 제거 - 실패(노선이 존재하지 않을 시)")
-    public void delete_실패_노선없음()  {
+    public void delete_실패_노선없음() {
         //given & when
         ExtractableResponse<Response> result = delete("/lines/" + Long.MAX_VALUE + "/sections?stationId=1");
 

@@ -2,12 +2,11 @@ package wooteco.subway.domain;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import wooteco.subway.exception.section.SectionDuplicatedException;
 import wooteco.subway.exception.section.SectionCycleException;
+import wooteco.subway.exception.section.SectionDuplicatedException;
 import wooteco.subway.exception.section.SectionInternalRemovableConflictException;
 import wooteco.subway.exception.section.SectionUnlinkedException;
 
-import java.nio.file.NotLinkException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,7 +66,7 @@ public class Sections {
 
         if (isMiddleSection(newSection, collect)) {
             // 베이스가 head일 경우
-            if(sections.stream().anyMatch(section -> section.isUpStation(newSection.getUpStation()))){
+            if (sections.stream().anyMatch(section -> section.isUpStation(newSection.getUpStation()))) {
                 Section sameHead = sections.stream()
                         .filter(section -> section.isUpStation(newSection.getUpStation()))
                         .findAny().orElseThrow(SectionUnlinkedException::new);
@@ -75,7 +74,7 @@ public class Sections {
             }
             // a - b b - c -> b - k
             // 베이스가 tail일 경우
-            if(sections.stream().anyMatch(section -> section.isDownStation(newSection.getDownStation()))){
+            if (sections.stream().anyMatch(section -> section.isDownStation(newSection.getDownStation()))) {
                 Section sameTail = sections.stream()
                         .filter(section -> section.isDownStation(newSection.getDownStation()))
                         .findAny().orElseThrow(SectionUnlinkedException::new);

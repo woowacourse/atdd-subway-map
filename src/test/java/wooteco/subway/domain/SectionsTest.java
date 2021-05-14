@@ -151,7 +151,6 @@ class SectionsTest {
 
         assertThatThrownBy(() -> sections.removeStationInBetween(강남역))
                 .isInstanceOf(InternalLogicConflictException.class);
-
     }
 
     @DisplayName("삭제")

@@ -2,22 +2,12 @@ package wooteco.subway.line.web;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
-import wooteco.subway.line.web.LineRequest;
 import wooteco.subway.station.StationRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("[API] 노선 관련 테스트")
 class LineApiControllerTest extends AcceptanceTest {
