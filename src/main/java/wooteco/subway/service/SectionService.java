@@ -41,7 +41,8 @@ public class SectionService {
         return saveSectionAtMiddle(section);
     }
 
-    private void checkStationIsExist(final Section section) {
+    @Transactional(readOnly = true)
+    void checkStationIsExist(final Section section) {
         final boolean existsUpStation = stationDao.findById(section.getUpStationId()).isPresent();
         final boolean existsDownStation = stationDao.findById(section.getDownStationId()).isPresent();
         if (!(existsUpStation && existsDownStation)) {
@@ -50,7 +51,7 @@ public class SectionService {
     }
 
     @Transactional(readOnly = true)
-    private Line findLineByLineId(final Long lineId) {
+    public Line findLineByLineId(final Long lineId) {
         return lineDao.findById(lineId).orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 노선이 존재하지 않습니다."));
     }
 
@@ -62,7 +63,7 @@ public class SectionService {
         return line.getTopStationId().equals(stationId);
     }
 
-    private Section saveSectionAtTop(final Section section) {
+    Section saveSectionAtTop(final Section section) {
         lineDao.updateTopStationId(section);
         return sectionDao.save(section);
     }
@@ -71,16 +72,16 @@ public class SectionService {
         return isStationBottom(line, section.getUpStationId());
     }
 
-    private boolean isStationBottom(final Line line, final Long stationId) {
+    boolean isStationBottom(final Line line, final Long stationId) {
         return line.getBottomStationId().equals(stationId);
     }
 
-    private Section saveSectionAtBottom(final Section section) {
+    Section saveSectionAtBottom(final Section section) {
         lineDao.updateBottomStationId(section);
         return sectionDao.save(section);
     }
 
-    private Section saveSectionAtMiddle(final Section section) {
+    Section saveSectionAtMiddle(final Section section) {
         final Long lineId = section.getLineId();
         new SectionValidator(sectionDao.findAllByLineId(lineId), section).validate();
 
@@ -121,7 +122,7 @@ public class SectionService {
         deleteMiddleStation(section);
     }
 
-    private void deleteTopStation(final Section section) {
+    void deleteTopStation(final Section section) {
         final Long downStationId = sectionDao.findByLineIdAndUpStationId(section)
                                              .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 구간이 존재하지 " + "않습니다."))
                                              .getDownStationId();
@@ -130,7 +131,7 @@ public class SectionService {
         sectionDao.deleteByLineIdAndUpStationId(section);
     }
 
-    private void deleteBottomStation(final Section section) {
+    void deleteBottomStation(final Section section) {
         final Long upStationId = sectionDao.findByLineIdAndDownStationId(section)
                                            .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 구간이 존재하지 " +
                                                    "않습니다."))
@@ -140,7 +141,7 @@ public class SectionService {
         sectionDao.deleteByLineIdAndDownStationId(section);
     }
 
-    private void deleteMiddleStation(final Section section) {
+    void deleteMiddleStation(final Section section) {
         final Section upSection = sectionDao.findByLineIdAndDownStationId(section)
                                             .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 구간이 존재하지 " +
                                                     "않습니다."));

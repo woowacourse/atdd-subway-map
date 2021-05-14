@@ -23,7 +23,8 @@ public class StationService {
         return stationDao.save(station);
     }
 
-    private void checkDuplicateStationName(final Station station) {
+    @Transactional(readOnly = true)
+    void checkDuplicateStationName(final Station station) {
         boolean existsName = stationDao.findByName(station.getName()).isPresent();
         if (existsName) {
             throw new DuplicateNameException("이미 저장된 역 이름입니다.");

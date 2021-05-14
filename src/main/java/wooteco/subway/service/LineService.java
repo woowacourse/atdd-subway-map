@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
@@ -39,14 +40,16 @@ public class LineService {
         return newLine;
     }
 
-    private void checkDuplicateLineName(final Line line) {
+    @Transactional(readOnly = true)
+    void checkDuplicateLineName(final Line line) {
         boolean existsName = lineDao.findByName(line.getName()).isPresent();
         if (existsName) {
             throw new DuplicateNameException("이미 존재하는 노선 이름입니다.");
         }
     }
 
-    private void checkStationIsExist(final Section section) {
+    @Transactional(readOnly = true)
+    void checkStationIsExist(final Section section) {
         final boolean existsUpStation = stationDao.findById(section.getUpStationId()).isPresent();
         final boolean existsDownStation = stationDao.findById(section.getDownStationId()).isPresent();
         if (!(existsUpStation && existsDownStation)) {
@@ -92,7 +95,7 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    private Station findStationByStationId(final Long stationId) {
+    public Station findStationByStationId(final Long stationId) {
         return stationDao.findById(stationId)
                          .orElseThrow(() -> new EntityNotFoundException("해당 ID와 일치하는 역이 존재하지 않습니다."));
     }
