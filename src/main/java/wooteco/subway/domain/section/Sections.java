@@ -17,9 +17,9 @@ public class Sections {
         }
     }
 
-    public List<Long> getStationIds(long upwardTerminalId, long downwardTerminalId) {
+    public List<Long> getStationIds(Long upwardTerminalId, Long downwardTerminalId) {
         List<Long> stationIds = new ArrayList<>();
-        long upwardId = upwardTerminalId;
+        Long upwardId = upwardTerminalId;
 
         while (ids.containsKey(upwardId)) {
             stationIds.add(upwardId);
@@ -39,7 +39,7 @@ public class Sections {
         return false;
     }
 
-    public void validateIfPossibleToInsert(Section section, long upwardTerminalId, long downwardTerminalId) {
+    public void validateIfPossibleToInsert(Section section, Long upwardTerminalId, Long downwardTerminalId) {
         validateIfAlreadyExistsInLine(section);
         validateIfBothStationNotExistsInLine(section);
         validateDistance(section, upwardTerminalId, downwardTerminalId);
@@ -55,7 +55,7 @@ public class Sections {
         return isStationExists(section.getUpStationId()) && isStationExists(section.getDownStationId());
     }
 
-    private boolean isStationExists(long stationId) {
+    private boolean isStationExists(Long stationId) {
         return ids.containsKey(stationId) || ids.containsValue(stationId);
     }
 
@@ -65,13 +65,13 @@ public class Sections {
         }
     }
 
-    private void validateDistance(Section section, long upwardTerminalId, long downwardTerminalId) {
+    private void validateDistance(Section section, Long upwardTerminalId, Long downwardTerminalId) {
         if (!isSideInsertion(section, upwardTerminalId, downwardTerminalId)) {
             compare(section);
         }
     }
 
-    private boolean isSideInsertion(Section section, long upwardTerminalId, long downwardTerminalId) {
+    private boolean isSideInsertion(Section section, Long upwardTerminalId, Long downwardTerminalId) {
         if (section.getDownStationId() == upwardTerminalId) {
             return true;
         }

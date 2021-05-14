@@ -3,11 +3,11 @@ package wooteco.subway.domain.line;
 import java.util.Objects;
 
 public class Line {
-    private long id;
+    private Long id;
     private String name;
     private String color;
-    private long upwardTerminalId;
-    private long downwardTerminalId;
+    private Long upwardTerminalId;
+    private Long downwardTerminalId;
 
     public Line() {
     }
@@ -17,20 +17,20 @@ public class Line {
         this.color = color;
     }
 
-    public Line(long id, String name, String color) {
+    public Line(Long id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
     }
 
-    public Line(String name, String color, long upwardTerminalId, long downwardTerminalId) {
+    public Line(String name, String color, Long upwardTerminalId, Long downwardTerminalId) {
         this.name = name;
         this.color = color;
         this.upwardTerminalId = upwardTerminalId;
         this.downwardTerminalId = downwardTerminalId;
     }
 
-    public Line(long id, String name, String color, long upwardTerminalId, long downwardTerminalId) {
+    public Line(Long id, String name, String color, Long upwardTerminalId, Long downwardTerminalId) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -38,7 +38,7 @@ public class Line {
         this.downwardTerminalId = downwardTerminalId;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -50,11 +50,11 @@ public class Line {
         return color;
     }
 
-    public long getUpwardTerminalId() {
+    public Long getUpwardTerminalId() {
         return upwardTerminalId;
     }
 
-    public long getDownwardTerminalId() {
+    public Long getDownwardTerminalId() {
         return downwardTerminalId;
     }
 

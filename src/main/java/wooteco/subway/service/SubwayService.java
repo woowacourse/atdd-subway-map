@@ -25,7 +25,7 @@ public class SubwayService {
         this.stationDao = stationDao;
     }
 
-    public long createLine(Line line) {
+    public Long createLine(Line line) {
         return lineDao.insert(line);
     }
 
@@ -33,12 +33,12 @@ public class SubwayService {
         return lineDao.selectAll();
     }
 
-    public Line showLineDetail(long id) {
+    public Line showLineDetail(Long id) {
         Line line = lineDao.select(id);
         return line;
     }
 
-    public List<Station> getStationsInLine(long id) {
+    public List<Station> getStationsInLine(Long id) {
         Sections sections = new Sections(sectionDao.selectAll(id));
         Line line = lineDao.select(id);
         List<Long> stationIds = sections.getStationIds(line.getUpwardTerminalId(), line.getDownwardTerminalId());
@@ -48,15 +48,15 @@ public class SubwayService {
                 .collect(Collectors.toList());
     }
 
-    public void modifyLine(long id, Line line) {
+    public void modifyLine(Long id, Line line) {
         lineDao.update(id, line);
     }
 
-    public void deleteLine(long id) {
+    public void deleteLine(Long id) {
         lineDao.delete(id);
     }
 
-    public long createStation(Station station) {
+    public Long createStation(Station station) {
         return stationDao.insert(station);
     }
 
@@ -64,15 +64,15 @@ public class SubwayService {
         return stationDao.selectAll();
     }
 
-    public void deleteStation(long id) {
+    public void deleteStation(Long id) {
         stationDao.delete(id);
     }
 
-    public long insertSection(long lineId, Section section) {
+    public Long insertSection(Long lineId, Section section) {
         return sectionDao.insert(lineId, section);
     }
 
-    public void deleteAdjacentSectionByStationId(long lineId, long stationId) {
+    public void deleteAdjacentSectionByStationId(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.selectAll(lineId));
         sections.validateIfPossibleToDelete();
         Optional<Section> downwardSection = sectionDao.selectDownwardSection(lineId, stationId);
@@ -96,7 +96,7 @@ public class SubwayService {
         }
     }
 
-    public void updateSection(long lineId, Section section) {
+    public void updateSection(Long lineId, Section section) {
         Sections sections = new Sections(sectionDao.selectAll(lineId));
         Line line = lineDao.select(lineId);
         sections.validateIfPossibleToInsert(section, line.getUpwardTerminalId(), line.getDownwardTerminalId());
@@ -119,7 +119,7 @@ public class SubwayService {
         return section.getUpStationId() == line.getDownwardTerminalId();
     }
 
-    private void processSideInsertion(long lineId, Line line, Section section) {
+    private void processSideInsertion(Long lineId, Line line, Section section) {
         if (section.getDownStationId() == line.getUpwardTerminalId()) {
             lineDao.updateUpwardTerminalId(lineId, section.getUpStationId());
         }

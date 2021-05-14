@@ -5,7 +5,7 @@ import wooteco.subway.domain.line.Line;
 import java.util.List;
 
 public class LineResponse {
-    private long id;
+    private Long id;
     private String name;
     private String color;
     private List<StationResponse> stations;
@@ -19,13 +19,13 @@ public class LineResponse {
         this.color = line.getColor();
     }
 
-    public LineResponse(long id, Line line) {
+    public LineResponse(Long id, Line line) {
         this.id = id;
         this.name = line.getName();
         this.color = line.getColor();
     }
 
-    public LineResponse(long id, Line line, List<StationResponse> stations) {
+    public LineResponse(Long id, Line line, List<StationResponse> stations) {
         this.id = id;
         this.name = line.getName();
         this.color = line.getColor();
@@ -39,7 +39,7 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

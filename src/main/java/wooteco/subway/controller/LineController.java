@@ -26,7 +26,7 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = lineRequest.createLine();
         Section section = lineRequest.createSection();
-        long id = subwayService.createLine(line);
+        Long id = subwayService.createLine(line);
         subwayService.insertSection(id, section);
         return ResponseEntity.created(URI.create("/lines/" + id)).body(new LineResponse(id, line));
     }
@@ -41,7 +41,7 @@ public class LineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> showLineDetail(@PathVariable long id) {
+    public ResponseEntity<LineResponse> showLineDetail(@PathVariable Long id) {
         Line line = subwayService.showLineDetail(id);
         List<StationResponse> stationResponses = subwayService.getStationsInLine(id).stream()
                 .map(StationResponse::new)
@@ -50,14 +50,14 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LineResponse> modifyLineDetail(@PathVariable long id,
+    public ResponseEntity<LineResponse> modifyLineDetail(@PathVariable Long id,
                                                          @RequestBody LineRequest lineRequest) {
         subwayService.modifyLine(id, lineRequest.createLine());
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteLine(@PathVariable long id) {
+    public ResponseEntity deleteLine(@PathVariable Long id) {
         subwayService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }

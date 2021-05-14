@@ -41,7 +41,7 @@ public class StationDao {
         }
     }
 
-    public Station select(long id) {
+    public Station select(Long id) {
         String query = "SELECT * FROM station WHERE id = ?";
         return jdbcTemplate.queryForObject(query,
                 (resultSet, rowNum) -> {
@@ -65,7 +65,7 @@ public class StationDao {
         return stations;
     }
 
-    public void delete(long id) {
+    public void delete(Long id) {
         String query = "DELETE FROM station WHERE id = ?";
         int affectedRowNumber = jdbcTemplate.update(query, id);
 

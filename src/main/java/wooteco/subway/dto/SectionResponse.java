@@ -3,16 +3,16 @@ package wooteco.subway.dto;
 import wooteco.subway.domain.section.Section;
 
 public class SectionResponse {
-    private long id;
-    private long lineId;
-    private long upStationId;
-    private long downStationId;
+    private Long id;
+    private Long lineId;
+    private Long upStationId;
+    private Long downStationId;
     private int distance;
 
     public SectionResponse() {
     }
 
-    public SectionResponse(long sectionId, long lineId, Section section) {
+    public SectionResponse(Long sectionId, Long lineId, Section section) {
         this.id = sectionId;
         this.lineId = lineId;
         this.upStationId = section.getUpStationId();
@@ -20,19 +20,19 @@ public class SectionResponse {
         this.distance = section.getDistance();
     }
 
-    public long getLineId() {
+    public Long getLineId() {
         return lineId;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public long getUpStationId() {
+    public Long getUpStationId() {
         return upStationId;
     }
 
-    public long getDownStationId() {
+    public Long getDownStationId() {
         return downStationId;
     }
 

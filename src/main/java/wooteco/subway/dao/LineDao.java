@@ -111,12 +111,12 @@ public class LineDao {
         }
     }
 
-    public void updateUpwardTerminalId(long lineId, long upStationId) {
+    public void updateUpwardTerminalId(Long lineId, Long upStationId) {
         String query = "UPDATE line SET upward_terminal_id=(?) WHERE id = (?)";
         jdbcTemplate.update(query, upStationId, lineId);
     }
 
-    public void updateDownwardTerminalId(long lineId, long downStationId) {
+    public void updateDownwardTerminalId(Long lineId, Long downStationId) {
         String query = "UPDATE line SET downward_terminal_id=(?) WHERE id = (?)";
         jdbcTemplate.update(query, downStationId, lineId);
     }

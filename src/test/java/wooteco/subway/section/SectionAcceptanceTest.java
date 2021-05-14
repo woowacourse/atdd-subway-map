@@ -28,10 +28,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createSection() {
         // given
-        SectionRequest sectionRequest = new SectionRequest(3, 1, 5);
+        SectionRequest sectionRequest = new SectionRequest(3L, 1L, 5);
 
         // when
-        ExtractableResponse<Response> sectionResponse = saveSection(1, sectionRequest);
+        ExtractableResponse<Response> sectionResponse = saveSection(1L, sectionRequest);
 
         // then
         assertThat(sectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -39,7 +39,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void saveByLineName(String lineName) {
-        LineRequest lineRequest = new LineRequest(lineName, "bg-red-600", 1, 2, 5);
+        LineRequest lineRequest = new LineRequest(lineName, "bg-red-600", 1L, 2L, 5);
         ExtractableResponse<Response> lineResponse = saveLine(lineRequest);
         assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -49,7 +49,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return saveStation(stationRequest);
     }
 
-    private ExtractableResponse<Response> saveSection(long lineId, SectionRequest sectionRequest) {
+    private ExtractableResponse<Response> saveSection(Long lineId, SectionRequest sectionRequest) {
         return RestAssured.given().log().all()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
