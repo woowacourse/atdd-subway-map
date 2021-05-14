@@ -40,7 +40,7 @@ class LineServiceTest {
     @Autowired
     private StationService stationService;
 
-    private List<Station> stations;
+    private StationsInLine stationsInLine;
 
     @BeforeEach
     void setUp() {
@@ -49,15 +49,17 @@ class LineServiceTest {
         Station station3 = new Station(stationName3);
         Station station4 = new Station(stationName4);
 
-        stations = Arrays.asList(station1, station2, station3, station4);
+        List<Station> stations = Arrays.asList(station1, station2, station3, station4);
         stations.forEach(station -> stationService.createStation(station));
+
+        stationsInLine = new StationsInLine(stations);
     }
 
     @DisplayName("노선을 생성하고 반환한다.")
     @Test
     void createLine() {
         Line line = new Line("2호선", "red");
-        Line createdLine = lineService.createLine(new Line(line, stations));
+        Line createdLine = lineService.createLine(new Line(line, stationsInLine));
         assertEquals(1L, createdLine.getId());
         assertEquals("2호선", createdLine.getName());
         assertEquals("red", createdLine.getColor());
@@ -81,7 +83,7 @@ class LineServiceTest {
     @Test
     void showLine() {
         Line line = new Line("2호선", "red");
-        Line createdLine = lineService.createLine(new Line(line, stations));
+        Line createdLine = lineService.createLine(new Line(line, stationsInLine));
 
         Section section = new Section(createdLine.getId(), 1L, 2L, 100);
         Section section1 = new Section(createdLine.getId(), 2L, 3L, 100);

@@ -44,7 +44,7 @@ public class LineService {
     public Line showLine(long id) {
         Line line = lineDao.findById(id).orElseThrow(NoSuchLineException::new);
         StationsInLine stationsInLine = sectionService.makeStationsInLine(id);
-        return new Line(line, stationsInLine.getStations());
+        return new Line(line, stationsInLine);
     }
 
     public void updateLine(long id, Line line) {

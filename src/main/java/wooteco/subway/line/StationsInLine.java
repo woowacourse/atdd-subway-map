@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import wooteco.subway.exception.illegal.BothStationInLineException;
@@ -14,6 +15,11 @@ import wooteco.subway.station.Station;
 public class StationsInLine {
     private final List<Station> stations;
     private final List<Long> stationIds;
+
+    public StationsInLine() {
+        stations = new ArrayList<>();
+        stationIds = new ArrayList<>();
+    }
 
     public StationsInLine(List<Station> stations) {
         this.stations = stations;
@@ -59,5 +65,20 @@ public class StationsInLine {
 
     public List<Station> getStations() {
         return stations;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        StationsInLine that = (StationsInLine)o;
+        return Objects.equals(stations, that.stations) && Objects.equals(stationIds, that.stationIds);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(stations, stationIds);
     }
 }

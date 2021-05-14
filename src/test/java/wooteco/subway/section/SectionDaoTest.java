@@ -68,11 +68,10 @@ class SectionDaoTest {
         long lineId = saveLine();
 
         int distance = 100;
-        Section section = new Section(lineId, stationId1, stationId2, distance);
+        Section section = new Section(1L, stationId1, stationId2, distance);
         sectionDao.save(section);
 
-        assertEquals(section, sectionDao.findSectionBySameUpStation(lineId, 1L).orElseThrow(
-            IllegalInputException::new));
+        assertEquals(section, sectionDao.findSectionBySameUpStation(lineId, 1L).get());
     }
 
     @DisplayName("DownStation이 같은 구간을 조회한다.")

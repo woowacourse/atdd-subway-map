@@ -54,8 +54,12 @@ class SectionServiceTest {
         stationService.createStation(station3);
         stationService.createStation(station4);
 
-        lineService.createLine(new Line(
-            new Line("2호선", "green"), Arrays.asList(station1, station2, station3, station4)));
+        lineService.createLine(
+            new Line(
+                new Line("2호선", "green"),
+                new StationsInLine(Arrays.asList(station1, station2, station3, station4))
+            )
+        );
     }
 
     @DisplayName("구간을 생성한다.")

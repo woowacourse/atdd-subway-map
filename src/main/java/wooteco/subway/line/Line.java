@@ -13,14 +13,14 @@ public class Line {
     private final String name;
     private final String color;
     private Long id;
-    private List<Station> stations;
+    private StationsInLine stationsInLine;
 
     public Line(String name, String color) {
         validateName(name);
         validateColor(name);
         this.name = name;
         this.color = color;
-        this.stations = new ArrayList<>();
+        this.stationsInLine = new StationsInLine();
     }
 
     public Line(Long id, String name, String color) {
@@ -28,9 +28,9 @@ public class Line {
         this.id = id;
     }
 
-    public Line(Line line, List<Station> stations) {
+    public Line(Line line, StationsInLine stationsInLine) {
         this(line.getId(), line.getName(), line.getColor());
-        this.stations = stations;
+        this.stationsInLine = stationsInLine;
     }
 
     public Line(LineRequest lineRequest) {
@@ -66,7 +66,7 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return stations;
+        return stationsInLine.getStations();
     }
 
     @Override
@@ -77,11 +77,11 @@ public class Line {
             return false;
         Line line = (Line)o;
         return Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects
-            .equals(id, line.id) && Objects.equals(stations, line.stations);
+            .equals(id, line.id) && Objects.equals(stationsInLine, line.stationsInLine);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, color, id, stations);
+        return Objects.hash(name, color, id, stationsInLine);
     }
 }
