@@ -14,21 +14,16 @@ import java.util.List;
 @RequiredArgsConstructor
 @Repository
 public class JdbcStationDao implements StationDao {
-    private static final String CREATE = "INSERT INTO station (name) VALUES (?)";
-    private static final String READ_ALL = "SELECT * FROM station";
-    private static final String READ_BY_ID = "SELECT * FROM station WHERE id = ?";
-    private static final String COUNT_BY_ID = "SELECT count(id) FROM station WHERE id = ?";
-    private static final String COUNT_BY_NAME = "SELECT count(id) FROM station WHERE name = ?";
-    private static final String DELETE_BY_ID = "DELETE FROM station WHERE id = ?";
 
     private final JdbcTemplate jdbcTemplate;
 
     @Override
     public Station create(Station station) {
+        String createSql = "INSERT INTO station (name) VALUES (?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         this.jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(CREATE, new String[]{"id"});
+            PreparedStatement ps = con.prepareStatement(createSql, new String[]{"id"});
             ps.setString(1, station.getName());
             return ps;
         }, keyHolder);
@@ -38,29 +33,34 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public List<Station> findAll() {
-        return this.jdbcTemplate.query(READ_ALL, stationRowMapper());
+        String readAllSql = "SELECT * FROM station";
+        return this.jdbcTemplate.query(readAllSql, stationRowMapper());
     }
 
     @Override
     public Station findById(Long id) {
-        return this.jdbcTemplate.queryForObject(READ_BY_ID, stationRowMapper(), id);
+        String readByIdSql = "SELECT * FROM station WHERE id = ?";
+        return this.jdbcTemplate.queryForObject(readByIdSql, stationRowMapper(), id);
     }
 
     @Override
     public boolean existById(Long id) {
-        Integer count = this.jdbcTemplate.queryForObject(COUNT_BY_ID, int.class, id);
+        String countByIdSql = "SELECT count(id) FROM station WHERE id = ?";
+        Integer count = this.jdbcTemplate.queryForObject(countByIdSql, int.class, id);
         return count >= 1;
     }
 
     @Override
     public boolean existByName(String name) {
-        Integer count = this.jdbcTemplate.queryForObject(COUNT_BY_NAME, int.class, name);
+        String countByNameSql = "SELECT count(id) FROM station WHERE name = ?";
+        Integer count = this.jdbcTemplate.queryForObject(countByNameSql, int.class, name);
         return count >= 1;
     }
 
     @Override
     public void remove(Long id) {
-        this.jdbcTemplate.update(DELETE_BY_ID, id);
+        String deleteByIdSql = "DELETE FROM station WHERE id = ?";
+        this.jdbcTemplate.update(deleteByIdSql, id);
     }
 
     private RowMapper<Station> stationRowMapper() {
