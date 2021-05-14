@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.controller.request.SectionInsertRequest;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -24,15 +23,15 @@ public class SectionService {
     }
 
     public void insert(Long lineId, SimpleSection section) {
-        sectionDao.insert(lineId, section);
+        sectionDao.insert(new Section(lineId, section));
     }
 
     public List<Section> findAllByLineId(Long id) {
         return sectionDao.findAllByLineId(id);
     }
 
-    public void validateEndStationsAreIncluded(Long lineId, SectionInsertRequest sectionInsertRequest) {
-        if (sectionDao.isIncludeAllEndStations(lineId, sectionInsertRequest)) {
+    public void validateEndStationsAreIncluded(Long lineId, SimpleSection section) {
+        if (sectionDao.isIncludeAllEndStations(new Section(lineId, section))) {
             throw new SectionsAlreadyExistException();
         }
     }
@@ -41,23 +40,23 @@ public class SectionService {
         return sectionDao.countsByLineId(lineId);
     }
 
-    public void insertSections(Long lineId, SectionInsertRequest sectionInsertRequest) {
+    public void insertSections(Long lineId, SimpleSection simpleSection) {
         final Optional<Section> optionalSectionConversed =
-                sectionDao.findOneIfIncludeConversed(lineId, sectionInsertRequest);
+                sectionDao.findOneIfIncludeConversed(new Section(lineId, simpleSection));
         if (optionalSectionConversed.isPresent()) {
-            sectionDao.insert(lineId, sectionInsertRequest.toSimpleSectionDto());
+            sectionDao.insert(new Section(lineId, simpleSection));
             return;
         }
 
-        final Optional<Section> optionalSection = sectionDao.findOneIfInclude(lineId, sectionInsertRequest);
-        final Section section = optionalSection.orElseThrow(NoneOfSectionIncludedInLine::new);
-        validateCanBeInserted(section, sectionInsertRequest);
-        final SimpleSection updatedSection = updateOriginalSectionToMakeOneLine(section, sectionInsertRequest);
-        sectionDao.update(lineId, updatedSection); // 기존 섹션을 업데이트함. 삽입된 구간을 포함하여.
-        sectionDao.insert(lineId, sectionInsertRequest.toSimpleSectionDto()); // 추가된 섹션을 삽입함.
+        final Section section = sectionDao.findOneIfInclude(new Section(lineId, simpleSection))
+                .orElseThrow(NoneOfSectionIncludedInLine::new);
+        validateCanBeInserted(section, simpleSection);
+        final SimpleSection updatedSection = updateOriginalSectionToMakeOneLine(section, simpleSection);
+        sectionDao.update(new Section(lineId, updatedSection)); // 기존 섹션을 업데이트함. 삽입된 구간을 포함하여.
+        sectionDao.insert(new Section(lineId, simpleSection)); // 추가된 섹션을 삽입함.
     }
 
-    private SimpleSection updateOriginalSectionToMakeOneLine(Section section, SectionInsertRequest insertedSection) {
+    private SimpleSection updateOriginalSectionToMakeOneLine(Section section, SimpleSection insertedSection) {
         if (section.getUpStationId().equals(insertedSection.getUpStationId())) {
             return new SimpleSection(insertedSection.getDownStationId(),
                     section.getDownStationId(),
@@ -70,14 +69,14 @@ public class SectionService {
                 updateDistance(section, insertedSection));
     }
 
-    private int updateDistance(Section section, SectionInsertRequest insertedSection) {
-        final int maxDistance = Math.max(section.getDistance(), insertedSection.getDistance());
-        final int minDistance = Math.min(section.getDistance(), insertedSection.getDistance());
+    private int updateDistance(Section section, SimpleSection simpleSection) {
+        final int maxDistance = Math.max(section.getDistance(), simpleSection.getDistance());
+        final int minDistance = Math.min(section.getDistance(), simpleSection.getDistance());
         return maxDistance - minDistance;
     }
 
-    private void validateCanBeInserted(Section section, SectionInsertRequest insertedSection) {
-        if (!section.compareDistance(insertedSection)) {
+    private void validateCanBeInserted(Section section, SimpleSection simpleSection) {
+        if (!section.compareDistance(simpleSection)) {
             throw new SectionDistanceMismatchException();
         }
     }
@@ -106,7 +105,7 @@ public class SectionService {
         if (sections.hasOnlyOneSection()) {
             return sections.section(0);
         }
-        sectionDao.update(lineId, sections.updateSectionToOneLine());
+        sectionDao.update(new Section(lineId, sections.updateSectionToOneLine()));
         return sections.section(1);
     }
 }

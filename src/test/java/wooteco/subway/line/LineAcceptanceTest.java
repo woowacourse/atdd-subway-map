@@ -1,4 +1,4 @@
-package wooteco.subway.dao.line;
+package wooteco.subway.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -9,8 +9,8 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.dao.fixture.Fixture.*;
-import static wooteco.subway.dao.fixture.LineAcceptanceTestFixture.createLineWithSection;
+import static wooteco.subway.fixture.Fixture.*;
+import static wooteco.subway.fixture.LineAcceptanceTestFixture.createLineWithSection;
 
 @Sql("classpath:tableInit.sql")
 public class LineAcceptanceTest extends AcceptanceTest {

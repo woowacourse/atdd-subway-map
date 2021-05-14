@@ -1,4 +1,4 @@
-package wooteco.subway.dao.subway;
+package wooteco.subway.subway;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -12,9 +12,9 @@ import wooteco.subway.controller.response.StationResponse;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.dao.fixture.Fixture.*;
-import static wooteco.subway.dao.fixture.LineAcceptanceTestFixture.createLineWithSection;
-import static wooteco.subway.dao.subway.SubwayAcceptanceTestFixture.*;
+import static wooteco.subway.fixture.Fixture.*;
+import static wooteco.subway.fixture.LineAcceptanceTestFixture.createLineWithSection;
+import static wooteco.subway.subway.SubwayAcceptanceTestFixture.*;
 
 @Sql("classpath:tableInit.sql")
 public class SubwayAcceptanceTest extends AcceptanceTest {

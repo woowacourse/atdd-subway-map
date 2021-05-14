@@ -1,11 +1,11 @@
-package wooteco.subway.dao.subway;
+package wooteco.subway.subway;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static wooteco.subway.dao.fixture.Fixture.STATION3;
-import static wooteco.subway.dao.fixture.Fixture.STATION4;
-import static wooteco.subway.dao.fixture.StationAcceptanceTestFixture.insertStation;
+import static wooteco.subway.fixture.Fixture.STATION3;
+import static wooteco.subway.fixture.Fixture.STATION4;
+import static wooteco.subway.fixture.StationAcceptanceTestFixture.insertStation;
 
 public class SubwayAcceptanceTestFixture {
     public static Map<String, String> createAddSectionRequestWithAnotherSection() {

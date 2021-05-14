@@ -1,4 +1,4 @@
-package wooteco.subway.dao.fixture;
+package wooteco.subway.fixture;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static wooteco.subway.dao.fixture.LineAcceptanceTestFixture.createLineRequest;
+import static wooteco.subway.fixture.LineAcceptanceTestFixture.createLineRequest;
 
 public class Fixture {
     public static final Station STATION1 = new Station(1L, "부산역");

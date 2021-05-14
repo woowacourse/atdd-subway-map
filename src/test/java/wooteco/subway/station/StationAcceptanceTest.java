@@ -1,4 +1,4 @@
-package wooteco.subway.dao.station;
+package wooteco.subway.station;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.dao.fixture.Fixture.*;
+import static wooteco.subway.fixture.Fixture.*;
 
 @DisplayName("지하철역 관련 기능")
 @Sql("classpath:tableInit.sql")

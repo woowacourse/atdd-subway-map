@@ -1,4 +1,4 @@
-package wooteco.subway.dao.line;
+package wooteco.subway.line;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static wooteco.subway.dao.fixture.Fixture.makeLine;
+import static wooteco.subway.fixture.Fixture.makeLine;
 
 @JdbcTest
 class LineDaoTest {

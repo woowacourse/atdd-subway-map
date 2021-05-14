@@ -1,4 +1,4 @@
-package wooteco.subway.dao.fixture;
+package wooteco.subway.fixture;
 
 import wooteco.subway.domain.Station;
 
@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static wooteco.subway.dao.fixture.Fixture.*;
-import static wooteco.subway.dao.fixture.StationAcceptanceTestFixture.insertStations;
+import static wooteco.subway.fixture.Fixture.*;
+import static wooteco.subway.fixture.StationAcceptanceTestFixture.insertStations;
 
 public class LineAcceptanceTestFixture {
 

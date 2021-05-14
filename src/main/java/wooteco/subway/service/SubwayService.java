@@ -41,8 +41,8 @@ public class SubwayService {
 
     public void insertSectionInLine(Long id, SectionInsertRequest sectionInsertRequest) {
         lineService.checkIfExistsById(id);
-        sectionService.validateEndStationsAreIncluded(id, sectionInsertRequest);
-        sectionService.insertSections(id, sectionInsertRequest);
+        sectionService.validateEndStationsAreIncluded(id, sectionInsertRequest.toSimpleSection());
+        sectionService.insertSections(id, sectionInsertRequest.toSimpleSection());
     }
 
     public void deleteLine(Long id) {

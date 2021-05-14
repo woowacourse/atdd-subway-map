@@ -1,4 +1,4 @@
-package wooteco.subway.dao.fixture;
+package wooteco.subway.fixture;
 
 import io.restassured.RestAssured;
 import org.springframework.http.MediaType;
