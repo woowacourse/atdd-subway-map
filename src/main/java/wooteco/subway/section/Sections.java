@@ -98,7 +98,7 @@ public class Sections {
         return !sections.isEmpty();
     }
 
-    public Section findByStationId(final Section section) {
+    public Section findByOverlappedStation(final Section section) {
         return sections.stream()
             .filter(
                 it -> section.getUpStationId().equals(it.getUpStationId()) ||
