@@ -101,7 +101,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [ ] Controller에서의 Validation 필요성 재고
     - [ ] Controller는 무엇이고, 어떤 역할을 도맡는가?
 - [ ] if 안에서는 조건만 체크하고, 필요한 행위는 따로 메서드로 분리하기
-- [ ] Service Layer에서 toDB와 같은 계층 간 강한 결합의 네이밍은 변경하기
+- [x] Service Layer에서 toDB와 같은 계층 간 강한 결합의 네이밍은 변경하기
 - [ ] Service Layer에서의 로직은 조회 -> 저장 순서로 바꾸기
 
 

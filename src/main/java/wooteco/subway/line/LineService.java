@@ -121,13 +121,13 @@ public class LineService {
     private void createSectionInBetween(long lineId, Line line, Section newSection) {
         Map<Section, Section> changedSections = line.insertSectionInBetween(newSection);
         final Section upperSection = changedSections.keySet().iterator().next();
-        saveSectionToDB(upperSection);
+        saveSection(upperSection);
         final Section lowerSection = changedSections.get(upperSection);
-        saveSectionToDB(lowerSection);
+        saveSection(lowerSection);
         sectionDao.deleteSection(lineId, upperSection.getUpStation().getId(), lowerSection.getDownStation().getId());
     }
 
-    private void saveSectionToDB(Section section) {
+    private void saveSection(Section section) {
         final Long lineId = section.getLineId();
         final Long upStationId = section.getUpStation().getId();
         final Long downStationId = section.getDownStation().getId();
@@ -149,7 +149,7 @@ public class LineService {
     private void deleteSectionInBetween(Line line, Station station) {
         Map<Section, Map<Section, Section>> sectionsToRemove = line.removeSectionInBetween(station);
         final Section sectionToSave = sectionsToRemove.keySet().iterator().next();
-        saveSectionToDB(sectionToSave);
+        saveSection(sectionToSave);
 
         final Map<Section, Section> sectionsToDelete = sectionsToRemove.get(sectionToSave);
         final Section upperSectionToDelete = sectionsToDelete.keySet().iterator().next();
