@@ -46,7 +46,11 @@ public class SectionService {
         List<SectionTable> sectionTables = sectionDao.findAdjacentByStationId1111(lineId, stationId);
         List<Section> effectiveSections = convertToSections(sectionTables);
 
-        sectionDao.removeSections(lineId, effectiveSections);
+        for(Section section : effectiveSections){
+            Long upStationId = section.getUpStation().getId();
+            Long downStationId = section.getDownStation().getId();
+            sectionDao.remove(lineId, upStationId, downStationId);
+        }
 
         if (effectiveSections.size() == WHEN_BETWEEN_SECTIONS) {
             Section section = Sections.create(effectiveSections).removeStationInBetween(station);

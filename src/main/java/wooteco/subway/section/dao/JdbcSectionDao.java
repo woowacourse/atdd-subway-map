@@ -7,8 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
-import wooteco.subway.domain.Station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -65,14 +63,11 @@ public class JdbcSectionDao {
         return sectionTables;
     }
 
-    public void removeSections(Long lineId, List<Section> sections) {
+
+    public void remove(Long lineId, Long upStationId, Long downStationId) {
         String deleteSql = "DELETE FROM section WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?";
 
-        for (Section section : sections) {
-            Long upStationId = section.getUpStation().getId();
-            Long downStationId = section.getDownStation().getId();
-            jdbcTemplate.update(deleteSql, lineId, upStationId, downStationId);
-        }
+        jdbcTemplate.update(deleteSql, lineId, upStationId, downStationId);
     }
 
     public void insertSection(Section affectedSection, Long lineId) {
