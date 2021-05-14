@@ -20,7 +20,11 @@ public class Sections {
         for (Optional<Section> now = firstSection(); now.isPresent(); now = next(now.get())) {
             stations.add(now.get().upStation());
         }
-        stations.add(lastSection().get().downStation());
+        stations.add(
+                lastSection()
+                .orElseThrow(() -> new IllegalStateException("마지막 구간이 없습니다."))
+                .downStation()
+        );
         return stations;
     }
 
@@ -33,8 +37,8 @@ public class Sections {
     private Optional<Section> lastSection() {
         return sections.stream()
                 .filter(section1 -> sections.stream()
-                        .noneMatch(section2 -> section1.downStation().equals(section2.upStation()))
-                ).findFirst();
+                        .noneMatch(section2 -> section1.downStation().equals(section2.upStation())))
+                .findFirst();
     }
 
     private Optional<Section> firstSection() {
@@ -61,27 +65,29 @@ public class Sections {
     }
 
     private void divideSectionBasedOnUpStation(Section section, Station station) {
-        Section temp = sectionWithUpStation(station).get();
-        validateDistance(section, temp);
-        Section insert = new Section(section.downStation(), temp.downStation(),
-                Distance.of(temp.distance().intValue() - section.distance().intValue())
+        Section oldSection = sectionWithUpStation(station)
+                .orElseThrow(() -> new IllegalArgumentException("해당 역을 상행역으로 갖고 있는 구간이 없습니다."));
+        validateDistance(section, oldSection);
+        Section newSection = new Section(section.downStation(), oldSection.downStation(),
+                Distance.of(oldSection.distance().intValue() - section.distance().intValue())
         );
-        sections.add(insert);
-        sections.remove(temp);
+        sections.add(newSection);
+        sections.remove(oldSection);
     }
 
     private void divideSectionBasedOnDownStation(Section section, Station station) {
-        Section temp = sectionWithDownStation(station).get();
-        validateDistance(section, temp);
-        Section insert = new Section(temp.upStation(), section.upStation(),
-                Distance.of(temp.distance().intValue() - section.distance().intValue())
+        Section oldSection = sectionWithDownStation(station)
+                .orElseThrow(() -> new IllegalArgumentException("해당 역을 하행역으로 갖고 있는 구간이 없습니다."));
+        validateDistance(section, oldSection);
+        Section newSection = new Section(oldSection.upStation(), section.upStation(),
+                Distance.of(oldSection.distance().intValue() - section.distance().intValue())
         );
-        sections.add(insert);
-        sections.remove(temp);
+        sections.add(newSection);
+        sections.remove(oldSection);
     }
 
-    private void validateDistance(Section section, Section temp) {
-        if (section.distance().intValue() >= temp.distance().intValue()) {
+    private void validateDistance(Section section, Section oldSection) {
+        if (section.distance().intValue() >= oldSection.distance().intValue()) {
             throw new IllegalArgumentException("추가할 구간 길이가 기존의 구간 길이보다 작아야 합니다.");
         }
     }
@@ -117,11 +123,17 @@ public class Sections {
     public void deleteStation(Station station) {
         validateDelete(station);
         if (sectionWithUpStation(station).equals(firstSection())) {
-            sections.remove(firstSection().get());
+            sections.remove(
+                    firstSection()
+                    .orElseThrow(() -> new IllegalStateException("첫 구간이 없습니다."))
+            );
             return;
         }
         if (sectionWithDownStation(station).equals(lastSection())) {
-            sections.remove(lastSection().get());
+            sections.remove(
+                    lastSection()
+                    .orElseThrow(() -> new IllegalStateException("마지막 구간이 없습니다."))
+            );
             return;
         }
 
@@ -129,12 +141,14 @@ public class Sections {
     }
 
     private void combineSection(Station station) {
-        Section leftSection = sectionWithDownStation(station).get();
-        Section rightSection = sectionWithUpStation(station).get();
-        Section insert = new Section(leftSection.upStation(), rightSection.downStation(),
+        Section leftSection = sectionWithDownStation(station)
+                .orElseThrow(() -> new IllegalArgumentException("해당 역을 하행역으로 갖고 있는 구간이 없습니다."));
+        Section rightSection = sectionWithUpStation(station)
+                .orElseThrow(() -> new IllegalArgumentException("해당 역을 상행역으로 갖고 있는 구간이 없습니다."));
+        Section newSection = new Section(leftSection.upStation(), rightSection.downStation(),
                 Distance.of(leftSection.distance().intValue() + rightSection.distance().intValue())
         );
-        sections.add(insert);
+        sections.add(newSection);
         sections.remove(leftSection);
         sections.remove(rightSection);
     }
