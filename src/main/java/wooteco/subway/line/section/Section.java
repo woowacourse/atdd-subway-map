@@ -23,6 +23,15 @@ public class Section {
         this.distance = distance;
     }
 
+    public static Section of(Long lineId, Section leftSection, Section rightSection) {
+        return new Section(
+            lineId,
+            leftSection.upStationId,
+            rightSection.downStationId,
+            leftSection.distance + rightSection.distance
+        );
+    }
+
     public void validateSmaller(final int distance) {
         if (this.distance <= distance) {
             throw new BiggerDistanceException("새로 추가할 구간의 거리가 기존 구간의 거리보다 크거나 같으면 안 됩니다.");
