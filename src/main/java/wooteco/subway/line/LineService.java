@@ -10,18 +10,20 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.exception.line.LineDuplicatedInformationException;
 import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.line.dao.JdbcLineDao;
+import wooteco.subway.line.web.LineRequest;
 import wooteco.subway.section.SectionService;
 import wooteco.subway.section.dao.JdbcSectionDao;
+import wooteco.subway.station.StationService;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class LineService {
-
     private final JdbcLineDao lineDao;
     private final JdbcSectionDao sectionDao;
     private final SectionService sectionService;
+    private final StationService stationService;
 
     public Line find(Long lineId) {
         validateExistById(lineId);
@@ -44,9 +46,15 @@ public class LineService {
     }
 
     @Transactional
-    public Line create(String name, String color, Station upStation, Station downStation, int distance) {
+    public Line create(LineRequest lineRequest) {
+        String name = lineRequest.getName();
+        String color = lineRequest.getColor();
+        int distance = lineRequest.getDistance();
+
         validateExistInfo(name, color);
 
+        Station upStation = stationService.find(lineRequest.getUpStationId());
+        Station downStation = stationService.find(lineRequest.getDownStationId());
         Line line = lineDao.create(Line.create(name, color));
         Section section = Section.create(upStation, downStation, distance);
         sectionDao.create(section, line.getId());
