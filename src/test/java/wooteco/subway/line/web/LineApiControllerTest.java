@@ -36,7 +36,6 @@ class LineApiControllerTest extends AcceptanceTest {
                 new LineRequest("2호선", "bg-green-600", 잠실역_id, 잠실새내_id, 10);
 
         // when
-
         ExtractableResponse<Response> result = postLine(이호선);
 
         // then

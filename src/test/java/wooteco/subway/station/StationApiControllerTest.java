@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("[API] 지하철역 관련 기능")
 @Transactional
-public class StationAcceptanceTest extends AcceptanceTest {
+public class StationApiControllerTest extends AcceptanceTest {
 
     @DisplayName("생성 - 성공")
     @Test
