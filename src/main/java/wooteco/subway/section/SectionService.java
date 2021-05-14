@@ -54,7 +54,7 @@ public class SectionService {
 
         if (effectiveSections.size() == WHEN_BETWEEN_SECTIONS) {
             Section section = Sections.create(effectiveSections).removeStationInBetween(station);
-            sectionDao.insertSection(section, lineId);
+            sectionDao.create(section, lineId);
         }
     }
 

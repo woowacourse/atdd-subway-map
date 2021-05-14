@@ -70,12 +70,4 @@ public class JdbcSectionDao {
         jdbcTemplate.update(deleteSql, lineId, upStationId, downStationId);
     }
 
-    public void insertSection(Section affectedSection, Long lineId) {
-        String createSql = "INSERT INTO section (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
-
-        jdbcTemplate.update(createSql, lineId,
-                affectedSection.getUpStation().getId(),
-                affectedSection.getDownStation().getId(),
-                affectedSection.getDistance());
-    }
 }

@@ -5,7 +5,7 @@
 - [x] 도메인에 대해 유니테스트 진행
 - [x] 깃 리베이스 사용해서 시도해보기
 - [x] AcceptanceTest에서 drop table 쿼리 제거
-- [ ] dao 여러개 제거는 IN절을 사용하여 수정
+- [x] dao 여러개 제거는 IN절을 사용하여 수정
 - [x] 인수테스트에서는 service, persistence layer 호출하지 않고 RestAssured 사용
 - [x] Sections: List 인터페이스 타입
 - [x] Line: insert 메소드명?
@@ -15,5 +15,5 @@
 - [x] Optional 금지!
 - [x] SubwayException은 왜 다 badRequest
 - [ ] LineService: 파라미터 갯수 줄이기, Info 금지
-- [ ] Dao: 쿼리 static? 왜?
-- [ ] SectionDao: create, insert 둘다 insert 구문 실행 무슨차이?
+- [x] Dao: 쿼리 static? 왜?
+- [x] SectionDao: create, insert 둘다 insert 구문 실행 무슨차이?
