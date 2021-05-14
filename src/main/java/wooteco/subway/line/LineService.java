@@ -56,7 +56,6 @@ public class LineService {
         final Line line = composeLine(lineId);
         final Long upStationId = sectionRequest.getUpStationId();
         final Long downStationId = sectionRequest.getDownStationId();
-        final int distance = sectionRequest.getDistance();
 
         line.validateStationsToAddSection(upStationId, downStationId);
 
@@ -64,6 +63,7 @@ public class LineService {
             return createSection(lineId, sectionRequest);
         }
 
+        final int distance = sectionRequest.getDistance();
         final Section targetSection = line.findUpdatedTarget(upStationId, downStationId, distance);
         final Section updatedSection = targetSection.createUpdatedSection(upStationId, downStationId, distance);
         sectionDao.update(updatedSection);
