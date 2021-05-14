@@ -14,7 +14,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 class StationServiceTest {
-    private final String stationName = "잠실역";
 
     @Autowired
     private StationService stationService;
@@ -34,7 +33,7 @@ class StationServiceTest {
     @DisplayName("역 정상 생성 테스트")
     void createStation() {
         Station savedStation = stationService.create(stationRequest);
-        assertThat(savedStation.getName()).isEqualTo(stationName);
+        assertThat(savedStation.getName()).isEqualTo("잠실역");
     }
 
     @Test
