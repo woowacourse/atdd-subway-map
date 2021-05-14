@@ -41,7 +41,7 @@ public class SectionDao {
         };
         jdbcTemplate.update(preparedStatementCreator, keyHolder);
         final long id = keyHolder.getKey().longValue();
-        return findById(id).get();
+        return findById(id).orElseThrow(() -> new DataNotFoundException("해당 Id의 구간이 없습니다."));
     }
 
     public Optional<Section> findById(final Long id) {

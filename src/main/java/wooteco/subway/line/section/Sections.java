@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import wooteco.subway.line.exception.BothExistentStationException;
-import wooteco.subway.line.exception.InvalidAddableSectionException;
+import wooteco.subway.line.exception.InvalidSectionException;
 import wooteco.subway.line.exception.NoneExistentStationException;
 
 public class Sections {
@@ -122,14 +122,14 @@ public class Sections {
         return sectionGroup.stream()
             .filter(section -> section.getUpStationId() == existentStationId)
             .findAny()
-            .get();
+            .orElseThrow(() -> new InvalidSectionException("존재하지 않는 구간입니다."));
     }
 
     public Section findSectionHasDownStation(long existentStationId) {
         return sectionGroup.stream()
             .filter(section -> section.getDownStationId() == existentStationId)
             .findAny()
-            .get();
+            .orElseThrow(() -> new InvalidSectionException("존재하지 않는 구간입니다."));
     }
 
     public Section findSameForm(final Long upStationId, final Long downStationId) {
@@ -138,7 +138,7 @@ public class Sections {
         return sectionGroup.stream()
             .filter(upStationFilter.or(downStationFilter))
             .findAny()
-            .orElseThrow(() -> new InvalidAddableSectionException("구간을 추가하기에 적합한 곳을 찾지 못했습니다."));
+            .orElseThrow(() -> new InvalidSectionException("구간을 추가하기에 적합한 곳을 찾지 못했습니다."));
     }
 
     public int size() {

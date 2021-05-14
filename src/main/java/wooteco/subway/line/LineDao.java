@@ -40,7 +40,7 @@ public class LineDao {
             };
             jdbcTemplate.update(preparedStatementCreator, keyHolder);
             final long id = keyHolder.getKey().longValue();
-            return findById(id).get();
+            return findById(id).orElseThrow(() -> new DataNotFoundException("해당 Id의 노선이 없습니다."));
         } catch (DuplicateKeyException e) {
             throw new DuplicatedNameException("중복된 이름의 노선입니다.");
         }
