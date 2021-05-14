@@ -41,7 +41,8 @@ public class SectionJdbcDao implements SectionDao {
 
     @Override
     public Optional<Section> findBySameUpOrDownId(Long lineId, Section newSection) {
-        String sql = "SELECT * FROM SECTION WHERE (line_id=? AND up_station_id=?) OR (line_id=? AND down_station_id=?)";
+        String sql = "SELECT id, up_station_id, down_station_id, distance " +
+            "FROM SECTION WHERE (line_id=? AND up_station_id=?) OR (line_id=? AND down_station_id=?)";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
                 sql,
@@ -72,7 +73,8 @@ public class SectionJdbcDao implements SectionDao {
 
     @Override
     public List<Section> findByStation(Long lineId, Long stationId) {
-        String sql = "SELECT * FROM SECTION WHERE (line_id=? AND up_station_id=?) OR (line_id=? AND down_station_id=?)";
+        String sql = "SELECT id, up_station_id, down_station_id, distance " +
+            "FROM SECTION WHERE (line_id=? AND up_station_id=?) OR (line_id=? AND down_station_id=?)";
         return jdbcTemplate.query(sql,
             (rs, rowNum) -> new Section(
                 rs.getLong("id"),
@@ -92,7 +94,8 @@ public class SectionJdbcDao implements SectionDao {
 
     @Override
     public List<Section> findByLineId(Long lineId) {
-        String sql = "SELECT * FROM SECTION WHERE line_id=?";
+        String sql = "SELECT id, up_station_id, down_station_id, distance" +
+            " FROM SECTION WHERE line_id=?";
         return jdbcTemplate.query(sql,
             (rs, rowNum) -> new Section(
                 rs.getLong("id"),

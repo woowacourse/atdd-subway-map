@@ -36,7 +36,7 @@ public class StationJdbcDao implements StationDao {
 
     @Override
     public List<Station> findAll() {
-        String sql = "SELECT * FROM STATION";
+        String sql = "SELECT id, name FROM STATION";
         return jdbcTemplate.query(
             sql,
             (rs, rowNum) -> new Station(
@@ -54,12 +54,12 @@ public class StationJdbcDao implements StationDao {
 
     @Override
     public Optional<Station> findById(Long id) {
-        String sql = "SELECT * FROM STATION WHERE id=?";
+        String sql = "SELECT name FROM STATION WHERE id=?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
                 sql,
                 (rs, rowNum) -> new Station(
-                    rs.getLong("id"),
+                    id,
                     rs.getString("name")
                 ),
                 id));
@@ -70,13 +70,13 @@ public class StationJdbcDao implements StationDao {
 
     @Override
     public Optional<Station> findByName(String name) {
-        String sql = "SELECT * FROM STATION WHERE name=?";
+        String sql = "SELECT id FROM STATION WHERE name=?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
                 sql,
                 (rs, rowNum) -> new Station(
                     rs.getLong("id"),
-                    rs.getString("name")
+                    name
                 ),
                 name));
         } catch (EmptyResultDataAccessException e) {

@@ -37,7 +37,7 @@ public class LineJdbcDao implements LineDao {
 
     @Override
     public List<Line> findAll() {
-        String sql = "SELECT * FROM LINE";
+        String sql = "SELECT id, name, color FROM LINE";
         return jdbcTemplate.query(
             sql,
             (rs, rowNum) -> new Line(
@@ -56,7 +56,7 @@ public class LineJdbcDao implements LineDao {
 
     @Override
     public Optional<Line> findById(Long id) {
-        String sql = "SELECT * FROM LINE WHERE id=?";
+        String sql = "SELECT id, name, color FROM LINE WHERE id=?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
                 sql,
@@ -80,7 +80,7 @@ public class LineJdbcDao implements LineDao {
 
     @Override
     public Optional<Line> findByName(String name) {
-        String sql = "SELECT * FROM LINE WHERE name=?";
+        String sql = "SELECT id, name, color FROM LINE WHERE name=?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
                 sql,
@@ -98,7 +98,7 @@ public class LineJdbcDao implements LineDao {
 
     @Override
     public Optional<Line> findByColor(String color) {
-        String sql = "SELECT * FROM LINE WHERE color=?";
+        String sql = "SELECT id, name, color FROM LINE WHERE color=?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
                 sql,
