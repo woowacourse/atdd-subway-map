@@ -15,14 +15,13 @@ public class Station {
     public Station() {
     }
 
+    public Station(String name) {
+        this(null, name);
+    }
+
     public Station(Long id, String name) {
         validate(name);
         this.id = id;
-        this.name = name;
-    }
-
-    public Station(String name) {
-        validate(name);
         this.name = name;
     }
 

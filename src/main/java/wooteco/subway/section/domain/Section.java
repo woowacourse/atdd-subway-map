@@ -18,9 +18,7 @@ public class Section {
     }
 
     public Section(Long upStationId, Long downStationId, int distance) {
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+        this(null, upStationId, downStationId, distance);
     }
 
     public boolean isUpStation(Long id) {
