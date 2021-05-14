@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import wooteco.subway.line.exception.BothExistentStationException;
+import wooteco.subway.line.exception.InvalidAddableSectionException;
 import wooteco.subway.line.exception.NoneExistentStationException;
 
 public class Sections {
@@ -137,7 +138,7 @@ public class Sections {
         return sectionGroup.stream()
             .filter(upStationFilter.or(downStationFilter))
             .findAny()
-            .orElseThrow(() -> new RuntimeException("구간을 추가하기에 적합한 곳을 찾지 못했습니다."));
+            .orElseThrow(() -> new InvalidAddableSectionException("구간을 추가하기에 적합한 곳을 찾지 못했습니다."));
     }
 
     public int size() {
