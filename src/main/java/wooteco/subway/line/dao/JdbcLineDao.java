@@ -14,19 +14,15 @@ import java.util.List;
 @RequiredArgsConstructor
 @Repository
 public class JdbcLineDao implements LineDao {
-    private static final String CREATE = "INSERT INTO line (name, color) VALUES (?, ?)";
-    private static final String SHOW_ALL = "SELECT * FROM line";
-    private static final String SHOW_MATCH_ID = "SELECT * FROM line WHERE id = ?";
-    private static final String COUNT_MATCH_NAME_OR_COLOR = "SELECT count(id) FROM line WHERE name = ? OR color = ?";
-    private static final String COUNT_MATCH_ID = "SELECT count(id) FROM line WHERE id = ?";
-
     private final JdbcTemplate jdbcTemplate;
 
     @Override
     public Line create(Line line) {
+        String createSql = "INSERT INTO line (name, color) VALUES (?, ?)";
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(CREATE, new String[]{"id"});
+            PreparedStatement ps = con.prepareStatement(createSql, new String[]{"id"});
             ps.setString(1, line.getName());
             ps.setString(2, line.getColor());
             return ps;
@@ -37,22 +33,27 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public boolean existByInfo(String name, String color) {
-        Integer count = jdbcTemplate.queryForObject(COUNT_MATCH_NAME_OR_COLOR, int.class, name, color);
+        String countMatchNameOrColorSql = "SELECT count(id) FROM line WHERE name = ? OR color = ?";
+        int count = jdbcTemplate.queryForObject(countMatchNameOrColorSql, int.class, name, color);
         return count >= 1;
     }
 
     public List<Line> showAll() {
-        return jdbcTemplate.query(SHOW_ALL, lineRowMapper());
+        String showAllSql = "SELECT * FROM line";
+
+        return jdbcTemplate.query(showAllSql, lineRowMapper());
     }
 
     @Override
     public Line findById(Long lineId) {
-        return jdbcTemplate.queryForObject(SHOW_MATCH_ID, lineRowMapper(), lineId);
+        String showMatchIdSql = "SELECT * FROM line WHERE id = ?";
+        return jdbcTemplate.queryForObject(showMatchIdSql, lineRowMapper(), lineId);
     }
 
     @Override
     public boolean existById(Long lineId) {
-        Integer count = jdbcTemplate.queryForObject(COUNT_MATCH_ID, int.class, lineId);
+        String countMatchIdSql = "SELECT count(id) FROM line WHERE id = ?";
+        int count = jdbcTemplate.queryForObject(countMatchIdSql, int.class, lineId);
         return count >= 1;
     }
 
