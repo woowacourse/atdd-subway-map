@@ -39,13 +39,11 @@ public class StationJdbcDao implements StationDao {
         String sql = "SELECT * FROM STATION";
         return jdbcTemplate.query(
             sql,
-            (rs, rowNum) -> {
-                Station station = new Station(
-                    rs.getLong("id"),
-                    rs.getString("name")
-                );
-                return station;
-            });
+            (rs, rowNum) -> new Station(
+                rs.getLong("id"),
+                rs.getString("name")
+            )
+        );
     }
 
     @Override
@@ -54,17 +52,16 @@ public class StationJdbcDao implements StationDao {
         jdbcTemplate.update(sql, id);
     }
 
+    @Override
     public Optional<Station> findById(Long id) {
         String sql = "SELECT * FROM STATION WHERE id=?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
                 sql,
-                (rs, rowNum) -> {
-                    return new Station(
-                        rs.getLong("id"),
-                        rs.getString("name")
-                    );
-                },
+                (rs, rowNum) -> new Station(
+                    rs.getLong("id"),
+                    rs.getString("name")
+                ),
                 id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -77,12 +74,10 @@ public class StationJdbcDao implements StationDao {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
                 sql,
-                (rs, rowNum) -> {
-                    return new Station(
-                        rs.getLong("id"),
-                        rs.getString("name")
-                    );
-                },
+                (rs, rowNum) -> new Station(
+                    rs.getLong("id"),
+                    rs.getString("name")
+                ),
                 name));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();

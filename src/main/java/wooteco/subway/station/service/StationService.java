@@ -44,15 +44,15 @@ public class StationService {
         stationDao.delete(id);
     }
 
+    private void validateId(Long stationId) {
+        stationDao.findById(stationId)
+            .orElseThrow(NoLineException::new);
+    }
+
     public StationResponse findById(Long id) {
         return new StationResponse(
             stationDao.findById(id)
                 .orElseThrow(NoStationException::new)
         );
-    }
-
-    public void validateId(Long stationId) {
-        stationDao.findById(stationId)
-            .orElseThrow(NoLineException::new);
     }
 }

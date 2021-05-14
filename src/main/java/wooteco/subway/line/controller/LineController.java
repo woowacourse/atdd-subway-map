@@ -44,7 +44,7 @@ public class LineController {
         Line line = lineService.findById(id);
         List<StationResponse> sortedStations = lineService.sortedStationsByLineId(id);
         LineResponse lineResponse = new LineResponse(line, sortedStations);
-        return ResponseEntity.ok().body(lineResponse);
+        return ResponseEntity.ok(lineResponse);
     }
 
     @PutMapping(value = "/{id}")

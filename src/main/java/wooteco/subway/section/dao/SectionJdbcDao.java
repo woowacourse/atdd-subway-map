@@ -25,6 +25,7 @@ public class SectionJdbcDao implements SectionDao {
     public Section save(Long lineId, Section section) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO SECTION (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
+
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, lineId);
@@ -33,6 +34,7 @@ public class SectionJdbcDao implements SectionDao {
             ps.setInt(4, section.getDistance());
             return ps;
         }, keyHolder);
+
         long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return new Section(id, section.getUpStationId(), section.getDownStationId(), section.getDistance());
     }
@@ -43,15 +45,14 @@ public class SectionJdbcDao implements SectionDao {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
                 sql,
-                (rs, rowNum) -> {
-                    Section section = new Section(
-                        rs.getLong("id"),
-                        rs.getLong("up_station_id"),
-                        rs.getLong("down_station_id"),
-                        rs.getInt("distance")
-                    );
-                    return section;
-                }, lineId, newSection.getUpStationId(), lineId, newSection.getDownStationId()));
+                (rs, rowNum) -> new Section(
+                    rs.getLong("id"),
+                    rs.getLong("up_station_id"),
+                    rs.getLong("down_station_id"),
+                    rs.getInt("distance")
+                ),
+                lineId, newSection.getUpStationId(), lineId, newSection.getDownStationId())
+            );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -73,15 +74,14 @@ public class SectionJdbcDao implements SectionDao {
     public List<Section> findByStation(Long lineId, Long stationId) {
         String sql = "SELECT * FROM SECTION WHERE (line_id=? AND up_station_id=?) OR (line_id=? AND down_station_id=?)";
         return jdbcTemplate.query(sql,
-            (rs, rowNum) -> {
-                Section section = new Section(
-                    rs.getLong("id"),
-                    rs.getLong("up_station_id"),
-                    rs.getLong("down_station_id"),
-                    rs.getInt("distance")
-                );
-                return section;
-            }, lineId, stationId, lineId, stationId);
+            (rs, rowNum) -> new Section(
+                rs.getLong("id"),
+                rs.getLong("up_station_id"),
+                rs.getLong("down_station_id"),
+                rs.getInt("distance")
+            ),
+            lineId, stationId, lineId, stationId
+        );
     }
 
     @Override
@@ -94,14 +94,12 @@ public class SectionJdbcDao implements SectionDao {
     public List<Section> findByLineId(Long lineId) {
         String sql = "SELECT * FROM SECTION WHERE line_id=?";
         return jdbcTemplate.query(sql,
-            (rs, rowNum) -> {
-                Section section = new Section(
-                    rs.getLong("id"),
-                    rs.getLong("up_station_id"),
-                    rs.getLong("down_station_id"),
-                    rs.getInt("distance")
-                );
-                return section;
-            }, lineId);
+            (rs, rowNum) -> new Section(
+                rs.getLong("id"),
+                rs.getLong("up_station_id"),
+                rs.getLong("down_station_id"),
+                rs.getInt("distance")
+            ), lineId
+        );
     }
 }

@@ -40,14 +40,12 @@ public class LineJdbcDao implements LineDao {
         String sql = "SELECT * FROM LINE";
         return jdbcTemplate.query(
             sql,
-            (rs, rowNum) -> {
-                Line line = new Line(
-                    rs.getLong("id"),
-                    rs.getString("name"),
-                    rs.getString("color")
-                );
-                return line;
-            });
+            (rs, rowNum) -> new Line(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("color")
+            )
+        );
     }
 
     @Override
@@ -62,14 +60,13 @@ public class LineJdbcDao implements LineDao {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
                 sql,
-                (rs, rowNum) -> {
-                    return new Line(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("color")
-                    );
-                },
-                id));
+                (rs, rowNum) -> new Line(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("color")
+                ),
+                id)
+            );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -87,14 +84,13 @@ public class LineJdbcDao implements LineDao {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
                 sql,
-                (rs, rowNum) -> {
-                    return new Line(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("color")
-                    );
-                },
-                name));
+                (rs, rowNum) -> new Line(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("color")
+                ),
+                name)
+            );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -106,14 +102,13 @@ public class LineJdbcDao implements LineDao {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
                 sql,
-                (rs, rowNum) -> {
-                    return new Line(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("color")
-                    );
-                },
-                color));
+                (rs, rowNum) -> new Line(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("color")
+                ),
+                color)
+            );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
