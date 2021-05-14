@@ -1,5 +1,7 @@
 package wooteco.subway.line.model;
 
+import java.util.Objects;
+
 public class Line {
 
     private Long id;
@@ -29,15 +31,16 @@ public class Line {
         return color;
     }
 
-    public boolean isSameName(Line newLine) {
-        return this.name.equals(newLine.name);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Line line = (Line) o;
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color);
     }
 
-    public boolean isSameId(Long id) {
-        return this.id == id;
-    }
-
-    public boolean isSameColor(Line newLine) {
-        return this.color.equals(newLine.color);
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color);
     }
 }

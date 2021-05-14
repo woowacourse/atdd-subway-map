@@ -1,15 +1,15 @@
 package wooteco.subway.station.api;
 
-import javax.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.util.List;
 import wooteco.subway.station.api.dto.StationRequest;
 import wooteco.subway.station.api.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
+
+import javax.validation.Valid;
+import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/stations")

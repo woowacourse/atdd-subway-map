@@ -3,19 +3,18 @@ package wooteco.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.station.api.dto.StationResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import wooteco.subway.station.api.dto.StationResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,7 +28,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         String stationName = "강남역";
 
         // when
-        ExtractableResponse<Response> response = 지하철역_저장_후_Response(stationName);
+        ExtractableResponse<Response> response = 지하철역_저장_후_응답(stationName);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -41,10 +40,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         String stationName = "강남역";
-        지하철역_저장_후_Response(stationName);
+        지하철역_저장_후_응답(stationName);
 
         // when
-        ExtractableResponse<Response> response = 지하철역_저장_후_Response(stationName);
+        ExtractableResponse<Response> response = 지하철역_저장_후_응답(stationName);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -58,7 +57,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         String wrongStationName = "1";
 
         // when
-        ExtractableResponse<Response> response = 지하철역_저장_후_Response(wrongStationName);
+        ExtractableResponse<Response> response = 지하철역_저장_후_응답(wrongStationName);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -70,10 +69,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void getStations() {
         /// given
         String stationName1 = "강남역";
-        ExtractableResponse<Response> createResponse1 = 지하철역_저장_후_Response(stationName1);
+        ExtractableResponse<Response> createResponse1 = 지하철역_저장_후_응답(stationName1);
 
         String stationName2 = "역삼역";
-        ExtractableResponse<Response> createResponse2 = 지하철역_저장_후_Response(stationName2);
+        ExtractableResponse<Response> createResponse2 = 지하철역_저장_후_응답(stationName2);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -99,11 +98,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void deleteStation() {
         // given
         String stationName = "강남역";
-        ExtractableResponse<Response> createResponse = 지하철역_저장_후_Response(stationName);
+        ExtractableResponse<Response> createResponse = 지하철역_저장_후_응답(stationName);
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = 지하철역_삭제_후_Response(uri);
+        ExtractableResponse<Response> response = 지하철역_삭제_후_응답(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -114,19 +113,19 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void deleteIfNotExistStationId() {
         //given
         String stationName = "강남역";
-        ExtractableResponse<Response> createResponse = 지하철역_저장_후_Response(stationName);
+        ExtractableResponse<Response> createResponse = 지하철역_저장_후_응답(stationName);
 
         //when
         Long id = createResponse.body().jsonPath().getObject(".", StationResponse.class).getId();
 
-        ExtractableResponse<Response> response = 지하철역_삭제_후_Response("/stations/" + (id + 1));
+        ExtractableResponse<Response> response = 지하철역_삭제_후_응답("/stations/" + (id + 1));
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString()).isEqualTo("존재하지 않는 역 ID 입니다.");
     }
 
-    private ExtractableResponse<Response> 지하철역_저장_후_Response(String stationName) {
+    private ExtractableResponse<Response> 지하철역_저장_후_응답(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
@@ -139,7 +138,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철역_삭제_후_Response(String uri) {
+    private ExtractableResponse<Response> 지하철역_삭제_후_응답(String uri) {
         return RestAssured.given().log().all()
                 .when()
                 .delete(uri)
