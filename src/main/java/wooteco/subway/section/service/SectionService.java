@@ -18,7 +18,7 @@ public class SectionService {
 
     @Transactional
     public Long save(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
-        Sections sections = sectionDao.findAllSections(lineId);
+        Sections sections = sectionDao.findAllByLineId(lineId);
         Section sectionToSave = new Section(
                 lineId,
                 new Station(upStationId),
@@ -54,7 +54,7 @@ public class SectionService {
 
     @Transactional
     public void delete(final Long lineId, final Long stationId) {
-        Sections sections = sectionDao.findAllSections(lineId);
+        Sections sections = sectionDao.findAllByLineId(lineId);
         Station stationToDelete = new Station(stationId);
 
         validateStationExistence(sections, stationToDelete);
@@ -80,6 +80,6 @@ public class SectionService {
     }
 
     public Sections findAll(final Long lineId) {
-        return sectionDao.findAllSections(lineId);
+        return sectionDao.findAllByLineId(lineId);
     }
 }

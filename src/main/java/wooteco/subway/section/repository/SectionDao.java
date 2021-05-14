@@ -41,7 +41,7 @@ public class SectionDao {
         jdbcTemplate.update(query, lineId, stationId, stationId);
     }
 
-    public Sections findAllSections(final Long lineId) {
+    public Sections findAllByLineId(final Long lineId) {
         String query = "SELECT up.id AS sectionId, up_station_id, up.name AS upName, down_station_id, down.name AS downName, up.distance AS distance " +
                 "FROM (SELECT section.id AS id, up_station_id, distance, name FROM section JOIN station ON section.up_station_id = station.id WHERE section.line_id = ?) up " +
                 "JOIN (SELECT section.id AS id, down_station_id, distance, name FROM section JOIN station ON section.down_station_id = station.id WHERE section.line_id = ?) down " +

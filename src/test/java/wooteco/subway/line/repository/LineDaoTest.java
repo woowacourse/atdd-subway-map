@@ -12,7 +12,6 @@ import wooteco.subway.line.domain.Lines;
 import wooteco.subway.line.service.NoSuchLineException;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

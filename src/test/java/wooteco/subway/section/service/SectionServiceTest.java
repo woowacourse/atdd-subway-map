@@ -97,9 +97,9 @@ public class SectionServiceTest {
     void save_existingSection_throwException() {
         assertThatThrownBy(() -> sectionService.save(lineId, 2L, 4L, 5)).isInstanceOf(DuplicateSectionException.class);
 
-        assertThatThrownBy(() -> sectionService.save(lineId, 2L, 4L ,5)).isInstanceOf(DuplicateSectionException.class);
+        assertThatThrownBy(() -> sectionService.save(lineId, 2L, 4L, 5)).isInstanceOf(DuplicateSectionException.class);
 
-        assertThatThrownBy(() -> sectionService.save(lineId, 4L ,2L, 3)).isInstanceOf(DuplicateSectionException.class);
+        assertThatThrownBy(() -> sectionService.save(lineId, 4L, 2L, 3)).isInstanceOf(DuplicateSectionException.class);
 
         assertThatThrownBy(() -> sectionService.save(lineId, 4L, 1L, 5)).isInstanceOf(DuplicateSectionException.class);
     }
@@ -107,7 +107,7 @@ public class SectionServiceTest {
     @DisplayName("구간을 저장할 때 상행선 하행선 둘다 존재하지 않으면 NoSuchStationException을 반환한다")
     @Test
     void save_nonExistingSection_throwException() {
-        assertThatThrownBy(() -> sectionService.save(lineId, 5L ,6L, 7)).isInstanceOf(NoSuchStationException.class);
+        assertThatThrownBy(() -> sectionService.save(lineId, 5L, 6L, 7)).isInstanceOf(NoSuchStationException.class);
     }
 
     @DisplayName("구간을 저장할 때 새로운 종점역을 만드는 구간 삽입이면 해당 구간을 단순 추가해준다")
@@ -135,7 +135,7 @@ public class SectionServiceTest {
         String stationQuery = "INSERT INTO station(name) VALUES(?)";
         jdbcTemplate.update(stationQuery, "강남역");
 
-        sectionService.save(lineId, 2L ,5L, 1);
+        sectionService.save(lineId, 2L, 5L, 1);
         // 잠실역 (1) - 5 - 잠실새내역 (2) - 1 - 강남역 (5) - 3 - 한성백제역 (4) - 7 - 몽촌토성역 (3)
 
         List<Section> sections = getSections();
@@ -173,7 +173,7 @@ public class SectionServiceTest {
         String stationQuery = "INSERT INTO station(name) VALUES(?)";
         jdbcTemplate.update(stationQuery, "강남역");
 
-        assertThatThrownBy(() -> sectionService.save(lineId, 2L, 5L,5 )).isInstanceOf(IllegalSectionDistanceException.class);
+        assertThatThrownBy(() -> sectionService.save(lineId, 2L, 5L, 5)).isInstanceOf(IllegalSectionDistanceException.class);
     }
 
     private List<Section> getSections() {
