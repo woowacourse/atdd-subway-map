@@ -1,5 +1,7 @@
 package wooteco.subway.station;
 
+import wooteco.subway.station.exception.StationException;
+
 import java.util.Objects;
 
 public class Station {
@@ -10,8 +12,15 @@ public class Station {
     }
 
     public Station(Long id, String name) {
+        validateName(name);
         this.id = id;
         this.name = name;
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.trim().length() <= 0) {
+            throw new StationException("이름이 반드시 존재해야 합니다.");
+        }
     }
 
     public Station(String name) {

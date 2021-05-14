@@ -1,5 +1,6 @@
 package wooteco.subway.section;
 
+import wooteco.subway.section.exception.SectionException;
 import wooteco.subway.station.Station;
 
 import java.util.Objects;
@@ -12,11 +13,29 @@ public class Section {
     private int distance;
 
     public Section(Long id, Long lineId, Station upStation, Station downStation, int distance) {
+        validateLineField(upStation, downStation, distance);
         this.id = id;
         this.lineId = lineId;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void validateLineField(Station upStation, Station downStation, int distance) {
+        validateStationExistence(upStation, downStation);
+        validateDistance(distance);
+    }
+
+    private void validateStationExistence(Station upStation, Station downStation) {
+        if (upStation == null || downStation == null) {
+            throw new SectionException("구간에는 양 역이 존재해야 합니다.");
+        }
+    }
+
+    private void validateDistance(int distance) {
+        if (distance <= 0) {
+            throw new SectionException("구간의 거리는 0 초과여야 합니다.");
+        }
     }
 
     public Long getId() {

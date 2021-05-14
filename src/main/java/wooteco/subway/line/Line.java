@@ -1,5 +1,6 @@
 package wooteco.subway.line;
 
+import wooteco.subway.line.exception.LineException;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.Sections;
 import wooteco.subway.station.StationResponse;
@@ -14,6 +15,7 @@ public class Line {
     private Sections sections;
 
     public Line(Long id, String name, String color) {
+        validateLineField(name, color);
         this.id = id;
         this.name = name;
         this.color = color;
@@ -21,6 +23,23 @@ public class Line {
 
     public List<StationResponse> stations() {
         return sections.sortedStations();
+    }
+
+    private void validateLineField(String name, String color) {
+        validateName(name);
+        validateColor(color);
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.trim().length() <= 0) {
+            throw new LineException("이름 값이 존재해야 합니다.");
+        }
+    }
+
+    private void validateColor(String color) {
+        if (color == null || color.trim().length() <= 0) {
+            throw new LineException("색상 값이 존재해야 합니다.");
+        }
     }
 
     public Long getId() {

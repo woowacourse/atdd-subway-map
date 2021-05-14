@@ -4,6 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @Controller
 @RequestMapping("/lines/{lineId}/sections")
 public class SectionController {
@@ -16,7 +18,7 @@ public class SectionController {
 
     @PostMapping
     public ResponseEntity<SectionResponse> addSection(@PathVariable Long lineId,
-                                                      @RequestBody SectionRequest sectionRequest) {
+                                                      @RequestBody @Valid SectionRequest sectionRequest) {
         Section savedSection = sectionService.save(SectionDto.of(lineId, sectionRequest));
         return ResponseEntity.ok(new SectionResponse(savedSection));
     }
