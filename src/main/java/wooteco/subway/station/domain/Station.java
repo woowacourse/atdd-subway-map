@@ -27,8 +27,8 @@ public class Station {
 
     private void validate(String name) {
         validateNotNull(name);
-        validateNotEmpty(name);
         validateSuffix(name);
+        validateNotEmpty(name);
     }
 
     private void validateNotNull(String name) {

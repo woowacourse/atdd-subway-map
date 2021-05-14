@@ -29,8 +29,8 @@ public class Line {
 
     private void validate(String name, String color) {
         validateNotNull(name, color);
-        validateNotEmpty(name, color);
         validateSuffix(name);
+        validateNotEmpty(name, color);
     }
 
     private void validateNotNull(String name, String color) {
@@ -40,7 +40,7 @@ public class Line {
     }
 
     private void validateNotEmpty(String name, String color) {
-        if ("".equals(name.substring(0, name.length()-1)) || "".equals(color)) {
+        if ("".equals(name.substring(0, name.length() - 1)) || "".equals(color)) {
             throw new EmptyInputException();
         }
     }
