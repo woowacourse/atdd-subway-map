@@ -27,11 +27,11 @@ public class Line {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        this.sections.add(upStation, downStation, distance);
+        sections.add(upStation, downStation, distance);
     }
 
     public void deleteStation(Station station) {
-        this.sections.delete(station);
+        sections.delete(station);
     }
 
     public Sections getSections() {
@@ -55,11 +55,11 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return this.sections.getStations();
+        return sections.getStations();
     }
 
     public boolean isRemovable() {
-        return this.sections.isRemovable();
+        return sections.isRemovable();
     }
 
     @Override

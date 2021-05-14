@@ -26,7 +26,7 @@ public class StationService {
     }
 
     private void validateDuplicateStationName(String name) {
-        this.stationRepository.findByName(name).ifPresent(line -> {
+        stationRepository.findByName(name).ifPresent(line -> {
             throw new DuplicateStationNameException(name);
         });
     }

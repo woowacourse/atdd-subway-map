@@ -31,7 +31,7 @@ public class LineH2Dao implements LineRepository {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        this.jdbcTemplate.update(connection -> {
+        jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection
                     .prepareStatement(query, new String[]{"id"});
             ps.setString(1, line.getName());
@@ -39,7 +39,7 @@ public class LineH2Dao implements LineRepository {
             return ps;
         }, keyHolder);
 
-        return this.findById(keyHolder.getKey().longValue());
+        return findById(keyHolder.getKey().longValue());
     }
 
     @Override
@@ -57,7 +57,7 @@ public class LineH2Dao implements LineRepository {
     @Override
     public Optional<Line> findByName(String name) {
         String query = "SELECT * FROM LINE WHERE name = ?";
-        return this.jdbcTemplate.query(query, (rs) -> {
+        return jdbcTemplate.query(query, (rs) -> {
             if (rs.next()) {
                 long id = rs.getLong("id");
                 String lineName = rs.getString("name");
@@ -71,8 +71,8 @@ public class LineH2Dao implements LineRepository {
     @Override
     public Line update(Long id, Line newLine) {
         String query = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
-        this.jdbcTemplate.update(query, newLine.getName(), newLine.getColor(), id);
-        return this.findById(id);
+        jdbcTemplate.update(query, newLine.getName(), newLine.getColor(), id);
+        return findById(id);
     }
 
     @Override

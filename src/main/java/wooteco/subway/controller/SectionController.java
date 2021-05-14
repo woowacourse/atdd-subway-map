@@ -19,7 +19,7 @@ public class SectionController {
 
     @PostMapping("/{lineId}/sections")
     public ResponseEntity<LineResponse> createSection(@PathVariable long lineId, @RequestBody SectionRequest sectionRequest) {
-        LineResponse lineResponse = this.sectionService.createSection(lineId, sectionRequest);
+        LineResponse lineResponse = sectionService.createSection(lineId, sectionRequest);
 
         URI location = URI.create("/lines/" + lineResponse.getId());
         return ResponseEntity
@@ -29,7 +29,7 @@ public class SectionController {
 
     @DeleteMapping("/{lineId}/sections")
     public ResponseEntity<LineResponse> deleteSection(@PathVariable long lineId, @RequestParam("stationId") long stationId) {
-        this.sectionService.deleteSection(lineId, stationId);
+        sectionService.deleteSection(lineId, stationId);
 
         return ResponseEntity
                 .noContent()

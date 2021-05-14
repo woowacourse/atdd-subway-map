@@ -29,7 +29,7 @@ public class Sections {
                 addMiddle(sectionToUpdate, downStation, distance);
                 return;
             }
-            addAt(new Section(upStation, downStation, distance), this.sections.size());
+            addAt(new Section(upStation, downStation, distance), sections.size());
             return;
         }
 
@@ -44,19 +44,19 @@ public class Sections {
     }
 
     private boolean contains(Station station) {
-        return this.sections.stream()
+        return sections.stream()
                 .anyMatch(section -> section.hasAny(station));
     }
 
     private Section getSectionWhereUpStationIs(Station upStation) {
-        return this.sections.stream()
+        return sections.stream()
                 .filter(section -> section.isUpStation(upStation))
                 .findAny()
                 .get();
     }
 
     private Section getSectionWhereDownStationIs(Station downStation) {
-        return this.sections.stream()
+        return sections.stream()
                 .filter(section -> section.isDownStation(downStation))
                 .findAny()
                 .get();
@@ -75,7 +75,7 @@ public class Sections {
     }
 
     private void addAt(Section section, int index) {
-        this.sections.add(index, section);
+        sections.add(index, section);
     }
 
     private void validateDistance(int distance, Section sectionToDelete) {
@@ -117,22 +117,22 @@ public class Sections {
     }
 
     private boolean isUp(Station station) {
-        return this.sections.stream()
+        return sections.stream()
                 .anyMatch(section -> section.isUpStation(station));
     }
 
     private boolean isDown(Station station) {
-        return this.sections.stream()
+        return sections.stream()
                 .anyMatch(section -> section.isDownStation(station));
     }
 
     private void removeStationFromMiddleOfSection(Station station) {
-        Section sectionToUpdateLeftSide = this.sections.stream()
+        Section sectionToUpdateLeftSide = sections.stream()
                 .filter(section -> section.isDownStation(station))
                 .findAny()
                 .get();
 
-        Section sectionToUpdateRightSide = this.sections.stream()
+        Section sectionToUpdateRightSide = sections.stream()
                 .filter(section -> section.isUpStation(station))
                 .findAny()
                 .get();
@@ -151,18 +151,18 @@ public class Sections {
     }
 
     public List<Section> sections() {
-        return this.sections;
+        return sections;
     }
 
     public boolean isRemovable() {
-        return this.sections.size() > 1;
+        return sections.size() > 1;
     }
 
     public List<Station> getStations() {
-        List<Station> stations = this.sections.stream()
+        List<Station> stations = sections.stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
-        stations.add(this.sections.get(this.sections.size() - 1).getDownStation());
+        stations.add(sections.get(sections.size() - 1).getDownStation());
         return stations;
     }
 

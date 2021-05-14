@@ -26,39 +26,39 @@ public class SectionService {
     }
 
     public LineResponse createSection(long lineId, SectionRequest sectionRequest) {
-        Line line = this.loadLine(lineId);
+        Line line = loadLine(lineId);
 
-        Station upStation = this.stationRepository.findById(sectionRequest.getUpStationId());
-        Station downStation = this.stationRepository.findById(sectionRequest.getDownStationId());
+        Station upStation = stationRepository.findById(sectionRequest.getUpStationId());
+        Station downStation = stationRepository.findById(sectionRequest.getDownStationId());
         int distance = sectionRequest.getDistance();
 
         line.addSection(upStation, downStation, distance);
-        this.updateSections(lineId, line);
+        updateSections(lineId, line);
         return LineResponse.from(line);
     }
 
     public void deleteSection(long lineId, long stationId) {
-        Line line = this.loadLine(lineId);
+        Line line = loadLine(lineId);
 
         validateIsRemovable(line);
 
-        Station station = this.stationRepository.findById(stationId);
+        Station station = stationRepository.findById(stationId);
         line.deleteStation(station);
-        this.updateSections(lineId, line);
+        updateSections(lineId, line);
     }
 
     private Line loadLine(long lineId) {
-        Line line = this.lineRepository.findById(lineId);
-        List<Section> sections = this.sectionRepository.findAllByLineId(lineId);
+        Line line = lineRepository.findById(lineId);
+        List<Section> sections = sectionRepository.findAllByLineId(lineId);
 
         for (Section section : sections) {
             long sectionId = section.getId();
 
-            Long upStationIdById = this.sectionRepository.getUpStationIdById(sectionId);
-            Station upStation = this.stationRepository.findById(upStationIdById);
+            Long upStationIdById = sectionRepository.getUpStationIdById(sectionId);
+            Station upStation = stationRepository.findById(upStationIdById);
 
-            Long downStationIdById = this.sectionRepository.getDownStationIdById(sectionId);
-            Station downStation = this.stationRepository.findById(downStationIdById);
+            Long downStationIdById = sectionRepository.getDownStationIdById(sectionId);
+            Station downStation = stationRepository.findById(downStationIdById);
 
             section.setUpStation(upStation);
             section.setDownStation(downStation);
@@ -74,7 +74,7 @@ public class SectionService {
     }
 
     private void updateSections(long lineId, Line line) {
-        this.sectionRepository.deleteSectionsByLineId(lineId);
-        this.sectionRepository.saveSections(lineId, line.getSections().sections());
+        sectionRepository.deleteSectionsByLineId(lineId);
+        sectionRepository.saveSections(lineId, line.getSections().sections());
     }
 }

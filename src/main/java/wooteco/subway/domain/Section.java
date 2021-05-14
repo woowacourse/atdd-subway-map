@@ -22,15 +22,15 @@ public class Section {
     }
 
     public boolean hasAny(Station station) {
-        return this.upStation.equals(station) || this.downStation.equals(station);
+        return upStation.equals(station) || downStation.equals(station);
     }
 
     public boolean isUpStation(Station station) {
-        return this.upStation.equals(station);
+        return upStation.equals(station);
     }
 
     public boolean isDownStation(Station station) {
-        return this.downStation.equals(station);
+        return downStation.equals(station);
     }
 
     public long getId() {
@@ -42,11 +42,11 @@ public class Section {
     }
 
     public int getDistance() {
-        return this.distance;
+        return distance;
     }
 
     public Station getUpStation() {
-        return this.upStation;
+        return upStation;
     }
 
     public void setUpStation(Station upStation) {
@@ -54,7 +54,7 @@ public class Section {
     }
 
     public Station getDownStation() {
-        return this.downStation;
+        return downStation;
     }
 
     public void setDownStation(Station downStation) {

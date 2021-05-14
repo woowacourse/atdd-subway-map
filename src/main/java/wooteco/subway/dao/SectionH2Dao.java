@@ -32,7 +32,7 @@ public class SectionH2Dao implements SectionRepository {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        this.jdbcTemplate.update(connection -> {
+        jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection
                     .prepareStatement(query, new String[]{"id"});
             ps.setLong(1, lineId);
@@ -42,14 +42,14 @@ public class SectionH2Dao implements SectionRepository {
             return ps;
         }, keyHolder);
 
-        return this.findById(keyHolder.getKey().longValue());
+        return findById(keyHolder.getKey().longValue());
     }
 
     @Override
     public void saveSections(long lineId, List<Section> sections) {
         String query = "INSERT INTO SECTION (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
 
-        this.jdbcTemplate.batchUpdate(
+        jdbcTemplate.batchUpdate(
                 query,
                 sections,
                 sections.size(),
@@ -65,7 +65,7 @@ public class SectionH2Dao implements SectionRepository {
     @Override
     public void deleteSectionsByLineId(long lineId) {
         String query = "DELETE FROM SECTION WHERE line_id = ?";
-        this.jdbcTemplate.update(query, lineId);
+        jdbcTemplate.update(query, lineId);
     }
 
     @Override

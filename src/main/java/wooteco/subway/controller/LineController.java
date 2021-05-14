@@ -14,16 +14,14 @@ import java.util.List;
 @RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;
-    private final LineRepository lineRepository;
 
-    public LineController(LineService lineService, LineRepository lineRepository) {
+    public LineController(LineService lineService) {
         this.lineService = lineService;
-        this.lineRepository = lineRepository;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLines(@RequestBody LineRequest lineRequest) {
-        LineResponse lineResponse = this.lineService.createLine(lineRequest);
+        LineResponse lineResponse = lineService.createLine(lineRequest);
 
         URI location = URI.create("/lines/" + lineResponse.getId());
         return ResponseEntity
@@ -33,7 +31,7 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> lineResponses = this.lineService.findAllLines();
+        List<LineResponse> lineResponses = lineService.findAllLines();
 
         return ResponseEntity
                 .ok()
@@ -42,7 +40,7 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable long id) {
-        LineResponse lineResponse = this.lineService.findLineById(id);
+        LineResponse lineResponse = lineService.findLineById(id);
 
         return ResponseEntity
                 .ok()
@@ -51,7 +49,7 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable long id, @RequestBody LineRequest lineRequest) {
-        this.lineService.updateLine(id, lineRequest.getName(), lineRequest.getColor());
+        lineService.updateLine(id, lineRequest.getName(), lineRequest.getColor());
 
         return ResponseEntity
                 .noContent()

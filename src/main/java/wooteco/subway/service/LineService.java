@@ -35,38 +35,38 @@ public class LineService {
 
         validateDuplicateLineName(name);
 
-        Line line = this.lineRepository.save(new Line(name, color));
+        Line line = lineRepository.save(new Line(name, color));
         long lineId = line.getId();
 
-        Station upStation = this.stationRepository.findById(upStationId);
-        Station downStation = this.stationRepository.findById(downStationId);
+        Station upStation = stationRepository.findById(upStationId);
+        Station downStation = stationRepository.findById(downStationId);
         Section section = new Section(upStation, downStation, distance);
 
-        this.sectionRepository.save(lineId, section);
-        return this.findLineById(lineId);
+        sectionRepository.save(lineId, section);
+        return findLineById(lineId);
     }
 
     private void validateDuplicateLineName(String name) {
-        this.lineRepository.findByName(name).ifPresent(line -> {
+        lineRepository.findByName(name).ifPresent(line -> {
             throw new DuplicateLineNameException(name);
         });
     }
 
     public List<LineResponse> findAllLines() {
-        return this.lineRepository.findAll().stream()
+        return lineRepository.findAll().stream()
                 .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLineById(long lineId) {
-        Line line = this.lineRepository.findById(lineId);
-        List<Section> sections = this.sectionRepository.findAllByLineId(lineId);
+        Line line = lineRepository.findById(lineId);
+        List<Section> sections = sectionRepository.findAllByLineId(lineId);
 
         for (Section section : sections) {
-            Long upStationId = this.sectionRepository.getUpStationIdById(section.getId());
+            Long upStationId = sectionRepository.getUpStationIdById(section.getId());
             section.setUpStation(stationRepository.findById(upStationId));
 
-            Long downStationId = this.sectionRepository.getDownStationIdById(section.getId());
+            Long downStationId = sectionRepository.getDownStationIdById(section.getId());
             section.setDownStation(stationRepository.findById(downStationId));
         }
 
