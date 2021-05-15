@@ -20,12 +20,6 @@ public class Line {
         this.color = color;
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
-        this.name = name;
-        this.color = color;
-        this.sections = new Sections(upStation, downStation, distance);
-    }
-
     public void addSection(Station upStation, Station downStation, int distance) {
         this.sections.add(upStation, downStation, distance);
     }
@@ -56,6 +50,35 @@ public class Line {
 
     public String getColor() {
         return color;
+    }
+
+    public static LineBuilder builder() {
+        return new LineBuilder();
+    }
+
+    public static class LineBuilder {
+        private Long id;
+        private String name;
+        private String color;
+
+        public LineBuilder setId(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public LineBuilder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public LineBuilder setColor(String color) {
+            this.color = color;
+            return this;
+        }
+
+        public Line build() {
+            return new Line(id, name, color);
+        }
     }
 
     @Override
