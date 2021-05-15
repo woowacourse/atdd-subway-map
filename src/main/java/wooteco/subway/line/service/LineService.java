@@ -1,6 +1,7 @@
 package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.domain.*;
 import wooteco.subway.line.domain.rule.FindSectionHaveSameDownRule;
 import wooteco.subway.line.domain.rule.FindSectionHaveSameUpRule;
@@ -24,6 +25,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public Line create(Line line) {
         checkCreateValidation(line);
         return lineRepository.save(line);
@@ -58,6 +60,7 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    @Transactional
     public void addSection(final Long id, final Section section) {
         Line line = findById(id);
         Sections sections = line.getSections();
@@ -82,6 +85,7 @@ public class LineService {
         lineRepository.addSection(id, section);
     }
 
+    @Transactional
     public void deleteSection(final Long id, final Long stationId) {
         Line line = findById(id);
         Sections sections = line.getSections();
@@ -93,7 +97,6 @@ public class LineService {
         }
 
         Section updateSection = sections.generateUpdateWhenDelete(deleteSections);
-
         deleteSections.forEach(section -> lineRepository.deleteSection(id, section));
         lineRepository.addSection(id, updateSection);
     }

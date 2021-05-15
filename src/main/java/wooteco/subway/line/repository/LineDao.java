@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.Line;
 
 import java.sql.PreparedStatement;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
