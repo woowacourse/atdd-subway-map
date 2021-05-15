@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Sections {
+    private static final int MIN_SECTION_NUMBER_TO_MAKE_LINE = 1;
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -15,15 +16,15 @@ public class Sections {
         this.sections = sections;
     }
 
+    public Sections(Station upStation, Station downStation, int distance) {
+        this.sections = new ArrayList<>();
+        sections.add(Section.of(upStation, downStation, distance));
+    }
+
     private void validateSections(List<Section> sections) {
         if (sections.isEmpty()) {
             throw new IllegalArgumentException("하나 이상의 구간이 존재해야 합니다.");
         }
-    }
-
-    public Sections(Station upStation, Station downStation, int distance) {
-        this.sections = new ArrayList<>();
-        sections.add(Section.of(upStation, downStation, distance));
     }
 
     public void add(Station upStation, Station downStation, int distance) {
@@ -169,7 +170,7 @@ public class Sections {
     }
 
     public boolean isRemovable() {
-        return sections.size() > 1;
+        return sections.size() > MIN_SECTION_NUMBER_TO_MAKE_LINE;
     }
 
     public List<Station> getStations() {
