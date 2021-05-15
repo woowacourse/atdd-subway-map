@@ -1,12 +1,12 @@
 package wooteco.subway.line.ui;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.domain.Sections;
+import wooteco.subway.line.exception.LineNotFoundException;
 import wooteco.subway.line.service.LineService;
 import wooteco.subway.line.ui.dto.LineCreateRequest;
 import wooteco.subway.line.ui.dto.LineModifyRequest;
@@ -95,7 +95,7 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler({DataAccessException.class, IllegalArgumentException.class})
+    @ExceptionHandler({LineNotFoundException.class, IllegalArgumentException.class})
     private ResponseEntity<String> handleDatabaseExceptions(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
