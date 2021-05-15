@@ -1,24 +1,26 @@
 package wooteco.subway.line.domain;
 
-import wooteco.subway.station.domain.Station;
-
-import java.util.List;
+import wooteco.subway.section.domain.Sections;
 
 public class Line {
     private final Long id;
     private final String name;
     private final String color;
-    private final List<Station> stations;
+    private final Sections sections;
 
     public Line(String name, String color) {
         this(null, name, color, null);
     }
 
-    public Line(final Long id, final String name, final String color, final List<Station> stations) {
+    public Line(Long id, String name, String color) {
+        this(id, name, color, null);
+    }
+
+    public Line(Long id, String name, String color, Sections sections) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = stations;
+        this.sections = sections;
     }
 
     public boolean isSameName(final String name) {
@@ -30,7 +32,7 @@ public class Line {
     }
 
     public Line update(final String name, final String color) {
-        return new Line(this.id, name, color, this.stations);
+        return new Line(this.id, name, color);
     }
 
     public Long getId() {
@@ -45,7 +47,7 @@ public class Line {
         return color;
     }
 
-    public List<Station> getStations() {
-        return stations;
+    public Sections getSections() {
+        return sections;
     }
 }

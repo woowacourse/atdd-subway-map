@@ -17,6 +17,14 @@ public class Distance {
         }
     }
 
+    public boolean lessThanOrEqualTo(Distance distance) {
+        return this.value <= distance.value;
+    }
+
+    public Distance minus(Distance distance) {
+        return new Distance(this.value - distance.value);
+    }
+
     public int value() {
         return this.value;
     }

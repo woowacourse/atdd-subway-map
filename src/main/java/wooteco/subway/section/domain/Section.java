@@ -22,15 +22,22 @@ public class Section {
         this.distance = distance;
     }
 
-    private void validateSection(Long lineId, Long upStationId, Long downStationId, Distance distance) {
-        validateNull(lineId, upStationId, downStationId, distance);
+    public boolean hasUpStationIdOrDownStationId(Section section) {
+        return this.isSameUpStationId(section) || this.isSameDownStationId(section);
     }
 
-    private void validateNull(Long lineId, Long upStationId, Long downStationId, Distance distance) {
-        Objects.requireNonNull(lineId, "lineId는 null이 될 수 없습니다.");
-        Objects.requireNonNull(upStationId, "upStationId는 null이 될 수 없습니다.");
-        Objects.requireNonNull(downStationId, "downStationId는 null이 될 수 없습니다.");
-        Objects.requireNonNull(distance, "distance는 null이 될 수 없습니다.");
+    public boolean isSameUpStationId(Section section) {
+        return this.upStationId.equals(section.upStationId);
+    }
+
+    public boolean isSameDownStationId(Section section) {
+        return this.downStationId.equals(section.downStationId);
+    }
+
+    public void validateAddableDistance(Section newSection) {
+        if (this.distance.lessThanOrEqualTo(newSection.distance)) {
+            throw new IllegalArgumentException("역과 역 사이 새로운 역을 추가할 때 기존 역 사이의 길이보다 크거나 같으면 등록할 수 없습니다.");
+        }
     }
 
     public Long getId() {
@@ -51,5 +58,30 @@ public class Section {
 
     public Distance getDistance() {
         return distance;
+    }
+
+    private void validateSection(Long lineId, Long upStationId, Long downStationId, Distance distance) {
+        validateNull(lineId, upStationId, downStationId, distance);
+    }
+
+    private void validateNull(Long lineId, Long upStationId, Long downStationId, Distance distance) {
+        Objects.requireNonNull(lineId, "lineId는 null이 될 수 없습니다.");
+        Objects.requireNonNull(upStationId, "upStationId는 null이 될 수 없습니다.");
+        Objects.requireNonNull(downStationId, "downStationId는 null이 될 수 없습니다.");
+        Objects.requireNonNull(distance, "distance는 null이 될 수 없습니다.");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(lineId, section.lineId) && Objects.equals(upStationId, section.upStationId)
+                && Objects.equals(downStationId, section.downStationId) && Objects.equals(distance, section.distance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(lineId, upStationId, downStationId, distance);
     }
 }

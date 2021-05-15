@@ -12,7 +12,6 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.repository.LineRepository;
 
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,8 +23,7 @@ public class JdbcLineRepository implements LineRepository {
             new Line(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
-                    resultSet.getString("color"),
-                    new ArrayList<>()
+                    resultSet.getString("color")
             );
 
     public JdbcLineRepository(JdbcTemplate jdbcTemplate) {

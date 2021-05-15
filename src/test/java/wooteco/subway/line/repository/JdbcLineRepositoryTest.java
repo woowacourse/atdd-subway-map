@@ -100,7 +100,7 @@ class JdbcLineRepositoryTest {
         Long expectedId = featureLine.getId();
         String expectedName = "200호선";
         String expectedColor = "bg-blue-999";
-        Line updateLine = new Line(expectedId, expectedName, expectedColor, new ArrayList<>());
+        Line updateLine = new Line(expectedId, expectedName, expectedColor);
 
         //when
         lineRepository.update(updateLine);

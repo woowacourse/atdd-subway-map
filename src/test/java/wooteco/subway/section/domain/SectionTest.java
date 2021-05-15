@@ -14,10 +14,10 @@ class SectionTest {
         Long expectedId = 1L;
         Long expectedUpStationId = 1L;
         Long expectedDownStationId = 10L;
-        Distance excpectedDistance = new Distance(100);
+        Distance expectedDistance = new Distance(100);
 
         // when
-        Section section = new Section(expectedId, expectedUpStationId, expectedDownStationId, excpectedDistance);
+        Section section = new Section(expectedId, expectedUpStationId, expectedDownStationId, expectedDistance);
 
         // then
         assertThat(section).isInstanceOf(Section.class);
