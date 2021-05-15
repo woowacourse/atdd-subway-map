@@ -28,6 +28,16 @@ public class LineResponse {
         this.stations = stations;
     }
 
+    private static List<StationResponse> toStationsResponses(final List<Section> sections) {
+        return sections.stream()
+                .flatMap(section -> Stream.of(
+                        section.upStation(), section.downStation()
+                ))
+                .distinct()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
+    }
+
     public Long getId() {
         return id;
     }
@@ -42,15 +52,5 @@ public class LineResponse {
 
     public List<StationResponse> getStations() {
         return stations;
-    }
-
-    private static List<StationResponse> toStationsResponses(final List<Section> sections) {
-        return sections.stream()
-                .flatMap(section -> Stream.of(
-                        section.upStation(), section.downStation()
-                ))
-                .distinct()
-                .map(StationResponse::new)
-                .collect(Collectors.toList());
     }
 }

@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class Line {
-    private Long id;
+    private final Long id;
     private Name name;
     private String color;
-    private State state;
+    private final State state;
 
     public Line(final Long id) {
         this(id, new NullName(), null, StateFactory.initialize(new Sections()));

@@ -76,7 +76,7 @@ public class JDBCLineDao implements LineDao {
                 "left outer join STATION DST on S.down_station_id = DST.id " +
                 "WHERE L.id = ?";
 
-        List<Map<String, Object>> result = jdbcTemplate.queryForList(sql, new Object[]{id});
+        List<Map<String, Object>> result = jdbcTemplate.queryForList(sql, id);
         return Optional.ofNullable(mapToLine(result));
     }
 
@@ -88,9 +88,9 @@ public class JDBCLineDao implements LineDao {
         List<Section> sections = extractSections(result);
 
         return new Line(
-                (Long)result.get(0).get("line_id"),
-                (String)result.get(0).get("line_name"),
-                (String)result.get(0).get("line_color"),
+                (Long) result.get(0).get("line_id"),
+                (String) result.get(0).get("line_name"),
+                (String) result.get(0).get("line_color"),
                 sections
         );
     }

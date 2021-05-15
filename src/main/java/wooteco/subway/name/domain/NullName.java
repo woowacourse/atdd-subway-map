@@ -1,6 +1,6 @@
 package wooteco.subway.name.domain;
 
-public class NullName implements Name{
+public class NullName implements Name {
     public NullName() {
     }
 
