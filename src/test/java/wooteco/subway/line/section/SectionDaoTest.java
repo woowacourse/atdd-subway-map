@@ -12,7 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.exception.repository.DataNotFoundException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineDao;
@@ -21,7 +21,7 @@ import wooteco.subway.line.LineDao;
 class SectionDaoTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private LineDao lineDao;
 
@@ -29,8 +29,8 @@ class SectionDaoTest {
 
     @BeforeEach
     void setUp() {
-        lineDao = new LineDao(jdbcTemplate);
-        sectionDao = new SectionDao(jdbcTemplate);
+        lineDao = new LineDao(namedParameterJdbcTemplate);
+        sectionDao = new SectionDao(namedParameterJdbcTemplate);
     }
 
     @DisplayName("구간을 생성한다.")

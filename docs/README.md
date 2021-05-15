@@ -21,6 +21,11 @@
       - [x] 기존에 존재하는 역이 하행인 경우
       - [x] 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
   - [x] 구간 삭제
+  
+## 3단계 피드백 이후 리팩토링 목록
+- [x] NameParameterJdbcTemplate 으로 변경
+- [ ] Section Builder 패턴 적용 
+- [ ] 요청시 비어있는 값 검증
 
 ## Commit Convention
 - 커밋 메시지 언어 : 한글.

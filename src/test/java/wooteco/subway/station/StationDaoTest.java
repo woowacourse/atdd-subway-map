@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.exception.repository.DataNotFoundException;
 import wooteco.subway.exception.repository.DuplicatedFieldException;
 
@@ -19,12 +19,12 @@ import wooteco.subway.exception.repository.DuplicatedFieldException;
 class StationDaoTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private StationDao stationDao;
 
     @BeforeEach
     void setUp() {
-        stationDao = new StationDao(jdbcTemplate);
+        stationDao = new StationDao(namedParameterJdbcTemplate);
     }
 
     @DisplayName("지하철역을 생성한다.")
