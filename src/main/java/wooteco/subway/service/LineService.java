@@ -86,10 +86,9 @@ public class LineService {
         final Deque<Long> orderedStationIds = OrderedStationIds.of(line, sections).getOrderedStationIds();
 
         List<Station> orderedStations = new ArrayList<>();
-        while (!orderedStationIds.isEmpty()) {
+        for (int i = 0, size = orderedStationIds.size(); i < size; i++) {
             orderedStations.add(findStationByStationId(orderedStationIds.pollFirst()));
         }
-
         return orderedStations;
     }
 
