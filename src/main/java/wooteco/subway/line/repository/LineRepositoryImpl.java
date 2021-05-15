@@ -2,6 +2,7 @@ package wooteco.subway.line.repository;
 
 import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.*;
+import wooteco.subway.line.exception.LineNotFoundException;
 
 import java.util.List;
 
@@ -29,7 +30,9 @@ public class LineRepositoryImpl implements LineRepository {
 
     @Override
     public Line findById(final Long id) {
-        Line line = lineDao.findById(id);
+        Line line = lineDao.findById(id)
+                .orElseThrow(() -> new LineNotFoundException("해당 라인을 찾을 수 없습니다."));
+
         List<Section> sections = sectionDao.findAll(id);
         return new Line(line.getId(), line.getName(), line.getColor(), new Sections(sections));
     }

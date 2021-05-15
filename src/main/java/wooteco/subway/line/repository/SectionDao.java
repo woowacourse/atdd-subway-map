@@ -1,5 +1,6 @@
 package wooteco.subway.line.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -8,6 +9,7 @@ import wooteco.subway.line.domain.Sections;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -60,11 +62,15 @@ public class SectionDao {
     public List<Section> findAll(Long lineId) {
         final String sql = "SELECT * FROM SECTION WHERE line_id = ?";
 
-        return jdbcTemplate.query(sql, (rs, rn) -> {
-            final Long upStationId = rs.getLong("up_station_id");
-            final Long downStationId = rs.getLong("down_station_id");
-            final int distance = rs.getInt("distance");
-            return new Section(upStationId, downStationId, distance);
-        }, lineId);
+        try {
+            return jdbcTemplate.query(sql, (rs, rn) -> {
+                final Long upStationId = rs.getLong("up_station_id");
+                final Long downStationId = rs.getLong("down_station_id");
+                final int distance = rs.getInt("distance");
+                return new Section(upStationId, downStationId, distance);
+            }, lineId);
+        } catch (EmptyResultDataAccessException e) {
+            return Collections.emptyList();
+        }
     }
 }

@@ -1,5 +1,7 @@
 package wooteco.subway.line.domain;
 
+import java.util.Collections;
+
 public class Line {
     private final Long id;
     private final String name;
@@ -18,7 +20,7 @@ public class Line {
     }
 
     public Line(final Long id, final String name, final String color) {
-        this(id, name, color, null);
+        this(id, name, color, new Sections(Collections.emptyList()));
     }
 
     public Long getId() {
