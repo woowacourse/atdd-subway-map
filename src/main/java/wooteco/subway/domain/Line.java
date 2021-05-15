@@ -1,7 +1,5 @@
 package wooteco.subway.domain;
 
-import jdk.nashorn.internal.ir.ReturnNode;
-
 public class Line {
     private final Long id;
     private final String name;
