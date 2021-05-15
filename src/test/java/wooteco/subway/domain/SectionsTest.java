@@ -20,8 +20,8 @@ class SectionsTest {
     @BeforeEach
     void setUp() {
         List<Section> original = new ArrayList<>(Arrays.asList(
-                new Section(namSung, isu, 3),
-                new Section(isu, naebang, 7)));
+                Section.of(namSung, isu, 3),
+                Section.of(isu, naebang, 7)));
 
         originalSections = new Sections(original);
     }

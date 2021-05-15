@@ -23,7 +23,7 @@ public class Sections {
 
     public Sections(Station upStation, Station downStation, int distance) {
         this.sections = new ArrayList<>();
-        sections.add(new Section(upStation, downStation, distance));
+        sections.add(Section.of(upStation, downStation, distance));
     }
 
     public void add(Station upStation, Station downStation, int distance) {
@@ -79,8 +79,8 @@ public class Sections {
     private void addMiddle(Section sectionToUpdate, Station station, int distance) {
         int index = sections.indexOf(sectionToUpdate);
         validateDistance(distance, sectionToUpdate);
-        Section sectionUpside = new Section(sectionToUpdate.getUpStation(), station, distance);
-        Section sectionDownside = new Section(station, sectionToUpdate.getDownStation(), sectionToUpdate.getDistance() - distance);
+        Section sectionUpside = Section.of(sectionToUpdate.getUpStation(), station, distance);
+        Section sectionDownside = Section.of(station, sectionToUpdate.getDownStation(), sectionToUpdate.getDistance() - distance);
 
         sections.remove(index);
 
@@ -161,7 +161,7 @@ public class Sections {
     }
 
     private Section mergeSection(Section left, Section right) {
-        return new Section(left.getUpStation(), right.getDownStation(), left.getDistance() + right.getDistance());
+        return Section.of(left.getUpStation(), right.getDownStation(), left.getDistance() + right.getDistance());
     }
 
     public List<Section> sections() {
