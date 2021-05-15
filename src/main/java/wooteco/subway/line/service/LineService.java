@@ -55,12 +55,12 @@ public class LineService {
         Line line = lineRepository.getLineById(id);
         Stations stations = new Stations(stationService.getAllStations());
 
-        return new LineResponse(line.getId(), line.getName(), line.getColor(),
-                stations.getOrderedStationResponses(sectionRepository.getSectionsByLineId(id)
-                ));
+        return new LineResponse(
+                line.getId(), line.getName(), line.getColor(),
+                stations.getOrderedStationResponses(sectionRepository.getSectionsByLineId(id))
+        );
     }
 
-    @Transactional
     public void updateLine(final Long id, final LineRequest lineRequest) {
         lineRepository.update(new Line(id, lineRequest.getColor(), lineRequest.getName()));
     }
