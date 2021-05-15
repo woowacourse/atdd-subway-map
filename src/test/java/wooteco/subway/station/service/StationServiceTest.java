@@ -9,7 +9,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.exception.SubwayException;
 import wooteco.subway.exception.station.StationDuplicatedNameException;
 import wooteco.subway.exception.station.StationNotFoundException;
-import wooteco.subway.section.dto.response.SectionResponse;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dao.JdbcStationDao;
 import wooteco.subway.station.dao.StationDao;

@@ -18,6 +18,10 @@ public class Section {
         this(id, section.line, section.upStation, section.downStation, section.distance);
     }
 
+    public Section(Line line, Station upStation, Station downStation, int distance) {
+        this(null, line, upStation, downStation, distance);
+    }
+
     public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
         this.id = id;
         this.line = line;
@@ -43,6 +47,20 @@ public class Section {
         if (this.distance <= distance) {
             throw new SubwayException("넣을 수 없는 거리입니다.");
         }
+    }
+
+    public void updateUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void updateDownStation(Station station) {
+        this.downStation = station;
+    }
+
+    public void update(Line line, Station upStation, Station downStation) {
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
     }
 
     public Long lineId() {

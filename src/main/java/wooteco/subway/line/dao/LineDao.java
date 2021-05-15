@@ -11,15 +11,9 @@ public interface LineDao {
 
     Line findById(Long id);
 
-//    Line findByName(String name);
-
-    void update(Line updatedLine);
+    void update(Line line);
 
     void delete(Long id);
-
-//    String findByNameAndNotInOriginalName(String name, String originalName);
-
-    boolean existByName(String name);
 
     boolean existByNameAndNotInOriginalName(String name, String originalName);
 }

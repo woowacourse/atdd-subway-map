@@ -53,22 +53,6 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public boolean existById(Long id) {
-        String query = "SELECT EXISTS (SELECT * FROM station WHERE id = ?)";
-        return jdbcTemplate.queryForObject(query, Boolean.class, id);
-    }
-
-    @Override
-    public Station findByName(String name) {
-        try {
-            String query = "SELECT * FROM station WHERE name = ?";
-            return jdbcTemplate.queryForObject(query, stationRowMapper(), name);
-        } catch (EmptyResultDataAccessException e) {
-            throw new StationNotFoundException();
-        }
-    }
-
-    @Override
     public List<Station> findAll() {
         String query = "SELECT * FROM station";
         return jdbcTemplate.query(query, stationRowMapper());

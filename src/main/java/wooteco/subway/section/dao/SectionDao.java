@@ -9,7 +9,7 @@ public interface SectionDao {
 
     List<Section> findAllByLineId(Long id);
 
-    void update(Section section);
+    void deleteByLineId(Long id);
 
-    void deleteById(Long id);
+    void batchInsert(List<Section> sections);
 }

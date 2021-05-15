@@ -11,7 +11,6 @@ import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.request.LineCreateRequest;
 import wooteco.subway.line.dto.request.LineUpdateRequest;
 import wooteco.subway.line.dto.response.LineCreateResponse;
-import wooteco.subway.line.dto.response.LineSectionResponse;
 import wooteco.subway.line.dto.response.LineStationsResponse;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dto.StationRequest;

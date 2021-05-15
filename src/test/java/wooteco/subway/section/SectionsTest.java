@@ -49,8 +49,8 @@ class SectionsTest {
         ));
 
         // when
-        boolean isSame = sections.isUpEndPoint(1L);
-        boolean isNotSame = sections.isUpEndPoint(2L);
+        boolean isSame = sections.isUpEndStation(1L);
+        boolean isNotSame = sections.isUpEndStation(2L);
 
         // then
         assertTrue(isSame);
@@ -68,8 +68,8 @@ class SectionsTest {
         ));
 
         // when
-        boolean isSame = sections.isDownEndPoint(4L);
-        boolean isNotSame = sections.isDownEndPoint(3L);
+        boolean isSame = sections.isDownEndStation(4L);
+        boolean isNotSame = sections.isDownEndStation(3L);
 
         // then
         assertTrue(isSame);
@@ -161,7 +161,7 @@ class SectionsTest {
         ));
 
         // when
-        Section section = sections.findByUpStationId(2L);
+        Section section = sections.findByUpStation(2L);
 
         // then
         assertThat(section).usingRecursiveComparison()
@@ -179,7 +179,7 @@ class SectionsTest {
         ));
 
         // when & then
-        assertThatThrownBy(() -> sections.findByUpStationId(5L))
+        assertThatThrownBy(() -> sections.findByUpStation(5L))
                 .isInstanceOf(SubwayException.class);
     }
 
@@ -194,7 +194,7 @@ class SectionsTest {
         ));
 
         // when
-        Section section = sections.findByDownStationId(2L);
+        Section section = sections.findByDownStation(2L);
 
         // then
         assertThat(section).usingRecursiveComparison()
@@ -212,7 +212,7 @@ class SectionsTest {
         ));
 
         // when & then
-        assertThatThrownBy(() -> sections.findByUpStationId(5L))
+        assertThatThrownBy(() -> sections.findByUpStation(5L))
                 .isInstanceOf(SubwayException.class);
     }
 

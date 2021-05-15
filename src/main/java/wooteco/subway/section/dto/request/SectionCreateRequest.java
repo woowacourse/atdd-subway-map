@@ -1,7 +1,5 @@
 package wooteco.subway.section.dto.request;
 
-import wooteco.subway.line.dto.request.LineCreateRequest;
-
 import javax.validation.constraints.NotNull;
 
 public class SectionCreateRequest {
@@ -13,10 +11,6 @@ public class SectionCreateRequest {
     private int distance;
 
     public SectionCreateRequest() {
-    }
-
-    public SectionCreateRequest(LineCreateRequest lineCreateRequest) {
-        this(lineCreateRequest.getUpStationId(), lineCreateRequest.getDownStationId(), lineCreateRequest.getDistance());
     }
 
     public SectionCreateRequest(long upStationId, long downStationId, int distance) {

@@ -11,10 +11,8 @@ import wooteco.subway.line.dto.response.LineCreateResponse;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.dao.JdbcSectionDao;
 import wooteco.subway.section.dao.SectionDao;
-import wooteco.subway.section.dto.AddSectionForm;
 import wooteco.subway.section.dto.request.SectionCreateRequest;
 import wooteco.subway.section.dto.response.SectionCreateResponse;
-import wooteco.subway.section.dto.response.SectionResponse;
 import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
@@ -89,7 +87,7 @@ class SectionServiceTest {
                 .willReturn(new Section(3L, 1L, 3L, 4L, 5));
 
         // when
-        sectionService.addSection(new AddSectionForm(1L,
+        sectionService.add(new AddSectionForm(1L,
                 new StationResponse(4L, "강남역"),
                 new StationResponse(1L, "잠실역")
                 , 5));
@@ -110,7 +108,7 @@ class SectionServiceTest {
                 .willReturn(new Section(3L, 1L, 1L, 4L, 1));
 
         // when
-        sectionService.addSection(new AddSectionForm(1L,
+        sectionService.add(new AddSectionForm(1L,
                 new StationResponse(2L, "강남역"),
                 new StationResponse(4L, "잠실역")
                 , 1));
@@ -130,7 +128,7 @@ class SectionServiceTest {
                 ));
 
         // when & then
-        assertThatThrownBy(() -> sectionService.addSection(new AddSectionForm(1L,
+        assertThatThrownBy(() -> sectionService.add(new AddSectionForm(1L,
                 new StationResponse(1L, "강남역"),
                 new StationResponse(2L, "잠실역")
                 , 5)
@@ -148,7 +146,7 @@ class SectionServiceTest {
                 ));
 
         // when & then
-        assertThatThrownBy(() -> sectionService.addSection(new AddSectionForm(1L,
+        assertThatThrownBy(() -> sectionService.add(new AddSectionForm(1L,
                 new StationResponse(4L, "강남역"),
                 new StationResponse(5L, "잠실역")
                 , 5)

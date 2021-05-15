@@ -53,12 +53,6 @@ public class InMemoryLineDao implements LineDao {
     }
 
     @Override
-    public boolean existByName(String name) {
-        return lines.stream()
-                .anyMatch(line -> line.isSameName(name));
-    }
-
-    @Override
     public boolean existByNameAndNotInOriginalName(String name, String originalName) {
         return lines.stream()
                 .filter(line -> !line.isSameName(originalName))

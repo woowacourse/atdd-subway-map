@@ -23,12 +23,11 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationRequest stationRequest, Errors errors) {
+    public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationRequest request, Errors errors) {
         if (errors.hasErrors()) {
             throw new SubwayException("올바른 값이 아닙니다.");
         }
-
-        StationResponse newStation = stationService.save(stationRequest);
+        StationResponse newStation = stationService.save(request);
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(newStation);
     }
 
