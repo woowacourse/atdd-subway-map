@@ -2,7 +2,10 @@ package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.line.domain.*;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.LineRepository;
+import wooteco.subway.line.domain.Lines;
+import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.domain.rule.FindSectionHaveSameDownRule;
 import wooteco.subway.line.domain.rule.FindSectionHaveSameUpRule;
 import wooteco.subway.line.domain.rule.FindSectionRule;
@@ -63,21 +66,20 @@ public class LineService {
     @Transactional
     public void addSection(final Long id, final Section section) {
         Line line = findById(id);
-        Sections sections = line.getSections();
-        sections.validateEnableAddSection(section);
-        boolean isEndPoint = sections.checkEndPoint(section);
+        line.validateEnableAddSection(section);
+        boolean isEndPoint = line.isEndPoint(section);
         if (isEndPoint) {
             lineRepository.addSection(id, section);
             return;
         }
 
-        addSectionBetween(id, sections, section);
+        addSectionBetween(id, line, section);
     }
 
-    private void addSectionBetween(final Long id, final Sections sections, final Section section) {
+    private void addSectionBetween(final Long id, final Line line, final Section section) {
         List<FindSectionRule> findSectionRules = Arrays.asList(new FindSectionHaveSameUpRule(),
                 new FindSectionHaveSameDownRule());
-        Section deleteSection = sections.findDeleteByAdding(section, findSectionRules);
+        Section deleteSection = line.findDeleteByAdding(section, findSectionRules);
         Section updateSection = deleteSection.updateWhenAdd(section);
 
         lineRepository.deleteSection(id, deleteSection);
@@ -88,15 +90,14 @@ public class LineService {
     @Transactional
     public void deleteSection(final Long id, final Long stationId) {
         Line line = findById(id);
-        Sections sections = line.getSections();
-        List<Section> deleteSections = sections.deleteSection(stationId);
+        List<Section> deleteSections = line.deleteSection(stationId);
 
         if (deleteSections.size() == 1) {
             lineRepository.deleteSection(id, deleteSections.get(0));
             return;
         }
 
-        Section updateSection = sections.generateUpdateWhenDelete(deleteSections);
+        Section updateSection = line.generateUpdateWhenDelete(deleteSections);
         deleteSections.forEach(section -> lineRepository.deleteSection(id, section));
         lineRepository.addSection(id, updateSection);
     }
