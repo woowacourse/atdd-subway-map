@@ -1,10 +1,10 @@
 package wooteco.subway.exception;
 
-import org.springframework.http.HttpStatus;
+import wooteco.subway.line.exception.ClientRuntimeException;
 
 public class DuplicatedNameException extends ClientRuntimeException {
 
     public DuplicatedNameException(final String message) {
-        super(message, HttpStatus.BAD_REQUEST);
+        super(message);
     }
 }

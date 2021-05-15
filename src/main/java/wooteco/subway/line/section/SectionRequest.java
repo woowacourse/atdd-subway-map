@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.line.section;
 
 public class SectionRequest {
 
@@ -13,6 +13,10 @@ public class SectionRequest {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public Section toEntity(final Long lineId) {
+        return new Section(lineId, upStationId, downStationId, distance);
     }
 
     public Long getUpStationId() {

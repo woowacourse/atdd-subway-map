@@ -2,9 +2,12 @@ package wooteco.subway.station;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -36,14 +39,14 @@ public class StationDao {
                 return preparedStatement;
             };
             jdbcTemplate.update(preparedStatementCreator, keyHolder);
-            final long id = keyHolder.getKey().longValue();
-            return findById(id).get();
+            final Long id = keyHolder.getKey().longValue();
+            return findById(id).orElseThrow(() -> new DataNotFoundException("해당 Id의 지하철역이 없습니다."));
         } catch (DuplicateKeyException e) {
             throw new DuplicatedNameException("중복된 이름의 지하철역입니다.");
         }
     }
 
-    public void deleteById(final long id) {
+    public void deleteById(final Long id) {
         final String sql = "DELETE FROM station WHERE id = ?";
         int deletedCnt = jdbcTemplate.update(sql, id);
 
@@ -60,18 +63,18 @@ public class StationDao {
     public Optional<Station> findById(final Long id) {
         final String sql = "SELECT * FROM station WHERE id = ?";
         final List<Station> stations = jdbcTemplate.query(sql, stationRowMapper, id);
-        if (stations.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(stations.get(0));
+        return Optional.ofNullable(DataAccessUtils.singleResult(stations));
     }
 
     public Optional<Station> findByName(final String name) {
         final String sql = "SELECT * FROM station WHERE name = ?";
         final List<Station> stations = jdbcTemplate.query(sql, stationRowMapper, name);
-        if (stations.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(stations.get(0));
+        return Optional.ofNullable(DataAccessUtils.singleResult(stations));
+    }
+
+    public List<Station> findByIds(final List<Long> stationIds) {
+        final String parameters = String.join(", ", Collections.nCopies(stationIds.size(), "?"));
+        final String sql = String.format("SELECT * FROM STATION s WHERE s.id IN (%s)", parameters);
+        return jdbcTemplate.query(sql, stationRowMapper, stationIds.toArray());
     }
 }

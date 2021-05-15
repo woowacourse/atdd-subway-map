@@ -35,12 +35,11 @@ class LineDaoTest {
 
         final Line createdLine = lineDao.save(line);
 
-        assertThat(createdLine.getId()).isEqualTo(createdLine.getId());
-        assertThat(createdLine.getName()).isEqualTo(createdLine.getName());
-        assertThat(createdLine.getColor()).isEqualTo(createdLine.getColor());
+        assertThat(createdLine.getName()).isEqualTo(line.getName());
+        assertThat(createdLine.getColor()).isEqualTo(line.getColor());
     }
 
-    @DisplayName("기존에 존재하는 노선의 이름으로 노선을 생성한다.")
+    @DisplayName("기존에 존재하는 노선의 이름으로 노선을 생성하면 예외가 발생한다.")
     @Test
     void saveStationWithDuplicateName() {
         final Line line = new Line("2호선", "black");
@@ -61,7 +60,7 @@ class LineDaoTest {
             .doesNotThrowAnyException();
     }
 
-    @DisplayName("존재하지 않는 노선의 이름으로 노선을 제거한다.")
+    @DisplayName("존재하지 않는 노선의 이름으로 노선을 제거하면 예외가 발생한다.")
     @Test
     void deleteWithAbsentName() {
         assertThatThrownBy(() -> lineDao.deleteById(1L))

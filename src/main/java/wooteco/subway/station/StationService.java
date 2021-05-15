@@ -3,9 +3,10 @@ package wooteco.subway.station;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.DataNotFoundException;
-import wooteco.subway.exception.DuplicatedNameException;
 
+@Transactional
 @Service
 public class StationService {
 
@@ -16,11 +17,11 @@ public class StationService {
     }
 
     public StationResponse createStation(final StationRequest stationRequest) {
-        final String name = stationRequest.getName();
-        final Station station = stationDao.save(new Station(name));
+        final Station station = stationDao.save(stationRequest.toEntity());
         return new StationResponse(station.getId(), station.getName());
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findStations() {
         final List<Station> stations = stationDao.findAll();
         return stations.stream()
@@ -28,14 +29,10 @@ public class StationService {
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public Station findById(final Long id) {
-        return stationDao.findById(id).
-            orElseThrow(() -> new DataNotFoundException("해당 Id의 지하철역이 없습니다."));
-    }
-
-    public Station findByName(final String name) {
-        return stationDao.findByName(name).
-            orElseThrow(() -> new DataNotFoundException("해당 이름의 지하철역이 없습니다."));
+        return stationDao.findById(id)
+            .orElseThrow(() -> new DataNotFoundException("해당 Id의 지하철역이 없습니다."));
     }
 
     public void deleteStation(final Long id) {

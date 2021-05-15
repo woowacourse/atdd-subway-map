@@ -34,11 +34,10 @@ class StationDaoTest {
 
         final Station createdStation = stationDao.save(station);
 
-        assertThat(createdStation.getId()).isEqualTo(createdStation.getId());
-        assertThat(createdStation.getName()).isEqualTo(createdStation.getName());
+        assertThat(createdStation.getName()).isEqualTo(station.getName());
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성하면 예외가 발생한다.")
     @Test
     void saveStationWithDuplicateName() {
         final Station station = new Station("잠실역");
@@ -59,7 +58,7 @@ class StationDaoTest {
             .doesNotThrowAnyException();
     }
 
-    @DisplayName("존재하지 않는 지하철역 이름으로 지하철역을 제거한다.")
+    @DisplayName("존재하지 않는 지하철역 이름으로 지하철역을 제거하면 예외가 발생한다.")
     @Test
     void deleteWithAbsentName() {
         assertThatThrownBy(() -> stationDao.deleteById(1L))
@@ -100,5 +99,23 @@ class StationDaoTest {
 
         assertThat(station.getId()).isEqualTo(createdStation.getId());
         assertThat(station.getName()).isEqualTo(createdStation.getName());
+    }
+
+    @DisplayName("여러 id의 지하철역들을 조회한다.")
+    @Test
+    void findByIds() {
+        final List<Station> actual = Arrays.asList(
+            new Station("강남역"),
+            new Station("역삼역"),
+            new Station("잠실역"),
+            new Station("교대역")
+        );
+        actual.forEach(station -> stationDao.save(station));
+        final List<Long> ids = Arrays.asList(1L, 2L, 3L, 4L);
+        List<Station> stations = stationDao.findByIds(ids);
+        assertThat(actual)
+            .usingRecursiveComparison()
+            .ignoringFields("id")
+            .isEqualTo(stations);
     }
 }
