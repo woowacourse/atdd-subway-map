@@ -138,10 +138,6 @@ public class JDBCLineDao implements LineDao {
     public void delete(final Long id) {
         String sql = "DELETE FROM LINE WHERE id = ?";
         int rowCount = jdbcTemplate.update(sql, id);
-
-        if (rowCount == 0) {
-            throw new IllegalStateException("존재하지 않는 id임");
-        }
     }
 
     @Override

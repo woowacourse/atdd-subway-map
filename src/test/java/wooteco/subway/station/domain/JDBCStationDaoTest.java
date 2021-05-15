@@ -9,8 +9,7 @@ import org.springframework.test.context.TestConstructor;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 @JdbcTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -124,8 +123,8 @@ class JDBCStationDaoTest {
     }
 
     @Test
-    @DisplayName("아이디로 없는 역을 삭제시 예외가 발생한다.")
-    void deleteException() {
+    @DisplayName(" 없는 아이디로 역을 삭제")
+    void deleteStationByNotFoundId() {
         //given
         Station station = new Station("김밥역");
 
@@ -134,7 +133,7 @@ class JDBCStationDaoTest {
         stationDao.delete(saveStation.id());
 
         //then
-        assertThatThrownBy(() -> stationDao.delete(saveStation.id()))
-                .isInstanceOf(IllegalStateException.class);
+        assertThatCode(() -> stationDao.delete(saveStation.id()))
+                .doesNotThrowAnyException();
     }
 }

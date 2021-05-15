@@ -14,8 +14,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 @JdbcTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -150,7 +149,7 @@ class JDBCLineDaoTest {
 
     @Test
     void delete() {
-        assertThatThrownBy(() -> lineDao.delete(0L))
-                .isInstanceOf(IllegalStateException.class);
+        assertThatCode(() -> lineDao.delete(0L))
+                .doesNotThrowAnyException();
     }
 }

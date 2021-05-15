@@ -8,6 +8,7 @@ import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,7 +41,8 @@ public class StationService {
         }
     }
 
-    public void delete(Long id) {
-        stationDao.delete(id);
+    public void delete(final Long id) {
+        Station station = stationDao.findById(id).orElseThrow(() -> new IllegalStateException("없는 역임!"));
+        stationDao.delete(station.id());
     }
 }

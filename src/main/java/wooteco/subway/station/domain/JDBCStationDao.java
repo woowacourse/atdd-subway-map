@@ -74,8 +74,5 @@ public class JDBCStationDao implements StationDao {
     @Override
     public void delete(final Long id) {
         int rowCount = jdbcTemplate.update("delete from station where id = ?", id);
-        if (rowCount == 0) {
-            throw new IllegalStateException("없는 역입!");
-        }
     }
 }
