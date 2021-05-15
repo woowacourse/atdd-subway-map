@@ -49,6 +49,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         this.station2 = stationDao.save(new Station("흑기역"));
         this.station3 = stationDao.save(new Station("아마찌역"));
         this.station4 = stationDao.save(new Station("검프역"));
+
         LineResponse lineResponse = lineService.save(new LineRequest("백기선", "bg-red-600", station1.getId(), station2.getId(), 7));
         this.line = new Line(lineResponse.getId(), lineResponse.getName(), lineResponse.getColor());
     }

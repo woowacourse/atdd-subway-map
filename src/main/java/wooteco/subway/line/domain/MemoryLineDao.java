@@ -76,4 +76,14 @@ public class MemoryLineDao implements LineDao {
         LineEntity findLineEntity = findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
         lineEntities.remove(findLineEntity);
     }
+
+    @Override
+    public boolean existByName(String name) {
+        return false;
+    }
+
+    @Override
+    public boolean existByColor(String color) {
+        return false;
+    }
 }

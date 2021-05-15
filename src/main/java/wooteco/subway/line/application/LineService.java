@@ -144,11 +144,11 @@ public class LineService {
     }
 
     private void validateDuplication(final LineRequest lineRequest) {
-        if (lineDao.findByName(lineRequest.getName()).isPresent()) {
+        if (lineDao.existByName(lineRequest.getName())) {
             throw new IllegalStateException("이미 등록된 이름임!");
         }
 
-        if (lineDao.findByColor(lineRequest.getColor()).isPresent()) {
+        if (lineDao.existByColor(lineRequest.getColor())) {
             throw new IllegalStateException("이미 있는 색깔임!");
         }
     }

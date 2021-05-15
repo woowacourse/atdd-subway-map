@@ -11,6 +11,7 @@ import wooteco.subway.line.entity.LineEntity;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -98,5 +99,19 @@ public class DBLineDao implements LineDao {
         if (rowCount == 0) {
             throw new IllegalStateException("존재하지 않는 id임");
         }
+    }
+
+    @Override
+    public boolean existByName(final String name) {
+        String sql = "select count (name) from line where name = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name);
+        return count > 0;
+    }
+
+    @Override
+    public boolean existByColor(final String color) {
+        String sql = "select count (color) from line where color = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, color);
+        return count > 0;
     }
 }
