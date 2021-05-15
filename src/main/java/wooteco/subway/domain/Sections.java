@@ -33,23 +33,28 @@ public class Sections {
         validateRegisteredStations(hasUpStation, hasDownStation);
 
         if (hasUpStation) {
-            if (isUp(upStation)) {
-                Section sectionToUpdate = getSectionWhereUpStationIs(upStation);
-                addMiddle(sectionToUpdate, downStation, distance);
-                return;
-            }
-            addAt(new Section(upStation, downStation, distance), sections.size());
+            addStationWhenHasUpStation(upStation, downStation, distance);
             return;
         }
+        addStationWhenHasDownStation(upStation, downStation, distance);
+    }
 
-        if (hasDownStation) {
-            if (isDown(downStation)) {
-                Section sectionToUpdate = getSectionWhereDownStationIs(downStation);
-                addMiddle(sectionToUpdate, upStation, sectionToUpdate.getDistance() - distance);
-                return;
-            }
-            addAt(new Section(upStation, downStation, distance), 0);
+    private void addStationWhenHasUpStation(Station upStation, Station downStation, int distance) {
+        if (isUp(upStation)) {
+            Section sectionToUpdate = getSectionWhereUpStationIs(upStation);
+            addMiddle(sectionToUpdate, downStation, distance);
+            return;
         }
+        addAt(Section.of(upStation, downStation, distance), sections.size());
+    }
+
+    private void addStationWhenHasDownStation(Station upStation, Station downStation, int distance) {
+        if (isDown(downStation)) {
+            Section sectionToUpdate = getSectionWhereDownStationIs(downStation);
+            addMiddle(sectionToUpdate, upStation, sectionToUpdate.getDistance() - distance);
+            return;
+        }
+        addAt(Section.of(upStation, downStation, distance), 0);
     }
 
     private boolean contains(Station station) {
