@@ -4,26 +4,36 @@ import wooteco.subway.line.state.State;
 import wooteco.subway.line.state.StateFactory;
 import wooteco.subway.name.domain.LineName;
 import wooteco.subway.name.domain.Name;
+import wooteco.subway.name.domain.NullName;
 import wooteco.subway.station.domain.Station;
 
 public class Line {
     private Long id;
     private Name name;
     private String color;
-    private final State state = StateFactory.initialize(new Sections());
+    private State state;
+
+    public Line(final Long id) {
+        this(id, new NullName(), null, StateFactory.initialize(new Sections()));
+    }
 
     public Line(final String name, final String color) {
-        this(null, new LineName(name), color);
+        this(null, new LineName(name), color, StateFactory.initialize(new Sections()));
     }
 
     public Line(final Long id, final String name, final String color) {
-        this(id, new LineName(name), color);
+        this(id, new LineName(name), color, StateFactory.initialize(new Sections()));
     }
 
     public Line(final Long id, final Name name, final String color) {
+        this(id, name, color, StateFactory.initialize(new Sections()));
+    }
+
+    public Line(final Long id, final Name name, final String color, final State state) {
         this.id = id;
         this.name = name;
         this.color = color;
+        this.state = state;
     }
 
     public Long id() {
@@ -51,6 +61,7 @@ public class Line {
         validateContain(targetSection.upStation(), targetSection.downStation());
 
         state.addSection(this, targetSection);
+        targetSection.changeLine(this);
     }
 
     public void deleteStation(final Station station) {

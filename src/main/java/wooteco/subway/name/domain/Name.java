@@ -11,7 +11,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = StationName.class, name = "stationName"),
-        @JsonSubTypes.Type(value = LineName.class, name = "lineName")
+        @JsonSubTypes.Type(value = LineName.class, name = "lineName"),
+        @JsonSubTypes.Type(value = NullName.class, name = "nullName"),
 })
 public interface Name {
     String name();

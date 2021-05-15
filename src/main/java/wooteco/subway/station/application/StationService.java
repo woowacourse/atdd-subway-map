@@ -23,19 +23,19 @@ public class StationService {
         Station station = new Station(stationRequest.getName());
         validateDuplicate(station);
         Station savedStation = stationDao.save(station);
-        return new StationResponse(savedStation.getId(), savedStation.getName());
+        return new StationResponse(savedStation.id(), savedStation.nameAsString());
     }
 
     @Transactional(readOnly = true)
     public List<StationResponse> findAll() {
         return stationDao.findAll()
                 .stream()
-                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .map(station -> new StationResponse(station.id(), station.nameAsString()))
                 .collect(Collectors.toList());
     }
 
     private void validateDuplicate(final Station station) {
-        if (stationDao.findByName(station.getName()).isPresent()) {
+        if (stationDao.findByName(station.nameAsString()).isPresent()) {
             throw new IllegalStateException("이미 있는 역임!");
         }
     }

@@ -1,6 +1,5 @@
 package wooteco.subway.station.domain;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -33,7 +32,7 @@ class DBStationDaoTest {
         //when
         Station savedStation = stationDao.save(station);
 
-        assertThat(station.getName()).isEqualTo(savedStation.getName());
+        assertThat(station.nameAsString()).isEqualTo(savedStation.nameAsString());
     }
 
     @Test
@@ -75,10 +74,10 @@ class DBStationDaoTest {
 
         //when
         Station saveStation = stationDao.save(station);
-        Station findById = stationDao.findById(saveStation.getId()).get();
+        Station findById = stationDao.findById(saveStation.id()).get();
 
         //then
-        assertThat(findById.getName()).isEqualTo(station.getName());
+        assertThat(findById.nameAsString()).isEqualTo(station.nameAsString());
     }
 
     @Test
@@ -90,10 +89,10 @@ class DBStationDaoTest {
 
         //when
         Station saveStation = stationDao.save(station);
-        Station findByName = stationDao.findByName(station.getName()).get();
+        Station findByName = stationDao.findByName(station.nameAsString()).get();
 
         //then
-        assertThat(findByName.getName()).isEqualTo(station.getName());
+        assertThat(findByName.nameAsString()).isEqualTo(station.nameAsString());
     }
 
     @Test
@@ -118,10 +117,10 @@ class DBStationDaoTest {
 
         //when
         Station saveStation = stationDao.save(station);
-        stationDao.delete(saveStation.getId());
+        stationDao.delete(saveStation.id());
 
         //then
-        assertThat(stationDao.findById(saveStation.getId())).isEmpty();
+        assertThat(stationDao.findById(saveStation.id())).isEmpty();
     }
 
     @Test
@@ -132,10 +131,10 @@ class DBStationDaoTest {
 
         //when
         Station saveStation = stationDao.save(station);
-        stationDao.delete(saveStation.getId());
+        stationDao.delete(saveStation.id());
 
         //then
-        assertThatThrownBy(() -> stationDao.delete(saveStation.getId()))
+        assertThatThrownBy(() -> stationDao.delete(saveStation.id()))
                 .isInstanceOf(IllegalStateException.class);
     }
 }

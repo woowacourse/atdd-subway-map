@@ -55,7 +55,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        StationRequest stationRequest = new StationRequest(station1.getName());
+        StationRequest stationRequest = new StationRequest(station1.nameAsString());
 
         // when
         ExtractableResponse<Response> response = saveStationToHTTP(stationRequest);
@@ -82,7 +82,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(findStationResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(resultLineIds).containsExactly(stationResponse.getId(), station2.getId(), station1.getId());
+        assertThat(resultLineIds).containsExactly(stationResponse.getId(), station2.id(), station1.id());
     }
 
     @DisplayName("지하철역을 제거한다.")
@@ -91,7 +91,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given
 
         // when
-        ExtractableResponse<Response> response = deleteStationByIdToHTTP(station1.getId());
+        ExtractableResponse<Response> response = deleteStationByIdToHTTP(station1.id());
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());

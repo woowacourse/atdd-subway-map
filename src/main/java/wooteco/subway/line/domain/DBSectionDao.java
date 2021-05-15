@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.line.entity.SectionEntity;
+import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -16,49 +16,49 @@ import java.util.Optional;
 @Repository
 public class DBSectionDao implements SectionDao {
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<SectionEntity> sectionEntityRowMapper;
+    private final RowMapper<Section> sectionRowMapper;
 
     @Autowired
     public DBSectionDao(final JdbcTemplate jdbcTemplate) {
         this(jdbcTemplate,
                 (rs, rowNum) ->
-                        new SectionEntity(rs.getLong("id"),
-                                rs.getLong("line_id"),
-                                rs.getLong("up_station_id"),
-                                rs.getLong("down_station_id"),
+                        new Section(rs.getLong("id"),
+                                new Line(rs.getLong("line_id")),
+                                new Station(rs.getLong("up_station_id")),
+                                new Station(rs.getLong("down_station_id")),
                                 rs.getInt("distance")));
     }
 
-    public DBSectionDao(final JdbcTemplate jdbcTemplate, final RowMapper<SectionEntity> sectionEntityRowMapper) {
+    public DBSectionDao(final JdbcTemplate jdbcTemplate, final RowMapper<Section> sectionRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
-        this.sectionEntityRowMapper = sectionEntityRowMapper;
+        this.sectionRowMapper = sectionRowMapper;
     }
 
     @Override
-    public SectionEntity save(final SectionEntity sectionEntity) {
+    public Section save(final Section section) {
         String sql = "INSERT INTO SECTION(line_id, up_station_id, down_station_id, distance) VALUES(?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
                     PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-                    ps.setLong(1, sectionEntity.getLineId());
-                    ps.setLong(2, sectionEntity.getUpStationId());
-                    ps.setLong(3, sectionEntity.getDownStationId());
-                    ps.setInt(4, sectionEntity.getDistance());
+                    ps.setLong(1, section.lineId());
+                    ps.setLong(2, section.upStationId());
+                    ps.setLong(3, section.downStationId());
+                    ps.setInt(4, section.distance());
                     return ps;
                 },
                 keyHolder);
 
         long newId = keyHolder.getKey().longValue();
-        return new SectionEntity(newId, sectionEntity.getLineId(), sectionEntity.getUpStationId(), sectionEntity.getDownStationId(), sectionEntity.getDistance());
+        return new Section(newId, section.line(), section.upStation(), section.downStation(), section.distance());
     }
 
     @Override
-    public List<SectionEntity> findAll() {
+    public List<Section> findAll() {
         return null;
     }
 
     @Override
-    public Optional<SectionEntity> findById(final Long id) {
+    public Optional<Section> findById(final Long id) {
         return Optional.empty();
     }
 
@@ -73,22 +73,38 @@ public class DBSectionDao implements SectionDao {
     }
 
     @Override
-    public List<SectionEntity> findByLineId(final Long id) {
+    public List<Section> findByLineId(final Long id) {
         String sql = "SELECT * FROM SECTION" +
                 " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
                 " WHERE Line.id = ?";
-        List<SectionEntity> sectionEntities = jdbcTemplate.query(sql, sectionEntityRowMapper, id);
-        return sectionEntities;
+
+        List<Section> sections = jdbcTemplate.query(sql, sectionRowMapper, id);
+        return sections;
+    }
+
+    public List<Section> findByLineId2(final Long id) {
+        String sql = "SELECT L.name as line_name L.id as line_id" +
+                " S.id as section_id S.distance as section_distance" +
+                " UST.id as up_station_id UST.name as up_station_name" +
+                " DST.id as down_station_id DST.name as down_station_name" +
+                " FROM SECTION S" +
+                " LEFT OUTER JOIN LINE L ON S.line_id = L.id" +
+                " LEFT OUTER JOIN STATION UST ON S.up_station_id = UST.id" +
+                " LEFT OUTER JOIN STATION DST ON S.down_station_id = DST.id" +
+                " WHERE L.id = ?";
+
+        List<Section> sections = jdbcTemplate.query(sql, sectionRowMapper, id);
+        return sections;
     }
 
     @Override
-    public Optional<SectionEntity> findByLineIdWithUpStationId(final Long lineId, final Long id) {
+    public Optional<Section> findByLineIdWithUpStationId(final Long lineId, final Long stationId) {
         String sql = "SELECT * FROM SECTION" +
                 " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
                 " WHERE LINE.id = ? AND SECTION.up_station_id = ?";
-        List<SectionEntity> sectionEntities = jdbcTemplate.query(sql, sectionEntityRowMapper, lineId, id);
+        List<Section> sections = jdbcTemplate.query(sql, sectionRowMapper, lineId, stationId);
 
-        return Optional.ofNullable(DataAccessUtils.singleResult(sectionEntities));
+        return Optional.ofNullable(DataAccessUtils.singleResult(sections));
     }
 
     @Override
@@ -99,13 +115,13 @@ public class DBSectionDao implements SectionDao {
     }
 
     @Override
-    public Optional<SectionEntity> findByLineIdWithDownStationId(Long lineId, Long downStationId) {
+    public Optional<Section> findByLineIdWithDownStationId(Long lineId, Long downStationId) {
         String sql = "SELECT * FROM SECTION" +
                 " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
                 " WHERE LINE.id = ? AND SECTION.down_station_id = ?";
-        List<SectionEntity> sectionEntities = jdbcTemplate.query(sql, sectionEntityRowMapper, lineId, downStationId);
+        List<Section> sections = jdbcTemplate.query(sql, sectionRowMapper, lineId, downStationId);
 
-        return Optional.ofNullable(DataAccessUtils.singleResult(sectionEntities));
+        return Optional.ofNullable(DataAccessUtils.singleResult(sections));
     }
 
     @Override

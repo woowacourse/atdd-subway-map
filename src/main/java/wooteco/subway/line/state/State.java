@@ -13,4 +13,6 @@ public interface State {
     State deleteStation(Station station);
 
     boolean containStation(Station station);
+
+    State changeSections(Sections sections);
 }

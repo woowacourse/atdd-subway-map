@@ -85,4 +85,16 @@ public class Section {
             throw new IllegalStateException("상행역과 하행역은 같을 수 없음! ");
         }
     }
+
+    public long lineId() {
+        return this.line.id();
+    }
+
+    public long upStationId() {
+        return this.upStation.id();
+    }
+
+    public long downStationId() {
+        return this.downStation.id();
+    }
 }

@@ -173,13 +173,13 @@ public class Sections {
     }
 
     private int tailMatchesCount(Section section) {
-        Long tailStationId = section.downStation().getId();
+        Long tailStationId = section.downStation().id();
         int checkCount = 0;
         for (Section target : sections) {
             if (section.equals(target)) {
                 continue;
             }
-            if (tailStationId.equals(target.upStation().getId()) || tailStationId.equals(target.downStation().getId())) {
+            if (tailStationId.equals(target.upStation().id()) || tailStationId.equals(target.downStation().id())) {
                 checkCount++;
             }
         }
@@ -187,13 +187,13 @@ public class Sections {
     }
 
     private int headMatchesCount(Section section) {
-        Long headStationId = section.upStation().getId();
+        Long headStationId = section.upStation().id();
         int checkCount = 0;
         for (Section target : sections) {
             if (section.equals(target)) {
                 continue;
             }
-            if (headStationId.equals(target.upStation().getId()) || headStationId.equals(target.downStation().getId())) {
+            if (headStationId.equals(target.upStation().id()) || headStationId.equals(target.downStation().id())) {
                 checkCount++;
             }
         }

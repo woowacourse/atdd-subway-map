@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.line.entity.SectionEntity;
+import org.springframework.test.context.TestConstructor;
 import wooteco.subway.station.domain.DBStationDao;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
@@ -12,6 +12,7 @@ import wooteco.subway.station.domain.StationDao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class DBSectionDaoTest {
     private final JdbcTemplate jdbcTemplate;
     private final SectionDao sectionDao;
@@ -34,10 +35,10 @@ class DBSectionDaoTest {
         Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
 
         //when
-        SectionEntity sectionEntity = new SectionEntity(line.id(), station.getId(), station2.getId(), 15);
-        SectionEntity savedSectionEntity = sectionDao.save(sectionEntity);
+        Section section = new Section(line, station, station2, 15);
+        Section savedSection = sectionDao.save(section);
 
         //then
-        assertThat(sectionEntity.getLineId()).isEqualTo(savedSectionEntity.getLineId());
+        assertThat(section.line().id()).isEqualTo(savedSection.line().id());
     }
 }

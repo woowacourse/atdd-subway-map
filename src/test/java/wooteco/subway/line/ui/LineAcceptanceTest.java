@@ -49,8 +49,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         this.station2 = stationDao.save(new Station("흑기역"));
         this.station3 = stationDao.save(new Station("아마찌역"));
         this.station4 = stationDao.save(new Station("검프역"));
+        this.line = new Line("백기선", "bg-red-600");
 
-        LineResponse lineResponse = lineService.save(new LineRequest("백기선", "bg-red-600", station1.getId(), station2.getId(), 7));
+        LineResponse lineResponse = lineService.save(new LineRequest(line.nameAsString(), line.color(), station1.id(), station2.id(), 7));
         this.line = new Line(lineResponse.getId(), lineResponse.getName(), lineResponse.getColor());
     }
 
@@ -72,7 +73,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-        assertThat(stationResponsesToStrings(lineResponse.getStations())).containsExactly(station3.getName(), station4.getName());
+        assertThat(stationResponsesToStrings(lineResponse.getStations())).containsExactly(station3.nameAsString(), station4.nameAsString());
     }
 
     @DisplayName("기존에 존재하는 노선의 이름으로 노선을 생성하면 예외가 발생한다.")
@@ -212,54 +213,54 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteUpwardEndPointStation() {
         int distance = 5;
-        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), distance);
+        SectionRequest sectionRequest = new SectionRequest(station2.id(), station3.id(), distance);
 
         //when
         ExtractableResponse<Response> addResponse = addSectionToHTTP(line.id(), sectionRequest);
-        ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.id(), station1.getId());
+        ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.id(), station1.id());
         ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.id());
 
         LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station2.getName(), station3.getName());
+        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station2.nameAsString(), station3.nameAsString());
     }
 
     @DisplayName("구간을 제거한다. (중간역)")
     @Test
     void deleteMiddlewardStation() {
         int distance = 5;
-        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), distance);
+        SectionRequest sectionRequest = new SectionRequest(station2.id(), station3.id(), distance);
 
         //when
         ExtractableResponse<Response> addResponse = addSectionToHTTP(line.id(), sectionRequest);
-        ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.id(), station2.getId());
+        ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.id(), station2.id());
         ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.id());
 
         LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.getName(), station3.getName());
+        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.nameAsString(), station3.nameAsString());
     }
 
     @DisplayName("구간을 제거한다. (하행 종점역)")
     @Test
     void deleteDownwardEndPointStation() {
         int distance = 5;
-        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), distance);
+        SectionRequest sectionRequest = new SectionRequest(station2.id(), station3.id(), distance);
 
         //when
         ExtractableResponse<Response> addResponse = addSectionToHTTP(line.id(), sectionRequest);
-        ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.id(), station3.getId());
+        ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.id(), station3.id());
         ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.id());
 
         LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.getName(), station2.getName());
+        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.nameAsString(), station2.nameAsString());
     }
 
     private static Stream<Arguments> stationIds() {
@@ -277,7 +278,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void registrationDuplicateException(Long upStationId, Long downStationId) {
         //given
         int distance = 3;
-        SectionRequest acceptSectionRequest = new SectionRequest(station2.getId(), station3.getId(), 7);
+        SectionRequest acceptSectionRequest = new SectionRequest(station2.id(), station3.id(), 7);
         SectionRequest exceptionSectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
         //when
@@ -321,7 +322,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         int distance = 5;
 
         //when
-        ExtractableResponse<Response> findLineResponse = deleteSectionByStationIdToHTTP(line.id(), station1.getId());
+        ExtractableResponse<Response> findLineResponse = deleteSectionByStationIdToHTTP(line.id(), station1.id());
 
         //then
         assertThat(findLineResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -332,7 +333,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void upwardEndPointRegistration() {
         //given
         int distance = 5;
-        SectionRequest sectionRequest = new SectionRequest(station3.getId(), station1.getId(), distance);
+        SectionRequest sectionRequest = new SectionRequest(station3.id(), station1.id(), distance);
 
         //when
         ExtractableResponse<Response> addResponse = addSectionToHTTP(line.id(), sectionRequest);
@@ -342,7 +343,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(findResponse.getId()).isEqualTo(line.id());
-        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station3.getName(), station1.getName(), station2.getName());
+        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station3.nameAsString(), station1.nameAsString(), station2.nameAsString());
     }
 
     @Test
@@ -350,7 +351,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void downwardEndPointRegistration() {
         //given
         int distance = 5;
-        SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), distance);
+        SectionRequest sectionRequest = new SectionRequest(station2.id(), station3.id(), distance);
 
         //when
         ExtractableResponse<Response> addResponse = addSectionToHTTP(line.id(), sectionRequest);
@@ -360,7 +361,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(findResponse.getId()).isEqualTo(line.id());
-        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.getName(), station2.getName(), station3.getName());
+        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.nameAsString(), station2.nameAsString(), station3.nameAsString());
     }
 
     private ExtractableResponse<Response> createLineToHTTP(final LineRequest lineRequest) {
