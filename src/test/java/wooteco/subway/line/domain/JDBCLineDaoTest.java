@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-class DBLineDaoTest {
+class JDBCLineDaoTest {
     private final JdbcTemplate jdbcTemplate;
     private final LineDao lineDao;
     private Long id;
@@ -27,9 +27,9 @@ class DBLineDaoTest {
     private String color;
     private Line line;
 
-    public DBLineDaoTest(JdbcTemplate jdbcTemplate) {
+    public JDBCLineDaoTest(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        lineDao = new DBLineDao(jdbcTemplate);
+        lineDao = new JDBCLineDao(jdbcTemplate);
     }
 
     @BeforeEach

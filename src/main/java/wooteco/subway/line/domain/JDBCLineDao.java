@@ -14,19 +14,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
-public class DBLineDao implements LineDao {
+public class JDBCLineDao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Line> lineRowMapper;
 
     @Autowired
-    public DBLineDao(final JdbcTemplate jdbcTemplate) {
+    public JDBCLineDao(final JdbcTemplate jdbcTemplate) {
         this(jdbcTemplate, (rs, rowNum) ->
                 new Line(rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("color")));
     }
 
-    public DBLineDao(final JdbcTemplate jdbcTemplate, final RowMapper<Line> lineRowMapper) {
+    public JDBCLineDao(final JdbcTemplate jdbcTemplate, final RowMapper<Line> lineRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.lineRowMapper = lineRowMapper;
     }

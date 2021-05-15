@@ -14,12 +14,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class DBSectionDao implements SectionDao {
+public class JDBCSectionDao implements SectionDao {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Section> sectionRowMapper;
 
     @Autowired
-    public DBSectionDao(final JdbcTemplate jdbcTemplate) {
+    public JDBCSectionDao(final JdbcTemplate jdbcTemplate) {
         this(jdbcTemplate,
                 (rs, rowNum) ->
                         new Section(rs.getLong("id"),
@@ -29,7 +29,7 @@ public class DBSectionDao implements SectionDao {
                                 rs.getInt("distance")));
     }
 
-    public DBSectionDao(final JdbcTemplate jdbcTemplate, final RowMapper<Section> sectionRowMapper) {
+    public JDBCSectionDao(final JdbcTemplate jdbcTemplate, final RowMapper<Section> sectionRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.sectionRowMapper = sectionRowMapper;
     }

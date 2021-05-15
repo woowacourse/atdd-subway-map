@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
-import wooteco.subway.station.domain.DBStationDao;
+import wooteco.subway.station.domain.JDBCStationDao;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 
@@ -13,18 +13,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-class DBSectionDaoTest {
+class JDBCSectionDaoTest {
     private final JdbcTemplate jdbcTemplate;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
     private final LineDao lineDao;
 
     @Autowired
-    DBSectionDaoTest(JdbcTemplate jdbcTemplate) {
+    JDBCSectionDaoTest(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.sectionDao = new DBSectionDao(jdbcTemplate);
-        this.stationDao = new DBStationDao(jdbcTemplate);
-        this.lineDao = new DBLineDao(jdbcTemplate);
+        this.sectionDao = new JDBCSectionDao(jdbcTemplate);
+        this.stationDao = new JDBCStationDao(jdbcTemplate);
+        this.lineDao = new JDBCLineDao(jdbcTemplate);
     }
 
     @Test

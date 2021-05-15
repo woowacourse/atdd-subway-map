@@ -13,18 +13,18 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class DBStationDao implements StationDao {
+public class JDBCStationDao implements StationDao {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Station> stationsMapper;
 
     @Autowired
-    public DBStationDao(final JdbcTemplate jdbcTemplate) {
+    public JDBCStationDao(final JdbcTemplate jdbcTemplate) {
         this(jdbcTemplate, (rs, rowNum) -> new Station(
                 rs.getLong("id"),
                 rs.getString("name")));
     }
 
-    public DBStationDao(final JdbcTemplate jdbcTemplate, final RowMapper<Station> stationsMapper) {
+    public JDBCStationDao(final JdbcTemplate jdbcTemplate, final RowMapper<Station> stationsMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.stationsMapper = stationsMapper;
     }
