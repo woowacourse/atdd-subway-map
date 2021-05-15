@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.section.SectionDao;
+import wooteco.subway.section.dao.SectionDao;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.exception.StationException;
+import wooteco.subway.station.service.StationService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

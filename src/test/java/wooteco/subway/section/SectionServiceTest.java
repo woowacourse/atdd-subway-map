@@ -6,11 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.line.Line;
-import wooteco.subway.line.LineException;
-import wooteco.subway.line.LineService;
-import wooteco.subway.station.Station;
-import wooteco.subway.station.StationService;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.exception.LineException;
+import wooteco.subway.line.service.LineService;
+import wooteco.subway.section.domain.Distance;
+import wooteco.subway.section.service.SectionService;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.service.StationService;
 
 import java.util.List;
 

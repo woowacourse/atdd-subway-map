@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import wooteco.subway.line.LineException;
-import wooteco.subway.station.StationException;
+import wooteco.subway.line.exception.LineException;
+import wooteco.subway.station.exception.StationException;
 
 @ControllerAdvice
 public class GlobalAdvice {

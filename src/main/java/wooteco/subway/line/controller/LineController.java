@@ -1,9 +1,13 @@
-package wooteco.subway.line;
+package wooteco.subway.line.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.station.StationResponse;
-import wooteco.subway.station.StationService;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.service.LineService;
+import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.service.StationService;
 
 import java.net.URI;
 import java.util.List;

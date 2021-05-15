@@ -1,9 +1,12 @@
-package wooteco.subway.line;
+package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.section.Section;
-import wooteco.subway.section.SectionDao;
+import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.exception.LineException;
+import wooteco.subway.section.domain.Section;
+import wooteco.subway.section.dao.SectionDao;
 
 import java.util.Collections;
 import java.util.LinkedList;

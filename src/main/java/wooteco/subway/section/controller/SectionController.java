@@ -1,8 +1,10 @@
-package wooteco.subway.section;
+package wooteco.subway.section.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.line.LineResponse;
+import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.section.dto.SectionRequest;
+import wooteco.subway.section.service.SectionService;
 
 import java.util.List;
 
