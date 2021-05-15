@@ -34,7 +34,11 @@ public class LineService {
     @Transactional
     public LineServiceDto createLine(@Valid CreateLineDto createLineDto) {
         Line line = createLineDto.toLineEntity();
+        Lines lines = new Lines(lineDao.showAll());
+        lines.validateDuplicate(line);
+
         Line saveLine = lineDao.create(line);
+
         SectionServiceDto sectionServiceDto = SectionServiceDto.of(saveLine, createLineDto);
         sectionService.saveByLineCreate(sectionServiceDto);
         return LineServiceDto.from(saveLine);
@@ -58,6 +62,8 @@ public class LineService {
     @Transactional
     public void update(@Valid LineServiceDto lineServiceDto) {
         Line line = lineServiceDto.toEntity();
+        Lines lines = new Lines(lineDao.showAll());
+        lines.validateDuplicate(line);
 
         if (lineDao.update(lineServiceDto.getId(), line) == NOT_FOUND) {
             throw new NotFoundException();

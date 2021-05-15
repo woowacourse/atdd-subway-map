@@ -23,6 +23,10 @@ public class Line {
         this.color = color;
     }
 
+    public boolean isDuplicate(Line line) {
+        return name.equals(line.name) || color.equals(line.color);
+    }
+
     public Long getId() {
         return id.getValue();
     }
