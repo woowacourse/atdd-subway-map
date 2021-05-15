@@ -4,45 +4,54 @@ import org.springframework.http.HttpStatus;
 import wooteco.subway.exception.SubwayException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Sections {
-    private final Map<Long, Long> ids = new HashMap<>();
-    private final Map<Map<Long, Long>, Integer> sections = new HashMap<>();
+    private final List<Section> sections = new ArrayList<>();
 
-    public Sections(List<Section> sections) {
-        List<Section> copiedSections = new ArrayList<>(sections);
-        for (Section section : copiedSections) {
-            ids.put(section.getUpStationId(), section.getDownStationId());
-            this.sections.put(ids, section.getDistance());
-        }
+    public Sections(List<Section> unOrderedSections) {
+        Long upwardTerminalStationId = findUpwardTerminalId(unOrderedSections);
+        sortSections(unOrderedSections, upwardTerminalStationId);
     }
 
-    public List<Long> getStationIds(Long upwardTerminalId, Long downwardTerminalId) {
-        List<Long> stationIds = new ArrayList<>();
-        Long upwardId = upwardTerminalId;
+    private Long findUpwardTerminalId(List<Section> unOrderedSections) {
+        List<Long> upStationIds = unOrderedSections.stream()
+                .map(Section::getUpStationId)
+                .collect(Collectors.toList());
 
-        while (ids.containsKey(upwardId)) {
-            stationIds.add(upwardId);
-            upwardId = ids.get(upwardId);
-        }
+        List<Long> downStationIds = unOrderedSections.stream()
+                .map(Section::getUpStationId)
+                .collect(Collectors.toList());
 
-        stationIds.add(downwardTerminalId);
-        return Collections.unmodifiableList(stationIds);
+        upStationIds.removeAll(downStationIds);
+        return upStationIds.get(0);
     }
 
-    public boolean isNewStationDownward(Section section) {
-        for (Map.Entry<Map<Long, Long>, Integer> entry : sections.entrySet()) {
-            if (isNewStationDownward(section, entry)) {
-                return true;
-            }
-        }
-        return false;
+    private void sortSections(List<Section> unOrderedSections, Long stationId) {
+        Section section;
+        Long nextStationId = stationId;
+        do {
+            section = findSection(unOrderedSections, nextStationId);
+            sections.add(section);
+            nextStationId = section.getDownStationId();
+        } while (hasNextDownwardSection(unOrderedSections, nextStationId));
     }
 
-    public void validateIfPossibleToInsert(Section section, Long upwardTerminalId, Long downwardTerminalId) {
+    private Section findSection(List<Section> unOrderedSections, Long terminalId) {
+        return unOrderedSections.stream()
+                .filter(section -> section.hasUpwardStation(terminalId))
+                .findFirst()
+                .get();
+    }
+
+    private boolean hasNextDownwardSection(List<Section> unOrderedSections, Long downStationId) {
+        return unOrderedSections.stream()
+                .anyMatch(section -> section.hasUpwardStation(downStationId));
+    }
+
+    public void addSection(Section section) {
         validateIfAlreadyExistsInLine(section);
         validateIfBothStationNotExistsInLine(section);
-        validateDistance(section, upwardTerminalId, downwardTerminalId);
     }
 
     private void validateIfAlreadyExistsInLine(Section section) {
@@ -56,55 +65,17 @@ public class Sections {
     }
 
     private boolean isStationExists(Long stationId) {
-        return ids.containsKey(stationId) || ids.containsValue(stationId);
+        boolean upwardExistence = sections.stream()
+                .anyMatch(section -> section.hasUpwardStation(stationId));
+        boolean downwardExistence = sections.stream()
+                .anyMatch(section -> section.hasDownwardStation(stationId));
+
+        return upwardExistence || downwardExistence;
     }
 
     private void validateIfBothStationNotExistsInLine(Section section) {
         if (!isStationExists(section.getUpStationId()) && !isStationExists(section.getDownStationId())) {
             throw new SubwayException(HttpStatus.BAD_REQUEST, "노선에 역들이 존재하지 않습니다.");
-        }
-    }
-
-    private void validateDistance(Section section, Long upwardTerminalId, Long downwardTerminalId) {
-        if (!isSideInsertion(section, upwardTerminalId, downwardTerminalId)) {
-            compare(section);
-        }
-    }
-
-    private boolean isSideInsertion(Section section, Long upwardTerminalId, Long downwardTerminalId) {
-        if (section.getDownStationId() == upwardTerminalId) {
-            return true;
-        }
-        return section.getUpStationId() == downwardTerminalId;
-    }
-
-    private void compare(Section section) {
-        for (Map.Entry<Map<Long, Long>, Integer> entry : sections.entrySet()) {
-            compareByNewStationDirection(section, entry);
-        }
-    }
-
-    private void compareByNewStationDirection(Section section, Map.Entry<Map<Long, Long>, Integer> entry) {
-        if (isNewStationDownward(section, entry)) {
-            compareDistance(section, entry);
-        }
-
-        if (isNewStationUpward(section, entry)) {
-            compareDistance(section, entry);
-        }
-    }
-
-    private boolean isNewStationDownward(Section section, Map.Entry<Map<Long, Long>, Integer> entry) {
-        return entry.getKey().containsKey(section.getUpStationId());
-    }
-
-    private boolean isNewStationUpward(Section section, Map.Entry<Map<Long, Long>, Integer> entry) {
-        return entry.getKey().containsValue(section.getDownStationId());
-    }
-
-    private void compareDistance(Section section, Map.Entry<Map<Long, Long>, Integer> entry) {
-        if (entry.getValue() <= section.getDistance()) {
-            throw new SubwayException(HttpStatus.BAD_REQUEST, "거리 오류");
         }
     }
 
