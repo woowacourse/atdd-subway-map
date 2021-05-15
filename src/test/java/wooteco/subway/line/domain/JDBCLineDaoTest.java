@@ -41,7 +41,7 @@ class JDBCLineDaoTest {
 
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, line.nameAsString());
+            ps.setString(1, line.rawName());
             ps.setString(2, line.color());
             return ps;
         }, keyHolder);
@@ -55,7 +55,7 @@ class JDBCLineDaoTest {
         String savedColor = "bg-black-601";
         Line saveLine = lineDao.save(new Line(savedName, savedColor));
 
-        assertThat(saveLine.nameAsString()).isEqualTo(savedName);
+        assertThat(saveLine.rawName()).isEqualTo(savedName);
         assertThat(saveLine.color()).isEqualTo(savedColor);
     }
 
@@ -93,7 +93,7 @@ class JDBCLineDaoTest {
         Line findLine = lineDao.findById(id).get();
 
         assertThat(findLine.id()).isEqualTo(id);
-        assertThat(findLine.nameAsString()).isEqualTo(name);
+        assertThat(findLine.rawName()).isEqualTo(name);
         assertThat(findLine.color()).isEqualTo(color);
     }
 
@@ -111,7 +111,7 @@ class JDBCLineDaoTest {
         Line line = lineDao.findByName(name).get();
 
         assertThat(line.id()).isEqualTo(id);
-        assertThat(line.nameAsString()).isEqualTo(name);
+        assertThat(line.rawName()).isEqualTo(name);
         assertThat(line.color()).isEqualTo(color);
     }
 
@@ -143,7 +143,7 @@ class JDBCLineDaoTest {
         Line line = lineDao.findById(id).get();
 
         assertThat(line.id()).isEqualTo(id);
-        assertThat(line.nameAsString()).isEqualTo(updatedName);
+        assertThat(line.rawName()).isEqualTo(updatedName);
         assertThat(line.color()).isEqualTo(updatedColor);
     }
 

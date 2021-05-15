@@ -28,7 +28,7 @@ class MemoryLineDaoTest {
     @Test
     @DisplayName("노선을 저장한다.")
     void save() {
-        assertThat(lineDao.findByName(name).get().nameAsString()).isEqualTo(name);
+        assertThat(lineDao.findByName(name).get().rawName()).isEqualTo(name);
     }
 
     @Test
@@ -46,7 +46,7 @@ class MemoryLineDaoTest {
     @Test
     @DisplayName("이름으로 단일 노선을 조회한다.")
     void findByName() {
-        assertThat(lineDao.findByName(name).get().nameAsString()).isEqualTo(name);
+        assertThat(lineDao.findByName(name).get().rawName()).isEqualTo(name);
     }
 
     @Test
@@ -60,7 +60,7 @@ class MemoryLineDaoTest {
         lineDao.update(line);
         Line findLine = lineDao.findById(id).get();
 
-        assertThat(findLine.nameAsString()).isEqualTo(updateName);
+        assertThat(findLine.rawName()).isEqualTo(updateName);
         assertThat(findLine.color()).isEqualTo(updateColor);
     }
 }

@@ -10,7 +10,7 @@ public class StationResponse {
     }
 
     public StationResponse(Station station) {
-        this(station.id(), station.nameAsString());
+        this(station.id(), station.rawName());
     }
 
     public StationResponse(Long id, String name) {

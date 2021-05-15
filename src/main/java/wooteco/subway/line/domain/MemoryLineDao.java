@@ -16,7 +16,7 @@ public class MemoryLineDao implements LineDao {
 
     @Override
     public Line save(final Line line) {
-        if (findByName(line.nameAsString()).isPresent()) {
+        if (findByName(line.rawName()).isPresent()) {
             throw new IllegalArgumentException("이미 등록된 역 입니다.");
         }
         Line persistLine = createNewObject(line);
@@ -59,7 +59,7 @@ public class MemoryLineDao implements LineDao {
     @Override
     public void update(Line line) {
         Line findLine = findById(line.id()).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
-        findLine.changeName(line.nameAsString());
+        findLine.changeName(line.rawName());
         findLine.changeColor(line.color());
     }
 

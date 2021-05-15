@@ -8,7 +8,6 @@ import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,19 +23,19 @@ public class StationService {
         Station station = new Station(stationRequest.getName());
         validateDuplicate(station);
         Station savedStation = stationDao.save(station);
-        return new StationResponse(savedStation.id(), savedStation.nameAsString());
+        return new StationResponse(savedStation.id(), savedStation.rawName());
     }
 
     @Transactional(readOnly = true)
     public List<StationResponse> findAll() {
         return stationDao.findAll()
                 .stream()
-                .map(station -> new StationResponse(station.id(), station.nameAsString()))
+                .map(station -> new StationResponse(station.id(), station.rawName()))
                 .collect(Collectors.toList());
     }
 
     private void validateDuplicate(final Station station) {
-        if (stationDao.findByName(station.nameAsString()).isPresent()) {
+        if (stationDao.findByName(station.rawName()).isPresent()) {
             throw new IllegalStateException("이미 있는 역임!");
         }
     }

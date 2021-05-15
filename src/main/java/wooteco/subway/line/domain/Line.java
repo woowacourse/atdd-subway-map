@@ -51,7 +51,7 @@ public class Line {
         return name;
     }
 
-    public String nameAsString() {
+    public String rawName() {
         return name.name();
     }
 
