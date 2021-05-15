@@ -20,7 +20,7 @@ public class LineService {
     private final SectionService sectionService;
     private final LineDao lineDao;
 
-    private LineService(SectionService sectionService, LineDao lineDao) {
+    public LineService(SectionService sectionService, LineDao lineDao) {
         this.sectionService = sectionService;
         this.lineDao = lineDao;
     }

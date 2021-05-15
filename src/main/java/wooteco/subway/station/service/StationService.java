@@ -17,7 +17,7 @@ public class StationService {
 
     private final StationDao stationDao;
 
-    private StationService(StationDao stationDao) {
+    public StationService(StationDao stationDao) {
         this.stationDao = stationDao;
     }
 
@@ -49,7 +49,7 @@ public class StationService {
     @Transactional(readOnly = true)
     public void validateId(Long stationId) {
         stationDao.findById(stationId)
-            .orElseThrow(NoLineException::new);
+            .orElseThrow(NoStationException::new);
     }
 
     @Transactional(readOnly = true)

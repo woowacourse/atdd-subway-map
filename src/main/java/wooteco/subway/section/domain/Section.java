@@ -3,6 +3,8 @@ package wooteco.subway.section.domain;
 import wooteco.subway.exception.NullInputException;
 import wooteco.subway.exception.section.InvalidDistanceException;
 
+import java.util.Objects;
+
 public class Section {
 
     private Long id;
@@ -64,5 +66,18 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return distance == section.distance && Objects.equals(upStationId, section.upStationId) && Objects.equals(downStationId, section.downStationId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(upStationId, downStationId, distance);
     }
 }

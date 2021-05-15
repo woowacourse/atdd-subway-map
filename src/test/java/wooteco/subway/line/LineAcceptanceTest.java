@@ -3,6 +3,7 @@ package wooteco.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private final LineRequest lineRequest =
         new LineRequest("2호선", "초록색", 1L, 2L, 10);
+
+    @BeforeEach
+    void setup() {
+        stationPostRequest(new StationRequest("강남역"));
+        stationPostRequest(new StationRequest("잠실역"));
+        stationPostRequest(new StationRequest("강변역"));
+        stationPostRequest(new StationRequest("구의역"));
+    }
+
 
     @DisplayName("지하철노선을 생성한다.")
     @Test
@@ -207,6 +217,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> stationPostRequest(StationRequest stationRequest) {
+        return RestAssured.given().log().all()
+            .body(stationRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
             .then().log().all()
             .extract();
     }
