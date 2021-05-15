@@ -73,6 +73,6 @@ public class JDBCStationDao implements StationDao {
 
     @Override
     public void delete(final Long id) {
-        int rowCount = jdbcTemplate.update("delete from station where id = ?", id);
+        jdbcTemplate.update("delete from station where id = ?", id);
     }
 }

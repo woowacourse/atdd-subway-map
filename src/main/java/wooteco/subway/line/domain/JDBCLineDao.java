@@ -137,7 +137,7 @@ public class JDBCLineDao implements LineDao {
     @Override
     public void delete(final Long id) {
         String sql = "DELETE FROM LINE WHERE id = ?";
-        int rowCount = jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, id);
     }
 
     @Override

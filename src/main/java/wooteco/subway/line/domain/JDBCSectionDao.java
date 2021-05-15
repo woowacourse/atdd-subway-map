@@ -68,8 +68,7 @@ public class JDBCSectionDao implements SectionDao {
                 " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
                 " WHERE Line.id = ?";
 
-        List<Section> sections = jdbcTemplate.query(sql, sectionRowMapper, id);
-        return sections;
+        return jdbcTemplate.query(sql, sectionRowMapper, id);
     }
 
     @Override
