@@ -2,8 +2,8 @@ package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.dao.SectionDao;
-import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.Section;
+import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationResponse;
 
@@ -19,7 +19,11 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public void save(Long lineId, Long upStationId, Long downStationId, int distance) {
+    public void save(Long lineId, LineRequest lineRequest) {
+        Long upStationId = lineRequest.getUpStationId();
+        Long downStationId = lineRequest.getDownStationId();
+        int distance = lineRequest.getDistance();
+
         duplicateInputStations(upStationId, downStationId);
         sectionDao.save(lineId, upStationId, downStationId, distance);
     }
@@ -69,7 +73,11 @@ public class SectionService {
         return upStations.iterator().next();
     }
 
-    public void saveSectionOfExistLine(Long lineId, Long upStationId, Long downStationId, int distance) {
+    public void saveSectionOfExistLine(Long lineId, LineRequest lineRequest) {
+        Long upStationId = lineRequest.getUpStationId();
+        Long downStationId = lineRequest.getDownStationId();
+        int distance = lineRequest.getDistance();
+
         duplicateInputStations(upStationId, downStationId);
 
         List<Section> sections = sectionDao.findSectionBylineId(lineId);
@@ -129,8 +137,7 @@ public class SectionService {
         return Section::getDownStation;
     }
 
-    public void deleteSection(Line line, Long stationId) {
-        Long lineId = line.getId();
+    public void deleteSection(Long lineId, Long stationId) {
         List<Section> sections = sectionDao.findSectionBylineId(lineId);
         validSectionSizeWhenDelete(sections);
 

@@ -4,9 +4,12 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.Section;
+import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.LineResponse;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -16,21 +19,21 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Long save(Section lines) {
+    public Long save(LineRequest lineRequest) {
+        Section lines = lineRequest.toLinesEntity();
         validateLine(lines.getLine());
-        Long lineId = lineDao.save(lines.getLine());
-        return lineId;
+        return lineDao.save(lines.getLine());
     }
 
-    public void update(Long id, Line line) {
-        Line duplicateLine = lineDao.findByName(line.getName())
+    public void update(Long id, LineRequest lineRequest) {
+        Line duplicateLine = lineDao.findByName(lineRequest.getName())
                 .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
 
         if (!duplicateLine.getId().equals(id)) {
             throw new IllegalArgumentException("중복된 노선입니다.");
         }
 
-        lineDao.update(id, line);
+        lineDao.update(id, lineRequest.toLineEntity());
     }
 
     private void validateLine(Line line) {
@@ -40,16 +43,20 @@ public class LineService {
         }
     }
 
-    public List<Line> findAll() {
-        return lineDao.findAll();
+    public List<LineResponse> findAll() {
+        return lineDao.findAll()
+                .stream()
+                .map(LineResponse::new)
+                .collect(Collectors.toList());
     }
 
     public void delete(Long id) {
         lineDao.delete(id);
     }
 
-    public Line findById(Long id) {
+    public LineResponse findById(Long id) {
         return lineDao.findById(id)
+                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
                 .orElseThrow(() -> new IllegalArgumentException("해당 지하철 역이 없습니다."));
     }
 }

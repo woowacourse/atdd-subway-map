@@ -3,8 +3,11 @@ package wooteco.subway.station.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.dto.StationRequest;
+import wooteco.subway.station.dto.StationResponse;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StationService {
@@ -15,15 +18,18 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Long save(Station station) {
-        if (stationDao.countStationByName(station.getName()) > 0) {
+    public Long save(StationRequest stationRequest) {
+        if (stationDao.countStationByName(stationRequest.getName()) > 0) {
             throw new IllegalArgumentException("중복된 지하철 역입니다.");
         }
-        return stationDao.save(station);
+        return stationDao.save(stationRequest.toEntity());
     }
 
-    public List<Station> findAll() {
-        return stationDao.findAll();
+    public List<StationResponse> findAll() {
+        return stationDao.findAll()
+                .stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
     }
 
     public void delete(Long id) {
@@ -33,8 +39,9 @@ public class StationService {
         }
     }
 
-    public Station findById(Long id) {
+    public StationResponse findById(Long id) {
         return stationDao.findById(id)
+                .map(StationResponse::new)
                 .orElseThrow(() -> new IllegalArgumentException("해당 지하철 역이 존재하지 않습니다."));
     }
 }

@@ -3,7 +3,6 @@ package wooteco.subway.station.controller;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
@@ -11,7 +10,6 @@ import wooteco.subway.station.service.StationService;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequestMapping("/stations")
 @RestController
@@ -25,20 +23,16 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
-        Long id = stationService.save(station);
-        Station newStation = stationService.findById(id);
+        Long stationId = stationService.save(stationRequest);
+        StationResponse newStation = stationService.findById(stationId);
         return ResponseEntity.created(
-                URI.create("/stations/" + newStation.getId()))
-                .body(new StationResponse(newStation));
+                URI.create("/stations/" + stationId))
+                .body(newStation);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = stationService.findAll();
-        List<StationResponse> stationResponses = stations.stream()
-                .map(StationResponse::new)
-                .collect(Collectors.toList());
+        List<StationResponse> stationResponses = stationService.findAll();
         return ResponseEntity.ok(stationResponses);
     }
 

@@ -13,7 +13,6 @@ import wooteco.subway.station.dto.StationResponse;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequestMapping("/lines")
 @RestController
@@ -29,34 +28,29 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
-        Long id = lineService.save(lineRequest.toLinesEntity());
-        sectionService.save(id, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
-        Line newLine = lineService.findById(id);
+        Long id = lineService.save(lineRequest);
+        sectionService.save(id, lineRequest);
+        LineResponse newLine = lineService.findById(id);
         return ResponseEntity.created(
-                URI.create("/lines/" + newLine.getId()))
-                .body(new LineResponse(newLine));
+                URI.create("/lines/" + id))
+                .body(newLine);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineService.findAll();
-        List<LineResponse> lineResponses = lines.stream()
-                .map(LineResponse::new)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(lineResponses);
+        return ResponseEntity.ok(lineService.findAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showSections(@PathVariable Long id) {
-        Line line = lineService.findById(id);
+        LineResponse line = lineService.findById(id); // TODO : 오.. 진짜 개이상하다. LineResponse를 받고 또 다시 생성
         List<StationResponse> section = sectionService.findSectionById(id);
-        return ResponseEntity.ok(new LineResponse(line, section));
+        return ResponseEntity.ok(new LineResponse(line.getId(), line.getName(), line.getColor(), section));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody @Valid LineRequest lineRequest) {
-        Line line = lineRequest.toLineEntity();
-        lineService.update(id, line);
+        lineService.update(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
@@ -68,16 +62,15 @@ public class LineController {
 
     @PostMapping("/{id}/sections")
     public ResponseEntity<LineResponse> addSection(@PathVariable Long id, @RequestBody @Valid LineRequest lineRequest) {
-        sectionService.saveSectionOfExistLine(id, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
-        Line line = lineService.findById(id);
+        sectionService.saveSectionOfExistLine(id, lineRequest);
+        LineResponse lineResponse = lineService.findById(id); // TODO : 오.. 진짜 개이상하다. LineResponse 받고 또 다시 생성
         List<StationResponse> section = sectionService.findSectionById(id);
-        return ResponseEntity.ok(new LineResponse(line, section));
+        return ResponseEntity.ok(new LineResponse(id, lineResponse.getName(), lineResponse.getColor(), section));
     }
 
     @DeleteMapping("/{id}/sections")
     public ResponseEntity<Void> deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
-        Line line = lineService.findById(id);
-        sectionService.deleteSection(line, stationId);
+        sectionService.deleteSection(id, stationId);
         return ResponseEntity.ok().build();
     }
 }
