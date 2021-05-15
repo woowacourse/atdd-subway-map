@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class MemoryLineDao implements LineDao {
+public class InMemoryLineDao implements LineDao {
     private static Long seq = 0L;
     private static final List<Line> lines = new ArrayList<>();
 
-    public MemoryLineDao() {
+    public InMemoryLineDao() {
     }
 
     @Override

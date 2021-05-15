@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class MemoryStationDaoTest {
-    private final StationDao stationDao = new MemoryStationDao();
+class InMemoryStationDaoTest {
+    private final StationDao stationDao = new InMemoryStationDao();
 
     @AfterEach
     void clean() {

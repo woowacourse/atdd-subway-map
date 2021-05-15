@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class MemoryLineDaoTest {
+class InMemoryLineDaoTest {
     private String name;
     private Long id;
-    private final LineDao lineDao = new MemoryLineDao();
+    private final LineDao lineDao = new InMemoryLineDao();
 
     @BeforeEach
     void setUp() {
