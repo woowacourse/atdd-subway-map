@@ -66,4 +66,12 @@ public class Section {
     public Section updateDistance(final int distance) {
         return new Section(id, lineId, upStationId, downStationId, distance);
     }
+
+    public boolean isUpStationIdEquals(final Section section) {
+        return this.upStationId.equals(section.getUpStationId());
+    }
+
+    public boolean isDownStationIdEquals(final Section section) {
+        return this.downStationId.equals(section.getDownStationId());
+    }
 }

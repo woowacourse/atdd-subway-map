@@ -4,6 +4,7 @@ import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.exception.DuplicateNameException;
+import wooteco.subway.exception.EntityNotFoundException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -58,16 +59,14 @@ public class LineFakeDao implements LineDao {
 
     @Override
     public void updateTopStationId(final Section section) {
-        final Line line = findById(section.getLineId()).orElseThrow(() -> new IllegalArgumentException("해당 ID와 일치하는 " +
-                "역이 존재하지 않습니다."));
+        final Line line = findById(section.getLineId()).orElseThrow(() -> new EntityNotFoundException("해당 ID와 일치하는 역이 존재하지 않습니다."));
         final Line updatedLine = line.updateTopStationId(section.getUpStationId());
         update(section.getLineId(), updatedLine);
     }
 
     @Override
     public void updateBottomStationId(final Section section) {
-        final Line line = findById(section.getLineId()).orElseThrow(() -> new IllegalArgumentException("해당 ID와 일치하는 " +
-                "역이 존재하지 않습니다."));
+        final Line line = findById(section.getLineId()).orElseThrow(() -> new EntityNotFoundException("해당 ID와 일치하는 역이 존재하지 않습니다."));
         final Line updatedLine = line.updateBottomStationId(section.getDownStationId());
         update(section.getLineId(), updatedLine);
     }
