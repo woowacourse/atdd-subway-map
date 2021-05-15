@@ -80,7 +80,7 @@ public class LineService {
     public void deleteLine(long lineId) {
         final Line line = findLineById(lineId);
         lineDao.delete(line.getId());
-        sectionRepository.deleteLine(line.getId());
+        sectionRepository.deleteSection(line.getId());
     }
 
     public void createSection(long lineId, long upStationId, long downStationId, int distance) {

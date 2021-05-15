@@ -57,8 +57,8 @@ public class SectionRepository {
         return new Section(lineId, upStation, downStation, distance);
     }
 
-    public void deleteLine(long lineId) {
-        sectionDao.deleteLine(lineId);
+    public void deleteSection(long lineId) {
+        sectionDao.deleteSection(lineId);
     }
 
     public void deleteSection(long lineId, long upStationId, long downStationId) {

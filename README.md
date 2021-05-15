@@ -120,3 +120,4 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - 각각 Dto를 만들어줘야 할까?
     - 중복된 필드 값을 사용하는데 각각 필요한 validation이 다를 때 어찌하지?
 - Entity와 Domain의 차이점?
+- SectionRepository 내에 stationDao가, sectionDao가 들어가니까 이게 스테이션 부를떄도 이거 써야하네
