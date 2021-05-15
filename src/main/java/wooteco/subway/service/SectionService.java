@@ -43,9 +43,9 @@ public class SectionService {
 
     private void validateOnlyOneStationExists(Long lineId, SectionRequest sectionRequest) {
         Long sectionCountOfSameUp = sectionDao
-                .countSection(lineId, sectionRequest.getUpStationId());
+                .countSectionByLineAndStationId(lineId, sectionRequest.getUpStationId());
         Long sectionCountOfSameDown = sectionDao
-                .countSection(lineId, sectionRequest.getDownStationId());
+                .countSectionByLineAndStationId(lineId, sectionRequest.getDownStationId());
 
         if (sectionCountOfSameUp > 0 && sectionCountOfSameDown > 0) {
             throw new SubwayHttpException("추가하려는 구간의 상/하행역 둘다 노선에 존재");
@@ -131,8 +131,8 @@ public class SectionService {
     }
 
     private void validateLineHasMoreThanOneSection(Long lineId) {
-        List<Section> sections = sectionDao.findSectionsByLineId(lineId);
-        if (sections.size() <= 1) {
+        Long sectionCount = sectionDao.countSectionByLineId(lineId);
+        if (sectionCount <= 1) {
             throw new SubwayHttpException("노선에 구간이 하나밖에 없어");
         }
     }
