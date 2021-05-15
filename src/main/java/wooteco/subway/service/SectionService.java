@@ -93,7 +93,7 @@ public class SectionService {
         }
 
         final Section sectionByDownStation = sectionDao.findByLineIdAndDownStationId(section)
-                                                       .orElseThrow(() -> new IllegalStateException("하행역과 상행역이 모두 " + "존재하지 않습니다."));
+                                                       .orElseThrow(() -> new IllegalStateException("하행역과 상행역이 모두 존재하지 않습니다."));
 
         final Section updateSection = section.subtractDistance(sectionByDownStation);
         sectionDao.updateDownStationAndDistance(updateSection);
@@ -124,7 +124,7 @@ public class SectionService {
 
     void deleteTopStation(final Section section) {
         final Long downStationId = sectionDao.findByLineIdAndUpStationId(section)
-                                             .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 구간이 존재하지 " + "않습니다."))
+                                             .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 구간이 존재하지 않습니다."))
                                              .getDownStationId();
 
         lineDao.updateTopStationId(section.updateUpStationId(downStationId));
@@ -133,8 +133,7 @@ public class SectionService {
 
     void deleteBottomStation(final Section section) {
         final Long upStationId = sectionDao.findByLineIdAndDownStationId(section)
-                                           .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 구간이 존재하지 " +
-                                                   "않습니다."))
+                                           .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 구간이 존재하지 않습니다."))
                                            .getUpStationId();
 
         lineDao.updateBottomStationId(section.updateDownStationId(upStationId));
@@ -143,11 +142,10 @@ public class SectionService {
 
     void deleteMiddleStation(final Section section) {
         final Section upSection = sectionDao.findByLineIdAndDownStationId(section)
-                                            .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 구간이 존재하지 " +
-                                                    "않습니다."));
+                                            .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 구간이 존재하지 않습니다."));
 
         final Section downSection = sectionDao.findByLineIdAndUpStationId(section)
-                                              .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 구간이 존재하지 " + "않습니다."));
+                                              .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 구간이 존재하지 않습니다."));
 
         final int distance = upSection.getDistance() + downSection.getDistance();
         final Section updateSection = section.updateUpStationId(upSection.getUpStationId())

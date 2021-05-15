@@ -9,7 +9,6 @@ import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.exception.EntityNotFoundException;
 import wooteco.subway.exception.response.ErrorResponse;
 
-import javax.validation.ConstraintViolationException;
 import java.util.Objects;
 
 @RestControllerAdvice
@@ -27,7 +26,8 @@ public class SubwayAdvice {
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> methodArgumentNotValidExceptionExceptionHandler(BindingResult bindingResult) {
-        return ResponseEntity.badRequest().body(new ErrorResponse(Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage()));
+        final String message = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
+        return ResponseEntity.badRequest().body(new ErrorResponse(message));
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
