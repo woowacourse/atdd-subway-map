@@ -27,16 +27,13 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> create(@RequestBody final LineRequest lineRequest) {
-        final Line line = lineService.create(lineRequest.toLine());
-
-        final LineResponse lineResponse = new LineResponse(line);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
+        final LineResponse lineResponse = lineService.create(lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<LineResponse> update(@PathVariable final Long id, @RequestBody final LineRequest lineRequest) {
-        final Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
-        lineService.update(line);
+        lineService.update(id, lineRequest);
 
         return ResponseEntity.ok().build();
     }

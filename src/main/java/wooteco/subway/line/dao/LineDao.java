@@ -47,6 +47,11 @@ public class LineDao {
         jdbcTemplate.update(sql, id);
     }
 
+    public void update(final Line line) {
+        final String sql = "UPDATE LINE SET NAME = ?, COLOR =? WHERE id = ?";
+        jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
+    }
+
     public void update(final Long id, final String name, final String color) {
         final String sql = "UPDATE LINE SET NAME = ?, COLOR =? WHERE id = ?";
         jdbcTemplate.update(sql, name, color, id);
@@ -87,6 +92,11 @@ public class LineDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public boolean isExistingId(final Long id) {
+        final String sql = "SELECT EXISTS(SELECT from LINE WHERE id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
     public boolean isExistingName(final String name) {
