@@ -48,9 +48,9 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public List<Station> findStationsBy(Long stationId, Long downStationId) {
-        String query = "SELECT * FROM station WHERE id in (?, ?)";
-        return jdbcTemplate.query(query, stationMapper, stationId, downStationId);
+    public boolean isExistingStation(Long stationId) {
+        String query = "SELECT EXISTS(SELECT * FROM station WHERE id in ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, stationId);
     }
 
     @Override

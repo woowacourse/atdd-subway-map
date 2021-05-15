@@ -1,14 +1,11 @@
 package wooteco.subway.section.repository;
 
 import wooteco.subway.section.Section;
-import wooteco.subway.station.Station;
 
 import java.util.List;
 
 public interface SectionDao {
     Section save(Long lineId, Section section);
-
-    List<Station> findStationsBy(Long stationId, Long downStationId);
 
     List<Section> findAllByLineId(Long lineId);
 
@@ -29,4 +26,6 @@ public interface SectionDao {
     Section appendToUp(Long lineId, Section newSection, int changedDistance);
 
     Section appendBeforeDown(Long lineId, Section newSection, int changedDistance);
+
+    boolean isExistingStation(Long stationId);
 }

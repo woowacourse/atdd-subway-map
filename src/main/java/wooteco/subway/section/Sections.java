@@ -18,6 +18,11 @@ public class Sections {
         this.sections = sort(sections);
     }
 
+    public Sections(List<Section> sections, Section section) {
+        this.sections = sort(sections);
+        validateSavableSection(section);
+    }
+
     private List<Section> sort(List<Section> sections) {
         Queue<Section> waiting = new LinkedList<>(sections);
         Deque<Section> result = new ArrayDeque<>();

@@ -10,7 +10,6 @@ import wooteco.subway.section.Sections;
 import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.dto.SectionResponse;
 import wooteco.subway.section.repository.SectionDao;
-import wooteco.subway.station.Station;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
 
@@ -33,10 +32,10 @@ public class SectionService {
         sectionDao.save(newLine.getId(), sectionReq.toEntity());
     }
 
-    public SectionResponse add(Long lineId, SectionRequest sectionReq) {
+    public SectionResponse appendSection(Long lineId, SectionRequest sectionReq) {
         Section newSection = sectionReq.toEntity();
-        Sections sections =  new Sections(sectionDao.findAllByLineId(lineId));
-        validateSavableSection(newSection, sections);
+        validateExistStation(newSection);
+        Sections sections =  new Sections(sectionDao.findAllByLineId(lineId), newSection);
 
         if (sections.isOnEdge(newSection)) {
             return saveAtEnd(lineId, newSection);
@@ -44,14 +43,11 @@ public class SectionService {
         return saveAtMiddle(lineId, newSection, sections);
     }
 
-    private void validateSavableSection(Section newSection, Sections sections) {
-        validateExistStation(newSection);
-        sections.validateSavableSection(newSection);
-    }
-
     private void validateExistStation(Section section) {
-        List<Station> stations = sectionDao.findStationsBy(section.getUpStationId(), section.getDownStationId());
-        if (stations.size() != 2) {
+        if (!sectionDao.isExistingStation(section.getUpStationId())) {
+            throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
+        }
+        if (!sectionDao.isExistingStation(section.getDownStationId())) {
             throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
         }
     }
