@@ -2,10 +2,12 @@ package wooteco.subway.line;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 
 public class LineRequest {
     @NotBlank(message = "name은 공백이 될 수 없습니다")
+    @Pattern(regexp = ".*선$", message = "노선 이름은 ~선으로 끝나야 합니다.")
     private String name;
     @NotBlank(message = "color는 공백이 될 수 없습니다")
     private String color;

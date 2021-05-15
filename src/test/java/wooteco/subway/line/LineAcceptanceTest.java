@@ -71,6 +71,32 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
+    @DisplayName("지하철 노선이 ~선으로 끝나지 않으면 Bad Request 처리")
+    @Test
+    void createLineEndsWith선() {
+        // given
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "테스트");
+        params.put("color", "red");
+        params.put("upStationId", 1);
+        params.put("downStationId", 2);
+        params.put("distance", "1000");
+        params.put("extraFare", "100");
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+
     @DisplayName("같은 이름의 지하철 노선은 생성할 수 없다.")
     @Test
     void createLineWithDuplicateName() {
