@@ -2,6 +2,7 @@ package wooteco.subway.section.dto;
 
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.section.Section;
+import wooteco.subway.station.Station;
 
 public class SectionRequest {
     private Long upStationId;
@@ -34,6 +35,9 @@ public class SectionRequest {
     }
 
     public Section toEntity() {
-        return new Section(upStationId, downStationId, distance);
+        Station upStation = new Station(upStationId, null);
+        Station downStation = new Station(downStationId, null);
+
+        return new Section(upStation, downStation, distance);
     }
 }

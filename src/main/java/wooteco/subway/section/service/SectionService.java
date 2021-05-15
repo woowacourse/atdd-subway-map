@@ -10,6 +10,7 @@ import wooteco.subway.section.Sections;
 import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.dto.SectionResponse;
 import wooteco.subway.section.repository.SectionDao;
+import wooteco.subway.station.Station;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
 
@@ -44,38 +45,38 @@ public class SectionService {
     }
 
     private void validateExistStation(Section section) {
-        if (!sectionDao.isExistingStation(section.getUpStationId())) {
+        if (!sectionDao.isExistingStation(section.getUpStation())) {
             throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
         }
-        if (!sectionDao.isExistingStation(section.getDownStationId())) {
+        if (!sectionDao.isExistingStation(section.getDownStation())) {
             throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
         }
     }
 
     private SectionResponse saveAtEnd(Long lineId, Section newSection) {
         Section savedSection = sectionDao.save(lineId, newSection);
-        return new SectionResponse(savedSection);
+        return SectionResponse.from(savedSection);
     }
 
     private SectionResponse saveAtMiddle(Long lineId, Section newSection, Sections sections) {
         if (sections.appendToUp(newSection)) {
             int changedDistance = compareDistanceWhenAppendToUp(lineId, newSection);
-            return new SectionResponse(sectionDao.appendToUp(lineId, newSection, changedDistance));
+            return SectionResponse.from(sectionDao.appendToUp(lineId, newSection, changedDistance));
         }
         if (sections.appendBeforeDown(newSection)) {
             int changedDistance = compareDistanceWhenAppendToBottom(lineId, newSection);
-            return new SectionResponse(sectionDao.appendBeforeDown(lineId, newSection, changedDistance));
+            return SectionResponse.from(sectionDao.appendBeforeDown(lineId, newSection, changedDistance));
         }
         throw new InvalidInsertException("해당 구간에 추가할 수 없습니다.");
     }
 
     private int compareDistanceWhenAppendToBottom(Long lineId, Section newSection) {
-        Section oldSection = sectionDao.findByDownStationId(lineId, newSection.getDownStationId());
+        Section oldSection = sectionDao.findByDownStationId(lineId, newSection.getDownStation());
         return differenceInDistance(newSection, oldSection);
     }
 
     private int compareDistanceWhenAppendToUp(Long lineId, Section newSection) {
-        Section oldSection = sectionDao.findByUpStationId(lineId, newSection.getUpStationId());
+        Section oldSection = sectionDao.findByUpStationId(lineId, newSection.getUpStation());
         return differenceInDistance(newSection, oldSection);
     }
 
@@ -122,8 +123,8 @@ public class SectionService {
     }
 
     private Section makeNewSection(Section before, Section after) {
-        Long newUp = before.getUpStationId();
-        Long newDown = after.getDownStationId();
+        Station newUp = before.getUpStation();
+        Station newDown = after.getDownStation();
         int totalDistance = before.plusDistance(after);
 
         Section newSection = new Section(newUp, newDown, totalDistance);

@@ -1,6 +1,8 @@
 package wooteco.subway.section.dto;
 
+import wooteco.subway.line.Line;
 import wooteco.subway.section.Section;
+import wooteco.subway.station.Station;
 
 public class SectionResponse {
     private Long id;
@@ -10,12 +12,12 @@ public class SectionResponse {
     private int distance;
 
 
-    public SectionResponse(Section savedSection) {
-        this.id = savedSection.getId();
-        this.lineId = savedSection.getLineId();
-        this.upStationId = savedSection.getUpStationId();
-        this.downStationId = savedSection.getDownStationId();
-        this.distance = savedSection.getDistance();
+    public SectionResponse(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+        this.id = id;
+        this.lineId = lineId;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
     }
 
     public Long getId() {
@@ -36,5 +38,12 @@ public class SectionResponse {
 
     public int getDistance() {
         return distance;
+    }
+
+    public static SectionResponse from(Section section) {
+        Line line = section.getLine();
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+        return new SectionResponse(section.getId(), line.getId(), upStation.getId(), downStation.getId(), section.getDistance());
     }
 }

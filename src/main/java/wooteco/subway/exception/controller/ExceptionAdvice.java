@@ -27,7 +27,7 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ExceptionResponse> handleNotFoundException(NotFoundException e) {
+    public ResponseEntity<ExceptionResponse> handleNotFoundException() {
         return ResponseEntity.notFound().build();
     }
 

@@ -3,6 +3,7 @@ package wooteco.subway.section;
 import wooteco.subway.exception.InvalidInsertException;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.exception.SubWayException;
+import wooteco.subway.station.Station;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,19 +36,23 @@ public class Sections {
 
     private void sortUpToDown(Queue<Section> waiting, Deque<Section> result) {
         while (!waiting.isEmpty()) {
-            Section section = waiting.remove();
-            Section frontBase = result.peek();
-            Section lastBase = result.peekLast();
-            if (section.isSameUp(lastBase.getDownStationId())) {
-                result.addLast(section);
-                continue;
-            }
-            if (section.isSameDown(frontBase.getUpStationId())) {
-                result.addFirst(section);
-                continue;
-            }
-            waiting.add(section);
+            sortSectionSequence(waiting, result);
         }
+    }
+
+    private void sortSectionSequence(Queue<Section> waiting, Deque<Section> result) {
+        Section current = waiting.poll();
+        Section first = result.peekFirst();
+        Section last = result.peekLast();
+        if (current.isBefore(first)) {
+            result.addFirst(current);
+            return;
+        }
+        if (current.isAfter(last)) {
+            result.addLast(current);
+            return;
+        }
+        waiting.add(current);
     }
 
     public void validateSavableSection(Section section) {
@@ -62,8 +67,10 @@ public class Sections {
     }
 
     public boolean isOnEdge(Section section) {
-        return isOnUpEdge(section.getDownStationId())
-                || isOnDownEdge(section.getUpStationId());
+        Station downStation = section.getDownStation();
+        Station upStation = section.getUpStation();
+        return isOnUpEdge(downStation.getId())
+                || isOnDownEdge(upStation.getId());
     }
 
     public boolean isOnUpEdge(Long downId) {
@@ -76,16 +83,24 @@ public class Sections {
 
     private Long getFirstUpId() {
         return upStationIds(sections).stream()
-                .filter(upId -> downStationIds(sections).stream().noneMatch(downId -> downId.equals(upId)))
+                .filter(this::isNotMatchWithDownIds)
                 .findAny()
                 .orElseThrow(() -> new SubWayException("상행역이 없습니다."));
     }
 
+    private boolean isNotMatchWithDownIds(Long upId) {
+        return downStationIds(sections).stream().noneMatch(downId -> downId.equals(upId));
+    }
+
     private Long getLastDownId() {
         return downStationIds(sections).stream()
-                .filter(downId -> upStationIds(sections).stream().noneMatch(upId -> upId.equals(downId)))
+                .filter(this::isNotMatchWithUpIds)
                 .findAny()
                 .orElseThrow(() -> new SubWayException("하행역이 없습니다."));
+    }
+
+    private boolean isNotMatchWithUpIds(Long downId) {
+        return upStationIds(sections).stream().noneMatch(upId -> upId.equals(downId));
     }
 
     private List<Long> upStationIds(List<Section> sections) {

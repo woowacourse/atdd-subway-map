@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.line.Line;
 import wooteco.subway.section.Section;
 import wooteco.subway.station.Station;
 
@@ -15,15 +16,11 @@ import java.util.Objects;
 @Repository
 public class JdbcSectionDao implements SectionDao {
     private JdbcTemplate jdbcTemplate;
-    private final RowMapper<Station> stationMapper = (rs, rowNum) -> new Station (
-            rs.getLong("id"),
-            rs.getString("name")
-    );
     private final RowMapper<Section> sectionMapper = (rs, rowNum) -> new Section (
             rs.getLong("id"),
-            rs.getLong("line_id"),
-            rs.getLong("up_station_id"),
-            rs.getLong("down_station_id"),
+            new Line(rs.getLong("line_id"), null, null, null),
+            new Station(rs.getLong("up_station_id"), null),
+            new Station(rs.getLong("down_station_id"), null),
             rs.getInt("distance")
     );
 
@@ -38,19 +35,20 @@ public class JdbcSectionDao implements SectionDao {
         jdbcTemplate.update(con -> {
             PreparedStatement pstmt = con.prepareStatement(query, new String[]{"id"});
             pstmt.setLong(1, lineId);
-            pstmt.setLong(2, section.getUpStationId());
-            pstmt.setLong(3, section.getDownStationId());
+            pstmt.setLong(2, section.getUpStation().getId());
+            pstmt.setLong(3, section.getDownStation().getId());
             pstmt.setInt(4, section.getDistance());
             return pstmt;
         }, keyHolder);
+
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new Section(id, lineId, section);
+        return new Section(id, new Line(lineId, null, null), section);
     }
 
     @Override
-    public boolean isExistingStation(Long stationId) {
-        String query = "SELECT EXISTS(SELECT * FROM station WHERE id in ?)";
-        return jdbcTemplate.queryForObject(query, Boolean.class, stationId);
+    public boolean isExistingStation(Station station) {
+        String query = "SELECT EXISTS (SELECT * FROM station WHERE id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, station.getId());
     }
 
     @Override
@@ -60,15 +58,15 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public Section findByUpStationId(Long lineId, Long upStationId) {
+    public Section findByUpStationId(Long lineId, Station upStation) {
         String query = "SELECT * FROM section WHERE up_station_id = ? AND line_id = ?";
-        return jdbcTemplate.query(query, sectionMapper, upStationId, lineId).get(0);
+        return jdbcTemplate.query(query, sectionMapper, upStation.getId(), lineId).get(0);
     }
 
     @Override
-    public Section findByDownStationId(Long lineId, Long downStationId) {
+    public Section findByDownStationId(Long lineId, Station downStation) {
         String query = "SELECT * FROM section WHERE down_station_id = ? AND line_id = ?";
-        return jdbcTemplate.query(query, sectionMapper, downStationId, lineId).get(0);
+        return jdbcTemplate.query(query, sectionMapper, downStation.getId(), lineId).get(0);
     }
 
     @Override

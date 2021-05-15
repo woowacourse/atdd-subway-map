@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Sql("classpath:test.sql")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
-    private static final long EXIST_GANGNAM = 1L;
-    private static final long EXIST_JAMSIL = 2L;
+    private final long EXIST_GANGNAM = 1L;
+    private final long EXIST_JAMSIL = 2L;
 
     @BeforeEach
     void beforeEach() {
@@ -39,8 +39,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간 추가 - 추가하려는 구간의 상행이 등록된 구간의 하행종점인 경우")
     void createSection() {
         // given
-        StationRequest 당산역 = new StationRequest("당산역");
-        StationRequest 왕십리역 = new StationRequest("왕십리역");
+        StationRequest 당산역 = new StationRequest("당산역"); // id = 2
+        StationRequest 왕십리역 = new StationRequest("왕십리역"); // id = 3
 
         SectionRequest 잠실에서당산 = new SectionRequest(EXIST_JAMSIL, 3L, 5);
 
@@ -133,26 +133,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("구간 추가(중간) - 추가하려는 구간의 하행이 등록된 구간 리스트의 하행에 있는 경우")
-    void createSectionAppendBeforeDown() {
-        // given
-        StationRequest 당산역 = new StationRequest("당산역"); // id = 3
-        StationRequest 왕십리역 = new StationRequest("왕십리역"); // id = 4
-
-        SectionRequest 잠실에서왕십리 = new SectionRequest(EXIST_JAMSIL, 4L, 5);
-        SectionRequest 당산에서왕십리 = new SectionRequest(3L, 4L, 3);
-
-        // when
-        postResponse("/stations", 당산역);
-        postResponse("/stations", 왕십리역);
-        postResponse("/lines/1/sections", 잠실에서왕십리);
-        ExtractableResponse<Response> response = postResponse("/lines/1/sections", 당산에서왕십리);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-    }
-
-    @Test
     @DisplayName("구간 추가(중간) - 추가하려는 구간의 거리가 등록된 구간 리스트의 거리 이상인 경우")
     void createWhenNewSectionsDistanceLonger() {
         // given
@@ -170,6 +150,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("구간 추가(중간) - 추가하려는 구간의 하행이 등록된 구간 리스트의 하행에 있는 경우")
+    void createSectionAppendBeforeDown() {
+        // given
+        StationRequest 당산역 = new StationRequest("당산역"); // id = 3
+        StationRequest 왕십리역 = new StationRequest("왕십리역"); // id = 4
+
+        SectionRequest 잠실에서왕십리 = new SectionRequest(EXIST_JAMSIL, 4L, 5);
+        SectionRequest 당산에서왕십리 = new SectionRequest(3L, 4L, 3);
+
+        // when
+        postResponse("/stations", 당산역);
+        postResponse("/stations", 왕십리역);
+        postResponse("/lines/1/sections", 잠실에서왕십리);
+        ExtractableResponse<Response> response = postResponse("/lines/1/sections", 당산에서왕십리);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     @Test

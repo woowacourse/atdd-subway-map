@@ -1,33 +1,35 @@
 package wooteco.subway.section;
 
 import wooteco.subway.exception.InvalidInsertException;
+import wooteco.subway.line.Line;
+import wooteco.subway.station.Station;
 
 public class Section {
     private Long id;
-    private Long lineId;
-    private Long upStationId;
-    private Long downStationId;
+    private Line line;
+    private Station upStation;
+    private Station downStation;
     private int distance;
 
-    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
-        validateStations(upStationId, downStationId);
+    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+        validateStations(upStation, downStation);
         this.id = id;
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
-    public Section(Long id, Long lineId, Section section) {
-        this(id, lineId, section.getUpStationId(), section.getDownStationId(), section.getDistance());
+    public Section(Long id, Line line, Section section) {
+        this(id, line, section.getUpStation(), section.getDownStation(), section.getDistance());
     }
 
-    public Section(Long upStationId, Long downStationId, int distance) {
-        this(null, null, upStationId, downStationId, distance);
+    public Section(Station upStation, Station downStation, int distance) {
+        this(null, null, upStation, downStation, distance);
     }
 
-    private void validateStations(Long upStationId, Long downStationId) {
-        if (upStationId.equals(downStationId)) {
+    private void validateStations(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
             throw new InvalidInsertException("구간의 상행과 하행이 같을 수 없습니다.");
         }
     }
@@ -36,35 +38,51 @@ public class Section {
         return id;
     }
 
-    public Long getLineId() {
-        return lineId;
+    public Line getLine() {
+        return line;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
+    public Station getDownStation() {
+        return downStation;
     }
 
     public int getDistance() {
         return distance;
     }
 
+    public boolean isBefore(Section first) {
+        return downStation.equals(first.getUpStation());
+    }
+
+    public boolean isAfter(Section last) {
+        return upStation.equals(last.getDownStation());
+    }
+
     public boolean isSameUp(Long upStationId) {
-        return this.upStationId.equals(upStationId);
+        return upStationId.equals(upStationId);
     }
 
     public boolean isSameDown(Long downStationId) {
-        return this.downStationId.equals(downStationId);
+        return downStationId.equals(downStationId);
     }
 
     public boolean hasLongerDistanceThan(Section oldSection) {
-        return this.distance >= oldSection.getDistance();
+        return this.distance >= oldSection.distance;
     }
 
     public int plusDistance(Section after) {
         return this.distance + after.distance;
+    }
+
+    public Long getUpStationId() {
+        return upStation.getId();
+    }
+
+    public Long getDownStationId() {
+        return downStation.getId();
     }
 }
