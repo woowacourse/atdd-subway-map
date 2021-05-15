@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Section;
-import wooteco.subway.exception.section.InvalidSectionOnLineException;
+import wooteco.subway.exception.InvalidSectionOnLineException;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql("classpath:initializeTable.sql")

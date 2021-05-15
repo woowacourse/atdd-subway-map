@@ -12,11 +12,9 @@ import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.exception.NullException;
 import wooteco.subway.exception.NullIdException;
 import wooteco.subway.exception.NullNameException;
-import wooteco.subway.exception.line.NotFoundLineException;
-import wooteco.subway.exception.line.NullColorException;
-import wooteco.subway.exception.section.InvalidSectionOnLineException;
-import wooteco.subway.exception.station.DuplicateStationException;
-import wooteco.subway.exception.station.NotFoundStationException;
+import wooteco.subway.exception.NullColorException;
+import wooteco.subway.exception.InvalidSectionOnLineException;
+import wooteco.subway.exception.DuplicateException;
 
 @RestControllerAdvice
 public class ExceptionController {
@@ -27,7 +25,7 @@ public class ExceptionController {
             .build();
     }
 
-    @ExceptionHandler({NotFoundLineException.class, NotFoundStationException.class})
+    @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Void> notFoundExceptionResponse(NotFoundException e) {
         return ResponseEntity.notFound()
             .build();
@@ -52,23 +50,20 @@ public class ExceptionController {
             .build();
     }
 
-    @ExceptionHandler(DuplicateStationException.class)
-    public ResponseEntity<Void> duplicatedStationExceptionResponse(
-        DuplicateStationException e) {
-        return ResponseEntity.badRequest()
+    @ExceptionHandler(DuplicateException.class)
+    public ResponseEntity<Void> duplicatedStationExceptionResponse(DuplicateException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
             .build();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Void> methodArgumentNotValidExceptionResponse(
-        MethodArgumentNotValidException e) {
+    public ResponseEntity<Void> methodArgumentNotValidExceptionResponse(MethodArgumentNotValidException e) {
         return ResponseEntity.badRequest()
             .build();
     }
 
     @ExceptionHandler(InvalidSectionOnLineException.class)
-    public ResponseEntity<Void> alreadyExistedStationsOnLineExceptionResponse(
-        InvalidSectionOnLineException e) {
+    public ResponseEntity<Void> alreadyExistedStationsOnLineExceptionResponse(InvalidSectionOnLineException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .build();
     }

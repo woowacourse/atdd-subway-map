@@ -1,6 +1,6 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.exception.station.DuplicateStationException;
+import wooteco.subway.exception.DuplicateException;
 
 public class Section {
 
@@ -36,7 +36,7 @@ public class Section {
 
     private void validateDuplicateStations(Id upStationId, Id downStationId) {
         if (upStationId.equals(downStationId)) {
-            throw new DuplicateStationException();
+            throw new DuplicateException();
         }
     }
 

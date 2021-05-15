@@ -8,9 +8,8 @@ import wooteco.subway.controller.dto.response.StationResponse;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
-import wooteco.subway.domain.Station;
-import wooteco.subway.exception.section.InvalidSectionOnLineException;
-import wooteco.subway.exception.station.NotFoundStationException;
+import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.InvalidSectionOnLineException;
 import wooteco.subway.service.dto.DeleteStationDto;
 import wooteco.subway.service.dto.SectionServiceDto;
 import wooteco.subway.service.dto.StationServiceDto;
@@ -59,7 +58,7 @@ public class SectionService {
         dtos.stream().map(StationServiceDto::getId)
             .filter(it -> it.equals(stationId))
             .findAny()
-            .orElseThrow(NotFoundStationException::new);
+            .orElseThrow(NotFoundException::new);
     }
 
     private SectionServiceDto saveSectionAtEnd(Section section) {
@@ -117,7 +116,7 @@ public class SectionService {
             .stream()
             .filter(element -> id.equals(element.getId()))
             .findAny()
-            .orElseThrow(NotFoundStationException::new);
+            .orElseThrow(NotFoundException::new);
 
         return new StationResponse(dto.getId(), dto.getName());
     }

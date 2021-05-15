@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Deque;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +17,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.InvalidDistanceException;
-import wooteco.subway.exception.station.NotFoundStationException;
+import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.service.dto.DeleteStationDto;
 import wooteco.subway.service.dto.SectionServiceDto;
 
@@ -136,7 +135,7 @@ public class SectionServiceTest {
         // when
         sectionService.delete(deleteStationDto);
         Section section = sectionDao.findByLineIdAndUpStationId(lineId, stationSinSeolId)
-            .orElseThrow(NotFoundStationException::new);
+            .orElseThrow(NotFoundException::new);
 
         // then
         assertThat(section.getUpStationId()).isEqualTo(stationSinSeolId);

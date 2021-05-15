@@ -9,7 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.controller.dto.response.StationResponse;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.line.NotFoundLineException;
+import wooteco.subway.domain.Lines;
+import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.service.dto.CreateLineDto;
 import wooteco.subway.service.dto.CreateSectionDto;
 import wooteco.subway.service.dto.DeleteStationDto;
@@ -59,14 +60,14 @@ public class LineService {
         Line line = lineServiceDto.toEntity();
 
         if (lineDao.update(lineServiceDto.getId(), line) == NOT_FOUND) {
-            throw new NotFoundLineException();
+            throw new NotFoundException();
         }
     }
 
     @Transactional
     public void delete(@Valid LineServiceDto lineServiceDto) {
         if (lineDao.delete(lineServiceDto.getId()) == NOT_FOUND) {
-            throw new NotFoundLineException();
+            throw new NotFoundException();
         }
     }
 

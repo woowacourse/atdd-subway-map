@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.exception.station.DuplicateStationException;
+import wooteco.subway.exception.DuplicateException;
 
 class SectionTest {
 
@@ -21,6 +21,6 @@ class SectionTest {
 
         // then
         assertThatThrownBy(() -> new Section(lineId, upStationId, downStationId, distance))
-            .isInstanceOf(DuplicateStationException.class);
+            .isInstanceOf(DuplicateException.class);
     }
 }

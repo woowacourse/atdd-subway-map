@@ -1,4 +1,4 @@
-package wooteco.subway.exception.section;
+package wooteco.subway.exception;
 
 import wooteco.subway.exception.SubwayException;
 

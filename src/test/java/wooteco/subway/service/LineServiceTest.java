@@ -16,8 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.line.NotFoundLineException;
-import wooteco.subway.service.LineService;
+import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.service.dto.CreateLineDto;
 import wooteco.subway.service.dto.LineServiceDto;
 import wooteco.subway.service.dto.ReadLineDto;
@@ -132,13 +131,13 @@ public class LineServiceTest {
         String color = "파란색";
 
         when(mockLineDao.delete(id)).thenReturn(1);
-        when(mockLineDao.show(id)).thenThrow(NotFoundLineException.class);
+        when(mockLineDao.show(id)).thenThrow(NotFoundException.class);
 
         //when
         lineService.delete(new LineServiceDto(id));
 
         // then
         assertThatThrownBy(() -> lineService.findOne(new LineServiceDto(id)))
-            .isInstanceOf(NotFoundLineException.class);
+            .isInstanceOf(NotFoundException.class);
     }
 }

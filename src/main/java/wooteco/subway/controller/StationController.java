@@ -55,7 +55,7 @@ public class StationController {
     public ResponseEntity<Void> deleteStation(@NotNull  @PathVariable Long id) {
         stationService.delete(new StationServiceDto(id));
 
-        return ResponseEntity.ok()
+        return ResponseEntity.noContent()
             .build();
     }
 }
