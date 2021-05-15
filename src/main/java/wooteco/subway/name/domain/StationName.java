@@ -32,6 +32,11 @@ public class StationName implements Name {
     }
 
     @Override
+    public Name changeName(final String name) {
+        return new StationName(name);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

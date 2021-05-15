@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.context.TestConstructor;
-import wooteco.subway.line.entity.LineEntity;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -26,7 +25,7 @@ class DBLineDaoTest {
     private Long id;
     private String name;
     private String color;
-    private LineEntity lineEntity;
+    private Line line;
 
     public DBLineDaoTest(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -37,14 +36,14 @@ class DBLineDaoTest {
     void setUp() {
         name = "백기선";
         color = "bg-red-600";
-        lineEntity = new LineEntity(name, color);
+        line = new Line(name, color);
         String sql = "INSERT INTO LINE(name, color) VALUES(?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, lineEntity.name());
-            ps.setString(2, lineEntity.color());
+            ps.setString(1, line.nameAsString());
+            ps.setString(2, line.color());
             return ps;
         }, keyHolder);
         id = keyHolder.getKey().longValue();
@@ -55,10 +54,10 @@ class DBLineDaoTest {
     void save() {
         String savedName = "흑기선";
         String savedColor = "bg-black-601";
-        LineEntity saveLineEntity = lineDao.save(new LineEntity(savedName, savedColor));
+        Line saveLine = lineDao.save(new Line(savedName, savedColor));
 
-        assertThat(saveLineEntity.name()).isEqualTo(savedName);
-        assertThat(saveLineEntity.color()).isEqualTo(savedColor);
+        assertThat(saveLine.nameAsString()).isEqualTo(savedName);
+        assertThat(saveLine.color()).isEqualTo(savedColor);
     }
 
     @Test
@@ -67,7 +66,7 @@ class DBLineDaoTest {
         String savedName = "백기선";
         String savedColor = "bg-red-600";
 
-        assertThatThrownBy(() -> lineDao.save(new LineEntity(savedName, savedColor)))
+        assertThatThrownBy(() -> lineDao.save(new Line(savedName, savedColor)))
                 .isInstanceOf(DuplicateKeyException.class);
     }
 
@@ -77,32 +76,32 @@ class DBLineDaoTest {
         String savedName = "흑기선";
         String savedColor = "bg-red-600";
 
-        assertThatThrownBy(() -> lineDao.save(new LineEntity(savedName, savedColor)))
+        assertThatThrownBy(() -> lineDao.save(new Line(savedName, savedColor)))
                 .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
     @DisplayName("모든 노선을 찾는다.")
     void findAll() {
-        List<LineEntity> lineEntities = lineDao.findAll();
+        List<Line> lines = lineDao.findAll();
 
-        assertThat(lineEntities).hasSize(1);
+        assertThat(lines).hasSize(1);
     }
 
     @Test
     @DisplayName("id로 노선을 찾는다.")
     void findById() {
-        LineEntity findLineEntity = lineDao.findById(id).get();
+        Line findLine = lineDao.findById(id).get();
 
-        assertThat(findLineEntity.id()).isEqualTo(id);
-        assertThat(findLineEntity.name()).isEqualTo(name);
-        assertThat(findLineEntity.color()).isEqualTo(color);
+        assertThat(findLine.id()).isEqualTo(id);
+        assertThat(findLine.nameAsString()).isEqualTo(name);
+        assertThat(findLine.color()).isEqualTo(color);
     }
 
     @Test
     @DisplayName("존재하지 않는 id로 노선을 찾는다.")
     void findByNoId() {
-        Optional<LineEntity> findLine = lineDao.findById(0L);
+        Optional<Line> findLine = lineDao.findById(0L);
 
         assertThat(findLine).isEmpty();
     }
@@ -110,17 +109,17 @@ class DBLineDaoTest {
     @Test
     @DisplayName("name으로 노선을 찾는다.")
     void findByName() {
-        LineEntity lineEntity = lineDao.findByName(name).get();
+        Line line = lineDao.findByName(name).get();
 
-        assertThat(lineEntity.id()).isEqualTo(id);
-        assertThat(lineEntity.name()).isEqualTo(name);
-        assertThat(lineEntity.color()).isEqualTo(color);
+        assertThat(line.id()).isEqualTo(id);
+        assertThat(line.nameAsString()).isEqualTo(name);
+        assertThat(line.color()).isEqualTo(color);
     }
 
     @Test
     @DisplayName("존재하지 않는 name로 노선을 찾는다.")
     void findByNoName() {
-        Optional<LineEntity> findLine = lineDao.findByName("마찌역");
+        Optional<Line> findLine = lineDao.findByName("마찌역");
 
         assertThat(findLine).isEmpty();
     }
@@ -137,13 +136,16 @@ class DBLineDaoTest {
     void update() {
         String updatedName = "흑기선";
         String updatedColor = "bg-red-700";
-        lineDao.update(id, updatedName, updatedColor);
 
-        LineEntity lineEntity = lineDao.findById(id).get();
+        Line updateLine = new Line(id, updatedName, updatedColor);
 
-        assertThat(lineEntity.id()).isEqualTo(id);
-        assertThat(lineEntity.name()).isEqualTo(updatedName);
-        assertThat(lineEntity.color()).isEqualTo(updatedColor);
+        lineDao.update(updateLine);
+
+        Line line = lineDao.findById(id).get();
+
+        assertThat(line.id()).isEqualTo(id);
+        assertThat(line.nameAsString()).isEqualTo(updatedName);
+        assertThat(line.color()).isEqualTo(updatedColor);
     }
 
     @Test

@@ -1,24 +1,22 @@
 package wooteco.subway.line.domain;
 
-import wooteco.subway.line.entity.LineEntity;
-
 import java.util.List;
 import java.util.Optional;
 
 public interface LineDao {
-    LineEntity save(LineEntity lineEntity);
+    Line save(Line line);
 
-    List<LineEntity> findAll();
+    List<Line> findAll();
 
-    Optional<LineEntity> findById(Long id);
+    Optional<Line> findById(Long id);
 
-    Optional<LineEntity> findByName(String name);
+    Optional<Line> findByName(String name);
 
-    Optional<LineEntity> findByColor(String name);
+    Optional<Line> findByColor(String name);
 
     void clear();
 
-    void update(Long id, String name, String color);
+    void update(Line line);
 
     void delete(Long id);
 

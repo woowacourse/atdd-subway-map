@@ -44,7 +44,7 @@ public class Section {
             return;
         }
         this.line = line;
-        line.getSections().add(this);
+        line.sections().add(this);
     }
 
     public Station upStation() {

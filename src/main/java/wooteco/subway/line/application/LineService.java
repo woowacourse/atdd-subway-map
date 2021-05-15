@@ -7,7 +7,6 @@ import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineUpdateRequest;
 import wooteco.subway.line.dto.SectionRequest;
-import wooteco.subway.line.entity.LineEntity;
 import wooteco.subway.line.entity.SectionEntity;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
@@ -34,79 +33,76 @@ public class LineService {
     @Transactional
     public LineResponse save(final LineRequest lineRequest) {
         validateDuplication(lineRequest);
-        LineEntity savedLineEntity = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
-        Line line = new Line(savedLineEntity.id(), savedLineEntity.name(), savedLineEntity.color());
+        Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
         Section section = new Section(line, findStationById(lineRequest.getUpStationId()), findStationById(lineRequest.getDownStationId()), lineRequest.getDistance());
 
-        sectionDao.save(new SectionEntity(section.line().getId(), section.upStation().getId(), section.downStation().getId(), section.distance()));
-        return new LineResponse(line.getId(), line.nameAsString(), line.getColor(), toStationsResponses(Collections.singletonList(section)));
+        sectionDao.save(new SectionEntity(section.line().id(), section.upStation().getId(), section.downStation().getId(), section.distance()));
+        return new LineResponse(line.id(), line.nameAsString(), line.color(), toStationsResponses(Collections.singletonList(section)));
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLine(final Long lineId) {
-        LineEntity findLineEntity = findLineEntityById(lineId);
-        Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());
+        Line line = findLineById(lineId);
         Sections sections = new Sections(toSections(line));
 
         List<Section> sortedSections = sections.sortedSections();
-        return new LineResponse(line.getId(), line.nameAsString(), line.getColor(), toStationsResponses(sortedSections));
+        return new LineResponse(line.id(), line.nameAsString(), line.color(), toStationsResponses(sortedSections));
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
-        List<LineEntity> lineEntities = lineDao.findAll();
-        return lineEntities.stream()
-                .map(lineEntity -> new Line(lineEntity.id(), lineEntity.name(), lineEntity.color()))
-                .map(line -> new LineResponse(line.getId(), line.nameAsString(), line.getColor(), toStationsResponses(new Sections(toSections(line)).sortedSections())))
+        List<Line> lines = lineDao.findAll();
+        return lines.stream()
+                .map(line -> new LineResponse(line.id(), line.nameAsString(), line.color(), toStationsResponses(new Sections(toSections(line)).sortedSections())))
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public void update(final Long id, final LineUpdateRequest lineUpdateRequest) {
-        LineEntity lineEntity = findLineEntityById(id);
-        lineDao.update(lineEntity.id(), lineUpdateRequest.getName(), lineUpdateRequest.getColor());
+        Line line = findLineById(id);
+        line.changeName(lineUpdateRequest.getName());
+        line.changeColor(lineUpdateRequest.getColor());
+        lineDao.update(line);
     }
 
     @Transactional
     public void delete(final Long id) {
-        LineEntity lineEntity = findLineEntityById(id);
-        lineDao.delete(lineEntity.id());
+        Line line = findLineById(id);
+        lineDao.delete(line.id());
     }
 
     @Transactional
     public void addSection(final Long lineId, final SectionRequest sectionRequest) {
-        LineEntity findLineEntity = findLineEntityById(lineId);
-        Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());
+        Line line = findLineById(lineId);
         Sections originSections = new Sections(toSections(line));
         Section targetSection = new Section(findStationById(sectionRequest.getUpStationId()), findStationById(sectionRequest.getDownStationId()), sectionRequest.getDistance());
 
         line.addSection(targetSection);
 
-        dirtyChecking(originSections, line.getSections());
+        dirtyChecking(originSections, line.sections());
     }
 
     @Transactional
     public void deleteSectionByStationId(final Long lineId, final Long stationId) {
-        LineEntity findLineEntity = findLineEntityById(lineId);
-        Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());
+        Line line = findLineById(lineId);
         Sections originSections = new Sections(toSections(line));
         Station targetStation = findStationById(stationId);
 
         line.deleteStation(targetStation);
 
-        deleteDirtyChecking(originSections, line.getSections());
+        deleteDirtyChecking(originSections, line.sections());
     }
 
     private void deleteDirtyChecking(final Sections originSections, final Sections sections) {
         List<Section> changedSections = sections.changedSections(originSections);
         for (Section section : changedSections) {
-            SectionEntity changedSectionEntity = new SectionEntity(section.id(), section.line().getId(), section.upStation().getId(), section.downStation().getId(), section.distance());
+            SectionEntity changedSectionEntity = new SectionEntity(section.id(), section.line().id(), section.upStation().getId(), section.downStation().getId(), section.distance());
             sectionDao.delete(changedSectionEntity.getId());
 
             Optional<Section> findStation = sections.findByUpwardStation(section.upStation());
             if (findStation.isPresent()) {
                 Section saveSection = findStation.get();
-                sectionDao.save(new SectionEntity(saveSection.line().getId(), saveSection.upStation().getId(), saveSection.downStation().getId(), saveSection.distance()));
+                sectionDao.save(new SectionEntity(saveSection.line().id(), saveSection.upStation().getId(), saveSection.downStation().getId(), saveSection.distance()));
             }
         }
     }
@@ -114,7 +110,7 @@ public class LineService {
     private void dirtyChecking(final Sections originSections, final Sections sections) {
         List<Section> changedSections = originSections.changedSections(sections);
         for (Section section : changedSections) {
-            SectionEntity changedSectionEntity = new SectionEntity(section.id(), section.line().getId(), section.upStation().getId(), section.downStation().getId(), section.distance());
+            SectionEntity changedSectionEntity = new SectionEntity(section.id(), section.line().id(), section.upStation().getId(), section.downStation().getId(), section.distance());
             if (sectionDao.findByLineIdWithUpStationId(changedSectionEntity.getLineId(), changedSectionEntity.getUpStationId()).isPresent()) {
                 sectionDao.deleteByLineIdWithUpStationId(changedSectionEntity.getLineId(), changedSectionEntity.getUpStationId());
             }
@@ -127,7 +123,7 @@ public class LineService {
     }
 
     private List<Section> toSections(final Line line) {
-        List<SectionEntity> sectionEntities = sectionDao.findByLineId(line.getId());
+        List<SectionEntity> sectionEntities = sectionDao.findByLineId(line.id());
         return sectionEntities.stream()
                 .map(sectionEntity -> new Section(sectionEntity.getId(), line, findStationById(sectionEntity.getUpStationId()), findStationById(sectionEntity.getDownStationId()), sectionEntity.getDistance()))
                 .collect(Collectors.toList());
@@ -153,7 +149,7 @@ public class LineService {
         }
     }
 
-    private LineEntity findLineEntityById(final Long id) {
+    private Line findLineById(final Long id) {
         return lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
     }
 

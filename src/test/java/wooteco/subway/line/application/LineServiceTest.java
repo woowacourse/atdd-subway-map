@@ -6,12 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineDao;
 import wooteco.subway.line.domain.SectionDao;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.SectionRequest;
-import wooteco.subway.line.entity.LineEntity;
 import wooteco.subway.line.entity.SectionEntity;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
@@ -50,7 +50,7 @@ class LineServiceTest {
     @DisplayName("노선 정상 저장된다")
     void save() {
         //given
-        when(lineDao.save(any(LineEntity.class))).thenReturn(new LineEntity(1L, "신분당선", "bg-red-600"));
+        when(lineDao.save(any(Line.class))).thenReturn(new Line(1L, "신분당선", "bg-red-600"));
         when(sectionDao.save(any(SectionEntity.class))).thenReturn(new SectionEntity(1L, 1L, 1L, 2L, 10));
         when(stationDao.findById(1L)).thenReturn(Optional.of(new Station(1L, "아마찌역")));
         when(stationDao.findById(2L)).thenReturn(Optional.of(new Station(2L, "검프역")));
@@ -68,7 +68,7 @@ class LineServiceTest {
     @DisplayName("구건 저장 시 상행역과 하행역이 같으면예와가 발생한다")
     void saveException() {
         //given
-        when(lineDao.save(any(LineEntity.class))).thenReturn(new LineEntity(1L, "신분당선", "bg-red-600"));
+        when(lineDao.save(any(Line.class))).thenReturn(new Line(1L, "신분당선", "bg-red-600"));
 
         //then
         assertThatThrownBy(() -> lineService.save(new LineRequest("신분당선", "화이트", 1L, 1L, 10)))
@@ -280,7 +280,7 @@ class LineServiceTest {
     }
 
     private void baseLine() {
-        when(lineDao.findById(1L)).thenReturn(Optional.of(new LineEntity(1L, "신분당선", "bg-red-600")));
+        when(lineDao.findById(1L)).thenReturn(Optional.of(new Line(1L, "신분당선", "bg-red-600")));
         when(stationDao.findById(1L)).thenReturn(Optional.of(new Station(1L, "아마찌역")));
         when(stationDao.findById(2L)).thenReturn(Optional.of(new Station(2L, "검프역")));
         when(stationDao.findById(3L)).thenReturn(Optional.of(new Station(3L, "마찌역")));

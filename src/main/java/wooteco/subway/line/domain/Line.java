@@ -7,9 +7,9 @@ import wooteco.subway.name.domain.Name;
 import wooteco.subway.station.domain.Station;
 
 public class Line {
-    private final Long id;
-    private final Name name;
-    private final String color;
+    private Long id;
+    private Name name;
+    private String color;
     private final State state = StateFactory.initialize(new Sections());
 
     public Line(final String name, final String color) {
@@ -26,11 +26,11 @@ public class Line {
         this.color = color;
     }
 
-    public Long getId() {
+    public Long id() {
         return id;
     }
 
-    public Name getName() {
+    public Name name() {
         return name;
     }
 
@@ -38,11 +38,11 @@ public class Line {
         return name.name();
     }
 
-    public String getColor() {
+    public String color() {
         return color;
     }
 
-    public Sections getSections() {
+    public Sections sections() {
         return state.sections();
     }
 
@@ -55,6 +55,26 @@ public class Line {
 
     public void deleteStation(final Station station) {
         state.deleteStation(station);
+    }
+
+    public boolean sameName(final String name) {
+        return this.name.sameName(name);
+    }
+
+    public boolean sameColor(String color) {
+        return this.color.equals(color);
+    }
+
+    public boolean sameId(final Long id) {
+        return this.id.equals(id);
+    }
+
+    public void changeName(final String name) {
+        this.name = this.name.changeName(name);
+    }
+
+    public void changeColor(String color) {
+        this.color = color;
     }
 
     private void validateDuplicationStation(final Station upStation, final Station downStation) {

@@ -77,8 +77,8 @@ public class DBSectionDao implements SectionDao {
         String sql = "SELECT * FROM SECTION" +
                 " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
                 " WHERE Line.id = ?";
-        List<SectionEntity> lineEntity = jdbcTemplate.query(sql, sectionEntityRowMapper, id);
-        return lineEntity;
+        List<SectionEntity> sectionEntities = jdbcTemplate.query(sql, sectionEntityRowMapper, id);
+        return sectionEntities;
     }
 
     @Override
@@ -86,9 +86,9 @@ public class DBSectionDao implements SectionDao {
         String sql = "SELECT * FROM SECTION" +
                 " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
                 " WHERE LINE.id = ? AND SECTION.up_station_id = ?";
-        List<SectionEntity> lineEntity = jdbcTemplate.query(sql, sectionEntityRowMapper, lineId, id);
+        List<SectionEntity> sectionEntities = jdbcTemplate.query(sql, sectionEntityRowMapper, lineId, id);
 
-        return Optional.ofNullable(DataAccessUtils.singleResult(lineEntity));
+        return Optional.ofNullable(DataAccessUtils.singleResult(sectionEntities));
     }
 
     @Override
@@ -103,9 +103,9 @@ public class DBSectionDao implements SectionDao {
         String sql = "SELECT * FROM SECTION" +
                 " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
                 " WHERE LINE.id = ? AND SECTION.down_station_id = ?";
-        List<SectionEntity> lineEntity = jdbcTemplate.query(sql, sectionEntityRowMapper, lineId, downStationId);
+        List<SectionEntity> sectionEntities = jdbcTemplate.query(sql, sectionEntityRowMapper, lineId, downStationId);
 
-        return Optional.ofNullable(DataAccessUtils.singleResult(lineEntity));
+        return Optional.ofNullable(DataAccessUtils.singleResult(sectionEntities));
     }
 
     @Override

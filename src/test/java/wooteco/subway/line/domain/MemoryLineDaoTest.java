@@ -4,12 +4,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.line.entity.LineEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class MemoryLineEntityDaoTest {
+class MemoryLineDaoTest {
     private String name;
     private Long id;
     private final LineDao lineDao = new MemoryLineDao();
@@ -17,8 +16,8 @@ class MemoryLineEntityDaoTest {
     @BeforeEach
     void setUp() {
         name = "아마찌선";
-        id = 1L;
-        lineDao.save(new LineEntity(id, name, "bg-red-600"));
+        Line save = lineDao.save(new Line(id, name, "bg-red-600"));
+        id = save.id();
     }
 
     @AfterEach
@@ -29,13 +28,13 @@ class MemoryLineEntityDaoTest {
     @Test
     @DisplayName("노선을 저장한다.")
     void save() {
-        assertThat(lineDao.findByName(name).get().name()).isEqualTo(name);
+        assertThat(lineDao.findByName(name).get().nameAsString()).isEqualTo(name);
     }
 
     @Test
     @DisplayName("노선을 저장한다.")
     void saveDuplicatedName() {
-        assertThatThrownBy(() -> lineDao.save(new LineEntity(2L, name, "bg-red-600")));
+        assertThatThrownBy(() -> lineDao.save(new Line(2L, name, "bg-red-600")));
     }
 
     @Test
@@ -47,7 +46,7 @@ class MemoryLineEntityDaoTest {
     @Test
     @DisplayName("이름으로 단일 노선을 조회한다.")
     void findByName() {
-        assertThat(lineDao.findByName(name).get().name()).isEqualTo(name);
+        assertThat(lineDao.findByName(name).get().nameAsString()).isEqualTo(name);
     }
 
     @Test
@@ -56,10 +55,12 @@ class MemoryLineEntityDaoTest {
         String updateName = "흑기선";
         String updateColor = "bg-red-700";
 
-        lineDao.update(id, updateName, updateColor);
-        LineEntity findLineEntity = lineDao.findById(id).get();
+        Line line = new Line(id, updateName, updateColor);
 
-        assertThat(findLineEntity.name()).isEqualTo(updateName);
-        assertThat(findLineEntity.color()).isEqualTo(updateColor);
+        lineDao.update(line);
+        Line findLine = lineDao.findById(id).get();
+
+        assertThat(findLine.nameAsString()).isEqualTo(updateName);
+        assertThat(findLine.color()).isEqualTo(updateColor);
     }
 }

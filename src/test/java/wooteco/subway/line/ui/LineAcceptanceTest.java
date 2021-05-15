@@ -98,7 +98,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateColor() {
         // given
         String newLineName = "신분당선";
-        String newLineColor = line.getColor();
+        String newLineColor = line.color();
         Long upStationId = 3L;
         Long downStationId = 4L;
         int distance = 5;
@@ -133,7 +133,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(resultLineIds).containsExactly(line.getId(), lineResponse.getId());
+        assertThat(resultLineIds).containsExactly(line.id(), lineResponse.getId());
     }
 
     @DisplayName("단일 노선을 조회한다.")
@@ -171,8 +171,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineUpdateRequest lineUpdateRequest = new LineUpdateRequest(newLineName, newLineColor);
 
         // when
-        ExtractableResponse<Response> updateResponse = updateLineByIdToHTTP(line.getId(), lineUpdateRequest);
-        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
+        ExtractableResponse<Response> updateResponse = updateLineByIdToHTTP(line.id(), lineUpdateRequest);
+        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.id());
 
         LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
 
@@ -188,8 +188,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
 
         // when
-        ExtractableResponse<Response> response = deleteLineByIdToHTTP(line.getId());
-        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
+        ExtractableResponse<Response> response = deleteLineByIdToHTTP(line.id());
+        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.id());
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -215,9 +215,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), distance);
 
         //when
-        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionRequest);
-        ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.getId(), station1.getId());
-        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
+        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.id(), sectionRequest);
+        ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.id(), station1.getId());
+        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.id());
 
         LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
 
@@ -233,9 +233,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), distance);
 
         //when
-        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionRequest);
-        ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.getId(), station2.getId());
-        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
+        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.id(), sectionRequest);
+        ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.id(), station2.getId());
+        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.id());
 
         LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
 
@@ -251,9 +251,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), distance);
 
         //when
-        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionRequest);
-        ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.getId(), station3.getId());
-        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
+        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.id(), sectionRequest);
+        ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.id(), station3.getId());
+        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.id());
 
         LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
 
@@ -281,9 +281,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         SectionRequest exceptionSectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
         //when
-        ExtractableResponse<Response> acceptSaveResponse = addSectionToHTTP(line.getId(), acceptSectionRequest);
+        ExtractableResponse<Response> acceptSaveResponse = addSectionToHTTP(line.id(), acceptSectionRequest);
 
-        ExtractableResponse<Response> exceptionR = addSectionToHTTP(line.getId(), exceptionSectionRequest);
+        ExtractableResponse<Response> exceptionR = addSectionToHTTP(line.id(), exceptionSectionRequest);
 
 
         //then
@@ -308,7 +308,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         SectionRequest exceptionSectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
         //when
-        ExtractableResponse<Response> exceptionR = addSectionToHTTP(line.getId(), exceptionSectionRequest);
+        ExtractableResponse<Response> exceptionR = addSectionToHTTP(line.id(), exceptionSectionRequest);
 
         //then
         assertThat(exceptionR.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -321,7 +321,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         int distance = 5;
 
         //when
-        ExtractableResponse<Response> findLineResponse = deleteSectionByStationIdToHTTP(line.getId(), station1.getId());
+        ExtractableResponse<Response> findLineResponse = deleteSectionByStationIdToHTTP(line.id(), station1.getId());
 
         //then
         assertThat(findLineResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -335,13 +335,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(station3.getId(), station1.getId(), distance);
 
         //when
-        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionRequest);
-        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
+        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.id(), sectionRequest);
+        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.id());
         LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
 
         //then
         assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(findResponse.getId()).isEqualTo(line.getId());
+        assertThat(findResponse.getId()).isEqualTo(line.id());
         assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station3.getName(), station1.getName(), station2.getName());
     }
 
@@ -353,13 +353,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(station2.getId(), station3.getId(), distance);
 
         //when
-        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionRequest);
-        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
+        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.id(), sectionRequest);
+        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.id());
         LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
 
         //then
         assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(findResponse.getId()).isEqualTo(line.getId());
+        assertThat(findResponse.getId()).isEqualTo(line.id());
         assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.getName(), station2.getName(), station3.getName());
     }
 

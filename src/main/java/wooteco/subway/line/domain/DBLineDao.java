@@ -7,76 +7,74 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.line.entity.LineEntity;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Repository
 public class DBLineDao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<LineEntity> lineRowMapper;
+    private final RowMapper<Line> lineRowMapper;
 
     @Autowired
     public DBLineDao(final JdbcTemplate jdbcTemplate) {
         this(jdbcTemplate, (rs, rowNum) ->
-                new LineEntity(rs.getLong("id"),
+                new Line(rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("color")));
     }
 
-    public DBLineDao(final JdbcTemplate jdbcTemplate, final RowMapper<LineEntity> lineRowMapper) {
+    public DBLineDao(final JdbcTemplate jdbcTemplate, final RowMapper<Line> lineRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.lineRowMapper = lineRowMapper;
     }
 
     @Override
-    public LineEntity save(final LineEntity lineEntity) {
+    public Line save(final Line line) {
         String sql = "INSERT INTO LINE(name, color) VALUES(?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, lineEntity.name());
-            ps.setString(2, lineEntity.color());
+            ps.setString(1, line.nameAsString());
+            ps.setString(2, line.color());
             return ps;
         }, keyHolder);
         long newId = keyHolder.getKey().longValue();
-        return new LineEntity(newId, lineEntity.name(), lineEntity.color());
+        return new Line(newId, line.name(), line.color());
     }
 
     @Override
-    public List<LineEntity> findAll() {
+    public List<Line> findAll() {
         String sql = "SELECT * FROM LINE";
 
         return jdbcTemplate.query(sql, lineRowMapper);
     }
 
     @Override
-    public Optional<LineEntity> findById(final Long id) {
+    public Optional<Line> findById(final Long id) {
         String sql = "SELECT * FROM LINE WHERE id = ?";
 
-        List<LineEntity> lineEntities = jdbcTemplate.query(sql, lineRowMapper, id);
+        List<Line> lines = jdbcTemplate.query(sql, lineRowMapper, id);
 
-        return Optional.ofNullable(DataAccessUtils.singleResult(lineEntities));
+        return Optional.ofNullable(DataAccessUtils.singleResult(lines));
     }
 
     @Override
-    public Optional<LineEntity> findByName(final String name) {
+    public Optional<Line> findByName(final String name) {
         String sql = "SELECT * FROM LINE WHERE name = ?";
 
-        List<LineEntity> lineEntities = jdbcTemplate.query(sql, lineRowMapper, name);
+        List<Line> lines = jdbcTemplate.query(sql, lineRowMapper, name);
 
-        return Optional.ofNullable(DataAccessUtils.singleResult(lineEntities));
+        return Optional.ofNullable(DataAccessUtils.singleResult(lines));
     }
 
     @Override
-    public Optional<LineEntity> findByColor(final String color) {
+    public Optional<Line> findByColor(final String color) {
         String sql = "SELECT * from LINE where color = ?";
-        List<LineEntity> lineEntities = jdbcTemplate.query(sql, lineRowMapper, color);
-        return Optional.ofNullable(DataAccessUtils.singleResult(lineEntities));
+        List<Line> lines = jdbcTemplate.query(sql, lineRowMapper, color);
+        return Optional.ofNullable(DataAccessUtils.singleResult(lines));
     }
 
     @Override
@@ -85,10 +83,10 @@ public class DBLineDao implements LineDao {
     }
 
     @Override
-    public void update(final Long id, final String name, final String color) {
+    public void update(final Line line) {
         String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ? ";
 
-        jdbcTemplate.update(sql, name, color, id);
+        jdbcTemplate.update(sql, line.nameAsString(), line.color(), line.id());
     }
 
     @Override
