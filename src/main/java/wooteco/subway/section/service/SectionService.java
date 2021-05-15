@@ -1,7 +1,6 @@
 package wooteco.subway.section.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.Line;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.Sections;
@@ -23,7 +22,6 @@ public class SectionService {
         return new Sections(sections);
     }
 
-    @Transactional
     public Section add(Section section) {
         return sectionDao.save(section);
     }
