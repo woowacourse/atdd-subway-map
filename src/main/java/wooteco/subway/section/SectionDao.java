@@ -47,6 +47,11 @@ public class SectionDao {
         return jdbcTemplate.query(sql, sectionDtoRowMapper, lineId);
     }
 
+    public List<Long> findLineIdsContains(long stationId) {
+        String sql = "SELECT DISTINCT line_id FROM SECTION WHERE up_station_id = ? OR down_station_id = ?";
+        return jdbcTemplate.queryForList(sql, Long.class, stationId, stationId);
+    }
+
     public void deleteSection(long lineId, Long upStationId, Long downStationId) {
         String sql = "DELETE FROM SECTION WHERE line_id = (?) AND up_station_id = (?) AND down_station_id = (?)";
         jdbcTemplate.update(sql, lineId, upStationId, downStationId);

@@ -283,4 +283,35 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("역을 삭제하면, 해당 역을 구간으로 가지고 있던 모든 노선에서 삭제한다.")
+    @Test
+    void deleteEveryLineSectionContainingStation() {
+        //given
+        String lineId = createTestLine(1, 2, "5");
+        Map<String, Object> section = new HashMap<>();
+        section.put("upStationId", 2);
+        section.put("downStationId", 3);
+        section.put("distance", "5");
+        sendPostRequest(section, "/lines/" + lineId + "/sections");
+        //when
+        RestAssured.given().log().all()
+                .when()
+                .delete("/stations/2")
+                .then().log().all()
+                .extract();
+        //then
+        ExtractableResponse<Response> getLineResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+
+        LineResponse lineResponse = getLineResponse.jsonPath().getObject(".", LineResponse.class);
+
+        assertThat(getLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse.getName()).isEqualTo("테스트선");
+        assertThat(lineResponse.getStations().size()).isEqualTo(2);
+    }
 }

@@ -47,6 +47,10 @@ public class SectionRepository {
         return new Sections(lineId, sectionList);
     }
 
+    public  List<Long> findLineIdsContains(long stationId) {
+        return sectionDao.findLineIdsContains(stationId);
+    }
+
     public Section createSection(long lineId, long upStationId, long downStationId, int distance) {
         final Station upStation = findStationById(upStationId);
         final Station downStation = findStationById(downStationId);

@@ -142,4 +142,12 @@ public class LineService {
         final Long downStationId = section.getDownStation().getId();
         sectionRepository.deleteSection(lineId, upStationId, downStationId);
     }
+
+    public void deleteStationInEveryLine(Station station) {
+        final Long stationId = station.getId();
+        final List<Long> lineIds = sectionRepository.findLineIdsContains(stationId);
+        for (Long lineId : lineIds) {
+            deleteSection(lineId, stationId);
+        }
+    }
 }

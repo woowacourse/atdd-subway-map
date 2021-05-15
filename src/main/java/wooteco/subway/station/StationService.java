@@ -2,6 +2,7 @@ package wooteco.subway.station;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.line.LineService;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,9 +13,11 @@ import java.util.stream.Collectors;
 public class StationService {
 
     private final StationDao stationDao;
+    private final LineService lineService;
 
-    public StationService(StationDao stationDao) {
+    public StationService(StationDao stationDao, LineService lineService) {
         this.stationDao = stationDao;
+        this.lineService = lineService;
     }
 
     public StationResponse createStation(String stationName) {
@@ -36,6 +39,11 @@ public class StationService {
     public void deleteStation(long stationId) {
         final Station station = stationDao.findById(stationId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 id에 대응하는 역이 없습니다."));
+        deleteStationInEveryLine(station);
         stationDao.delete(station.getId());
+    }
+
+    private void deleteStationInEveryLine(Station station) {
+        lineService.deleteStationInEveryLine(station);
     }
 }

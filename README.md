@@ -57,10 +57,12 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 ## 기능 구현 목록
 - [x] 지하철 역 관리
     - [x] 입력 값이 "~역"으로 끝나지 않으면 예외 처리
+    - [ ] DB에 저장할 수 있는 최대 길이를 공부해 보고 적용해보기
     - [x] 같은 지하철 역 생성 불가 기능
     - [x] 삭제 기능
 - [x] 지하철 노선 관리 
     - [x] 입력 값이 "~선"으로 끝나지 않으면 예외 처리
+    - [ ] DB에 저장할 수 있는 최대 길이를 공부해 보고 적용해보기
     - [x] 노선 생성
     - [x] 노선 목록 조회
     - [x] 노선 조회
@@ -103,7 +105,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] Service Layer에서 toDB와 같은 계층 간 강한 결합의 네이밍은 변경하기
 - [x] Service Layer에서의 로직은 조회 -> 저장 순서로 바꾸기
 - [x] SectionRepository를 만들어 온전한 Section을 만들어 Service에 반환하기
-- [ ] StationService가 LineService를 호출하여 역 삭제시 필요한 구간 삭제토록 변경
+- [x] StationService가 LineService를 호출하여 역 삭제시 필요한 구간 삭제토록 변경
 
 ## 질문 사항
 - findById 이후 CRUD 로직을 수행하면 DB를 한 번에 2번 찌르는 건데 병목이 발생하진 않을까?
