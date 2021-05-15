@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class StationDao implements StationRepository {
+public class CollectionStationDao implements StationRepository {
     private final List<Station> stations = new ArrayList<>();
     private Long seq = 0L;
 

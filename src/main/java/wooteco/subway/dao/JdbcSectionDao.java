@@ -12,7 +12,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 @Repository
-public class SectionH2Dao implements SectionRepository {
+public class JdbcSectionDao implements SectionRepository {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Section> sectionRowMapper = (rs, rn) -> {
         long sectionId = rs.getLong("id");
@@ -22,7 +22,7 @@ public class SectionH2Dao implements SectionRepository {
         return new Section(sectionId, lineId, distance);
     };
 
-    public SectionH2Dao(JdbcTemplate jdbcTemplate) {
+    public JdbcSectionDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

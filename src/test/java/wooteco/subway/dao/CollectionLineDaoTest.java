@@ -10,7 +10,7 @@ import wooteco.subway.domain.Line;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class LineDaoTest extends AcceptanceTest {
+public class CollectionLineDaoTest extends AcceptanceTest {
     @Autowired
     private LineRepository lineRepository;
 

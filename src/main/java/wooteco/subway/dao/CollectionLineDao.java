@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class LineDao implements LineRepository {
+public class CollectionLineDao implements LineRepository {
     private final List<Line> lines = new ArrayList<>();
     private Long seq = 0L;
 

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class LineH2Dao implements LineRepository {
+public class JdbcLineDao implements LineRepository {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Line> lineRowMapper = (rs, rn) -> {
         long id = rs.getLong("id");
@@ -21,7 +21,7 @@ public class LineH2Dao implements LineRepository {
         return new Line(id, name, color);
     };
 
-    public LineH2Dao(JdbcTemplate jdbcTemplate) {
+    public JdbcLineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class StationH2Dao implements StationRepository {
+public class JdbcStationDao implements StationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Station> stationRowMapper = (rs, rn) -> {
         long id = rs.getLong("id");
@@ -20,7 +20,7 @@ public class StationH2Dao implements StationRepository {
         return new Station(id, name);
     };
 
-    public StationH2Dao(JdbcTemplate jdbcTemplate) {
+    public JdbcStationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
