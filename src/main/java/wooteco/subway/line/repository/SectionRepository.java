@@ -11,10 +11,7 @@ import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.dto.SectionRequest;
 
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Repository
 public class SectionRepository {
@@ -53,17 +50,6 @@ public class SectionRepository {
         return jdbcTemplate.query(query, sectionRowMapperByLineId, id);
     }
 
-
-    // TODO : 여기서 제거, sections 일급컬렉션에서 할작업
-    public List<Long> getStationIdsByLineId(final Long id) {
-        String query = "SELECT up_station_id FROM section WHERE line_id = ?";
-        Set<Long> stationIds = new HashSet<>(jdbcTemplate.query(query, stationIdRowMapperByUpStationId, id));
-
-        query = "SELECT down_station_id FROM section WHERE line_id = ?";
-        stationIds.addAll(jdbcTemplate.query(query, stationIdRowMapperByDownStationId, id));
-        return new ArrayList<>(stationIds);
-    }
-
     //TODO : 로직 윗단계로 올리기
     public void saveBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest) {
         try {
@@ -92,6 +78,7 @@ public class SectionRepository {
         delete(lineId, sectionRequest.getUpStationId(), beforeConnectedStationId);
     }
 
+    //TODO : 로직 윗단계로 올리기
     public void saveBaseOnDownStation(final Long lineId, final SectionRequest sectionRequest) {
         try {
             String query = "SELECT up_station_id FROM section WHERE line_id = ? AND down_station_id = ?";
@@ -102,6 +89,7 @@ public class SectionRepository {
         }
     }
 
+    //TODO : 로직 윗단계로 올리기
     private void saveSectionBetweenStationsBaseOnDownStation(final Long lineId, final SectionRequest sectionRequest, final Long beforeConnectedStationId) {
         String query = "SELECT distance FROM section WHERE line_id = ? AND down_station_id = ?";
         int beforeDistance = jdbcTemplate.queryForObject(query, Integer.class, lineId, sectionRequest.getDownStationId());
@@ -111,6 +99,7 @@ public class SectionRepository {
         sectionUpdateBetweenSaveBaseOnDownStation(lineId, sectionRequest, beforeConnectedStationId, beforeDistance);
     }
 
+    //TODO : 로직 윗단계로 올리기
     private void sectionUpdateBetweenSaveBaseOnDownStation(final Long lineId, final SectionRequest sectionRequest, final Long beforeConnectedStationId, final int beforeDistance) {
         save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         delete(lineId, beforeConnectedStationId, sectionRequest.getDownStationId());
@@ -134,6 +123,7 @@ public class SectionRepository {
         deleteSectionBaseOnDownStation(lineId, stationId);
     }
 
+    //TODO : 로직 윗단계로 올리기
     private void deleteSectionBaseOnUpStation(final Long lineId, final Long stationId) {
         String query = "SELECT down_station_id FROM section WHERE line_id = ? AND up_station_id = ?";
         Long backStationId = jdbcTemplate.queryForObject(query, Long.class, lineId, stationId);
@@ -147,18 +137,21 @@ public class SectionRepository {
         }
     }
 
+    //TODO : 로직 윗단계로 올리기
     private void deleteSectionBaseOnDownStation(final Long lineId, final Long stationId) {
         String query = "SELECT up_station_id FROM section WHERE line_id = ? AND down_station_id = ?";
         Long frontStationId = jdbcTemplate.queryForObject(query, Long.class, lineId, stationId);
         delete(lineId, frontStationId, stationId);
     }
 
+    //TODO : 로직 윗단계로 올리기
     private void sectionUpdateWhenBetweenDelete(final Long lineId, final Long stationId, final Long backStationId, final Long frontStationId, final int connectDistance) {
         delete(lineId, frontStationId, stationId);
         delete(lineId, stationId, backStationId);
         save(lineId, frontStationId, backStationId, connectDistance);
     }
 
+    //TODO : 로직 윗단계로 올리기
     private int getBetweenDistance(final Long lineId, final Long stationId) {
         String query = "SELECT distance FROM section WHERE line_id = ? AND up_station_id = ?";
         int distance = jdbcTemplate.queryForObject(query, Integer.class, lineId, stationId);

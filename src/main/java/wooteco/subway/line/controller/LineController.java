@@ -1,6 +1,7 @@
 package wooteco.subway.line.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
@@ -25,6 +26,7 @@ public class LineController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<LineResponse> createLine(@Valid @RequestBody LineRequest lineRequest) {
         LineResponse lineResponse = lineService.save(lineRequest);
         sectionService.lineCreateAdd(
