@@ -39,6 +39,7 @@ public class LineService {
         return LineServiceDto.from(saveLine);
     }
 
+    @Transactional
     public List<LineServiceDto> findAll() {
         return lineDao.showAll()
             .stream()
@@ -46,12 +47,14 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public ReadLineDto findOne(@Valid LineServiceDto lineServiceDto) {
         Line line = lineDao.show(lineServiceDto.getId());
         List<StationResponse> stationResponses = sectionService.findAllbyLindId(line.getId());
         return ReadLineDto.of(line, stationResponses);
     }
 
+    @Transactional
     public void update(@Valid LineServiceDto lineServiceDto) {
         Line line = lineServiceDto.toEntity();
 
@@ -60,17 +63,20 @@ public class LineService {
         }
     }
 
+    @Transactional
     public void delete(@Valid LineServiceDto lineServiceDto) {
         if (lineDao.delete(lineServiceDto.getId()) == NOT_FOUND) {
             throw new NotFoundLineException();
         }
     }
 
+    @Transactional
     public void createSection(@Valid CreateSectionDto createSectionDto) {
         SectionServiceDto sectionServiceDto = SectionServiceDto.from(createSectionDto);
         sectionService.save(sectionServiceDto);
     }
 
+    @Transactional
     public void deleteStation(@NotNull Long lineId, @NotNull Long stationId) {
         DeleteStationDto deleteStationDto = new DeleteStationDto(lineId, stationId);
         sectionService.delete(deleteStationDto);

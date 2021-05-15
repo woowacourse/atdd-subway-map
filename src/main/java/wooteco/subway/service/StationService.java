@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.exception.station.NotFoundStationException;
 import wooteco.subway.service.dto.StationServiceDto;
@@ -19,6 +20,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public List<StationServiceDto> showStations() {
         List<Station> stations = stationDao.showAll();
 
@@ -27,6 +29,7 @@ public class StationService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public StationServiceDto save(@Valid StationServiceDto stationServiceDto) {
         Station station = stationServiceDto.toEntity();
         Station saveStation = stationDao.save(station);
@@ -34,6 +37,7 @@ public class StationService {
         return StationServiceDto.from(saveStation);
     }
 
+    @Transactional
     public void delete(@Valid StationServiceDto stationServiceDto) {
         if (stationDao.delete(stationServiceDto.getId()) == NOT_FOUND) {
             throw new NotFoundStationException();
