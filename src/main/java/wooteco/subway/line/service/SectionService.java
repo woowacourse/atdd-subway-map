@@ -36,7 +36,7 @@ public class SectionService {
         Section section = new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
 
         if (sections.containUpStationId(section.getUpStationId())) {
-            addBaseOnUpStation(lineId, sectionRequest);
+            addBaseOnUpStation(lineId, section, sections);
             return;
         }
         addBaseOnDownStation(lineId, sectionRequest);
@@ -46,11 +46,27 @@ public class SectionService {
         sectionRepository.saveBaseOnDownStation(lineId, sectionRequest);
     }
 
-    // TODO : sections에게 현재 upId을 하행으로 가지고 있는 section이 있는지 물어봄
-    // TODO : sections이 있다고 하면, 중간에 끼어 들어가는 상황
-    // TODO : sections로부터 Input upId를 출발지으로 가지고 있는 section의 도착지를 찾는다. (만약 가지고 있다면 중간삽입)
-    private void addBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest) {
-        sectionRepository.saveBaseOnUpStation(lineId, sectionRequest);
+    private void addBaseOnUpStation(final Long lineId, final Section section, final Sections sections) {
+        if(sections.containUpStationId(section.getUpStationId())){
+            Long beforeConnectedStationId = sections.getDownStationId(section.getUpStationId());
+            saveSectionBetweenStationsBaseOnUpStation(lineId, section, sections, beforeConnectedStationId);
+            return;
+        }
+        sectionRepository.save(lineId, section.getUpStationId(), section.getDownStationId(), section.getDistance());
+    }
+
+    private void saveSectionBetweenStationsBaseOnUpStation(final Long lineId, final Section section, final Sections sections, final Long beforeConnectedStationId) {
+        int beforeDistance = sections.getDistance(section.getUpStationId(), beforeConnectedStationId);
+        if(beforeDistance <= section.getDistance()){
+            throw new IllegalArgumentException("기존에 존재하는 구간의 길이가 더 짧습니다.");
+        }
+        sectionUpdateBetweenSaveBaseOnUpStation(lineId, section, beforeConnectedStationId, beforeDistance);
+    }
+
+    private void sectionUpdateBetweenSaveBaseOnUpStation(final Long lineId, final Section section, final Long beforeConnectedStationId, final int beforeDistance) {
+        sectionRepository.save(lineId, section.getUpStationId(), section.getDownStationId(), section.getDistance());
+        sectionRepository.save(lineId, section.getDownStationId(), beforeConnectedStationId, beforeDistance - section.getDistance());
+        sectionRepository.delete(lineId, section.getUpStationId(), beforeConnectedStationId);
     }
 
     private void validateAddRequest(final Long lineId, final SectionRequest sectionRequest, final Sections sections) {

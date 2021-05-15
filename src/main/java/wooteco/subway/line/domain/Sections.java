@@ -4,37 +4,39 @@ package wooteco.subway.line.domain;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotFoundException;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Sections {
     private static final int LINE_MIN_SIZE = 2;
 
     private final List<Section> sections;
+    private final Map<Long, Long> connect = new HashMap<>();
 
     public Sections(final List<Section> sections) {
         this.sections = new ArrayList<>(sections);
+        sections.forEach(section -> connect.put(section.getUpStationId(), section.getDownStationId()));
     }
 
     public List<Long> getStationIds() {
         Set<Long> stationIds = new HashSet<>();
-        for (Section section : sections) {
-            stationIds.add(section.getUpStationId());
-            stationIds.add(section.getDownStationId());
-        }
+//        for (Section section : sections) {
+//            stationIds.add(section.getUpStationId());
+//            stationIds.add(section.getDownStationId());
+//        }
+
+        connect.forEach((upStationId, downStationId) -> {
+            stationIds.add(upStationId);
+            stationIds.add(downStationId);
+        });
         return new ArrayList<>(stationIds);
     }
 
     public boolean containUpStationId(final Long upStationId) {
-        return sections.stream()
-                .anyMatch(section -> section.getUpStationId().equals(upStationId));
+        return connect.containsKey(upStationId);
     }
 
     public boolean containDownStationId(final Long downStationId) {
-        return sections.stream()
-                .anyMatch(section -> section.getDownStationId().equals(downStationId));
+        return connect.containsValue(downStationId);
     }
 
     public void isValidateSection(final Long upStationId, final Long downStationId) {
@@ -56,4 +58,27 @@ public class Sections {
             throw new IllegalArgumentException("해당 라인이 포함하고 있는 구간이 2개 이하입니다");
         }
     }
+
+//    public int getDistance(final Section newSection) {
+//        for(Section )
+//    }
+
+    public Long getDownStationId(final Long upStationId) {
+        return connect.get(upStationId);
+    }
+
+    public int getDistance(final Long upStationId, final Long beforeConnectedStationId) {
+//        for(Section section : sections) {
+//            if (section.getUpStationId().equals(upStationId) && section.getDownStationId().equals(beforeConnectedStationId)) {
+//                return section.getDistance();
+//            }
+//        }
+
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(upStationId))
+                .filter(section -> section.getDownStationId().equals(beforeConnectedStationId))
+                .findFirst().get().getDistance();
+    }
+
+//    public Section get
 }

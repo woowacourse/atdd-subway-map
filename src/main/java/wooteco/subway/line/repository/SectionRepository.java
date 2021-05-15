@@ -50,33 +50,7 @@ public class SectionRepository {
         return jdbcTemplate.query(query, sectionRowMapperByLineId, id);
     }
 
-    //TODO : 로직 윗단계로 올리기
-    public void saveBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest) {
-        try {
-            String query = "SELECT down_station_id FROM section WHERE line_id = ? AND up_station_id = ?";
-            Long beforeConnectedStationId = jdbcTemplate.queryForObject(query, Long.class, lineId, sectionRequest.getUpStationId());
-            saveSectionBetweenStationsBaseOnUpStation(lineId, sectionRequest, beforeConnectedStationId);
-        } catch (EmptyResultDataAccessException e) {
-            save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
-        }
-    }
-
-    //TODO : 로직 윗단계로 올리기
-    private void saveSectionBetweenStationsBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest, final Long beforeConnectedStationId) {
-        String query = "SELECT distance FROM section WHERE line_id = ? AND up_station_id = ?";
-        int beforeDistance = jdbcTemplate.queryForObject(query, Integer.class, lineId, sectionRequest.getUpStationId());
-        if (beforeDistance <= sectionRequest.getDistance()) {
-            throw new IllegalArgumentException("기존에 존재하는 구간의 길이가 더 짧습니다.");
-        }
-        sectionUpdateBetweenSaveBaseOnUpStation(lineId, sectionRequest, beforeConnectedStationId, beforeDistance);
-    }
-
-    //TODO : 로직 윗단계로 올리기
-    private void sectionUpdateBetweenSaveBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest, final Long beforeConnectedStationId, final int beforeDistance) {
-        save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
-        save(lineId, sectionRequest.getDownStationId(), beforeConnectedStationId, beforeDistance - sectionRequest.getDistance());
-        delete(lineId, sectionRequest.getUpStationId(), beforeConnectedStationId);
-    }
+    // ====================
 
     //TODO : 로직 윗단계로 올리기
     public void saveBaseOnDownStation(final Long lineId, final SectionRequest sectionRequest) {
@@ -106,7 +80,7 @@ public class SectionRepository {
         save(lineId, beforeConnectedStationId, sectionRequest.getUpStationId(), beforeDistance - sectionRequest.getDistance());
     }
 
-    private void delete(final Long lineId, final Long upStationId, final Long downStationId) {
+    public void delete(final Long lineId, final Long upStationId, final Long downStationId) {
         String query = "DELETE FROM section WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?";
         int affectedRowCount = jdbcTemplate.update(query, lineId, upStationId, downStationId);
         if (affectedRowCount == NO_EXIST_COUNT) {
