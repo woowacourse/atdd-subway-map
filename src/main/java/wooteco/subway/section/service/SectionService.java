@@ -1,6 +1,7 @@
 package wooteco.subway.section.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.section.InvalidDeleteSectionException;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.domain.Section;
@@ -15,6 +16,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class SectionService {
 
     private final StationService stationService;
@@ -85,6 +87,7 @@ public class SectionService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<Station> sortedStationIds(Long lineIds) {
         Sections sections = new Sections(sectionDao.findByLineId(lineIds));
         List<Long> sortedStationIds = sections.sortedStationIds();

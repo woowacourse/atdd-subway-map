@@ -1,6 +1,7 @@
 package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.line.NoLineException;
 import wooteco.subway.exception.station.NoStationException;
 import wooteco.subway.exception.station.StationDuplicationException;
@@ -11,6 +12,7 @@ import wooteco.subway.station.dto.StationRequest;
 import java.util.List;
 
 @Service
+@Transactional
 public class StationService {
 
     private final StationDao stationDao;
@@ -34,6 +36,7 @@ public class StationService {
         throw new StationDuplicationException();
     }
 
+    @Transactional(readOnly = true)
     public List<Station> stations() {
         return stationDao.findAll();
     }
@@ -43,11 +46,13 @@ public class StationService {
         stationDao.delete(id);
     }
 
+    @Transactional(readOnly = true)
     public void validateId(Long stationId) {
         stationDao.findById(stationId)
             .orElseThrow(NoLineException::new);
     }
 
+    @Transactional(readOnly = true)
     public Station findById(Long id) {
         return stationDao.findById(id)
             .orElseThrow(NoStationException::new);
