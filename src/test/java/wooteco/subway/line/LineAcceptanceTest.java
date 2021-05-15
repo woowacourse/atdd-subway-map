@@ -1,8 +1,16 @@
 package wooteco.subway.line;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,15 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.api.dto.LineDetailsResponse;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -59,9 +58,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             upStationId, downStationId, DISTANCE);
 
         // then
-        assertThat(response.body().jsonPath().getString("error")).isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        assertThat(response.body().jsonPath().getInt("status")).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isEqualTo("이미 존재하는 노선 이름입니다.");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("이미 존재하는 노선 이름입니다.");
     }
 
     @DisplayName("잘못된 요청값으로 노선 생성 요청시, 예외처리")
@@ -97,9 +95,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             upStationId, downStationId, DISTANCE);
 
         // then
-        assertThat(response.body().jsonPath().getString("error")).isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        assertThat(response.body().jsonPath().getInt("status")).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isEqualTo("이미 존재하는 노선 색깔입니다.");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("이미 존재하는 노선 색깔입니다.");
     }
 
 
@@ -172,9 +169,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 노선_조회_후_응답("/lines/" + (id + 1L));
 
         //then
-        assertThat(response.body().jsonPath().getString("error")).isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        assertThat(response.body().jsonPath().getInt("status")).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isEqualTo("존재하지 않는 노선 ID 입니다.");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("존재하지 않는 노선 ID 입니다.");
     }
 
     @DisplayName("노선 삭제 기능")
@@ -198,9 +194,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 노선_삭제_후_응답(id + 1);
 
         //then
-        assertThat(response.body().jsonPath().getString("error")).isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        assertThat(response.body().jsonPath().getInt("status")).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isEqualTo("존재하지 않는 노선 ID 입니다.");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("존재하지 않는 노선 ID 입니다.");
     }
 
     private ExtractableResponse<Response> 지하철역_저장(String stationName) {

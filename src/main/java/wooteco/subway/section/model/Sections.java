@@ -58,7 +58,8 @@ public class Sections {
         sections.add(0, newSection);
     }
 
-    private void addAfterMatchingStationIfValidDistance(Section newSection, Section matchingSection) {
+    private void addAfterMatchingStationIfValidDistance(Section newSection,
+        Section matchingSection) {
         if (matchingSection.getDistance() > newSection.getDistance()) {
             int index = sections.indexOf(matchingSection);
             sections.add(index, newSection);
@@ -68,7 +69,8 @@ public class Sections {
         throw new SectionAdditionException("추가하는 구간의 거리가 더 짧아야합니다.");
     }
 
-    private void addBeforeMatingStationIfValidDistance(Section newSection, Section matchingSection) {
+    private void addBeforeMatingStationIfValidDistance(Section newSection,
+        Section matchingSection) {
         if (matchingSection.getDistance() > newSection.getDistance()) {
             int index = sections.indexOf(matchingSection);
             sections.add(index + 1, newSection);

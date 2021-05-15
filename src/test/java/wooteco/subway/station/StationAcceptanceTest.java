@@ -1,22 +1,21 @@
 package wooteco.subway.station;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.api.dto.StationResponse;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -46,9 +45,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_저장_후_응답(stationName);
 
         // then
-        assertThat(response.body().jsonPath().getString("error")).isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        assertThat(response.body().jsonPath().getInt("status")).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isEqualTo("이미 존재하는 역 이름입니다.");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("이미 존재하는 역 이름입니다.");
     }
 
     @DisplayName("잘못된 요청값으로 지하철역 생성 요청시, 예외처리")
@@ -122,9 +120,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_삭제_후_응답("/stations/" + (id + 1));
 
         //then
-        assertThat(response.body().jsonPath().getString("error")).isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        assertThat(response.body().jsonPath().getInt("status")).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isEqualTo("존재하지 않는 역 ID 입니다.");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("존재하지 않는 역 ID 입니다.");
     }
 
     private ExtractableResponse<Response> 지하철역_저장_후_응답(String stationName) {

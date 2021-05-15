@@ -1,8 +1,12 @@
 package wooteco.subway.section;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,11 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.api.dto.LineDetailsResponse;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionAcceptanceTest extends AcceptanceTest {
 
@@ -62,9 +61,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 구간_추가_후_응답(params);
 
         //then
-        assertThat(response.body().jsonPath().getString("error")).isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        assertThat(response.body().jsonPath().getInt("status")).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isEqualTo("추가될 수 없는 구간입니다.");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("추가될 수 없는 구간입니다.");
     }
 
     @DisplayName("section을 삭제하는 기능")
@@ -102,9 +100,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
             .extract();
 
         //then
-        assertThat(response.body().jsonPath().getString("error")).isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        assertThat(response.body().jsonPath().getInt("status")).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isEqualTo("노선 내 최소한 2개의 역이 존재해야 합니다.");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("노선 내 최소한 2개의 역이 존재해야 합니다.");
     }
 
     @DisplayName("노선 내 존재하지 않는 구간 삭제 요청 시 예외처리")
@@ -124,9 +121,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
         //then
-        assertThat(response.body().jsonPath().getString("error")).isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        assertThat(response.body().jsonPath().getInt("status")).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isEqualTo("노선 내 존재하는 역이 없습니다.");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("노선 내 존재하는 역이 없습니다.");
     }
 
     private Map<String, Object> 구간_저장을_위한_요청정보(long downStationId, long upStationId, int distance) {

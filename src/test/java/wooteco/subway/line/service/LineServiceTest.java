@@ -1,7 +1,6 @@
 package wooteco.subway.line.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.line.api.dto.LineDetailsResponse;
 import wooteco.subway.line.api.dto.LineRequest;
 import wooteco.subway.line.api.dto.LineResponse;

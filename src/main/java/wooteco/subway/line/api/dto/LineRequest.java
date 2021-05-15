@@ -22,7 +22,7 @@ public class LineRequest {
     }
 
     public LineRequest(String name, String color, Long upStationId, Long downStationId,
-                       int distance) {
+        int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;

@@ -1,15 +1,14 @@
 package wooteco.subway.line.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.line.api.dto.LineDetailsResponse;
-import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.api.dto.LineRequest;
 import wooteco.subway.line.api.dto.LineResponse;
+import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.model.Line;
 import wooteco.subway.section.api.dto.SectionDto;
 import wooteco.subway.section.dao.SectionDao;
