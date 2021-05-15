@@ -17,4 +17,6 @@ public interface LineRepository {
     Line update(Long id, Line newLine);
 
     void delete(Long id);
+
+    boolean exists(long id);
 }

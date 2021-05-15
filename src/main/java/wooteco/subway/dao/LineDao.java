@@ -63,4 +63,10 @@ public class LineDao implements LineRepository {
             throw new NoSuchLineException(1);
         }
     }
+
+    @Override
+    public boolean exists(long id) {
+        return lines.stream()
+                .anyMatch(line -> line.getId().equals(id));
+    }
 }

@@ -10,6 +10,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.DuplicateLineNameException;
+import wooteco.subway.exception.NoSuchLineException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,6 +53,9 @@ public class LineService {
     }
 
     public LineResponse updateLine(long id, String name, String color) {
+        if (!lineRepository.exists(id)) {
+            throw new NoSuchLineException(1);
+        }
         Line line = lineRepository.update(id, new Line(name, color));
         return LineResponse.from(line);
     }

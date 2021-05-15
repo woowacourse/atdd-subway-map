@@ -80,4 +80,10 @@ public class LineH2Dao implements LineRepository {
         String query = "DELETE FROM LINE WHERE id = ?";
         jdbcTemplate.update(query, id);
     }
+
+    @Override
+    public boolean exists(long id) {
+        String query = "SELECT EXISTS (SELECT * FROM LINE WHERE id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, id);
+    }
 }
