@@ -11,3 +11,5 @@ spring:
   h2:
     console:
       enabled: true     # h2 console 설정
+
+debug: true

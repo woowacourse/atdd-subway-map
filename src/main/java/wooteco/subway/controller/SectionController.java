@@ -2,6 +2,7 @@ package wooteco.subway.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.controller.dto.SectionRequest;
 import wooteco.subway.controller.dto.SectionResponse;
@@ -11,6 +12,7 @@ import wooteco.subway.service.SectionService;
 import javax.validation.Valid;
 import java.net.URI;
 
+@Validated
 @RequestMapping("/lines/{id}")
 @RestController
 public class SectionController {
@@ -23,11 +25,7 @@ public class SectionController {
 
     @PostMapping
     public ResponseEntity<Section> createSection(@PathVariable(name = "id") Long lineId,
-                                                 @Valid @RequestBody SectionRequest sectionRequest,
-                                                 BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new IllegalArgumentException(bindingResult.getFieldError().getDefaultMessage());
-        }
+                                                 @Valid @RequestBody SectionRequest sectionRequest) {
         Section section = sectionRequest.toEntity(lineId);
 
         final Section savedSection = sectionService.save(section);

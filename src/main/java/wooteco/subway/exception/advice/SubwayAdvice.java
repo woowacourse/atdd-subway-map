@@ -1,11 +1,16 @@
 package wooteco.subway.exception.advice;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.exception.EntityNotFoundException;
 import wooteco.subway.exception.response.ErrorResponse;
+
+import javax.validation.ConstraintViolationException;
+import java.util.Objects;
 
 @RestControllerAdvice
 public class SubwayAdvice {
@@ -18,6 +23,11 @@ public class SubwayAdvice {
     @ExceptionHandler(value = EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> entityNotFoundExceptionHandler(EntityNotFoundException e) {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> methodArgumentNotValidExceptionExceptionHandler(BindingResult bindingResult) {
+        return ResponseEntity.badRequest().body(new ErrorResponse(Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage()));
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
