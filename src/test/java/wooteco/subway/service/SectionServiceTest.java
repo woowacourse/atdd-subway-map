@@ -34,8 +34,6 @@ public class SectionServiceTest {
     @Autowired
     private SectionDao sectionDao;
     @Autowired
-    private LineDao lineDao;
-    @Autowired
     private StationDao stationDao;
     @Autowired
     private SectionService sectionService;
@@ -60,9 +58,9 @@ public class SectionServiceTest {
     @DisplayName("Section 추가")
     void createSectionWithLineAndStations() {
         // given
-        long sectionId = 3L;
-        long downStationId = 4L;
-        long upStationId = 3L;
+        Long sectionId = 3L;
+        Long downStationId = 4L;
+        Long upStationId = 3L;
         int distance = 10;
         String name = "회기역";
         stationDao.save(new Station(name));
@@ -84,18 +82,17 @@ public class SectionServiceTest {
     @DisplayName("역 사이에 추가")
     void createSectionBetweenSections() {
         // given
-        long targetUpStationId = 2L;
-        long targetDownStationId = 9L;
-        int distance = 5;
-        String name = "회기역";
-        stationDao.save(new Station(name));
+        Station 회기역 = stationDao.save(new Station("회기역"));
+        Long targetUpStationId = 2L;
+        int distance = 3;
+        Long targetDownStationId = 회기역.getId();
 
-        // when
         SectionServiceDto dongDaeMoonAndHaegiDto = new SectionServiceDto(lineId, targetUpStationId,
             targetDownStationId, distance);
+
+        // when
         SectionServiceDto savedDongDaeMoonAndHaegiDto = sectionService.save(dongDaeMoonAndHaegiDto);
-        assertThat(savedDongDaeMoonAndHaegiDto).isNotNull();
-        Section changedSection = sectionDao.findByLineIdAndDownStationId(lineId, 3L).get();
+        Section changedSection = sectionDao.findByLineIdAndDownStationId(lineId, targetDownStationId).get();
 
         // then
         assertThat(savedDongDaeMoonAndHaegiDto.getLineId()).isEqualTo(lineId);
@@ -103,16 +100,16 @@ public class SectionServiceTest {
         assertThat(savedDongDaeMoonAndHaegiDto.getDownStationId()).isEqualTo(targetDownStationId);
         assertThat(savedDongDaeMoonAndHaegiDto.getDistance()).isEqualTo(distance);
 
-        assertThat(changedSection.getDistance()).isEqualTo(5);
-        assertThat(changedSection.getUpStationId()).isEqualTo(9L);
+        assertThat(changedSection.getDistance()).isEqualTo(distance);
+        assertThat(changedSection.getUpStationId()).isEqualTo(targetUpStationId);
     }
 
     @Test
     @DisplayName("역 사이에 먼 거리 추가")
     void createSectionBetweenSectionsWithExcessDistance() {
         // given
-        long targetUpStationId = 2L;
-        long targetDownStationId = 9L;
+        Long targetUpStationId = 2L;
+        Long targetDownStationId = 9L;
         int distance = 15;
         String name = "회기역";
         stationDao.save(new Station(name));
