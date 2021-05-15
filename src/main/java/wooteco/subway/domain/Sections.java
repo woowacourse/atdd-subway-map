@@ -23,8 +23,9 @@ public class Sections {
     }
 
     public boolean isBothEndStation(Long stationId) {
-        return stationId.equals(sortedStationIds().peekFirst())
-            || stationId.equals(sortedStationIds().peekLast());
+        Deque<Long> ids = sortedStationIds();
+        return stationId.equals(ids.peekFirst())
+            || stationId.equals(ids.peekLast());
     }
 
     public Deque<Long> sortedStationIds() {
@@ -84,12 +85,8 @@ public class Sections {
     }
 
     private boolean isNotExistOnLine(Long stationId) {
-        boolean isMatchedAtUpStation = sections.stream()
-            .anyMatch(it -> stationId.equals(it.getUpStationId()));
-        boolean isMatchedAtDownStation = sections.stream()
-            .anyMatch(it -> stationId.equals(it.getDownStationId()));
-
-        return !(isMatchedAtUpStation || isMatchedAtDownStation);
+        return sections.stream()
+            .noneMatch(section -> section.hasSameStation(stationId));
     }
 
     public boolean isNotEmpty() {
