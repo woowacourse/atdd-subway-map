@@ -57,8 +57,6 @@ class SectionServiceTest {
     @Test
     public void saveTest() {
         validateStationOrder(bStation, dStation);
-        validateFinalStation(bStation, dStation);
-
         validateStationDistance(bStation, dStation, initialDistance);
     }
 
@@ -68,8 +66,6 @@ class SectionServiceTest {
         sectionService.addSection(testLine.getId(), bStation.getId(), cStation.getId(), insertDistance.value());
 
         validateStationOrder(bStation, cStation, dStation);
-        validateFinalStation(bStation, dStation);
-
         validateStationDistance(bStation, cStation, insertDistance);
         validateStationDistance(cStation, dStation, initialDistance.sub(insertDistance));
     }
@@ -80,8 +76,6 @@ class SectionServiceTest {
         sectionService.addSection(testLine.getId(), cStation.getId(), dStation.getId(), insertDistance.value());
 
         validateStationOrder(bStation, cStation, dStation);
-        validateFinalStation(bStation, dStation);
-
         validateStationDistance(bStation, cStation, initialDistance.sub(insertDistance));
         validateStationDistance(cStation, dStation, insertDistance);
     }
@@ -92,8 +86,6 @@ class SectionServiceTest {
         sectionService.addSection(testLine.getId(), aStation.getId(), bStation.getId(), insertDistance.value());
 
         validateStationOrder(aStation, bStation, dStation);
-        validateFinalStation(aStation, dStation);
-
         validateStationDistance(aStation, bStation, insertDistance);
         validateStationDistance(bStation, dStation, initialDistance);
     }
@@ -104,8 +96,6 @@ class SectionServiceTest {
         sectionService.addSection(testLine.getId(), dStation.getId(), eStation.getId(), insertDistance.value());
 
         validateStationOrder(bStation, dStation, eStation);
-        validateFinalStation(bStation, eStation);
-
         validateStationDistance(bStation, dStation, initialDistance);
         validateStationDistance(dStation, eStation, insertDistance);
     }
@@ -117,8 +107,6 @@ class SectionServiceTest {
         sectionService.deleteSection(testLine.getId(), cStation.getId());
 
         validateStationOrder(bStation, dStation);
-        validateFinalStation(bStation, dStation);
-
         validateStationDistance(bStation, dStation, initialDistance);
     }
 
@@ -129,8 +117,6 @@ class SectionServiceTest {
         sectionService.deleteSection(testLine.getId(), bStation.getId());
 
         validateStationOrder(cStation, dStation);
-        validateFinalStation(cStation, dStation);
-
         validateStationDistance(cStation, dStation, insertDistance);
     }
 
@@ -141,8 +127,6 @@ class SectionServiceTest {
         sectionService.deleteSection(testLine.getId(), dStation.getId());
 
         validateStationOrder(bStation, cStation);
-        validateFinalStation(bStation, cStation);
-
         validateStationDistance(bStation, cStation, initialDistance.sub(insertDistance));
     }
 
@@ -174,9 +158,7 @@ class SectionServiceTest {
     @Test
     public void addSectionWithExistentSection() {
         assertThatThrownBy(()->{
-            sectionService.addSection(testLine.getId(), aStation.getId(), bStation.getId(), initialDistance.value());
-            validateStationOrder(aStation, bStation, dStation);
-            sectionService.addSection(testLine.getId(), aStation.getId(), bStation.getId(), initialDistance.value());
+            sectionService.addSection(testLine.getId(), bStation.getId(), dStation.getId(), initialDistance.value());
         }).isInstanceOf(LineException.class);
     }
 
@@ -205,11 +187,8 @@ class SectionServiceTest {
         for (final Station station : expectOrders) {
             assertThat(stations.get(index++)).isEqualTo(station.getId());
         }
-    }
 
-    private void validateStationDistance(final Station upStation, final Station downStation, final Distance expectedDistance){
-        final Distance actualDistance = sectionService.distance(testLine.getId(), upStation.getId(), downStation.getId());
-        assertThat(expectedDistance).isEqualTo(actualDistance);
+        validateFinalStation(expectOrders[0], expectOrders[expectOrders.length-1]);
     }
 
     private void validateFinalStation(final Station expectedUpStation, final Station expectedDownStation){
@@ -219,5 +198,10 @@ class SectionServiceTest {
 
         assertThat(actualUpStationId).isEqualTo(expectedUpStation.getId());
         assertThat(actualDownStationId).isEqualTo(expectedDownStation.getId());
+    }
+
+    private void validateStationDistance(final Station upStation, final Station downStation, final Distance expectedDistance){
+        final Distance actualDistance = sectionService.distance(testLine.getId(), upStation.getId(), downStation.getId());
+        assertThat(expectedDistance).isEqualTo(actualDistance);
     }
 }
