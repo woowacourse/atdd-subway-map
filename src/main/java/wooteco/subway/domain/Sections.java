@@ -100,10 +100,7 @@ public class Sections {
 
     public Section findByStationId(Section section) {
         return sections.stream()
-            .filter(
-                it -> section.getUpStationId().equals(it.getUpStationId()) ||
-                    section.getDownStationId().equals(it.getDownStationId())
-            )
+            .filter(section::hasSameStation)
             .findAny()
             .orElseThrow(InvalidSectionOnLineException::new);
     }

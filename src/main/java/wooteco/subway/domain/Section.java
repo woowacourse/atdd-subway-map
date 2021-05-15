@@ -40,6 +40,24 @@ public class Section {
         }
     }
 
+    public Section updateForSave(Section section) {
+        Distance updateDistance = this.distance.subtract(section.distance);
+
+        if (upStationId.equals(section.upStationId)){
+            return new Section(null, lineId, section.downStationId, downStationId, updateDistance);
+        }
+        return new Section(null, lineId, upStationId, section.upStationId, updateDistance);
+    }
+
+    public Section updateForDelete(Section section) {
+        Distance updateDistance = section.distance.add(this.distance);
+        return new Section(null, lineId, upStationId, section.downStationId, updateDistance);
+    }
+
+    public boolean hasSameStation(Section section) {
+        return upStationId.equals(section.upStationId) || downStationId.equals(section.downStationId);
+    }
+
     public Long getId() {
         return id.getValue();
     }
@@ -58,20 +76,6 @@ public class Section {
 
     public int getDistance() {
         return distance.getValue();
-    }
-
-    public Section updateForSave(Section section) {
-        Distance updateDistance = this.distance.subtract(section.distance);
-
-        if (upStationId.equals(section.upStationId)){
-           return new Section(null, lineId, section.downStationId, downStationId, updateDistance);
-        }
-        return new Section(null, lineId, upStationId, section.upStationId, updateDistance);
-    }
-
-    public Section updateForDelete(Section section) {
-        Distance updateDistance = section.distance.add(this.distance);
-        return new Section(null, lineId, upStationId, section.downStationId, updateDistance);
     }
 
 }
