@@ -56,6 +56,7 @@ public class DBLineDao implements LineDao {
                 "left outer join SECTION S on L.id = S.line_id " +
                 "left outer join STATION UST on S.up_station_id = UST.id " +
                 "left outer join STATION DST on S.down_station_id = DST.id ";
+
         List<Map<String, Object>> result = jdbcTemplate.queryForList(sql);
         Map<Object, List<Map<String, Object>>> resultByLine = result.stream().collect(Collectors.groupingBy(it -> it.get("LINE_ID")));
         return resultByLine.entrySet().stream()

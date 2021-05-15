@@ -66,7 +66,7 @@ public class LineService {
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
-                .map(line -> new LineResponse(line.id(), line.nameAsString(), line.color(), toStationsResponses(new Sections(findSectionByLineId(line.id())).sortedSections())))
+                .map(line -> new LineResponse(line.id(), line.nameAsString(), line.color(), toStationsResponses(line.sections().sections())))
                 .collect(Collectors.toList());
     }
 
