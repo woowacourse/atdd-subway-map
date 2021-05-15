@@ -11,9 +11,14 @@ public class Sections {
 
     public static final String ERROR_SECTION_HAVE_TO_ONE_STATION_IN_LINE = "상행역과 하행역 둘 중 하나만 노선에 존재해야 합니다.";
 
-    private final LinkedList<Section> sections;
+    private final List<Section> sections;
 
     public Sections(final List<Section> sections) {
+        if (sections.isEmpty()) {
+            this.sections = sections;
+            return;
+        }
+
         this.sections = sort(sections);
     }
 
@@ -39,8 +44,8 @@ public class Sections {
     }
 
     public boolean checkEndPoint(Section section) {
-        Section upSection = sections.getFirst();
-        Section downSection = sections.getLast();
+        Section upSection = sections.get(0);
+        Section downSection = sections.get(sections.size() - 1);
         return section.getDownStationId().equals(upSection.getUpStationId())
                 || section.getUpStationId().equals(downSection.getDownStationId());
     }
