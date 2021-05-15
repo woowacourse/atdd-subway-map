@@ -18,5 +18,7 @@ public interface SectionDao {
 
     void delete(Long id);
 
+    void deleteByLine(Long id);
+
     List<Section> findByLineId(Long lineId);
 }

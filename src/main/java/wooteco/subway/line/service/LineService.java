@@ -71,6 +71,7 @@ public class LineService {
 
     public void delete(Long id) {
         validateId(id);
+        sectionService.deleteByLine(id);
         lineDao.delete(id);
     }
 

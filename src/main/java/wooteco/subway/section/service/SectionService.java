@@ -73,6 +73,10 @@ public class SectionService {
         }
     }
 
+    public void deleteByLine(Long id) {
+        sectionDao.deleteByLine(id);
+    }
+
     private void validateRemovableSize(Long lineId) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         if (sections.isOne()) {
