@@ -12,6 +12,7 @@ import wooteco.subway.web.exception.SubwayHttpException;
 @Repository
 public class SectionDao {
 
+    private static final String SECTION = "section";
     private static final String ID = "id";
     private static final String LINE_ID = "line_id";
     private static final String UP_STATION_ID = "up_station_id";
@@ -33,16 +34,16 @@ public class SectionDao {
     public SectionDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate())
-                .withTableName("section")
-                .usingGeneratedKeyColumns("id");
+                .withTableName(SECTION)
+                .usingGeneratedKeyColumns(ID);
     }
 
     public Long save(Section section) {
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("line_id", section.getLineId());
-        params.addValue("up_station_id", section.getUpStationId());
-        params.addValue("down_station_id", section.getDownStationId());
-        params.addValue("distance", section.getDistance());
+        final MapSqlParameterSource params = getParamSource();
+        params.addValue(LINE_ID, section.getLineId());
+        params.addValue(UP_STATION_ID, section.getUpStationId());
+        params.addValue(DOWN_STATION_ID, section.getDownStationId());
+        params.addValue(DISTANCE, section.getDistance());
 
         try {
             return simpleJdbcInsert.executeAndReturnKey(params).longValue();
@@ -54,10 +55,10 @@ public class SectionDao {
     public List<Section> findSectionsByLineId(Long lineId) {
         final String sql = "SELECT id, line_id, up_station_id, down_station_id, distance "
                 + "FROM section "
-                + "WHERE line_id = :lineId";
+                + "WHERE line_id = :line_id";
 
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("lineId", lineId);
+        final MapSqlParameterSource params = getParamSource();
+        params.addValue(LINE_ID, lineId);
 
         return namedParameterJdbcTemplate.query(sql, params, SECTION_ROW_MAPPER);
     }
@@ -65,13 +66,13 @@ public class SectionDao {
     public Long countSection(Long lineId, Long stationId) {
         final String sql = "SELECT COUNT(*) "
                 + "FROM section "
-                + "WHERE line_id = :lineId "
+                + "WHERE line_id = :line_id "
                 + "AND "
-                + "(up_station_id = :stationId OR down_station_id = :stationId)";
+                + "(up_station_id = :id OR down_station_id = :id)";
 
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("lineId", lineId);
-        params.addValue("stationId", stationId);
+        final MapSqlParameterSource params = getParamSource();
+        params.addValue(LINE_ID, lineId);
+        params.addValue(ID, stationId);
 
         return namedParameterJdbcTemplate.queryForObject(sql, params, Long.class);
     }
@@ -79,8 +80,8 @@ public class SectionDao {
     public void delete(Long id) {
         final String sql = "DELETE FROM section WHERE id = :id";
 
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("id", id);
+        final MapSqlParameterSource params = getParamSource();
+        params.addValue(ID, id);
 
         namedParameterJdbcTemplate.update(sql, params);
     }
@@ -88,16 +89,16 @@ public class SectionDao {
     public Optional<Section> priorSection(Long lineId, Long upStationId, Long downStationId) {
         final String sql = "SELECT id, line_id, up_station_id, down_station_id, distance "
                 + "FROM section "
-                + "WHERE line_id = :lineId "
+                + "WHERE line_id = :line_id "
                 + "AND "
-                + "(up_station_id = :upStationId OR down_station_id = :downStationId)";
+                + "(up_station_id = :up_station_id OR down_station_id = :down_station_id)";
 
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("lineId", lineId);
-        params.addValue("upStationId", upStationId);
-        params.addValue("downStationId", downStationId);
+        final MapSqlParameterSource params = getParamSource();
+        params.addValue(LINE_ID, lineId);
+        params.addValue(UP_STATION_ID, upStationId);
+        params.addValue(DOWN_STATION_ID, downStationId);
 
-        List<Section> sections = namedParameterJdbcTemplate
+        final List<Section> sections = namedParameterJdbcTemplate
                 .query(sql, params, SECTION_ROW_MAPPER);
 
         if (sections.isEmpty()) {
@@ -113,13 +114,13 @@ public class SectionDao {
         final String sql = "SELECT id, line_id, up_station_id, down_station_id, distance "
                 + "FROM section "
                 + "WHERE "
-                + "line_id = :lineId "
+                + "line_id = :line_id "
                 + "AND "
-                + "(up_station_id = :stationId OR down_station_id = :stationId)";
+                + "(up_station_id = :id OR down_station_id = :id)";
 
-        final MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("lineId", lineId);
-        params.addValue("stationId", stationId);
+        final MapSqlParameterSource params = getParamSource();
+        params.addValue(LINE_ID, lineId);
+        params.addValue(ID, stationId);
 
         return namedParameterJdbcTemplate.query(sql, params, SECTION_ROW_MAPPER);
     }
@@ -127,14 +128,18 @@ public class SectionDao {
     public void deleteSectionByStationId(Long lineId, Long stationId) {
         final String sql = "DELETE FROM section "
                 + "WHERE "
-                + "line_id = :lineId "
+                + "line_id = :line_id "
                 + "AND "
-                + "(up_station_id = :stationId OR down_station_id = :stationId)";
+                + "(up_station_id = :id OR down_station_id = :id)";
 
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("lineId", lineId);
-        params.addValue("stationId", stationId);
+        final MapSqlParameterSource params = getParamSource();
+        params.addValue(LINE_ID, lineId);
+        params.addValue(ID, stationId);
 
         namedParameterJdbcTemplate.update(sql, params);
+    }
+
+    private MapSqlParameterSource getParamSource() {
+        return new MapSqlParameterSource();
     }
 }

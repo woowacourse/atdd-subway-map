@@ -12,8 +12,10 @@ import wooteco.subway.web.exception.SubwayHttpException;
 @Repository
 public class StationDao {
 
+    private static final String STATION = "station";
     private static final String ID = "id";
     private static final String NAME = "name";
+    private static final String IDS = "ids";
 
     private static final RowMapper<Station> STATION_ROW_MAPPER = (rs, rowNum) ->
             new Station(
@@ -27,13 +29,13 @@ public class StationDao {
     public StationDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate())
-                .withTableName("station")
-                .usingGeneratedKeyColumns("id");
+                .withTableName(STATION)
+                .usingGeneratedKeyColumns(ID);
     }
 
     public Long save(Station station) {
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("name", station.getName());
+        final MapSqlParameterSource params = getParamSource();
+        params.addValue(NAME, station.getName());
 
         try {
             return simpleJdbcInsert.executeAndReturnKey(params).longValue();
@@ -50,8 +52,8 @@ public class StationDao {
     public Station findById(Long id) {
         final String sql = "SELECT id, name FROM station WHERE id = :id";
 
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("id", id);
+        final MapSqlParameterSource params = getParamSource();
+        params.addValue(ID, id);
 
         // todo 단일조회 예외처리 이슈
         return namedParameterJdbcTemplate.queryForObject(sql, params, STATION_ROW_MAPPER);
@@ -60,8 +62,8 @@ public class StationDao {
     public void delete(Long id) {
         final String sql = "DELETE FROM station WHERE id = :id";
 
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("id", id);
+        final MapSqlParameterSource params = getParamSource();
+        params.addValue(ID, id);
 
         namedParameterJdbcTemplate.update(sql, params);
     }
@@ -69,9 +71,13 @@ public class StationDao {
     public List<Station> findStationsByIds(List<Long> ids) {
         final String sql = "SELECT id, name FROM station WHERE id IN (:ids)";
 
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("ids", ids);
+        final MapSqlParameterSource params = getParamSource();
+        params.addValue(IDS, ids);
 
         return namedParameterJdbcTemplate.query(sql, params, STATION_ROW_MAPPER);
+    }
+
+    private MapSqlParameterSource getParamSource() {
+        return new MapSqlParameterSource();
     }
 }

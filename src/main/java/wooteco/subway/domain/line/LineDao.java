@@ -13,6 +13,7 @@ import wooteco.subway.web.exception.SubwayHttpException;
 @Repository
 public class LineDao {
 
+    private static final String LINE = "line";
     private static final String ID = "id";
     private static final String NAME = "name";
     private static final String COLOR = "color";
@@ -30,14 +31,14 @@ public class LineDao {
     public LineDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate())
-                .withTableName("line")
-                .usingGeneratedKeyColumns("id");
+                .withTableName(LINE)
+                .usingGeneratedKeyColumns(ID);
     }
 
     public Long save(Line line) {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", line.getName());
-        params.put("color", line.getColor());
+        params.put(NAME, line.getName());
+        params.put(COLOR, line.getColor());
 
         try {
             return simpleJdbcInsert.executeAndReturnKey(params).longValue();
@@ -55,8 +56,8 @@ public class LineDao {
     public Line findById(Long id) {
         final String sql = "SELECT id, name, color FROM line WHERE id = :id";
 
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("id", id);
+        final MapSqlParameterSource params = getParamSource();
+        params.addValue(ID, id);
 
         return namedParameterJdbcTemplate.queryForObject(sql, params, LINE_ROW_MAPPER);
     }
@@ -64,10 +65,10 @@ public class LineDao {
     public void update(Long id, Line line) {
         final String sql = "UPDATE line SET name = :name, color = :color WHERE id = :id";
 
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("name", line.getName());
-        params.addValue("color", line.getColor());
-        params.addValue("id", id);
+        final MapSqlParameterSource params = getParamSource();
+        params.addValue(NAME, line.getName());
+        params.addValue(COLOR, line.getColor());
+        params.addValue(ID, id);
 
         namedParameterJdbcTemplate.update(sql, params);
     }
@@ -75,9 +76,13 @@ public class LineDao {
     public void delete(Long id) {
         final String sql = "DELETE FROM line WHERE id = :id";
 
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("id", id);
+        final MapSqlParameterSource params = getParamSource();
+        params.addValue(ID, id);
 
         namedParameterJdbcTemplate.update(sql, params);
+    }
+
+    private MapSqlParameterSource getParamSource() {
+        return new MapSqlParameterSource();
     }
 }

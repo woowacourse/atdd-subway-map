@@ -103,18 +103,23 @@ public class SectionService {
 
     public void delete(Long lineId, Long stationId) {
         validateLineId(lineId);
-
         validateLineHasMoreThanOneSection(lineId);
 
         List<Section> sections = sectionDao.countSectionByStationId(lineId, stationId);
+
         validateLineHasStation(sections);
+        validateSize(sections.size());
 
         if (sections.size() == 2) {
             mergePriorSections(lineId, stationId, sections);
-        } else if (sections.size() != 1) {
-            throw new SubwayHttpException("삭제하려는 역을 포함하는 구간이 2개 이상임");
         }
         sectionDao.deleteSectionByStationId(lineId, stationId);
+    }
+
+    private void validateSize(int size) {
+        if (!Arrays.asList(1, 2).contains(size)) {
+            throw new SubwayHttpException("삭제하려는 역을 포함하는 구간이 2개 이상임");
+        }
     }
 
     private void validateLineId(Long lineId) {
