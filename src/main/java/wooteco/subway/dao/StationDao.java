@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -9,9 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -32,14 +29,13 @@ public class StationDao implements StationRepository {
     public Station save(Station station) {
         String query = "INSERT INTO STATION (name) VALUES (:name)";
 
-        Map<String, Object> param = new HashMap<>();
-        param.put("name", station.getName());
-
-        SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource(param);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSourceBuilder()
+                .setParam("name", station.getName())
+                .build();
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        jdbcTemplate.update(query, mapSqlParameterSource, keyHolder);
+        jdbcTemplate.update(query, sqlParameterSource, keyHolder);
 
         return this.findById(keyHolder.getKey().longValue());
     }
@@ -47,12 +43,12 @@ public class StationDao implements StationRepository {
     @Override
     public Station findById(long id) {
         String query = "SELECT * FROM STATION WHERE id = :id";
-        Map<String, Object> param = new HashMap<>();
-        param.put("id", id);
 
-        SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource(param);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSourceBuilder()
+                .setParam("id", id)
+                .build();
 
-        return this.jdbcTemplate.queryForObject(query, mapSqlParameterSource, stationRowMapper);
+        return this.jdbcTemplate.queryForObject(query, sqlParameterSource, stationRowMapper);
     }
 
     @Override
@@ -65,12 +61,11 @@ public class StationDao implements StationRepository {
     public Optional<Station> findByName(String name) {
         String query = "SELECT * FROM STATION WHERE name = :name";
 
-        Map<String, Object> param = new HashMap<>();
-        param.put("name", name);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSourceBuilder()
+                .setParam("name", name)
+                .build();
 
-        SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource(param);
-
-        return this.jdbcTemplate.query(query, mapSqlParameterSource, (rs) -> {
+        return this.jdbcTemplate.query(query, sqlParameterSource, (rs) -> {
             if (rs.next()) {
                 long id = rs.getLong("id");
                 String stationName = rs.getString("name");
@@ -84,11 +79,10 @@ public class StationDao implements StationRepository {
     public void delete(Long id) {
         String query = "DELETE FROM STATION WHERE id = :id";
 
-        Map<String, Object> param = new HashMap<>();
-        param.put("id", id);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSourceBuilder()
+                .setParam("id", id)
+                .build();
 
-        SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource(param);
-
-        jdbcTemplate.update(query, mapSqlParameterSource);
+        jdbcTemplate.update(query, sqlParameterSource);
     }
 }
