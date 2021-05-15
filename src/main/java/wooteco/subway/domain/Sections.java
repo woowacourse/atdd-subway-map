@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.NoSuchSectionException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -59,14 +61,14 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.isUpStation(upStation))
                 .findAny()
-                .get();
+                .orElseThrow(() -> new NoSuchSectionException(1));
     }
 
     private Section getSectionWhereDownStationIs(Station downStation) {
         return sections.stream()
                 .filter(section -> section.isDownStation(downStation))
                 .findAny()
-                .get();
+                .orElseThrow(() -> new NoSuchSectionException(1));
     }
 
     private void addMiddle(Section sectionToUpdate, Station station, int distance) {
