@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.line.domain.Sections;
 import wooteco.subway.line.dto.SectionRequest;
 import wooteco.subway.line.repository.LineRepository;
 import wooteco.subway.line.repository.SectionRepository;
@@ -35,7 +36,15 @@ public class SectionService {
     @Transactional
     public void add(final Long lineId, final SectionRequest sectionRequest) {
         validateAddRequest(lineId, sectionRequest);
+
+        // TODO : sectionRepo로부터 id에 해당하는 모든 section을 가져옴.
+        // TODO : sections를 만듬
+        // TODO : sections에게 해당 sectionRequest의 upId를 들고 있는지 물어봄
+        // TODO : 가지고 있다면, up을 기준으로 저장하는걸 시도함
+
         List<Long> stationIdsByLineId = sectionRepository.getStationIdsByLineId(lineId);
+
+        Sections sections = new Sections(sectionRepository.getSectionsByLineId(lineId));
 
         if (stationIdsByLineId.contains(sectionRequest.getUpStationId())) {
             addBaseOnUpStation(lineId, sectionRequest);
@@ -48,10 +57,14 @@ public class SectionService {
         sectionRepository.saveBaseOnDownStation(lineId, sectionRequest);
     }
 
+    // TODO : sections에게 현재 upId을 하행으로 가지고 있는 section이 있는지 물어봄
+    // TODO : sections이 있다고 하면, 중간에 끼어 들어가는 상황
+        // TODO : sections로부터 Input upId를 출발지으로 가지고 있는 section의 도착지를 찾는다. (만약 가지고 있다면 중간삽입)
     private void addBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest) {
         sectionRepository.saveBaseOnUpStation(lineId, sectionRequest);
     }
 
+    //Domain? Service?
     private void validateAddRequest(final Long lineId, final SectionRequest sectionRequest) {
         validateLineId(lineId);
         validateStations(sectionRequest);
@@ -59,9 +72,6 @@ public class SectionService {
     }
 
     private void validateStations(final SectionRequest sectionRequest) {
-        if (sectionRequest.getUpStationId().equals(sectionRequest.getDownStationId())) {
-            throw new IllegalArgumentException("출발지와 도착지가 같을 수 없습니다.");
-        }
         if (!stationRepository.isExistId(sectionRequest.getUpStationId()) || !stationRepository.isExistId(sectionRequest.getDownStationId())) {
             throw new NotFoundException("존재하지 않는 station을 구간에 등록할 수 없습니다.");
         }
