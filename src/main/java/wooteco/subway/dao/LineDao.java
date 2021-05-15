@@ -1,21 +1,21 @@
 package wooteco.subway.dao;
 
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
-import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class LineDao implements LineRepository {
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public LineDao(JdbcTemplate jdbcTemplate) {
+    public LineDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -28,17 +28,16 @@ public class LineDao implements LineRepository {
 
     @Override
     public Line save(Line line) {
-        String query = "INSERT INTO LINE (name, color) VALUES (?, ?)";
+        String query = "INSERT INTO LINE (name, color) VALUES (:name, :color)";
+
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSourceBuilder()
+                .setParam("name", line.getName())
+                .setParam("color", line.getColor())
+                .build();
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        this.jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection
-                    .prepareStatement(query, new String[]{"id"});
-            ps.setString(1, line.getName());
-            ps.setString(2, line.getColor());
-            return ps;
-        }, keyHolder);
+        this.jdbcTemplate.update(query, sqlParameterSource, keyHolder);
 
         return this.findById(keyHolder.getKey().longValue());
     }
@@ -51,14 +50,24 @@ public class LineDao implements LineRepository {
 
     @Override
     public Line findById(Long id) {
-        String query = "SELECT * FROM LINE WHERE id = ?";
-        return jdbcTemplate.queryForObject(query, lineRowMapper, id);
+        String query = "SELECT * FROM LINE WHERE id = :id";
+
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSourceBuilder()
+                .setParam("id", id)
+                .build();
+
+        return jdbcTemplate.queryForObject(query, sqlParameterSource, lineRowMapper);
     }
 
     @Override
     public Optional<Line> findByName(String name) {
-        String query = "SELECT * FROM LINE WHERE name = ?";
-        return this.jdbcTemplate.query(query, (rs) -> {
+        String query = "SELECT * FROM LINE WHERE name = :name";
+
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSourceBuilder()
+                .setParam("name", name)
+                .build();
+
+        return this.jdbcTemplate.query(query, sqlParameterSource, (rs) -> {
             if (rs.next()) {
                 long id = rs.getLong("id");
                 String lineName = rs.getString("name");
@@ -66,19 +75,31 @@ public class LineDao implements LineRepository {
                 return Optional.of(new Line(id, lineName, color));
             }
             return Optional.empty();
-        }, name);
+        });
     }
 
     @Override
     public Line update(Long id, Line newLine) {
-        String query = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
-        this.jdbcTemplate.update(query, newLine.getName(), newLine.getColor(), id);
+        String query = "UPDATE LINE SET name = :name, color = :color WHERE id = :id";
+
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSourceBuilder()
+                .setParam("name", newLine.getName())
+                .setParam("color", newLine.getColor())
+                .setParam("id", id)
+                .build();
+
+        this.jdbcTemplate.update(query, sqlParameterSource);
         return this.findById(id);
     }
 
     @Override
     public void delete(Long id) {
-        String query = "DELETE FROM LINE WHERE id = ?";
-        jdbcTemplate.update(query, id);
+        String query = "DELETE FROM LINE WHERE id = :id";
+
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSourceBuilder()
+                .setParam("id", id)
+                .build();
+
+        jdbcTemplate.update(query, sqlParameterSource);
     }
 }
