@@ -1,8 +1,11 @@
-package wooteco.subway.station;
+package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.section.SectionDao;
+import wooteco.subway.section.dao.SectionDao;
+import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.exception.StationException;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +31,7 @@ public class StationService {
     public void delete(final Long id) {
         final Optional optionalStation = stationDao.findById(id);
 
-        if(optionalStation.isPresent()){
+        if (optionalStation.isPresent()) {
             checkIsNotInLine(id);
             stationDao.delete(id);
             return;
@@ -52,8 +55,8 @@ public class StationService {
         }
     }
 
-    private void checkIsNotInLine(final Long id){
-        if(sectionDao.isExistingStation(id)){
+    private void checkIsNotInLine(final Long id) {
+        if (sectionDao.isExistingStation(id)) {
             throw new StationException("구간에 등록된 역은 삭제할 수 없습니다.");
         }
     }

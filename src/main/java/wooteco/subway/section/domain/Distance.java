@@ -1,6 +1,6 @@
-package wooteco.subway.section;
+package wooteco.subway.section.domain;
 
-import wooteco.subway.line.LineException;
+import wooteco.subway.line.exception.LineException;
 
 public class Distance {
     private final int value;

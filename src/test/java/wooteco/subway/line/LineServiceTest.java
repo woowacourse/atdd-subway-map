@@ -6,8 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.section.SectionDao;
-import wooteco.subway.section.SectionService;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.exception.LineException;
+import wooteco.subway.line.service.LineService;
+import wooteco.subway.section.service.SectionService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +36,7 @@ public class LineServiceTest {
     private final Long mockDownStationId = 2L;
 
     @BeforeEach
-    private void initLine(){
+    private void initLine() {
         final Line mockLine = new Line(savedName, savedColor, mockUpStationId, mockDownStationId);
         savedLine = lineService.create(mockLine);
         savedLineId = savedLine.getId();
@@ -42,24 +44,24 @@ public class LineServiceTest {
 
     @DisplayName("중복된 이름으로 노선을 생성할 수 없다.")
     @Test
-    public void createLineWithDuplicatedName(){
-        assertThatThrownBy(()->{
+    public void createLineWithDuplicatedName() {
+        assertThatThrownBy(() -> {
             lineService.create(new Line(savedName, savedColor, mockUpStationId, mockDownStationId));
         }).isInstanceOf(LineException.class);
     }
 
     @DisplayName("존재하지 않는 노선을 수정할 수 없다.")
     @Test
-    public void updateNonExistentLine(){
-        assertThatThrownBy(()->{
+    public void updateNonExistentLine() {
+        assertThatThrownBy(() -> {
             lineService.update(new Line(Long.MAX_VALUE, "validName", "validColor"));
         }).isInstanceOf(LineException.class);
     }
 
     @DisplayName("중복된 이름으로 노선 이름을 수정 할 수 없다.")
     @Test
-    public void updateLineWithDuplicatedName(){
-        assertThatThrownBy(()->{
+    public void updateLineWithDuplicatedName() {
+        assertThatThrownBy(() -> {
             final String newName = "newName";
             lineService.create(new Line(newName, savedColor, mockUpStationId, mockDownStationId));
             lineService.update(new Line(savedLineId, newName, savedColor));
@@ -68,7 +70,7 @@ public class LineServiceTest {
 
     @DisplayName("노선 색상만을 수정할 수 있다.")
     @Test
-    public void updateColor(){
+    public void updateColor() {
         final String newColor = "newColor";
         lineService.update(new Line(savedLineId, savedName, newColor));
 
@@ -78,15 +80,15 @@ public class LineServiceTest {
 
     @DisplayName("존재하지 않는 노선을 삭제할 수 없다.")
     @Test
-    public void deleteLineNonExistent(){
-        assertThatThrownBy(()->{
+    public void deleteLineNonExistent() {
+        assertThatThrownBy(() -> {
             lineService.delete(Long.MAX_VALUE);
         }).isInstanceOf(LineException.class);
     }
 
     @DisplayName("노선 삭제 시, 노선이 포함하는 모든 구간 데이터를 삭제한다.")
     @Test
-    public void deleteAllSectionInLine(){
+    public void deleteAllSectionInLine() {
         assertThat(lineService.allStationIdInLine(savedLineId).size()).isEqualTo(2);
         lineService.delete(savedLineId);
         assertThat(lineService.allStationIdInLine(savedLineId).size()).isEqualTo(0);
@@ -94,14 +96,14 @@ public class LineServiceTest {
 
     @DisplayName("노선을 조회한다.")
     @Test
-    public void findLine(){
+    public void findLine() {
         final Line searchedLine = lineService.findById(savedLineId);
         assertThat(savedLineId).isEqualTo(searchedLine.getId());
     }
 
     @DisplayName("노선에 포함된 역을 순서대로 조회한다.")
     @Test
-    public void findStationsInLine(){
+    public void findStationsInLine() {
         final Long mockStationId3 = 3L;
         final Long mockStationId4 = 4L;
 

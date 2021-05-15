@@ -1,12 +1,12 @@
-package wooteco.subway.section;
+package wooteco.subway.section.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.line.Line;
-import wooteco.subway.line.LineException;
+import wooteco.subway.line.exception.LineException;
+import wooteco.subway.section.domain.Section;
 
 import java.sql.PreparedStatement;
 
@@ -91,11 +91,11 @@ public class SectionDao {
         final String sql = "SELECT COUNT(*) from SECTION WHERE line_id = ?";
         final Long columnCount = jdbcTemplate.queryForObject(sql, Long.class, lineId);
 
-        if(columnCount == 0){
+        if (columnCount == 0) {
             return 0L;
         }
 
-        return columnCount+1;
+        return columnCount + 1;
     }
 
     private RowMapper<Section> rowMapper() {
