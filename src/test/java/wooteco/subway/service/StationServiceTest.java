@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.Stations;
-import wooteco.subway.service.StationService;
 import wooteco.subway.service.dto.StationServiceDto;
 
 @ExtendWith(MockitoExtension.class)

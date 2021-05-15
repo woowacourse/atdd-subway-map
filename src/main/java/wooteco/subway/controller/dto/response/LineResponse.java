@@ -34,11 +34,13 @@ public class LineResponse {
     }
 
     public static LineResponse from(LineServiceDto lineServiceDto) {
-        return new LineResponse(lineServiceDto.getId(), lineServiceDto.getName(), lineServiceDto.getColor());
+        return new LineResponse(lineServiceDto.getId(), lineServiceDto.getName(),
+            lineServiceDto.getColor());
     }
 
     public static LineResponse from(ReadLineDto dto) {
-        return new LineResponse(dto.getId(), dto.getName(), dto.getColor(), dto.getStationsResponses());
+        return new LineResponse(dto.getId(), dto.getName(), dto.getColor(),
+            dto.getStationsResponses());
     }
 
     public Long getId() {

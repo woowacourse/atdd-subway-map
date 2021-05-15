@@ -5,15 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
-import javax.swing.text.html.Option;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.service.dto.DeleteStationDto;
 
 @Repository
 public class SectionDao {
@@ -57,7 +54,8 @@ public class SectionDao {
     public Optional<Section> findByLineIdAndUpStationId(Long lineId, Long upStationId) {
         try {
             String sql = "SELECT * FROM section WHERE line_id = ? AND up_station_id = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, upStationId));
+            return Optional
+                .ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, upStationId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -66,7 +64,8 @@ public class SectionDao {
     public Optional<Section> findByLineIdAndDownStationId(Long lineId, Long downStationId) {
         try {
             String sql = "SELECT * FROM section WHERE line_id = ? AND down_station_id = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, downStationId));
+            return Optional
+                .ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, downStationId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

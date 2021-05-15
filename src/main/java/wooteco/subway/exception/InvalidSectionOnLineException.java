@@ -1,7 +1,5 @@
 package wooteco.subway.exception;
 
-import wooteco.subway.exception.SubwayException;
-
 public class InvalidSectionOnLineException extends SubwayException {
 
     public InvalidSectionOnLineException() {

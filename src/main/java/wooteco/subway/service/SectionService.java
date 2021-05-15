@@ -9,8 +9,8 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Stations;
-import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.exception.InvalidSectionOnLineException;
+import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.service.dto.DeleteStationDto;
 import wooteco.subway.service.dto.SectionServiceDto;
 import wooteco.subway.service.dto.StationServiceDto;
@@ -86,17 +86,20 @@ public class SectionService {
     }
 
     private void deleteStationAtEnd(DeleteStationDto dto) {
-        if (sectionDao.findByLineIdAndUpStationId(dto.getLineId(), dto.getStationId()).isPresent()) {
+        if (sectionDao.findByLineIdAndUpStationId(dto.getLineId(), dto.getStationId())
+            .isPresent()) {
             sectionDao.deleteByLineIdAndUpStationId(dto.getLineId(), dto.getStationId());
         }
         sectionDao.deleteByLineIdAndDownStationId(dto.getLineId(), dto.getStationId());
     }
 
     private void deleteStationAtMiddle(DeleteStationDto dto) {
-        Section upSection = sectionDao.findByLineIdAndDownStationId(dto.getLineId(), dto.getStationId())
-                .orElseThrow(InvalidSectionOnLineException::new);
-        Section downSection = sectionDao.findByLineIdAndUpStationId(dto.getLineId(), dto.getStationId())
-                .orElseThrow(InvalidSectionOnLineException::new);
+        Section upSection = sectionDao
+            .findByLineIdAndDownStationId(dto.getLineId(), dto.getStationId())
+            .orElseThrow(InvalidSectionOnLineException::new);
+        Section downSection = sectionDao
+            .findByLineIdAndUpStationId(dto.getLineId(), dto.getStationId())
+            .orElseThrow(InvalidSectionOnLineException::new);
 
         Section updatedSection = upSection.updateForDelete(downSection);
         sectionDao.delete(upSection);

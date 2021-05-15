@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.service.StationService;
-import wooteco.subway.service.dto.StationServiceDto;
 import wooteco.subway.controller.dto.request.StationRequest;
 import wooteco.subway.controller.dto.response.StationResponse;
+import wooteco.subway.service.StationService;
+import wooteco.subway.service.dto.StationServiceDto;
 
 @RestController
 @RequestMapping(value = "/stations")
@@ -52,7 +52,7 @@ public class StationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStation(@NotNull  @PathVariable Long id) {
+    public ResponseEntity<Void> deleteStation(@NotNull @PathVariable Long id) {
         stationService.delete(new StationServiceDto(id));
 
         return ResponseEntity.noContent()

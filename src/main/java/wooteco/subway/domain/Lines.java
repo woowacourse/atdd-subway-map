@@ -12,7 +12,7 @@ public class Lines {
     }
 
     public void validateDuplicate(Line line) {
-        if(lines.stream().anyMatch(line::isDuplicate)) {
+        if (lines.stream().anyMatch(line::isDuplicate)) {
             throw new DuplicateException();
         }
     }

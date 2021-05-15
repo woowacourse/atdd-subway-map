@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
@@ -92,7 +91,8 @@ public class SectionServiceTest {
 
         // when
         SectionServiceDto savedDongDaeMoonAndHaegiDto = sectionService.save(dongDaeMoonAndHaegiDto);
-        Section changedSection = sectionDao.findByLineIdAndDownStationId(lineId, targetDownStationId).get();
+        Section changedSection = sectionDao
+            .findByLineIdAndDownStationId(lineId, targetDownStationId).get();
 
         // then
         assertThat(savedDongDaeMoonAndHaegiDto.getLineId()).isEqualTo(lineId);

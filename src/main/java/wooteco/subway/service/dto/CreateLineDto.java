@@ -9,17 +9,18 @@ import wooteco.subway.domain.Line;
 public class CreateLineDto {
 
     @NotEmpty
-    private String name;
+    private final String name;
     @NotBlank
-    private String color;
+    private final String color;
     @NotNull
-    private Long upStationId;
+    private final Long upStationId;
     @NotNull
-    private Long downStationId;
+    private final Long downStationId;
     @NotNull
-    private int distance;
+    private final int distance;
 
-    public CreateLineDto(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public CreateLineDto(String name, String color, Long upStationId, Long downStationId,
+        int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
@@ -28,7 +29,8 @@ public class CreateLineDto {
     }
 
     public static CreateLineDto from(LineRequest dto) {
-        return new CreateLineDto(dto.getName(), dto.getColor(), dto.getUpStationId(), dto.getDownStationId(), dto.getDistance());
+        return new CreateLineDto(dto.getName(), dto.getColor(), dto.getUpStationId(),
+            dto.getDownStationId(), dto.getDistance());
     }
 
     public Line toLineEntity() {

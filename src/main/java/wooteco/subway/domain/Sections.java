@@ -5,8 +5,8 @@ import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.exception.InvalidSectionOnLineException;
+import wooteco.subway.exception.NotFoundException;
 
 public class Sections {
 
@@ -49,7 +49,8 @@ public class Sections {
         stationIds.addLast(section.getDownStationId());
     }
 
-    private void sortStationsById(Deque<Long> stationIds, Map<Long, Long> upStationIds, Map<Long, Long> downStationIds) {
+    private void sortStationsById(Deque<Long> stationIds, Map<Long, Long> upStationIds,
+        Map<Long, Long> downStationIds) {
         while (upStationIds.containsKey(stationIds.peekLast())) {
             Long id = stationIds.peekLast();
             stationIds.addLast(upStationIds.get(id));

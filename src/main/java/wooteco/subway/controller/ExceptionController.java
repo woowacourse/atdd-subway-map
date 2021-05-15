@@ -7,14 +7,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.InvalidDistanceException;
+import wooteco.subway.exception.InvalidSectionOnLineException;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.NullColorException;
 import wooteco.subway.exception.NullException;
 import wooteco.subway.exception.NullIdException;
 import wooteco.subway.exception.NullNameException;
-import wooteco.subway.exception.NullColorException;
-import wooteco.subway.exception.InvalidSectionOnLineException;
-import wooteco.subway.exception.DuplicateException;
 
 @RestControllerAdvice
 public class ExceptionController {
@@ -57,13 +57,15 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Void> methodArgumentNotValidExceptionResponse(MethodArgumentNotValidException e) {
+    public ResponseEntity<Void> methodArgumentNotValidExceptionResponse(
+        MethodArgumentNotValidException e) {
         return ResponseEntity.badRequest()
             .build();
     }
 
     @ExceptionHandler(InvalidSectionOnLineException.class)
-    public ResponseEntity<Void> alreadyExistedStationsOnLineExceptionResponse(InvalidSectionOnLineException e) {
+    public ResponseEntity<Void> alreadyExistedStationsOnLineExceptionResponse(
+        InvalidSectionOnLineException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .build();
     }

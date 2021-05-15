@@ -215,9 +215,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         StationResponse 한티역 = 지하철역_생성결과_추출(지하철역_생성("한티역"));
         StationResponse 상봉역 = 지하철역_생성결과_추출(지하철역_생성("상봉역"));
         StationResponse 군자역 = 지하철역_생성결과_추출(지하철역_생성("군자역"));
-        LineRequest lineRequest1 = new LineRequest(firstLineName, firstLineColor, 오리역.getId(), 한티역.getId(),
+        LineRequest lineRequest1 = new LineRequest(firstLineName, firstLineColor, 오리역.getId(),
+            한티역.getId(),
             5);
-        LineRequest lineRequest2 = new LineRequest(secondLineName, secondLineColor, 상봉역.getId(), 군자역.getId(),
+        LineRequest lineRequest2 = new LineRequest(secondLineName, secondLineColor, 상봉역.getId(),
+            군자역.getId(),
             25);
 
         지하철노선_생성(lineRequest1);
@@ -225,7 +227,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long responseId = 지하철노선_ID_추출(secondLineCreateResponse);
 
         // when
-        ExtractableResponse<Response> response = 지하철노선_수정(responseId, secondLineName, firstLineColor);
+        ExtractableResponse<Response> response = 지하철노선_수정(responseId, secondLineName,
+            firstLineColor);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
@@ -244,9 +247,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         StationResponse 한티역 = 지하철역_생성결과_추출(지하철역_생성("한티역"));
         StationResponse 상봉역 = 지하철역_생성결과_추출(지하철역_생성("상봉역"));
         StationResponse 군자역 = 지하철역_생성결과_추출(지하철역_생성("군자역"));
-        LineRequest lineRequest1 = new LineRequest(firstLineName, firstLineColor, 오리역.getId(), 한티역.getId(),
+        LineRequest lineRequest1 = new LineRequest(firstLineName, firstLineColor, 오리역.getId(),
+            한티역.getId(),
             5);
-        LineRequest lineRequest2 = new LineRequest(secondLineName, secondLineColor, 상봉역.getId(), 군자역.getId(),
+        LineRequest lineRequest2 = new LineRequest(secondLineName, secondLineColor, 상봉역.getId(),
+            군자역.getId(),
             25);
 
         지하철노선_생성(lineRequest1);
@@ -254,7 +259,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long responseId = 지하철노선_ID_추출(secondLineCreateResponse);
 
         // when
-        ExtractableResponse<Response> response = 지하철노선_수정(responseId, firstLineName, secondLineColor);
+        ExtractableResponse<Response> response = 지하철노선_수정(responseId, firstLineName,
+            secondLineColor);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());

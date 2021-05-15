@@ -13,9 +13,10 @@ public class ReadLineDto {
     private final String name;
     @NotBlank
     private final String color;
-    private List<StationResponse> stationsResponses;
+    private final List<StationResponse> stationsResponses;
 
-    public ReadLineDto(Long id, String name, String color, List<StationResponse> stationsResponses) {
+    public ReadLineDto(Long id, String name, String color,
+        List<StationResponse> stationsResponses) {
         this.id = id;
         this.name = name;
         this.color = color;

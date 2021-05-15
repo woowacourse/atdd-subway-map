@@ -47,7 +47,8 @@ public class LineServiceTest {
         when(mockSectionService.saveByLineCreate(any())).thenReturn(null);
 
         // when
-        CreateLineDto createLineDto = new CreateLineDto(name, color, UPSTATION_ID, DOWNSTATION_ID, DISTANCE);
+        CreateLineDto createLineDto = new CreateLineDto(name, color, UPSTATION_ID, DOWNSTATION_ID,
+            DISTANCE);
         LineServiceDto createdDto = lineService.createLine(createLineDto);
 
         // then
