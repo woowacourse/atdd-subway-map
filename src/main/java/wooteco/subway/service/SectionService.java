@@ -60,7 +60,7 @@ public class SectionService {
     }
 
     private boolean isStationTop(final Line line, final Long stationId) {
-        return line.getTopStationId().equals(stationId);
+        return line.isTopStationIdEquals(stationId);
     }
 
     Section saveSectionAtTop(final Section section) {
@@ -73,7 +73,7 @@ public class SectionService {
     }
 
     boolean isStationBottom(final Line line, final Long stationId) {
-        return line.getBottomStationId().equals(stationId);
+        return line.isBottomStationIdEquals(stationId);
     }
 
     Section saveSectionAtBottom(final Section section) {

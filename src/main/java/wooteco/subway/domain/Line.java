@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import jdk.nashorn.internal.ir.ReturnNode;
+
 public class Line {
     private final Long id;
     private final String name;
@@ -46,5 +48,17 @@ public class Line {
 
     public Line updateBottomStationId(final Long bottomStationId) {
         return new Line(id, name, color, topStationId, bottomStationId);
+    }
+
+    public boolean isNameEquals(Line line) {
+        return this.name.equals(line.name);
+    }
+
+    public boolean isTopStationIdEquals(Long topStationId) {
+        return this.topStationId.equals(topStationId);
+    }
+
+    public boolean isBottomStationIdEquals(Long bottomStationId) {
+        return this.bottomStationId.equals(bottomStationId);
     }
 }

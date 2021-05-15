@@ -67,7 +67,7 @@ public class LineService {
     }
 
     public void update(final Long id, final Line line) {
-        final boolean onlyChangeContent = findById(id).getName().equals(line.getName());
+        final boolean onlyChangeContent = findById(id).isNameEquals(line);
         final boolean isPresentName = lineDao.findByName(line.getName()).isPresent();
         if (!onlyChangeContent && isPresentName) {
             throw new DuplicateNameException("이미 존재하는 노선 이름입니다.");
