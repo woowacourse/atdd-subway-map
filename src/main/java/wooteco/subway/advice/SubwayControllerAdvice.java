@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import wooteco.subway.exception.DuplicateException;
+import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.exception.NotFoundException;
 
 import java.util.HashMap;
@@ -13,8 +13,8 @@ import java.util.Map;
 
 @ControllerAdvice
 public class SubwayControllerAdvice {
-    @ExceptionHandler(DuplicateException.class)
-    public ResponseEntity<Map<String, String>> duplicateExceptionHandler(final DuplicateException e) {
+    @ExceptionHandler(DuplicateNameException.class)
+    public ResponseEntity<Map<String, String>> duplicateExceptionHandler(final DuplicateNameException e) {
         Map<String, String> body = new HashMap<>();
         body.put("Error message", e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);

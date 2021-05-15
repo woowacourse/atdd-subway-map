@@ -1,7 +1,6 @@
 package wooteco.subway.line.domain;
 
 
-import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotFoundException;
 
 import java.util.*;
@@ -37,7 +36,7 @@ public class Sections {
     public void isValidateSection(final Long upStationId, final Long downStationId) {
         List<Long> stationIds = getStationIds();
         if (containUpStationId(upStationId) && containDownStationId(downStationId)) {
-            throw new DuplicateException("이미 노선에 등록되어있는 구간입니다.");
+            throw new IllegalArgumentException("이미 노선에 등록되어있는 구간입니다.");
         }
         if (!(stationIds.contains(upStationId) || stationIds.contains(downStationId))) {
             throw new NotFoundException("상행선, 하행선 둘다 현재 노선에 존재하지 않습니다.");
@@ -57,6 +56,7 @@ public class Sections {
     public Long getDownStationId(final Long upStationId) {
         return connect.get(upStationId);
     }
+
     public Long getUpStationId(final Long downStationId) {
         return sections.stream()
                 .filter(section -> section.getDownStationId().equals(downStationId))

@@ -12,7 +12,7 @@ public class Stations {
         this.stations = stations;
     }
 
-    public List<StationResponse> getOrderedStationResponses(final List<Section> sections){
+    public List<StationResponse> getOrderedStationResponses(final List<Section> sections) {
         List<StationResponse> stationResponses = new ArrayList<>();
         for (Long stationId : getSortedStationIds(sections)) {
             stationResponses.add(stations.stream()

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.exception.DuplicateException;
+import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.line.domain.Line;
 
@@ -102,7 +102,7 @@ class LineRepositoryTest {
     void saveDuplicateName() {
         Line line = new Line("bg-red-600", "신분당선");
         assertThatThrownBy(() -> lineRepository.save(line))
-                .isInstanceOf(DuplicateException.class).hasMessageContaining("중복되는 LineName 입니다.");
+                .isInstanceOf(DuplicateNameException.class).hasMessageContaining("중복되는 LineName 입니다.");
     }
 
     @DisplayName("존재하지 않는 id의 Line을 가져오려고하면, 예외가 발생한다.")

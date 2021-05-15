@@ -30,8 +30,8 @@ public class Section {
         return distance;
     }
 
-    private void validateStations(final Long upStationId, final Long downStationId){
-        if(upStationId.equals(downStationId)){
+    private void validateStations(final Long upStationId, final Long downStationId) {
+        if (upStationId.equals(downStationId)) {
             throw new IllegalArgumentException("출발지와 도착지가 같을 수 없습니다.");
         }
     }

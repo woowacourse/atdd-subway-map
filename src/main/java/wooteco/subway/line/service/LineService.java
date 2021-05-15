@@ -2,7 +2,7 @@ package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.exception.DuplicateException;
+import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
@@ -38,14 +38,13 @@ public class LineService {
     public LineResponse save(final LineRequest lineRequest) {
         Line newLine = new Line(lineRequest.getColor(), lineRequest.getName());
         if (lineRepository.isExistName(newLine)) {
-            throw new DuplicateException("이미 존재하는 Line 입니다.");
+            throw new DuplicateNameException("이미 존재하는 Line Name 입니다.");
         }
         validateStationIds(lineRequest);
         Line savedLine = lineRepository.save(newLine);
         return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor());
     }
 
-    // 이걸 그냥 section에서 처리?
     private void validateStationIds(final LineRequest lineRequest) {
         if (lineRequest.getDownStationId().equals(lineRequest.getUpStationId())) {
             throw new IllegalArgumentException("새 노선 등록시, 상행선과 하행선이 같을 수 없습니다.");
@@ -58,7 +57,7 @@ public class LineService {
 
         return new LineResponse(line.getId(), line.getName(), line.getColor(),
                 stations.getOrderedStationResponses(sectionRepository.getSectionsByLineId(id)
-        ));
+                ));
     }
 
     @Transactional

@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.exception.DuplicateException;
+import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.station.domain.Station;
 
@@ -49,7 +49,7 @@ public class StationRepository {
             }, keyHolder);
             return new Station(Objects.requireNonNull(keyHolder.getKey()).longValue(), station.getName());
         } catch (DuplicateKeyException e) {
-            throw new DuplicateException("중복되는 StationName 입니다.");
+            throw new DuplicateNameException("중복되는 StationName 입니다.");
         }
     }
 
