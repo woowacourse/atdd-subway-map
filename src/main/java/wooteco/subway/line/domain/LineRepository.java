@@ -7,6 +7,8 @@ public interface LineRepository {
 
     Line findById(Long id);
 
+    boolean hasLine(String name);
+
     void update(Line line);
 
     void deleteById(Long id);

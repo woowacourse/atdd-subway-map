@@ -64,6 +64,21 @@ public class LineDao {
         }
     }
 
+    public Optional<Line> findByName(final String name) {
+        final String sql = "SELECT * FROM LINE WHERE name = ?";
+
+        try {
+            return jdbcTemplate.queryForObject(sql, (rs, rn) -> {
+                final Long id = rs.getLong("id");
+                final String color = rs.getString("color");
+
+                return Optional.of(new Line(id, name, color));
+            }, name);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     public void update(final Line line) {
         final String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
 

@@ -38,7 +38,13 @@ public class LineRepositoryImpl implements LineRepository {
     }
 
     @Override
-    public void update(Line line) {
+    public boolean hasLine(final String name) {
+        return lineDao.findByName(name).isPresent();
+    }
+
+
+    @Override
+    public void update(final Line line) {
         lineDao.update(line);
     }
 

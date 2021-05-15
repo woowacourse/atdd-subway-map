@@ -99,8 +99,7 @@ public class LineService {
     }
 
     private void checkCreateValidation(Line line) {
-        Lines lines = lineRepository.findAll();
-        if (lines.haveSameName(line)) {
+        if (lineRepository.hasLine(line.getName())) {
             throw new IllegalArgumentException(ERROR_DUPLICATED_LINE_NAME);
         }
     }
