@@ -13,15 +13,11 @@ public class Sections {
     private final List<Section> sections;
 
     public Sections() {
-        this.sections = new ArrayList<>();
+        this(new ArrayList<>());
     }
 
-    public Sections(List<Section> sections) {
+    public Sections(final List<Section> sections) {
         this.sections = sections;
-    }
-
-    public void add(final Section section) {
-        sections.add(section);
     }
 
     public Stations getOrderedStations() {

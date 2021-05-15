@@ -13,6 +13,7 @@ import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.service.StationService;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -62,9 +63,9 @@ public class LineService {
         Station upStation = stationService.findById(lineRequest.getUpStationId());
         Station downStation = stationService.findById(lineRequest.getDownStationId());
 
-        Sections sections = new Sections();
-        sections.add(new Section(sectionId, lineId, upStation, downStation, lineRequest.getDistance()));
-        return sections;
+        return new Sections(
+                Collections.singletonList(new Section(sectionId, lineId, upStation, downStation, lineRequest.getDistance()))
+        );
     }
 
     public LineResponse getLine(final Long id) {

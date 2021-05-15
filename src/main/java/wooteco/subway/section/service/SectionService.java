@@ -57,8 +57,8 @@ public class SectionService {
         Sections sections = sectionDao.findAllByLineId(lineId);
         Station stationToDelete = new Station(stationId);
 
+        validateDeleteAvailability(sections);
         validateStationExistence(sections, stationToDelete);
-        validateSectionCount(sections);
 
         if (!sections.isEndStation(stationToDelete)) {
             Section newSection = sections.createNewSection(lineId, stationToDelete);
@@ -67,15 +67,15 @@ public class SectionService {
         sectionDao.deleteByStationId(lineId, stationId);
     }
 
-    private void validateStationExistence(final Sections sections, final Station station) {
-        if (!sections.doesStationExist(station)) {
-            throw new NoSuchStationException();
+    private void validateDeleteAvailability(final Sections sections) {
+        if (sections.isUnableToDelete()) {
+            throw new UnavailableSectionDeleteException();
         }
     }
 
-    private void validateSectionCount(final Sections sections) {
-        if (sections.isUnableToDelete()) {
-            throw new UnavailableSectionDeleteException();
+    private void validateStationExistence(final Sections sections, final Station station) {
+        if (!sections.doesStationExist(station)) {
+            throw new NoSuchStationException();
         }
     }
 
