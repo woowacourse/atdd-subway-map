@@ -18,7 +18,7 @@ public class LineResponse {
     }
 
     public LineResponse(Line line) {
-        this(line.id(), line.nameAsString(), line.color(), toStationsResponses(line.sections().sections()));
+        this(line.id(), line.nameAsString(), line.color(), toStationsResponses(line.sortedSections()));
     }
 
     public LineResponse(Long id, String name, String color, List<StationResponse> stations) {

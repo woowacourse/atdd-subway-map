@@ -6,10 +6,6 @@ import java.util.Optional;
 public interface SectionDao {
     Section save(Section section);
 
-    List<Section> findAll();
-
-    Optional<Section> findById(Long id);
-
     void delete(Long id);
 
     List<Section> findByLineId(Long id);

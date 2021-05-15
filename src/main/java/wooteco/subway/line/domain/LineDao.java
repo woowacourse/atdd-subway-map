@@ -12,8 +12,6 @@ public interface LineDao {
 
     Optional<Line> findByName(String name);
 
-    Optional<Line> findByColor(String name);
-
     void clear();
 
     void update(Line line);

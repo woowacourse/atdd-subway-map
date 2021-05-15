@@ -9,13 +9,11 @@ import wooteco.subway.line.dto.LineUpdateRequest;
 import wooteco.subway.line.dto.SectionRequest;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
-import wooteco.subway.station.dto.StationResponse;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class LineService {
@@ -33,11 +31,11 @@ public class LineService {
     public LineResponse save(final LineRequest lineRequest) {
         validateDuplication(lineRequest);
         Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-        line.addSection(saveSection(lineRequest, line));
+        line.addSection(addSection(lineRequest, line));
         return new LineResponse(line);
     }
 
-    private Section saveSection(LineRequest lineRequest, Line line) {
+    private Section addSection(LineRequest lineRequest, Line line) {
         if (Objects.nonNull(lineRequest.getUpStationId()) && Objects.nonNull(lineRequest.getDownStationId())) {
             Station upStation = findStationById(lineRequest.getUpStationId());
             Station downStation = findStationById(lineRequest.getDownStationId());
@@ -49,15 +47,14 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(final Long lineId) {
-        Line line = findLineById(lineId);
-        return new LineResponse(line.id(), line.nameAsString(), line.color(), toStationsResponses(line.sortedSections()));
+        return new LineResponse(findLineById(lineId));
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
-        List<Line> lines = lineDao.findAll();
-        return lines.stream()
-                .map(line -> new LineResponse(line.id(), line.nameAsString(), line.color(), toStationsResponses(line.sections().sections())))
+        return lineDao.findAll()
+                .stream()
+                .map(LineResponse::new)
                 .collect(Collectors.toList());
     }
 
@@ -76,7 +73,7 @@ public class LineService {
     }
 
     @Transactional
-    public void saveSection(final Long lineId, final SectionRequest sectionRequest) {
+    public void addSection(final Long lineId, final SectionRequest sectionRequest) {
         Line line = findLineById(lineId);
         Sections originSections = new Sections(line.sections().sections());
         Section targetSection = new Section(findStationById(sectionRequest.getUpStationId()), findStationById(sectionRequest.getDownStationId()), sectionRequest.getDistance());
@@ -124,20 +121,6 @@ public class LineService {
             }
             sectionDao.save(changedSection);
         }
-    }
-
-    private List<Section> findSectionByLineId(final Long lineId) {
-        return sectionDao.findByLineId(lineId);
-    }
-
-    private List<StationResponse> toStationsResponses(final List<Section> sections) {
-        return sections.stream()
-                .flatMap(section -> Stream.of(
-                        section.upStation(), section.downStation()
-                ))
-                .distinct()
-                .map(StationResponse::new)
-                .collect(Collectors.toList());
     }
 
     private void validateDuplication(final LineRequest lineRequest) {

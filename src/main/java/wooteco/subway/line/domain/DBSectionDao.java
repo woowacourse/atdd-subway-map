@@ -53,16 +53,6 @@ public class DBSectionDao implements SectionDao {
     }
 
     @Override
-    public List<Section> findAll() {
-        return null;
-    }
-
-    @Override
-    public Optional<Section> findById(final Long id) {
-        return Optional.empty();
-    }
-
-    @Override
     public void delete(final Long id) {
         String sql = "DELETE FROM SECTION WHERE id = ?";
         int rowCount = jdbcTemplate.update(sql, id);
@@ -77,21 +67,6 @@ public class DBSectionDao implements SectionDao {
         String sql = "SELECT * FROM SECTION" +
                 " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
                 " WHERE Line.id = ?";
-
-        List<Section> sections = jdbcTemplate.query(sql, sectionRowMapper, id);
-        return sections;
-    }
-
-    public List<Section> findByLineId2(final Long id) {
-        String sql = "SELECT L.name as line_name L.id as line_id" +
-                " S.id as section_id S.distance as section_distance" +
-                " UST.id as up_station_id UST.name as up_station_name" +
-                " DST.id as down_station_id DST.name as down_station_name" +
-                " FROM SECTION S" +
-                " LEFT OUTER JOIN LINE L ON S.line_id = L.id" +
-                " LEFT OUTER JOIN STATION UST ON S.up_station_id = UST.id" +
-                " LEFT OUTER JOIN STATION DST ON S.down_station_id = DST.id" +
-                " WHERE L.id = ?";
 
         List<Section> sections = jdbcTemplate.query(sql, sectionRowMapper, id);
         return sections;

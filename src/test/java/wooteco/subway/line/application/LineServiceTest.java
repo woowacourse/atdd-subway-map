@@ -18,7 +18,6 @@ import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -126,7 +125,7 @@ class LineServiceTest {
         //when
 
         //then
-        assertThatThrownBy(() -> lineService.saveSection(line.id(), new SectionRequest(section1.upStationId(), section1.downStationId(), distance1)))
+        assertThatThrownBy(() -> lineService.addSection(line.id(), new SectionRequest(section1.upStationId(), section1.downStationId(), distance1)))
                 .isInstanceOf(IllegalStateException.class);
     }
 

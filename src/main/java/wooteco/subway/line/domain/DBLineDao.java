@@ -123,13 +123,6 @@ public class DBLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findByColor(final String color) {
-        String sql = "SELECT * from LINE where color = ?";
-        List<Line> lines = jdbcTemplate.query(sql, lineRowMapper, color);
-        return Optional.ofNullable(DataAccessUtils.singleResult(lines));
-    }
-
-    @Override
     public void clear() {
         throw new UnsupportedOperationException("DB 전체 삭제는 불가능!");
     }
