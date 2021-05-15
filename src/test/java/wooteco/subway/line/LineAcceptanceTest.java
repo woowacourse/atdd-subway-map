@@ -33,7 +33,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> postStations(StationRequest stationRequest){
+    private ExtractableResponse<Response> postStations(StationRequest stationRequest) {
         return RestAssured.given().log().all()
             .body(stationRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -98,10 +98,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
+        postStations(new StationRequest("쌍문역"));
+        postStations(new StationRequest("수유역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
         ExtractableResponse<Response> createResponse1 = postLineRequest(lineRequest);
 
-        lineRequest = new LineRequest("3호선", "bg-orange-600");
+        lineRequest = new LineRequest("3호선", "bg-orange-600", 1L, 2L, 10);
         ExtractableResponse<Response> createResponse2 = postLineRequest(lineRequest);
 
         // when
@@ -128,10 +131,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     public void getLine() {
         /// given
-        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
+        postStations(new StationRequest("쌍문역"));
+        postStations(new StationRequest("수유역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
         postLineRequest(lineRequest);
 
-        lineRequest = new LineRequest("3호선", "bg-orange-600");
+        lineRequest = new LineRequest("3호선", "bg-orange-600", 1L, 2L, 10);
         postLineRequest(lineRequest);
 
         // when
@@ -153,7 +159,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     public void putLine() {
         /// given
-        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
+        postStations(new StationRequest("쌍문역"));
+        postStations(new StationRequest("수유역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
+
         postLineRequest(lineRequest);
         lineRequest = new LineRequest("3호선", "bg-orange-600");
 
@@ -174,8 +184,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     public void deleteLine() {
         // given
-        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
-        ExtractableResponse<Response> createResponse = postLineRequest(lineRequest);
+        postStations(new StationRequest("쌍문역"));
+        postStations(new StationRequest("수유역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
+        postLineRequest(lineRequest);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()

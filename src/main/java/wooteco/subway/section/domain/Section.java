@@ -2,33 +2,29 @@ package wooteco.subway.section.domain;
 
 import java.util.Objects;
 import wooteco.subway.exception.SectionDistanceException;
+import wooteco.subway.station.domain.Station;
 
 public class Section {
 
     private static final int DISTANCE_MIN = 1;
-    private final Long lineId;
-    private final Long upStationId;
-    private final Long downStationId;
-    private int distance;
     private Long id;
+    private final Long lineId;
+    private Station upStation;
+    private Station downStation;
+    private int distance;
 
-    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
+    public Section(Long lineId, Station upStation, Station downStation, int distance) {
         validateDistance(distance);
         this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
-    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
-        this(lineId, upStationId, downStationId, distance);
+    public Section(Long id, Long lineId, Station upStation,
+        Station downStation, int distance) {
+        this(lineId, upStation, downStation, distance);
         this.id = id;
-    }
-
-    public Section(Long lineId, Long upStationId, Long downStationId) {
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
     }
 
     private void validateDistance(int distance) {
@@ -37,9 +33,24 @@ public class Section {
         }
     }
 
-    public boolean isSameStations(Section section) {
-        return upStationId.equals(section.upStationId)
-            && downStationId.equals(section.downStationId);
+    public boolean isSameUpStation(Section section) {
+        return upStation.equals(section.getUpStation());
+    }
+
+    public boolean isSameDownStation(Section section) {
+        return downStation.equals(section.getDownStation());
+    }
+
+    public int minusDistance(Section section) {
+        return distance - section.getDistance();
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 
     public Long getId() {
@@ -50,16 +61,16 @@ public class Section {
         return lineId;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
     public Long getUpStationId() {
-        return upStationId;
+        return upStation.getId();
     }
 
     public Long getDownStationId() {
-        return downStationId;
-    }
-
-    public int getDistance() {
-        return distance;
+        return downStation.getId();
     }
 
     @Override
@@ -73,12 +84,12 @@ public class Section {
         Section section = (Section) o;
         return distance == section.distance && Objects.equals(id, section.id)
             && Objects.equals(lineId, section.lineId) && Objects
-            .equals(upStationId, section.upStationId) && Objects
-            .equals(downStationId, section.downStationId);
+            .equals(upStation, section.upStation) && Objects
+            .equals(downStation, section.downStation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, lineId, upStationId, downStationId, distance);
+        return Objects.hash(id, lineId, upStation, downStation, distance);
     }
 }

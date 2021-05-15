@@ -30,19 +30,20 @@ public class StationController {
     @PostMapping
     public ResponseEntity<StationResponse> createStation(
         @RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
-        Station newStation = stationService.createStation(station);
+        Station newStation = stationService.createStation(stationRequest);
         StationResponse stationResponse = new StationResponse(newStation);
+
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId()))
             .body(stationResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = stationService.showStations();
+        List<Station> stations = stationService.findStations();
         List<StationResponse> stationResponses = stations.stream()
             .map(StationResponse::new)
             .collect(Collectors.toList());
+
         return ResponseEntity.ok().body(stationResponses);
     }
 

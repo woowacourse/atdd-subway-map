@@ -1,49 +1,55 @@
 package wooteco.subway.section.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.exception.NotExistLineException;
 import wooteco.subway.exception.NotExistStationException;
-import wooteco.subway.exception.SectionDistanceException;
 import wooteco.subway.section.domain.Section;
+import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.repository.SectionRepository;
-import wooteco.subway.station.repository.StationRepository;
+import wooteco.subway.station.service.StationService;
 
 @Service
 public class SectionService {
 
-    private static final int MIN_DISTANCE = 0;
+    private final StationService stationService;
     private final SectionRepository sectionRepository;
-    private final StationRepository stationRepository;
 
-
-    public SectionService(SectionRepository sectionRepository,
-        StationRepository stationRepository) {
+    public SectionService(StationService stationService,
+        SectionRepository sectionRepository) {
+        this.stationService = stationService;
         this.sectionRepository = sectionRepository;
-        this.stationRepository = stationRepository;
     }
 
     @Transactional
-    public void createSection(Section newSection) {
-        validateDistance(newSection);
-        validateStations(newSection);
-        sectionRepository.save(newSection);
+    public Section create(Long lineId, SectionRequest sectionRequest) {
+        Section newSection = section(lineId, sectionRequest);
+        return sectionRepository.save(newSection);
     }
 
-    private void validateDistance(Section section) {
-        if (section.getDistance() <= MIN_DISTANCE) {
-            throw new SectionDistanceException();
+    @Transactional
+    public List<Section> findAllByLineId(Long id) {
+        List<Section> sections = sectionRepository.findAllByLineId(id);
+        if (sections.isEmpty()) {
+            throw new NotExistLineException();
         }
+        return sections;
     }
 
-    private void validateStations(Section section) {
-        validateStation(section.getUpStationId());
-        validateStation(section.getDownStationId());
-    }
-
-    private void validateStation(Long stationId) {
-        if (!stationRepository.isExist(stationId)) {
+    @Transactional
+    public void delete(Long lineId, SectionRequest sectionRequest) {
+        Section newSection = section(lineId, sectionRequest);
+        if (sectionRepository.delete(newSection) == 0) {
             throw new NotExistStationException();
         }
+    }
+
+    private Section section(Long lineId, SectionRequest sectionRequest) {
+        return new Section(sectionRequest.getId(), lineId,
+            stationService.findById(sectionRequest.getUpStationId()),
+            stationService.findById(sectionRequest.getDownStationId()),
+            sectionRequest.getDistance());
     }
 
 }

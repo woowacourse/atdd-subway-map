@@ -70,11 +70,6 @@ public class StationRepository {
         return jdbcTemplate.queryForObject(sql, Boolean.class, station.getName());
     }
 
-    public Boolean isExist(Long id) {
-        String sql = "SELECT EXISTS(SELECT * FROM station WHERE id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
-    }
-
     public Optional<Station> findById(Long id) {
         String sql = "SELECT * FROM STATION WHERE id = ?";
         List<Station> result = jdbcTemplate.query(sql, stationRowMapper, id);

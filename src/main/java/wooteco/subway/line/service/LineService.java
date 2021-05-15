@@ -2,47 +2,49 @@ package wooteco.subway.line.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.DuplicateLineNameException;
 import wooteco.subway.exception.NotExistLineException;
-import wooteco.subway.exception.NotExistStationException;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.repository.LineRepository;
 import wooteco.subway.section.domain.Section;
-import wooteco.subway.section.domain.SectionAdder;
-import wooteco.subway.section.domain.SectionRemover;
 import wooteco.subway.section.domain.Sections;
-import wooteco.subway.section.repository.SectionRepository;
+import wooteco.subway.section.dto.SectionRequest;
+import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.repository.StationRepository;
+import wooteco.subway.station.service.StationService;
 
 @Service
 public class LineService {
 
+    private final StationService stationService;
+    private final SectionService sectionService;
     private final LineRepository lineRepository;
-    private final SectionRepository sectionRepository;
-    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository,
-        SectionRepository sectionRepository,
-        StationRepository stationRepository) {
+    public LineService(StationService stationService,
+        SectionService sectionService, LineRepository lineRepository) {
+        this.stationService = stationService;
+        this.sectionService = sectionService;
         this.lineRepository = lineRepository;
-        this.sectionRepository = sectionRepository;
-        this.stationRepository = stationRepository;
     }
 
     @Transactional
-    public Line createLine(Line line) {
-        if (lineRepository.isExistName(line)) {
+    public Line createLine(LineRequest lineRequest) {
+        if (lineRepository.isExistName(lineRequest.getName())) {
             throw new DuplicateLineNameException();
         }
-        return lineRepository.save(line);
+        Line newLine = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        Station upStation = stationService.findById(lineRequest.getUpStationId());
+        Station downStation = stationService.findById(lineRequest.getDownStationId());
+        Section newSection = new Section(newLine.getId(), upStation, downStation, lineRequest.getDistance());
+        sectionService.create(newLine.getId(), new SectionRequest(newSection));
+        return newLine;
     }
 
     @Transactional(readOnly = true)
-    public Line showLine(Long id) {
+    public Line findLine(Long id) {
         Optional<Line> line = lineRepository.findById(id);
         if (line.isPresent()) {
             return line.get();
@@ -51,17 +53,19 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public List<Line> showLines() {
+    public List<Line> findLines() {
         List<Line> lines = lineRepository.findAll();
 
         if (lines.isEmpty()) {
             throw new NotExistLineException();
         }
+
         return lines;
     }
 
     @Transactional
-    public void updateLine(Line line) {
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
         if (lineRepository.update(line) == 0) {
             throw new NotExistLineException();
         }
@@ -76,47 +80,43 @@ public class LineService {
 
     @Transactional
     public List<Station> findSortedLineStations(Long id) {
-        Sections sections = new Sections(sectionRepository.findByLineId(id));
-
-        return sections.sortedStationIds().stream()
-            .map(stationId -> {
-                Optional<Station> station = stationRepository.findById(stationId);
-                if (station.isPresent()) {
-                    return station.get();
-                }
-                throw new NotExistStationException();
-            }).collect(Collectors.toList());
+        Sections sections = new Sections(sectionService.findAllByLineId(id));
+        return sections.sortedStations();
     }
 
     @Transactional
-    public void addSection(Section section) {
-        SectionAdder sectionAdder = new SectionAdder(
-            sectionRepository.findByLineId(section.getLineId()));
-        sectionAdder.validateSectionAddable(section);
+    public void addSection(Long lineId, LineRequest lineRequest) {
+        Sections sections = new Sections(sectionService.findAllByLineId(lineId));
+        Section newSection = section(lineId, lineRequest);
+        sections.validateAddable(newSection);
 
-        if (sectionAdder.isTerminalSection(section)) {
-            sectionRepository.save(section);
+        if (sections.isTerminalSection(newSection)) {
+            sectionService.create(lineId, new SectionRequest(newSection));
             return;
         }
-        sectionRepository.save(sectionAdder.createdSection(section));
-        sectionRepository.save(section);
-        sectionRepository.delete(sectionAdder.originSection(section));
+        sectionService.create(lineId, new SectionRequest(sections.createdSectionByAddSection(newSection)));
+        sectionService.create(lineId, new SectionRequest(newSection));
+        sectionService.delete(lineId, new SectionRequest(sections.removedSectionByAddSection(newSection)));
     }
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        SectionRemover sectionRemover = new SectionRemover(sectionRepository.findByLineId(lineId));
-        sectionRemover.validateSectionRemovable(stationId);
+        Sections sections = new Sections(sectionService.findAllByLineId(lineId));
+        Station deletedStation = stationService.findById(stationId);
+        sections.validateRemovable(deletedStation);
 
-        if (sectionRemover.isTerminalSection(stationId)) {
-            sectionRepository.deleteByUpStationIdAndDownStationId(
-                sectionRemover.deletedTerminalSection(lineId, stationId));
+        if (sections.isTerminalStation(deletedStation)) {
+            sectionService.delete(lineId, new SectionRequest(sections.removedTerminalSectionByRemoveStation(deletedStation)));
             return;
         }
-        for (Section section : sectionRemover.deletedSections(lineId, stationId)) {
-            sectionRepository.deleteByUpStationIdAndDownStationId(section);
-        }
-        sectionRepository.save(sectionRemover.createdSection(lineId, stationId));
+        sectionService.create(lineId, new SectionRequest(sections.createdSectionByRemoveStation(lineId, deletedStation)));
+        sections.removedSectionsByRemoveStation(deletedStation).forEach(section -> sectionService.delete(lineId, new SectionRequest(section)));
+    }
+
+    private Section section(Long lineId, LineRequest lineRequest) {
+        Station upStation = stationService.findById(lineRequest.getUpStationId());
+        Station downStation = stationService.findById(lineRequest.getDownStationId());
+        return new Section(lineId, upStation, downStation, lineRequest.getDistance());
     }
 
 }

@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.section.domain.Section;
+import wooteco.subway.station.domain.Station;
 
 @Repository
 public class SectionRepository {
@@ -21,7 +22,6 @@ public class SectionRepository {
     }
 
     public Section save(Section section) {
-
         String sql = "INSERT INTO SECTION (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -44,16 +44,30 @@ public class SectionRepository {
         return section;
     }
 
-    public List<Section> findByLineId(Long lineId) {
-        String sql = "SELECT * FROM SECTION WHERE line_id = ?";
+    public List<Section> findAllByLineId(Long lineId) {
+        String sql = "SELECT *,\n"
+            + "(SELECT name AS up_station_name\n"
+            + "FROM SECTION \n"
+            + "INNER JOIN STATION\n"
+            + "ON section.up_station_id = station.id\n"
+            + "WHERE SECTION.id = ORIGIN_SECTION_TB.id) AS up_station_name,\n"
+            + "(SELECT name AS up_station_name\n"
+            + "FROM SECTION \n"
+            + "INNER JOIN STATION\n"
+            + "ON section.down_station_id = station.id\n"
+            + "WHERE SECTION.id = ORIGIN_SECTION_TB.id) AS down_station_name,\n"
+            + "FROM SECTION as ORIGIN_SECTION_TB WHERE line_id = ?";
 
-        return jdbcTemplate.query(sql, (resultSet, rowNumber) -> new Section(
-            resultSet.getLong("id"),
-            resultSet.getLong("line_id"),
-            resultSet.getLong("up_station_id"),
-            resultSet.getLong("down_station_id"),
-            resultSet.getInt("distance")
-        ), lineId);
+        return jdbcTemplate.query(sql, (resultSet, rowNumber) ->
+            new Section(
+                resultSet.getLong("id"),
+                resultSet.getLong("line_id"),
+                new Station(resultSet.getLong("up_station_id"),
+                    resultSet.getString("up_station_name")),
+                new Station(resultSet.getLong("down_station_id"),
+                    resultSet.getString("down_station_name")),
+                resultSet.getInt("distance")
+            ), lineId);
     }
 
     public Integer delete(Section section) {
@@ -61,12 +75,4 @@ public class SectionRepository {
         return jdbcTemplate.update(sql, section.getId());
     }
 
-    public void deleteAll(List<Section> deleteSections) {
-        deleteSections.forEach(this::delete);
-    }
-
-    public Integer deleteByUpStationIdAndDownStationId(Section section) {
-        String sql = "DELETE FROM SECTION WHERE up_station_id = ? AND down_station_id = ?";
-        return jdbcTemplate.update(sql, section.getUpStationId(), section.getDownStationId());
-    }
 }

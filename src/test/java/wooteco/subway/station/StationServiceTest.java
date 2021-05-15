@@ -12,6 +12,7 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.exception.DuplicateStationNameException;
 import wooteco.subway.exception.NotExistStationException;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.service.StationService;
 
 @DisplayName("Station Service")
@@ -29,54 +30,59 @@ public class StationServiceTest {
     @DisplayName("createStation 메서드는 역을 생성하고 생성한 역을 반환한다.")
     @Test
     void createLine() {
-        Station station = new Station("쌍문역");
-        Station result = stationService.createStation(station);
+        // given, when
+        Station stationA = stationService.createStation(new StationRequest("A"));
 
-        assertThat(result.getId()).isEqualTo(1L);
-        assertThat(result.getName()).isEqualTo(station.getName());
+        // then
+        assertThat(stationA.getId()).isEqualTo(1L);
+        assertThat(stationA.getName()).isEqualTo("A");
     }
 
     @DisplayName("createStation 메서드는 중복된 역을 생성할 경우 예외를 던진다.")
     @Test
     void createLineException() {
-        Station station = new Station("쌍문역");
-        stationService.createStation(station);
+        // given
+        stationService.createStation(new StationRequest("A"));
 
+        // when, then
         assertThatThrownBy(() -> {
-            stationService.createStation(station);
+            stationService.createStation(new StationRequest("A"));
         }).isInstanceOf(DuplicateStationNameException.class);
     }
 
     @DisplayName("showStations 메서드는 역 리스트를 반환한다.")
     @Test
     void showStations() {
-        Station station1 = new Station("쌍문역");
-        Station station2 = new Station("방학역");
-        Station station3 = new Station("도봉역");
+        // given
+        Station stationA = stationService.createStation(new StationRequest("A"));
+        Station stationB = stationService.createStation(new StationRequest("B"));
+        Station stationC = stationService.createStation(new StationRequest("C"));
 
-        stationService.createStation(station1);
-        stationService.createStation(station2);
-        stationService.createStation(station3);
-        List<Station> stations = stationService.showStations();
+        // when
+        List<Station> stations = stationService.findStations();
 
-        assertThat(stations).containsExactly(station1, station2, station3);
+        // then
+        assertThat(stations).containsExactly(stationA, stationB, stationC);
     }
 
     @DisplayName("showStations 메서드는 저장된 역이 없을 경우, 예외를 던진다.")
     @Test
     void showStationsException() {
-        assertThatThrownBy(stationService::showStations)
+        assertThatThrownBy(stationService::findStations)
             .isInstanceOf(NotExistStationException.class);
     }
 
     @DisplayName("showStations 메서드는 삭제하려는 역이 있다면, 역을 삭제한다.")
     @Test
     void delete() {
-        Station station = new Station("쌍문역");
+        // given
+        stationService.createStation(new StationRequest("A"));
 
-        stationService.createStation(station);
+        // when
         stationService.deleteStation(1L);
-        assertThatThrownBy(stationService::showStations)
+
+        // then
+        assertThatThrownBy(stationService::findStations)
             .isInstanceOf(NotExistStationException.class);
     }
 
