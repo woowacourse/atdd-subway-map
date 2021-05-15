@@ -11,10 +11,20 @@ public class Section {
 
     private static final int MIN_DISTANCE_VALUE = 1;
 
+    private Long id;
     private final Line line;
     private final Station upStation;
     private final Station downStation;
     private final int distance;
+
+    @Builder
+    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+        this.id = id;
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
 
     @Builder
     public Section(Line line, Station upStation, Station downStation, int distance) {

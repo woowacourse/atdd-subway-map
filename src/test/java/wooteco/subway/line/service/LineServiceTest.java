@@ -16,6 +16,7 @@ import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.model.Line;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.model.Section;
+import wooteco.subway.section.model.SectionRepository;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.model.Station;
 
@@ -25,6 +26,9 @@ class LineServiceTest {
 
     @Autowired
     private SectionDao sectionDao;
+
+    @Autowired
+    private SectionRepository sectionRepository;
 
     @Autowired
     private StationDao stationDao;
@@ -71,7 +75,7 @@ class LineServiceTest {
         //then
         assertThat(lineDetailsResponse.getName()).isEqualTo("2호선");
         assertThat(lineDetailsResponse.getColor()).isEqualTo("green");
-        assertThat(sectionDao.findSectionsByLineId(lineDetailsResponse.getId()))
+        assertThat(sectionRepository.findSectionsByLineId(lineDetailsResponse.getId()))
             .isNotEmpty();
     }
 
@@ -122,6 +126,6 @@ class LineServiceTest {
         lineService.deleteById(line.getId());
 
         //then
-        assertThat(sectionDao.findSectionsByLineId(line.getId())).isEmpty();
+        assertThat(sectionRepository.findSectionsByLineId(line.getId())).isEmpty();
     }
 }
