@@ -2,7 +2,7 @@ package wooteco.subway.domain.section;
 
 import java.util.stream.Stream;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.exceptions.StationNotFoundException;
+import wooteco.subway.exception.StationNotFoundException;
 
 public class Section {
 
@@ -57,5 +57,9 @@ public class Section {
             .filter(station -> id.equals(station.getId()))
             .findFirst()
             .orElseThrow(StationNotFoundException::new);
+    }
+
+    public boolean contains(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
     }
 }

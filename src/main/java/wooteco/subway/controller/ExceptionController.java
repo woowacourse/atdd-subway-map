@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.exception.LineDuplicationException;
 import wooteco.subway.exception.LineNotFoundException;
 import wooteco.subway.exception.NotAddableSectionException;
+import wooteco.subway.exception.NotRemovableSectionException;
 import wooteco.subway.exception.StationDuplicationException;
 import wooteco.subway.exception.StationNotFoundException;
 
@@ -15,6 +16,7 @@ public class ExceptionController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Void> exception(Exception exception) {
+        exception.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
@@ -29,7 +31,13 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(NotAddableSectionException.class)
-    public ResponseEntity<String> handleNotAddableSectionException(RuntimeException exception) {
+    public ResponseEntity<String> handleNotAddableSectionException(NotAddableSectionException exception) {
+        exception.printStackTrace();
+        return ResponseEntity.badRequest().body(exception.getMessage());
+    }
+
+    @ExceptionHandler(NotRemovableSectionException.class)
+    public ResponseEntity<String> handleNotRemovableSectionException(NotRemovableSectionException exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 }

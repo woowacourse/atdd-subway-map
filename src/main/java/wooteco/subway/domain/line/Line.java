@@ -1,6 +1,5 @@
 package wooteco.subway.domain.line;
 
-import java.util.Deque;
 import java.util.List;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
@@ -60,6 +59,18 @@ public class Line {
 
     public void addSection(Section section) {
         sections.addSection(section);
+    }
+
+    public void removeSectionsBy(Station station) {
+        sections.removeSectionsBy(station);
+    }
+
+    public Section findAffectedSectionByDeleteStation(Station station) {
+        return sections.findAffectedSectionByDeleteStation(station);
+    }
+
+    public List<Section> findAffectedSectionByAddSection(Section section) {
+        return sections.findAffectedSectionByAddSection(section);
     }
 }
 
