@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +17,7 @@ public class MapSqlParameterSourceBuilder {
         return this;
     }
 
-    public SqlParameterSource build() {
+    public MapSqlParameterSource build() {
         return new MapSqlParameterSource(param);
     }
 }
