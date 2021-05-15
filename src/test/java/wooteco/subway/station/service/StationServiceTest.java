@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wooteco.subway.exception.SubwayException;
 import wooteco.subway.exception.station.StationDuplicatedNameException;
 import wooteco.subway.exception.station.StationNotFoundException;
 import wooteco.subway.station.Station;
@@ -106,72 +105,20 @@ class StationServiceTest {
         verify(stationDao).delete(any(Long.class));
     }
 
-    @DisplayName("같은 역을 구간으로 등록하려는 경우")
-    @Test
-    void validatesSameStation() {
-        // given
-        Station 잠실역 = new Station(1L, "잠실역");
-        given(stationDao.findById(잠실역.getId()))
-                .willReturn(잠실역);
-
-        // when & then
-        assertThatThrownBy(() -> stationService.checkValidStation(잠실역.getId(), 잠실역.getId()))
-                .isInstanceOf(SubwayException.class);
-    }
-
-    @DisplayName("존재하지 않는 id로 역을 찾는 경우")
-    @Test
-    void validatesExistStation() {
-        // given
-        given(stationDao.findById(any(Long.class)))
-                .willThrow(StationNotFoundException.class);
-
-        // when & then
-        assertThatThrownBy(() -> stationService.checkValidStation(1L, 2L))
-                .isInstanceOf(SubwayException.class);
-    }
-
-    @DisplayName("구간 리스트를 통해 포함된 모든 역 조회")
-    @Test
-    void findStations() {
-        // given
-        List<SectionResponse> sections = Arrays.asList(
-                new SectionResponse(1L, 2L),
-                new SectionResponse(2L, 3L)
-        );
-        given(stationDao.findById(1L))
-                .willReturn(new Station(1L, "강남역"));
-        given(stationDao.findById(2L))
-                .willReturn(new Station(2L, "잠실역"));
-        given(stationDao.findById(3L))
-                .willReturn(new Station(3L, "왕십리역"));
-
-        // when
-        List<StationResponse> stations = stationService.findStations(sections);
-
-        // then
-        assertThat(stations).hasSize(3);
-        assertThat(stations).usingRecursiveFieldByFieldElementComparator()
-                .containsAll(Arrays.asList(
-                        new StationResponse(1L, "강남역"),
-                        new StationResponse(2L, "잠실역"),
-                        new StationResponse(3L, "왕십리역")
-                ));
-    }
-
     @DisplayName("id로 지하철 역 조회")
     @Test
     void findById() {
         // given
+        Station 강남역 = new Station(1L, "강남역");
         given(stationDao.findById(1L))
-                .willReturn(new Station(1L, "강남역"));
+                .willReturn(강남역);
 
         // when
-        StationResponse response = stationService.findById(1L);
+        Station station = stationService.findById(1L);
 
         // then
-        assertThat(response).usingRecursiveComparison()
-                .isEqualTo(new StationResponse(1L, "강남역"));
+        assertThat(station)
+                .isEqualTo(강남역);
     }
 
     @DisplayName("존재하지 않는 id로 지하철 역 조회")
