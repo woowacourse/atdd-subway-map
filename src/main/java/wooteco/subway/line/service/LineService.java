@@ -4,19 +4,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LinesResponse;
 import wooteco.subway.line.repository.LineRepository;
-import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.repository.SectionRepository;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,19 +52,23 @@ public class LineService {
         }
     }
 
-    public LineResponse getLineResponseById(final Long id) {
+    // TODO : 일급컬렉션을 활용하도록 변경
+    public LineResponse getLineResponseByLineId(final Long id) {
         Line line = lineRepository.getLineById(id);
-        List<Long> sortedStationIds = getStationIdsById(id);
+        List<StationResponse> allStations = stationService.getAllStations();
+        List<StationResponse> stationResponsesByLineId = new ArrayList<>();
 
-        List<StationResponse> stationResponses = stationService.getAllStations();
-        return new LineResponse(line.getId(), line.getName(), line.getColor(),
-                stationResponses.stream()
-                        .filter(stationResponse -> sortedStationIds.contains(stationResponse.getId()))
-                        .collect(Collectors.toList())
-        );
+        for (Long stationId : getStationIdsByLineId(id)) {
+            stationResponsesByLineId.add(allStations.stream()
+                    .filter(stationResponse -> stationResponse.getId().equals(stationId))
+                    .findFirst()
+                    .orElseThrow(NoSuchElementException::new));
+        }
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponsesByLineId);
     }
 
-    private List<Long> getStationIdsById(final Long id) {
+    // TODO : stations이 sections로부터 List<Section>을 받아서 처리할 작업
+    private List<Long> getStationIdsByLineId(final Long id) {
         List<Section> sections = sectionRepository.getSectionsByLineId(id);
         Map<Long, Long> connectMap = new HashMap<>();
 
@@ -78,6 +79,7 @@ public class LineService {
         return getSortedStationIds(connectMap, curId);
     }
 
+    // TODO : stations이 sections로부터 List<Section>을 받아서 처리할 작업
     private List<Long> getSortedStationIds(final Map<Long, Long> connectMap, Long curId) {
         List<Long> stationIdsByLineId = new ArrayList<>();
         stationIdsByLineId.add(curId);
@@ -88,11 +90,12 @@ public class LineService {
         return stationIdsByLineId;
     }
 
+    //TODO : Stations 이 FrontStation을 찾기 위해 필요한 과정
     private Long getFrontId(final Map<Long, Long> connectMap) {
         List<Long> keys = new ArrayList<>(connectMap.keySet());
         List<Long> values = new ArrayList<>(connectMap.values());
 
-        return keys.stream().filter(key -> !values.contains(key)).findFirst().orElse(null);
+        return keys.stream().filter(key -> !values.contains(key)).findFirst().orElseThrow(NoSuchElementException::new);
     }
 
     @Transactional

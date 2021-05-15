@@ -11,7 +11,10 @@ import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.dto.SectionRequest;
 
 import java.sql.PreparedStatement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Repository
 public class SectionRepository {
@@ -20,10 +23,12 @@ public class SectionRepository {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Long> stationIdRowMapperByUpStationId = (resultSet, rowNum) -> resultSet.getLong("up_station_id");
     private final RowMapper<Long> stationIdRowMapperByDownStationId = (resultSet, rowNum) -> resultSet.getLong("down_station_id");
-    private final RowMapper<Section> sectionRowMapperByLineId = (resultSet, rowNum) -> new Section(
-            resultSet.getLong("up_station_id"),
-            resultSet.getLong("down_station_id")
-    );
+    private final RowMapper<Section> sectionRowMapperByLineId = (resultSet, rowNum) ->
+            new Section(
+                    resultSet.getLong("up_station_id"),
+                    resultSet.getLong("down_station_id"),
+                    resultSet.getInt("distance")
+            );
 
     public SectionRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -43,11 +48,13 @@ public class SectionRepository {
         }, keyHolder);
     }
 
-    public List<Section> getSectionsByLineId(final Long id){
-        String query = "SELECT up_station_id, down_station_id FROM section WHERE line_id = ?";
+    public List<Section> getSectionsByLineId(final Long id) {
+        String query = "SELECT up_station_id, down_station_id, distance FROM section WHERE line_id = ?";
         return jdbcTemplate.query(query, sectionRowMapperByLineId, id);
     }
 
+
+    // TODO : 여기서 제거, sections 일급컬렉션에서 할작업
     public List<Long> getStationIdsByLineId(final Long id) {
         String query = "SELECT up_station_id FROM section WHERE line_id = ?";
         Set<Long> stationIds = new HashSet<>(jdbcTemplate.query(query, stationIdRowMapperByUpStationId, id));
@@ -57,6 +64,7 @@ public class SectionRepository {
         return new ArrayList<>(stationIds);
     }
 
+    //TODO : 로직 윗단계로 올리기
     public void saveBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest) {
         try {
             String query = "SELECT down_station_id FROM section WHERE line_id = ? AND up_station_id = ?";
@@ -67,6 +75,7 @@ public class SectionRepository {
         }
     }
 
+    //TODO : 로직 윗단계로 올리기
     private void saveSectionBetweenStationsBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest, final Long beforeConnectedStationId) {
         String query = "SELECT distance FROM section WHERE line_id = ? AND up_station_id = ?";
         int beforeDistance = jdbcTemplate.queryForObject(query, Integer.class, lineId, sectionRequest.getUpStationId());
@@ -76,6 +85,7 @@ public class SectionRepository {
         sectionUpdateBetweenSaveBaseOnUpStation(lineId, sectionRequest, beforeConnectedStationId, beforeDistance);
     }
 
+    //TODO : 로직 윗단계로 올리기
     private void sectionUpdateBetweenSaveBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest, final Long beforeConnectedStationId, final int beforeDistance) {
         save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         save(lineId, sectionRequest.getDownStationId(), beforeConnectedStationId, beforeDistance - sectionRequest.getDistance());
