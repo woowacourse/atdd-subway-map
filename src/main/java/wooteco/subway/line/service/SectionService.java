@@ -25,48 +25,67 @@ public class SectionService {
     public void lineCreateAdd(final Long lineId, final SectionRequest sectionRequest) {
         validateLineId(lineId);
         validateStations(sectionRequest);
-        Section section = new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
-        sectionRepository.save(lineId, section.getUpStationId(), section.getDownStationId(), section.getDistance());
+        Section section = new Section(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        sectionRepository.save(section);
     }
 
     @Transactional
     public void add(final Long lineId, final SectionRequest sectionRequest) {
         Sections sections = new Sections(sectionRepository.getSectionsByLineId(lineId));
         validateAddRequest(lineId, sectionRequest, sections);
-        Section section = new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        Section section = new Section(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
 
         if (sections.containUpStationId(section.getUpStationId())) {
-            addBaseOnUpStation(lineId, section, sections);
+            addBaseOnUpStation(section, sections);
             return;
         }
-        addBaseOnDownStation(lineId, sectionRequest);
+        addBaseOnDownStation(section, sections);
     }
 
-    private void addBaseOnDownStation(final Long lineId, final SectionRequest sectionRequest) {
-        sectionRepository.saveBaseOnDownStation(lineId, sectionRequest);
-    }
-
-    private void addBaseOnUpStation(final Long lineId, final Section section, final Sections sections) {
-        if(sections.containUpStationId(section.getUpStationId())){
+    private void addBaseOnUpStation(final Section section, final Sections sections) {
+        if (sections.containUpStationId(section.getUpStationId())) {
             Long beforeConnectedStationId = sections.getDownStationId(section.getUpStationId());
-            saveSectionBetweenStationsBaseOnUpStation(lineId, section, sections, beforeConnectedStationId);
+            saveSectionBetweenStationsBaseOnUpStation(section, sections, beforeConnectedStationId);
             return;
         }
-        sectionRepository.save(lineId, section.getUpStationId(), section.getDownStationId(), section.getDistance());
+        sectionRepository.save(section);
     }
 
-    private void saveSectionBetweenStationsBaseOnUpStation(final Long lineId, final Section section, final Sections sections, final Long beforeConnectedStationId) {
+    private void addBaseOnDownStation(final Section section, final Sections sections) {
+        if (sections.containDownStationId(section.getDownStationId())) {
+            Long beforeConnectedUpStationId = sections.getUpStationId(section.getDownStationId());
+            saveSectionBetweenStationsBaseOnDownStation(section, sections, beforeConnectedUpStationId);
+            return;
+        }
+        sectionRepository.save(section);
+    }
+
+    private void saveSectionBetweenStationsBaseOnUpStation(final Section section, final Sections sections, final Long beforeConnectedStationId) {
         int beforeDistance = sections.getDistance(section.getUpStationId(), beforeConnectedStationId);
-        if(beforeDistance <= section.getDistance()){
+        if (beforeDistance <= section.getDistance()) {
             throw new IllegalArgumentException("기존에 존재하는 구간의 길이가 더 짧습니다.");
         }
-        sectionUpdateBetweenSaveBaseOnUpStation(lineId, section, beforeConnectedStationId, beforeDistance);
+        sectionUpdateBetweenSaveBaseOnUpStation(section, beforeConnectedStationId, beforeDistance);
     }
 
-    private void sectionUpdateBetweenSaveBaseOnUpStation(final Long lineId, final Section section, final Long beforeConnectedStationId, final int beforeDistance) {
-        sectionRepository.save(lineId, section.getUpStationId(), section.getDownStationId(), section.getDistance());
-        sectionRepository.save(lineId, section.getDownStationId(), beforeConnectedStationId, beforeDistance - section.getDistance());
-        sectionRepository.delete(lineId, section.getUpStationId(), beforeConnectedStationId);
+    private void sectionUpdateBetweenSaveBaseOnUpStation(final Section section, final Long beforeConnectedStationId, final int beforeDistance) {
+        sectionRepository.save(section);
+        sectionRepository.save(new Section(section.getLineId(), section.getDownStationId(), beforeConnectedStationId, beforeDistance - section.getDistance()));
+        sectionRepository.delete(section.getLineId(), section.getUpStationId(), beforeConnectedStationId);
+    }
+
+    private void saveSectionBetweenStationsBaseOnDownStation(final Section section, final Sections sections, final Long beforeConnectedUpStationId) {
+        int beforeDistance = sections.getDistance(beforeConnectedUpStationId, section.getDownStationId());
+        if (beforeDistance <= section.getDistance()) {
+            throw new IllegalArgumentException("기존에 존재하는 구간의 길이가 더 짧습니다.");
+        }
+        sectionUpdateBetweenSaveBaseOnDownStation(section, beforeConnectedUpStationId, beforeDistance);
+    }
+
+    private void sectionUpdateBetweenSaveBaseOnDownStation(final Section section, final Long beforeConnectedUpStationId, final int beforeDistance) {
+        sectionRepository.save(section);
+        sectionRepository.delete(section.getLineId(), beforeConnectedUpStationId, section.getDownStationId());
+        sectionRepository.save(new Section(section.getLineId(), beforeConnectedUpStationId, section.getUpStationId(), beforeDistance - section.getDistance()));
     }
 
     private void validateAddRequest(final Long lineId, final SectionRequest sectionRequest, final Sections sections) {
@@ -84,7 +103,30 @@ public class SectionService {
     @Transactional
     public void delete(final Long lineId, final Long stationId) {
         validateDeleteRequest(lineId, stationId);
-        sectionRepository.deleteSection(lineId, stationId);
+        Sections sections = new Sections(sectionRepository.getSectionsByLineId(lineId));
+        if (sections.containUpStationId(stationId)) {
+            deleteSectionBaseOnUpStation(lineId, stationId, sections);
+            return;
+        }
+        sectionRepository.delete(lineId, sections.getUpStationId(stationId), stationId);
+    }
+
+    private void deleteSectionBaseOnUpStation(final Long lineId, final Long stationId, final Sections sections) {
+        Long backStationId = sections.getDownStationId(stationId);
+
+        if (sections.containDownStationId(stationId)) {
+            Long frontStationId = sections.getUpStationId(stationId);
+            int connectDistance = sections.getDistance(frontStationId, stationId) + sections.getDistance(stationId, backStationId);
+            sectionUpdateWhenBetweenDelete(lineId, stationId, backStationId, frontStationId, connectDistance);
+            return;
+        }
+        sectionRepository.delete(lineId, stationId, backStationId);
+    }
+
+    private void sectionUpdateWhenBetweenDelete(final Long lineId, final Long stationId, final Long backStationId, final Long frontStationId, final int connectDistance) {
+        sectionRepository.delete(lineId, frontStationId, stationId);
+        sectionRepository.delete(lineId, stationId, backStationId);
+        sectionRepository.save(new Section(lineId, frontStationId, backStationId, connectDistance));
     }
 
     private void validateDeleteRequest(final Long lineId, final Long stationId) {

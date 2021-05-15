@@ -7,7 +7,7 @@ import wooteco.subway.exception.NotFoundException;
 import java.util.*;
 
 public class Sections {
-    private static final int LINE_MIN_SIZE = 2;
+    private static final int LINE_MIN_SIZE = 1;
 
     private final List<Section> sections;
     private final Map<Long, Long> connect = new HashMap<>();
@@ -19,11 +19,6 @@ public class Sections {
 
     public List<Long> getStationIds() {
         Set<Long> stationIds = new HashSet<>();
-//        for (Section section : sections) {
-//            stationIds.add(section.getUpStationId());
-//            stationIds.add(section.getDownStationId());
-//        }
-
         connect.forEach((upStationId, downStationId) -> {
             stationIds.add(upStationId);
             stationIds.add(downStationId);
@@ -54,31 +49,24 @@ public class Sections {
         if (!stationIds.contains(stationId)) {
             throw new NotFoundException("해당 station id는 입력받은 Line id에 속해있지 않습니다.");
         }
-        if (stationIds.size() <= LINE_MIN_SIZE) {
-            throw new IllegalArgumentException("해당 라인이 포함하고 있는 구간이 2개 이하입니다");
+        if (sections.size() <= LINE_MIN_SIZE) {
+            throw new IllegalArgumentException("해당 라인이 포함하고 있는 구간이 1개 이하입니다");
         }
     }
-
-//    public int getDistance(final Section newSection) {
-//        for(Section )
-//    }
 
     public Long getDownStationId(final Long upStationId) {
         return connect.get(upStationId);
     }
+    public Long getUpStationId(final Long downStationId) {
+        return sections.stream()
+                .filter(section -> section.getDownStationId().equals(downStationId))
+                .findFirst().get().getUpStationId();
+    }
 
     public int getDistance(final Long upStationId, final Long beforeConnectedStationId) {
-//        for(Section section : sections) {
-//            if (section.getUpStationId().equals(upStationId) && section.getDownStationId().equals(beforeConnectedStationId)) {
-//                return section.getDistance();
-//            }
-//        }
-
         return sections.stream()
                 .filter(section -> section.getUpStationId().equals(upStationId))
                 .filter(section -> section.getDownStationId().equals(beforeConnectedStationId))
                 .findFirst().get().getDistance();
     }
-
-//    public Section get
 }
