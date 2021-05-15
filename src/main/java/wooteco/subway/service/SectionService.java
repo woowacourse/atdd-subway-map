@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineRepository;
 import wooteco.subway.dao.SectionRepository;
@@ -51,20 +50,22 @@ public class SectionService {
         Line line = lineRepository.findById(lineId);
         List<Section> sections = sectionRepository.findAllByLineId(lineId);
 
-        for (Section section : sections) {
-            long sectionId = section.getId();
-
-            Long upStationIdById = sectionRepository.getUpStationIdById(sectionId);
-            Station upStation = stationRepository.findById(upStationIdById);
-
-            Long downStationIdById = sectionRepository.getDownStationIdById(sectionId);
-            Station downStation = stationRepository.findById(downStationIdById);
-
-            section.setUpStation(upStation);
-            section.setDownStation(downStation);
-        }
+        sections.forEach(this::loadEachLine);
         line.setSectionsFrom(sections);
         return line;
+    }
+
+    private void loadEachLine(Section section) {
+        long sectionId = section.getId();
+
+        Long upStationIdById = sectionRepository.getUpStationIdById(sectionId);
+        Station upStation = stationRepository.findById(upStationIdById);
+
+        Long downStationIdById = sectionRepository.getDownStationIdById(sectionId);
+        Station downStation = stationRepository.findById(downStationIdById);
+
+        section.setUpStation(upStation);
+        section.setDownStation(downStation);
     }
 
     private void validateIsRemovable(Line line) {
