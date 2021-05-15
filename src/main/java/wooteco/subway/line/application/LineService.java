@@ -11,7 +11,6 @@ import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -51,15 +50,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findLine(final Long lineId) {
         Line line = findLineById(lineId);
-        Sections sections = new Sections(line.sections().sections());
-
-        List<Section> sections1 = line.sections().sections();
-        for (Section section : sections1) {
-            System.out.println("section = " + section);
-        };
-
-        List<Section> sortedSections = sections.sortedSections();
-        return new LineResponse(line.id(), line.nameAsString(), line.color(), toStationsResponses(sortedSections));
+        return new LineResponse(line.id(), line.nameAsString(), line.color(), toStationsResponses(line.sortedSections()));
     }
 
     @Transactional(readOnly = true)

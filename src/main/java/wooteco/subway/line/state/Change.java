@@ -5,6 +5,8 @@ import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.domain.Sections;
 import wooteco.subway.station.domain.Station;
 
+import java.util.List;
+
 public abstract class Change implements State {
     private final Sections sections;
 
@@ -61,6 +63,11 @@ public abstract class Change implements State {
     @Override
     public State changeSections(Sections sections) {
         return new UnModified(sections);
+    }
+
+    @Override
+    public List<Section> sortedSections() {
+        return sections.sortedSections();
     }
 
     private boolean isChange(Sections originSections) {

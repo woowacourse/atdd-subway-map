@@ -64,8 +64,6 @@ class LineServiceTest {
         distance2 = 5;
         section1 = new Section(1L, line, station1, station2, distance1);
         section2 = new Section(2L, line, station2, station3, distance2);
-        line.addSection(section1);
-        line.addSection(section2);
     }
 
     @Test
@@ -101,6 +99,9 @@ class LineServiceTest {
     @DisplayName("노선에 포함된 구간을 찾는다")
     void findBy() {
         //given
+        line.addSection(section1);
+        line.addSection(section2);
+
         baseLine();
 
         when(lineDao.findById(line.id())).thenReturn(Optional.of(line));
@@ -119,6 +120,8 @@ class LineServiceTest {
     void registrationDuplicateException() {
         //given
         baseLine();
+        line.addSection(section1);
+        line.addSection(section2);
 
         //when
 

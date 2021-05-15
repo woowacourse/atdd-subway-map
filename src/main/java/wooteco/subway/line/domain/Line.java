@@ -63,6 +63,10 @@ public class Line {
         return state.sections();
     }
 
+    public List<Section> sortedSections() {
+        return state.sortedSections();
+    }
+
     public void addSection(final Section targetSection) {
         if (Objects.isNull(targetSection)) {
             return;
