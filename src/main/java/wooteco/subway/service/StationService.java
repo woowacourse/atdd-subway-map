@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.domain.station.StationDao;
@@ -28,13 +29,16 @@ public class StationService {
         return stationDao.findAll();
     }
 
-    private Station findById(Long id) {
-        return stationDao.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 역입니다"));
-    }
-
     public void delete(Long id) {
         findById(id);
         stationDao.delete(id);
+    }
+
+    private Station findById(Long id) {
+        try {
+            return stationDao.findById(id);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("노선이 존재하지 않습니다");
+        }
     }
 }

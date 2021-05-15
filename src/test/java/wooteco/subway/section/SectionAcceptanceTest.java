@@ -31,9 +31,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private static final String DOWN_STATION_ID = "downStationId";
     private static final String DISTANCE = "distance";
 
-    private Long stationA;
-    private Long stationB;
-    private Long stationC;
+    private Long stationIdA;
+    private Long stationIdB;
+    private Long stationIdC;
     private Long newStationId1;
     private Long newStationId2;
     private Long lineId;
@@ -43,20 +43,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
         // set station
-        stationA = createStationAndGetId("A역");
-        stationB = createStationAndGetId("B역");
-        stationC = createStationAndGetId("C역");
+        stationIdA = createStationAndGetId("A역");
+        stationIdB = createStationAndGetId("B역");
+        stationIdC = createStationAndGetId("C역");
         newStationId1 = createStationAndGetId("NEW1역");
         newStationId2 = createStationAndGetId("NEW2역");
 
         // set line
-        Map<String, Object> lineData = lineData("1호선", stationA, stationB);
-        Map<String, Object> lineData2 = lineData("2호선", stationA, stationB);
+        Map<String, Object> lineData = lineData("1호선", stationIdA, stationIdB);
+        Map<String, Object> lineData2 = lineData("2호선", stationIdA, stationIdB);
         lineId = postLine(lineData);
         lineId_hasOneSection = postLine(lineData2);
 
         // set section
-        Map<String, Object> sectionData = sectionData(stationB, stationC, 3);
+        Map<String, Object> sectionData = sectionData(stationIdB, stationIdC, 3);
         postSection(sectionData, lineId);
     }
 
@@ -67,6 +67,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return getRequestSpecification()
                 .body(data)
                 .post(STATIONS_PATH)
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
                 .as(StationResponse.class)
                 .getId();
     }
@@ -75,6 +78,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return getRequestSpecification()
                 .body(data)
                 .post(LINES_PATH)
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
                 .as(LineResponse.class)
                 .getId();
     }
@@ -104,70 +110,70 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간 추가: 상행 종점")
     void create_last_up() {
         // given
-        Map<String, Object> sectionData = sectionData(newStationId1, stationA, 2);
+        Map<String, Object> sectionData = sectionData(newStationId1, stationIdA, 2);
 
         // when
         ExtractableResponse<Response> response = postSection(sectionData, lineId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertLinesStations(lineId, newStationId1, stationA, stationB, stationC);
+        assertLinesStations(lineId, newStationId1, stationIdA, stationIdB, stationIdC);
     }
 
     @Test
     @DisplayName("구간 추가: 하행 종점")
     void create_last_down() {
         // given
-        Map<String, Object> sectionData = sectionData(stationC, newStationId1, 2);
+        Map<String, Object> sectionData = sectionData(stationIdC, newStationId1, 2);
 
         // when
         ExtractableResponse<Response> response = postSection(sectionData, lineId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertLinesStations(lineId, stationA, stationB, stationC, newStationId1);
+        assertLinesStations(lineId, stationIdA, stationIdB, stationIdC, newStationId1);
     }
 
     @Test
     @DisplayName("구간 추가: 중간 - 상행역 기준")
     void create_between_up() {
         // given
-        Map<String, Object> sectionData = sectionData(stationA, newStationId1, 2);
+        Map<String, Object> sectionData = sectionData(stationIdA, newStationId1, 2);
 
         // when
         ExtractableResponse<Response> response = postSection(sectionData, lineId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertLinesStations(lineId, stationA, newStationId1, stationB, stationC);
+        assertLinesStations(lineId, stationIdA, newStationId1, stationIdB, stationIdC);
     }
 
     @Test
     @DisplayName("구간 추가: 중간 - 하행역 기준")
     void create_between_down() {
         // given
-        Map<String, Object> sectionData = sectionData(newStationId1, stationB, 2);
+        Map<String, Object> sectionData = sectionData(newStationId1, stationIdB, 2);
 
         // when
         ExtractableResponse<Response> response = postSection(sectionData, lineId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertLinesStations(lineId, stationA, newStationId1, stationB, stationC);
+        assertLinesStations(lineId, stationIdA, newStationId1, stationIdB, stationIdC);
     }
 
     @Test
     @DisplayName("구간 추가 실패: 상/하행역 둘다 노선에 존재")
     void createFail_bothStationExists() {
         // given
-        Map<String, Object> sectionData = sectionData(stationA, stationB, 2);
+        Map<String, Object> sectionData = sectionData(stationIdA, stationIdB, 2);
 
         // when
         ExtractableResponse<Response> response = postSection(sectionData, lineId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertLinesStations(lineId, stationA, stationB, stationC);
+        assertLinesStations(lineId, stationIdA, stationIdB, stationIdC);
     }
 
     @Test
@@ -181,51 +187,51 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertLinesStations(lineId, stationA, stationB, stationC);
+        assertLinesStations(lineId, stationIdA, stationIdB, stationIdC);
     }
 
     @Test
     @DisplayName("구간 삭제: 상행 종점")
     void delete_last_up() {
         // when
-        ExtractableResponse<Response> response = deleteSection(lineId, stationA);
+        ExtractableResponse<Response> response = deleteSection(lineId, stationIdA);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertLinesStations(lineId, stationB, stationC);
+        assertLinesStations(lineId, stationIdB, stationIdC);
     }
 
     @Test
     @DisplayName("구간 삭제: 하행 종점")
     void delete_last_down() {
         // when
-        ExtractableResponse<Response> response = deleteSection(lineId, stationA);
+        ExtractableResponse<Response> response = deleteSection(lineId, stationIdA);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertLinesStations(lineId, stationB, stationC);
+        assertLinesStations(lineId, stationIdB, stationIdC);
     }
 
     @Test
     @DisplayName("구간 삭제: 중간")
     void delete_between() {
         // when
-        ExtractableResponse<Response> response = deleteSection(lineId, stationB);
+        ExtractableResponse<Response> response = deleteSection(lineId, stationIdB);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertLinesStations(lineId, stationA, stationC);
+        assertLinesStations(lineId, stationIdA, stationIdC);
     }
 
     @Test
     @DisplayName("구간 삭제 실패: 노선에 구간이 하나밖에 없음")
     void deleteFail_lineHasOnlyOneSection() {
         // when
-        ExtractableResponse<Response> response = deleteSection(lineId_hasOneSection, stationA);
+        ExtractableResponse<Response> response = deleteSection(lineId_hasOneSection, stationIdA);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertLinesStations(lineId_hasOneSection, stationA, stationB);
+        assertLinesStations(lineId_hasOneSection, stationIdA, stationIdB);
     }
 
     @Test
@@ -236,7 +242,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertLinesStations(lineId, stationA, stationB, stationC);
+        assertLinesStations(lineId, stationIdA, stationIdB, stationIdC);
     }
 
     private void assertLinesStations(Long lineId, Long... stationIds) {
@@ -274,6 +280,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return getRequestSpecification()
                 .get(LINES_PATH + lineId)
                 .then().log().all()
+                .statusCode(HttpStatus.OK.value())
                 .extract();
     }
 

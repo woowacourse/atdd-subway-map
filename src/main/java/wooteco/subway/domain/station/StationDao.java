@@ -1,81 +1,77 @@
 package wooteco.subway.domain.station;
 
-import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.web.exception.SubwayHttpException;
 
 @Repository
 public class StationDao {
 
-    private final JdbcTemplate jdbcTemplate;
+    private static final String ID = "id";
+    private static final String NAME = "name";
 
-    private final RowMapper<Station> stationRowMapper = (rs, rowNum) -> new Station(
-            rs.getLong("id"),
-            rs.getString("name")
-    );
+    private static final RowMapper<Station> STATION_ROW_MAPPER = (rs, rowNum) ->
+            new Station(
+                    rs.getLong(ID),
+                    rs.getString(NAME)
+            );
 
-    public StationDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
+
+    public StationDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate())
+                .withTableName("station")
+                .usingGeneratedKeyColumns("id");
     }
 
     public Long save(Station station) {
-        final KeyHolder keyHolder = new GeneratedKeyHolder();
-        final String sql = "INSERT INTO station (name) VALUES (?)";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("name", station.getName());
 
         try {
-            jdbcTemplate.update(con -> {
-                PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-                ps.setString(1, station.getName());
-                return ps;
-            }, keyHolder);
+            return simpleJdbcInsert.executeAndReturnKey(params).longValue();
         } catch (DuplicateKeyException e) {
             throw new SubwayHttpException("중복된 역 이름입니다");
         }
-
-        return keyHolder.getKey().longValue();
     }
 
     public List<Station> findAll() {
         final String sql = "SELECT id, name FROM station";
-        return jdbcTemplate.query(sql, stationRowMapper);
+        return namedParameterJdbcTemplate.query(sql, STATION_ROW_MAPPER);
     }
 
-    public Optional<Station> findById(Long id) {
-        final String sql = "SELECT id, name FROM station WHERE id = ?";
+    public Station findById(Long id) {
+        final String sql = "SELECT id, name FROM station WHERE id = :id";
 
-        try {
-            final Station station = jdbcTemplate.queryForObject(sql, stationRowMapper, id);
-            return Optional.of(station);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", id);
+
+        // todo 단일조회 예외처리 이슈
+        return namedParameterJdbcTemplate.queryForObject(sql, params, STATION_ROW_MAPPER);
     }
 
     public void delete(Long id) {
-        final String sql = "DELETE FROM station WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        final String sql = "DELETE FROM station WHERE id = :id";
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", id);
+
+        namedParameterJdbcTemplate.update(sql, params);
     }
 
-    public List<Station> stationsFilteredById(List<Long> ids) {
+    public List<Station> findStationsByIds(List<Long> ids) {
         final String sql = "SELECT id, name FROM station WHERE id IN (:ids)";
 
-        NamedParameterJdbcTemplate npJdbcTemplate = new NamedParameterJdbcTemplate(
-                Objects.requireNonNull(this.jdbcTemplate.getDataSource()));
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("ids", ids);
 
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("ids", ids);
-
-        return npJdbcTemplate.query(sql, parameters, stationRowMapper);
+        return namedParameterJdbcTemplate.query(sql, params, STATION_ROW_MAPPER);
     }
 }
