@@ -7,18 +7,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class StationControllerAdvice {
+public class GlobalExceptionHandler {
+
     @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity<String> handleEmptyResultException(Exception e) {
+    public ResponseEntity<String> handleEmptyResultException(EmptyResultDataAccessException e) {
         return ResponseEntity
                 .badRequest()
                 .body(e.getMessage());
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<String> handleDuplicateUniqueColumnException(Exception e) {
+    public ResponseEntity<String> handleDuplicateNameException(DuplicateKeyException e) {
         return ResponseEntity
                 .badRequest()
-                .body("이미 존재하는 역 이름입니다.");
+                .body("이미 존재하는 이름입니다.");
     }
 }
