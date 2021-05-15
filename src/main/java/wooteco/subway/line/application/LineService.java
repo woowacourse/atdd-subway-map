@@ -34,11 +34,8 @@ public class LineService {
     public LineResponse save(final LineRequest lineRequest) {
         validateDuplication(lineRequest);
         Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-        Section section = saveSection(lineRequest, line);
-        //line.addSection();
-        //return new LineResponse(line);
-        return new LineResponse(line.id(), line.nameAsString(), line.color(), toStationsResponses(Collections.singletonList(section)));
-
+        line.addSection(saveSection(lineRequest, line));
+        return new LineResponse(line);
     }
 
     private Section saveSection(LineRequest lineRequest, Line line) {
@@ -55,6 +52,11 @@ public class LineService {
     public LineResponse findLine(final Long lineId) {
         Line line = findLineById(lineId);
         Sections sections = new Sections(line.sections().sections());
+
+        List<Section> sections1 = line.sections().sections();
+        for (Section section : sections1) {
+            System.out.println("section = " + section);
+        };
 
         List<Section> sortedSections = sections.sortedSections();
         return new LineResponse(line.id(), line.nameAsString(), line.color(), toStationsResponses(sortedSections));

@@ -64,6 +64,8 @@ class LineServiceTest {
         distance2 = 5;
         section1 = new Section(1L, line, station1, station2, distance1);
         section2 = new Section(2L, line, station2, station3, distance2);
+        line.addSection(section1);
+        line.addSection(section2);
     }
 
     @Test
@@ -100,14 +102,16 @@ class LineServiceTest {
     void findBy() {
         //given
         baseLine();
-        when(sectionDao.findByLineId(line.id())).thenReturn(Collections.singletonList(section1));
+
+        when(lineDao.findById(line.id())).thenReturn(Optional.of(line));
 
         //when
         LineResponse response = lineService.findLine(line.id());
 
+
         //then
         assertThat(response.getName()).isEqualTo(line.nameAsString());
-        assertThat(stationResponsesToString(response.getStations())).containsExactly(station1.nameAsString(), station2.nameAsString());
+        assertThat(stationResponsesToString(response.getStations())).containsExactly(station1.nameAsString(), station2.nameAsString(), station3.nameAsString());
     }
 
     @Test

@@ -67,11 +67,17 @@ public class Line {
         if (Objects.isNull(targetSection)) {
             return;
         }
+
+        if (state.sections().sections().size() < 1) {
+            this.state.sections().addSection(targetSection);
+            targetSection.changeLine(this);
+            return;
+        }
+
         validateDuplicationStation(targetSection.upStation(), targetSection.downStation());
         validateContain(targetSection.upStation(), targetSection.downStation());
 
         state.addSection(this, targetSection);
-
         targetSection.changeLine(this);
     }
 
