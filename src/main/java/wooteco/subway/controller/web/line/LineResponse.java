@@ -36,7 +36,7 @@ public class LineResponse {
     private static List<StationResponse> convertDto(Sections orderedSections) {
         List<StationResponse> stationResponses = orderedSections.getSections().stream()
                 .map(Section::getUpStation)
-                .map(StationResponse::new)
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
         StationResponse lastDownStation = getLastDownStation(orderedSections.getSections());
         stationResponses.add(lastDownStation);
@@ -44,7 +44,7 @@ public class LineResponse {
     }
 
     private static StationResponse getLastDownStation(List<Section> sections) {
-        return new StationResponse(sections.get(sections.size() - 1).getDownStation());
+        return StationResponse.of(sections.get(sections.size() - 1).getDownStation());
     }
 
     public Long getId() {

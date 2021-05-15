@@ -62,7 +62,7 @@ public class LineService {
     }
 
     private List<Line> createWithSections(List<Line> lines) {
-        Map<Long, OrderedSections> sectionsAllWithId = sectionService.findSectionsAllWithId();
+        Map<Long, OrderedSections> sectionsAllWithId = sectionService.findSectionsWithLineId();
         return lines.stream()
                 .map(line -> Line.createEntity(line, sectionsAllWithId.get(line.getId())))
                 .collect(toList());
@@ -76,19 +76,17 @@ public class LineService {
     }
 
     public void update(Long lineId, String lineName, String color) {
-        ifAbsent(lineId);
+        if (!lineDao.checkExistId(lineId)) {
+            throw new WrongLineIdException("노선이 존재하지 않습니다.");
+        }
         lineDao.update(new Line(lineId, lineName, color, new EmptySections()));
     }
 
     public void delete(Long lineId) {
-        ifAbsent(lineId);
-        lineDao.delete(lineId);
-        sectionService.deleteLine(lineId);
-    }
-
-    private void ifAbsent(Long lindId) {
-        if (!lineDao.checkExistId(lindId)) {
+        if (!lineDao.checkExistId(lineId)) {
             throw new WrongLineIdException("노선이 존재하지 않습니다.");
         }
+        lineDao.delete(lineId);
+        sectionService.deleteSections(lineId);
     }
 }

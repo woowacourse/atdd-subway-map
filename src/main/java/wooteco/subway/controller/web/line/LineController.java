@@ -1,6 +1,5 @@
 package wooteco.subway.controller.web.line;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.line.exception.WrongLineInformationException;
 import wooteco.subway.line.service.LineService;
-import wooteco.subway.section.service.SectionService;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -24,7 +22,7 @@ import java.util.List;
 public class LineController {
     private final LineService lineService;
 
-    public LineController(LineService lineService, SectionService sectionService) {
+    public LineController(LineService lineService) {
         this.lineService = lineService;
     }
 
@@ -39,20 +37,20 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping
+    public ResponseEntity<List<LineResponse>> showLines() {
+        List<LineResponse> lineResponses = lineService.findAll();
+        return ResponseEntity.ok().body(lineResponses);
+    }
+
+    @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
          lineService.findById(id);
         LineResponse byId = lineService.findById(id);
         return ResponseEntity.ok().body(byId);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> lineResponses = lineService.findAll();
-        return ResponseEntity.ok().body(lineResponses);
-    }
-
-    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping("/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.update(id, lineRequest.getName(), lineRequest.getColor());
         return ResponseEntity.ok().build();

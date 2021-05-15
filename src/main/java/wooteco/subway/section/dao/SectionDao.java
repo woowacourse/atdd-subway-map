@@ -71,7 +71,7 @@ public class SectionDao {
     }
 
     public void saveAll(Long lineId, OrderedSections lineSections) {
-        deleteLine(lineId);
+        deleteSections(lineId);
 
         String sql = "INSERT INTO " +
                 "SECTION (line_id, up_station_id, down_station_id, distance) VALUES " +
@@ -95,7 +95,7 @@ public class SectionDao {
         });
     }
 
-    public void deleteLine(Long lineId) {
+    public void deleteSections(Long lineId) {
         String sql = "DELETE FROM SECTION " +
                 "WHERE line_id = ?";
 

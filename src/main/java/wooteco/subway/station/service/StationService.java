@@ -1,6 +1,7 @@
 package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.controller.web.station.StationResponse;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class StationService {
 
     private final StationDao stationDao;
@@ -45,17 +47,9 @@ public class StationService {
     }
 
     public void delete(Long id) {
-        ifAbsent(id);
-        stationDao.delete(id);
-    }
-
-    private void ifAbsent(Long id) {
         if (!stationDao.checkExistId(id)) {
             throw new WrongStationIdException("역이 존재하지 않습니다.");
         }
-    }
-
-    public void deleteAll() {
-        stationDao.deleteAll();
+        stationDao.delete(id);
     }
 }

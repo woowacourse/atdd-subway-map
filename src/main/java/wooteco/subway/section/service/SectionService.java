@@ -52,20 +52,12 @@ public class SectionService {
         return convert(sectionDao.findByLineId(lineId));
     }
 
-    public Map<Long, OrderedSections> findSectionsAllWithId() {
+    public Map<Long, OrderedSections> findSectionsWithLineId() {
         Map<Long, List<SectionDto>> all = sectionDao.findAll();
         Map<Long, OrderedSections> lineIdAndSections = all.keySet().stream()
                 .collect(toMap(Function.identity(), lineId -> convert(all.get(lineId))));
 
         return lineIdAndSections;
-    }
-
-    public List<OrderedSections> findSectionsAll() {
-        Map<Long, List<SectionDto>> all = sectionDao.findAll();
-        return all.entrySet().stream()
-                .map(Map.Entry::getValue)
-                .map(this::convert)
-                .collect(toList());
     }
 
     private OrderedSections convert(List<SectionDto> sectionDtos) {
@@ -77,7 +69,7 @@ public class SectionService {
                 .collect(collectingAndThen(toList(), OrderedSections::new));
     }
 
-    public void deleteLine(Long lineId) {
-        sectionDao.deleteLine(lineId);
+    public void deleteSections(Long lineId) {
+        sectionDao.deleteSections(lineId);
     }
 }
