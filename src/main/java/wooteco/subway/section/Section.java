@@ -62,12 +62,12 @@ public class Section {
         return upStation.equals(last.getDownStation());
     }
 
-    public boolean isSameUp(Long upStationId) {
-        return upStationId.equals(upStationId);
+    public boolean isSameAsUpId(Long stationId) {
+        return getUpStationId().equals(stationId);
     }
 
-    public boolean isSameDown(Long downStationId) {
-        return downStationId.equals(downStationId);
+    public boolean isSameAsDownId(Long stationId) {
+        return getDownStationId().equals(stationId);
     }
 
     public boolean hasLongerDistanceThan(Section oldSection) {

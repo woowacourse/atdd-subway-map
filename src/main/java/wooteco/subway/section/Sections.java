@@ -58,7 +58,7 @@ public class Sections {
     public void validateSavableSection(Section section) {
         long matchCount = Stream.concat(upStationIds(sections).stream(), downStationIds(sections).stream())
                 .distinct()
-                .filter(id -> id.equals(section.getUpStationId()) || id.equals(section.getDownStationId()))
+                .filter(id -> section.isSameAsUpId(id) || section.isSameAsDownId(id))
                 .count();
 
         if (matchCount == ALL_SECTION_EXIST_COUNT || matchCount == NONE_EXIST_SECTION_COUNT) {
@@ -89,7 +89,8 @@ public class Sections {
     }
 
     private boolean isNotMatchWithDownIds(Long upId) {
-        return downStationIds(sections).stream().noneMatch(downId -> downId.equals(upId));
+        return downStationIds(sections).stream()
+                .noneMatch(downId -> downId.equals(upId));
     }
 
     private Long getLastDownId() {
@@ -100,7 +101,8 @@ public class Sections {
     }
 
     private boolean isNotMatchWithUpIds(Long downId) {
-        return upStationIds(sections).stream().noneMatch(upId -> upId.equals(downId));
+        return upStationIds(sections).stream()
+                .noneMatch(upId -> upId.equals(downId));
     }
 
     private List<Long> upStationIds(List<Section> sections) {
@@ -127,31 +129,36 @@ public class Sections {
 
     private boolean containUpIdInUpIds(Section newSection) {
         return upStationIds(sections).stream()
-                .anyMatch(upId -> upId.equals(newSection.getUpStationId()));
+                .anyMatch(newSection::isSameAsUpId);
     }
 
     private boolean notContainDownIdInDownIds(Section newSection) {
         return downStationIds(sections).stream()
-                .noneMatch(downId -> downId.equals(newSection.getDownStationId()));
+                .noneMatch(newSection::isSameAsDownId);
     }
 
     private boolean containDownIdInDownIds(Section newSection) {
         return downStationIds(sections).stream()
-                .anyMatch(downId -> downId.equals(newSection.getDownStationId()));
+                .anyMatch(newSection::isSameAsDownId);
     }
 
     private boolean notContainUpIdInUpIds(Section newSection) {
         return upStationIds(sections).stream()
-                .noneMatch(upId -> upId.equals(newSection.getDownStationId()));
+                .noneMatch(newSection::isSameAsDownId);
     }
 
     public List<Long> toSortedStationIds() {
-        Long lastStationId = sections.get(sections.size()-1).getDownStationId();
         List<Long> stationIds = sections.stream()
                 .map(Section::getUpStationId)
                 .collect(Collectors.toList());
-        stationIds.add(lastStationId);
+        stationIds.add(lastStationId());
         return stationIds;
+    }
+
+    private Long lastStationId() {
+        int lastIdx = sections.size() - 1;
+        return sections.get(lastIdx).getDownStationId();
+
     }
 
     public void validateDeletable() {
@@ -162,14 +169,14 @@ public class Sections {
 
     public Section findSectionByDown(Long stationId) {
         return sections.stream()
-                .filter(section -> section.isSameDown(stationId))
+                .filter(section -> section.isSameAsDownId(stationId))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("일치하는 하행역이 없습니다."));
     }
 
     public Section findSectionByUp(Long stationId) {
         return sections.stream()
-                .filter(section -> section.isSameUp(stationId))
+                .filter(section -> section.isSameAsUpId(stationId))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("일치하는 상행역이 없습니다."));
     }
