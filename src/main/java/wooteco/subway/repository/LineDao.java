@@ -3,8 +3,6 @@ package wooteco.subway.repository;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
-import javax.swing.text.html.Option;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,7 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.line.Line;
-import wooteco.subway.exceptions.LineNotFoundException;
+import wooteco.subway.exception.LineNotFoundException;
 
 @Repository
 public class LineDao {

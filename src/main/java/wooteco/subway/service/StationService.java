@@ -3,8 +3,8 @@ package wooteco.subway.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.exceptions.StationDuplicationException;
-import wooteco.subway.exceptions.StationNotFoundException;
+import wooteco.subway.exception.StationDuplicationException;
+import wooteco.subway.exception.StationNotFoundException;
 import wooteco.subway.repository.StationDao;
 
 @Service
