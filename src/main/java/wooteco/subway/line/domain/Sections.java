@@ -17,7 +17,7 @@ public class Sections {
         this.sections = new ArrayList<>(sections);
     }
 
-    public void add(final Section section) {
+    public void addSection(final Section section) {
         this.sections.add(section);
     }
 
@@ -43,15 +43,14 @@ public class Sections {
         return Collections.unmodifiableList(sortedSections);
     }
 
-    public void upwardEndPointRegistration(final Line line, final Section targetSection) {
+    public void upwardEndPointRegistration(Line line, final Section targetSection) {
         Section headSection = headSection();
         if (headSection.sameUpStation(targetSection.downStation())) {
-            targetSection.changeLine(line);
             this.sections.add(targetSection);
         }
     }
 
-    public void downwardEndPointRegistration(final Line line, final Section targetSection) {
+    public void downwardEndPointRegistration(Line line, final Section targetSection) {
         Section tailSection = tailSection();
         if (tailSection.sameDownStation(targetSection.upStation())) {
             targetSection.changeLine(line);
@@ -59,7 +58,7 @@ public class Sections {
         }
     }
 
-    public void betweenUpwardRegistration(final Line line, final Section targetSection) {
+    public void betweenUpwardRegistration(Line line, final Section targetSection) {
         Section findSection = findByUpStationSection(targetSection.upStation());
         if (Objects.isNull(findSection)) {
             return;

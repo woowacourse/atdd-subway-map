@@ -118,8 +118,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         String newLineName = "신분당선";
         String newLineColor = "bg-black-500";
-        Long upStationId = 3L;
-        Long downStationId = 4L;
+        Long upStationId = station3.id();
+        Long downStationId = station4.id();
         int distance = 5;
         LineRequest lineRequest = new LineRequest(newLineName, newLineColor, upStationId, downStationId, distance);
 

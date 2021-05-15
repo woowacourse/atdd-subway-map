@@ -13,6 +13,7 @@ import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,15 +34,27 @@ public class LineService {
     public LineResponse save(final LineRequest lineRequest) {
         validateDuplication(lineRequest);
         Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-        Section section = new Section(line, findStationById(lineRequest.getUpStationId()), findStationById(lineRequest.getDownStationId()), lineRequest.getDistance());
-        sectionDao.save(section);
+        Section section = saveSection(lineRequest, line);
+        //line.addSection();
+        //return new LineResponse(line);
         return new LineResponse(line.id(), line.nameAsString(), line.color(), toStationsResponses(Collections.singletonList(section)));
+
+    }
+
+    private Section saveSection(LineRequest lineRequest, Line line) {
+        if (Objects.nonNull(lineRequest.getUpStationId()) && Objects.nonNull(lineRequest.getDownStationId())) {
+            Station upStation = findStationById(lineRequest.getUpStationId());
+            Station downStation = findStationById(lineRequest.getDownStationId());
+            Section section = new Section(line, upStation, downStation, lineRequest.getDistance());
+            return sectionDao.save(section);
+        }
+        return null;
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLine(final Long lineId) {
         Line line = findLineById(lineId);
-        Sections sections = new Sections(findSectionByLineId(line.id()));
+        Sections sections = new Sections(line.sections().sections());
 
         List<Section> sortedSections = sections.sortedSections();
         return new LineResponse(line.id(), line.nameAsString(), line.color(), toStationsResponses(sortedSections));
@@ -70,9 +83,9 @@ public class LineService {
     }
 
     @Transactional
-    public void addSection(final Long lineId, final SectionRequest sectionRequest) {
+    public void saveSection(final Long lineId, final SectionRequest sectionRequest) {
         Line line = findLineById(lineId);
-        Sections originSections = line.sections();
+        Sections originSections = new Sections(line.sections().sections());
         Section targetSection = new Section(findStationById(sectionRequest.getUpStationId()), findStationById(sectionRequest.getDownStationId()), sectionRequest.getDistance());
 
         line.addSection(targetSection);
@@ -83,7 +96,7 @@ public class LineService {
     @Transactional
     public void deleteSectionByStationId(final Long lineId, final Long stationId) {
         Line line = findLineById(lineId);
-        Sections originSections = new Sections(findSectionByLineId(line.id()));
+        Sections originSections = new Sections(line.sections().sections());
         Station targetStation = findStationById(stationId);
 
         line.deleteStation(targetStation);

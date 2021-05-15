@@ -7,10 +7,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class DBLineDao implements LineDao {
@@ -47,18 +48,68 @@ public class DBLineDao implements LineDao {
 
     @Override
     public List<Line> findAll() {
-        String sql = "SELECT * FROM LINE";
-
-        return jdbcTemplate.query(sql, lineRowMapper);
+        String sql = "select L.id as line_id, L.name as line_name, L.color as line_color, " +
+                "S.id as section_id, S.distance as section_distance, " +
+                "UST.id as up_station_id, UST.name as up_station_name, " +
+                "DST.id as down_station_id, DST.name as down_station_name " +
+                "from LINE L \n" +
+                "left outer join SECTION S on L.id = S.line_id " +
+                "left outer join STATION UST on S.up_station_id = UST.id " +
+                "left outer join STATION DST on S.down_station_id = DST.id ";
+        List<Map<String, Object>> result = jdbcTemplate.queryForList(sql);
+        Map<Object, List<Map<String, Object>>> resultByLine = result.stream().collect(Collectors.groupingBy(it -> it.get("LINE_ID")));
+        return resultByLine.entrySet().stream()
+                .map(it -> mapToLine(it.getValue()))
+                .collect(Collectors.toList());
     }
 
     @Override
     public Optional<Line> findById(final Long id) {
-        String sql = "SELECT * FROM LINE WHERE id = ?";
+        String sql = "select L.id as line_id, L.name as line_name, L.color as line_color, " +
+                "S.id as section_id, S.distance as section_distance, " +
+                "UST.id as up_station_id, UST.name as up_station_name, " +
+                "DST.id as down_station_id, DST.name as down_station_name " +
+                "from LINE L \n" +
+                "left outer join SECTION S on L.id = S.line_id " +
+                "left outer join STATION UST on S.up_station_id = UST.id " +
+                "left outer join STATION DST on S.down_station_id = DST.id " +
+                "WHERE L.id = ?";
 
-        List<Line> lines = jdbcTemplate.query(sql, lineRowMapper, id);
+        List<Map<String, Object>> result = jdbcTemplate.queryForList(sql, new Object[]{id});
+        return Optional.ofNullable(mapToLine(result));
+    }
 
-        return Optional.ofNullable(DataAccessUtils.singleResult(lines));
+    private Line mapToLine(List<Map<String, Object>> result) {
+        if (result.size() == 0) {
+            return null;
+        }
+
+        List<Section> sections = extractSections(result);
+
+        return new Line(
+                (Long)result.get(0).get("line_id"),
+                (String)result.get(0).get("line_name"),
+                (String)result.get(0).get("line_color"),
+                sections
+        );
+    }
+
+    private List<Section> extractSections(List<Map<String, Object>> result) {
+        if (result.isEmpty() || Objects.isNull(result.get(0).get("SECTION_ID"))) {
+            return Collections.emptyList();
+        }
+        return result.stream()
+                .collect(Collectors.groupingBy(it -> it.get("SECTION_ID")))
+                .entrySet()
+                .stream()
+                .map(it ->
+                        new Section(
+                                (Long) it.getKey(),
+                                new Line((Long) it.getValue().get(0).get("LINE_ID"), (String) it.getValue().get(0).get("LINE_NAME"), (String) it.getValue().get(0).get("LINE_COLOR")),
+                                new Station((Long) it.getValue().get(0).get("UP_STATION_ID"), (String) it.getValue().get(0).get("UP_STATION_Name")),
+                                new Station((Long) it.getValue().get(0).get("DOWN_STATION_ID"), (String) it.getValue().get(0).get("DOWN_STATION_Name")),
+                                (int) it.getValue().get(0).get("SECTION_DISTANCE")))
+                .collect(Collectors.toList());
     }
 
     @Override

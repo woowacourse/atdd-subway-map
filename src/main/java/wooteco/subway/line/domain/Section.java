@@ -24,7 +24,7 @@ public class Section {
 
     public Section(final Long id, final Line line, final Station upStation, final Station downStation, final int distance) {
         this.id = id;
-        changeLine(line);
+        this.line = line;
         validateStation(upStation, downStation);
         this.upStation = upStation;
         this.downStation = downStation;
@@ -44,7 +44,6 @@ public class Section {
             return;
         }
         this.line = line;
-        line.sections().add(this);
     }
 
     public Station upStation() {

@@ -119,7 +119,7 @@ class LineServiceTest {
         //when
 
         //then
-        assertThatThrownBy(() -> lineService.addSection(line.id(), new SectionRequest(section1.upStationId(), section1.downStationId(), distance1)))
+        assertThatThrownBy(() -> lineService.saveSection(line.id(), new SectionRequest(section1.upStationId(), section1.downStationId(), distance1)))
                 .isInstanceOf(IllegalStateException.class);
     }
 

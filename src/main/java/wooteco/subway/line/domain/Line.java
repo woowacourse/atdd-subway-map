@@ -7,6 +7,9 @@ import wooteco.subway.name.domain.Name;
 import wooteco.subway.name.domain.NullName;
 import wooteco.subway.station.domain.Station;
 
+import java.util.List;
+import java.util.Objects;
+
 public class Line {
     private Long id;
     private Name name;
@@ -27,6 +30,10 @@ public class Line {
 
     public Line(final Long id, final Name name, final String color) {
         this(id, name, color, StateFactory.initialize(new Sections()));
+    }
+
+    public Line(final Long id, final String name, final String color, final List<Section> sections) {
+        this(id, new LineName(name), color, StateFactory.initialize(new Sections(sections)));
     }
 
     public Line(final Long id, final Name name, final String color, final State state) {
@@ -57,10 +64,14 @@ public class Line {
     }
 
     public void addSection(final Section targetSection) {
+        if (Objects.isNull(targetSection)) {
+            return;
+        }
         validateDuplicationStation(targetSection.upStation(), targetSection.downStation());
         validateContain(targetSection.upStation(), targetSection.downStation());
 
         state.addSection(this, targetSection);
+
         targetSection.changeLine(this);
     }
 
