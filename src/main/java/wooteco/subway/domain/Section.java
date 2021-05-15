@@ -21,6 +21,10 @@ public class Section {
         this.distance = distance;
     }
 
+    public static Section of(Station upStation, Station downStation, int distance) {
+        return new Section(upStation, downStation, distance);
+    }
+
     public boolean hasAny(Station station) {
         return upStation.equals(station) || downStation.equals(station);
     }

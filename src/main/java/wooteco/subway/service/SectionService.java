@@ -7,6 +7,7 @@ import wooteco.subway.dao.StationRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
 
@@ -24,7 +25,15 @@ public class SectionService {
         this.sectionRepository = sectionRepository;
     }
 
-    public LineResponse createSection(long lineId, SectionRequest sectionRequest) {
+    public void createSection(long lineId, LineRequest lineRequest) {
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId());
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId());
+        int distance = lineRequest.getDistance();
+
+        sectionRepository.save(lineId, Section.of(upStation, downStation, distance));
+    }
+
+    public LineResponse addSection(long lineId, SectionRequest sectionRequest) {
         Line line = loadLine(lineId);
 
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId());
@@ -46,7 +55,7 @@ public class SectionService {
         updateSections(lineId, line);
     }
 
-    private Line loadLine(long lineId) {
+    public Line loadLine(long lineId) {
         Line line = lineRepository.findById(lineId);
         List<Section> sections = sectionRepository.findAllByLineId(lineId);
 
@@ -56,16 +65,11 @@ public class SectionService {
     }
 
     private void loadEachLine(Section section) {
-        long sectionId = section.getId();
+        Long upStationId = sectionRepository.getUpStationIdById(section.getId());
+        section.setUpStation(stationRepository.findById(upStationId));
 
-        Long upStationIdById = sectionRepository.getUpStationIdById(sectionId);
-        Station upStation = stationRepository.findById(upStationIdById);
-
-        Long downStationIdById = sectionRepository.getDownStationIdById(sectionId);
-        Station downStation = stationRepository.findById(downStationIdById);
-
-        section.setUpStation(upStation);
-        section.setDownStation(downStation);
+        Long downStationId = sectionRepository.getDownStationIdById(section.getId());
+        section.setDownStation(stationRepository.findById(downStationId));
     }
 
     private void validateIsRemovable(Line line) {
