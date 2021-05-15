@@ -33,15 +33,15 @@ public class LineService {
         Long downStationId = lineRequest.getDownStationId();
         int distance = lineRequest.getDistance();
 
+        Station upStation = stationRepository.findById(upStationId);
+        Station downStation = stationRepository.findById(downStationId);
+
         validateDuplicateLineName(name);
 
         Line line = lineRepository.save(new Line(name, color));
         long lineId = line.getId();
 
-        Station upStation = stationRepository.findById(upStationId);
-        Station downStation = stationRepository.findById(downStationId);
         Section section = new Section(upStation, downStation, distance);
-
         sectionRepository.save(lineId, section);
         return findLineById(lineId);
     }
