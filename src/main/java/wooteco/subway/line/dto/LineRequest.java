@@ -4,7 +4,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 public class LineRequest {
-
     @NotBlank(message = "이름은 비어있을 수 없습니다.")
     private String name;
 
