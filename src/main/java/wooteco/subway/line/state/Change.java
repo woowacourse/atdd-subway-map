@@ -1,6 +1,5 @@
 package wooteco.subway.line.state;
 
-import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.domain.Sections;
 import wooteco.subway.station.domain.Station;
@@ -19,24 +18,24 @@ public abstract class Change implements State {
     }
 
     @Override
-    public State addSection(final Line line, final Section targetSection) {
+    public State addSection(final Section targetSection) {
         Sections originSections = new Sections(sections.sections());
-        sections.upwardEndPointRegistration(line, targetSection);
+        sections.upwardEndPointRegistration(targetSection);
         if (isChange(originSections)) {
             return new Modified(this.sections);
         }
 
-        sections.downwardEndPointRegistration(line, targetSection);
+        sections.downwardEndPointRegistration(targetSection);
         if (isChange(originSections)) {
             return new Modified(this.sections);
         }
 
-        sections.betweenUpwardRegistration(line, targetSection);
+        sections.betweenUpwardRegistration(targetSection);
         if (isChange(originSections)) {
             return new Modified(this.sections);
         }
 
-        sections.betweenDownwardRegistration(line, targetSection);
+        sections.betweenDownwardRegistration(targetSection);
         if (isChange(originSections)) {
             return new Modified(this.sections);
         }
@@ -71,6 +70,6 @@ public abstract class Change implements State {
     }
 
     private boolean isChange(final Sections originSections) {
-        return !originSections.changedSections(this.sections).isEmpty();
+        return !originSections.dirtyChecking(this.sections).isEmpty();
     }
 }

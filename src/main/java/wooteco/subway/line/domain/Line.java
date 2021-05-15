@@ -14,7 +14,7 @@ public class Line {
     private final Long id;
     private Name name;
     private String color;
-    private State state;
+    private final State state;
 
     public Line(final Long id) {
         this(id, new NullName(), null);
@@ -81,7 +81,7 @@ public class Line {
         validateDuplicationStation(targetSection.upStation(), targetSection.downStation());
         validateContain(targetSection.upStation(), targetSection.downStation());
 
-        state.addSection(this, targetSection);
+        state.addSection(targetSection);
         targetSection.changeLine(this);
     }
 

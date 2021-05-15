@@ -2,6 +2,7 @@ package wooteco.subway.line.domain;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -103,5 +105,32 @@ public class JDBCSectionDao implements SectionDao {
         String sql = "DELETE FROM SECTION" +
                 " WHERE SECTION.line_id = ? AND SECTION.down_station_id = ?";
         jdbcTemplate.update(sql, lineId, downStationId);
+    }
+
+    @Override
+    public void deleteByLineId(Long lineId) {
+        String sql = "DELETE FROM SECTION" +
+                " WHERE SECTION.line_id = ?";
+        jdbcTemplate.update(sql, lineId);
+    }
+
+    @Override
+    public void batchInsert(List<Section> sortedSections) {
+        String sql = "INSERT INTO SECTION(line_id, up_station_id, down_station_id, distance) VALUES(?, ?, ?, ?)";
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                Section section = sortedSections.get(i);
+                ps.setLong(1, section.lineId());
+                ps.setLong(2, section.upStationId());
+                ps.setLong(3, section.downStationId());
+                ps.setInt(4, section.distance());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return sortedSections.size();
+            }
+        });
     }
 }

@@ -17,4 +17,8 @@ public interface SectionDao {
     Optional<Section> findByLineIdWithDownStationId(Long lineId, Long downStationId);
 
     void deleteByLineIdWithDownStationId(Long lineId, Long downStationId);
+
+    void deleteByLineId(Long lineId);
+
+    void batchInsert(List<Section> sortedSections);
 }

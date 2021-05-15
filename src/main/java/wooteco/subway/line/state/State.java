@@ -1,6 +1,5 @@
 package wooteco.subway.line.state;
 
-import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.domain.Sections;
 import wooteco.subway.station.domain.Station;
@@ -8,7 +7,7 @@ import wooteco.subway.station.domain.Station;
 import java.util.List;
 
 public interface State {
-    State addSection(Line line, Section targetSection);
+    State addSection(Section targetSection);
 
     Sections sections();
 

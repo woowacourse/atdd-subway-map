@@ -2,7 +2,10 @@ package wooteco.subway.line.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.line.domain.*;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.LineDao;
+import wooteco.subway.line.domain.Section;
+import wooteco.subway.line.domain.SectionDao;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineUpdateRequest;
@@ -12,7 +15,6 @@ import wooteco.subway.station.domain.StationDao;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -84,52 +86,23 @@ public class LineService {
     @Transactional
     public void addSection(final Long lineId, final SectionRequest sectionRequest) {
         Line line = findLineById(lineId);
-        Sections originSections = new Sections(line.sortedSections());
         Section targetSection = toSection(line, sectionRequest);
 
         line.addSection(targetSection);
 
-        dirtyChecking(originSections, line.sections());
+        sectionDao.deleteByLineId(line.id());
+        sectionDao.batchInsert(line.sortedSections());
     }
 
     @Transactional
     public void deleteSectionByStationId(final Long lineId, final Long stationId) {
         Line line = findLineById(lineId);
-        Sections originSections = new Sections(line.sortedSections());
         Station targetStation = findStationById(stationId);
 
         line.deleteStation(targetStation);
 
-        deleteDirtyChecking(originSections, line.sections());
-    }
-
-    private void deleteDirtyChecking(final Sections originSections, final Sections sections) {
-        List<Section> changedSections = sections.changedSections(originSections);
-        for (Section section : changedSections) {
-            Section changedSection = new Section(section.id(), section.line(), section.upStation(), section.downStation(), section.distance());
-            sectionDao.delete(changedSection.id());
-
-            Optional<Section> findStation = sections.findByUpwardStation(section.upStation());
-            if (findStation.isPresent()) {
-                Section saveSection = findStation.get();
-                sectionDao.save(new Section(saveSection.line(), saveSection.upStation(), saveSection.downStation(), saveSection.distance()));
-            }
-        }
-    }
-
-    private void dirtyChecking(final Sections originSections, final Sections sections) {
-        List<Section> changedSections = originSections.changedSections(sections);
-        for (Section section : changedSections) {
-            Section changedSection = new Section(section.id(), section.line(), section.upStation(), section.downStation(), section.distance());
-            if (sectionDao.findByLineIdWithUpStationId(changedSection.line().id(), changedSection.upStation().id()).isPresent()) {
-                sectionDao.deleteByLineIdWithUpStationId(changedSection.line().id(), changedSection.upStation().id());
-            }
-
-            if (sectionDao.findByLineIdWithDownStationId(changedSection.line().id(), changedSection.downStation().id()).isPresent()) {
-                sectionDao.deleteByLineIdWithDownStationId(changedSection.line().id(), changedSection.downStation().id());
-            }
-            sectionDao.save(changedSection);
-        }
+        sectionDao.deleteByLineId(line.id());
+        sectionDao.batchInsert(line.sortedSections());
     }
 
     private void validateDuplication(final LineRequest lineRequest) {

@@ -44,45 +44,44 @@ public class Sections {
         return Collections.unmodifiableList(sortedSections);
     }
 
-    public void upwardEndPointRegistration(final Line line, final Section targetSection) {
+    public void upwardEndPointRegistration(final Section targetSection) {
         Section headSection = headSection();
         if (headSection.sameUpStation(targetSection.downStation())) {
             this.sections.add(targetSection);
         }
     }
 
-    public void downwardEndPointRegistration(final Line line, final Section targetSection) {
+    public void downwardEndPointRegistration(final Section targetSection) {
         Section tailSection = tailSection();
         if (tailSection.sameDownStation(targetSection.upStation())) {
-            targetSection.changeLine(line);
             this.sections.add(targetSection);
         }
     }
 
-    public void betweenUpwardRegistration(final Line line, final Section targetSection) {
+    public void betweenUpwardRegistration(final Section targetSection) {
         Section findSection = findByUpStationSection(targetSection.upStation());
         if (Objects.isNull(findSection)) {
             return;
         }
         validateDistance(findSection.distance(), targetSection.distance());
-        targetSection.changeLine(line);
 
         this.sections.remove(findSection);
         this.sections.add(targetSection);
-        this.sections.add(new Section(targetSection.line(), targetSection.downStation(), findSection.downStation(), findSection.distance() - targetSection.distance()));
+        this.sections.add(new Section(targetSection.line(), targetSection.downStation(), findSection.downStation(),
+                findSection.distance() - targetSection.distance()));
     }
 
-    public void betweenDownwardRegistration(final Line line, final Section targetSection) {
+    public void betweenDownwardRegistration(final Section targetSection) {
         Section findSection = findByDownStationSection(targetSection.downStation());
         if (Objects.isNull(findSection)) {
             return;
         }
         validateDistance(findSection.distance(), targetSection.distance());
-        targetSection.changeLine(line);
 
         this.sections.remove(findSection);
         this.sections.add(targetSection);
-        this.sections.add(new Section(targetSection.line(), findSection.upStation(), targetSection.upStation(), findSection.distance() - targetSection.distance()));
+        this.sections.add(new Section(targetSection.line(), findSection.upStation(), targetSection.upStation(),
+                findSection.distance() - targetSection.distance()));
     }
 
     public void deleteStation(final Station station) {
@@ -111,7 +110,7 @@ public class Sections {
         }
     }
 
-    public List<Section> changedSections(final Sections sections) {
+    public List<Section> dirtyChecking(final Sections sections) {
         List<Section> changedSections = new ArrayList<>();
         for (Section section : sections.sections) {
             if (!this.sections.contains(section)) {
@@ -119,13 +118,6 @@ public class Sections {
             }
         }
         return changedSections;
-    }
-
-    public Optional<Section> findByUpwardStation(final Station upStation) {
-        return sections.stream()
-                .filter(section -> section.sameUpStation(upStation))
-                .findFirst();
-
     }
 
     public boolean existSection(final Station upStation, final Station downStation) {
@@ -138,7 +130,7 @@ public class Sections {
     public boolean noContainStation(final Station upStation, final Station downStation) {
         List<Station> stations = stations();
 
-        return !stations.contains(upStation) && !stations.contains(downStation) ;
+        return !stations.contains(upStation) && !stations.contains(downStation);
     }
 
     private List<Station> stations() {
