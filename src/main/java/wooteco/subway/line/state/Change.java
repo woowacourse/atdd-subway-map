@@ -19,7 +19,7 @@ public abstract class Change implements State {
     }
 
     @Override
-    public State addSection(Line line, Section targetSection) {
+    public State addSection(final Line line, final Section targetSection) {
         Sections originSections = new Sections(sections.sections());
         sections.upwardEndPointRegistration(line, targetSection);
         if (isChange(originSections)) {
@@ -45,7 +45,7 @@ public abstract class Change implements State {
     }
 
     @Override
-    public State deleteStation(Station station) {
+    public State deleteStation(final Station station) {
         Sections originSections = new Sections(sections.sections());
         sections.deleteStation(station);
         if (isChange(originSections)) {
@@ -56,21 +56,21 @@ public abstract class Change implements State {
     }
 
     @Override
-    public boolean containStation(Station station) {
-        return sections.containStation(station);
-    }
-
-    @Override
-    public State changeSections(Sections sections) {
-        return new UnModified(sections);
-    }
-
-    @Override
     public List<Section> sortedSections() {
         return sections.sortedSections();
     }
 
-    private boolean isChange(Sections originSections) {
+    @Override
+    public boolean existSection(final Station upStation, final Station downStation) {
+        return sections.existSection(upStation, downStation);
+    }
+
+    @Override
+    public boolean noContainStation(final Station upStation, final Station downStation) {
+        return sections.noContainStation(upStation, downStation);
+    }
+
+    private boolean isChange(final Sections originSections) {
         return !originSections.changedSections(this.sections).isEmpty();
     }
 }

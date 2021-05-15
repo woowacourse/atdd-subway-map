@@ -3,6 +3,7 @@ package wooteco.subway.line.domain;
 import wooteco.subway.station.domain.Station;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Sections {
@@ -43,14 +44,14 @@ public class Sections {
         return Collections.unmodifiableList(sortedSections);
     }
 
-    public void upwardEndPointRegistration(Line line, final Section targetSection) {
+    public void upwardEndPointRegistration(final Line line, final Section targetSection) {
         Section headSection = headSection();
         if (headSection.sameUpStation(targetSection.downStation())) {
             this.sections.add(targetSection);
         }
     }
 
-    public void downwardEndPointRegistration(Line line, final Section targetSection) {
+    public void downwardEndPointRegistration(final Line line, final Section targetSection) {
         Section tailSection = tailSection();
         if (tailSection.sameDownStation(targetSection.upStation())) {
             targetSection.changeLine(line);
@@ -58,7 +59,7 @@ public class Sections {
         }
     }
 
-    public void betweenUpwardRegistration(Line line, final Section targetSection) {
+    public void betweenUpwardRegistration(final Line line, final Section targetSection) {
         Section findSection = findByUpStationSection(targetSection.upStation());
         if (Objects.isNull(findSection)) {
             return;
@@ -120,24 +121,38 @@ public class Sections {
         return changedSections;
     }
 
-    public Optional<Section> findByUpwardStation(Station upStation) {
+    public Optional<Section> findByUpwardStation(final Station upStation) {
         return sections.stream()
                 .filter(section -> section.sameUpStation(upStation))
                 .findFirst();
 
     }
 
-    public boolean containStation(Station station) {
-        return sections.stream()
-                .flatMap(section -> Stream.of(
-                        section.upStation(),
-                        section.downStation()
-                ))
-                .distinct()
-                .anyMatch(targetStation -> targetStation.equals(station));
+    public boolean existSection(final Station upStation, final Station downStation) {
+        List<Station> stations = stations();
+        List<Station> targetStation = Arrays.asList(upStation, downStation);
+
+        return stations.containsAll(targetStation);
     }
 
-    private void deleteDownwardEndPointStation(Station station) {
+    public boolean noContainStation(final Station upStation, final Station downStation) {
+        List<Station> stations = stations();
+
+        return !stations.contains(upStation) && !stations.contains(downStation) ;
+    }
+
+    private List<Station> stations() {
+        return sections.stream()
+                .flatMap(section ->
+                        Stream.of(
+                                section.upStation(),
+                                section.downStation()
+                        ))
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private void deleteDownwardEndPointStation(final Station station) {
         Section findSection = findByDownStationSection(station);
         this.sections.remove(findSection);
     }
@@ -147,7 +162,7 @@ public class Sections {
         this.sections.remove(findSection);
     }
 
-    private void validateDistance(int baseDistance, int targetDistance) {
+    private void validateDistance(final int baseDistance, final int targetDistance) {
         if (baseDistance <= targetDistance) {
             throw new IllegalStateException("기존 역 사이 길이보다 크거나 같을 수 없습니다");
         }
@@ -171,7 +186,7 @@ public class Sections {
         throw new IllegalStateException("구간이 제대로 등록되어있지 않음!");
     }
 
-    private int tailMatchesCount(Section section) {
+    private int tailMatchesCount(final Section section) {
         Long tailStationId = section.downStation().id();
         int checkCount = 0;
         for (Section target : sections) {
@@ -185,7 +200,7 @@ public class Sections {
         return checkCount;
     }
 
-    private int headMatchesCount(Section section) {
+    private int headMatchesCount(final Section section) {
         Long headStationId = section.upStation().id();
         int checkCount = 0;
         for (Section target : sections) {
@@ -199,7 +214,7 @@ public class Sections {
         return checkCount;
     }
 
-    private Section findByUpStationSection(Station targetUpStation) {
+    private Section findByUpStationSection(final Station targetUpStation) {
         for (Section section : sections) {
             if (section.sameUpStation(targetUpStation)) {
                 return section;
@@ -208,7 +223,7 @@ public class Sections {
         return null;
     }
 
-    private Section findByDownStationSection(Station targetDownStation) {
+    private Section findByDownStationSection(final Station targetDownStation) {
         for (Section section : sections) {
             if (section.sameDownStation(targetDownStation)) {
                 return section;

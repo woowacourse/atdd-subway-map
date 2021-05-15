@@ -14,9 +14,9 @@ public interface State {
 
     State deleteStation(Station station);
 
-    boolean containStation(Station station);
-
-    State changeSections(Sections sections);
-
     List<Section> sortedSections();
+
+    boolean existSection(Station upStation, Station downStation);
+
+    boolean noContainStation(Station upStation, Station downStation);
 }

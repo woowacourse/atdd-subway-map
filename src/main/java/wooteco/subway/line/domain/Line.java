@@ -14,18 +14,18 @@ public class Line {
     private final Long id;
     private Name name;
     private String color;
-    private final State state;
+    private State state;
 
     public Line(final Long id) {
-        this(id, new NullName(), null, StateFactory.initialize(new Sections()));
+        this(id, new NullName(), null);
     }
 
     public Line(final String name, final String color) {
-        this(null, new LineName(name), color, StateFactory.initialize(new Sections()));
+        this(null, new LineName(name), color);
     }
 
     public Line(final Long id, final String name, final String color) {
-        this(id, new LineName(name), color, StateFactory.initialize(new Sections()));
+        this(id, new LineName(name), color);
     }
 
     public Line(final Long id, final Name name, final String color) {
@@ -93,10 +93,6 @@ public class Line {
         return this.name.sameName(name);
     }
 
-    public boolean sameColor(String color) {
-        return this.color.equals(color);
-    }
-
     public boolean sameId(final Long id) {
         return this.id.equals(id);
     }
@@ -110,14 +106,14 @@ public class Line {
     }
 
     private void validateDuplicationStation(final Station upStation, final Station downStation) {
-        if (state.containStation(upStation) && state.containStation(downStation)) {
+        if (state.existSection(upStation, downStation)) {
             throw new IllegalStateException("이미 등록되어 있는 구간임!");
         }
     }
 
     private void validateContain(final Station upStation, final Station downStation) {
-        if (!state.containStation(upStation) && !state.containStation(downStation)) {
-            throw new IllegalStateException("노선에 등록되어 있지 않은 상행, 하행역임!!");
+        if (state.noContainStation(upStation, downStation)) {
+            throw new IllegalStateException("상행, 하행역 둘다 노선에 등록되어 있지 않음!!");
         }
     }
 }
