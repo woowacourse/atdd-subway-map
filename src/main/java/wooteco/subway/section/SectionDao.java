@@ -17,9 +17,10 @@ public class SectionDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void save(long lineId, long upStationId, long downStationId, int distance) {
+    public void save(Section section) {
         String sql = "INSERT INTO SECTION (line_id, up_station_id, down_station_id, distance) values (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, lineId, upStationId, downStationId, distance);
+        jdbcTemplate.update(sql, section.getLine().getId(),
+                section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
     }
 
     public Map<Long, Long> sectionMap(long id) {
@@ -28,14 +29,15 @@ public class SectionDao {
         return jdbcTemplate.query(sql, sectionRowMapper(), id);
     }
 
-    public void delete(long lineId, long stationId, long downStationId) {
+    public void delete(Section section) {
         String sql = "DELETE FROM SECTION WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?";
-        jdbcTemplate.update(sql, lineId, stationId, downStationId);
+        jdbcTemplate.update(sql, section.getLine().getId(), section.getUpStation().getId(), section.getDownStation().getId());
     }
 
-    public int distance(long lineId, long upStationId, long downStationId) {
+    public int distance(Section section) {
         String sql = "SELECT distance FROM SECTION WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?";
-        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Integer.class, lineId, upStationId, downStationId));
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Integer.class,
+                section.getLine().getId(), section.getUpStation().getId(), section.getDownStation().getId()));
     }
 
     public boolean isExistStation(long lineId, long stationId) {
@@ -43,12 +45,12 @@ public class SectionDao {
         return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId, stationId));
     }
 
-    public List<Long> findDownStationIdByUpStationId(long lineId, long upStationId) {
+    public List<Long> findDownStation(long lineId, long upStationId) {
         String sql = "SELECT down_station_id FROM SECTION WHERE line_id = ? AND up_station_id = ?";
         return jdbcTemplate.queryForList(sql, Long.class, lineId, upStationId);
     }
 
-    public List<Long> findUpStationIdByDownStationId(long lineId, long downStationId) {
+    public List<Long> findUpStation(long lineId, long downStationId) {
         String sql = "SELECT up_station_id FROM SECTION WHERE line_id = ? AND down_station_id = ?";
         return jdbcTemplate.queryForList(sql, Long.class, lineId, downStationId);
     }

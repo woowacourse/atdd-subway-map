@@ -17,6 +17,10 @@ public class Line {
     public Line() {
     }
 
+    public Line(Long id) {
+        this(id, null, null, Collections.emptyList());
+    }
+
     public Line(String name, String color) {
         this(null, name, color, Collections.emptyList(), Collections.emptyList());
     }
@@ -31,6 +35,10 @@ public class Line {
         this.color = color;
         this.stations = stations;
         this.sections = sections;
+    }
+
+    public Line update(String lineName, String lineColor) {
+        return new Line(id, lineName, lineColor, stations);
     }
 
     public Long getId() {

@@ -26,14 +26,14 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long save(String lineName, String lineColor) {
+    public long save(Line line) {
         String sql = "INSERT INTO LINE (name, color) values (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, lineName);
-            ps.setString(2, lineColor);
+            ps.setString(1, line.getName());
+            ps.setString(2, line.getColor());
             return ps;
         }, keyHolder);
 
@@ -57,13 +57,13 @@ public class LineDao {
         return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
 
-    public void update(long id, String lineName, String lineColor) {
+    public void update(Line newLine) {
         String sql = "UPDATE LINE set name = ?, color = ? where id = ?";
-        jdbcTemplate.update(sql, lineName, lineColor, id);
+        jdbcTemplate.update(sql, newLine.getName(), newLine.getColor(), newLine.getId());
     }
 
-    public void delete(long id) {
+    public void delete(Line line) {
         String sql = "DELETE FROM LINE WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, line.getId());
     }
 }

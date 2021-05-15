@@ -11,6 +11,14 @@ public class Station {
         this(id, null);
     }
 
+    public Station(String name) {
+        this(null, name);
+    }
+
+    public Station(StationRequest stationRequest) {
+        this(null, stationRequest.getName());
+    }
+
     public Station(Long id, String name) {
         this.id = id;
         this.name = name;

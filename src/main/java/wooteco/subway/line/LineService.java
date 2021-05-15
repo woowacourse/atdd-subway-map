@@ -25,8 +25,9 @@ public class LineService {
     }
 
     public Line createLine(Line line, Section section) {
-        long lineId = lineDao.save(line.getName(), line.getColor());
-        sectionDao.save(lineId, section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
+        long lineId = lineDao.save(line);
+        Section newSection = new Section(new Line(lineId), section.getUpStation(), section.getDownStation(), section.getDistance());
+        sectionDao.save(newSection);
 
         return new Line(lineId, line.getName(), line.getColor(), Collections.emptyList());
     }
@@ -45,12 +46,14 @@ public class LineService {
         return new Line(lineId, line.getName(), line.getColor(), stations);
     }
 
-    public void updateLine(long id, String lineName, String lineColor) {
-        lineDao.update(id, lineName, lineColor);
+    public void updateLine(long id, Line newLine) {
+        Line line = lineDao.findById(id);
+        lineDao.update(line.update(newLine.getName(), newLine.getColor()));
     }
 
     public void deleteLine(long id) {
-        lineDao.delete(id);
+        Line line = lineDao.findById(id);
+        lineDao.delete(line);
     }
 
     private long findUpStation(Map<Long, Long> sectionMap) {
