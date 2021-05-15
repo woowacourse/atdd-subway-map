@@ -28,12 +28,6 @@ public class SectionService {
         return sectionDao.save(section);
     }
 
-    public void addInLine(Line line, Section section) {
-        Sections sections = line.getSections();
-        sections.addSection(section);
-        synchronizeDB(line);
-    }
-
     public void synchronizeDB(Line line) {
         deleteByLineId(line.getId());
         addSections(line.getSections());

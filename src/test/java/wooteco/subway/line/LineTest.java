@@ -2,19 +2,15 @@ package wooteco.subway.line;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.DummyData;
 import wooteco.subway.line.dto.request.LineUpdateRequest;
-import wooteco.subway.section.Section;
 import wooteco.subway.section.Sections;
-import wooteco.subway.station.Station;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static wooteco.subway.DummyData.강남역;
+import static wooteco.subway.DummyData.*;
 
 @DisplayName("지하철 노선 도메인 테스트")
 class LineTest {
@@ -72,7 +68,7 @@ class LineTest {
         // given
         Line 이호선 = new Line(2L, "2호선", "green", new Sections());
         Sections sections = new Sections(
-                Arrays.asList(DummyData.왕십리_잠실, DummyData.잠실_강남)
+                Arrays.asList(이호선_왕십리_잠실_거리10, 이호선_잠실_강남_거리5)
         );
 
         // when
@@ -87,7 +83,7 @@ class LineTest {
     void deleteStationInSection() {
         // given
         Sections sections = new Sections(
-                Arrays.asList(DummyData.왕십리_잠실, DummyData.잠실_강남)
+                Arrays.asList(이호선_왕십리_잠실_거리10, 이호선_잠실_강남_거리5)
         );
         Line 이호선 = new Line(2L, "2호선", "green", sections);
 
@@ -96,5 +92,22 @@ class LineTest {
 
         // then
         assertThat(이호선.getSections().getSections()).hasSize(1);
+    }
+
+    @DisplayName("구간 추가")
+    @Test
+    void addSection() {
+        // given
+        Sections sections = new Sections(Arrays.asList(
+                이호선_왕십리_잠실_거리10,
+                이호선_잠실_강남_거리5
+        ));
+        Line 이호선 = new Line(2L, "2호선", "green", sections);
+
+        // when
+        이호선.addSection(이호선_강남_구의_거리7);
+
+        // then
+        assertThat(이호선.getSections().getSections()).hasSize(3);
     }
 }

@@ -11,9 +11,6 @@ public class Section {
     private Station downStation;
     private int distance;
 
-    public Section() {
-    }
-
     public Section(Long id, Section section) {
         this(id, section.line, section.upStation, section.downStation, section.distance);
     }

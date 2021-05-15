@@ -1,273 +1,220 @@
-//package wooteco.subway.section;
-//
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import wooteco.subway.exception.SubwayException;
-//
-//import java.util.Arrays;
-//import java.util.Collections;
-//import java.util.List;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//import static org.assertj.core.api.Assertions.assertThatThrownBy;
-//import static org.junit.jupiter.api.Assertions.assertFalse;
-//import static org.junit.jupiter.api.Assertions.assertTrue;
-//
-//@DisplayName("지하철 구간 일급 컬렉션 테스트")
-//class SectionsTest {
-//
-//    @DisplayName("sorting 테스트")
-//    @Test
-//    void sorting() {
-//        // given
-//        List<Section> sectionList = Arrays.asList(
-//                new Section(2L, 1L, 2L, 3L, 4),
-//                new Section(1L, 1L, 1L, 2L, 3),
-//                new Section(3L, 1L, 3L, 4L, 5)
-//        );
-//
-//        // when
-//        Sections sections = new Sections(sectionList);
-//
-//        // then
-//        assertThat(sections.getSections()).usingRecursiveFieldByFieldElementComparator()
-//                .isEqualTo(Arrays.asList(
-//                        new Section(1L, 1L, 1L, 2L, 3),
-//                        new Section(2L, 1L, 2L, 3L, 4),
-//                        new Section(3L, 1L, 3L, 4L, 5)
-//                ));
-//    }
-//
-//    @DisplayName("현재 노선의 상행 종점이 추가하려는 구간의 끝점과 같은지 확인")
-//    @Test
-//    void isUpEndStationEqualsSectionDownStation() {
-//        // given
-//        Sections sections = new Sections(Arrays.asList(
-//                new Section(1L, 1L, 1L, 2L, 3),
-//                new Section(2L, 1L, 2L, 3L, 4),
-//                new Section(3L, 1L, 3L, 4L, 5)
-//        ));
-//
-//        // when
-//        boolean isSame = sections.isUpEndStation(1L);
-//        boolean isNotSame = sections.isUpEndStation(2L);
-//
-//        // then
-//        assertTrue(isSame);
-//        assertFalse(isNotSame);
-//    }
-//
-//    @DisplayName("현재 노선의 하행 종점이 추가하려는 구간의 시작점과 같은지 확인")
-//    @Test
-//    void isDownEndStationEqualsSectionUpStation() {
-//        // given
-//        Sections sections = new Sections(Arrays.asList(
-//                new Section(1L, 1L, 1L, 2L, 3),
-//                new Section(2L, 1L, 2L, 3L, 4),
-//                new Section(3L, 1L, 3L, 4L, 5)
-//        ));
-//
-//        // when
-//        boolean isSame = sections.isDownEndStation(4L);
-//        boolean isNotSame = sections.isDownEndStation(3L);
-//
-//        // then
-//        assertTrue(isSame);
-//        assertFalse(isNotSame);
-//    }
-//
-//    @DisplayName("추가하려는 구간의 시작점이 노선에 등록된 구간들의 upStation에 존재하는 경우")
-//    @Test
-//    void sectionUpStationInStartPoints() {
-//        // given
-//        Sections sections = new Sections(Arrays.asList(
-//                new Section(1L, 1L, 1L, 2L, 3),
-//                new Section(2L, 1L, 2L, 3L, 4),
-//                new Section(3L, 1L, 3L, 4L, 5)
-//        ));
-//
-//        // when
-//        boolean isExist = sections.newUpStationInStartPoints(
-//                new Section(4L, 1L, 2L, 5L, 1));
-//        boolean isNotExist = sections.newUpStationInStartPoints(
-//                new Section(4L, 1L, 4L, 3L, 1));
-//
-//        // then
-//        assertTrue(isExist);
-//        assertFalse(isNotExist);
-//    }
-//
-//    @DisplayName("추가하려는 구간의 끝점이 노선에 등록된 구간들의 downStation에 존재하는 경우")
-//    @Test
-//    void sectionDownStationInEndPoints() {
-//        // given
-//        Sections sections = new Sections(Arrays.asList(
-//                new Section(1L, 1L, 1L, 2L, 3),
-//                new Section(2L, 1L, 2L, 3L, 4),
-//                new Section(3L, 1L, 3L, 4L, 5)
-//        ));
-//
-//        // when
-//        boolean isExist = sections.newDownStationInEndPoints(
-//                new Section(4L, 1L, 4L, 3L, 1));
-//        boolean isNotExist = sections.newDownStationInEndPoints(
-//                new Section(4L, 1L, 3L, 5L, 1));
-//
-//        // then
-//        assertTrue(isExist);
-//        assertFalse(isNotExist);
-//    }
-//
-//    @DisplayName("들어온 Section의 각 역이 종점인지 검증 - 두 역이 모두 종점인 경우")
-//    @Test
-//    void twoEndPoints() {
-//        // given
-//        Sections sections = new Sections(Arrays.asList(
-//                new Section(1L, 1L, 1L, 2L, 3),
-//                new Section(2L, 1L, 2L, 3L, 4),
-//                new Section(3L, 1L, 3L, 4L, 5)
-//        ));
-//        Section section = new Section(1L, 1L, 1L, 4L, 3);
-//
-//        // when & then
-//        assertThatThrownBy(() -> sections.validatesEndPoints(section))
-//                .isInstanceOf(SubwayException.class);
-//    }
-//
-//    @DisplayName("들어온 Section의 각 역이 종점인지 검증 - 두 역이 모두 종점이 아닌 경우")
-//    @Test
-//    void zeroEndPoints() {
-//        // given
-//        Sections sections = new Sections(Arrays.asList(
-//                new Section(1L, 1L, 1L, 2L, 3),
-//                new Section(2L, 1L, 2L, 3L, 4),
-//                new Section(3L, 1L, 3L, 4L, 5)
-//        ));
-//        Section section = new Section(1L, 1L, 2L, 3L, 3);
-//
-//        // when & then
-//        assertThatThrownBy(() -> sections.validatesEndPoints(section))
-//                .isInstanceOf(SubwayException.class);
-//    }
-//
-//    @DisplayName("upStationId로 일치하는 section 찾기")
-//    @Test
-//    void findByUpStationId() {
-//        // given
-//        Sections sections = new Sections(Arrays.asList(
-//                new Section(1L, 1L, 1L, 2L, 3),
-//                new Section(2L, 1L, 2L, 3L, 4),
-//                new Section(3L, 1L, 3L, 4L, 5)
-//        ));
-//
-//        // when
-//        Section section = sections.findByUpStation(2L);
-//
-//        // then
-//        assertThat(section).usingRecursiveComparison()
-//                .isEqualTo(new Section(2L, 1L, 2L, 3L, 4));
-//    }
-//
-//    @DisplayName("없는 upStationId로 section을 찾는 경우")
-//    @Test
-//    void findByNotExistUpStationId() {
-//        // given
-//        Sections sections = new Sections(Arrays.asList(
-//                new Section(1L, 1L, 1L, 2L, 3),
-//                new Section(2L, 1L, 2L, 3L, 4),
-//                new Section(3L, 1L, 3L, 4L, 5)
-//        ));
-//
-//        // when & then
-//        assertThatThrownBy(() -> sections.findByUpStation(5L))
-//                .isInstanceOf(SubwayException.class);
-//    }
-//
-//    @DisplayName("downStationId로 일치하는 section 찾기")
-//    @Test
-//    void findByDownStationId() {
-//        // given
-//        Sections sections = new Sections(Arrays.asList(
-//                new Section(1L, 1L, 1L, 2L, 3),
-//                new Section(2L, 1L, 2L, 3L, 4),
-//                new Section(3L, 1L, 3L, 4L, 5)
-//        ));
-//
-//        // when
-//        Section section = sections.findByDownStation(2L);
-//
-//        // then
-//        assertThat(section).usingRecursiveComparison()
-//                .isEqualTo(new Section(1L, 1L, 1L, 2L, 3));
-//    }
-//
-//    @DisplayName("없는 downStationId로 section을 찾는 경우")
-//    @Test
-//    void findByNotExistDownStationId() {
-//        // given
-//        Sections sections = new Sections(Arrays.asList(
-//                new Section(1L, 1L, 1L, 2L, 3),
-//                new Section(2L, 1L, 2L, 3L, 4),
-//                new Section(3L, 1L, 3L, 4L, 5)
-//        ));
-//
-//        // when & then
-//        assertThatThrownBy(() -> sections.findByUpStation(5L))
-//                .isInstanceOf(SubwayException.class);
-//    }
-//
-//    @DisplayName("추가하려는 section의 downStationId가 상행종점과 같은지 확인")
-//    @Test
-//    void isUpEndPoint() {
-//        // given
-//        Sections sections = new Sections(Arrays.asList(
-//                new Section(1L, 1L, 1L, 2L, 3),
-//                new Section(2L, 1L, 2L, 3L, 4),
-//                new Section(3L, 1L, 3L, 4L, 5)
-//        ));
-//        Section endPointSection = new Section(4L, 1L, 5L, 1L, 3);
-//        Section noEndPointSection = new Section(4L, 1L, 5L, 3L, 3);
-//
-//        // when
-//        boolean isSame = sections.isEndPoint(endPointSection);
-//        boolean isNotSame = sections.isEndPoint(noEndPointSection);
-//
-//        // then
-//        assertTrue(isSame);
-//        assertFalse(isNotSame);
-//    }
-//
-//    @DisplayName("추가하려는 section의 upStationId가 하행종점과 같은지 확인")
-//    @Test
-//    void isDownEndPoint() {
-//        // given
-//        Sections sections = new Sections(Arrays.asList(
-//                new Section(1L, 1L, 1L, 2L, 3),
-//                new Section(2L, 1L, 2L, 3L, 4),
-//                new Section(3L, 1L, 3L, 4L, 5)
-//        ));
-//        Section endPointSection = new Section(4L, 1L, 4L, 5L, 3);
-//        Section noEndPointSection = new Section(4L, 1L, 3L, 3L, 3);
-//
-//        // when
-//        boolean isSame = sections.isEndPoint(endPointSection);
-//        boolean isNotSame = sections.isEndPoint(noEndPointSection);
-//
-//        // then
-//        assertTrue(isSame);
-//        assertFalse(isNotSame);
-//    }
-//
-//    @DisplayName("노선에 남아있는 구간 개수가 1이하인 경우 예외발생")
-//    @Test
-//    void checkRemainSectionSize() {
-//        // given
-//        Sections sections = new Sections(Collections.singletonList(
-//                new Section(1L, 1L, 1L, 2L, 3)
-//        ));
-//
-//        // when & then
-//        assertThatThrownBy(sections::checkRemainSectionSize)
-//                .isInstanceOf(SubwayException.class);
-//    }
-//}
+package wooteco.subway.section;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.SubwayException;
+import wooteco.subway.station.Station;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static wooteco.subway.DummyData.*;
+
+@DisplayName("지하철 구간 일급 컬렉션 테스트")
+class SectionsTest {
+
+    @DisplayName("sorting 테스트")
+    @Test
+    void sorting() {
+        // given
+        List<Section> sectionList = Arrays.asList(
+                new Section(2L, 이호선, 잠실역, 강남역, 5),
+                new Section(3L, 이호선, 강남역, 구의역, 7),
+                new Section(1L, 이호선, 왕십리역, 잠실역, 10)
+        );
+
+        // when
+        Sections sections = new Sections(sectionList);
+
+        // then
+        assertThat(sections.getSections()).usingRecursiveFieldByFieldElementComparator()
+                .isEqualTo(Arrays.asList(
+                        new Section(1L, 이호선, 왕십리역, 잠실역, 10),
+                        new Section(2L, 이호선, 잠실역, 강남역, 5),
+                        new Section(3L, 이호선, 강남역, 구의역, 7)
+                ));
+    }
+
+    @DisplayName("구간 추가 - 상행종점")
+    @Test
+    void addSectionUpEndPoint() {
+        // given
+        Sections sections = new Sections(Arrays.asList(
+                new Section(1L, 이호선, 왕십리역, 잠실역, 10),
+                new Section(2L, 이호선, 잠실역, 강남역, 5),
+                new Section(3L, 이호선, 강남역, 구의역, 7)
+        ));
+
+        // when
+        sections.addSection(new Section(3L, 이호선, 건대입구역, 왕십리역, 3));
+
+        // then
+        assertThat(sections.getSections()).hasSize(4);
+    }
+
+    @DisplayName("구간 추가 - 하행종점")
+    @Test
+    void addSectionDownEndPoint() {
+        // given
+        Sections sections = new Sections(Arrays.asList(
+                new Section(1L, 이호선, 왕십리역, 잠실역, 10),
+                new Section(2L, 이호선, 잠실역, 강남역, 5),
+                new Section(3L, 이호선, 강남역, 구의역, 7)
+        ));
+
+        // when
+        sections.addSection(new Section(3L, 이호선, 구의역, 건대입구역, 3));
+
+        // then
+        assertThat(sections.getSections()).hasSize(4);
+    }
+
+    @DisplayName("구간 추가 - 중간(A - B가 있을 때 A - C 추가)")
+    @Test
+    void addSectionMiddlePointCase1() {
+        // given
+        Sections sections = new Sections(Arrays.asList(
+                new Section(1L, 이호선, 왕십리역, 잠실역, 10),
+                new Section(2L, 이호선, 잠실역, 강남역, 5),
+                new Section(3L, 이호선, 강남역, 구의역, 7)
+        ));
+
+        // when
+        sections.addSection(new Section(3L, 이호선, 왕십리역, 한양대역, 3));
+
+        // then
+        assertThat(sections.getSections()).hasSize(4);
+    }
+
+    @DisplayName("구간 추가 - 중간(A - B가 있을 때 C - B 추가)")
+    @Test
+    void addSectionMiddlePointCase2() {
+        // given
+        Sections sections = new Sections(Arrays.asList(
+                new Section(1L, 이호선, 왕십리역, 잠실역, 10),
+                new Section(2L, 이호선, 잠실역, 강남역, 5),
+                new Section(3L, 이호선, 강남역, 구의역, 7)
+        ));
+
+        // when
+        sections.addSection(new Section(3L, 이호선, 한양대역, 강남역, 3));
+
+        // then
+        assertThat(sections.getSections()).hasSize(4);
+    }
+
+    @DisplayName("구간 추가 - upStation, downStation 둘 다 포함되지 않는 구간 추가시 예외")
+    @Test
+    void addSectionNotInclude() {
+        // given
+        Sections sections = new Sections(Arrays.asList(
+                new Section(1L, 이호선, 왕십리역, 잠실역, 10),
+                new Section(2L, 이호선, 잠실역, 강남역, 5),
+                new Section(3L, 이호선, 강남역, 구의역, 7)
+        ));
+
+        // when & then
+        assertThatThrownBy(() -> sections.addSection(new Section(3L, 이호선, 한양대역, 건대입구역, 5)))
+                .isInstanceOf(SubwayException.class);
+    }
+
+    @DisplayName("구간 추가 - upStation, downStation 둘 다 포함되는 구간 추가시 예외")
+    @Test
+    void addSectionBothInclude() {
+        // given
+        Sections sections = new Sections(Arrays.asList(
+                new Section(1L, 이호선, 왕십리역, 잠실역, 10),
+                new Section(2L, 이호선, 잠실역, 강남역, 5),
+                new Section(3L, 이호선, 강남역, 구의역, 7)
+        ));
+
+        // when & then
+        assertThatThrownBy(() -> sections.addSection(new Section(3L, 이호선, 왕십리역, 구의역, 5)))
+                .isInstanceOf(SubwayException.class);
+    }
+
+    @DisplayName("지하철 역이 포함된 구간 삭제 - 상행종점")
+    @Test
+    void deleteUpEndPoint() {
+        // given
+        Sections sections = new Sections(Arrays.asList(
+                new Section(1L, 이호선, 왕십리역, 잠실역, 10),
+                new Section(2L, 이호선, 잠실역, 강남역, 5),
+                new Section(3L, 이호선, 강남역, 구의역, 7)
+        ));
+
+        // when
+        sections.delete(왕십리역);
+
+        // then
+        assertThat(sections.getSections()).hasSize(2);
+    }
+
+    @DisplayName("지하철 역이 포함된 구간 삭제 - 하행종점")
+    @Test
+    void deleteDownEndPoint() {
+        // given
+        Sections sections = new Sections(Arrays.asList(
+                new Section(1L, 이호선, 왕십리역, 잠실역, 10),
+                new Section(2L, 이호선, 잠실역, 강남역, 5),
+                new Section(3L, 이호선, 강남역, 구의역, 7)
+        ));
+
+        // when
+        sections.delete(구의역);
+
+        // then
+        assertThat(sections.getSections()).hasSize(2);
+    }
+
+    @DisplayName("지하철 역이 포함된 구간 삭제 - 중간")
+    @Test
+    void deleteMiddlePoint() {
+        // given
+        Sections sections = new Sections(Arrays.asList(
+                new Section(1L, 이호선, 왕십리역, 잠실역, 10),
+                new Section(2L, 이호선, 잠실역, 강남역, 5),
+                new Section(3L, 이호선, 강남역, 구의역, 7)
+        ));
+
+        // when
+        sections.delete(잠실역);
+
+        // then
+        assertThat(sections.getSections()).hasSize(2);
+    }
+
+    @DisplayName("노선에 남아있는 구간 개수가 1이하인 경우 예외발생")
+    @Test
+    void checkRemainSectionSize() {
+        // given
+        Sections sections = new Sections(Collections.singletonList(
+                new Section(1L, 이호선, 왕십리역, 잠실역, 10)
+        ));
+
+        // when & then
+        assertThatThrownBy(() -> sections.delete(왕십리역))
+                .isInstanceOf(SubwayException.class);
+    }
+
+    @DisplayName("구간에 포함된 지하철 역 반환")
+    @Test
+    void getStations() {
+        // given
+        Sections sections = new Sections(Arrays.asList(
+                new Section(1L, 이호선, 왕십리역, 잠실역, 10),
+                new Section(2L, 이호선, 잠실역, 강남역, 5),
+                new Section(3L, 이호선, 강남역, 구의역, 7)
+        ));
+
+        // when
+        List<Station> stations = sections.getStations();
+
+        // then
+        assertThat(stations)
+                .containsAll(Arrays.asList(왕십리역, 잠실역, 강남역, 구의역));
+    }
+}

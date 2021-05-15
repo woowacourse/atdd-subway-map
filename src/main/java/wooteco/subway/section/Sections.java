@@ -81,20 +81,6 @@ public class Sections {
                         || section.isSameDownStation(station));
     }
 
-    private Section findByUpStation(Station upStation) {
-        return sections.stream()
-                .filter(section -> section.isSameUpStation(upStation))
-                .findAny()
-                .orElseThrow(() -> new SubwayException("없는 구간입니다!"));
-    }
-
-    private Section findByDownStation(Station downStation) {
-        return sections.stream()
-                .filter(section -> section.isSameDownStation(downStation))
-                .findAny()
-                .orElseThrow(() -> new SubwayException("없는 구간입니다!"));
-    }
-
     private boolean isEndPoint(Section section) {
         if (isUpEndStation(section.getDownStation())) {
             return true;
@@ -129,10 +115,24 @@ public class Sections {
         addNewSection(upSection, newSection);
     }
 
+    private Section findByUpStation(Station upStation) {
+        return sections.stream()
+                .filter(section -> section.isSameUpStation(upStation))
+                .findAny()
+                .orElseThrow(() -> new SubwayException("없는 구간입니다!"));
+    }
+
     private void updateDownStation(Section section) {
         Section downSection = findByDownStation(section.getDownStation());
         downSection.updateDownStation(section.getUpStation());
         addNewSection(downSection, section);
+    }
+
+    private Section findByDownStation(Station downStation) {
+        return sections.stream()
+                .filter(section -> section.isSameDownStation(downStation))
+                .findAny()
+                .orElseThrow(() -> new SubwayException("없는 구간입니다!"));
     }
 
     private void addNewSection(Section section, Section newSection) {

@@ -61,8 +61,8 @@ public class LineService {
         Station upStation = stationService.findById(request.getUpStationId());
         Station downStation = stationService.findById(request.getDownStationId());
         Section section = new Section(line, upStation, downStation, request.getDistance());
-
-        sectionService.addInLine(line, section);
+        line.addSection(section);
+        sectionService.synchronizeDB(line);
     }
 
     private Line lineSetting(Long id) {

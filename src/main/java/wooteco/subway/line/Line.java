@@ -1,5 +1,6 @@
 package wooteco.subway.line;
 
+import wooteco.subway.section.Section;
 import wooteco.subway.section.Sections;
 import wooteco.subway.station.Station;
 
@@ -36,6 +37,10 @@ public class Line {
 
     public boolean isSameId(Long id) {
         return this.id.equals(id);
+    }
+
+    public void addSection(Section section) {
+        this.sections.addSection(section);
     }
 
     public void update(String name, String color) {
