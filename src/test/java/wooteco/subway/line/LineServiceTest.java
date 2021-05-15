@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.exception.LineException;
 import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.service.SectionService;
@@ -21,32 +23,33 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 public class LineServiceTest {
 
-    @Autowired
-    private LineService lineService;
-
-    @Autowired
-    private SectionService sectionService;
-
-    private Line savedLine;
-    private Long savedLineId;
-
     private final String savedName = "코기선";
     private final String savedColor = "black";
     private final Long mockUpStationId = 1L;
     private final Long mockDownStationId = 2L;
 
+    @Autowired
+    private LineService lineService;
+
+    @Autowired
+    private SectionService sectionService;
+    private Line savedLine;
+    private Long savedLineId;
+
     @BeforeEach
     private void initLine() {
-        final Line mockLine = new Line(savedName, savedColor, mockUpStationId, mockDownStationId);
-        savedLine = lineService.create(mockLine);
-        savedLineId = savedLine.getId();
+        final LineRequest mockLine = new LineRequest(savedName, savedColor, mockUpStationId, mockDownStationId, 1);
+        final LineResponse savedLine = lineService.create(mockLine);
+
+        this.savedLine = savedLine.toLine();
+        this.savedLineId = this.savedLine.getId();
     }
 
     @DisplayName("중복된 이름으로 노선을 생성할 수 없다.")
     @Test
     public void createLineWithDuplicatedName() {
         assertThatThrownBy(() -> {
-            lineService.create(new Line(savedName, savedColor, mockUpStationId, mockDownStationId));
+            lineService.create(new LineRequest(savedName, savedColor, mockUpStationId, mockDownStationId, 1));
         }).isInstanceOf(LineException.class);
     }
 
@@ -63,12 +66,12 @@ public class LineServiceTest {
     public void updateLineWithDuplicatedName() {
         assertThatThrownBy(() -> {
             final String newName = "newName";
-            lineService.create(new Line(newName, savedColor, mockUpStationId, mockDownStationId));
+            lineService.create(new LineRequest(newName, savedColor, mockUpStationId, mockDownStationId, 1));
             lineService.update(new Line(savedLineId, newName, savedColor));
         }).isInstanceOf(LineException.class);
     }
 
-    @DisplayName("노선 색상만을 수정할 수 있다.")
+    @DisplayName("노선 색상만 수정할 수도 있다.")
     @Test
     public void updateColor() {
         final String newColor = "newColor";

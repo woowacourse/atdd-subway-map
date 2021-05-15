@@ -2,8 +2,8 @@ package wooteco.subway.section.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.line.domain.FinalStations;
 import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.domain.FinalStations;
 import wooteco.subway.line.exception.LineException;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.domain.Distance;

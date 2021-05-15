@@ -20,14 +20,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 public class StationServiceTest {
 
+    private final String savedName = "코기역";
     @Autowired
     private StationService stationService;
-
     @MockBean
     private SectionDao sectionDao;
-
     private Station savedStation;
-    private final String savedName = "코기역";
 
     @BeforeEach
     private void init() {

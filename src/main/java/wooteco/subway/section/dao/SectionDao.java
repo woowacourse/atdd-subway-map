@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.exception.LineException;
 import wooteco.subway.section.domain.Section;
 
@@ -18,6 +19,10 @@ public class SectionDao {
 
     public SectionDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public Long save(final Line line) {
+        return save(line.getId(), line.getUpStationId(), line.getDownStationId(), line.getDistance());
     }
 
     public Long save(final Long lineId,
