@@ -5,7 +5,6 @@ import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.exception.InvalidSectionOnLineException;
 
@@ -20,9 +19,7 @@ public class Sections {
 
     public boolean isBothEndSection(Section section) {
         Deque<Long> ids = sortedStationIds();
-
-        return Objects.equals(ids.peekFirst(), section.getDownStationId())
-            || Objects.equals(ids.peekLast(), section.getUpStationId());
+        return section.hasSameStation(ids.peekFirst()) || section.hasSameStation(ids.peekLast());
     }
 
     public boolean isBothEndStation(Long stationId) {
@@ -64,7 +61,7 @@ public class Sections {
         }
     }
 
-    public void insertAvailable(Section section) {
+    public void validateInsertable(Section section) {
         boolean isUpStationExisted = isNotExistOnLine(section.getUpStationId());
         boolean isDownStationExisted = isNotExistOnLine(section.getDownStationId());
 
@@ -100,7 +97,7 @@ public class Sections {
 
     public Section findByStationId(Section section) {
         return sections.stream()
-            .filter(section::hasSameStation)
+            .filter(section::hasSameStationBySection)
             .findAny()
             .orElseThrow(InvalidSectionOnLineException::new);
     }

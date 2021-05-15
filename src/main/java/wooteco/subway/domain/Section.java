@@ -10,7 +10,7 @@ public class Section {
     private final Id downStationId;
     private final Distance distance;
 
-    public Section(long key, Section section) {
+    public Section(Long key, Section section) {
         this(new Id(key), section.lineId, section.upStationId, section.downStationId,
             section.distance);
     }
@@ -43,7 +43,7 @@ public class Section {
     public Section updateForSave(Section section) {
         Distance updateDistance = this.distance.subtract(section.distance);
 
-        if (upStationId.equals(section.upStationId)){
+        if (upStationId.equals(section.upStationId)) {
             return new Section(null, lineId, section.downStationId, downStationId, updateDistance);
         }
         return new Section(null, lineId, upStationId, section.upStationId, updateDistance);
@@ -54,8 +54,13 @@ public class Section {
         return new Section(null, lineId, upStationId, section.downStationId, updateDistance);
     }
 
-    public boolean hasSameStation(Section section) {
-        return upStationId.equals(section.upStationId) || downStationId.equals(section.downStationId);
+    public boolean hasSameStationBySection(Section section) {
+        return hasSameStation(section.getUpStationId()) ||
+            hasSameStation(section.getDownStationId());
+    }
+
+    public boolean hasSameStation(Long stationId) {
+        return getUpStationId().equals(stationId) || getDownStationId().equals(stationId);
     }
 
     public Long getId() {

@@ -39,7 +39,7 @@ public class SectionService {
     public SectionServiceDto save(@Valid SectionServiceDto sectionServiceDto) {
         Section section = sectionServiceDto.toEntity();
         Sections sections = new Sections(sectionDao.findAllByLineId(section.getLineId()));
-        sections.insertAvailable(section);
+        sections.validateInsertable(section);
 
         if (sections.isBothEndSection(section)) {
             return saveSectionAtEnd(section);
