@@ -8,6 +8,7 @@ import wooteco.subway.controller.dto.response.StationResponse;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Stations;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.exception.InvalidSectionOnLineException;
 import wooteco.subway.service.dto.DeleteStationDto;
@@ -28,7 +29,7 @@ public class SectionService {
     public SectionServiceDto saveByLineCreate(@Valid SectionServiceDto sectionServiceDto) {
         Section section = sectionServiceDto.toEntity();
         Sections sections = new Sections(sectionDao.findAllByLineId(section.getLineId()));
-        checkExistedStation(sectionServiceDto);
+        validateExistedStation(sectionServiceDto);
         if (sections.isNotEmpty()) {
             throw new InvalidSectionOnLineException();
         }
@@ -46,7 +47,7 @@ public class SectionService {
         return saveSectionAtMiddle(section, sections);
     }
 
-    private void checkExistedStation(SectionServiceDto sectionServiceDto) {
+    private void validateExistedStation(SectionServiceDto sectionServiceDto) {
         List<StationServiceDto> dtos = stationService.showStations();
         Long upStationId = sectionServiceDto.getUpStationId();
         Long downStationId = sectionServiceDto.getDownStationId();
@@ -105,20 +106,13 @@ public class SectionService {
 
     public List<StationResponse> findAllbyLindId(Long lineId) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        Stations stations = stationService.findAll();
+
         return sections.sortedStationIds()
             .stream()
-            .map(this::stationReponseById)
+            .map(stations::findById)
+            .map(StationResponse::from)
             .collect(Collectors.toList());
-    }
-
-    private StationResponse stationReponseById(Long id) {
-        StationServiceDto dto = stationService.showStations()
-            .stream()
-            .filter(element -> id.equals(element.getId()))
-            .findAny()
-            .orElseThrow(NotFoundException::new);
-
-        return new StationResponse(dto.getId(), dto.getName());
     }
 }
 

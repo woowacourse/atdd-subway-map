@@ -6,6 +6,7 @@ import javax.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Stations;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.service.dto.StationServiceDto;
 import wooteco.subway.domain.Station;
@@ -27,6 +28,11 @@ public class StationService {
         return stations.stream()
             .map(StationServiceDto::from)
             .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Stations findAll() {
+        return new Stations(stationDao.showAll());
     }
 
     @Transactional
