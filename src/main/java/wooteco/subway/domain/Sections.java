@@ -9,7 +9,14 @@ public class Sections {
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
+        validateSections(sections);
         this.sections = sections;
+    }
+
+    private void validateSections(List<Section> sections) {
+        if (sections.isEmpty()) {
+            throw new IllegalArgumentException("하나 이상의 구간이 존재해야 합니다.");
+        }
     }
 
     public Sections(Station upStation, Station downStation, int distance) {
