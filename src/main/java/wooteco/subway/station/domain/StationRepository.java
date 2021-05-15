@@ -7,6 +7,8 @@ public interface StationRepository {
 
     Station findById(Long id);
 
+    Station findByIds(List<Long> ids);
+
     void delete(Long id);
 
     List<Station> findAll();
