@@ -10,7 +10,7 @@ public class Section {
     private int distance;
 
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
-        validateIfDownStationSameAsUpStation(upStationId, downStationId);
+        validateStations(upStationId, downStationId);
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
@@ -26,7 +26,7 @@ public class Section {
         this(null, null, upStationId, downStationId, distance);
     }
 
-    private void validateIfDownStationSameAsUpStation(Long upStationId, Long downStationId) {
+    private void validateStations(Long upStationId, Long downStationId) {
         if (upStationId.equals(downStationId)) {
             throw new InvalidInsertException("구간의 상행과 하행이 같을 수 없습니다.");
         }
