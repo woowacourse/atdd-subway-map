@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Sections {
+    public static final int INDEX_OF_FIRST_STATION = 0;
     List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -118,14 +119,18 @@ public class Sections {
         }
 
         if (hasUpStation) {
-            this.sections.remove(0);
+            this.sections.remove(INDEX_OF_FIRST_STATION);
             return;
         }
 
         if (hasDownStation) {
-            this.sections.remove(sections.size() - 1);
+            this.sections.remove(getIndexOfLastStation());
             return;
         }
+    }
+
+    private int getIndexOfLastStation() {
+        return sections.size() - 1;
     }
 
     private boolean isUpStationOfAnywhere(Station station) {
@@ -170,7 +175,7 @@ public class Sections {
         List<Station> stations = this.sections.stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
-        stations.add(this.sections.get(this.sections.size() - 1).getDownStation());
+        stations.add(this.sections.get(getIndexOfLastStation()).getDownStation());
         return stations;
     }
 
