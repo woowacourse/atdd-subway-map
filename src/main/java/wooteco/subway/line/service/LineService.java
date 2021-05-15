@@ -2,17 +2,19 @@ package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.domain.LineRepository;
-import wooteco.subway.line.domain.Lines;
-import wooteco.subway.line.domain.Section;
+import wooteco.subway.line.domain.*;
 import wooteco.subway.line.domain.rule.FindSectionHaveSameDownRule;
 import wooteco.subway.line.domain.rule.FindSectionHaveSameUpRule;
 import wooteco.subway.line.domain.rule.FindSectionRule;
+import wooteco.subway.line.ui.dto.LineCreateRequest;
+import wooteco.subway.line.ui.dto.LineModifyRequest;
+import wooteco.subway.line.ui.dto.LineResponse;
+import wooteco.subway.line.ui.dto.SectionAddRequest;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationRepository;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,33 +31,46 @@ public class LineService {
     }
 
     @Transactional
-    public Line create(Line line) {
+    public LineResponse create(final LineCreateRequest lineCreateRequest) {
+        Section section = new Section(lineCreateRequest.getUpStationId(),
+                lineCreateRequest.getDownStationId(),
+                lineCreateRequest.getDistance());
+        Sections sections = new Sections(Collections.singletonList(section));
+
+        Line line = new Line(lineCreateRequest.getName(), lineCreateRequest.getColor(), sections);
         checkCreateValidation(line);
-        return lineRepository.save(line);
+        Line savedLine = lineRepository.save(line);
+
+        List<Long> ids = Arrays.asList(section.getUpStationId(), section.getDownStationId());
+
+        return new LineResponse(savedLine, stationRepository.findByIds(ids));
     }
 
-    public List<Station> getStations(Long lineId) {
+
+    public List<Station> getStations(final Long lineId) {
         Line line = lineRepository.findById(lineId);
         List<Section> sectionList = line.getSections().toList();
-        List<Station> stations = sectionList.stream()
-                .map(section -> stationRepository.findById(section.getUpStationId()))
+        List<Long> ids = sectionList.stream()
+                .map(Section::getUpStationId)
                 .collect(Collectors.toList());
 
         Long lastStationId = sectionList.get(sectionList.size() -1).getDownStationId();
-        stations.add(stationRepository.findById(lastStationId));
+        ids.add(lastStationId);
 
-        return stations;
+        return stationRepository.findByIds(ids);
     }
 
     public Lines allLines() {
         return lineRepository.findAll();
     }
 
-    public Line findById(final Long id) {
-        return lineRepository.findById(id);
+    public LineResponse findById(final Long id) {
+        Line savedLine = lineRepository.findById(id);
+        return new LineResponse(savedLine, getStations(savedLine.getId()));
     }
 
-    public void update(final Line line) {
+    public void update(final Long id, final LineModifyRequest lineModifyRequest) {
+        Line line = new Line(id, lineModifyRequest.getName(), lineModifyRequest.getName());
         lineRepository.update(line);
     }
 
@@ -65,15 +80,32 @@ public class LineService {
 
     @Transactional
     public void addSection(final Long id, final Section section) {
-        Line line = findById(id);
-        line.validateEnableAddSection(section);
-        boolean isEndPoint = line.isEndPoint(section);
+        Line savedLine = lineRepository.findById(id);
+        savedLine.validateEnableAddSection(section);
+        boolean isEndPoint = savedLine.isEndPoint(section);
         if (isEndPoint) {
             lineRepository.addSection(id, section);
             return;
         }
 
-        addSectionBetween(id, line, section);
+        addSectionBetween(id, savedLine, section);
+    }
+
+    @Transactional
+    public void addSection(final Long id, final SectionAddRequest sectionAddRequest) {
+        Line savedLine = lineRepository.findById(id);
+        Section section = new Section(sectionAddRequest.getUpStationId(),
+                sectionAddRequest.getDownStationId(), sectionAddRequest.getDistance());
+
+        savedLine.validateEnableAddSection(section);
+
+        boolean isEndPoint = savedLine.isEndPoint(section);
+        if (isEndPoint) {
+            lineRepository.addSection(id, section);
+            return;
+        }
+
+        addSectionBetween(id, savedLine, section);
     }
 
     private void addSectionBetween(final Long id, final Line line, final Section section) {
@@ -89,20 +121,20 @@ public class LineService {
 
     @Transactional
     public void deleteSection(final Long id, final Long stationId) {
-        Line line = findById(id);
-        List<Section> deleteSections = line.deleteSection(stationId);
+        Line savedLine = lineRepository.findById(id);
+        List<Section> deleteSections = savedLine.deleteSection(stationId);
 
         if (deleteSections.size() == 1) {
             lineRepository.deleteSection(id, deleteSections.get(0));
             return;
         }
 
-        Section updateSection = line.generateUpdateWhenDelete(deleteSections);
+        Section updateSection = savedLine.generateUpdateWhenDelete(deleteSections);
         deleteSections.forEach(section -> lineRepository.deleteSection(id, section));
         lineRepository.addSection(id, updateSection);
     }
 
-    private void checkCreateValidation(Line line) {
+    private void checkCreateValidation(final Line line) {
         if (lineRepository.hasLine(line.getName())) {
             throw new IllegalArgumentException(ERROR_DUPLICATED_LINE_NAME);
         }

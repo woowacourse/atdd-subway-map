@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.LineRepository;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.domain.Sections;
 import wooteco.subway.line.service.LineService;
@@ -39,6 +40,9 @@ class LineControllerTest {
 
     @Autowired
     private LineService lineService;
+
+    @Autowired
+    private LineRepository lineRepository;
 
     @Autowired
     private StationRepository stationRepository;
@@ -86,7 +90,7 @@ class LineControllerTest {
         Station kangnam = setDummyStation("강남역");
         Station yangjae = setDummyStation("양재역");
 
-        Line newLine = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
+        setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
         final LineCreateRequest request = new LineCreateRequest("bg-red-600", "신분당선", kangnam.getId(), yangjae.getId(), 10);
 
         RestAssured
@@ -204,7 +208,7 @@ class LineControllerTest {
                 .extract();
 
         //then
-        final Line updatedLine = lineService.findById(line.getId());
+        final Line updatedLine = lineRepository.findById(line.getId());
         assertThat(updatedLine.getName()).isEqualTo("구분당선");
     }
 
@@ -359,7 +363,7 @@ class LineControllerTest {
                 .extract();
 
         //then
-        Line savedLine = lineService.findById(line.getId());
+        Line savedLine = lineRepository.findById(line.getId());
 
         assertThat(savedLine.getSections().sumSectionDistance()).isEqualTo(30);
 
@@ -390,7 +394,7 @@ class LineControllerTest {
                 .extract();
 
         //then
-        savedLine = lineService.findById(line.getId());
+        savedLine = lineRepository.findById(line.getId());
 
         assertThat(savedLine.getSections().sumSectionDistance()).isEqualTo(50);
 
@@ -430,7 +434,7 @@ class LineControllerTest {
                 .extract();
 
         //then
-        Line savedLine = lineService.findById(line.getId());
+        Line savedLine = lineRepository.findById(line.getId());
 
         assertThat(savedLine.getSections().sumSectionDistance()).isEqualTo(10);
 
@@ -466,7 +470,7 @@ class LineControllerTest {
                 .extract();
 
         //then
-        savedLine = lineService.findById(line.getId());
+        savedLine = lineRepository.findById(line.getId());
 
         assertThat(savedLine.getSections().sumSectionDistance()).isEqualTo(10);
 
@@ -508,7 +512,7 @@ class LineControllerTest {
                 .extract();
 
         //then
-        Line savedLine = lineService.findById(line.getId());
+        Line savedLine = lineRepository.findById(line.getId());
 
         assertThat(savedLine.getSections().sumSectionDistance()).isEqualTo(5);
 
@@ -546,7 +550,7 @@ class LineControllerTest {
                 .extract();
 
         //then
-        Line savedLine = lineService.findById(line.getId());
+        Line savedLine = lineRepository.findById(line.getId());
 
         assertThat(savedLine.getSections().sumSectionDistance()).isEqualTo(5);
 
@@ -584,7 +588,7 @@ class LineControllerTest {
                 .extract();
 
         //then
-        Line savedLine = lineService.findById(line.getId());
+        Line savedLine = lineRepository.findById(line.getId());
 
         int totalDistance = line.getSections().toList().stream()
                 .mapToInt(Section::getDistance)
@@ -637,6 +641,6 @@ class LineControllerTest {
                 )
         );
 
-        return lineService.create(new Line(lineName, lineColor, sections));
+        return lineRepository.save(new Line(lineName, lineColor, sections));
     }
 }

@@ -10,11 +10,6 @@ public class Lines {
         this.lines = new ArrayList<>(lines);
     }
 
-    public boolean haveSameName(Line line) {
-       return lines.stream()
-               .filter(savedLine -> savedLine.getName().equals(line.getName())).count() == 1;
-    }
-
     public List<Line> toList() {
         return this.lines;
     }

@@ -26,8 +26,8 @@ public class StationRepositoryImpl implements StationRepository {
     }
 
     @Override
-    public Station findByIds(final List<Long> ids) {
-        return null;
+    public List<Station> findByIds(final List<Long> ids) {
+        return stationDao.findByIds(ids);
     }
 
     @Override
