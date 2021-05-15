@@ -26,6 +26,10 @@ public class Section {
         return this.isSameUpStationId(section) || this.isSameDownStationId(section);
     }
 
+    public boolean hasStationId(Long stationsId) {
+        return this.downStationId.equals(stationsId) || this.upStationId.equals(stationsId);
+    }
+
     public boolean isSameUpStationId(Section section) {
         return this.upStationId.equals(section.upStationId);
     }
@@ -60,6 +64,13 @@ public class Section {
         return distance;
     }
 
+    public Section mergeWithoutDuplicateStationId(Section section) {
+        if (this.upStationId.equals(section.downStationId)) {
+            return new Section(lineId, section.upStationId, this.downStationId, this.distance.plus(section.distance));
+        }
+        return new Section(lineId, section.downStationId, this.upStationId, this.distance.plus(section.distance));
+    }
+
     private void validateSection(Long lineId, Long upStationId, Long downStationId, Distance distance) {
         validateNull(lineId, upStationId, downStationId, distance);
     }
@@ -83,5 +94,16 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(lineId, upStationId, downStationId, distance);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", lineId=" + lineId +
+                ", upStationId=" + upStationId +
+                ", downStationId=" + downStationId +
+                ", distance=" + distance +
+                '}';
     }
 }

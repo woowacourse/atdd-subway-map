@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,7 +88,7 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class).hasMessage("연결할 수 있는 역이 구간내에 없습니다.");
     }
 
-    @DisplayName("상행역 하행역 둘다 노선에 등록된 구간을 등록한다.")
+    @DisplayName("상행역 하행역 둘다 이미 노선에 등록된 구간을 등록한다.")
     @Test
     void addAlreadyExistSectionOfStation() {
         //given
@@ -96,5 +97,47 @@ class SectionsTest {
         //then
         assertThatThrownBy(() -> sections.add(추가할_수_없는_구간))
                 .isInstanceOf(IllegalArgumentException.class).hasMessage("상행역과 하행역이 이미 존재합니다.");
+    }
+
+    @DisplayName("지하철 중간 역 제거한다.")
+    @Test
+    void deleteBetweenStation() {
+        //given
+        Long stationId = 2L;
+        int expectedSize = sections.toList().size();
+
+        //when
+        sections.delete(stationId);
+
+        //then
+        assertThat(sections.toList()).hasSize(expectedSize - 1);
+    }
+
+    @DisplayName("지하철 종점 제거한다.")
+    @Test
+    void deleteEndPoint() {
+        //given
+        Long stationId = 1L;
+        int expectedSize = sections.toList().size();
+
+        //when
+        sections.delete(stationId);
+
+        //then
+        assertThat(sections.toList()).hasSize(expectedSize - 1);
+    }
+
+    @DisplayName("구간이 하나 남았을 때 구간을 삭제한다.")
+    @Test
+    void deleteOneLeftSection() {
+        //given
+        List<Section> singleSection =
+                Collections.singletonList(new Section(1L, 1L, 2L, new Distance(10)));
+        Sections sections = new Sections(singleSection);
+
+        //then
+        assertThatThrownBy(() -> {
+            sections.delete(1L);
+        }).isInstanceOf(IllegalStateException.class).hasMessage("구간이 하나 이하일 때는 삭제할 수 없습니다.");
     }
 }

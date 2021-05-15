@@ -5,6 +5,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Sections {
+    private static final int DELETE_LIMIT_SIZE = 1;
+    private static final int END_POINT_COUNT = 1;
+
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -18,6 +21,52 @@ public class Sections {
             return;
         }
         addToBetween(section);
+    }
+
+    public void delete(Long stationId) {
+        validateDeleteSize();
+        validateExistStationId(stationId);
+        if (isDeleteToEndPoint(stationId)) {
+            deleteEndPoint(stationId);
+            return;
+        }
+        deleteSectionOfStation(stationId);
+    }
+
+    private void deleteSectionOfStation(Long stationId) {
+        List<Section> findSections = sections.stream()
+                .filter(section -> section.hasStationId(stationId))
+                .collect(Collectors.toList());
+
+        sections.add(findSections.get(0).mergeWithoutDuplicateStationId(findSections.get(1)));
+        findSections.forEach(sections::remove);
+    }
+
+    private void deleteEndPoint(Long stationId) {
+        Section findSection = sections.stream()
+                .filter(section -> section.hasStationId(stationId))
+                .findAny().orElseThrow(() -> new IllegalArgumentException("삭제할 역을 가진 구간이 존재하지 않습니다."));
+        sections.remove(findSection);
+    }
+
+    private boolean isDeleteToEndPoint(Long stationId) {
+        int count = (int) sections.stream()
+                .filter(section -> section.hasStationId(stationId))
+                .count();
+        return count == END_POINT_COUNT;
+    }
+
+    private void validateExistStationId(Long stationId) {
+        if (isExistStationId(stationId)) {
+            return;
+        }
+        throw new IllegalArgumentException("삭제하려는 역을 포함하는 구간이 존재하지 않습니다.");
+    }
+
+    private void validateDeleteSize() {
+        if (sections.size() <= DELETE_LIMIT_SIZE) {
+            throw new IllegalStateException("구간이 하나 이하일 때는 삭제할 수 없습니다.");
+        }
     }
 
     private void addToBetween(Section newSection) {
@@ -63,15 +112,14 @@ public class Sections {
     }
 
     private void validatePossibleToAdd(Section newSection) {
-        List<Long> stationsIds = this.stationIds();
-        boolean existUpStation = isExistStationId(stationsIds, newSection.getUpStationId());
-        boolean existDownStation = isExistStationId(stationsIds, newSection.getDownStationId());
+        boolean existUpStation = isExistStationId(newSection.getUpStationId());
+        boolean existDownStation = isExistStationId(newSection.getDownStationId());
         validateAlreadyExistSectionOfStation(existUpStation, existDownStation);
         validateNotExistSectionOfStation(existUpStation, existDownStation);
     }
 
-    private boolean isExistStationId(List<Long> stationsIds, Long upStationId) {
-        return stationsIds.contains(upStationId);
+    private boolean isExistStationId(Long upStationId) {
+        return this.stationIds().contains(upStationId);
     }
 
     private void validateNotExistSectionOfStation(boolean existUpStation, boolean existDownStation) {
@@ -79,6 +127,7 @@ public class Sections {
             throw new IllegalArgumentException("연결할 수 있는 역이 구간내에 없습니다.");
         }
     }
+
     private void validateAlreadyExistSectionOfStation(boolean existUpStation, boolean existDownStation) {
         if (existUpStation && existDownStation) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 존재합니다.");
