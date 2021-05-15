@@ -2,11 +2,19 @@ package wooteco.subway.line;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.DummyData;
 import wooteco.subway.line.dto.request.LineUpdateRequest;
+import wooteco.subway.section.Section;
+import wooteco.subway.section.Sections;
+import wooteco.subway.station.Station;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static wooteco.subway.DummyData.강남역;
 
 @DisplayName("지하철 노선 도메인 테스트")
 class LineTest {
@@ -56,5 +64,37 @@ class LineTest {
         // then
         assertThat(분당선).usingRecursiveComparison()
                 .isEqualTo(new Line(1L, "신분당선", "bg-yellow-600"));
+    }
+
+    @DisplayName("지하철 노선의 구간 정보 수정")
+    @Test
+    void updateSections() {
+        // given
+        Line 이호선 = new Line(2L, "2호선", "green", new Sections());
+        Sections sections = new Sections(
+                Arrays.asList(DummyData.왕십리_잠실, DummyData.잠실_강남)
+        );
+
+        // when
+        이호선.updateSections(sections);
+
+        // then
+        assertThat(이호선.getSections().getSections()).hasSize(2);
+    }
+
+    @DisplayName("구간에서 지하철 역 제거")
+    @Test
+    void deleteStationInSection() {
+        // given
+        Sections sections = new Sections(
+                Arrays.asList(DummyData.왕십리_잠실, DummyData.잠실_강남)
+        );
+        Line 이호선 = new Line(2L, "2호선", "green", sections);
+
+        // when
+        이호선.deleteStationInSection(강남역);
+
+        // then
+        assertThat(이호선.getSections().getSections()).hasSize(1);
     }
 }
