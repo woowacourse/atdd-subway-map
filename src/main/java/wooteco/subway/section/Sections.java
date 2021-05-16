@@ -24,6 +24,35 @@ public class Sections {
         this.sections = sections;
     }
 
+    public Sections(List<Section> sections, Section section) {
+        validateSectionStations(section);
+        validateSectionDistance(section);
+        this.sections = sections;
+    }
+
+    public void validateSectionStations(Section newSection) {
+        List<Long> stationIds = sections.stream()
+            .map(section -> Arrays.asList(section.getUpStationId(), section.getDownStationId()))
+            .flatMap(List::stream)
+            .distinct()
+            .collect(Collectors.toList());
+
+        List<Long> newSectionStationsId = Arrays.asList(newSection.getUpStationId(),
+            newSection.getDownStationId());
+
+        stationIds.retainAll(newSectionStationsId);
+        if (stationIds.size() != VALID_SECTION_DUPLICATE_STATION_ID_CRITERIA) {
+            throw new NoneOrAllStationsExistingInLineException();
+        }
+    }
+
+    public void validateSectionDistance(Section newSection) {
+        int distance = sectionToBeDivided(newSection).getDistance();
+        if (newSection.largerThan(distance)) {
+            throw new InvalidSectionDistanceException();
+        }
+    }
+
     public boolean isNotEndPoint() {
         return sections.size() == MIDDLE_SECTION_CRITERIA;
     }
@@ -50,13 +79,6 @@ public class Sections {
             .sum();
     }
 
-    public void validateSectionDistance(Section newSection) {
-        int distance = sectionToBeDivided(newSection).getDistance();
-        if (newSection.largerThan(distance)) {
-            throw new InvalidSectionDistanceException();
-        }
-    }
-
     public Section sectionToBeDivided(Section newSection) {
         return sections.stream()
             .filter(section -> hasSameUpOrDownStationId(newSection, section))
@@ -79,20 +101,8 @@ public class Sections {
             .getDownStationId().equals(newSection.getDownStationId());
     }
 
-    public void validateSectionStations(Section newSection) {
-        List<Long> stationIds = sections.stream()
-            .map(section -> Arrays.asList(section.getUpStationId(), section.getDownStationId()))
-            .flatMap(List::stream)
-            .distinct()
-            .collect(Collectors.toList());
-
-        List<Long> newSectionStationsId = Arrays.asList(newSection.getUpStationId(),
-            newSection.getDownStationId());
-
-        stationIds.retainAll(newSectionStationsId);
-        if (stationIds.size() != VALID_SECTION_DUPLICATE_STATION_ID_CRITERIA) {
-            throw new NoneOrAllStationsExistingInLineException();
-        }
+    public boolean isEmpty() {
+        return sections.size() == 0;
     }
 
     public List<Long> sortedStationIds() {

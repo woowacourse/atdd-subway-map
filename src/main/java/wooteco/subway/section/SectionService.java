@@ -3,9 +3,7 @@ package wooteco.subway.section;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.UniqueSectionDeleteException;
-import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.section.dao.SectionDao;
-import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.station.StationService;
 import wooteco.subway.station.dto.StationResponse;
 
@@ -21,44 +19,48 @@ public class SectionService {
         this.stationService = stationService;
     }
 
-    public void add(Long lindId, SectionRequest sectionRequest) {
-        Section section = new Section(lindId, sectionRequest);
-        Sections sections = new Sections(sectionDao.findSectionsByLineId(lindId));
-        sections.validateSectionStations(section);
-        if (section.isEndPointOf(sections)) {
+    public void create(Long lindId, Long upStationId, Long downStationId, int distance) {
+        Section section = new Section(lindId, upStationId,
+            downStationId, distance);
+        List<Section> sectionList = sectionDao.findSectionsByLineId(lindId);
+        Sections sections = new Sections(sectionList, section);
+        if (section.isEndPointOf(sections) || sections.isEmpty()) {
             sectionDao.save(section);
             return;
         }
-        sections.validateSectionDistance(section);
+        createSectionBetweenSections(lindId, section, sections);
+    }
+
+    private void createSectionBetweenSections(Long lindId, Section section, Sections sections) {
         Section dividedSection = sections.divideSection(lindId, section);
-        sectionDao.deleteBySectionId(sections.sectionToBeDivided(section).getId());
+        sectionDao.deleteBySectionId(dividedSection.getId());
         sectionDao.save(dividedSection);
         sectionDao.save(section);
     }
 
-    public void initialize(Long id, LineRequest request) {
-        Section section = new Section(id, request.getUpStationId(),
-            request.getDownStationId(), request.getDistance());
-        sectionDao.save(section);
-    }
-
     public List<StationResponse> findAllByLineId(Long lineId) {
-        Sections sections = new Sections(sectionDao.findSectionsByLineId(lineId));
+        List<Section> sectionList = sectionDao.findSectionsByLineId(lineId);
+        Sections sections = new Sections(sectionList);
         return stationService.findAllByIds(sections.sortedStationIds());
     }
 
-    public void deleteById(Long id, Long stationId) {
-        if (sectionDao.findSectionsByLineId(id).size() == 1) {
+    public void deleteById(Long lineId, Long stationId) {
+        if (isUniqueSectionOfLine(lineId)) {
             throw new UniqueSectionDeleteException();
         }
-
-        Sections sections = new Sections(sectionDao.findById(id, stationId));
-        sectionDao.deleteById(id, stationId);
+        List<Section> sectionList = sectionDao.findById(lineId, stationId);
+        Sections sections = new Sections(sectionList);
+        sectionDao.deleteById(lineId, stationId);
         if (sections.isNotEndPoint()) {
             Long upStationId = sections.findUpStationId(stationId);
             Long downStationId = sections.findDownStationId(stationId);
-            sectionDao.save(new Section(id, upStationId, downStationId, sections.sumDistance()));
+            sectionDao
+                .save(new Section(lineId, upStationId, downStationId, sections.sumDistance()));
         }
+    }
+
+    private boolean isUniqueSectionOfLine(Long lineId) {
+        return sectionDao.findSectionsByLineId(lineId).size() == 1;
     }
 
     public void deleteAllByLineId(Long lineId) {

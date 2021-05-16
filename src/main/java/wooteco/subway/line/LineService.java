@@ -8,6 +8,7 @@ import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineResponses;
 import wooteco.subway.section.SectionService;
+import wooteco.subway.station.dto.StationResponse;
 
 @Service
 public class LineService {
@@ -24,21 +25,25 @@ public class LineService {
     public LineResponse create(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineDao.save(line);
-        sectionService.initialize(newLine.getId(), lineRequest);
+        sectionService
+            .create(newLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(),
+                lineRequest.getDistance());
+        List<StationResponse> stations = sectionService.findAllByLineId(newLine.getId());
         return new LineResponse(newLine.getId(), newLine.getName(),
-            newLine.getColor(), sectionService.findAllByLineId(newLine.getId()));
+            newLine.getColor(), stations);
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
-        return LineResponses.from(lines).toList();
+        return LineResponses.toLineResponse(lines);
     }
 
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id);
+        List<StationResponse> stationResponses = sectionService.findAllByLineId(id);
         return new LineResponse(line.getId(), line.getName(), line.getColor(),
-            sectionService.findAllByLineId(id));
+            stationResponses);
     }
 
     public void updateById(Long id, LineRequest lineRequest) {

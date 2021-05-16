@@ -6,23 +6,10 @@ import wooteco.subway.line.Line;
 
 public class LineResponses {
 
-    private List<LineResponse> responses;
-
-    public LineResponses() {
-    }
-
-    private LineResponses(List<LineResponse> responses) {
-        this.responses = responses;
-    }
-
-    public static LineResponses from(List<Line> lines) {
-        return new LineResponses(lines
+    public static List<LineResponse> toLineResponse(List<Line> lines) {
+        return lines
             .stream()
             .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), null))
-            .collect(Collectors.toList()));
-    }
-
-    public List<LineResponse> toList() {
-        return responses;
+            .collect(Collectors.toList());
     }
 }
