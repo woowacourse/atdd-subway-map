@@ -1,6 +1,7 @@
 package wooteco.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.station.StationAcceptanceTest.addStation;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -21,6 +22,7 @@ import wooteco.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 @Sql("/truncate.sql")
+public
 class LineAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> response;
@@ -32,31 +34,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        upId = RestAssured.given().log().all()
-            .body(new StationRequest("강남역"))
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract().as(StationResponse.class)
-            .getId();
+        upId = addStation("강남역").as(StationResponse.class).getId();
+        downId = addStation("역삼역").as(StationResponse.class).getId();
 
-        downId = RestAssured.given().log().all()
-            .body(new StationRequest("역삼역"))
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract().as(StationResponse.class)
-            .getId();
-
-        response = RestAssured.given().log().all()
-            .body(new LineRequest("분당선", "bg-yellow-600", upId, downId, 1))
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        LineRequest lineRequest = new LineRequest("분당선", "bg-yellow-600", upId, downId, 1);
+        response = addLine(lineRequest);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -73,13 +55,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/lines")
-            .then().log().all()
-            .extract();
-
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class)
+        List<Long> resultLineIds = getLineResponses()
             .stream()
             .map(LineResponse::getId)
             .collect(Collectors.toList());
@@ -138,5 +114,25 @@ class LineAcceptanceTest extends AcceptanceTest {
             .extract();
 
         assertThat(actualResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static ExtractableResponse<Response> addLine(LineRequest request) {
+        return RestAssured.given().log().all()
+            .body(request)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+    }
+
+    public static List<LineResponse> getLineResponses() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines")
+            .then().log().all()
+            .extract();
+
+        return response.jsonPath().getList(".", LineResponse.class);
     }
 }

@@ -25,9 +25,9 @@ public class Sections {
     }
 
     public Sections(List<Section> sections, Section section) {
+        this.sections = sections;
         validateSectionStations(section);
         validateSectionDistance(section);
-        this.sections = sections;
     }
 
     public void validateSectionStations(Section newSection) {

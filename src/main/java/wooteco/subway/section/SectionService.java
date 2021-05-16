@@ -19,16 +19,22 @@ public class SectionService {
         this.stationService = stationService;
     }
 
-    public void create(Long lindId, Long upStationId, Long downStationId, int distance) {
-        Section section = new Section(lindId, upStationId,
+    public void createSectionOfNewLine(Long lineId, Long upStationId, Long downStationId, int distance){
+        Section section = new Section(lineId, upStationId,
             downStationId, distance);
-        List<Section> sectionList = sectionDao.findSectionsByLineId(lindId);
+        sectionDao.save(section);
+    }
+
+    public void create(Long lineId, Long upStationId, Long downStationId, int distance) {
+        Section section = new Section(lineId, upStationId,
+            downStationId, distance);
+        List<Section> sectionList = sectionDao.findSectionsByLineId(lineId);
         Sections sections = new Sections(sectionList, section);
-        if (section.isEndPointOf(sections) || sections.isEmpty()) {
+        if (section.isEndPointOf(sections)) {
             sectionDao.save(section);
             return;
         }
-        createSectionBetweenSections(lindId, section, sections);
+        createSectionBetweenSections(lineId, section, sections);
     }
 
     private void createSectionBetweenSections(Long lindId, Section section, Sections sections) {

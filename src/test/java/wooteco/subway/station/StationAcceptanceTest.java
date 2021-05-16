@@ -27,8 +27,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-        response = RestAssured.given().log().all()
-            .body(new StationRequest("강남역"))
+        response = addStation("강남역");
+    }
+
+    public static ExtractableResponse<Response> addStation(String name) {
+        return RestAssured.given().log().all()
+            .body(new StationRequest(name))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/stations")
@@ -41,20 +45,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-        assertThat(response.body().as(StationResponse.class).getName()).isEqualTo("강남역");
+        assertThat(response.as(StationResponse.class).getName()).isEqualTo("강남역");
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
-        ExtractableResponse<Response> duplicateResponse = RestAssured.given().log().all()
-            .body(new StationRequest("강남역"))
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then()
-            .log().all()
-            .extract();
+        ExtractableResponse<Response> duplicateResponse = addStation("강남역");
 
         assertThat(duplicateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
