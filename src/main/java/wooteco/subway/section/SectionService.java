@@ -65,7 +65,7 @@ public class SectionService {
     }
 
     private void validateIsLastRemainedSection(Long lineId) {
-        if (findAllByLineId(lineId).hasSize(1)) {
+        if (findAllByLineId(lineId).hasSizeOf(1)) {
             throw new SectionLastRemainedException();
         }
     }

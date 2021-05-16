@@ -3,23 +3,21 @@ package wooteco.subway.domain;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
-@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class Station {
     private Long id;
-    private StationName name;
+    private String name;
 
     public static Station create(String name) {
         return create(null, name);
     }
 
     public static Station create(Long id, String name) {
-        return new Station(id, new StationName(name));
+        return new Station(id, name);
     }
 
     public boolean isSameId(Long id) {
@@ -27,11 +25,11 @@ public class Station {
     }
 
     public boolean isSameName(String name) {
-        return this.name.equals(new StationName(name));
+        return this.name.equals(name);
     }
 
     public String getName() {
-        return name.getName();
+        return name;
     }
 
     @Override

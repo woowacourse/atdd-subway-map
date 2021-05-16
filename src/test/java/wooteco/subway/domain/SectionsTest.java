@@ -170,6 +170,6 @@ class SectionsTest {
 
         Sections sections = Sections.create(setting);
 
-        assertTrue(sections.hasSize(2));
+        assertTrue(sections.hasSizeOf(2));
     }
 }

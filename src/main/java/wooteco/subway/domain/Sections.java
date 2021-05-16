@@ -160,7 +160,7 @@ public class Sections {
     }
 
 
-    public boolean hasSize(int size) {
+    public boolean hasSizeOf(int size) {
         return sections.size() == size;
     }
 
