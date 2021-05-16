@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -68,7 +69,7 @@ public class SectionService {
     public void deleteSection(Long lineId, Long stationId) {
         validateSectionCount(lineId);
         final List<Section> sections = sectionDao.findAllSectionsIncludeStationId(lineId, stationId);
-        if (sections.isEmpty()) {
+        if (CollectionUtils.isEmpty(sections)) {
             throw new DeleteSectionIsNotPermittedException();
         }
         Section section = adjustSection(lineId, new Sections(sections));
