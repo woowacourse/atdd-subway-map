@@ -1,8 +1,20 @@
 package wooteco.subway.exception;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import wooteco.subway.exception.DuplicateLineNameException;
+import wooteco.subway.exception.DuplicateStationNameException;
+import wooteco.subway.exception.InvalidSectionsException;
+import wooteco.subway.exception.NotAddSectionException;
+import wooteco.subway.exception.NotContainStationsException;
+import wooteco.subway.exception.NotExistLineException;
+import wooteco.subway.exception.NotExistSectionException;
+import wooteco.subway.exception.NotExistStationException;
+import wooteco.subway.exception.NotFoundTerminalStationException;
+import wooteco.subway.exception.NotRemoveSectionException;
 
+@ControllerAdvice
 public class SubwayAdvice {
 
     @ExceptionHandler(DuplicateStationNameException.class)
@@ -52,6 +64,11 @@ public class SubwayAdvice {
 
     @ExceptionHandler(NotRemoveSectionException.class)
     public ResponseEntity<String> handleNotRemoveSectionException(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(SectionDistanceException.class)
+    public ResponseEntity<String> handleSectionDistanceException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
