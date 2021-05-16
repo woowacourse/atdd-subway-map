@@ -6,7 +6,6 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.service.LineService;
-import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
 
 import java.net.URI;
@@ -27,10 +26,10 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> create(@RequestBody final LineRequest lineRequest) {
-        final LineResponse lineResponse = lineService.create(lineRequest);
-        final URI responseUrl = URI.create("/lines/" + lineResponse.getId());
+        final LineResponse line = lineService.create(lineRequest);
+        final URI responseUri = URI.create("/lines/" + line.getId());
 
-        return ResponseEntity.created(responseUrl).body(lineResponse);
+        return ResponseEntity.created(responseUri).body(line);
     }
 
     @PutMapping("/{id}")
@@ -45,6 +44,11 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> line(@PathVariable final Long id) {
+        return ResponseEntity.ok(lineService.findById(id));
+    }
+
     @GetMapping
     public ResponseEntity<List<LineResponse>> lines() {
         final List<Line> lines = lineService.findAll();
@@ -55,20 +59,8 @@ public class LineController {
         return ResponseEntity.ok(lineResponses);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> line(@PathVariable final Long id) {
-        final Line line = lineService.findById(id);
-        return ResponseEntity.ok(lineResponse(line));
-    }
-
     private LineResponse lineResponse(final Line line) {
-        final List<Long> stationIds = lineService.allStationIdInLine(line.getId());
-        return new LineResponse(line, stationResponses(stationIds));
-    }
-
-    private List<StationResponse> stationResponses(final List<Long> stationIds) {
-        return stationIds.stream()
-                .map(stationId -> new StationResponse(stationService.findById(stationId)))
-                .collect(Collectors.toList());
+        final List<Long> stationIds = lineService.allStationIdInLine(line);
+        return new LineResponse(line, stationService.idsToStations(stationIds));
     }
 }

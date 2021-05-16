@@ -8,10 +8,10 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.FinalStations;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.exception.LineException;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class LineDao {
@@ -24,18 +24,14 @@ public class LineDao {
     }
 
     public Long save(final Line line) {
-        return save(line.getName(), line.getColor(), line.getUpStationId(), line.getDownStationId());
-    }
-
-    public Long save(final String name, final String color, final Long upStationId, final Long downStationId) {
         final String sql = "INSERT INTO LINE (name, color, up_station_id, down_station_id) VALUES (?, ?, ?, ?)";
 
         jdbcTemplate.update(con -> {
             final PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, name);
-            ps.setString(2, color);
-            ps.setLong(3, upStationId);
-            ps.setLong(4, downStationId);
+            ps.setString(1, line.getName());
+            ps.setString(2, line.getColor());
+            ps.setLong(3, line.getUpStationId());
+            ps.setLong(4, line.getDownStationId());
             return ps;
         }, keyHolder);
 
@@ -50,11 +46,6 @@ public class LineDao {
     public void update(final Line line) {
         final String sql = "UPDATE LINE SET NAME = ?, COLOR =? WHERE id = ?";
         jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
-    }
-
-    public void update(final Long id, final String name, final String color) {
-        final String sql = "UPDATE LINE SET NAME = ?, COLOR =? WHERE id = ?";
-        jdbcTemplate.update(sql, name, color, id);
     }
 
     public void updateFinalStations(final Long id, final FinalStations finalStations) {
@@ -84,17 +75,16 @@ public class LineDao {
         return findDownStationId(id).equals(downStationId);
     }
 
-    public Optional<Line> findById(final Long id) {
+    public Line findById(final Long id) {
         try {
             final String sql = "SELECT * FROM LINE WHERE id = ?";
-            final Line result = jdbcTemplate.queryForObject(sql, rowMapper(), id);
-            return Optional.of(result);
+            return jdbcTemplate.queryForObject(sql, rowMapper(), id);
         } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
+            throw new LineException("존재하지 않는 노선입니다.");
         }
     }
 
-    public boolean isNonExisting(final Long id) {
+    public boolean isNotExist(final Long id) {
         final String sql = "SELECT EXISTS(SELECT from LINE WHERE id = ?)";
         return !jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }

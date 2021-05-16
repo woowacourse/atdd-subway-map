@@ -14,6 +14,8 @@ import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.domain.Distance;
 import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.dto.StationRequest;
+import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
 
 import java.util.List;
@@ -34,11 +36,11 @@ class SectionServiceTest {
     @Autowired
     private SectionService sectionService;
 
-    private Station aStation;
-    private Station bStation;
-    private Station cStation;
-    private Station dStation;
-    private Station eStation;
+    private StationResponse aStation;
+    private StationResponse bStation;
+    private StationResponse cStation;
+    private StationResponse dStation;
+    private StationResponse eStation;
 
     private Line testLine;
 
@@ -47,13 +49,13 @@ class SectionServiceTest {
 
     @BeforeEach
     private void initLine() {
-        aStation = stationService.save(new Station("A역"));
-        bStation = stationService.save(new Station("B역"));
-        cStation = stationService.save(new Station("C역"));
-        dStation = stationService.save(new Station("D역"));
-        eStation = stationService.save(new Station("E역"));
+        aStation = stationService.save(new StationRequest("A역"));
+        bStation = stationService.save(new StationRequest("B역"));
+        cStation = stationService.save(new StationRequest("C역"));
+        dStation = stationService.save(new StationRequest("D역"));
+        eStation = stationService.save(new StationRequest("E역"));
 
-        final LineRequest sample = new LineRequest("코기선", "black", bStation.getId(), dStation.getId(), initialDistance.value());
+        final LineRequest sample = new LineRequest("코기선", "black",  bStation.getId(), dStation.getId(), initialDistance.value());
         final LineResponse lineResponse = lineService.create(sample);
         testLine = lineResponse.toLine();
     }
@@ -185,27 +187,27 @@ class SectionServiceTest {
         }).isInstanceOf(LineException.class);
     }
 
-    private void validateStationOrder(final Station... expectOrders) {
-        final List<Long> stations = lineService.allStationIdInLine(testLine.getId());
+    private void validateStationOrder(final StationResponse... expectOrders) {
+        final List<Long> stations = lineService.allStationIdInLine(testLine);
 
         int index = 0;
-        for (final Station station : expectOrders) {
+        for (final StationResponse station : expectOrders) {
             assertThat(stations.get(index++)).isEqualTo(station.getId());
         }
 
         validateFinalStation(expectOrders[0], expectOrders[expectOrders.length - 1]);
     }
 
-    private void validateFinalStation(final Station expectedUpStation, final Station expectedDownStation) {
-        final List<Long> stations = lineService.allStationIdInLine(testLine.getId());
-        final Long actualUpStationId = stations.get(0);
-        final Long actualDownStationId = stations.get(stations.size() - 1);
+    private void validateFinalStation(final StationResponse expectedUpStation, final StationResponse expectedDownStation) {
+        final List<Long> ids = lineService.allStationIdInLine(testLine);
+        final Long firstId = ids.get(0);
+        final Long lastId = ids.get(ids.size() - 1);
 
-        assertThat(actualUpStationId).isEqualTo(expectedUpStation.getId());
-        assertThat(actualDownStationId).isEqualTo(expectedDownStation.getId());
+        assertThat(firstId).isEqualTo(expectedUpStation.getId());
+        assertThat(lastId).isEqualTo(expectedDownStation.getId());
     }
 
-    private void validateStationDistance(final Station upStation, final Station downStation, final Distance expectedDistance) {
+    private void validateStationDistance(final StationResponse upStation, final StationResponse downStation, final Distance expectedDistance) {
         final Distance actualDistance = sectionService.distance(testLine.getId(), upStation.getId(), downStation.getId());
         assertThat(expectedDistance).isEqualTo(actualDistance);
     }

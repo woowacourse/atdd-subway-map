@@ -21,10 +21,6 @@ public class Line {
         this(null, name, color, upStationId, downStationId, distance);
     }
 
-    public Line(final Long id, final String name, final String color, final Long upStationId, final Long downStationId) {
-        this(id, name, color, upStationId, downStationId, 0);
-    }
-
     public Line(final Long id, final String name, final String color) {
         this.id = id;
         this.name = name;

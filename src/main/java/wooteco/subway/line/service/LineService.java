@@ -30,10 +30,9 @@ public class LineService {
         validateName(lineRequest.getName());
 
         final Long id = lineDao.save(lineRequest.toLine());
-        final Line line = findById(id);
-        sectionDao.save(line);
+        sectionDao.save(lineRequest.toLine(id));
 
-        return new LineResponse(line);
+        return new LineResponse(lineDao.findById(id));
     }
 
     public void update(final Long id, final LineRequest lineRequest) {
@@ -48,7 +47,7 @@ public class LineService {
     }
 
     private boolean isUpdatingName(final Line updating) {
-        final Line old = findById(updating.getId());
+        final Line old = lineDao.findById(updating.getId());
         return old.isDifferentName(updating);
     }
 
@@ -59,27 +58,26 @@ public class LineService {
     }
 
     public void delete(final Long id) {
-        if (lineDao.isNonExisting(id)) {
+        if (lineDao.isNotExist(id)) {
             throw new LineException("존재하지 않는 노선입니다.");
         }
         sectionDao.deleteAllSectionInLine(id);
         lineDao.delete(id);
     }
 
-    public Line findById(final Long id) {
-        return lineDao.findById(id)
-                .orElseThrow(() -> new LineException("존재하지 않는 노선입니다."));
+    public LineResponse findById(final Long id) {
+        return new LineResponse(lineDao.findById(id));
     }
 
     public List<Line> findAll() {
         return lineDao.findAll();
     }
 
-    public List<Long> allStationIdInLine(final Long lineId) {
-        if (sectionDao.stationCountInLine(lineId) == 0) {
+    public List<Long> allStationIdInLine(final Line line) {
+        if (sectionDao.stationCountInLine(line.getId()) == 0) {
             return Collections.EMPTY_LIST;
         }
-        return backStations(lineId, lineDao.findUpStationId(lineId), lineDao.findDownStationId(lineId));
+        return backStations(line.getId(), line.getUpStationId(), line.getDownStationId());
     }
 
     private List<Long> backStations(Long lineId, Long frontStationId, Long downStationId) {

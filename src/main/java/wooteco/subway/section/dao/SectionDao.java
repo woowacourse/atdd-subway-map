@@ -97,9 +97,8 @@ public class SectionDao {
         final Long columnCount = jdbcTemplate.queryForObject(sql, Long.class, lineId);
 
         if (columnCount == 0) {
-            return 0L;
+            return columnCount;
         }
-
         return columnCount + 1;
     }
 

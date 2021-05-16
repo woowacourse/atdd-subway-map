@@ -10,6 +10,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.dto.StationRequest;
+import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.exception.StationException;
 import wooteco.subway.station.service.StationService;
 
@@ -25,17 +27,17 @@ public class StationServiceTest {
     private StationService stationService;
     @MockBean
     private SectionDao sectionDao;
-    private Station savedStation;
+    private StationResponse savedStation;
 
     @BeforeEach
     private void init() {
-        savedStation = stationService.save(new Station(savedName));
+        savedStation = stationService.save(new StationRequest(savedName));
     }
 
     @DisplayName("역을 추가한다.")
     @Test
     public void insertStation() {
-        stationService.save(new Station("validName"));
+        stationService.save(new StationRequest("validName"));
     }
 
     @DisplayName("중복 이름의 역을 추가할 수 없다.")
@@ -43,7 +45,7 @@ public class StationServiceTest {
     public void insertStationWithDuplicatedName() {
         final String duplicatedName = savedName;
         assertThatThrownBy(() -> {
-            stationService.save(new Station(duplicatedName));
+            stationService.save(new StationRequest(duplicatedName));
         }).isInstanceOf(StationException.class);
     }
 
@@ -51,9 +53,7 @@ public class StationServiceTest {
     @Test
     public void deleteStation() {
         final int preSize = stationService.findAll().size();
-
         stationService.delete(savedStation.getId());
-
         final int postSize = stationService.findAll().size();
 
         assertThat(preSize - 1).isEqualTo(postSize);

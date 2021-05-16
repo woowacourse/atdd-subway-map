@@ -77,7 +77,7 @@ public class LineServiceTest {
         final String newColor = "newColor";
         lineService.update(new Line(savedLineId, savedName, newColor));
 
-        final Line updated = lineService.findById(savedLineId);
+        final LineResponse updated = lineService.findById(savedLineId);
         assertThat(updated.getColor()).isEqualTo(newColor);
     }
 
@@ -92,15 +92,15 @@ public class LineServiceTest {
     @DisplayName("노선 삭제 시, 노선이 포함하는 모든 구간 데이터를 삭제한다.")
     @Test
     public void deleteAllSectionInLine() {
-        assertThat(lineService.allStationIdInLine(savedLineId).size()).isEqualTo(2);
+        assertThat(lineService.allStationIdInLine(savedLine).size()).isEqualTo(2);
         lineService.delete(savedLineId);
-        assertThat(lineService.allStationIdInLine(savedLineId).size()).isEqualTo(0);
+        assertThat(lineService.allStationIdInLine(savedLine).size()).isEqualTo(0);
     }
 
     @DisplayName("노선을 조회한다.")
     @Test
     public void findLine() {
-        final Line searchedLine = lineService.findById(savedLineId);
+        final LineResponse searchedLine = lineService.findById(savedLineId);
         assertThat(savedLineId).isEqualTo(searchedLine.getId());
     }
 
@@ -113,7 +113,7 @@ public class LineServiceTest {
         sectionService.addSection(savedLineId, mockDownStationId, mockStationId3, 1);
         sectionService.addSection(savedLineId, mockStationId3, mockStationId4, 1);
 
-        final List<Long> ids = lineService.allStationIdInLine(savedLineId);
+        final List<Long> ids = lineService.allStationIdInLine(savedLine);
         assertThat(ids).usingRecursiveComparison()
                 .isEqualTo(Arrays.asList(mockUpStationId, mockDownStationId, mockStationId3, mockStationId4));
     }
