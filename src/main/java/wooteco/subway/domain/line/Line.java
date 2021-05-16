@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Objects;
 
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.exception.illegal.IllegalInputException;
 import wooteco.subway.dto.line.LineRequest;
+import wooteco.subway.exception.illegal.IllegalInputException;
 
 public class Line {
 

@@ -11,8 +11,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.validation.annotation.Validated;
 
-import wooteco.subway.exception.illegal.IllegalInputException;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.exception.illegal.IllegalInputException;
 
 @SpringBootTest
 @Sql("classpath:test-schema.sql")

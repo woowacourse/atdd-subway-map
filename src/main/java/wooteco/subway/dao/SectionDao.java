@@ -2,7 +2,6 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -14,9 +13,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import wooteco.subway.domain.line.StationsInLine;
 import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.station.Station;
+import wooteco.subway.domain.section.Sections;
 
 @Repository
 public class SectionDao {
@@ -48,40 +46,21 @@ public class SectionDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public StationsInLine findSectionsByLineId(long id) {
+    public Sections findSectionsByLineId(long id) {
         String sql = "SELECT * FROM SECTION WHERE LINE_ID = ?";
         List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sql, id);
 
         List<Section> sections1 = new ArrayList<>();
 
         for (Map<String, Object> result : resultList) {
-            long up_station_id = (long) result.get("UP_STATION_ID");
-            long down_station_id = (long) result.get("DOWN_STATION_ID");
-            int distance = (int) result.get("DISTANCE");
+            long up_station_id = (long)result.get("UP_STATION_ID");
+            long down_station_id = (long)result.get("DOWN_STATION_ID");
+            int distance = (int)result.get("DISTANCE");
 
             sections1.add(new Section(id, up_station_id, down_station_id, distance));
         }
-        return StationsInLine.of(sections1);
+        return Sections.of(sections1);
     }
-
-    // public StationsInLine findOrderedStationsByLineId(long id) {
-    //     String sql = "SELECT * FROM SECTION WHERE LINE_ID = ?";
-    //     List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sql, id);
-    //     Map<Station, Station> sections = new HashMap<>();
-    //
-    //     for (Map<String, Object> result : resultList) {
-    //         long up_station_id = (long) result.get("UP_STATION_ID");
-    //         long down_station_id = (long) result.get("DOWN_STATION_ID");
-    //
-    //         sections.put(
-    //             new Station(up_station_id,
-    //                 jdbcTemplate.queryForObject("SELECT NAME FROM STATION WHERE ID = ?", String.class, up_station_id)),
-    //             new Station(down_station_id,
-    //                 jdbcTemplate.queryForObject("SELECT NAME FROM STATION WHERE ID = ?", String.class,
-    //                     down_station_id)));
-    //     }
-    //     return StationsInLine.from(sections);
-    // }
 
     public Optional<Section> findSectionBySameUpStation(long lineId, long upStationId) {
         String sql = "SELECT * FROM SECTION WHERE LINE_ID = ? AND UP_STATION_ID = ?";

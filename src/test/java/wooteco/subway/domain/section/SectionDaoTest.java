@@ -3,8 +3,6 @@ package wooteco.subway.domain.section;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,12 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import wooteco.subway.domain.line.Line;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.domain.line.StationsInLine;
-import wooteco.subway.domain.station.Station;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.station.Station;
 
 @SpringBootTest
 @Transactional
@@ -60,11 +57,11 @@ class SectionDaoTest {
         sectionDao.save(section);
         sectionDao.save(section2);
 
-        StationsInLine stationsInLine = StationsInLine.of(Arrays.asList(section, section2));
+        Sections sections = Sections.of(Arrays.asList(section, section2));
 
-        StationsInLine sectionsByLineId = sectionDao.findSectionsByLineId(lineId);
+        Sections sectionsByLineId = sectionDao.findSectionsByLineId(lineId);
 
-        assertEquals(stationsInLine.getSections(), sectionsByLineId.getSections());
+        assertEquals(sections.getSections(), sectionsByLineId.getSections());
     }
 
     @DisplayName("UpStation이 같은 구간을 조회한다.")
@@ -116,7 +113,8 @@ class SectionDaoTest {
         assertEquals(initSize - 1, sectionDao.findSectionsByLineId(lineId).getSections().size());
     }
 
-    private Section saveSection(long lineId, long upStationId, long downStationId, int distance, long downStationId2, int distance2) {
+    private Section saveSection(long lineId, long upStationId, long downStationId, int distance, long downStationId2,
+        int distance2) {
         Section section = new Section(lineId, upStationId, downStationId, distance);
         Section section2 = new Section(lineId, downStationId, downStationId2, distance2);
         sectionDao.save(section);

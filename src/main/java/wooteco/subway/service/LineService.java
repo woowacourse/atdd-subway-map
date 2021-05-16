@@ -8,12 +8,12 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import wooteco.subway.dao.LineDao;
+import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.duplicate.DuplicateLineException;
 import wooteco.subway.exception.nosuch.NoSuchLineException;
-import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.line.StationsInLine;
-import wooteco.subway.dao.LineDao;
 
 @Service
 @Transactional
@@ -46,9 +46,13 @@ public class LineService {
 
     public Line showLine(long id) {
         Line line = lineDao.findById(id).orElseThrow(NoSuchLineException::new);
-        StationsInLine stationsInLine = sectionService.makeStationsInLine(id);
+        Sections sections = sectionService.makeStationsInLine(id);
+
         List<Station> stations = new ArrayList<>();
-        stationsInLine.getStationIds().forEach(stationId -> stations.add(stationService.showStation(stationId)));
+        for (Long stationId : sections.getStationIds()) {
+            stations.add(stationService.showStation(stationId));
+        }
+
         return new Line(line, stations);
     }
 

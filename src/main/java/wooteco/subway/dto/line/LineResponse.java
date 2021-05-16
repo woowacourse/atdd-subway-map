@@ -39,10 +39,11 @@ public class LineResponse {
     }
 
     public static LineResponse from(Line line) {
-        // if (Objects.isNull(line.getStations())) {
-        //     return new LineResponse(line.getId(), line.getName(), line.getColor());
-        // }
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        if (Objects.isNull(line.getStations())) {
+            return new LineResponse(line.getId(), line.getName(), line.getColor());
+        }
+        return new LineResponse(line.getId(), line.getName(), line.getColor(),
+            convertStationResponses(line.getStations()));
     }
 
     private static List<StationResponse> convertStationResponses(List<Station> stations) {

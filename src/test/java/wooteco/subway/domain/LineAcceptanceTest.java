@@ -32,7 +32,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private static final long downStationId = 2L;
     private static final int distance = 100;
 
-
     @BeforeEach
     void setUpStations() {
         addStation("강남역");

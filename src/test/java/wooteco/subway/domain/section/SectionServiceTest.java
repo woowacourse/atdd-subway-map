@@ -15,14 +15,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.illegal.ImpossibleDeleteException;
 import wooteco.subway.exception.illegal.ImpossibleDistanceException;
 import wooteco.subway.exception.nosuch.NoSuchStationInLineException;
-import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.line.StationsInLine;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.SectionService;
-import wooteco.subway.domain.station.Station;
 import wooteco.subway.service.StationService;
 
 @SpringBootTest
@@ -86,7 +85,8 @@ class SectionServiceTest {
     @DisplayName("상행종점, 하행종점을 추가한다.")
     @Test
     void addEndSection() {
-        System.out.println("!!"+ stationService.showStations().stream().map(Station::getId).collect(Collectors.toList()));
+        System.out.println(
+            "!!" + stationService.showStations().stream().map(Station::getId).collect(Collectors.toList()));
 
         Section section = new Section(1L, 1L, 2L, 100);
         Section endSection = new Section(1L, 2L, 3L, 1000);
@@ -131,10 +131,9 @@ class SectionServiceTest {
     @DisplayName("하나 남은 구간을 삭제한다.")
     @Test
     void ImpossibleDeleteSectionException() {
-        addEndSection();
+        Section section = new Section(1L, 2L, 3L, 1000);
+        sectionService.createSection(section);
 
-        assertEquals(1, sectionService.deleteSectionByStationId(1L, 4L));
-        assertEquals(1, sectionService.deleteSectionByStationId(1L, 1L));
         assertThatThrownBy(() -> sectionService.deleteSectionByStationId(1L, 2L))
             .isInstanceOf(ImpossibleDeleteException.class);
     }

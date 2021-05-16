@@ -17,7 +17,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.line.StationsInLine;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.nosuch.NoSuchLineException;
@@ -48,7 +47,6 @@ class LineServiceTest {
 
     @Autowired
     private StationService stationService;
-
 
     @BeforeEach
     void setUp() {
