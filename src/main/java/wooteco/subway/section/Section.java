@@ -58,6 +58,10 @@ public class Section {
         return this.distance + after.distance;
     }
 
+    public int subtractDistance(Section newSection) {
+        return this.distance - newSection.distance;
+    }
+
     public Long getId() {
         return id;
     }

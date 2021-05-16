@@ -67,4 +67,11 @@ public class SectionTest {
         assertThat(성수에서건대.plusDistance(건대에서구의)).isEqualTo(7);
         assertThat(건대에서구의.plusDistance(구의에서잠실)).isEqualTo(8);
     }
+
+    @Test
+    @DisplayName("구간끼리의 거리를 뺀다.")
+    void testSubtractDistance() {
+        assertThat(성수에서건대.subtractDistance(건대에서구의)).isEqualTo(1);
+        assertThat(구의에서잠실.subtractDistance(건대에서구의)).isEqualTo(2);
+    }
 }

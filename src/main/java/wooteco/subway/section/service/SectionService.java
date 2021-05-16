@@ -97,9 +97,9 @@ public class SectionService {
         return differenceInDistance(newSection, oldSection);
     }
 
-    private int differenceInDistance(Section newSection, Section oldSection) {
-        validatesDistance(oldSection, newSection);
-        return oldSection.getDistance() - newSection.getDistance();
+    private int differenceInDistance(Section newSection, Section currentSection) {
+        validatesDistance(currentSection, newSection);
+        return currentSection.subtractDistance(newSection);
     }
 
     private void validatesDistance(Section oldSection, Section newSection) {
