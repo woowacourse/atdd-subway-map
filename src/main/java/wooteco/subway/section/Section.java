@@ -3,89 +3,101 @@ package wooteco.subway.section;
 import java.util.Objects;
 import wooteco.subway.domain.Id;
 import wooteco.subway.exception.section.DuplicateStationException;
+import wooteco.subway.line.Line;
+import wooteco.subway.station.Station;
 
 public class Section {
 
     private final Id id;
-    private final Id lineId;
-    private final Id upStationId;
-    private final Id downStationId;
+    private final Line line;
+    private final Station upStation;
+    private final Station downStation;
     private final Distance distance;
 
     public Section(final long key, final Section section) {
-        this(new Id(key), section.lineId, section.upStationId, section.downStationId,
+        this(new Id(key), section.line, section.upStation, section.downStation,
             section.distance);
     }
 
-    public Section(final Long lineId, final Long upStationId, final Long downStationId,
+    public Section(final Line line, final Station upStation, final Station downStation,
         final int distance) {
 
-        this(null, new Id(lineId), new Id(upStationId), new Id(downStationId),
+        this(null, line, upStation, downStation,
             new Distance(distance));
     }
 
-    public Section(final Long id, final Long lineId, final Long upStationId,
-        final Long downStationId, final int distance) {
+    public Section(final Long id, final Line line, final Station upStation,
+        final Station downStation, final int distance) {
 
-        this(new Id(id), new Id(lineId), new Id(upStationId), new Id(downStationId),
+        this(new Id(id), line, upStation, downStation,
             new Distance(distance));
     }
 
-    public Section(final Id id, final Id lineId, final Id upStationId, final Id downStationId,
+    public Section(final Id id, final Line line, final Station upStation, final Station downStation,
         final Distance distance) {
-        validateDuplicateStations(upStationId, downStationId);
+        validateDuplicateStations(upStation, downStation);
         this.id = id;
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
-    private void validateDuplicateStations(final Id upStationId, final Id downStationId) {
-        if (upStationId.equals(downStationId)) {
+    private void validateDuplicateStations(final Station upStation, final Station downStation) {
+        if (upStation.equals(downStation)) {
             throw new DuplicateStationException();
         }
     }
 
     public Section dividedSectionForSave(final Section section) {
         Distance updateDistance = this.distance.subtract(section.distance);
-        if (upStationId.equals(section.upStationId)) {
-            return new Section(null, lineId, section.downStationId, downStationId, updateDistance);
+        if (upStation.equals(section.upStation)) {
+            return new Section(null, line, section.downStation, downStation, updateDistance);
         }
-        return new Section(null, lineId, upStationId, section.upStationId, updateDistance);
+        return new Section(null, line, upStation, section.upStation, updateDistance);
     }
 
     public Section assembledSectionForDelete(final Section section) {
         Distance updateDistance = section.distance.add(this.distance);
-        return new Section(null, lineId, upStationId, section.downStationId, updateDistance);
+        return new Section(null, line, upStation, section.downStation, updateDistance);
+    }
+
+    public boolean isIncludeUpStation(Section section) {
+        return this.getUpStation().equals(section.getUpStation()) ||
+            this.getDownStation().equals(section.getUpStation());
+    }
+
+    public boolean isIncludeDownStation(Section section) {
+        return this.getDownStation().equals(section.getDownStation()) ||
+            this.getUpStation().equals(section.getDownStation());
     }
 
     public boolean isSameUpStation(Section section) {
-        return this.getUpStationId().equals(section.getUpStationId());
+        return this.getUpStation().equals(section.getUpStation());
     }
 
     public boolean isSameDownStation(Section section) {
-        return this.getDownStationId().equals(section.getDownStationId());
+        return this.getDownStation().equals(section.getDownStation());
     }
 
     public Long getId() {
         return id.getValue();
     }
 
-    public Long getLineId() {
-        return lineId.getValue();
+    public Line getLine() {
+        return line;
     }
 
-    public Long getUpStationId() {
-        return upStationId.getValue();
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public Long getDownStationId() {
-        return downStationId.getValue();
+    public Station getDownStation() {
+        return downStation;
     }
 
-    public int getDistance() {
-        return distance.getValue();
+    public Distance getDistance() {
+        return distance;
     }
 
     @Override
