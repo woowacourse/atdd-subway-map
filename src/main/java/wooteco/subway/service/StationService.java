@@ -4,16 +4,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.web.dto.StationResponse;
 import wooteco.subway.web.exception.NotFoundException;
 
 @Service
 public class StationService {
+
+    private static final String LINE_RESOURCE_NAME = "노선";
 
     private final StationDao stationDao;
 
@@ -44,11 +45,8 @@ public class StationService {
     }
 
     public Station findById(Long id) {
-        try {
-            return stationDao.findById(id);
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException("노선이 존재하지 않습니다");
-        }
+        return stationDao.findById(id)
+                .orElseThrow(() -> new NotFoundException(LINE_RESOURCE_NAME));
     }
 
     public Long save(Station station) {

@@ -1,14 +1,15 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
-import wooteco.subway.domain.Line;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.web.exception.NotFoundException;
 
 @Service
 public class LineService {
+
+    private static final String LINE_RESOURCE_NAME = "노선";
 
     private final LineDao lineDao;
 
@@ -17,11 +18,8 @@ public class LineService {
     }
 
     public Line findLine(Long id) {
-        try {
-            return lineDao.findById(id);
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException("노선이 존재하지 않습니다");
-        }
+        return lineDao.findById(id)
+                .orElseThrow(() -> new NotFoundException(LINE_RESOURCE_NAME));
     }
 
     public Long addLine(Line line) {

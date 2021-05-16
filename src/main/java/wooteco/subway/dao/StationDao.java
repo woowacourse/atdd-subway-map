@@ -2,14 +2,16 @@ package wooteco.subway.dao;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
-import wooteco.subway.web.exception.SubwayHttpException;
+import wooteco.subway.exception.DuplicatedNameException;
 
 @Repository
 public class StationDao {
@@ -18,6 +20,7 @@ public class StationDao {
     private static final String ID = "id";
     private static final String NAME = "name";
     private static final String IDS = "ids";
+    private static final String STATION_RESOURCE_NAME = "역";
 
     private static final RowMapper<Station> STATION_ROW_MAPPER = (rs, rowNum) ->
             new Station(
@@ -42,7 +45,7 @@ public class StationDao {
         try {
             return simpleJdbcInsert.executeAndReturnKey(params).longValue();
         } catch (DuplicateKeyException e) {
-            throw new SubwayHttpException("중복된 역 이름입니다");
+            throw new DuplicatedNameException(STATION_RESOURCE_NAME);
         }
     }
 
@@ -51,14 +54,19 @@ public class StationDao {
         return namedParameterJdbcTemplate.query(sql, STATION_ROW_MAPPER);
     }
 
-    public Station findById(Long id) {
+    public Optional<Station> findById(Long id) {
         final String sql = "SELECT id, name FROM station WHERE id = :id";
 
         final MapSqlParameterSource params = getParamSource();
         params.addValue(ID, id);
 
-        // todo 단일조회 예외처리 이슈
-        return namedParameterJdbcTemplate.queryForObject(sql, params, STATION_ROW_MAPPER);
+        try {
+            Station station = namedParameterJdbcTemplate
+                    .queryForObject(sql, params, STATION_ROW_MAPPER);
+            return Optional.ofNullable(station);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public void delete(Long id) {

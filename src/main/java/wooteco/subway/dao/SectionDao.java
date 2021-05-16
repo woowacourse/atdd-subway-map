@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
-import wooteco.subway.web.exception.SubwayHttpException;
 
 @Repository
 public class SectionDao {
@@ -46,11 +45,7 @@ public class SectionDao {
         params.addValue(DOWN_STATION_ID, section.getDownStationId());
         params.addValue(DISTANCE, section.getDistance());
 
-        try {
-            return simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        } catch (Exception e) {
-            throw new SubwayHttpException("중복된 역 이름입니다");
-        }
+        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
     public List<Section> findSectionsByLineId(Long lineId) {
