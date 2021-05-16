@@ -108,11 +108,13 @@ public class SectionService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<Long> findAllSectionsId(Long lineId) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         return sections.toSortedStationIds();
     }
 
+    @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         sections.validateDeletable();
@@ -148,6 +150,7 @@ public class SectionService {
         return newSection;
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findStationsByIds(List<Long> stationIds) {
         return stationService.findStationsByIds(stationIds);
     }

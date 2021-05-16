@@ -1,6 +1,7 @@
 package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dto.StationRequest;
@@ -18,6 +19,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public StationResponse save(StationRequest stationRequest) {
         validateStationName(stationRequest);
         Station station = stationRequest.toEntity();
@@ -35,6 +37,7 @@ public class StationService {
         return stationDao.findByName(stationRequest.getName());
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()
@@ -42,10 +45,12 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void delete(Long id) {
         stationDao.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findStationsByIds(List<Long> stationIds) {
         return stationIds.stream()
                 .map(id -> stationDao.findBy(id))
