@@ -14,5 +14,5 @@ public interface SectionRepository {
 
     List<Section> findByLineId(Long lineId);
 
-    void remove(Long id);
+    void delete(Long id);
 }

@@ -28,10 +28,19 @@ public class SectionService {
         updateSectionByChanged(tempSections, updatedSections);
     }
 
+    public void deleteSection(Long lineId, Long stationId) {
+        Sections sections = new Sections(sectionRepository.findByLineId(lineId));
+        List<Section> tempSections = sections.toList();
+        sections.delete(stationId);
+        List<Section> deletedSections = sections.toList();
+        updateSectionByChanged(tempSections, deletedSections);
+    }
+
     private void updateSectionByChanged(List<Section> sections, List<Section> updatedSections) {
         sections.stream()
                 .filter(section -> !updatedSections.contains(section))
-                .findAny().ifPresent(section -> sectionRepository.remove(section.getId()));
+                .collect(Collectors.toList())
+                .forEach(section -> sectionRepository.delete(section.getId()));
 
         updatedSections.stream()
                 .filter(section -> !sections.contains(section))

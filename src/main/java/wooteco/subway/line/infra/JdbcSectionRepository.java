@@ -62,7 +62,7 @@ public class JdbcSectionRepository implements SectionRepository {
     }
 
     @Override
-    public void remove(Long id) {
+    public void delete(Long id) {
         String query = "DELETE FROM section WHERE id = ?";
         jdbcTemplate.update(query, id);
     }
