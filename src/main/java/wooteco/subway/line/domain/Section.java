@@ -15,6 +15,13 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
+        this(new Line(lineId),
+                new Station(upStationId),
+                new Station(downStationId),
+                distance);
+    }
+
     public Line getLine() {
         return line;
     }
@@ -29,5 +36,9 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean isLessOrSameDistance(int distance) {
+        return this.distance <= distance;
     }
 }

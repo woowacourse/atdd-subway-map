@@ -23,6 +23,15 @@ public class SectionDao {
         jdbcTemplate.update(sql, lineId, upStationId, downStationId, distance);
     }
 
+    public void save(Section section) {
+        String sql = "INSERT INTO section(line_id, up_station_id, down_station_id, distance) VALUES(?, ?, ?, ?)";
+        jdbcTemplate.update(sql,
+                section.getLine().getId(),
+                section.getUpStation().getId(),
+                section.getDownStation().getId(),
+                section.getDistance());
+    }
+
     public List<Section> findSectionBylineId(Long lineId) {
         String query = "SELECT up_station_id, s1.name, down_station_id, s2.name, distance " +
                 "FROM section " +

@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 
@@ -22,9 +21,9 @@ public class LineService {
     }
 
     public Long save(LineRequest lineRequest) {
-        Section lines = lineRequest.toLinesEntity();
-        validateLine(lines.getLine());
-        return lineDao.save(lines.getLine());
+        Line line = lineRequest.toLineEntity();
+        validateLine(line);
+        return lineDao.save(line);
     }
 
     public void update(Long id, LineRequest lineRequest) {

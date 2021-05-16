@@ -31,6 +31,10 @@ public class Station {
         return name;
     }
 
+    public boolean isSame(Long stationId) {
+        return id.equals(stationId);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

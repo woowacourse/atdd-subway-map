@@ -24,10 +24,10 @@ public class SectionService {
     public void save(Long lineId, LineRequest lineRequest) {
         Long upStationId = lineRequest.getUpStationId();
         Long downStationId = lineRequest.getDownStationId();
-        int distance = lineRequest.getDistance();
 
         duplicateInputStations(upStationId, downStationId);
-        sectionDao.save(lineId, upStationId, downStationId, distance);
+        Section section = new Section(lineId, upStationId, downStationId, lineRequest.getDistance());
+        sectionDao.save(section);
     }
 
     private void duplicateInputStations(Long upStationId, Long downStationId) {
@@ -42,10 +42,10 @@ public class SectionService {
         List<Station> stations = stationsOfLine(sections);
 
         return stations.stream()
-                .map(res ->
+                .map(station ->
                         new StationResponse(
-                                res.getId(),
-                                res.getName()
+                                station.getId(),
+                                station.getName()
                         ))
                 .collect(Collectors.toList());
     }
@@ -86,8 +86,9 @@ public class SectionService {
         List<Section> sections = sectionDao.findSectionBylineId(lineId);
         Station station = findSameStationInSection(upStationId, downStationId, sections);
 
-        updateNewStation(station, sections, lineId, upStationId, downStationId, distance);
-        sectionDao.save(lineId, upStationId, downStationId, distance);
+        Section section = new Section(lineId, upStationId, downStationId, distance);
+        updateNewStation(station, sections, new Section(lineId, upStationId, downStationId, distance));
+        sectionDao.save(section);
     }
 
     private Station findSameStationInSection(Long upStationId, Long downStationId, List<Section> sections) {
@@ -102,12 +103,17 @@ public class SectionService {
 
     private List<Station> findStationsOfSectionByStation(Long upStationId, Long downStationId, List<Station> stationsOfLine) {
         return stationsOfLine.stream()
-                .filter(station -> station.getId().equals(upStationId) || station.getId().equals(downStationId))
+                .filter(station -> station.isSame(upStationId) || station.isSame(downStationId))
                 .collect(Collectors.toList());
     }
 
-    private void updateNewStation(Station station, List<Section> sections, Long lineId, Long upStationId, Long downStationId, int distance) {
-        if (station.getId().equals(upStationId)) {
+    private void updateNewStation(Station station, List<Section> sections, Section section) {
+        Long lineId = section.getLine().getId();
+        Long upStationId = section.getUpStation().getId();
+        Long downStationId = section.getDownStation().getId();
+        int distance = section.getDistance();
+
+        if (station.isSame(upStationId)) {
             Section selectSection = findSelectedSection(sections, true, upStationId);
             validateDistance(selectSection, distance);
             sectionDao.updateUpStation(lineId, upStationId, downStationId, selectSection.getDistance() - distance);
@@ -120,7 +126,7 @@ public class SectionService {
     }
 
     private void validateDistance(Section selectSection, int distance) {
-        if (selectSection.getDistance() <= distance) {
+        if (selectSection.isLessOrSameDistance(distance)) {
             throw new IllegalArgumentException("거리가 현재 존재하는 구간보다 크거나 같습니다!");
         }
     }
@@ -128,7 +134,7 @@ public class SectionService {
     private Section findSelectedSection(List<Section> sections, boolean isUpStation, Long stationId) {
         Function<Section, Station> sectionFunction = findFunction(isUpStation);
         return sections.stream()
-                .filter(section -> sectionFunction.apply(section).getId().equals(stationId))
+                .filter(section -> sectionFunction.apply(section).isSame(stationId))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("중복되는 역이 없습니다!!"));
     }
@@ -150,10 +156,10 @@ public class SectionService {
 
     private void addSectionIfNotEndStation(Long stationId, Long lineId, List<Section> sections) {
         Optional<Section> sectionBySameUpStation = sections.stream()
-                .filter(section -> section.getUpStation().getId().equals(stationId))
+                .filter(section -> section.getUpStation().isSame(stationId))
                 .findAny();
         Optional<Section> sectionBySameDownStation = sections.stream()
-                .filter(section -> section.getDownStation().getId().equals(stationId))
+                .filter(section -> section.getDownStation().isSame(stationId))
                 .findAny();
 
         if (sectionBySameUpStation.isPresent() && sectionBySameDownStation.isPresent()) {
