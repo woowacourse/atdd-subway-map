@@ -13,9 +13,10 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Repository
-public class JdbcSectionDao {
+public class JdbcSectionDao implements SectionDao {
     private final JdbcTemplate jdbcTemplate;
 
+    @Override
     public Section create(Section section, Long lineId) {
         String createSql = "INSERT INTO section (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
 
@@ -32,6 +33,7 @@ public class JdbcSectionDao {
         return Section.create(keyHolder.getKey().longValue(), section.getUpStation(), section.getDownStation(), section.getDistance());
     }
 
+    @Override
     public List<SectionTable> findAllByLineId(Long targetLineId) {
         String readSql = "SELECT * FROM section WHERE line_id = ?";
 
@@ -51,12 +53,14 @@ public class JdbcSectionDao {
         };
     }
 
+    @Override
     public void updateModified(Section section) {
         String updateSql = "UPDATE section SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
 
         jdbcTemplate.update(updateSql, section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance(), section.getId());
     }
 
+    @Override
     public void remove(Long lineId, Long upStationId, Long downStationId) {
         String deleteSql = "DELETE FROM section WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?";
 

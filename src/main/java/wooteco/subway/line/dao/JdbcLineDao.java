@@ -13,9 +13,10 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Repository
-public class JdbcLineDao {
+public class JdbcLineDao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
 
+    @Override
     public Line create(Line line) {
         String createSql = "INSERT INTO line (name, color) VALUES (?, ?)";
 
@@ -30,23 +31,27 @@ public class JdbcLineDao {
         return Line.create(keyHolder.getKey().longValue(), line.getName(), line.getColor());
     }
 
+    @Override
     public boolean existByInfo(String name, String color) {
         String countMatchNameOrColorSql = "SELECT count(id) FROM line WHERE name = ? OR color = ?";
         int count = jdbcTemplate.queryForObject(countMatchNameOrColorSql, int.class, name, color);
         return count >= 1;
     }
 
+    @Override
     public List<Line> showAll() {
         String showAllSql = "SELECT * FROM line";
 
         return jdbcTemplate.query(showAllSql, lineRowMapper());
     }
 
+    @Override
     public Line findById(Long lineId) {
         String showMatchIdSql = "SELECT * FROM line WHERE id = ?";
         return jdbcTemplate.queryForObject(showMatchIdSql, lineRowMapper(), lineId);
     }
 
+    @Override
     public boolean existById(Long lineId) {
         String countMatchIdSql = "SELECT count(id) FROM line WHERE id = ?";
         int count = jdbcTemplate.queryForObject(countMatchIdSql, int.class, lineId);

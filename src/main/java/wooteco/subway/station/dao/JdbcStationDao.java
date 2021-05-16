@@ -13,9 +13,10 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Repository
-public class JdbcStationDao {
+public class JdbcStationDao implements StationDao {
     private final JdbcTemplate jdbcTemplate;
 
+    @Override
     public Station create(Station station) {
         String createSql = "INSERT INTO station (name) VALUES (?)";
 
@@ -29,29 +30,34 @@ public class JdbcStationDao {
         return Station.create(keyHolder.getKey().longValue(), station.getName());
     }
 
+    @Override
     public List<Station> findAll() {
         String readAllSql = "SELECT * FROM station";
         return this.jdbcTemplate.query(readAllSql, stationRowMapper());
     }
 
+    @Override
     public Station findById(Long id) {
         String readByIdSql = "SELECT * FROM station WHERE id = ?";
         return this.jdbcTemplate.queryForObject(readByIdSql, stationRowMapper(), id);
     }
 
+    @Override
     public boolean existById(Long id) {
         String countByIdSql = "SELECT count(id) FROM station WHERE id = ?";
         int count = this.jdbcTemplate.queryForObject(countByIdSql, int.class, id);
-        return count >= 1;
+        return count > 0;
     }
 
+    @Override
     public boolean existByName(String name) {
         String countByNameSql = "SELECT count(id) FROM station WHERE name = ?";
         int count = this.jdbcTemplate.queryForObject(countByNameSql, int.class, name);
-        return count >= 1;
+        return count > 0;
     }
 
-    public void remove(Long id) {
+    @Override
+    public void removeById(Long id) {
         String deleteByIdSql = "DELETE FROM station WHERE id = ?";
         this.jdbcTemplate.update(deleteByIdSql, id);
     }

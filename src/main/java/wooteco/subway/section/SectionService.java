@@ -7,7 +7,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.section.SectionLastRemainedException;
-import wooteco.subway.section.dao.JdbcSectionDao;
+import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.dao.SectionTable;
 import wooteco.subway.section.web.SectionRequest;
 import wooteco.subway.section.web.SectionResponse;
@@ -20,11 +20,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SectionService {
     private final StationService stationService;
-    private final JdbcSectionDao sectionDao;
+    private final SectionDao sectionDao;
 
     @Transactional
-    public Section createInitial(Section section, Long lineId) {
-        return sectionDao.create(section, lineId);
+    public void createInitial(Section section, Long lineId) {
+        sectionDao.create(section, lineId);
     }
 
     @Transactional

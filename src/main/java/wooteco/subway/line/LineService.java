@@ -10,7 +10,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.exception.line.LineDuplicatedInformationException;
 import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.exception.line.StationUpAndDownDuplicatedException;
-import wooteco.subway.line.dao.JdbcLineDao;
+import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.web.LineRequest;
 import wooteco.subway.line.web.LineResponse;
 import wooteco.subway.section.SectionService;
@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class LineService {
-    private final JdbcLineDao lineDao;
+    private final LineDao lineDao;
     private final SectionService sectionService;
     private final StationService stationService;
 
