@@ -14,17 +14,18 @@ public class OrderedStationId {
     public List<Long> asList() {
         if (sections.isEmpty()) return Collections.emptyList();
 
-        long maxStationsId = getMaxStationsId();
+        int maxStationsId = (int) getMaxStationsId();
 
-        long[] stationIndexesByUpStationId = new long[(int) maxStationsId + 1];
-        long[] stationIndexesByDownStationId = new long[(int) maxStationsId + 1];
+        long[] stationIndexesByUpStationId = new long[maxStationsId + 1];
+        long[] stationIndexesByDownStationId = new long[maxStationsId + 1];
 
         initializeStationIdArray(stationIndexesByUpStationId, stationIndexesByDownStationId);
 
         return sortStationIds(stationIndexesByUpStationId, stationIndexesByDownStationId);
     }
 
-    private List<Long> sortStationIds(long[] stationIndexesByUpStationId, long[] stationIndexesByDownStationId) {
+    private List<Long> sortStationIds(long[] stationIndexesByUpStationId,
+                                      long[] stationIndexesByDownStationId) {
         Deque<Long> stationIds = new ArrayDeque<>();
 
         Section section = sections.get(0);
@@ -43,7 +44,8 @@ public class OrderedStationId {
         return new ArrayList<>(stationIds);
     }
 
-    private void initializeStationIdArray(long[] stationIndexesByUpStationId, long[] stationIndexesByDownStationId) {
+    private void initializeStationIdArray(long[] stationIndexesByUpStationId,
+                                          long[] stationIndexesByDownStationId) {
         sections.forEach(section -> {
             int upStationId = section.getUpStationId().intValue();
             int downStationId = section.getDownStationId().intValue();
