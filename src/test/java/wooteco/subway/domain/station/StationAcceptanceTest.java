@@ -19,6 +19,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.dto.station.StationRequest;
 import wooteco.subway.dto.station.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
@@ -94,10 +95,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> addStation(String stationName) {
-        Map<String, String> params = new HashMap<>();   //TODO: dto로 넘기기
-        params.put("name", stationName);
+        StationRequest stationRequest = new StationRequest(stationName);
         return RestAssured.given().log().all()
-            .body(params)
+            .body(stationRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/stations")

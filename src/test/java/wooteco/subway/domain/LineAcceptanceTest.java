@@ -22,6 +22,7 @@ import io.restassured.response.Response;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
+import wooteco.subway.dto.station.StationRequest;
 
 @Transactional
 @Sql("classpath:test-schema.sql")
@@ -155,10 +156,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void addStation(String stationName) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", stationName);
+        StationRequest stationRequest = new StationRequest(stationName);
         RestAssured.given().log().all()
-            .body(params)
+            .body(stationRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/stations")

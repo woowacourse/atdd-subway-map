@@ -66,7 +66,7 @@ public class LineController {
 
     @GetMapping("{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable long id) {
-        LineResponse lineResponse = LineResponse.from(lineService.showLine(id));    //TODO: List<STation> 꺼내기
+        LineResponse lineResponse = LineResponse.from(lineService.showLine(id));
         return ResponseEntity.ok().body(lineResponse);
     }
 
