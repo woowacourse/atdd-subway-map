@@ -23,6 +23,7 @@ import wooteco.subway.AcceptanceTest;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     static Map<String, String> defaultLineParams;
+    static Map<String, String> defaultLineParams2;
 
     @BeforeAll
     static void fillDefaultDataParams() {
@@ -32,6 +33,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         defaultLineParams.put("upStationId", "1");
         defaultLineParams.put("downStationId", "2");
         defaultLineParams.put("distance", "10");
+
+        defaultLineParams2.put("name", "1호선");
+        defaultLineParams2.put("color", "bg-red-600");
+        defaultLineParams2.put("upStationId", "1");
+        defaultLineParams2.put("downStationId", "2");
+        defaultLineParams2.put("distance", "10");
     }
 
     @Autowired
@@ -73,14 +80,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse1 = testResponse(defaultLineParams,
             DEFAULT_MEDIA_TYPE,
             "/lines");
-
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "1호선");
-        params2.put("color", "bg-red-600");
-        params2.put("upStationId", "1");
-        params2.put("downStationId", "2");
-        params2.put("distance", "10");
-        ExtractableResponse<Response> createResponse2 = testResponse(params2, DEFAULT_MEDIA_TYPE,
+        ExtractableResponse<Response> createResponse2 = testResponse(defaultLineParams2,
+            DEFAULT_MEDIA_TYPE,
             "/lines");
 
         // when
