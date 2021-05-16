@@ -33,4 +33,6 @@ CREATE TABLE IF NOT EXISTS LINE
 INSERT INTO LINE(name, color) VALUES('OneLine', 'BLUE');
 INSERT INTO STATION(name) VALUES('신설동역');
 INSERT INTO STATION(name) VALUES('동묘앞역');
-INSERT INTO STATION(name) VALUES('동대문역')
+INSERT INTO STATION(name) VALUES('동대문역');
+INSERT INTO SECTION(line_id, up_station_id, down_station_id, distance) VALUES(1, 1, 2, 10);
+INSERT INTO SECTION(line_id, up_station_id, down_station_id, distance) VALUES(1, 2, 3, 10);

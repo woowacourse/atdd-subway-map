@@ -13,14 +13,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.exception.section.InvalidDistanceException;
 import wooteco.subway.exception.station.NotFoundStationException;
+import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.dto.DeleteStationDto;
 import wooteco.subway.section.dto.SectionServiceDto;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dao.StationDao;
 
-@Sql("classpath:initializeData.sql")
 @SpringBootTest
+@Sql("classpath:initializeData.sql")
 public class SectionServiceTest {
 
     private final Long lineId = 1L;
@@ -34,6 +35,8 @@ public class SectionServiceTest {
     @Autowired
     private StationDao stationDao;
     @Autowired
+    private LineDao lineDao;
+    @Autowired
     private SectionService sectionService;
 
     @BeforeEach
@@ -42,8 +45,6 @@ public class SectionServiceTest {
             stationDongMyoId, distance);
         SectionServiceDto dongMyoAndDongDaeMoonDto = new SectionServiceDto(lineId, stationDongMyoId,
             stationDongDaeMoonId, distance);
-        sectionService.saveByLineCreate(sinSeolAndDongMyoDto);
-        sectionService.save(dongMyoAndDongDaeMoonDto);
     }
 
     @Test
@@ -75,7 +76,7 @@ public class SectionServiceTest {
     void createSectionBetweenSections() {
         // given
         long targetUpStationId = 2L;
-        long targetDownStationId = 9L;
+        long targetDownStationId = 4L;
         int targetDistance = 5;
         String name = "회기역";
         stationDao.save(new Station(name));
@@ -98,8 +99,8 @@ public class SectionServiceTest {
         assertThat(savedDongDaeMoonAndHaegiDto.getDownStationId()).isEqualTo(targetDownStationId);
         assertThat(savedDongDaeMoonAndHaegiDto.getDistance()).isEqualTo(targetDistance);
 
-        assertThat(changedSection.getDistance()).isEqualTo(10 - targetDistance);
-        assertThat(changedSection.getUpStationId()).isEqualTo(9L);
+        assertThat(changedSection.getDistance().getValue()).isEqualTo(10 - targetDistance);
+        assertThat(changedSection.getUpStation().getId()).isEqualTo(4L);
     }
 
     @Test
@@ -107,7 +108,7 @@ public class SectionServiceTest {
     void createSectionBetweenSectionsWithExcessDistance() {
         // given
         long targetUpStationId = 2L;
-        long targetDownStationId = 9L;
+        long targetDownStationId = 4L;
         int distance = 15;
         String name = "회기역";
         stationDao.save(new Station(name));
@@ -133,9 +134,9 @@ public class SectionServiceTest {
             .orElseThrow(NotFoundStationException::new);
 
         // then
-        assertThat(section.getUpStationId()).isEqualTo(stationSinSeolId);
-        assertThat(section.getDownStationId()).isEqualTo(stationDongDaeMoonId);
-        assertThat(section.getDistance()).isEqualTo(20);
+        assertThat(section.getUpStation().getId()).isEqualTo(stationSinSeolId);
+        assertThat(section.getDownStation().getId()).isEqualTo(stationDongDaeMoonId);
+        assertThat(section.getDistance().getValue()).isEqualTo(20);
     }
 
     @Test

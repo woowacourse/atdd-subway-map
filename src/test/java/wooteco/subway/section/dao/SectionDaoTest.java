@@ -11,26 +11,38 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.exception.section.InvalidSectionOnLineException;
+import wooteco.subway.line.Line;
+import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.section.Section;
+import wooteco.subway.station.Station;
+import wooteco.subway.station.dao.StationDao;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql("classpath:initializeTable.sql")
 public class SectionDaoTest {
 
-    private final Long lineId = 1L;
-    private final Long stationSinSeolId = 1L;
-    private final Long stationDongMyoId = 2L;
-    private final Long stationDongDaeMoonId = 3L;
+    private final Line line = new Line(1L, "1호선", "파란");
+    private final Station stationSinSeol = new Station(1L, "신설동역");
+    private final Station stationDongMyo = new Station(2L, "동묘앞역");
+    private final Station stationDongDaeMoon = new Station(3L, "동대문역");
     private final int distance = 10;
 
     @Autowired
     private SectionDao sectionDao;
+    @Autowired
+    private LineDao lineDao;
+    @Autowired
+    private StationDao stationDao;
 
     @BeforeEach
     void setUp() {
-        Section sinSeolAndDongMyo = new Section(lineId, stationSinSeolId, stationDongMyoId,
+        lineDao.save(line);
+        stationDao.save(stationSinSeol);
+        stationDao.save(stationDongMyo);
+        stationDao.save(stationDongDaeMoon);
+        Section sinSeolAndDongMyo = new Section(line, stationSinSeol, stationDongMyo,
             distance);
-        Section dongMyoAndDongDaeMoon = new Section(lineId, stationDongMyoId, stationDongDaeMoonId,
+        Section dongMyoAndDongDaeMoon = new Section(line, stationDongMyo, stationDongDaeMoon,
             distance);
 
         sectionDao.save(sinSeolAndDongMyo);
@@ -41,21 +53,21 @@ public class SectionDaoTest {
     @DisplayName("Section 저장 테스트")
     public void save() {
         // given
-        Long lineId = 1L;
-        Long upStationId = 1L;
-        Long downStationId = 2L;
+        Line line = lineDao.show(1L).get();
+        Station upStation = stationDao.showStation(1L).get();
+        Station downStation = stationDao.showStation(2L).get();
         int distance = 10;
 
-        Section targetSection = new Section(lineId, upStationId, downStationId, distance);
+        Section targetSection = new Section(line, upStation, downStation, distance);
 
         // when
         Section savedSection = sectionDao.save(targetSection);
 
         // then
-        assertThat(savedSection.getLineId()).isEqualTo(lineId);
-        assertThat(savedSection.getUpStationId()).isEqualTo(upStationId);
-        assertThat(savedSection.getDownStationId()).isEqualTo(downStationId);
-        assertThat(savedSection.getDistance()).isEqualTo(distance);
+        assertThat(savedSection.getLine()).isEqualTo(line);
+        assertThat(savedSection.getUpStation()).isEqualTo(upStation);
+        assertThat(savedSection.getDownStation()).isEqualTo(downStation);
+        assertThat(savedSection.getDistance().getValue()).isEqualTo(distance);
     }
 
     @Test
@@ -64,19 +76,19 @@ public class SectionDaoTest {
         // given
 
         // when
-        List<Section> sections = sectionDao.findAllByLineId(lineId);
+        List<Section> sections = sectionDao.findAllByLineId(line.getId());
         Section savedSinSeolAndDongMyo = sections.get(0);
         Section savedDongMyoAndDongDaeMoon = sections.get(1);
 
         // then
-        assertThat(savedSinSeolAndDongMyo.getLineId()).isEqualTo(lineId);
-        assertThat(savedSinSeolAndDongMyo.getUpStationId()).isEqualTo(stationSinSeolId);
-        assertThat(savedSinSeolAndDongMyo.getDownStationId()).isEqualTo(stationDongMyoId);
-        assertThat(savedSinSeolAndDongMyo.getDistance()).isEqualTo(distance);
-        assertThat(savedDongMyoAndDongDaeMoon.getLineId()).isEqualTo(lineId);
-        assertThat(savedDongMyoAndDongDaeMoon.getUpStationId()).isEqualTo(stationDongMyoId);
-        assertThat(savedDongMyoAndDongDaeMoon.getDownStationId()).isEqualTo(stationDongDaeMoonId);
-        assertThat(savedDongMyoAndDongDaeMoon.getDistance()).isEqualTo(distance);
+        assertThat(savedSinSeolAndDongMyo.getLine()).isEqualTo(line);
+        assertThat(savedSinSeolAndDongMyo.getUpStation()).isEqualTo(stationSinSeol);
+        assertThat(savedSinSeolAndDongMyo.getDownStation()).isEqualTo(stationDongMyo);
+        assertThat(savedSinSeolAndDongMyo.getDistance().getValue()).isEqualTo(distance);
+        assertThat(savedDongMyoAndDongDaeMoon.getLine()).isEqualTo(line);
+        assertThat(savedDongMyoAndDongDaeMoon.getUpStation()).isEqualTo(stationDongMyo);
+        assertThat(savedDongMyoAndDongDaeMoon.getDownStation()).isEqualTo(stationDongDaeMoon);
+        assertThat(savedDongMyoAndDongDaeMoon.getDistance().getValue()).isEqualTo(distance);
     }
 
     @Test
@@ -85,14 +97,14 @@ public class SectionDaoTest {
         // given
 
         // when
-        Section section = sectionDao.findByLineIdAndUpStationId(lineId, stationSinSeolId)
+        Section section = sectionDao.findByLineIdAndUpStationId(line.getId(), stationSinSeol.getId())
             .orElseThrow(InvalidSectionOnLineException::new);
 
         // then
-        assertThat(section.getLineId()).isEqualTo(lineId);
-        assertThat(section.getUpStationId()).isEqualTo(stationSinSeolId);
-        assertThat(section.getDownStationId()).isEqualTo(stationDongMyoId);
-        assertThat(section.getDistance()).isEqualTo(distance);
+        assertThat(section.getLine()).isEqualTo(line);
+        assertThat(section.getUpStation()).isEqualTo(stationSinSeol);
+        assertThat(section.getDownStation()).isEqualTo(stationDongMyo);
+        assertThat(section.getDistance().getValue()).isEqualTo(distance);
     }
 
     @Test
@@ -101,14 +113,14 @@ public class SectionDaoTest {
         // given
 
         // when
-        Section section = sectionDao.findByLineIdAndDownStationId(lineId, stationDongMyoId)
+        Section section = sectionDao.findByLineIdAndDownStationId(line.getId(), stationDongMyo.getId())
             .orElseThrow(InvalidSectionOnLineException::new);
 
         // then
-        assertThat(section.getLineId()).isEqualTo(lineId);
-        assertThat(section.getUpStationId()).isEqualTo(stationSinSeolId);
-        assertThat(section.getDownStationId()).isEqualTo(stationDongMyoId);
-        assertThat(section.getDistance()).isEqualTo(distance);
+        assertThat(section.getLine()).isEqualTo(line);
+        assertThat(section.getUpStation()).isEqualTo(stationSinSeol);
+        assertThat(section.getDownStation()).isEqualTo(stationDongMyo);
+        assertThat(section.getDistance().getValue()).isEqualTo(distance);
     }
 
     @Test
@@ -119,10 +131,10 @@ public class SectionDaoTest {
         // when
 
         // then
-        assertThat(sectionDao.findByLineIdAndUpStationId(lineId, 9L)).isEmpty();
-        assertThat(sectionDao.findByLineIdAndUpStationId(2L, stationDongMyoId)).isEmpty();
-        assertThat(sectionDao.findByLineIdAndDownStationId(2L, stationDongMyoId)).isEmpty();
-        assertThat(sectionDao.findByLineIdAndUpStationId(lineId, stationDongDaeMoonId)).isEmpty();
+        assertThat(sectionDao.findByLineIdAndUpStationId(line.getId(), 9L)).isEmpty();
+        assertThat(sectionDao.findByLineIdAndUpStationId(2L, stationDongMyo.getId())).isEmpty();
+        assertThat(sectionDao.findByLineIdAndDownStationId(2L, stationDongMyo.getId())).isEmpty();
+        assertThat(sectionDao.findByLineIdAndUpStationId(line.getId(), stationDongDaeMoon.getId())).isEmpty();
     }
 
     @Test
@@ -132,9 +144,9 @@ public class SectionDaoTest {
         Long targetRemoveStationId = 1L;
 
         // when
-        List<Section> beforeAllByLineId = sectionDao.findAllByLineId(lineId);
-        int result = sectionDao.deleteByLineIdAndUpStationId(lineId, targetRemoveStationId);
-        List<Section> afterAllByLindId = sectionDao.findAllByLineId(lineId);
+        List<Section> beforeAllByLineId = sectionDao.findAllByLineId(line.getId());
+        int result = sectionDao.deleteByLineIdAndUpStationId(line.getId(), targetRemoveStationId);
+        List<Section> afterAllByLindId = sectionDao.findAllByLineId(line.getId());
 
         //then
         assertThat(result).isEqualTo(1);
@@ -148,9 +160,9 @@ public class SectionDaoTest {
         Long targetRemoveStationId = 3L;
 
         // when
-        List<Section> beforeAllByLineId = sectionDao.findAllByLineId(lineId);
-        int result = sectionDao.deleteByLineIdAndDownStationId(lineId, targetRemoveStationId);
-        List<Section> afterAllByLindId = sectionDao.findAllByLineId(lineId);
+        List<Section> beforeAllByLineId = sectionDao.findAllByLineId(line.getId());
+        int result = sectionDao.deleteByLineIdAndDownStationId(line.getId(), targetRemoveStationId);
+        List<Section> afterAllByLindId = sectionDao.findAllByLineId(line.getId());
 
         //then
         assertThat(result).isEqualTo(1);
@@ -163,16 +175,17 @@ public class SectionDaoTest {
     public void delete() {
         // given
         Long targetRemoveSectionId = 1L;
-        Section section = new Section(1L, 1L, 2L, 3L, 10);
+        Section section = new Section(1L, line, stationSinSeol, stationDongMyo, 10);
+        section = sectionDao.save(section);
 
         // when
-        List<Section> beforeAllByLineId = sectionDao.findAllByLineId(lineId);
+        List<Section> beforeAllByLineId = sectionDao.findAllByLineId(line.getId());
         int result = sectionDao.delete(section);
-        List<Section> afterAllByLindId = sectionDao.findAllByLineId(lineId);
+        List<Section> afterAllByLindId = sectionDao.findAllByLineId(line.getId());
 
         // then
         assertThat(result).isEqualTo(1);
-        assertThat(beforeAllByLineId).hasSize(2);
-        assertThat(afterAllByLindId).hasSize(1);
+        assertThat(beforeAllByLineId).hasSize(3);
+        assertThat(afterAllByLindId).hasSize(2);
     }
 }
