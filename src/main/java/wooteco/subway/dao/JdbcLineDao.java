@@ -1,0 +1,89 @@
+package wooteco.subway.dao;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+import wooteco.subway.domain.Line;
+
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public class JdbcLineDao implements LineRepository {
+    private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Line> lineRowMapper = (rs, rn) -> {
+        long id = rs.getLong("id");
+        String name = rs.getString("name");
+        String color = rs.getString("color");
+        return new Line(id, name, color);
+    };
+
+    public JdbcLineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public Line save(Line line) {
+        String query = "INSERT INTO LINE (name, color) VALUES (?, ?)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection
+                    .prepareStatement(query, new String[]{"id"});
+            ps.setString(1, line.getName());
+            ps.setString(2, line.getColor());
+            return ps;
+        }, keyHolder);
+
+        return findById(keyHolder.getKey().longValue());
+    }
+
+    @Override
+    public List<Line> findAll() {
+        String query = "SELECT * FROM LINE";
+        return jdbcTemplate.query(query, lineRowMapper);
+    }
+
+    @Override
+    public Line findById(Long id) {
+        String query = "SELECT * FROM LINE WHERE id = ?";
+        return jdbcTemplate.queryForObject(query, lineRowMapper, id);
+    }
+
+    @Override
+    public Optional<Line> findByName(String name) {
+        String query = "SELECT * FROM LINE WHERE name = ?";
+        return jdbcTemplate.query(query, (rs) -> {
+            if (rs.next()) {
+                long id = rs.getLong("id");
+                String lineName = rs.getString("name");
+                String color = rs.getString("color");
+                return Optional.of(new Line(id, lineName, color));
+            }
+            return Optional.empty();
+        }, name);
+    }
+
+    @Override
+    public Line update(Long id, Line newLine) {
+        String query = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
+        jdbcTemplate.update(query, newLine.getName(), newLine.getColor(), id);
+        return findById(id);
+    }
+
+    @Override
+    public void delete(Long id) {
+        String query = "DELETE FROM LINE WHERE id = ?";
+        jdbcTemplate.update(query, id);
+    }
+
+    @Override
+    public boolean exists(long id) {
+        String query = "SELECT EXISTS (SELECT * FROM LINE WHERE id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, id);
+    }
+}
