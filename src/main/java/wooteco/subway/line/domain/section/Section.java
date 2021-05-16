@@ -44,6 +44,18 @@ public class Section {
         }
     }
 
+    public Distance distanceDifference(Section section) {
+        return this.distance.minus(section.distance);
+    }
+
+
+    public Section mergeWithoutDuplicateStationId(Section section) {
+        if (this.upStationId.equals(section.downStationId)) {
+            return new Section(lineId, section.upStationId, this.downStationId, this.distance.plus(section.distance));
+        }
+        return new Section(lineId, section.downStationId, this.upStationId, this.distance.plus(section.distance));
+    }
+
     public Long getId() {
         return id;
     }
@@ -62,13 +74,6 @@ public class Section {
 
     public Distance getDistance() {
         return distance;
-    }
-
-    public Section mergeWithoutDuplicateStationId(Section section) {
-        if (this.upStationId.equals(section.downStationId)) {
-            return new Section(lineId, section.upStationId, this.downStationId, this.distance.plus(section.distance));
-        }
-        return new Section(lineId, section.downStationId, this.upStationId, this.distance.plus(section.distance));
     }
 
     private void validateSection(Long lineId, Long upStationId, Long downStationId, Distance distance) {
@@ -94,16 +99,5 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(lineId, upStationId, downStationId, distance);
-    }
-
-    @Override
-    public String toString() {
-        return "Section{" +
-                "id=" + id +
-                ", lineId=" + lineId +
-                ", upStationId=" + upStationId +
-                ", downStationId=" + downStationId +
-                ", distance=" + distance +
-                '}';
     }
 }

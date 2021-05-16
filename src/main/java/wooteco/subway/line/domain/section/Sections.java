@@ -1,5 +1,6 @@
 package wooteco.subway.line.domain.section;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -73,6 +74,7 @@ public class Sections {
         Section section = findSectionToConnect(newSection);
         section.validateAddableDistance(newSection);
         sections.remove(section);
+        sections.add(newSection);
         addUpStation(section, newSection);
         addDownStation(section, newSection);
     }
@@ -80,19 +82,15 @@ public class Sections {
 
     private void addUpStation(Section section, Section newSection) {
         if (section.isSameDownStationId(newSection)) {
-            sections.add(new Section(newSection.getLineId(), newSection.getUpStationId(),
-                    section.getDownStationId(), newSection.getDistance()));
             sections.add(new Section(newSection.getLineId(), section.getUpStationId(),
-                    newSection.getDownStationId(), section.getDistance().minus(newSection.getDistance())));
+                    newSection.getUpStationId(), section.distanceDifference(newSection)));
         }
     }
 
     private void addDownStation(Section section, Section newSection) {
         if (section.isSameUpStationId(newSection)) {
-            sections.add(new Section(newSection.getLineId(), section.getUpStationId(),
-                    newSection.getDownStationId(), newSection.getDistance()));
-            sections.add(new Section(newSection.getLineId(), newSection.getUpStationId(),
-                    section.getDownStationId(), section.getDistance().minus(newSection.getDistance())));
+            sections.add(new Section(newSection.getLineId(), newSection.getDownStationId(),
+                    section.getDownStationId(), section.distanceDifference(newSection)));
         }
     }
 
@@ -142,6 +140,6 @@ public class Sections {
     }
 
     public List<Section> toList() {
-        return sections;
+        return new ArrayList<>(sections);
     }
 }

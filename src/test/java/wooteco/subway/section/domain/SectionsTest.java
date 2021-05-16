@@ -53,6 +53,14 @@ class SectionsTest {
 
         //when
         sections.add(하행_추가_가능한_구간);
+        Section 예상되는_추가_구간 = new Section(1L, 5L, 4L, new Distance(8));
+        Section 예상되는_삭제_구간 = new Section(1L, 3L, 4L, new Distance(10));
+
+
+        //then
+        assertThat(sections.toList()).contains(하행_추가_가능한_구간);
+        assertThat(sections.toList()).contains(예상되는_추가_구간);
+        assertThat(sections.toList()).doesNotContain(예상되는_삭제_구간);
     }
 
     @DisplayName("새로 등록하려는 구간의 하행역을 기준으로 등록할 수 있다.")
@@ -63,9 +71,13 @@ class SectionsTest {
 
         //when
         sections.add(상행_추가_가능한_구간);
+        Section 예상되는_추가_구간 = new Section(1L, 2L, 6L, new Distance(8));
+        Section 예상되는_삭제_구간 = new Section(1L, 2L, 3L, new Distance(10));
 
         //then
         assertThat(sections.toList()).contains(상행_추가_가능한_구간);
+        assertThat(sections.toList()).contains(예상되는_추가_구간);
+        assertThat(sections.toList()).doesNotContain(예상되는_삭제_구간);
     }
 
     @DisplayName("기존 구간의 길이와 같은 구간을 등록한다.")

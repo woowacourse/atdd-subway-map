@@ -1,4 +1,4 @@
-package wooteco.subway.line.repository;
+package wooteco.subway.line.domain.repository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -6,9 +6,8 @@ import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.repository.infra.JdbcLineRepository;
+import wooteco.subway.line.infra.JdbcLineRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
