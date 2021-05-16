@@ -2,20 +2,16 @@ package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.DuplicatedNameException;
-import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.repository.StationDao;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class StationService {
-    private static final int VALID_STATION_SIZE = 2;
-
     private StationDao stationDao;
 
     public StationService(StationDao stationDao) {
@@ -50,16 +46,6 @@ public class StationService {
         stationDao.deleteById(id);
     }
 
-    public void validateStations(Long upStationId, Long downStationId) {
-        List<Station> stations = new ArrayList<>();
-        stations.add(stationDao.findBy(upStationId));
-        stations.add(stationDao.findBy(downStationId));
-
-        if (stations.size() != VALID_STATION_SIZE) {
-            throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
-        }
-    }
-
     public List<StationResponse> findStationsByIds(List<Long> stationIds) {
         return stationIds.stream()
                 .map(id -> stationDao.findBy(id))
@@ -67,7 +53,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public boolean isExistingStation(Station station) {
-        return stationDao.isExistingStation(station);
+    public boolean isExistingStation(Long stationId) {
+        return stationDao.isExistingStation(stationId);
     }
 }

@@ -1,6 +1,7 @@
 package wooteco.subway.section.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.InvalidInsertException;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.line.Line;
@@ -26,16 +27,18 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
+    @Transactional
     public void save(Line newLine, LineRequest lineRequest) {
         SectionRequest sectionReq = new SectionRequest(lineRequest);
-        validateExistStation(sectionReq.toEntity());
+        validateExistStations(sectionReq.getUpStationId(), sectionReq.getDownStationId());
 
         sectionDao.save(newLine.getId(), sectionReq.toEntity());
     }
 
+    @Transactional
     public SectionResponse appendSection(Long lineId, SectionRequest sectionReq) {
+        validateExistStations(sectionReq.getUpStationId(), sectionReq.getDownStationId());
         Section newSection = sectionReq.toEntity();
-        validateExistStation(newSection);
         Sections sections =  new Sections(sectionDao.findAllByLineId(lineId), newSection);
 
         if (sections.isOnEdge(newSection)) {
@@ -44,17 +47,13 @@ public class SectionService {
         return saveAtMiddle(lineId, newSection, sections);
     }
 
-    private void validateExistStation(Section section) {
-        if (!stationService.isExistingStation(section.getUpStation())) {
+    public void validateExistStations(Long upId, Long downId) {
+        if (!stationService.isExistingStation(upId)) {
             throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
         }
-        if (!stationService.isExistingStation(section.getDownStation())) {
+        if (!stationService.isExistingStation(downId)) {
             throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
         }
-    }
-
-    public void validateStations(Long upId, Long downId) {
-        stationService.validateStations(upId, downId);
     }
 
     private SectionResponse saveAtEnd(Long lineId, Section newSection) {

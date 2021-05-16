@@ -15,5 +15,5 @@ public interface StationDao {
 
     Station findBy(Long id);
 
-    boolean isExistingStation(Station station);
+    boolean isExistingStation(Long stationId);
 }

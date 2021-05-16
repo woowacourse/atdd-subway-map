@@ -36,7 +36,7 @@ public class LineService {
         if (checkNameDuplicate(lineReq)) {
             throw new DuplicatedNameException("중복된 이름의 노선이 존재합니다.");
         }
-        sectionService.validateStations(lineReq.getUpStationId(), lineReq.getDownStationId());
+        sectionService.validateExistStations(lineReq.getUpStationId(), lineReq.getDownStationId());
     }
 
     private boolean checkNameDuplicate(LineRequest lineRequest) {

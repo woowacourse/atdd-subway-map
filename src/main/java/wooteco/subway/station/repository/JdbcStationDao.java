@@ -64,8 +64,8 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public boolean isExistingStation(Station station) {
+    public boolean isExistingStation(Long stationId) {
         String query = "SELECT EXISTS (SELECT * FROM station WHERE id = ?)";
-        return jdbcTemplate.queryForObject(query, Boolean.class, station.getId());
+        return jdbcTemplate.queryForObject(query, Boolean.class, stationId);
     }
 }
