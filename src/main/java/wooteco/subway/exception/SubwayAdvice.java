@@ -45,4 +45,14 @@ public class SubwayAdvice {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
+    @ExceptionHandler(InvalidSectionsException.class)
+    public ResponseEntity<String> handleInvalidSectionsException(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(NotRemoveSectionException.class)
+    public ResponseEntity<String> handleNotRemoveSectionException(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
 }

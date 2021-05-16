@@ -5,8 +5,11 @@ import java.util.LinkedList;
 import java.util.List;
 import wooteco.subway.exception.DeleteSectionException;
 import wooteco.subway.exception.DuplicatedSectionException;
+import wooteco.subway.exception.InvalidSectionsException;
+import wooteco.subway.exception.NotAddSectionException;
 import wooteco.subway.exception.NotContainStationsException;
 import wooteco.subway.exception.NotFoundTerminalStationException;
+import wooteco.subway.exception.NotRemoveSectionException;
 import wooteco.subway.station.domain.Station;
 
 public class Sections {
@@ -38,7 +41,7 @@ public class Sections {
                 return section.getDownStation();
             }
         }
-        throw new IllegalArgumentException();
+        throw new InvalidSectionsException();
     }
 
     private Section upTerminalSection(List<Section> sections) {
@@ -132,17 +135,17 @@ public class Sections {
                 return currentSection.createdUpSection(section);
             }
         }
-        throw new IllegalArgumentException();
+        throw new NotAddSectionException();
     }
 
     public Section removedSectionByAddInternalSection(Section section) {
         return sections.stream()
             .filter((it) -> it.isContainEqualsStation(section))
             .findAny()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(NotAddSectionException::new);
     }
 
-    public Section createdSectionByRemoveStation(Long lineId, Station station) {
+    public Section createdSectionByRemoveInternalStation(Long lineId, Station station) {
         for (int i = 0; i < sections.size(); i++) {
             Section currentSection = sections.get(i);
             if (currentSection.isEqualsUpStation(station)) {
@@ -152,10 +155,10 @@ public class Sections {
                     currentSection.getDownStation(), newDistance);
             }
         }
-        throw new IllegalArgumentException();
+        throw new NotRemoveSectionException();
     }
 
-    public List<Section> removedSectionsByRemoveStation(Station station) {
+    public List<Section> removedSectionsByRemoveInternalStation(Station station) {
         List<Section> removedSections = new ArrayList<>();
         for (int i = 0; i < sections.size(); i++) {
             Section currentSection = sections.get(i);
@@ -168,7 +171,7 @@ public class Sections {
         return removedSections;
     }
 
-    public Section removedTerminalSectionByRemoveStation(Station station) {
+    public Section removedSectionByRemoveTerminalStation(Station station) {
         Section upTerminalSection = sections.get(0);
         if (upTerminalSection.isEqualsUpStation(station)) {
             return upTerminalSection;
@@ -178,7 +181,7 @@ public class Sections {
         if (downTerminalSection.isEqualsDownStation(station)) {
             return downTerminalSection;
         }
-        throw new IllegalArgumentException();
+        throw new NotRemoveSectionException();
     }
 
     public List<Station> sortedStations() {

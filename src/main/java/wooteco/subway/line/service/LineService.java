@@ -97,11 +97,11 @@ public class LineService {
         sections.validateRemovable(deletedStation);
 
         if (sections.isTerminalStation(deletedStation)) {
-            sectionService.delete(lineId, new SectionRequest(sections.removedTerminalSectionByRemoveStation(deletedStation)));
+            sectionService.delete(lineId, new SectionRequest(sections.removedSectionByRemoveTerminalStation(deletedStation)));
             return;
         }
-        sectionService.create(lineId, new SectionRequest(sections.createdSectionByRemoveStation(lineId, deletedStation)));
-        sections.removedSectionsByRemoveStation(deletedStation).forEach(section -> sectionService.delete(lineId, new SectionRequest(section)));
+        sectionService.create(lineId, new SectionRequest(sections.createdSectionByRemoveInternalStation(lineId, deletedStation)));
+        sections.removedSectionsByRemoveInternalStation(deletedStation).forEach(section -> sectionService.delete(lineId, new SectionRequest(section)));
     }
 
     private Section section(Long lineId, LineRequest lineRequest) {
