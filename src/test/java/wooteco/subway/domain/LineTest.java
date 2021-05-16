@@ -2,11 +2,13 @@ package wooteco.subway.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.station.StationNotFoundException;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -25,10 +27,10 @@ class LineTest {
     void stations() {
         Line line = Line.create("1호선", "bg-green-300");
         List<Section> sections = Arrays.asList(강남_수서, 수서_잠실, 잠실_동탄);
-        line.setSections(Sections.create(sections));
+        line.setStationsBySections(Sections.create(sections));
 
-        assertThat(line.stations()).hasSize(4);
-        assertThat(line.stations()).containsExactly(강남역, 수서역, 잠실역, 동탄역);
+        assertThat(line.getStations()).hasSize(4);
+        assertThat(line.getStations()).containsExactly(강남역, 수서역, 잠실역, 동탄역);
     }
 
     @DisplayName("같은 이름 확인")
@@ -61,10 +63,25 @@ class LineTest {
     @Test
     void setSections() {
         Line line = Line.create("1호선", "bg-green-300");
-        assertTrue(line.getSections().hasSize(0));
+        assertThatThrownBy(line::getStations).isInstanceOf(StationNotFoundException.class);
 
-        line.setSections(Sections.create(강남_수서));
+        line.setStationsBySections(Sections.create(강남_수서));
 
-        assertTrue(line.getSections().hasSize(1));
+        assertThat(line.getStations()).hasSize(2);
+    }
+
+    @DisplayName("구간 순서대로 역 보여주기")
+    @Test
+    void convertToSortedStations() {
+        Line line = Line.create("샘플", "샘플");
+        List<Section> setting = Arrays.asList(수서_잠실, 강남_수서, 잠실_동탄);
+        Sections sections = Sections.create(setting);
+
+        line.setStationsBySections(sections);
+
+        List<Station> stations = line.getStations();
+
+        assertThat(stations).hasSize(4);
+        assertThat(stations).containsExactly(강남역, 수서역, 잠실역, 동탄역);
     }
 }

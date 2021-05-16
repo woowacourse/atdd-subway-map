@@ -45,17 +45,7 @@ class SectionsTest {
         잠실_동탄 = Section.create(잠실역, 동탄역, 10);
     }
 
-    @DisplayName("구간 순서대로 역 보여주기")
-    @Test
-    void convertToSortedStations() {
-        List<Section> setting = Arrays.asList(수서_잠실, 강남_수서, 잠실_동탄);
-        Sections sections = Sections.create(setting);
 
-        List<Station> stations = sections.convertToSortedStations();
-
-        assertThat(stations).hasSize(4);
-        assertThat(stations).containsExactly(강남역, 수서역, 잠실역, 동탄역);
-    }
 
     @DisplayName("구간추가 - 성공(기존의 구간이 변경되는 경우)")
     @Test

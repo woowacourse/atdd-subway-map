@@ -3,10 +3,7 @@ package wooteco.subway.line;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.*;
 import wooteco.subway.exception.line.LineDuplicatedInformationException;
 import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.line.dao.JdbcLineDao;
@@ -28,7 +25,7 @@ public class LineService {
 
         Line line = lineDao.findById(lineId);
         Sections sections = sectionService.findAllByLineId(lineId);
-        line.setSections(sections);
+        line.setStationsBySections(sections);
 
         return line;
     }
@@ -37,7 +34,7 @@ public class LineService {
         List<Line> lines = lineDao.showAll();
         for (Line line : lines) {
             Sections sections = sectionService.findAllByLineId(line.getId());
-            line.setSections(sections);
+            line.setStationsBySections(sections);
         }
 
         return lines;
@@ -56,7 +53,7 @@ public class LineService {
         Line line = lineDao.create(Line.create(name, color));
         Section section = Section.create(upStation, downStation, distance);
         sectionService.createInitial(section, line.getId());
-        line.setSections(Sections.create(section));
+        line.setStationsBySections(Sections.create(section));
 
         return line;
     }

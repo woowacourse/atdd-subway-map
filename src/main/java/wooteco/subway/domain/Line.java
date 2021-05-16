@@ -12,22 +12,22 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-    private Sections sections;
+    private Stations stations;
 
     public static Line create(String name, String color) {
         return create(null, name, color);
     }
 
     public static Line create(Long id, String name, String color) {
-        return create(id, name, color, Sections.create());
+        return create(id, name, color, Stations.create());
     }
 
-    public static Line create(Long id, String name, String color, Sections sections) {
-        return new Line(id, name, color, sections);
+    public static Line create(Long id, String name, String color, Stations stations) {
+        return new Line(id, name, color, stations);
     }
 
-    public List<Station> stations() {
-        return sections.convertToSortedStations();
+    public List<Station> getStations() {
+        return stations.getStations();
     }
 
     public boolean isSameColor(String color) {
@@ -38,7 +38,7 @@ public class Line {
         return id.equals(lineId);
     }
 
-    public void setSections(Sections sections) {
-        this.sections = sections;
+    public void setStationsBySections(Sections sections) {
+        this.stations = Stations.create(sections);
     }
 }

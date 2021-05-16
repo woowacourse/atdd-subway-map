@@ -20,7 +20,7 @@ public class LineResponse {
 
     public static LineResponse create(Line line) {
         List<StationResponse> stations = line
-                .stations()
+                .getStations()
                 .stream()
                 .map(StationResponse::create)
                 .collect(Collectors.toList());
