@@ -17,3 +17,15 @@
 - [x] LineService: 파라미터 갯수 줄이기, Info 금지
 - [x] Dao: 쿼리 static? 왜?
 - [x] SectionDao: create, insert 둘다 insert 구문 실행 무슨차이?
+
+# 3-2 피드백
+
+- [ ] 디버깅시 사용했던 불필요한 출력문 제거
+- [ ] Sections: 중복구문 Arrays.asList로 변경, Map 일급 컬렉션?, 메서드명 확인
+- [ ] Station: 기본 생성자 필요?
+- [ ] StationName: 단순 문자열로 변경
+- [ ] 내부로직 예외: 500번대
+- [ ] Dao: 인터페이스 분리
+- [ ] Service: 메소드명 ~~ById, dto 생성도 서비스로
+- [ ] Section에서 line 정보?
+- [ ] 중복역 체크는 비즈니스로직으로 Service 레이어로 이동
