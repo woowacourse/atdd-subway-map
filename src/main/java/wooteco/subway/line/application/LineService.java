@@ -39,21 +39,16 @@ public class LineService {
 
     private Section addSection(final LineRequest lineRequest, final Line line) {
         if (Objects.nonNull(lineRequest.getUpStationId()) && Objects.nonNull(lineRequest.getDownStationId())) {
-            return sectionDao.save(toSection(line, lineRequest));
+            return sectionDao.save(toSection(line, lineRequest.getUpStationId(),
+                    lineRequest.getDownStationId(), lineRequest.getDistance()));
         }
         return null;
     }
 
-    private Section toSection(final Line line, final LineRequest lineRequest) {
-        Station upStation = findStationById(lineRequest.getUpStationId());
-        Station downStation = findStationById(lineRequest.getDownStationId());
-        return new Section(line, upStation, downStation, lineRequest.getDistance());
-    }
-
-    private Section toSection(final Line line, final SectionRequest sectionRequest) {
-        Station upStation = findStationById(sectionRequest.getUpStationId());
-        Station downStation = findStationById(sectionRequest.getDownStationId());
-        return new Section(line, upStation, downStation, sectionRequest.getDistance());
+    private Section toSection(final Line line, final Long upStationId, final Long downStationId, final int distance) {
+        Station upStation = findStationById(upStationId);
+        Station downStation = findStationById(downStationId);
+        return new Section(line, upStation, downStation, distance);
     }
 
     @Transactional(readOnly = true)
@@ -86,7 +81,8 @@ public class LineService {
     @Transactional
     public void addSection(final Long lineId, final SectionRequest sectionRequest) {
         Line line = findLineById(lineId);
-        Section targetSection = toSection(line, sectionRequest);
+        Section targetSection = toSection(line, sectionRequest.getUpStationId(),
+                sectionRequest.getDownStationId(), sectionRequest.getDistance());
 
         line.addSection(targetSection);
 
