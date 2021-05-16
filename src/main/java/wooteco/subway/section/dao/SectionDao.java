@@ -10,10 +10,25 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.domain.Id;
+import wooteco.subway.line.Line;
+import wooteco.subway.section.Distance;
 import wooteco.subway.section.Section;
+import wooteco.subway.station.Station;
 
 @Repository
 public class SectionDao {
+
+    private static final String ASSEMBLE_SECTION_SQL =
+        "SELECT target_section.id AS id, "
+            + "line.id AS line_id, line.name AS line_name, line.color AS line_color, "
+            + "up_station.id AS up_station_id, up_station.name AS up_station_name, "
+            + "down_station.id AS down_station_id, down_station.name AS down_station_name, "
+            + "distance "
+            + "FROM section AS target_section "
+            + "LEFT JOIN line ON target_section.line_id = line.id "
+            + "LEFT JOIN station AS up_station ON target_section.up_station_id = up_station.id "
+            + "LEFT JOIN station AS down_station ON target_section.down_station_id = down_station.id";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -27,19 +42,29 @@ public class SectionDao {
         this.rowMapper = (rs, rowNum) -> {
             final Long foundId = rs.getLong("id");
             final Long lineId = rs.getLong("line_id");
+            final String lineName = rs.getString("line_name");
+            final String lineColor = rs.getString("line_color");
             final Long upStationId = rs.getLong("up_station_id");
+            final String upStationName = rs.getString("up_station_name");
             final Long downStationId = rs.getLong("down_station_id");
+            final String downStationName = rs.getString("down_station_name");
             final int distance = rs.getInt("distance");
-            return new Section(foundId, lineId, upStationId, downStationId, distance);
+            return new Section(
+                new Id(foundId),
+                new Line(lineId, lineName, lineColor),
+                new Station(upStationId, upStationName),
+                new Station(downStationId, downStationName),
+                new Distance(distance)
+            );
         };
     }
 
     public Section save(final Section section) {
         Map<String, Object> params = new HashMap<>();
-        params.put("line_id", section.getLineId());
-        params.put("up_station_id", section.getUpStationId());
-        params.put("down_station_id", section.getDownStationId());
-        params.put("distance", section.getDistance());
+        params.put("line_id", section.getLine().getId());
+        params.put("up_station_id", section.getUpStation().getId());
+        params.put("down_station_id", section.getDownStation().getId());
+        params.put("distance", section.getDistance().getValue());
 
         long key = jdbcInsert.executeAndReturnKey(params).longValue();
 
@@ -47,23 +72,38 @@ public class SectionDao {
     }
 
     public List<Section> findAllByLineId(final Long lineId) {
-        String sql = "SELECT * FROM section WHERE line_id = ?";
+        String sql = ASSEMBLE_SECTION_SQL + " WHERE target_section.line_id = ?";
+
         return jdbcTemplate.query(sql, rowMapper, lineId);
     }
 
-    public Optional<Section> findByLineIdAndUpStationId(final Long lineId, final Long upStationId) {
+    public Optional<Section> findById(final Long sectionId) {
         try {
-            String sql = "SELECT * FROM section WHERE line_id = ? AND up_station_id = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, upStationId));
+            String sql = ASSEMBLE_SECTION_SQL + " WHERE target_section.id = ?";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, sectionId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
-    public Optional<Section> findByLineIdAndDownStationId(final Long lineId, final Long downStationId) {
+    public Optional<Section> findByLineIdAndUpStationId(final Long lineId, final Long upStationId) {
         try {
-            String sql = "SELECT * FROM section WHERE line_id = ? AND down_station_id = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, downStationId));
+            String sql = ASSEMBLE_SECTION_SQL
+                + " WHERE target_section.line_id = ? AND target_section.up_station_id = ?";
+            return Optional
+                .ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, upStationId));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Section> findByLineIdAndDownStationId(final Long lineId,
+        final Long downStationId) {
+        try {
+            String sql = ASSEMBLE_SECTION_SQL
+                + " WHERE target_section.line_id = ? AND target_section.down_station_id = ?";
+            return Optional
+                .ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, downStationId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
