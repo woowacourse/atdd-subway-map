@@ -3,6 +3,7 @@ package wooteco.subway.station.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -36,6 +37,11 @@ public class StationDao {
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         return new Station(id, station.getName());
+    }
+
+    public Optional<Station> showStation(final Long stationId) {
+        String statement = "SELECT * FROM STATION WHERE id = ?";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(statement, rowMapper, stationId));
     }
 
     public List<Station> showAll() {
