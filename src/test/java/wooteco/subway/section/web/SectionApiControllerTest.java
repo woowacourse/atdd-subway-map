@@ -2,6 +2,7 @@ package wooteco.subway.section.web;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,12 +19,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("[API] 구간관련 테스트")
 class SectionApiControllerTest extends AcceptanceTest {
-    private StationRequest 잠실역 = new StationRequest("잠실역");
-    private StationRequest 잠실새내역 = new StationRequest("잠실새내역");
-    private StationRequest 강남역 = new StationRequest("강남역");
-    private StationRequest 동탄역 = new StationRequest("동탄역");
-    private StationRequest 수서역 = new StationRequest("수서역");
-    private int ORIGINAL_DISTANCE = 10;
+    private StationRequest 잠실역;
+    private StationRequest 잠실새내역;
+    private StationRequest 강남역;
+    private StationRequest 동탄역;
+    private StationRequest 수서역;
+    private static final int ORIGINAL_DISTANCE = 10;
+
+    @BeforeEach
+    void setUpStationRequest() {
+        잠실역 = new StationRequest("잠실역");
+        잠실새내역 = new StationRequest("잠실새내역");
+        강남역 = new StationRequest("강남역");
+        동탄역 = new StationRequest("동탄역");
+        수서역 = new StationRequest("수서역");
+    }
+
+    @AfterEach
+    void clear() {
+        잠실역 = null;
+        잠실새내역 = null;
+        강남역 = null;
+        동탄역 = null;
+        수서역 = null;
+    }
 
     @Test
     @DisplayName("구간 등록 - 성공(상행종점 등록)")

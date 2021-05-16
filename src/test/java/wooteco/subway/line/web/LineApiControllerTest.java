@@ -2,25 +2,34 @@ package wooteco.subway.line.web;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
-import wooteco.subway.domain.Station;
 import wooteco.subway.station.StationRequest;
-
-import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("[API] 노선 관련 테스트")
 class LineApiControllerTest extends AcceptanceTest {
-    private static final StationRequest 잠실역 = new StationRequest("잠실역");
-    private static final StationRequest 잠실새내역 = new StationRequest("잠실새내역");
-    private static final StationRequest 노원역 = new StationRequest("노원역");
+    private StationRequest 잠실역;
+    private StationRequest 잠실새내역;
+    private StationRequest 노원역;
+
+    @BeforeEach
+    void setUpStationRequest() {
+        잠실역 = new StationRequest("잠실역");
+        잠실새내역 = new StationRequest("잠실새내역");
+        노원역 = new StationRequest("노원역");
+    }
+
+    @AfterEach
+    void clear(){
+        잠실역 = null;
+        잠실새내역 = null;
+        노원역 = null;
+    }
 
     @Test
     @DisplayName("노선 생성 - 성공")

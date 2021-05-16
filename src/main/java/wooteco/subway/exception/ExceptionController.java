@@ -1,5 +1,6 @@
 package wooteco.subway.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,7 +20,7 @@ public class ExceptionController {
 
     @ExceptionHandler(InternalLogicConflictException.class)
     public ResponseEntity<Void> handle(InternalLogicConflictException e) {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
 }
