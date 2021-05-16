@@ -26,7 +26,6 @@ public class Section {
         this.distance = distance;
     }
 
-    @Builder
     public Section(Line line, Station upStation, Station downStation, int distance) {
         validateSection(upStation, downStation, distance);
         this.line = line;

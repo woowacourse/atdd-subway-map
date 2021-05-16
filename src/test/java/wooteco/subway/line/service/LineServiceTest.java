@@ -14,18 +14,14 @@ import wooteco.subway.line.api.dto.LineRequest;
 import wooteco.subway.line.api.dto.LineResponse;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.model.Line;
-import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.model.Section;
-import wooteco.subway.section.model.SectionRepository;
+import wooteco.subway.section.repository.SectionRepository;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.model.Station;
 
 @Sql(value = "/truncate.sql")
 @SpringBootTest
 class LineServiceTest {
-
-    @Autowired
-    private SectionDao sectionDao;
 
     @Autowired
     private SectionRepository sectionRepository;
@@ -94,7 +90,7 @@ class LineServiceTest {
             .distance(10)
             .build();
 
-        sectionDao.save(section);
+        sectionRepository.save(section);
 
         //when
         LineDetailsResponse lineDetailsResponse = lineService.showLineById(line.getId());
@@ -120,7 +116,7 @@ class LineServiceTest {
             .distance(10)
             .build();
 
-        sectionDao.save(section);
+        sectionRepository.save(section);
 
         //when
         lineService.deleteById(line.getId());
