@@ -1,6 +1,10 @@
 package wooteco.subway.domain.station;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -68,7 +72,7 @@ public class StationDao {
         namedParameterJdbcTemplate.update(sql, params);
     }
 
-    public List<Station> findStationsByIds(List<Long> ids) {
+    public List<Station> findStationsByIds(Collection<Long> ids) {
         final String sql = "SELECT id, name FROM station WHERE id IN (:ids)";
 
         final MapSqlParameterSource params = getParamSource();

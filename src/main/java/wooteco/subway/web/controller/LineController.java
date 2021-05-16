@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.service.LineService;
+import wooteco.subway.service.LineFacade;
 import wooteco.subway.web.dto.LineRequest;
 import wooteco.subway.web.dto.LineResponse;
 import wooteco.subway.web.dto.LineUpdateRequest;
@@ -23,18 +23,18 @@ import wooteco.subway.web.dto.LineUpdateRequest;
 @RequestMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LineController {
 
-    private final LineService lineService;
+    private final LineFacade lineFacade;
 
-    public LineController(LineService lineService) {
-        this.lineService = lineService;
+    public LineController(LineFacade lineFacade) {
+        this.lineFacade = lineFacade;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> create(@RequestBody @Valid LineRequest lineRequest) {
-        LineResponse lineResponse = lineService.add(
+        Long lineId = lineFacade.add(
                 lineRequest.toEntity(),
-                lineRequest.toStationRequest()
-        );
+                lineRequest.toStationRequest());
+        LineResponse lineResponse = lineFacade.findById(lineId);
 
         return ResponseEntity
                 .created(URI.create("/lines/" + lineResponse.getId()))
@@ -43,7 +43,7 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> list() {
-        List<LineResponse> lineResponses = lineService.findAll()
+        List<LineResponse> lineResponses = lineFacade.findAll()
                 .stream()
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
@@ -53,7 +53,7 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> find(@PathVariable Long id) {
-        LineResponse lineResponse = lineService.findById(id);
+        LineResponse lineResponse = lineFacade.findById(id);
 
         return ResponseEntity.ok(lineResponse);
     }
@@ -61,14 +61,14 @@ public class LineController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable Long id,
             @RequestBody @Valid LineUpdateRequest lineRequest) {
-        lineService.update(id, lineRequest.toEntity());
+        lineFacade.update(id, lineRequest.toEntity());
 
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        lineService.delete(id);
+        lineFacade.delete(id);
 
         return ResponseEntity.noContent().build();
     }

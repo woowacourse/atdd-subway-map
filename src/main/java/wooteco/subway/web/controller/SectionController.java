@@ -11,31 +11,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.service.SectionService;
+import wooteco.subway.service.SectionFacade;
 import wooteco.subway.web.dto.SectionRequest;
 
 @RestController
 @RequestMapping(value = "/lines/{lineId}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
 public class SectionController {
 
-    private final SectionService sectionService;
+    private final SectionFacade sectionFacade;
 
-    public SectionController(SectionService sectionService) {
-        this.sectionService = sectionService;
+    public SectionController(SectionFacade sectionFacade) {
+        this.sectionFacade = sectionFacade;
     }
 
     @PostMapping
     public ResponseEntity<Void> create(@PathVariable Long lineId,
             @RequestBody @Valid SectionRequest sectionRequest) {
-        sectionService.add(lineId, sectionRequest);
+        sectionFacade.add(lineId, sectionRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @DeleteMapping()
+    @DeleteMapping
     public ResponseEntity<Void> delete(@PathVariable Long lineId,
             @RequestParam(value = "stationId") Long stationId) {
-        sectionService.delete(lineId, stationId);
+        sectionFacade.delete(lineId, stationId);
         return ResponseEntity.noContent().build();
     }
 }
