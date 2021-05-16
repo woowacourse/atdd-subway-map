@@ -10,12 +10,6 @@ import wooteco.subway.exception.line.NotFoundLineException;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.CreateLineDto;
 import wooteco.subway.line.dto.LineServiceDto;
-import wooteco.subway.line.dto.ReadLineDto;
-import wooteco.subway.section.SectionService;
-import wooteco.subway.section.dto.CreateSectionDto;
-import wooteco.subway.section.dto.DeleteStationDto;
-import wooteco.subway.section.dto.SectionServiceDto;
-import wooteco.subway.station.dto.StationResponse;
 
 @Transactional
 @Service
@@ -24,20 +18,19 @@ public class LineService {
     private static final int NOT_FOUND = 0;
 
     private final LineDao lineDao;
-    private final SectionService sectionService;
 
-    public LineService(final LineDao lineDao, final SectionService sectionService) {
+    public LineService(final LineDao lineDao) {
         this.lineDao = lineDao;
-        this.sectionService = sectionService;
     }
 
-    @Transactional
-    public LineServiceDto createLine(@Valid final CreateLineDto createLineDto) {
-        Line line = createLineDto.toLineEntity();
-        Line saveLine = lineDao.save(line);
-        SectionServiceDto sectionServiceDto = SectionServiceDto.of(saveLine, createLineDto);
-        sectionService.saveByLineCreate(sectionServiceDto);
-        return LineServiceDto.from(saveLine);
+    public Line saveLine(final Line line) {
+        Line rawLine = line;
+        return lineDao.save(rawLine);
+    }
+
+    public Line showLine(final Long lineId) {
+        return lineDao.show(lineId)
+            .orElseThrow(() -> new NotFoundLineException());
     }
 
     private void checkExistedNameAndColor(CreateLineDto createLineDto) {
@@ -53,18 +46,15 @@ public class LineService {
         }
     }
 
+    public Line showLine(final long lineId) {
+        return lineDao.show(lineId).get();
+    }
+
     public List<LineServiceDto> findAll() {
         return lineDao.showAll()
             .stream()
             .map(LineServiceDto::from)
             .collect(Collectors.toList());
-    }
-
-    public ReadLineDto findOne(@Valid final LineServiceDto lineServiceDto) {
-        Line line = lineDao.show(lineServiceDto.getId())
-            .orElseThrow(() -> new NotFoundLineException());
-        List<StationResponse> stationResponses = sectionService.findAllbyLindId(line.getId());
-        return ReadLineDto.of(line, stationResponses);
     }
 
     public void update(@Valid final LineServiceDto lineServiceDto) {
@@ -79,15 +69,5 @@ public class LineService {
         if (lineDao.delete(lineServiceDto.getId()) == NOT_FOUND) {
             throw new NotFoundLineException();
         }
-    }
-
-    public void createSection(CreateSectionDto createSectionDto) {
-        SectionServiceDto sectionServiceDto = SectionServiceDto.from(createSectionDto);
-        sectionService.save(sectionServiceDto);
-    }
-
-    public void deleteStation(final long lineId, final long stationId) {
-        DeleteStationDto deleteStationDto = new DeleteStationDto(lineId, stationId);
-        sectionService.delete(deleteStationDto);
     }
 }
