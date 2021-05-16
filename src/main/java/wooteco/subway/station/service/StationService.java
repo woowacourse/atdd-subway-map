@@ -10,6 +10,7 @@ import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.repository.StationRepository;
 
+@Transactional
 @Service
 public class StationService {
 
@@ -19,7 +20,6 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
-    @Transactional
     public Station createStation(StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
         if (stationRepository.isExistName(station)) {
@@ -37,7 +37,6 @@ public class StationService {
         throw new NotExistStationException();
     }
 
-    @Transactional
     public List<Station> findStations() {
         List<Station> stations = stationRepository.findAll();
         if (stations.isEmpty()) {
@@ -46,7 +45,6 @@ public class StationService {
         return stations;
     }
 
-    @Transactional
     public void deleteStation(Long id) {
         if (stationRepository.delete(id) == 0) {
             throw new NotExistStationException();

@@ -10,6 +10,7 @@ import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.repository.SectionRepository;
 import wooteco.subway.station.service.StationService;
 
+@Transactional
 @Service
 public class SectionService {
 
@@ -22,13 +23,12 @@ public class SectionService {
         this.sectionRepository = sectionRepository;
     }
 
-    @Transactional
     public Section create(Long lineId, SectionRequest sectionRequest) {
         Section newSection = section(lineId, sectionRequest);
         return sectionRepository.save(newSection);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Section> findAllByLineId(Long id) {
         List<Section> sections = sectionRepository.findAllByLineId(id);
         if (sections.isEmpty()) {
@@ -37,7 +37,6 @@ public class SectionService {
         return sections;
     }
 
-    @Transactional
     public void delete(Long lineId, SectionRequest sectionRequest) {
         Section newSection = section(lineId, sectionRequest);
         if (sectionRepository.delete(newSection) == 0) {

@@ -1,17 +1,19 @@
 package wooteco.subway.exception;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import wooteco.subway.exception.DuplicateLineNameException;
-import wooteco.subway.exception.NotAddSectionException;
-import wooteco.subway.exception.NotContainStationsException;
-import wooteco.subway.exception.NotExistLineException;
-import wooteco.subway.exception.NotExistSectionException;
-import wooteco.subway.exception.NotFoundTerminalStationException;
 
-@ControllerAdvice
-public class LineAdvice {
+public class SubwayAdvice {
+
+    @ExceptionHandler(DuplicateStationNameException.class)
+    public ResponseEntity<String> handleDuplicateStationNameException(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(NotExistStationException.class)
+    public ResponseEntity<String> handleNotExistStationException(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 
     @ExceptionHandler(DuplicateLineNameException.class)
     public ResponseEntity<String> handleDuplicateLineNameException(Exception e) {
@@ -43,13 +45,4 @@ public class LineAdvice {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler(DuplicateStationNameException.class)
-    public ResponseEntity<String> handleDuplicateStationNameException(Exception e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(NotExistStationException.class)
-    public ResponseEntity<String> handleNotExistStationException(Exception e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
 }

@@ -15,6 +15,7 @@ import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.service.StationService;
 
+@Transactional
 @Service
 public class LineService {
 
@@ -29,7 +30,6 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    @Transactional
     public Line createLine(LineRequest lineRequest) {
         if (lineRepository.isExistName(lineRequest.getName())) {
             throw new DuplicateLineNameException();
@@ -59,7 +59,6 @@ public class LineService {
         return lines;
     }
 
-    @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
         if (lineRepository.update(line) == 0) {
@@ -67,20 +66,18 @@ public class LineService {
         }
     }
 
-    @Transactional
     public void deleteLine(Long id) {
         if (lineRepository.delete(id) == 0) {
             throw new NotExistLineException();
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Station> findSortedLineStations(Long id) {
         Sections sections = new Sections(sectionService.findAllByLineId(id));
         return sections.sortedStations();
     }
 
-    @Transactional
     public void addSection(Long lineId, LineRequest lineRequest) {
         Sections sections = new Sections(sectionService.findAllByLineId(lineId));
         Section newSection = section(lineId, lineRequest);
@@ -94,7 +91,6 @@ public class LineService {
         sectionService.create(lineId, new SectionRequest(newSection));
     }
 
-    @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionService.findAllByLineId(lineId));
         Station deletedStation = stationService.findById(stationId);
