@@ -45,12 +45,16 @@ public class SectionService {
     }
 
     private void validateExistStation(Section section) {
-        if (!sectionDao.isExistingStation(section.getUpStation())) {
+        if (!stationService.isExistingStation(section.getUpStation())) {
             throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
         }
-        if (!sectionDao.isExistingStation(section.getDownStation())) {
+        if (!stationService.isExistingStation(section.getDownStation())) {
             throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
         }
+    }
+
+    public void validateStations(Long upId, Long downId) {
+        stationService.validateStations(upId, downId);
     }
 
     private SectionResponse saveAtEnd(Long lineId, Section newSection) {
