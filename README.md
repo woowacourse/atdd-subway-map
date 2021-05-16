@@ -84,7 +84,7 @@
     + A - B 하나의 구간만 존재한다면 A나 B를 삭제해서 구간을 제거할 수 없습니다
 
 ### 지하철 구간(Section) 제거 API
-* [ ] (DELETE, url = /lines/1/sections?stationId=2)
+* [x] (DELETE, url = /lines/1/sections?stationId=2)
 
 ### 노선(Line) 조회 시 구간(Section)에 포함된 역 목록 응답
 * [x] 노선(Line)에 포함된 구간(Section) 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답
