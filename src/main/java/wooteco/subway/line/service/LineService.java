@@ -3,9 +3,7 @@ package wooteco.subway.line.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.domain.*;
-import wooteco.subway.line.domain.rule.FindSectionHaveSameDownRule;
-import wooteco.subway.line.domain.rule.FindSectionHaveSameUpRule;
-import wooteco.subway.line.domain.rule.FindSectionRule;
+import wooteco.subway.line.domain.rule.*;
 import wooteco.subway.line.ui.dto.LineCreateRequest;
 import wooteco.subway.line.ui.dto.LineModifyRequest;
 import wooteco.subway.line.ui.dto.LineResponse;
@@ -15,6 +13,7 @@ import wooteco.subway.station.domain.StationRepository;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +42,8 @@ public class LineService {
 
         List<Long> ids = Arrays.asList(section.getUpStationId(), section.getDownStationId());
 
-        return new LineResponse(savedLine, stationRepository.findByIds(ids));
+        List<Station> stations = stationRepository.findByIds(ids);
+        return new LineResponse(savedLine, stations);
     }
 
 
@@ -57,7 +57,17 @@ public class LineService {
         Long lastStationId = sectionList.get(sectionList.size() -1).getDownStationId();
         ids.add(lastStationId);
 
-        return stationRepository.findByIds(ids);
+        List<Station> stations = stationRepository.findByIds(ids);
+        sortStation(stations, ids);
+
+        return stations;
+    }
+
+    private void sortStation(List<Station> stations, List<Long> key) {
+        stations.sort(Comparator.comparing(station -> {
+            int index = key.indexOf(station.getId());
+            return index >= 0 ? index : Integer.MAX_VALUE;
+        }));
     }
 
     public Lines allLines() {
@@ -66,7 +76,10 @@ public class LineService {
 
     public LineResponse findById(final Long id) {
         Line savedLine = lineRepository.findById(id);
-        return new LineResponse(savedLine, getStations(savedLine.getId()));
+        List<Station> stations = getStations(savedLine.getId());
+
+
+        return new LineResponse(savedLine, stations);
     }
 
     public void update(final Long id, final LineModifyRequest lineModifyRequest) {
