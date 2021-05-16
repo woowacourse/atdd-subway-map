@@ -63,6 +63,20 @@ class LineDaoTest {
         assertThat(line.getColor()).isEqualTo(color);
     }
 
+    @DisplayName("name으로 노선을 조회한다")
+    @Test
+    void findByName() {
+        String name = "2호선";
+        String color = "green";
+        Line savedLine = lineDao.save(name, color);
+
+        final Optional<Line> lineFound = lineDao.findByName(savedLine.getName());
+        Line line = lineFound.get();
+
+        assertThat(line.getName()).isEqualTo(name);
+        assertThat(line.getColor()).isEqualTo(color);
+    }
+
     @DisplayName("노선의 이름과 색상을 수정한다")
     @Test
     void update() {

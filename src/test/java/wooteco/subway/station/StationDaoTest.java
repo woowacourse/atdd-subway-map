@@ -88,27 +88,13 @@ class StationDaoTest {
         assertThat(foundStation.get().getName()).isEqualTo(stationName);
     }
 
-    @DisplayName("노선 id를 통해 노선에 포함된 역의 id들을 조회한다")
+    @DisplayName("name으로 역을 조회한다")
     @Test
-    void findStationsIdByLineId() {
-        String stationName1 = "강남역";
-        String stationName2 = "잠실역";
-        String stationName3 = "신림역";
+    void findByName() {
+        String stationName = "강남역";
+        Station station = stationDao.save(stationName);
 
-        Station station1 = stationDao.save(stationName1);
-        Station station2 = stationDao.save(stationName2);
-        Station station3 = stationDao.save(stationName3);
-
-        final Long stationId1 = station1.getId();
-        final Long stationId2 = station2.getId();
-        final Long stationId3 = station3.getId();
-
-        String name = "2호선";
-        String color = "green";
-        Line savedLine = lineDao.save(name, color);
-        sectionDao.save(savedLine.getId(), stationId1, stationId2);
-        sectionDao.save(savedLine.getId(), stationId2, stationId3);
-
-        assertTrue(stationDao.findStationIdsInLineByLineId(savedLine.getId()).containsAll(Arrays.asList(stationId1, stationId2, stationId3)));
+        Optional<Station> foundStation = stationDao.findByName(station.getName());
+        assertThat(foundStation.get().getName()).isEqualTo(stationName);
     }
 }

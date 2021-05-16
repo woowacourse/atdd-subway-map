@@ -59,11 +59,4 @@ public class StationDao {
         String sql = "DELETE FROM STATION WHERE id=?";
         jdbcTemplate.update(sql, stationId);
     }
-
-    public List<Long> findStationIdsInLineByLineId(long lineId) {
-        String sql = "SELECT DISTINCT STATION.id AS station_id FROM STATION JOIN SECTION ON SECTION.line_id = ? " +
-                "WHERE SECTION.up_station_id = STATION.id OR SECTION.down_station_Id = STATION.id";
-
-        return jdbcTemplate.queryForList(sql, Long.class, lineId);
-    }
 }

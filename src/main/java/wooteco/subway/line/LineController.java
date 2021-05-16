@@ -1,9 +1,12 @@
 package wooteco.subway.line;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.section.SectionRequest;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -18,13 +21,14 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@Valid @RequestBody LineRequest lineRequest) {
         long upStationId = lineRequest.getUpStationId();
         long downStationId = lineRequest.getDownStationId();
         String lineName = lineRequest.getName();
         String lineColor = lineRequest.getColor();
+        int distance = lineRequest.getDistance();
 
-        LineResponse lineResponse = lineService.createLine(upStationId, downStationId, lineName, lineColor);
+        LineResponse lineResponse = lineService.createLine(upStationId, downStationId, lineName, lineColor, distance);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
@@ -41,17 +45,33 @@ public class LineController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<String> updateLine(@RequestBody LineRequest lineRequest, @PathVariable long id) {
+    public ResponseEntity<String> updateLine(@PathVariable long id, @RequestBody LineRequest lineRequest) {
         String lineName = lineRequest.getName();
         String lineColor = lineRequest.getColor();
-        lineService.updateLine(id, lineName, lineColor);
 
+        lineService.updateLine(id, lineName, lineColor);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteLine(@PathVariable long id) {
         lineService.deleteLine(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("{id}/sections")
+    public ResponseEntity<String> createSection(@PathVariable long id, @RequestBody SectionRequest sectionRequest) {
+        long upStationId = sectionRequest.getUpStationId();
+        long downStationId = sectionRequest.getDownStationId();
+        int distance = sectionRequest.getDistance();
+
+        lineService.createSection(id, upStationId, downStationId, distance);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @DeleteMapping("{id}/sections")
+    public ResponseEntity<String> deleteSection(@PathVariable long id, @RequestParam long stationId) {
+        lineService.deleteSection(id, stationId);
         return ResponseEntity.noContent().build();
     }
 }
