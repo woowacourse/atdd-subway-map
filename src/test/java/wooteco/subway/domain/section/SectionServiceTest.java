@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -57,7 +58,7 @@ class SectionServiceTest {
         lineService.createLine(
             new Line(
                 new Line("2호선", "green"),
-                new StationsInLine(Arrays.asList(station1, station2, station3, station4))
+                Arrays.asList(station1, station2, station3, station4)
             )
         );
     }
@@ -85,6 +86,8 @@ class SectionServiceTest {
     @DisplayName("상행종점, 하행종점을 추가한다.")
     @Test
     void addEndSection() {
+        System.out.println("!!"+ stationService.showStations().stream().map(Station::getId).collect(Collectors.toList()));
+
         Section section = new Section(1L, 1L, 2L, 100);
         Section endSection = new Section(1L, 2L, 3L, 1000);
         Section startSection = new Section(1L, 4L, 1L, 1000);
@@ -93,11 +96,11 @@ class SectionServiceTest {
         assertEquals(2L, sectionService.addSection(endSection));
         assertEquals(3L, sectionService.addSection(startSection));
 
-        List<Station> stations = sectionService.makeStationsInLine(1L).getStations();
-        assertEquals(stationName4, stations.get(0).getName());
-        assertEquals(stationName1, stations.get(1).getName());
-        assertEquals(stationName2, stations.get(2).getName());
-        assertEquals(stationName3, stations.get(3).getName());
+        List<Long> stations = sectionService.makeStationsInLine(1L).getStationIds();
+        assertEquals(4L, stations.get(0));
+        assertEquals(1L, stations.get(1));
+        assertEquals(2L, stations.get(2));
+        assertEquals(3L, stations.get(3));
     }
 
     @DisplayName("구간을 삭제한다.")

@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.station.StationResponse;
 
 public class LineResponse {
@@ -30,18 +31,22 @@ public class LineResponse {
     }
 
     public LineResponse(Line line) {
-        this(line.getId(), line.getName(), line.getColor(), convertStationResponses(line));
+        this(line.getId(), line.getName(), line.getColor(), convertStationResponses(line.getStations()));
+    }
+
+    public LineResponse(Line line, List<Station> stations) {
+        this(line.getId(), line.getName(), line.getColor(), convertStationResponses(stations));
     }
 
     public static LineResponse from(Line line) {
-        if (Objects.isNull(line.getStations())) {
-            return new LineResponse(line.getId(), line.getName(), line.getColor());
-        }
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), convertStationResponses(line));
+        // if (Objects.isNull(line.getStations())) {
+        //     return new LineResponse(line.getId(), line.getName(), line.getColor());
+        // }
+        return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 
-    private static List<StationResponse> convertStationResponses(Line line) {
-        return line.getStations().stream()
+    private static List<StationResponse> convertStationResponses(List<Station> stations) {
+        return stations.stream()
             .map(station -> new StationResponse(station.getId(), station.getName()))
             .collect(Collectors.toList());
     }

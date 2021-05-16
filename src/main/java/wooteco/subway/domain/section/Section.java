@@ -41,6 +41,14 @@ public class Section {
         this.distance -= newSection.distance;
     }
 
+    public void addDistance(Section nextSection) {
+        this.distance += nextSection.distance;
+    }
+
+    public boolean contains(long stationId) {
+        return this.downStationId == stationId || this.upStationId == stationId;
+    }
+
     public long getLineId() {
         return lineId;
     }
@@ -64,17 +72,12 @@ public class Section {
         if (o == null || getClass() != o.getClass())
             return false;
         Section section = (Section)o;
-        return upStationId == section.upStationId && downStationId == section.downStationId
-            && distance == section.distance
-            && lineId == section.lineId;
+        return upStationId == section.upStationId && downStationId == section.downStationId && lineId == section.lineId
+            && distance == section.distance;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(upStationId, downStationId, distance, lineId);
-    }
-
-    public void addDistance(Section nextSection) {
-        this.distance += nextSection.distance;
+        return Objects.hash(upStationId, downStationId, lineId, distance);
     }
 }

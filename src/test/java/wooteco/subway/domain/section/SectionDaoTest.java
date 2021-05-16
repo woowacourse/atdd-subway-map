@@ -2,6 +2,7 @@ package wooteco.subway.domain.section;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,13 +53,18 @@ class SectionDaoTest {
     @DisplayName("같은 노선의 모든 구간을 조회해 StationsInLine으로 반환한다.")
     @Test
     void findSections() {
-        save();
-        Map<Station, Station> expectedSections = new HashMap<>();
-        expectedSections.put(stationDao.findById(1L).get(), stationDao.findById(2L).get());
-        expectedSections.put(stationDao.findById(2L).get(), stationDao.findById(3L).get());
-        StationsInLine stationsInLine = StationsInLine.from(expectedSections);
+        saveStations();
+        long lineId = saveLine();
+        Section section = new Section(lineId, 1L, 2L, 100);
+        Section section2 = new Section(lineId, 2L, 3L, 200);
+        sectionDao.save(section);
+        sectionDao.save(section2);
 
-        assertEquals(stationsInLine, sectionDao.findOrderedStationsByLineId(1L));
+        StationsInLine stationsInLine = StationsInLine.of(Arrays.asList(section, section2));
+
+        StationsInLine sectionsByLineId = sectionDao.findSectionsByLineId(lineId);
+
+        assertEquals(stationsInLine.getSections(), sectionsByLineId.getSections());
     }
 
     @DisplayName("UpStation이 같은 구간을 조회한다.")
@@ -104,10 +110,10 @@ class SectionDaoTest {
         long lineId = saveLine();
         Section section2 = saveSection(lineId, 1L, 2L, 100, 3L, 200);
 
-        int initSize = sectionDao.findOrderedStationsByLineId(lineId).getStations().size();
+        int initSize = sectionDao.findSectionsByLineId(lineId).getSections().size();
 
         assertEquals(1, sectionDao.deleteSection(section2));
-        assertEquals(initSize - 1, sectionDao.findOrderedStationsByLineId(lineId).getStations().size());
+        assertEquals(initSize - 1, sectionDao.findSectionsByLineId(lineId).getSections().size());
     }
 
     private Section saveSection(long lineId, long upStationId, long downStationId, int distance, long downStationId2, int distance2) {

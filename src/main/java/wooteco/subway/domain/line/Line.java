@@ -1,5 +1,6 @@
 package wooteco.subway.domain.line;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -12,14 +13,14 @@ public class Line {
     private final String name;
     private final String color;
     private Long id;
-    private StationsInLine stationsInLine;
+    private List<Station> stations;
 
     public Line(String name, String color) {
         validateName(name);
         validateColor(name);
         this.name = name;
         this.color = color;
-        this.stationsInLine = new StationsInLine();
+        this.stations = new ArrayList<>();
     }
 
     public Line(Long id, String name, String color) {
@@ -27,9 +28,9 @@ public class Line {
         this.id = id;
     }
 
-    public Line(Line line, StationsInLine stationsInLine) {
+    public Line(Line line, List<Station> stations) {
         this(line.getId(), line.getName(), line.getColor());
-        this.stationsInLine = stationsInLine;
+        this.stations = stations;
     }
 
     public Line(LineRequest lineRequest) {
@@ -65,7 +66,7 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return stationsInLine.getStations();
+        return stations;
     }
 
     @Override
@@ -76,11 +77,11 @@ public class Line {
             return false;
         Line line = (Line)o;
         return Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects
-            .equals(id, line.id) && Objects.equals(stationsInLine, line.stationsInLine);
+            .equals(id, line.id) && Objects.equals(stations, line.stations);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, color, id, stationsInLine);
+        return Objects.hash(name, color, id, stations);
     }
 }

@@ -34,6 +34,12 @@ class LineServiceTest {
     private static final String stationName3 = "잠실역";
     private static final String stationName4 = "매봉역";
 
+    Station station1 = new Station(stationName1);
+    Station station2 = new Station(stationName2);
+    Station station3 = new Station(stationName3);
+    Station station4 = new Station(stationName4);
+    List<Station> stations = Arrays.asList(station1, station2, station3, station4);
+
     @Autowired
     private LineService lineService;
 
@@ -43,26 +49,18 @@ class LineServiceTest {
     @Autowired
     private StationService stationService;
 
-    private StationsInLine stationsInLine;
 
     @BeforeEach
     void setUp() {
-        Station station1 = new Station(stationName1);
-        Station station2 = new Station(stationName2);
-        Station station3 = new Station(stationName3);
-        Station station4 = new Station(stationName4);
-
-        List<Station> stations = Arrays.asList(station1, station2, station3, station4);
         stations.forEach(station -> stationService.createStation(station));
-
-        stationsInLine = new StationsInLine(stations);
+        // stationsInLine = new StationsInLine(stations);
     }
 
     @DisplayName("노선을 생성하고 반환한다.")
     @Test
     void createLine() {
         Line line = new Line("2호선", "red");
-        Line createdLine = lineService.createLine(new Line(line, stationsInLine));
+        Line createdLine = lineService.createLine(new Line(line, stations));
         assertEquals(1L, createdLine.getId());
         assertEquals("2호선", createdLine.getName());
         assertEquals("red", createdLine.getColor());
@@ -86,7 +84,7 @@ class LineServiceTest {
     @Test
     void showLine() {
         Line line = new Line("2호선", "red");
-        Line createdLine = lineService.createLine(new Line(line, stationsInLine));
+        Line createdLine = lineService.createLine(new Line(line, stations));
 
         Section section = new Section(createdLine.getId(), 1L, 2L, 100);
         Section section1 = new Section(createdLine.getId(), 2L, 3L, 100);

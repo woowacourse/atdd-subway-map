@@ -38,7 +38,7 @@ public class SectionController {
         sectionService.addSection(section);
 
         Line line = lineService.showLine(lineId);
-        LineResponse lineResponse = new LineResponse(line);
+        LineResponse lineResponse = new LineResponse(line); //TODO: List<STation> 꺼내기
         return ResponseEntity.created(URI.create("/lines/" + lineId)).body(lineResponse);
     }
 

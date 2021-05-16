@@ -1,6 +1,7 @@
 package wooteco.subway.controller;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
 import wooteco.subway.service.LineService;
@@ -45,12 +47,12 @@ public class LineController {
         Line createdLine = lineService.createLine(new Line(lineRequest));
         Section createdSection = new Section(createdLine.getId(), lineRequest);
 
-        stationService.showStation(lineRequest.getUpStationId());
-        stationService.showStation(lineRequest.getDownStationId());
+        Station createdUpStation = stationService.showStation(lineRequest.getUpStationId());
+        Station createdDownStation = stationService.showStation(lineRequest.getDownStationId());
 
         sectionService.createSection(createdSection);
 
-        LineResponse lineResponse = LineResponse.from(createdLine);
+        LineResponse lineResponse = new LineResponse(createdLine, Arrays.asList(createdUpStation, createdDownStation));
         return ResponseEntity.created(URI.create("/lines/" + createdLine.getId())).body(lineResponse);
     }
 
@@ -64,7 +66,7 @@ public class LineController {
 
     @GetMapping("{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable long id) {
-        LineResponse lineResponse = LineResponse.from(lineService.showLine(id));
+        LineResponse lineResponse = LineResponse.from(lineService.showLine(id));    //TODO: List<STation> 꺼내기
         return ResponseEntity.ok().body(lineResponse);
     }
 

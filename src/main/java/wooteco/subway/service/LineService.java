@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.duplicate.DuplicateLineException;
 import wooteco.subway.exception.nosuch.NoSuchLineException;
 import wooteco.subway.domain.line.Line;
@@ -20,11 +22,13 @@ public class LineService {
     private final LineDao lineDao;
 
     private final SectionService sectionService;
+    private final StationService stationService;
 
     @Autowired
-    public LineService(LineDao lineDao, SectionService sectionService) {
+    public LineService(LineDao lineDao, SectionService sectionService, StationService stationService) {
         this.lineDao = lineDao;
         this.sectionService = sectionService;
+        this.stationService = stationService;
     }
 
     public Line createLine(Line line) {
@@ -43,7 +47,9 @@ public class LineService {
     public Line showLine(long id) {
         Line line = lineDao.findById(id).orElseThrow(NoSuchLineException::new);
         StationsInLine stationsInLine = sectionService.makeStationsInLine(id);
-        return new Line(line, stationsInLine);
+        List<Station> stations = new ArrayList<>();
+        stationsInLine.getStationIds().forEach(stationId -> stations.add(stationService.showStation(stationId)));
+        return new Line(line, stations);
     }
 
     public void updateLine(long id, Line line) {

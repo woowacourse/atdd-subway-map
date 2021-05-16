@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,15 +40,15 @@ public class SectionService {
         long upStationId = section.getUpStationId();
         long downStationId = section.getDownStationId();
 
-        StationsInLine stationsInLine = makeStationsInLine(section.getLineId());
+        StationsInLine stationsInLine = makeStationsInLine(section.getLineId());    //12
 
         stationsInLine.validStations(upStationId, downStationId);
-        checkSavingOptions(section, upStationId, downStationId, stationsInLine);
+        updateStation(section, upStationId, downStationId, stationsInLine);
 
         return sectionDao.save(section);
     }
 
-    private void checkSavingOptions(Section section, long upStationId, long downStationId, StationsInLine stations) {
+    private void updateStation(Section section, long upStationId, long downStationId, StationsInLine stations) {
         if (stations.isEndStations(upStationId, downStationId)) {
             return;
         }
@@ -83,31 +84,59 @@ public class SectionService {
         }
     }
 
-    public int deleteSectionByStationId(long lineId, long stationId) {
-        Optional<Section> unKnownPreviousSection = sectionDao.findSectionBySameDownStation(lineId, stationId);
-        Optional<Section> unknownNextSection = sectionDao.findSectionBySameUpStation(lineId, stationId);
+    // public int deleteSectionByStationId(long lineId, long stationId) {
+    //     Optional<Section> optionalPreviousSection = sectionDao.findSectionBySameDownStation(lineId, stationId);
+    //     Optional<Section> optionalNextSection = sectionDao.findSectionBySameUpStation(lineId, stationId);
+    //
+    //     if(makeStationsInLine(lineId).canNotDelete()) {
+    //         throw new ImpossibleDeleteException();
+    //     }
+    //
+    //     if (optionalPreviousSection.isPresent() && optionalNextSection.isPresent()) {
+    //         Section nextSection = optionalNextSection.get();
+    //         Section previousSection = optionalPreviousSection.get();
+    //         previousSection.addDistance(nextSection);
+    //         sectionDao.updateDownStation(previousSection, nextSection.getDownStationId());
+    //         return deleteSection(nextSection);
+    //     }
+    //
+    //     if (optionalPreviousSection.isPresent()) {
+    //         return deleteSection(optionalPreviousSection.get());
+    //     }
+    //
+    //     if (optionalNextSection.isPresent()) {
+    //         return deleteSection(optionalNextSection.get());
+    //     }
+    //
+    //     throw new NoSuchStationInLineException();
+    // }
 
-        if(makeStationsInLine(lineId).canNotDelete()) {
+    public int deleteSectionByStationId(long lineId, long stationId) {
+        StationsInLine stationsInLine = makeStationsInLine(lineId);
+
+        if(stationsInLine.canNotDelete()) {
             throw new ImpossibleDeleteException();
         }
 
-        if (unKnownPreviousSection.isPresent() && unknownNextSection.isPresent()) {
-            Section nextSection = unknownNextSection.get();
-            Section previousSection = unKnownPreviousSection.get();
+        List<Section> sectionsWithStation = stationsInLine.getSectionsWithStation(stationId);
+
+        if(sectionsWithStation.size() == 0) {
+            throw new NoSuchStationInLineException();
+        }
+
+        if (sectionsWithStation.size() == 2) {
+            Section nextSection = stationsInLine.getDownSection(stationId);
+            Section previousSection = stationsInLine.getUpSection(stationId);
             previousSection.addDistance(nextSection);
             sectionDao.updateDownStation(previousSection, nextSection.getDownStationId());
             return deleteSection(nextSection);
         }
 
-        if (unKnownPreviousSection.isPresent()) {
-            return deleteSection(unKnownPreviousSection.get());
+        if (sectionsWithStation.size() == 1) {
+            return deleteSection(sectionsWithStation.get(0));
         }
 
-        if (unknownNextSection.isPresent()) {
-            return deleteSection(unknownNextSection.get());
-        }
-
-        throw new NoSuchStationInLineException();
+        throw new IllegalArgumentException();
     }
 
     private int deleteSection(Section nextSection) {
@@ -115,10 +144,10 @@ public class SectionService {
     }
 
     public StationsInLine makeStationsInLine(long id) {
-        StationsInLine sectionsInLine = sectionDao.findOrderedStationsByLineId(id);
-        if (sectionsInLine.getStations().isEmpty()) {
-            throw new NoSuchStationInLineException();
-        }
+        StationsInLine sectionsInLine = sectionDao.findSectionsByLineId(id);
+        // if (sectionsInLine.getStations().isEmpty()) {
+        //     throw new NoSuchStationInLineException();
+        // }
         return sectionsInLine;
     }
 }
