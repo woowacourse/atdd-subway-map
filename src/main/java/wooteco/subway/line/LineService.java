@@ -54,8 +54,8 @@ public class LineService {
 
         validateExistInfo(name, color);
 
-        Station upStation = stationService.find(lineRequest.getUpStationId());
-        Station downStation = stationService.find(lineRequest.getDownStationId());
+        Station upStation = stationService.findById(lineRequest.getUpStationId());
+        Station downStation = stationService.findById(lineRequest.getDownStationId());
         Line line = lineDao.create(Line.create(name, color));
         Section section = Section.create(upStation, downStation, distance);
         sectionService.createInitial(section, line.getId());

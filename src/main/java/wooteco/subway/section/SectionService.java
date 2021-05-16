@@ -6,13 +6,12 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.exception.section.SectionLastRemainedException;
-import wooteco.subway.exception.station.StationNotFoundException;
-import wooteco.subway.line.dao.JdbcLineDao;
 import wooteco.subway.section.dao.JdbcSectionDao;
 import wooteco.subway.section.dao.SectionTable;
-import wooteco.subway.station.dao.JdbcStationDao;
+import wooteco.subway.section.web.SectionRequest;
+import wooteco.subway.section.web.SectionResponse;
+import wooteco.subway.station.StationService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +19,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SectionService {
-    private final JdbcStationDao stationDao;
-    private final JdbcLineDao lineDao;
+    private final StationService stationService;
     private final JdbcSectionDao sectionDao;
 
     @Transactional
@@ -30,21 +28,27 @@ public class SectionService {
     }
 
     @Transactional
-    public Section create(Section newSection, Long lineId) {
+    public SectionResponse create(SectionRequest sectionRequest, Long lineId) {
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+        Section newSection = Section.create(upStation, downStation, sectionRequest.getDistance());
+
         Sections sections = findAllByLineId(lineId);
 
         Section modified = sections.modifyRelatedToAdd(newSection);
         sections.add(newSection);
 
         sectionDao.updateModified(modified);
-        return sectionDao.create(newSection, lineId);
+        Section section = sectionDao.create(newSection, lineId);
+
+        return SectionResponse.create(section);
     }
 
     @Transactional
     public void removeByLineAndStationIds(Long lineId, Long stationId) {
         validateRemovable(lineId, stationId);
 
-        Station station = stationDao.findById(stationId);
+        Station station = stationService.findById(stationId);
         Sections sections = findAllByLineId(lineId);
 
         List<Section> removed = sections.removeRelated(station);
@@ -59,8 +63,7 @@ public class SectionService {
     }
 
     private void validateRemovable(Long lineId, Long stationId) {
-        validateExistLine(lineId);
-        validateExistStation(stationId);
+        stationService.validateExistStation(stationId);
         validateIsLastRemainedSection(lineId);
     }
 
@@ -79,22 +82,11 @@ public class SectionService {
     private List<Section> convertToSections(List<SectionTable> sectionTables) {
         List<Section> sections = new ArrayList<>();
         for (SectionTable sectionTable : sectionTables) {
-            Station upStation = stationDao.findById(sectionTable.getUpStationId());
-            Station downStation = stationDao.findById(sectionTable.getDownStationId());
+            Station upStation = stationService.findById(sectionTable.getUpStationId());
+            Station downStation = stationService.findById(sectionTable.getDownStationId());
             sections.add(Section.create(sectionTable.getId(), upStation, downStation, sectionTable.getDistance()));
         }
         return sections;
     }
 
-    private void validateExistStation(Long stationId) {
-        if (!stationDao.existById(stationId)) {
-            throw new StationNotFoundException();
-        }
-    }
-
-    private void validateExistLine(Long lineId) {
-        if (!lineDao.existById(lineId)) {
-            throw new LineNotFoundException();
-        }
-    }
 }

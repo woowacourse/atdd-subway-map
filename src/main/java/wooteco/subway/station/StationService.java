@@ -17,7 +17,7 @@ public class StationService {
 
     private final JdbcStationDao stationDao;
 
-    public Station find(Long id) {
+    public Station findById(Long id) {
         validateExistStation(id);
 
         return stationDao.findById(id);
@@ -47,7 +47,7 @@ public class StationService {
         stationDao.remove(id);
     }
 
-    private void validateExistStation(Long id) {
+    public void validateExistStation(Long id) {
         if (!stationDao.existById(id)) {
             throw new StationNotFoundException();
         }
