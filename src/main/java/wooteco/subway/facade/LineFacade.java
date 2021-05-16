@@ -9,8 +9,8 @@ import wooteco.subway.domain.SortedStations;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.SectionService;
 import wooteco.subway.service.StationService;
+import wooteco.subway.web.dto.LineRequest;
 import wooteco.subway.web.dto.LineResponse;
-import wooteco.subway.web.dto.SectionRequest;
 import wooteco.subway.web.dto.StationResponse;
 
 @Service
@@ -30,7 +30,7 @@ public class LineFacade {
     }
 
     public LineResponse findById(Long id) {
-        Line line = lineService.findLine(id);
+        Line line = lineService.findLineById(id);
 
         List<Section> sections = sectionService.findSectionsByLineId(line.getId());
         List<StationResponse> stations = stationService.findStationsBySections(sections);
@@ -44,19 +44,22 @@ public class LineFacade {
         return lineService.findAll();
     }
 
-    public Long add(Line line, SectionRequest request) {
+    public Long add(LineRequest lineRequest) {
+        Line line = lineRequest.toEntity();
+        Section section = lineRequest.toSectionRequest().toEntity();
+
         Long lineId = lineService.addLine(line);
-        sectionService.save(lineId, request.toEntity());
+        sectionService.addSection(lineId, section);
         return lineId;
     }
 
     public void update(Long id, Line line) {
-        lineService.findLine(id);
-        lineService.update(id, line);
+        lineService.validateLineId(id);
+        lineService.updateLine(id, line);
     }
 
     public void delete(Long id) {
-        lineService.findLine(id);
-        lineService.delete(id);
+        lineService.validateLineId(id);
+        lineService.deleteLine(id);
     }
 }

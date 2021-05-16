@@ -57,7 +57,7 @@ public class LineRequest {
         return new Line(name, color);
     }
 
-    public SectionRequest toStationRequest() {
+    public SectionRequest toSectionRequest() {
         return new SectionRequest(upStationId, downStationId, distance);
     }
 }

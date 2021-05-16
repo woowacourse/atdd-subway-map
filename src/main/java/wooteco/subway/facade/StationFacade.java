@@ -16,17 +16,17 @@ public class StationFacade {
         this.stationService = stationService;
     }
 
-    public Station add(Station station) {
-        Long id = stationService.save(station);
-        return stationService.findById(id);
-    }
-
     public List<Station> findAll() {
         return stationService.findAll();
     }
 
+    public Station add(Station station) {
+        Long id = stationService.save(station);
+        return stationService.findStationById(id);
+    }
+
     public void delete(Long id) {
-        stationService.findById(id);
+        stationService.validateStationId(id);
         stationService.delete(id);
     }
 }

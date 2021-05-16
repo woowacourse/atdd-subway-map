@@ -31,9 +31,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> create(@RequestBody @Valid LineRequest lineRequest) {
-        Long lineId = lineFacade.add(
-                lineRequest.toEntity(),
-                lineRequest.toStationRequest());
+        Long lineId = lineFacade.add(lineRequest);
         LineResponse lineResponse = lineFacade.findById(lineId);
 
         return ResponseEntity

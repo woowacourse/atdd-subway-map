@@ -19,15 +19,14 @@ public class SectionFacade {
     }
 
     public void add(Long lineId, SectionRequest sectionRequest) {
-        lineService.findLine(lineId);
+        lineService.validateLineId(lineId);
         sectionService.validateOnlyOneStationExists(lineId, sectionRequest);
-
         sectionService.shortenPriorSectionIfExists(lineId, sectionRequest);
-        sectionService.save(lineId, sectionRequest.toEntity());
+        sectionService.addSection(lineId, sectionRequest.toEntity());
     }
 
     public void delete(Long lineId, Long stationId) {
-        lineService.findLine(lineId);
+        lineService.validateLineId(lineId);
         sectionService.validateLineHasMoreThanOneSection(lineId);
         sectionService.mergePriorSectionsIfExists(lineId, stationId);
         sectionService.deleteSectionByStationId(lineId, stationId);

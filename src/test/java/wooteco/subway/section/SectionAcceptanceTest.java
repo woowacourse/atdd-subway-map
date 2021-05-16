@@ -30,6 +30,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private static final String UP_STATION_ID = "upStationId";
     private static final String DOWN_STATION_ID = "downStationId";
     private static final String DISTANCE = "distance";
+    private static final Long INVALID_LINE_ID = Long.MAX_VALUE;
 
     private Long stationIdA;
     private Long stationIdB;
@@ -160,6 +161,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertLinesStations(lineId, stationIdA, newStationId1, stationIdB, stationIdC);
+    }
+
+    @Test
+    @DisplayName("구간 추가 실패: 유효하지 않은 노선")
+    void createFail_InvalidLineId() {
+        // given
+        Map<String, Object> validSectionData = sectionData(newStationId1, stationIdB, 2);
+
+        // when
+        ExtractableResponse<Response> response = postSection(validSectionData, INVALID_LINE_ID);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test

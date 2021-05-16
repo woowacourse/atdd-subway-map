@@ -10,6 +10,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.web.dto.StationResponse;
 import wooteco.subway.web.exception.NotFoundException;
+import wooteco.subway.web.exception.SubwayHttpException;
 
 @Service
 public class StationService {
@@ -20,6 +21,15 @@ public class StationService {
 
     public StationService(StationDao stationDao) {
         this.stationDao = stationDao;
+    }
+
+    public List<Station> findAll() {
+        return stationDao.findAll();
+    }
+
+    public Station findStationById(Long id) {
+        return stationDao.findById(id)
+                .orElseThrow(() -> new NotFoundException(LINE_RESOURCE_NAME));
     }
 
     public List<StationResponse> findStationsBySections(List<Section> sections) {
@@ -40,20 +50,16 @@ public class StationService {
         return stationIdSet;
     }
 
-    public List<Station> findAll() {
-        return stationDao.findAll();
-    }
-
-    public Station findById(Long id) {
-        return stationDao.findById(id)
-                .orElseThrow(() -> new NotFoundException(LINE_RESOURCE_NAME));
-    }
-
     public Long save(Station station) {
         return stationDao.save(station);
     }
 
     public void delete(Long id) {
         stationDao.delete(id);
+    }
+
+    public void validateStationId(Long id) {
+        stationDao.findById(id)
+                .orElseThrow(() -> new SubwayHttpException("유효하지 않은 역입니다."));
     }
 }

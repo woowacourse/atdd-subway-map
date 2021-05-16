@@ -11,6 +11,8 @@ import wooteco.subway.web.exception.SubwayHttpException;
 @Service
 public class SectionService {
 
+    private static final List<Integer> VALID_COUNT = Arrays.asList(1, 2);
+
     private final SectionDao sectionDao;
 
     public SectionService(SectionDao sectionDao) {
@@ -47,7 +49,7 @@ public class SectionService {
             SectionRequest sectionRequest) {
         validateDistance(priorSection, sectionRequest);
         sectionDao.delete(priorSection.getId());
-        addUpdatedPrior(lineId, priorSection, sectionRequest);
+        addShortenedPriorSection(lineId, priorSection, sectionRequest);
     }
 
     private void validateDistance(Section priorSection, SectionRequest sectionRequest) {
@@ -58,7 +60,8 @@ public class SectionService {
         }
     }
 
-    private void addUpdatedPrior(Long lineId, Section priorSection, SectionRequest sectionRequest) {
+    private void addShortenedPriorSection(Long lineId, Section priorSection,
+            SectionRequest sectionRequest) {
         Long priorUpId = priorSection.getUpStationId();
         Long priorDownId = priorSection.getDownStationId();
         Long requestUpId = sectionRequest.getUpStationId();
@@ -75,8 +78,8 @@ public class SectionService {
             newUpId = priorUpId;
             newDownId = requestUpId;
         }
-        Section updatedPriorSection = new Section(lineId, newUpId, newDownId, newDistance);
-        sectionDao.save(updatedPriorSection);
+        Section shortenedPriorSection = new Section(lineId, newUpId, newDownId, newDistance);
+        sectionDao.save(shortenedPriorSection);
     }
 
     public void validateLineHasMoreThanOneSection(Long lineId) {
@@ -89,8 +92,8 @@ public class SectionService {
     public void mergePriorSectionsIfExists(Long lineId, Long stationId) {
         List<Section> sections = sectionDao.countSectionByStationId(lineId, stationId);
         validateLineHasStation(sections);
-        validateSize(sections.size());
-        if (sections.size() == 2) {
+        validateCountOfSections(sections.size());
+        if (priorSectionExists(sections)) {
             mergePriorSections(lineId, stationId, sections);
         }
     }
@@ -101,10 +104,14 @@ public class SectionService {
         }
     }
 
-    private void validateSize(int size) {
-        if (!Arrays.asList(1, 2).contains(size)) {
+    private void validateCountOfSections(int sectionCount) {
+        if (!VALID_COUNT.contains(sectionCount)) {
             throw new SubwayHttpException("삭제하려는 역을 포함하는 구간이 2개 이상임");
         }
+    }
+
+    private boolean priorSectionExists(List<Section> sections) {
+        return sections.size() == 2;
     }
 
     private void mergePriorSections(Long lineId, Long stationId, List<Section> sections) {
@@ -140,7 +147,7 @@ public class SectionService {
                 && lower.getDownStationId().equals(stationId);
     }
 
-    public void save(Long lineId, Section section) {
+    public void addSection(Long lineId, Section section) {
         Section newSection = new Section(lineId, section);
         sectionDao.save(newSection);
     }
