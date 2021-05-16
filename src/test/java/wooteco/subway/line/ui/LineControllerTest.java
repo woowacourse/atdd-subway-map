@@ -233,9 +233,11 @@ class LineControllerTest {
         StationResponse station1 = 지하철역_등록되어_있음(봉천역);
         StationResponse station2 = 지하철역_등록되어_있음(신림역);
 
-        final LineCreateRequest request = new LineCreateRequest("bg-red-600", "2호선",
+        LineCreateRequest request = new LineCreateRequest("bg-red-600", "2호선",
                 station1.getId(), station2.getId(), 10);
+        지하철_노선_등록되어_있음(request);
 
+        
         //when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(request);
 
