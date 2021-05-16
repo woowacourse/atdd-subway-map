@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.section.Section;
 
-@Component
+@Repository
 public class JdbcSectionDao implements SectionDao {
 
     private final JdbcTemplate jdbcTemplate;
