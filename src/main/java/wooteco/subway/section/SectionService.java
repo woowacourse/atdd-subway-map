@@ -18,6 +18,7 @@ import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
 @Service
+@Transactional
 public class SectionService {
 
     private StationDao stationDao;
@@ -69,7 +70,6 @@ public class SectionService {
         return stations;
     }
 
-    @Transactional
     public void insertSection(Long lineId, SectionRequest sectionRequest) {
         List<Station> stationsInLine = findStationsByLineId(lineId);
         LineEndPoint sectionEndPoint = findSectionEndPoint(lineId);
