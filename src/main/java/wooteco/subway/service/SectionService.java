@@ -59,8 +59,8 @@ public class SectionService {
         final Section section = sectionDao.findOneIfInclude(insertSection)
                 .orElseThrow(NoneOfSectionIncludedInLine::new);
         final Section updatedSection = section.makeSectionsToStraight(insertSection);
-        sectionDao.update(updatedSection); // 기존 섹션을 업데이트함. 삽입된 구간을 포함하여.
-        sectionDao.insert(insertSection); // 추가된 섹션을 삽입함.
+        sectionDao.update(updatedSection);
+        sectionDao.insert(insertSection);
     }
 
     public void deleteAllSectionByLineId(Long lineId) {
