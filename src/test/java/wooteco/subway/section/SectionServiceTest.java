@@ -20,6 +20,7 @@ import wooteco.subway.exception.SectionInsertExistStationsException;
 import wooteco.subway.exception.ShortDistanceException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineDao;
+import wooteco.subway.line.LineEndPoint;
 import wooteco.subway.line.SectionRequest;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
@@ -200,5 +201,26 @@ public class SectionServiceTest {
         assertThatThrownBy(() ->
             sectionService.deleteByUpStationId(1L, 1L)
         ).isInstanceOf(DeleteMinimumSizeException.class);
+    }
+
+    @DisplayName("종점 찾기 테스트")
+    @Test
+    void findUpAndDownStation() {
+        sectionDao.save(new Section(1L, 2L, 3L, 20));
+        LineEndPoint sectionEndPoint = sectionService.findSectionEndPoint(1L);
+
+        assertThat(sectionEndPoint).isEqualTo(new LineEndPoint(2L, 0L));
+    }
+
+    @DisplayName("구간에 속한 모든 역 찾기 테스트")
+    @Test
+    void findAllStationInSection() {
+        List<Station> stations = sectionService.findStationsByLineId(1L);
+
+        assertThat(stations).hasSize(3);
+
+        assertThat(stations.get(0)).isEqualTo(new Station("테스트 역1"));
+        assertThat(stations.get(1)).isEqualTo(new Station("테스트 역2"));
+        assertThat(stations.get(2)).isEqualTo(new Station("테스트 역3"));
     }
 }
