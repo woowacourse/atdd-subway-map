@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.exception.line.NullColorException;
+import wooteco.subway.exception.NullColorException;
 
 class ColorTest {
 

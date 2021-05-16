@@ -7,12 +7,12 @@ public class Id {
 
     private final Long value;
 
-    public Id(final Long value) {
+    public Id(Long value) {
         this.value = value;
         validateNull(this.value);
     }
 
-    private void validateNull(final Long value) {
+    private void validateNull(Long value) {
         if (Objects.isNull(value)) {
             throw new NullIdException();
         }
@@ -20,5 +20,22 @@ public class Id {
 
     public Long getValue() {
         return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Id id = (Id) o;
+        return Objects.equals(value, id.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }

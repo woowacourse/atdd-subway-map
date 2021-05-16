@@ -1,11 +1,13 @@
 package wooteco.subway.controller.dto.response;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.StationServiceDto;
 
 public class StationResponse {
 
-    @NotEmpty
+    @NotNull
     private Long id;
     @NotEmpty
     private String name;
@@ -13,13 +15,17 @@ public class StationResponse {
     public StationResponse() {
     }
 
-    public StationResponse(final Long id, final String name) {
+    public StationResponse(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public static StationResponse from(final StationServiceDto stationServiceDto) {
+    public static StationResponse from(StationServiceDto stationServiceDto) {
         return new StationResponse(stationServiceDto.getId(), stationServiceDto.getName());
+    }
+
+    public static StationResponse from(Station station) {
+        return new StationResponse(station.getId(), station.getName());
     }
 
     public Long getId() {

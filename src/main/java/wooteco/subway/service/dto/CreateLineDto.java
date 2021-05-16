@@ -1,39 +1,41 @@
-package wooteco.subway.controller.dto.request;
+package wooteco.subway.service.dto;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import wooteco.subway.controller.dto.request.LineRequest;
+import wooteco.subway.domain.Line;
 
-public class LineRequest {
+public class CreateLineDto {
 
     @NotEmpty
-    private String name;
+    private final String name;
     @NotBlank
-    private String color;
+    private final String color;
     @NotNull
-    private Long upStationId;
+    private final Long upStationId;
     @NotNull
-    private Long downStationId;
+    private final Long downStationId;
     @Min(1)
-    private int distance;
+    private final int distance;
 
-    public LineRequest() {
-    }
-
-    public LineRequest(final String name, final String color) {
-        this.name = name;
-        this.color = color;
-    }
-
-    public LineRequest(final String name, final String color, final Long upStationId,
-        final Long downStationId, final int distance) {
-
+    public CreateLineDto(String name, String color, Long upStationId, Long downStationId,
+        int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public static CreateLineDto from(LineRequest dto) {
+        return new CreateLineDto(dto.getName(), dto.getColor(), dto.getUpStationId(),
+            dto.getDownStationId(), dto.getDistance());
+    }
+
+    public Line toLineEntity() {
+        return new Line(name, color);
     }
 
     public String getName() {

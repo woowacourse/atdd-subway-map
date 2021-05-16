@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -14,17 +14,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wooteco.subway.dao.line.LineDaoH2;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.line.NotFoundLineException;
-import wooteco.subway.service.LineService;
+import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.service.dto.CreateLineDto;
 import wooteco.subway.service.dto.LineServiceDto;
+import wooteco.subway.service.dto.ReadLineDto;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceTest {
 
+    private final long UPSTATION_ID = 1;
+    private final long DOWNSTATION_ID = 2;
+    private final int DISTANCE = 10;
+
     @Mock
-    private LineDaoH2 mockLineDao;
+    private LineDao mockLineDao;
+    @Mock
+    private SectionService mockSectionService;
     @InjectMocks
     private LineService lineService;
 
@@ -37,9 +44,12 @@ public class LineServiceTest {
         String color = "파란색";
 
         when(mockLineDao.create(any(Line.class))).thenReturn(new Line(id, name, color));
+        when(mockSectionService.saveByLineCreate(any(Line.class), any())).thenReturn(null);
 
         // when
-        LineServiceDto createdDto = lineService.createLine(new LineServiceDto(name, color));
+        CreateLineDto createLineDto = new CreateLineDto(name, color, UPSTATION_ID, DOWNSTATION_ID,
+            DISTANCE);
+        LineServiceDto createdDto = lineService.createLine(createLineDto);
 
         // then
         assertThat(createdDto.getName()).isEqualTo(name);
@@ -84,12 +94,12 @@ public class LineServiceTest {
         when(mockLineDao.show(id)).thenReturn(new Line(id, name, color));
 
         // when
-        LineServiceDto requestedDto = lineService.findOne(new LineServiceDto((id)));
+        ReadLineDto readLineDto = lineService.findOne(new LineServiceDto((id)));
 
         // then
-        assertThat(requestedDto.getId()).isEqualTo(id);
-        assertThat(requestedDto.getName()).isEqualTo(name);
-        assertThat(requestedDto.getColor()).isEqualTo(color);
+        assertThat(readLineDto.getId()).isEqualTo(id);
+        assertThat(readLineDto.getName()).isEqualTo(name);
+        assertThat(readLineDto.getColor()).isEqualTo(color);
     }
 
     @Test
@@ -107,10 +117,10 @@ public class LineServiceTest {
         lineService.update(new LineServiceDto(id, updateName, updateColor));
 
         // then
-        LineServiceDto responseDto = lineService.findOne(new LineServiceDto(id));
-        assertThat(responseDto.getId()).isEqualTo(1);
-        assertThat(responseDto.getName()).isEqualTo(updateName);
-        assertThat(responseDto.getColor()).isEqualTo("녹담색");
+        ReadLineDto readLineDto = lineService.findOne(new LineServiceDto(id));
+        assertThat(readLineDto.getId()).isEqualTo(1);
+        assertThat(readLineDto.getName()).isEqualTo(updateName);
+        assertThat(readLineDto.getColor()).isEqualTo("녹담색");
     }
 
     @Test
@@ -122,13 +132,13 @@ public class LineServiceTest {
         String color = "파란색";
 
         when(mockLineDao.delete(id)).thenReturn(1);
-        when(mockLineDao.show(id)).thenThrow(NotFoundLineException.class);
+        when(mockLineDao.show(id)).thenThrow(NotFoundException.class);
 
         //when
         lineService.delete(new LineServiceDto(id));
 
         // then
         assertThatThrownBy(() -> lineService.findOne(new LineServiceDto(id)))
-            .isInstanceOf(NotFoundLineException.class);
+            .isInstanceOf(NotFoundException.class);
     }
 }

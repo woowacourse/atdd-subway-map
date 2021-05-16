@@ -1,38 +1,37 @@
-package wooteco.subway.dao.station;
+package wooteco.subway.dao;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Id;
-import wooteco.subway.domain.Name;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.NotFoundException;
 
 @Repository
-public class StationDaoH2 implements StationDao {
+public class StationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Station> rowMapper;
 
-    public StationDaoH2(final JdbcTemplate jdbcTemplate, final DataSource source) {
+    public StationDao(JdbcTemplate jdbcTemplate, DataSource source) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(source)
             .withTableName("STATION")
             .usingGeneratedKeyColumns("id");
         this.rowMapper = (rs, rowNum) -> {
-            final Long foundId = rs.getLong("id");
-            final String name = rs.getString("name");
+            Long foundId = rs.getLong("id");
+            String name = rs.getString("name");
             return new Station(foundId, name);
         };
     }
 
-    @Override
-    public Station save(final Station station) {
+    public Station save(Station station) {
         Map<String, String> params = new HashMap<>();
         params.put("name", station.getName());
 
@@ -41,15 +40,22 @@ public class StationDaoH2 implements StationDao {
         return new Station(id, station.getName());
     }
 
-    @Override
     public List<Station> showAll() {
-        String statement = "SELECT * FROM STATION";
-        return jdbcTemplate.query(statement, rowMapper);
+        String sql = "SELECT * FROM STATION";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
-    @Override
-    public int delete(final long id) {
-        String statement = "DELETE FROM station WHERE id = ?";
-        return jdbcTemplate.update(statement, id);
+    public Station showById(Long id) {
+        try {
+            String sql = "SELECT * FROM station WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException();
+        }
+    }
+
+    public int delete(Long id) {
+        String sql = "DELETE FROM station WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 }
