@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class InMemoryLineDao implements LineDao {
-    private static Long seq = 0L;
     private static final List<Line> lines = new ArrayList<>();
+    private static Long seq = 0L;
 
     public InMemoryLineDao() {
     }
@@ -71,11 +71,13 @@ public class InMemoryLineDao implements LineDao {
 
     @Override
     public boolean existByName(String name) {
-        return false;
+        return lines.stream()
+                .anyMatch(line -> line.sameName(name));
     }
 
     @Override
     public boolean existByColor(String color) {
-        return false;
+        return lines.stream()
+                .anyMatch(line -> line.sameName(color));
     }
 }
