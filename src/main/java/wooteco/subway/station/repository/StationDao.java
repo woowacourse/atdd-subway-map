@@ -14,4 +14,6 @@ public interface StationDao {
     void deleteById(Long id);
 
     Station findBy(Long id);
+
+    boolean isExistingStation(Station station);
 }

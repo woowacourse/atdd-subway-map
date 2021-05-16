@@ -27,6 +27,4 @@ public interface SectionDao {
     Section appendToUp(Long lineId, Section newSection, int changedDistance);
 
     Section appendBeforeDown(Long lineId, Section newSection, int changedDistance);
-
-    boolean isExistingStation(Station stationId);
 }

@@ -46,12 +46,6 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public boolean isExistingStation(Station station) {
-        String query = "SELECT EXISTS (SELECT * FROM station WHERE id = ?)";
-        return jdbcTemplate.queryForObject(query, Boolean.class, station.getId());
-    }
-
-    @Override
     public List<Section> findAllByLineId(Long lineId) {
         String query = "SELECT * FROM section WHERE line_id = ?";
         return jdbcTemplate.query(query, sectionMapper, lineId);

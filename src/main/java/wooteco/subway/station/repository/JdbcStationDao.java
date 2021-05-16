@@ -62,4 +62,10 @@ public class JdbcStationDao implements StationDao {
         List<Station> stations = jdbcTemplate.query(query, stationRowMapper, id);
         return DataAccessUtils.singleResult(stations);
     }
+
+    @Override
+    public boolean isExistingStation(Station station) {
+        String query = "SELECT EXISTS (SELECT * FROM station WHERE id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, station.getId());
+    }
 }
