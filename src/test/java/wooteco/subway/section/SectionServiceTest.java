@@ -13,7 +13,6 @@ import wooteco.subway.line.exception.LineException;
 import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.domain.Distance;
 import wooteco.subway.section.service.SectionService;
-import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
@@ -57,7 +56,7 @@ class SectionServiceTest {
 
         final LineRequest sample = new LineRequest("코기선", "black",  bStation.getId(), dStation.getId(), initialDistance.value());
         final LineResponse lineResponse = lineService.create(sample);
-        testLine = lineResponse.toLine();
+        testLine = sample.toLine(lineResponse.getId());
     }
 
     @DisplayName("노선 추가 시 상행, 하행 종점 추가")

@@ -41,7 +41,7 @@ public class LineServiceTest {
         final LineRequest mockLine = new LineRequest(savedName, savedColor, mockUpStationId, mockDownStationId, 1);
         final LineResponse savedLine = lineService.create(mockLine);
 
-        this.savedLine = savedLine.toLine();
+        this.savedLine = mockLine.toLine(savedLine.getId());
         this.savedLineId = this.savedLine.getId();
     }
 
@@ -57,7 +57,7 @@ public class LineServiceTest {
     @Test
     public void updateNonExistentLine() {
         assertThatThrownBy(() -> {
-            lineService.update(new Line(Long.MAX_VALUE, "validName", "validColor"));
+            lineService.update(new Line(Long.MAX_VALUE, "validName", "validColor", null, null));
         }).isInstanceOf(LineException.class);
     }
 
@@ -67,7 +67,7 @@ public class LineServiceTest {
         assertThatThrownBy(() -> {
             final String newName = "newName";
             lineService.create(new LineRequest(newName, savedColor, mockUpStationId, mockDownStationId, 1));
-            lineService.update(new Line(savedLineId, newName, savedColor));
+            lineService.update(new Line(savedLineId, newName, savedColor, null, null));
         }).isInstanceOf(LineException.class);
     }
 
@@ -75,9 +75,10 @@ public class LineServiceTest {
     @Test
     public void updateColor() {
         final String newColor = "newColor";
-        lineService.update(new Line(savedLineId, savedName, newColor));
+        lineService.update(new Line(savedLineId, savedName, newColor, null, null));
 
         final LineResponse updated = lineService.findById(savedLineId);
+        System.out.println(updated);
         assertThat(updated.getColor()).isEqualTo(newColor);
     }
 
@@ -117,5 +118,4 @@ public class LineServiceTest {
         assertThat(ids).usingRecursiveComparison()
                 .isEqualTo(Arrays.asList(mockUpStationId, mockDownStationId, mockStationId3, mockStationId4));
     }
-
 }

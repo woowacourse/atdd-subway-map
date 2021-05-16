@@ -21,8 +21,8 @@ public class SectionDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long save(final Line line) {
-        return save(line.getId(), line.getUpStationId(), line.getDownStationId(), line.getDistance());
+    public Long save(final Line line, final int distance) {
+        return save(line.getId(), line.getUpStationId(), line.getDownStationId(), distance);
     }
 
     public Long save(final Long lineId,

@@ -41,10 +41,10 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, color, upStationId, downStationId, distance);
+        return new Line(null, name, color, upStationId, downStationId);
     }
 
     public Line toLine(final Long id) {
-        return new Line(id, name, color, upStationId, downStationId, distance);
+        return new Line(id, name, color, upStationId, downStationId);
     }
 }

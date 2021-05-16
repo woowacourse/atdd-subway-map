@@ -20,7 +20,7 @@ public class LineResponse {
     }
 
     public LineResponse(final Line line) {
-        this(line.getId(), line.getName(), line.getName());
+        this(line.getId(), line.getName(), line.getColor());
     }
 
     public LineResponse(final Line line, final List<StationResponse> stationResponse) {
@@ -45,9 +45,5 @@ public class LineResponse {
 
     public List<StationResponse> getStations() {
         return stations;
-    }
-
-    public Line toLine() {
-        return new Line(id, name, color);
     }
 }

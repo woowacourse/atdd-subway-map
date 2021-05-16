@@ -103,7 +103,9 @@ public class LineDao {
         return (rs, rowNum) -> new Line(
                 rs.getLong("id"),
                 rs.getString("name"),
-                rs.getString("color")
+                rs.getString("color"),
+                rs.getLong("up_station_id"),
+                rs.getLong("down_station_id")
         );
     }
 }

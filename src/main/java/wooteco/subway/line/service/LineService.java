@@ -30,7 +30,7 @@ public class LineService {
         validateName(lineRequest.getName());
 
         final Long id = lineDao.save(lineRequest.toLine());
-        sectionDao.save(lineRequest.toLine(id));
+        sectionDao.save(lineRequest.toLine(id), lineRequest.getDistance());
 
         return new LineResponse(lineDao.findById(id));
     }
