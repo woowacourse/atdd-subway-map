@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.controller.request.LineAndSectionCreateRequest;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.SimpleLine;
 import wooteco.subway.exception.line.LineColorDuplicateException;
 import wooteco.subway.exception.line.LineNameDuplicateException;
 import wooteco.subway.exception.line.LineNotFoundException;
@@ -23,8 +22,8 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line create(SimpleLine simpleLine) {
-        final Long id = lineDao.insert(simpleLine.toLine());
+    public Line create(Line line) {
+        final Long id = lineDao.insert(line);
         return lineDao.findById(id);
     }
 
@@ -49,8 +48,8 @@ public class LineService {
         }
     }
 
-    public void updateById(Long id, SimpleLine simpleLine) {
-        lineDao.update(id, simpleLine.toLine());
+    public void updateById(Long id, Line updateLine) {
+        lineDao.update(id, updateLine);
     }
 
     public void deleteById(Long id) {

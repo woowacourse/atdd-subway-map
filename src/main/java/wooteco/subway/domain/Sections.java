@@ -30,7 +30,7 @@ public class Sections {
         return new SimpleSection(upStationId, downStationId, updatedDistance);
     }
 
-    public List<SimpleStation> sortSectionsByOrder() {
+    public List<StationId> sortSectionsByOrder() {
         final Map<Long, Long> stations = initialize();
         final Long firstUpStationId = findFirstUpStation(stations);
         return sortByOrder(stations, firstUpStationId);
@@ -51,7 +51,7 @@ public class Sections {
                 .orElseThrow(SectionSortedException::new);
     }
 
-    private List<SimpleStation> sortByOrder(Map<Long, Long> stations, Long firstUpStationId) {
+    private List<StationId> sortByOrder(Map<Long, Long> stations, Long firstUpStationId) {
         List<Long> sortedStations = new ArrayList<>();
         sortedStations.add(firstUpStationId);
 
@@ -63,9 +63,9 @@ public class Sections {
         return wrapToSimpleStation(sortedStations);
     }
 
-    private List<SimpleStation> wrapToSimpleStation(List<Long> stationIds) {
+    private List<StationId> wrapToSimpleStation(List<Long> stationIds) {
         return stationIds.stream()
-                .map(SimpleStation::new)
+                .map(StationId::new)
                 .collect(Collectors.toList());
     }
 }

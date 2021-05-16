@@ -2,10 +2,10 @@ package wooteco.subway.domain;
 
 import java.util.Objects;
 
-public class SimpleStation {
+public class StationId {
     private Long id;
 
-    public SimpleStation(Long id) {
+    public StationId(Long id) {
         this.id = id;
     }
 
@@ -17,7 +17,7 @@ public class SimpleStation {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SimpleStation that = (SimpleStation) o;
+        StationId that = (StationId) o;
         return Objects.equals(id, that.id);
     }
 

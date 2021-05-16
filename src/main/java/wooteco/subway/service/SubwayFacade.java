@@ -6,7 +6,7 @@ import wooteco.subway.controller.request.SectionInsertRequest;
 import wooteco.subway.controller.response.StationResponse;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Sections;
-import wooteco.subway.domain.SimpleStation;
+import wooteco.subway.domain.StationId;
 import wooteco.subway.service.dto.LineDto;
 import wooteco.subway.service.dto.LineWithStationsDto;
 
@@ -27,7 +27,7 @@ public class SubwayFacade {
 
     public LineDto createLine(LineAndSectionCreateRequest lineAndSectionCreateRequest) {
         lineService.validate(lineAndSectionCreateRequest);
-        final Line line = lineService.create(lineAndSectionCreateRequest.toSimpleLine());
+        final Line line = lineService.create(lineAndSectionCreateRequest.toLine());
         sectionService.insert(line.getId(), lineAndSectionCreateRequest.toSimpleSection());
         return new LineDto(line);
     }
@@ -55,7 +55,7 @@ public class SubwayFacade {
         sectionService.deleteSection(lineId, stationId);
     }
 
-    private List<StationResponse> makeStationResponse(List<SimpleStation> stationIds) {
+    private List<StationResponse> makeStationResponse(List<StationId> stationIds) {
         return stationService.makeStationResponses(stationIds);
     }
 
@@ -64,6 +64,6 @@ public class SubwayFacade {
     }
 
     public void updateLineById(Long id, LineAndSectionCreateRequest lineAndSectionCreateRequest) {
-        lineService.updateById(id, lineAndSectionCreateRequest.toSimpleLine());
+        lineService.updateById(id, lineAndSectionCreateRequest.toLine());
     }
 }

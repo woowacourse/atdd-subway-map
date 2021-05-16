@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.controller.request.StationRequest;
 import wooteco.subway.controller.response.StationResponse;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.SimpleStation;
+import wooteco.subway.domain.StationId;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.station.StationDuplicateException;
 import wooteco.subway.exception.station.StationNotFoundException;
@@ -44,13 +44,13 @@ public class StationService {
         stationDao.deleteById(id);
     }
 
-    public List<StationResponse> makeStationResponses(List<SimpleStation> simpleStations) {
+    public List<StationResponse> makeStationResponses(List<StationId> stationIds) {
         final List<StationResponse> stationResponses = new ArrayList<>();
-        for (SimpleStation simpleStation : simpleStations) {
-            if (!stationDao.isExistById(simpleStation.getId())) {
+        for (StationId stationId : stationIds) {
+            if (!stationDao.isExistById(stationId.getId())) {
                 throw new StationNotFoundException();
             }
-            stationResponses.add(new StationResponse(stationDao.findById(simpleStation.getId())));
+            stationResponses.add(new StationResponse(stationDao.findById(stationId.getId())));
         }
         return stationResponses;
     }
