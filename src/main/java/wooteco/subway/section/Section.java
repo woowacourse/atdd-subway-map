@@ -57,9 +57,9 @@ public class Section {
         return new Section(null, line, upStation, section.upStation, updateDistance);
     }
 
-    public Section assembledSectionForDelete(final Section section) {
-        Distance updateDistance = section.distance.add(this.distance);
-        return new Section(null, line, upStation, section.downStation, updateDistance);
+    public Section assembledSectionForDelete(final Section downSection) {
+        Distance updateDistance = downSection.distance.add(this.distance);
+        return new Section(null, line, upStation, downSection.downStation, updateDistance);
     }
 
     public boolean isIncludeUpStation(Section section) {
