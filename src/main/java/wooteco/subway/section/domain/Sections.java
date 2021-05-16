@@ -2,8 +2,7 @@ package wooteco.subway.section.domain;
 
 import wooteco.subway.line.exception.LineException;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -30,5 +29,23 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.isIncludeStation(stationId))
                 .collect(Collectors.toList());
+    }
+
+    public Order sort(final Long upStationId){
+        final Map<Long, Long> idTable = new HashMap<>();
+        for(final Section section : sections){
+            idTable.put(section.frontStationId(), section.backStationId());
+        }
+
+        final List<Long> ids = new LinkedList<>();
+
+        Long frontStationId = upStationId;
+        while(idTable.containsValue(frontStationId)){
+            ids.add(frontStationId);
+            frontStationId = idTable.get(upStationId);
+        }
+        ids.add(frontStationId);
+
+        return new Order(ids);
     }
 }
