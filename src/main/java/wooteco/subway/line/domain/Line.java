@@ -44,11 +44,7 @@ public class Line {
         return id;
     }
 
-    public LineName name() {
-        return name;
-    }
-
-    public String rawName() {
+    public String name() {
         return name.name();
     }
 

@@ -31,7 +31,7 @@ class JDBCStationDaoTest {
         //when
         Station savedStation = stationDao.save(station);
 
-        assertThat(station.rawName()).isEqualTo(savedStation.rawName());
+        assertThat(station.name()).isEqualTo(savedStation.name());
     }
 
     @Test
@@ -76,7 +76,7 @@ class JDBCStationDaoTest {
         Station findById = stationDao.findById(saveStation.id()).get();
 
         //then
-        assertThat(findById.rawName()).isEqualTo(station.rawName());
+        assertThat(findById.name()).isEqualTo(station.name());
     }
 
     @Test
@@ -88,10 +88,10 @@ class JDBCStationDaoTest {
 
         //when
         Station saveStation = stationDao.save(station);
-        Station findByName = stationDao.findByName(station.rawName()).get();
+        Station findByName = stationDao.findByName(station.name()).get();
 
         //then
-        assertThat(findByName.rawName()).isEqualTo(station.rawName());
+        assertThat(findByName.name()).isEqualTo(station.name());
     }
 
     @Test

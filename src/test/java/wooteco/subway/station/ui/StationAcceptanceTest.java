@@ -55,7 +55,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        StationRequest stationRequest = new StationRequest(station1.rawName());
+        StationRequest stationRequest = new StationRequest(station1.name());
 
         // when
         ExtractableResponse<Response> response = saveStationToHTTP(stationRequest);

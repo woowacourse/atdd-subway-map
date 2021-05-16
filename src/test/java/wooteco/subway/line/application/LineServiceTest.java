@@ -75,7 +75,7 @@ class LineServiceTest {
         when(stationDao.findById(2L)).thenReturn(Optional.of(station2));
 
         //when
-        LineResponse lineResponse = lineService.save(new LineRequest(line.rawName(), line.color(), station1.id(), station2.id(), distance1));
+        LineResponse lineResponse = lineService.save(new LineRequest(line.name(), line.color(), station1.id(), station2.id(), distance1));
 
         //then
         assertThat(lineResponse.getId()).isEqualTo(line.id());
@@ -90,7 +90,7 @@ class LineServiceTest {
         when(lineDao.save(any(Line.class))).thenReturn(line);
 
         //then
-        assertThatThrownBy(() -> lineService.save(new LineRequest(line.rawName(), line.color(), station1.id(), station1.id(), distance1)))
+        assertThatThrownBy(() -> lineService.save(new LineRequest(line.name(), line.color(), station1.id(), station1.id(), distance1)))
                 .isInstanceOf(IllegalStateException.class);
     }
 
@@ -110,8 +110,8 @@ class LineServiceTest {
 
 
         //then
-        assertThat(response.getName()).isEqualTo(line.rawName());
-        assertThat(stationResponsesToString(response.getStations())).containsExactly(station1.rawName(), station2.rawName(), station3.rawName());
+        assertThat(response.getName()).isEqualTo(line.name());
+        assertThat(stationResponsesToString(response.getStations())).containsExactly(station1.name(), station2.name(), station3.name());
     }
 
     @Test

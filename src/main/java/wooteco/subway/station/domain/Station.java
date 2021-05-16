@@ -29,12 +29,8 @@ public class Station {
     public Long id() {
         return id;
     }
-
-    public StationName name() {
-        return name;
-    }
-
-    public String rawName() {
+    
+    public String name() {
         return name.name();
     }
 

@@ -22,7 +22,7 @@ class InMemoryStationDaoTest {
         stationDao.save(new Station(1L, name));
         Station station = stationDao.findByName(name).get();
 
-        assertThat(station.rawName()).isEqualTo(name);
+        assertThat(station.name()).isEqualTo(name);
     }
 
     @Test

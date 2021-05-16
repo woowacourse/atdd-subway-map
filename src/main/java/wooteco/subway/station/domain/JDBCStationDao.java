@@ -30,10 +30,10 @@ public class JDBCStationDao implements StationDao {
 
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, station.rawName());
+            ps.setString(1, station.name());
             return ps;
         }, keyHolder);
-        return new Station(keyHolder.getKey().longValue(), station.rawName());
+        return new Station(keyHolder.getKey().longValue(), station.name());
     }
 
     @Override

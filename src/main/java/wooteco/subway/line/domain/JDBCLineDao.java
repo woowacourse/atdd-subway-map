@@ -32,7 +32,7 @@ public class JDBCLineDao implements LineDao {
 
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, line.rawName());
+            ps.setString(1, line.name());
             ps.setString(2, line.color());
             return ps;
         }, keyHolder);
@@ -126,7 +126,7 @@ public class JDBCLineDao implements LineDao {
     public void update(final Line line) {
         String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ? ";
 
-        jdbcTemplate.update(sql, line.rawName(), line.color(), line.id());
+        jdbcTemplate.update(sql, line.name(), line.color(), line.id());
     }
 
     @Override

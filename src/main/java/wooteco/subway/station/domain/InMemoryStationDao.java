@@ -13,7 +13,7 @@ public class InMemoryStationDao implements StationDao {
 
     @Override
     public Station save(final Station station) {
-        if (findByName(station.rawName()).isPresent()) {
+        if (findByName(station.name()).isPresent()) {
             throw new IllegalArgumentException("이미 등록된 역 입니다.");
         }
         Station persistStation = createNewObject(station);

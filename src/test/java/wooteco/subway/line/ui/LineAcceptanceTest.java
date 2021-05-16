@@ -51,7 +51,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         this.station4 = stationDao.save(new Station("검프역"));
         this.line = new Line("백기선", "bg-red-600");
 
-        LineResponse lineResponse = lineService.save(new LineRequest(line.rawName(), line.color(), station1.id(), station2.id(), 7));
+        LineResponse lineResponse = lineService.save(new LineRequest(line.name(), line.color(), station1.id(), station2.id(), 7));
         this.line = new Line(lineResponse.getId(), lineResponse.getName(), lineResponse.getColor());
     }
 
@@ -73,14 +73,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-        assertThat(stationResponsesToStrings(lineResponse.getStations())).containsExactly(station3.rawName(), station4.rawName());
+        assertThat(stationResponsesToStrings(lineResponse.getStations())).containsExactly(station3.name(), station4.name());
     }
 
     @DisplayName("기존에 존재하는 노선의 이름으로 노선을 생성하면 예외가 발생한다.")
     @Test
     void createStationWithDuplicateName() {
         // given
-        String newLineName = line.rawName();
+        String newLineName = line.name();
         String newLineColor = "bg-black-500";
         Long upStationId = 3L;
         Long downStationId = 4L;
@@ -224,7 +224,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station2.rawName(), station3.rawName());
+        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station2.name(), station3.name());
     }
 
     @DisplayName("구간을 제거한다. (중간역)")
@@ -242,7 +242,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.rawName(), station3.rawName());
+        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.name(), station3.name());
     }
 
     @DisplayName("구간을 제거한다. (하행 종점역)")
@@ -260,7 +260,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.rawName(), station2.rawName());
+        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.name(), station2.name());
     }
 
     private static Stream<Arguments> stationIds() {
@@ -343,7 +343,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(findResponse.getId()).isEqualTo(line.id());
-        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station3.rawName(), station1.rawName(), station2.rawName());
+        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station3.name(), station1.name(), station2.name());
     }
 
     @Test
@@ -361,7 +361,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(findResponse.getId()).isEqualTo(line.id());
-        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.rawName(), station2.rawName(), station3.rawName());
+        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.name(), station2.name(), station3.name());
     }
 
     private ExtractableResponse<Response> createLineToHTTP(final LineRequest lineRequest) {
