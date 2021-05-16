@@ -16,7 +16,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineDao;
-import wooteco.subway.line.LineEndPoint;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
@@ -28,16 +27,13 @@ public class SectionDaoTest {
     private JdbcTemplate jdbcTemplate;
 
     private SectionDao sectionDao;
-    private LineDao lineDao;
-    private StationDao stationDao;
-    private SectionService sectionService;
+
 
     @BeforeEach
     void setUp() {
         this.sectionDao = new SectionDao(jdbcTemplate);
-        this.lineDao = new LineDao(jdbcTemplate);
-        this.stationDao = new StationDao(jdbcTemplate);
-        this.sectionService = new SectionService(stationDao, sectionDao);
+        LineDao lineDao = new LineDao(jdbcTemplate);
+        StationDao stationDao = new StationDao(jdbcTemplate);
 
         stationDao.save(new Station("테스트 역1"));
         stationDao.save(new Station("테스트 역2"));
@@ -81,27 +77,27 @@ public class SectionDaoTest {
         System.out.println(stations);
     }
 
-    @DisplayName("종점 찾기 테스트")
-    @Test
-    void findUpAndDownStation() {
-        sectionDao.save(new Section(1L, 2L, 3L, 20));
-        LineEndPoint sectionEndPoint = sectionService.findSectionEndPoint(1L);
-
-        assertThat(sectionEndPoint).isEqualTo(new LineEndPoint(1L, 3L));
-    }
-
-    @DisplayName("구간에 속한 모든 역 찾기 테스트")
-    @Test
-    void findAllStationInSection() {
-        sectionDao.save(new Section(1L, 2L, 3L, 20));
-        List<Station> stations = sectionService.findStationsByLineId(1L);
-
-        assertThat(stations).hasSize(3);
-
-        assertThat(stations.get(0)).isEqualTo(new Station("테스트 역1"));
-        assertThat(stations.get(1)).isEqualTo(new Station("테스트 역2"));
-        assertThat(stations.get(2)).isEqualTo(new Station("테스트 역3"));
-    }
+//    @DisplayName("종점 찾기 테스트")
+//    @Test
+//    void findUpAndDownStation() {
+//        sectionDao.save(new Section(1L, 2L, 3L, 20));
+//        LineEndPoint sectionEndPoint = sectionService.findSectionEndPoint(1L);
+//
+//        assertThat(sectionEndPoint).isEqualTo(new LineEndPoint(1L, 3L));
+//    }
+//
+//    @DisplayName("구간에 속한 모든 역 찾기 테스트")
+//    @Test
+//    void findAllStationInSection() {
+//        sectionDao.save(new Section(1L, 2L, 3L, 20));
+//        List<Station> stations = sectionService.findStationsByLineId(1L);
+//
+//        assertThat(stations).hasSize(3);
+//
+//        assertThat(stations.get(0)).isEqualTo(new Station("테스트 역1"));
+//        assertThat(stations.get(1)).isEqualTo(new Station("테스트 역2"));
+//        assertThat(stations.get(2)).isEqualTo(new Station("테스트 역3"));
+//    }
 
     @DisplayName("구간에 존재하는 역 확인 테스트")
     @Test
