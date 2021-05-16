@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.repository.SectionRepository;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
@@ -8,6 +9,7 @@ import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.SectionResponse;
 
 @Service
+@Transactional(readOnly = true)
 public class SectionService {
     private final SectionRepository sectionRepository;
 
@@ -15,12 +17,14 @@ public class SectionService {
         this.sectionRepository = sectionRepository;
     }
 
+    @Transactional
     public SectionResponse createSection(Long lineId, SectionRequest sectionRequest) {
         Section section = sectionRepository.createSection(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         Long sectionId = sectionRepository.insert(lineId, section);
         return new SectionResponse(sectionId, lineId, section);
     }
 
+    @Transactional
     public SectionResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Section section = sectionRepository.createSection(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         Sections sections = sectionRepository.loadSections(lineId);
@@ -31,6 +35,7 @@ public class SectionService {
         return new SectionResponse(sectionId, lineId, section);
     }
 
+    @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Sections sections = sectionRepository.loadSections(lineId);
         sections.validateIfPossibleToDelete();

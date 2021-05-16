@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.repository.StationRepository;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.StationRequest;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class StationService {
     private final StationRepository stationRepository;
 
@@ -17,6 +19,7 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public StationResponse createStation(StationRequest stationRequest) {
         Station station = stationRequest.createStation();
         long stationId = stationRepository.insertStation(station);
@@ -30,6 +33,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteStation(Long id) {
         stationRepository.deleteStation(id);
     }
