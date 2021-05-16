@@ -26,8 +26,8 @@ public class SectionDao {
         return save(line.getId(), line.getUpStationId(), line.getDownStationId(), distance);
     }
 
-    public Long save(final Long lineId, final Section section) {
-        return save(lineId, section.frontStationId(), section.backStationId(), section.distance());
+    public Long save(final Section section) {
+        return save(section.lineId(), section.frontStationId(), section.backStationId(), section.distance());
     }
 
     public Long save(final Long lineId,

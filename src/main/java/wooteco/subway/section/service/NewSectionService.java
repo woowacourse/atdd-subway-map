@@ -20,10 +20,11 @@ public class NewSectionService implements ISectionService {
         this.lineDao = lineDao;
     }
 
+    // TODO :: Ordered sections만 만들어 준다면 코드가 더 줄겠다.
+
     @Override
     public void addSection(final Long lineId, final Section section) {
         // TODO :: 유효성 검증 :: 존재하는 노선인지
-
         final FinalStations finalStations = lineDao.finalStations(lineId);
 
         if (finalStations.isFinalSection(section)) {
@@ -34,12 +35,15 @@ public class NewSectionService implements ISectionService {
         insertMiddleSection(lineId, section);
     }
 
+    // TODO :: Dao에서 배열로 save, delete해도 될까?
+    // sectionDao.save(sectionsToDelete);
+
     private void insertMiddleSection(final Long lineId, final Section section) {
         final Sections sectionsInLine = new Sections(sectionDao.findSections(lineId));
-        final Section insertingSection = sectionsInLine.findInsertingSection(section);
+        final Section insertingSection = sectionsInLine.findSectionInclude(section);
 
         for(Section sectionToSave : insertingSection.devide(section)){
-            sectionDao.save(lineId, sectionToSave);
+            sectionDao.save(sectionToSave);
         }
         sectionDao.delete(insertingSection);
     }
@@ -47,19 +51,38 @@ public class NewSectionService implements ISectionService {
     private void insertFinalSection(final Long lineId, final Section section){
         final FinalStations finalStations = lineDao.finalStations(lineId);
 
-        sectionDao.save(lineId, section);
+        sectionDao.save(section);
         lineDao.updateFinalStations(lineId, finalStations.addStations(section));
     }
 
     @Override
-    public void addSection(Long lineId, Long front, Long back, int distance) {
-        // TODO :: 변경을 위해 남겨둠
-        addSection(lineId, new Section(front, back, distance));
+    public void deleteSection(final Long lineId, final Long stationId) {
+        // TODO :: 유효성 검증 :: 존재하는 노선인지, 노선 위에 존재하는 역인지
+
+        final Sections sectionsInLine = new Sections(sectionDao.findSections(lineId));
+        final List<Section> sections = sectionsInLine.sectionsIncludeStation(stationId);
+        final FinalStations finalStations = lineDao.finalStations(lineId);
+
+        if(finalStations.isFinalStation(stationId)){
+            final Section sectionToDelete = sections.get(0);
+            final FinalStations newFinalStations = finalStations.change(sectionToDelete.getOther(stationId), stationId);
+            deleteFinalSection(lineId, sectionToDelete, newFinalStations);
+            return;
+        }
+
+        deleteMiddleSection(sections.get(0), sections.get(1));
     }
 
-    @Override
-    public void deleteSection(Long lineId, Long stationId) {
+    private void deleteFinalSection(final Long lineId, final Section section, final FinalStations finalStations) {
+        lineDao.updateFinalStations(lineId, finalStations);
+        sectionDao.delete(section);
+    }
 
+    // TODO :: 변수명 질문하기, section1, section2 이런식으로 변수명을 쓰기도 하나
+    private void deleteMiddleSection(final Section section1, final Section section2) {
+        sectionDao.delete(section1);
+        sectionDao.delete(section2);
+        sectionDao.save(section1.combine(section2));
     }
 
     public List<Long> orders(final Long lineId) {
@@ -74,5 +97,11 @@ public class NewSectionService implements ISectionService {
         }
         stations.add(frontStationId);
         return stations;
+    }
+
+    @Override
+    public void addSection(Long lineId, Long front, Long back, int distance) {
+        // TODO :: 변경을 위해 남겨둠
+        addSection(lineId, new Section(front, back, distance));
     }
 }
