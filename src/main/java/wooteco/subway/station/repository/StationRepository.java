@@ -13,6 +13,8 @@ public interface StationRepository {
 
     Optional<Station> findByName(String name);
 
+    List<Station> findByIds(List<Long> ids);
+
     List<Station> findAll();
 
     void delete(Long id);

@@ -13,6 +13,8 @@ public interface LineRepository {
 
     Optional<Line> findById(Long id);
 
+    Optional<Line> findLineSectionById(Long id);
+
     Optional<Line> findByName(String name);
 
     void delete(Long id);

@@ -50,7 +50,7 @@ public class LineController {
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
         LineDto lineDto = lineService.findById(id);
         LineResponse lineResponse = new LineResponse(lineDto.getId(), lineDto.getName(), lineDto.getColor(),
-                new ArrayList<>());
+                lineDto.getStations());
         return ResponseEntity.ok().body(lineResponse);
     }
 

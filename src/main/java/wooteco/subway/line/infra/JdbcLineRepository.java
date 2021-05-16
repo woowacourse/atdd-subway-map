@@ -10,8 +10,12 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.repository.LineRepository;
+import wooteco.subway.line.domain.section.Distance;
+import wooteco.subway.line.domain.section.Section;
+import wooteco.subway.line.domain.section.Sections;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +37,7 @@ public class JdbcLineRepository implements LineRepository {
     @Override
     public Line save(final Line line) {
         try {
+            System.out.println(line);
             String query = "INSERT INTO line(name, color) VALUES(?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             this.jdbcTemplate.update(connection -> {
@@ -55,6 +60,35 @@ public class JdbcLineRepository implements LineRepository {
         } catch (DataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public Optional<Line> findLineSectionById(Long id) {
+        try {
+            String query = "SELECT * FROM line AS l JOIN section AS s ON l.id = s.line_id WHERE l.id = ?";
+            return Optional.ofNullable(this.jdbcTemplate.queryForObject(query, lineSectionMapper(), id));
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    private RowMapper<Line> lineSectionMapper() {
+        return (resultSet, rowNum) -> {
+            Long id = resultSet.getLong("id");
+            String name = resultSet.getString("name");
+            String color = resultSet.getString("color");
+            List<Section> sectionList = new ArrayList<>();
+            do {
+                sectionList.add(new Section(
+                        resultSet.getLong("id"),
+                        id,
+                        resultSet.getLong("up_station_id"),
+                        resultSet.getLong("down_station_id"),
+                        new Distance(resultSet.getInt("distance"))
+                ));
+            } while (resultSet.next());
+            return new Line(id, name, color, new Sections(sectionList));
+        };
     }
 
     @Override

@@ -1,6 +1,11 @@
 package wooteco.subway.line.domain;
 
+import wooteco.subway.line.domain.section.Section;
 import wooteco.subway.line.domain.section.Sections;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Line {
     private final Long id;
@@ -33,6 +38,14 @@ public class Line {
 
     public Line update(final String name, final String color) {
         return new Line(this.id, name, color);
+    }
+
+    public List<Long> sortingSectionIds() {
+        List<Section> sortSection = sections.sortSection();
+        return sortSection.stream()
+                .flatMap(section -> Stream.of(section.getUpStationId(), section.getDownStationId()))
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public Long getId() {

@@ -13,6 +13,7 @@ import wooteco.subway.station.repository.StationRepository;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class JdbcStationRepository implements StationRepository {
@@ -54,6 +55,15 @@ public class JdbcStationRepository implements StationRepository {
     public Optional<Station> findByName(final String name) {
         String query = "SELECT * FROM station WHERE name = ?";
         return Optional.ofNullable(jdbcTemplate.queryForObject(query, stationRowMapper, name));
+    }
+
+    @Override
+    public List<Station> findByIds(List<Long> ids) {
+        String parseIds = ids.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+        String query = String.format("SELECT * FROM station WHERE id IN (%s)", parseIds);
+        return jdbcTemplate.query(query, stationRowMapper);
     }
 
     @Override

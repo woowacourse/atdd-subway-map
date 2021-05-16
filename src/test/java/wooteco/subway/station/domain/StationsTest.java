@@ -37,16 +37,25 @@ class StationsTest {
         assertThat(stations).isInstanceOf(Stations.class);
     }
 
-    @DisplayName("지하철 역들 중에 인자로 넣는 ID 가 존재하는지 확인한다.")
+    @DisplayName("정렬된 역들의 Id를 활용해서 정렬한다.")
     @Test
-    void containsId() {
+    void sortStationsByIds() {
         //given
-        Long stationId = 1L;
+        Stations stations = new Stations(Arrays.asList(
+                new Station(4L, "네 번째 역 이름"),
+                new Station(1L, "첫 번째 역 이름"),
+                new Station(2L, "두 번째 역 이름"),
+                new Station(3L, "세 번째 역 이름")
+        ));
+        List<Long> sortIds = Arrays.asList(1L, 2L, 3L, 4L);
 
         //when
-        boolean 참이_나와야하는_결과 = stationList.contains(stationId);
+        Stations sortedStations = stations.sortStationsByIds(sortIds);
 
         //then
-        assertThat(참이_나와야하는_결과).isTrue();
+        assertThat(sortedStations.toList()).containsExactly(new Station(1L, "첫 번째 역 이름"),
+                new Station(2L, "두 번째 역 이름"),
+                new Station(3L, "세 번째 역 이름"),
+                new Station(4L, "네 번째 역 이름"));
     }
 }

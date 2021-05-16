@@ -1,7 +1,6 @@
 package wooteco.subway.line.domain.section;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -137,6 +136,24 @@ public class Sections {
                 .flatMap(section -> Stream.of(section.getUpStationId(), section.getDownStationId()))
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public List<Section> sortSection() {
+        Map<Long, Section> upStationIdMap = sections.stream()
+                .collect(Collectors.toMap(Section::getUpStationId, section -> section));
+
+        Deque<Section> sectionDeque = new ArrayDeque<>();
+        sectionDeque.add(sections.get(0));
+        while (upStationIdMap.containsKey(sectionDeque.peekLast().getDownStationId())) {
+            sectionDeque.addLast(upStationIdMap.get(sectionDeque.peekLast().getDownStationId()));
+        }
+
+        Map<Long, Section> downStationIdMap = sections.stream()
+                .collect(Collectors.toMap(Section::getDownStationId, section -> section));
+        while (downStationIdMap.containsKey(sectionDeque.peekFirst().getUpStationId())) {
+            sectionDeque.addFirst(downStationIdMap.get(sectionDeque.peekFirst().getUpStationId()));
+        }
+        return new ArrayList<>(sectionDeque);
     }
 
     public List<Section> toList() {
