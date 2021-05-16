@@ -1,5 +1,6 @@
 package wooteco.subway.service.dto;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -16,7 +17,7 @@ public class CreateLineDto {
     private final Long upStationId;
     @NotNull
     private final Long downStationId;
-    @NotNull
+    @Min(1)
     private final int distance;
 
     public CreateLineDto(String name, String color, Long upStationId, Long downStationId,

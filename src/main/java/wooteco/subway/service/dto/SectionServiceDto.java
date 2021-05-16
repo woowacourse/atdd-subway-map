@@ -1,5 +1,6 @@
 package wooteco.subway.service.dto;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
@@ -13,7 +14,7 @@ public class SectionServiceDto {
     private final Long upStationId;
     @NotNull
     private final Long downStationId;
-    @NotNull
+    @Min(1)
     private final int distance;
 
     public SectionServiceDto(Long lineId, Long upStationId, Long downStationId, int distance) {
