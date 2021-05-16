@@ -3,9 +3,13 @@ package wooteco.subway.line;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.domain.*;
+import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.exception.line.LineDuplicatedInformationException;
 import wooteco.subway.exception.line.LineNotFoundException;
+import wooteco.subway.exception.line.StationUpAndDownDuplicatedException;
 import wooteco.subway.line.dao.JdbcLineDao;
 import wooteco.subway.line.web.LineRequest;
 import wooteco.subway.line.web.LineResponse;
@@ -51,11 +55,13 @@ public class LineService {
         String name = lineRequest.getName();
         String color = lineRequest.getColor();
         int distance = lineRequest.getDistance();
+        Long upStationId = lineRequest.getUpStationId();
+        Long downStationId = lineRequest.getDownStationId();
 
-        validateExistInfo(name, color);
+        validateLineRequest(name, color, upStationId, downStationId);
 
-        Station upStation = stationService.findById(lineRequest.getUpStationId());
-        Station downStation = stationService.findById(lineRequest.getDownStationId());
+        Station upStation = stationService.findById(upStationId);
+        Station downStation = stationService.findById(downStationId);
         Line line = lineDao.create(Line.create(name, color));
         Section section = Section.create(upStation, downStation, distance);
         sectionService.createInitial(section, line.getId());
@@ -64,9 +70,13 @@ public class LineService {
         return LineResponse.create(line);
     }
 
-    private void validateExistInfo(String name, String color) {
+    private void validateLineRequest(String name, String color, Long upStationId, Long downStationId) {
         if (lineDao.existByInfo(name, color)) {
             throw new LineDuplicatedInformationException();
+        }
+
+        if (upStationId.equals(downStationId)) {
+            throw new StationUpAndDownDuplicatedException();
         }
     }
 

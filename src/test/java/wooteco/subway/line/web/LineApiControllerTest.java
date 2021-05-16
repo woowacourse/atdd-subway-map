@@ -140,7 +140,7 @@ class LineApiControllerTest extends AcceptanceTest {
 
         // then
         assertThat(result.statusCode()).isEqualTo(BAD_REQUEST);
-        assertThat(result.body().asString()).isEqualTo("필수값이 잘못 되었습니다.");
+        assertThat(result.body().asString()).isEqualTo("상하행역이 같습니다.");
     }
 
     @Test

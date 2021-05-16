@@ -27,7 +27,7 @@
 - [x] 내부로직 예외: 500번대
 - [ ] Dao: 인터페이스 분리
 - [x] Service: 메소드명 ~~ById, dto 생성도 서비스로
-- [ ] 중복역 체크는 비즈니스로직으로 Service 레이어로 이동
+- [x] 중복역 체크는 비즈니스로직으로 Service 레이어로 이동
 
 ### 적용에 질문 있는 내용
 - Sections: Arrays.asList

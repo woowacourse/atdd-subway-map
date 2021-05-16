@@ -3,7 +3,6 @@ package wooteco.subway.line.web;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.exception.line.LineInsufficientRequestException;
 import wooteco.subway.line.LineService;
@@ -17,12 +16,6 @@ import java.util.List;
 @RequestMapping("/lines")
 public class LineApiController {
     private final LineService lineService;
-
-    @InitBinder("lineRequest")
-    private void initBind(WebDataBinder webDataBinder) {
-        webDataBinder.addValidators(new LineValidator());
-    }
-
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showAll() {
