@@ -91,6 +91,11 @@ class SectionServiceTest {
     public void addFinalSectionFromFront() {
         sectionService.addSection(testLine.getId(), aStation.getId(), bStation.getId(), insertDistance.value());
 
+        List<Long> longs = lineService.allStationIdInLine(testLine);
+        for(Long l : longs){
+            System.out.println(l);
+        }
+
         validateStationOrder(aStation, bStation, dStation);
         validateStationDistance(aStation, bStation, insertDistance);
         validateStationDistance(bStation, dStation, initialDistance);
@@ -121,6 +126,11 @@ class SectionServiceTest {
     public void deleteFrontStationInLine() {
         sectionService.addSection(testLine.getId(), cStation.getId(), dStation.getId(), insertDistance.value());
         sectionService.deleteSection(testLine.getId(), bStation.getId());
+
+        List<Long> longs = lineService.allStationIdInLine(testLine);
+        for(Long l : longs){
+            System.out.println(l);
+        }
 
         validateStationOrder(cStation, dStation);
         validateStationDistance(cStation, dStation, insertDistance);
@@ -191,6 +201,7 @@ class SectionServiceTest {
 
         int index = 0;
         for (final StationResponse station : expectOrders) {
+            System.out.println(station.getName() + station.getId());
             assertThat(stations.get(index++)).isEqualTo(station.getId());
         }
 

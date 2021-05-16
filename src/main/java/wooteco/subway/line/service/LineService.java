@@ -81,15 +81,6 @@ public class LineService {
     }
 
     private List<Long> backStations(Long lineId, Long frontStationId, Long downStationId) {
-        final List<Long> stations = new LinkedList<>();
-
-        while (!frontStationId.equals(downStationId)) {
-            stations.add(frontStationId);
-            Section next = sectionDao.findSectionByFrontStation(lineId, frontStationId);
-            frontStationId = next.back();
-        }
-        stations.add(frontStationId);
-
-        return stations;
+        return getLongs(lineId, frontStationId, downStationId, sectionDao);
     }
 }

@@ -11,7 +11,7 @@ import wooteco.subway.section.domain.Section;
 
 @Service
 @Transactional
-public class SectionService {
+public class SectionService implements ISectionService {
     private static final int LIMIT_NUMBER_OF_STATION_IN_LINE = 2;
 
     private final SectionDao sectionDao;
@@ -23,7 +23,7 @@ public class SectionService {
     }
 
     public void addSection(final Long lineId, final Section section) {
-        addSection(lineId, section.front(), section.back(), section.distance());
+        addSection(lineId, section.frontStationId(), section.backStationId(), section.distance());
     }
 
     public void addSection(final Long lineId, final Long front, final Long back, final int distance) {
@@ -71,8 +71,8 @@ public class SectionService {
         final Section sectionToUpdate = sectionDao.findSectionByFrontStation(lineId, front);
         final Distance subDistance = new Distance(sectionToUpdate.distance()).sub(distance);
 
-        sectionDao.deleteSection(sectionToUpdate);
-        sectionDao.save(lineId, back, sectionToUpdate.back(), subDistance.value());
+        sectionDao.delete(sectionToUpdate);
+        sectionDao.save(lineId, back, sectionToUpdate.backStationId(), subDistance.value());
         sectionDao.save(lineId, front, back, distance);
     }
 
@@ -80,8 +80,8 @@ public class SectionService {
         final Section sectionToUpdate = sectionDao.findSectionByBackStation(lineId, back);
         final Distance subDistance = new Distance(sectionToUpdate.distance()).sub(distance);
 
-        sectionDao.deleteSection(sectionToUpdate);
-        sectionDao.save(lineId, sectionToUpdate.front(), front, subDistance.value());
+        sectionDao.delete(sectionToUpdate);
+        sectionDao.save(lineId, sectionToUpdate.frontStationId(), front, subDistance.value());
         sectionDao.save(lineId, front, back, distance);
     }
 
@@ -102,24 +102,24 @@ public class SectionService {
         final Section backSection = sectionDao.findSectionByFrontStation(lineId, stationId);
         final Distance sumDistance = new Distance(frontSection.distance() + backSection.distance());
 
-        sectionDao.deleteSection(frontSection);
-        sectionDao.deleteSection(backSection);
-        sectionDao.save(lineId, frontSection.front(), backSection.back(), sumDistance.value());
+        sectionDao.delete(frontSection);
+        sectionDao.delete(backSection);
+        sectionDao.save(lineId, frontSection.frontStationId(), backSection.backStationId(), sumDistance.value());
     }
 
     private void deleteDownStation(final Long lineId, final Long stationId) {
         if (lineDao.isDownStation(lineId, stationId)) {
             Section sectionToDelete = sectionDao.findSectionByBackStation(lineId, stationId);
-            lineDao.updateFinalStations(lineId, lineDao.findUpStationId(lineId), sectionToDelete.front());
-            sectionDao.deleteSection(sectionToDelete);
+            lineDao.updateFinalStations(lineId, lineDao.findUpStationId(lineId), sectionToDelete.frontStationId());
+            sectionDao.delete(sectionToDelete);
         }
     }
 
     private void deleteUpStation(final Long lineId, final Long stationId) {
         if (lineDao.isUpStation(lineId, stationId)) {
             Section sectionToDelete = sectionDao.findSectionByFrontStation(lineId, stationId);
-            lineDao.updateFinalStations(lineId, sectionToDelete.back(), lineDao.findDownStationId(lineId));
-            sectionDao.deleteSection(sectionToDelete);
+            lineDao.updateFinalStations(lineId, sectionToDelete.backStationId(), lineDao.findDownStationId(lineId));
+            sectionDao.delete(sectionToDelete);
         }
     }
 

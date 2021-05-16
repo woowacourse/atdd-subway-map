@@ -10,6 +10,7 @@ import wooteco.subway.line.exception.LineException;
 import wooteco.subway.section.domain.Section;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 
 @Repository
 public class SectionDao {
@@ -23,6 +24,10 @@ public class SectionDao {
 
     public Long save(final Line line, final int distance) {
         return save(line.getId(), line.getUpStationId(), line.getDownStationId(), distance);
+    }
+
+    public Long save(final Long lineId, final Section section) {
+        return save(lineId, section.frontStationId(), section.backStationId(), section.distance());
     }
 
     public Long save(final Long lineId,
@@ -82,7 +87,7 @@ public class SectionDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId);
     }
 
-    public void deleteSection(final Section section) {
+    public void delete(final Section section) {
         final String sql = "DELETE FROM SECTION WHERE id = ?";
         jdbcTemplate.update(sql, section.id());
     }
@@ -110,5 +115,10 @@ public class SectionDao {
                 rs.getLong("back_station_id"),
                 rs.getInt("distance")
         );
+    }
+
+    public List<Section> findSections(final Long lineId) {
+        final String sql = "SELECT * FROM SECTION line_id = ?";
+        return jdbcTemplate.query(sql, rowMapper(), lineId);
     }
 }
