@@ -4,16 +4,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.LineNotFoundException;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.repository.LineRepository;
-import wooteco.subway.line.service.dto.LineDto;
-import wooteco.subway.line.service.dto.LineSaveDto;
+import wooteco.subway.line.domain.repository.LineRepository;
+import wooteco.subway.line.service.dto.line.LineDto;
+import wooteco.subway.line.service.dto.line.LineSaveDto;
 import wooteco.subway.line.domain.section.Distance;
 import wooteco.subway.line.domain.section.Section;
-import wooteco.subway.line.repository.SectionRepository;
+import wooteco.subway.line.domain.repository.SectionRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +27,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineDto saveLineAndSection(final LineSaveDto lineSaveDto) {
+    public LineDto saveLine(final LineSaveDto lineSaveDto) {
         Line savedLine = lineRepository.save(new Line(lineSaveDto.getName(), lineSaveDto.getColor()));
         sectionRepository.save(new Section(savedLine.getId(), lineSaveDto.getUpStationId(),
                 lineSaveDto.getDownStationId(), new Distance(lineSaveDto.getDistance())));
@@ -44,15 +43,13 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineDto findById(final Long id) {
-        Optional<Line> optionalLine = lineRepository.findById(id);
-        Line line = optionalLine.orElseThrow(LineNotFoundException::new);
+        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
         return LineDto.from(line);
     }
 
     @Transactional
     public void delete(final Long id) {
-        Optional<Line> optionalLine = lineRepository.findById(id);
-        optionalLine.orElseThrow(LineNotFoundException::new);
+        lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
         lineRepository.delete(id);
     }
 

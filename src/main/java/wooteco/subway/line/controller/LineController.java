@@ -5,9 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.controller.dto.LineRequest;
 import wooteco.subway.line.controller.dto.LineResponse;
-import wooteco.subway.line.repository.dto.LineDto;
+import wooteco.subway.line.service.dto.line.LineDto;
 import wooteco.subway.line.service.LineService;
-import wooteco.subway.line.service.dto.LineSaveDto;
+import wooteco.subway.line.service.dto.line.LineSaveDto;
+import wooteco.subway.line.controller.dto.SectionRequest;
+import wooteco.subway.line.service.SectionService;
+import wooteco.subway.line.service.dto.section.SectionSaveDto;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -19,16 +22,18 @@ import java.util.stream.Collectors;
 public class LineController {
 
     private final LineService lineService;
+    private final SectionService sectionService;
     private final ModelMapper modelMapper;
 
-    public LineController(LineService lineService, ModelMapper modelMapper) {
+    public LineController(LineService lineService, SectionService sectionService, ModelMapper modelMapper) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
         this.modelMapper = modelMapper;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
-        LineDto newLine = lineService.saveLineAndSection(modelMapper.map(lineRequest, LineSaveDto.class));
+        LineDto newLine = lineService.saveLine(modelMapper.map(lineRequest, LineSaveDto.class));
         LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
@@ -60,5 +65,11 @@ public class LineController {
         LineDto lineDto = new LineDto(id, lineRequest.getName(), lineRequest.getColor(), new ArrayList<>());
         lineService.update(lineDto);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity<Void> createSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        sectionService.addSection(lineId, modelMapper.map(sectionRequest, SectionSaveDto.class));
+        return ResponseEntity.noContent().build();
     }
 }

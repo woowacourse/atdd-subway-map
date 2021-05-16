@@ -1,4 +1,4 @@
-package wooteco.subway.line.repository.infra;
+package wooteco.subway.line.infra;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
@@ -9,7 +9,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.repository.LineRepository;
+import wooteco.subway.line.domain.repository.LineRepository;
 
 import java.sql.PreparedStatement;
 import java.util.List;

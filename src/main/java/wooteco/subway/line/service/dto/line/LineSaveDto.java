@@ -1,17 +1,38 @@
-package wooteco.subway.line.service.dto;
+package wooteco.subway.line.service.dto.line;
 
-public class SectionSaveDto {
+public class LineSaveDto {
+
+    private String name;
+    private String color;
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
-    public SectionSaveDto() {
+    public LineSaveDto() {
     }
 
-    public SectionSaveDto(Long upStationId, Long downStationId, int distance) {
+    public LineSaveDto(final String name, final String color, final Long upStationId, final Long downStationId, final int distance) {
+        this.name = name;
+        this.color = color;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public Long getUpStationId() {
