@@ -1,5 +1,6 @@
 package wooteco.subway.line.domain;
 
+import wooteco.subway.line.exception.LineException;
 import wooteco.subway.section.domain.Section;
 
 public class FinalStations {
@@ -41,5 +42,17 @@ public class FinalStations {
 
     public boolean isFinalSection(final Long frontStationId, final Long backStationId) {
         return this.upStationId.equals(backStationId) != this.downStationId.equals(frontStationId);
+    }
+
+    public FinalStations changeFinalStation(final Section section, final Long stationId) {
+        if(upStationId.equals(stationId)){
+            return new FinalStations(section.backStationId(), downStationId);
+        }
+
+        if(downStationId.equals(stationId)){
+            return new FinalStations(upStationId, section.frontStationId());
+        }
+
+        throw new LineException("적절하지 않은 구간 삭제입니다.");
     }
 }

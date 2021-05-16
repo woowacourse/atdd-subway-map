@@ -1,7 +1,9 @@
 package wooteco.subway.section.domain;
 
 import wooteco.subway.line.exception.LineException;
+import wooteco.subway.station.domain.Station;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,6 +34,21 @@ public class Section {
         this(null, null, frontStationId, backStationId, distance);
     }
 
+    // TODO :: 변수명 질문하기
+    public static Section combine(final Section section1, final Section section2) {
+        if(section1.isBackStationId(section2.frontStationId)) {
+            final int distance = section1.distance + section2.distance;
+            return new Section(section1.lineId, section1.frontStationId, section2.backStationId, distance);
+        }
+
+        if(section2.isBackStationId(section1.frontStationId)) {
+            final int distance = section1.distance + section2.distance;
+            return new Section(section2.lineId, section2.frontStationId, section1.backStationId, distance);
+        }
+
+        throw new LineException("두 구간에 중복되는 역이 없습니다.");
+    }
+
     public boolean isSameFrontStation(final Section section) {
         return frontStationId.equals(section.frontStationId);
     }
@@ -50,20 +67,23 @@ public class Section {
 
     // TODO :: Sections와 합칠 수 있지 않을까
     public List<Section> devide(final Section section) {
-        final List<Section> sections = new LinkedList<>();
-        sections.add(section);
+        final List<Section> sections = Arrays.asList(section);
 
-        if (isFrontStationId(section.frontStationId())) {
+        if (isSameFrontStation(section)) {
             sections.add(new Section(lineId, section.backStationId(), backStationId, distance - section.distance()));
             return sections;
         }
 
-        if (isBackStationId(section.frontStationId())) {
+        if (isSameBackStation(section)) {
             sections.add(new Section(lineId, frontStationId, section.frontStationId(), distance - section.distance()));
             return sections;
         }
 
         throw new LineException("올바른 구간이 아닙니다.");
+    }
+
+    public boolean isIncludeStation(final Long stationId){
+        return frontStationId.equals(stationId) || backStationId.equals(stationId);
     }
 
     public Long frontStationId() {
@@ -76,6 +96,10 @@ public class Section {
 
     public int distance() {
         return distance;
+    }
+
+    public Long lineId() {
+        return lineId;
     }
 
     public Long id() {
