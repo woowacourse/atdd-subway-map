@@ -1,6 +1,6 @@
 package wooteco.subway.controller.request;
 
-import wooteco.subway.domain.InsertSection;
+import wooteco.subway.domain.Section;
 
 import javax.validation.constraints.NotNull;
 
@@ -33,7 +33,7 @@ public class SectionInsertRequest {
         return distance;
     }
 
-    public InsertSection toSimpleSection() {
-        return new InsertSection(upStationId, downStationId, distance);
+    public Section toSectionWithLineId(Long lineId) {
+        return new Section(lineId, upStationId, downStationId, distance);
     }
 }

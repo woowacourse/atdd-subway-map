@@ -41,8 +41,8 @@ public class SubwayFacade {
 
     public void insertSectionInLine(Long id, SectionInsertRequest sectionInsertRequest) {
         lineService.checkIfExistsById(id);
-        sectionService.validateCanBeInserted(id, sectionInsertRequest.toSimpleSection());
-        sectionService.insertSections(id, sectionInsertRequest.toSimpleSection());
+        sectionService.validateCanBeInserted(sectionInsertRequest.toSectionWithLineId(id));
+        sectionService.insertSections(sectionInsertRequest.toSectionWithLineId(id));
     }
 
     public void deleteLine(Long id) {

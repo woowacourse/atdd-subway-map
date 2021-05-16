@@ -15,12 +15,16 @@ public class Distance {
         return Math.min(distance, comparedDistance.distance);
     }
 
-    public boolean isLongerDistanceThan(InsertSection section) {
+    public boolean isLongerDistanceThan(Section section) {
         return distance > section.getDistance();
     }
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean isMoreThanZero() {
+        return distance > 0;
     }
 
     @Override

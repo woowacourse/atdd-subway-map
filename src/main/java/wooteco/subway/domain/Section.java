@@ -13,10 +13,6 @@ public class Section {
 
     }
 
-    public Section(Long lineId, InsertSection section) {
-        this(lineId, section.getUpStationId(), section.getDownStationId(), new Distance(section.getDistance()));
-    }
-
     public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
         this(lineId, upStationId, downStationId, new Distance(distance));
     }
@@ -64,23 +60,23 @@ public class Section {
         return distance.getDistance();
     }
 
-    public boolean isEqualUpStationId(InsertSection section) {
+    public boolean isEqualUpStationId(Section section) {
         return upStationId.equals(section.getUpStationId());
     }
 
-    public boolean isLongerDistanceThan(InsertSection section) {
+    public boolean isLongerDistanceThan(Section section) {
         return distance.isLongerDistanceThan(section);
     }
 
-    public int calculateMaxDistance(InsertSection insertSection) {
+    public int calculateMaxDistance(Section insertSection) {
         return distance.calculateMax(new Distance(insertSection.getDistance()));
     }
 
-    public int calculateMinDistance(InsertSection insertSection) {
+    public int calculateMinDistance(Section insertSection) {
         return distance.calculateMin(new Distance(insertSection.getDistance()));
     }
 
-    public Section makeSectionsToStraight(Long lineId, InsertSection insertSection) {
+    public Section makeSectionsToStraight(Section insertSection) {
         validateCanBeInsertedByDistance(insertSection);
         if (isEqualUpStationId(insertSection)) {
             return new Section(
@@ -101,15 +97,23 @@ public class Section {
         );
     }
 
-    private void validateCanBeInsertedByDistance(InsertSection insertSection) {
+    private void validateCanBeInsertedByDistance(Section insertSection) {
         if (!isLongerDistanceThan(insertSection)) {
             throw new SectionDistanceMismatchException();
         }
     }
 
-    public int updateDistance(Section section, InsertSection insertSection) {
+    public int updateDistance(Section section, Section insertSection) {
         final int maxDistance = section.calculateMaxDistance(insertSection);
         final int minDistance = section.calculateMinDistance(insertSection);
         return maxDistance - minDistance;
+    }
+
+    public boolean isSameBetweenUpAndDownStation() {
+        return upStationId.equals(downStationId);
+    }
+
+    public boolean isDistanceMoreThanZero() {
+        return distance.isMoreThanZero();
     }
 }

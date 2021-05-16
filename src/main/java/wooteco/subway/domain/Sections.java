@@ -23,11 +23,11 @@ public class Sections {
         return sections.get(index);
     }
 
-    public InsertSection updateSectionToOneLine() {
+    public Section updateSectionToOneLine(Long lineId) {
         final int updatedDistance = sections.stream().mapToInt(Section::getDistance).sum();
         final Long upStationId = sections.get(0).getUpStationId();
         final Long downStationId = sections.get(1).getDownStationId();
-        return new InsertSection(upStationId, downStationId, updatedDistance);
+        return new Section(lineId, upStationId, downStationId, updatedDistance);
     }
 
     public List<StationId> sortSectionsByOrder() {
