@@ -1,5 +1,7 @@
 package wooteco.subway.line.domain;
 
+import java.util.Objects;
+
 public class Section {
 
     public static final String ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE = "구간의 길이가 기존 구간 길이보다 크거나 같을 수 없습니다.";
@@ -56,12 +58,15 @@ public class Section {
     }
 
     @Override
-    public int hashCode() {
-        return super.hashCode();
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final Section section = (Section) o;
+        return distance == section.distance && Objects.equals(upStationId, section.upStationId) && Objects.equals(downStationId, section.downStationId);
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        return super.equals(obj);
+    public int hashCode() {
+        return Objects.hash(upStationId, downStationId, distance);
     }
 }

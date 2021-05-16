@@ -32,6 +32,13 @@ public class Sections {
         }
     }
 
+    public boolean checkEndPoint(Section section) {
+        Section upSection = sections.get(0);
+        Section downSection = sections.get(sections.size() - 1);
+        return section.getDownStationId().equals(upSection.getUpStationId())
+                || section.getUpStationId().equals(downSection.getDownStationId());
+    }
+
     public Section findDeleteByAdding(Section newSection, List<FindSectionRule> findSectionRules) {
         for (FindSectionRule rule : findSectionRules) {
             Optional<Section> section = rule.findSection(this, newSection);
@@ -43,22 +50,29 @@ public class Sections {
         throw new IllegalArgumentException(ERROR_SECTION_HAVE_TO_ONE_STATION_IN_LINE);
     }
 
-    public boolean checkEndPoint(Section section) {
-        Section upSection = sections.get(0);
-        Section downSection = sections.get(sections.size() - 1);
-        return section.getDownStationId().equals(upSection.getUpStationId())
-                || section.getUpStationId().equals(downSection.getDownStationId());
-    }
-
-    public int sumSectionDistance() {
-        return sections.stream().mapToInt(Section::getDistance).sum();
-    }
-
     private boolean hasStation(Long stationId) {
         return sections.stream()
                 .filter(section -> section.getUpStationId().equals(stationId)
                         || section.getDownStationId().equals(stationId))
                 .count() >= 1;
+    }
+
+    public List<Section> deleteSection(final Long stationId) {
+        if (sections.size() == 1) {
+            throw  new IllegalArgumentException("삭제 할 수 없습니다. 현재 구간이 1개 입니다.");
+        }
+
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(stationId)
+                        || section.getDownStationId().equals(stationId))
+                .collect(Collectors.toList());
+    }
+
+    public Section generateUpdateWhenDelete(final List<Section> deleteSections) {
+        Section firstSection = deleteSections.get(0);
+        Section secondSection = deleteSections.get(1);
+
+        return getUpdateSectionWhenDelete(firstSection, secondSection);
     }
 
     private LinkedList<Section> sort(List<Section> sections) {
@@ -104,24 +118,6 @@ public class Sections {
         return sections.stream()
                 .map(Section::getDownStationId)
                 .collect(Collectors.toList());
-    }
-
-    public List<Section> deleteSection(final Long stationId) {
-        if (sections.size() == 1) {
-            throw  new IllegalArgumentException("삭제 할 수 없습니다. 현재 구간이 1개 입니다.");
-        }
-
-        return sections.stream()
-                .filter(section -> section.getUpStationId().equals(stationId)
-                        || section.getDownStationId().equals(stationId))
-                .collect(Collectors.toList());
-    }
-
-    public Section generateUpdateWhenDelete(final List<Section> deleteSections) {
-        Section firstSection = deleteSections.get(0);
-        Section secondSection = deleteSections.get(1);
-
-        return getUpdateSectionWhenDelete(firstSection, secondSection);
     }
 
     private Section getUpdateSectionWhenDelete(Section first, Section second) {
