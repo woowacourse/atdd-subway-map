@@ -33,10 +33,10 @@ public class SectionServiceDto {
     public static SectionServiceDto from(final Section section) {
         return new SectionServiceDto(
             section.getId(),
-            section.getLineId(),
-            section.getUpStationId(),
-            section.getDownStationId(),
-            section.getDistance()
+            section.getLine().getId(),
+            section.getUpStation().getId(),
+            section.getDownStation().getId(),
+            section.getDistance().getValue()
         );
     }
 
@@ -48,10 +48,6 @@ public class SectionServiceDto {
     public static SectionServiceDto from(CreateSectionDto dto) {
         return new SectionServiceDto(dto.getLineId(), dto.getUpStationId(), dto.getDownStationId(),
             dto.getDistance());
-    }
-
-    public Section toEntity() {
-        return new Section(lineId, upStationId, downStationId, distance);
     }
 
     public Long getId() {

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import wooteco.subway.exception.section.InvalidSectionOnLineException;
 import wooteco.subway.exception.station.NotFoundStationException;
+import wooteco.subway.station.Station;
 
 public class Sections {
 
@@ -21,8 +22,8 @@ public class Sections {
     public boolean isBothEndSection(final Section section) {
         Deque<Long> ids = sortedStationIds();
 
-        return Objects.equals(ids.peekFirst(), section.getDownStationId())
-            || Objects.equals(ids.peekLast(), section.getUpStationId());
+        return Objects.equals(ids.peekFirst(), section.getDownStation().getId())
+            || Objects.equals(ids.peekLast(), section.getUpStation().getId());
     }
 
     public boolean isBothEndStation(final Long stationId) {
@@ -43,13 +44,13 @@ public class Sections {
     private void initStationIds(Deque<Long> stationIds, Map<Long, Long> upStationIds,
         Map<Long, Long> downStationIds) {
         for (Section section : sections) {
-            upStationIds.put(section.getUpStationId(), section.getDownStationId());
-            downStationIds.put(section.getDownStationId(), section.getUpStationId());
+            upStationIds.put(section.getUpStation().getId(), section.getDownStation().getId());
+            downStationIds.put(section.getDownStation().getId(), section.getUpStation().getId());
         }
 
         Section section = sections.get(0);
-        stationIds.addFirst(section.getUpStationId());
-        stationIds.addLast(section.getDownStationId());
+        stationIds.addFirst(section.getUpStation().getId());
+        stationIds.addLast(section.getDownStation().getId());
     }
 
     private void sortStationsById(Deque<Long> stationIds, Map<Long, Long> upStationIds, Map<Long, Long> downStationIds) {
@@ -65,8 +66,8 @@ public class Sections {
     }
 
     public void insertAvailable(final Section section) {
-        boolean isUpStationExisted = isNotExistOnLine(section.getUpStationId());
-        boolean isDownStationExisted = isNotExistOnLine(section.getDownStationId());
+        boolean isUpStationExisted = isNotExistOnLine(section.getUpStation());
+        boolean isDownStationExisted = isNotExistOnLine(section.getDownStation());
 
         if (isUpStationExisted == isDownStationExisted) {
             throw new InvalidSectionOnLineException();
@@ -79,17 +80,17 @@ public class Sections {
         }
     }
 
-    public void validateExistStation(final Long stationId) {
-        if (isNotExistOnLine(stationId)) {
+    public void validateExistStation(final Station station) {
+        if (isNotExistOnLine(station)) {
             throw new NotFoundStationException();
         }
     }
 
-    private boolean isNotExistOnLine(final Long stationId) {
+    private boolean isNotExistOnLine(final Station station) {
         boolean isMatchedAtUpStation = sections.stream()
-            .anyMatch(it -> stationId.equals(it.getUpStationId()));
+            .anyMatch(it -> station.equals(it.getUpStation()));
         boolean isMatchedAtDownStation = sections.stream()
-            .anyMatch(it -> stationId.equals(it.getDownStationId()));
+            .anyMatch(it -> station.equals(it.getDownStation()));
 
         return !(isMatchedAtUpStation || isMatchedAtDownStation);
     }

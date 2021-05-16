@@ -7,9 +7,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.section.InvalidSectionOnLineException;
 import wooteco.subway.exception.station.NotFoundStationException;
+import wooteco.subway.line.Line;
+import wooteco.subway.line.LineService;
+import wooteco.subway.line.dto.CreateLineDto;
+import wooteco.subway.line.dto.LineServiceDto;
+import wooteco.subway.line.dto.ReadLineDto;
 import wooteco.subway.section.dao.SectionDao;
+import wooteco.subway.section.dto.CreateSectionDto;
 import wooteco.subway.section.dto.DeleteStationDto;
 import wooteco.subway.section.dto.SectionServiceDto;
+import wooteco.subway.station.Station;
 import wooteco.subway.station.StationService;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.dto.StationServiceDto;
@@ -19,16 +26,20 @@ import wooteco.subway.station.dto.StationServiceDto;
 public class SectionService {
 
     private final SectionDao sectionDao;
+    private final LineService lineService;
     private final StationService stationService;
 
-    public SectionService(final SectionDao sectionDao, final StationService stationService) {
+    public SectionService(final SectionDao sectionDao, final LineService lineService,
+        final StationService stationService) {
         this.sectionDao = sectionDao;
         this.stationService = stationService;
+        this.lineService = lineService;
     }
 
     public SectionServiceDto saveByLineCreate(@Valid final SectionServiceDto sectionServiceDto) {
-        Section section = sectionServiceDto.toEntity();
-        Sections sections = new Sections(sectionDao.findAllByLineId(section.getLineId()));
+        Section section = assembleSectionFromSectionServiceDto(sectionServiceDto);
+        final Long lineId = section.getLine().getId();
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         checkExistedStation(sectionServiceDto);
         if (sections.isNotEmpty()) {
             throw new InvalidSectionOnLineException();
@@ -37,14 +48,23 @@ public class SectionService {
     }
 
     public SectionServiceDto save(@Valid final SectionServiceDto sectionServiceDto) {
-        Section section = sectionServiceDto.toEntity();
-        Sections sections = new Sections(sectionDao.findAllByLineId(section.getLineId()));
+        Section section = assembleSectionFromSectionServiceDto(sectionServiceDto);
+        final long lineId = sectionServiceDto.getLineId();
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         sections.insertAvailable(section);
 
         if (sections.isBothEndSection(section)) {
             return saveSectionAtEnd(section);
         }
         return saveSectionAtMiddle(section, sections);
+    }
+
+    private Section assembleSectionFromSectionServiceDto(SectionServiceDto sectionServiceDto) {
+        Station upStation = stationService.showStation(sectionServiceDto.getUpStationId());
+        Station downStation = stationService.showStation(sectionServiceDto.getDownStationId());
+        Line line = lineService.showLine(sectionServiceDto.getLineId());
+        Distance distance = new Distance(sectionServiceDto.getDistance());
+        return new Section(line, upStation, downStation, sectionServiceDto.getDistance());
     }
 
     private void checkExistedStation(SectionServiceDto sectionServiceDto) {
@@ -67,7 +87,7 @@ public class SectionService {
     }
 
     private SectionServiceDto saveSectionAtMiddle(final Section section, final Sections sections) {
-        Section legacySection = sections.findByOverlappedStation(section);
+        Section legacySection = sections.sectionForInterval(section);
         sectionDao.delete(legacySection);
         sectionDao.save(legacySection.dividedSectionForSave(section));
         return SectionServiceDto.from(sectionDao.save(section));
@@ -75,8 +95,9 @@ public class SectionService {
 
     public void delete(@Valid final DeleteStationDto deleteDto) {
         Sections sections = new Sections(sectionDao.findAllByLineId(deleteDto.getLineId()));
+        Station targetStation = stationService.showStation(deleteDto.getStationId());
         sections.validateDeletableCount();
-        sections.validateExistStation(deleteDto.getStationId());
+        sections.validateExistStation(targetStation);
 
         if (sections.isBothEndStation(deleteDto.getStationId())) {
             deleteStationAtEnd(deleteDto);
@@ -108,11 +129,11 @@ public class SectionService {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         return sections.sortedStationIds()
             .stream()
-            .map(this::stationReponseById)
+            .map(this::stationResponseById)
             .collect(Collectors.toList());
     }
 
-    private StationResponse stationReponseById(final Long id) {
+    private StationResponse stationResponseById(final Long id) {
         StationServiceDto dto = stationService.showStations()
             .stream()
             .filter(element -> id.equals(element.getId()))
@@ -120,6 +141,43 @@ public class SectionService {
             .orElseThrow(NotFoundStationException::new);
 
         return new StationResponse(dto.getId(), dto.getName());
+    }
+    @Transactional
+    public LineServiceDto createLine(@Valid final CreateLineDto createLineDto) {
+        Line line = createLineDto.toLineEntity();
+        Line saveLine = lineService.saveLine(line);
+        SectionServiceDto sectionServiceDto = SectionServiceDto.of(saveLine, createLineDto);
+        saveByLineCreate(sectionServiceDto);
+        return LineServiceDto.from(saveLine);
+    }
+
+    public ReadLineDto findOne(@Valid final LineServiceDto lineServiceDto) {
+        final Long lineId = lineServiceDto.getId();
+        Line line =lineService.showLine(lineId);
+        List<StationResponse> stationResponses = findAllbyLindId(line.getId());
+        return ReadLineDto.of(line, stationResponses);
+    }
+
+    public List<LineServiceDto> findAll() {
+        return lineService.findAll();
+    }
+
+    public void deleteLine(LineServiceDto lineServiceDto) {
+        lineService.delete(lineServiceDto);
+    }
+
+    public void updateLine(LineServiceDto lineServiceDto) {
+        lineService.update(lineServiceDto);
+    }
+
+    public void createSection(CreateSectionDto createSectionDto) {
+        SectionServiceDto sectionServiceDto = SectionServiceDto.from(createSectionDto);
+        save(sectionServiceDto);
+    }
+
+    public void deleteStation(final long lineId, final long stationId) {
+        DeleteStationDto deleteStationDto = new DeleteStationDto(lineId, stationId);
+        delete(deleteStationDto);
     }
 }
 
