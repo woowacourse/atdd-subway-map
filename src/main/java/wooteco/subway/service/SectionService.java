@@ -95,4 +95,9 @@ public class SectionService {
         sectionDao.deleteById(DownStationSectionId);
         sectionDao.insert(newSection);
     }
+
+    public boolean existStationByStationId(Long stationId) {
+        return sectionDao.findByStationId(stationId)
+                .isPresent();
+    }
 }

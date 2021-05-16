@@ -9,9 +9,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.station.response.StationResponse;
+import wooteco.subway.section.SectionAcceptanceTestUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static wooteco.subway.station.StationAcceptanceTestUtils.*;
@@ -128,5 +131,30 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         List<Long> allSavedStationIdsAfterDelete = requestAndGetAllStationIds();
         assertThat(allSavedStationIdsAfterDelete).containsExactly(역삼역_id);
+    }
+
+    @DisplayName("지하철역을 제거 - 구간에 존재하는 역 제거시 예외 ")
+    @Test
+    void deleteStation_When_Station_ExistInSection() {
+        //given
+        createStationWithName("강남역");
+        createStationWithName("역삼역");
+        List<Station> Stations = getAllStationResponse().stream()
+                .map(station -> new Station(station.getId(), station.getName()))
+                .collect(Collectors.toList());
+        SectionAcceptanceTestUtils.createLineWithSections(Stations);
+        List<Long> allSavedStationIdsBeforeDelete = requestAndGetAllStationIds();
+        Long 강남역_id = allSavedStationIdsBeforeDelete.get(0);
+        Long 역삼역_id = allSavedStationIdsBeforeDelete.get(1);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/stations/{id}", 강남역_id)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

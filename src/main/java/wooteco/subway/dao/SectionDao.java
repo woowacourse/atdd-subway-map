@@ -9,6 +9,7 @@ import wooteco.subway.domain.Section;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class SectionDao {
@@ -50,6 +51,12 @@ public class SectionDao {
         return jdbcTemplate.query(query, SECTION_ROW_MAPPER, lineId);
     }
 
+    public Optional<Section> findByStationId(Long stationId) {
+        String query = "SELECT * FROM section WHERE up_station_id = ? OR down_station_id = ?";
+        return jdbcTemplate.query(query, SECTION_ROW_MAPPER, stationId, stationId)
+                .stream()
+                .findAny();
+    }
 
     public void updateUpStationId(Long targetId, int distance, Long upStationId, Long downStationId, Long lineId) {
         String query = "UPDATE section SET up_station_id = ?, distance = ? WHERE up_station_id = ? AND down_station_id = ? AND line_id = ?";
