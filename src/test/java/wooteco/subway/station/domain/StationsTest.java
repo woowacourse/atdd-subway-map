@@ -11,16 +11,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class StationsTest {
 
-    private Stations stationList;
-
-    @BeforeEach
-    void setUp() {
-        stationList = new Stations(Arrays.asList(
-                new Station(1L, "첫 번째 역 이름"),
-                new Station(2L, "두 번째 역 이름")
-        ));
-    }
-
     @DisplayName("지하철 역의 컬렉션(List)를 가진 Stations 객체 생성된다.")
     @Test
     void create() {
