@@ -9,4 +9,6 @@ public interface SectionRepository {
     void update(final Section section);
 
     void delete(final Long id);
+
+    void deleteByStationId(Long stationId);
 }

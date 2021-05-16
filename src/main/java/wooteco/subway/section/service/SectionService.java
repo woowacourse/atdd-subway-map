@@ -66,33 +66,22 @@ public class SectionService {
 
     @Transactional
     public void delete(final SectionDeleteDto sectionInfo) {
+        final Long deletingStationId = sectionInfo.getStationId();
         final Sections sections = sectionRepository.findAllByLineId(sectionInfo.getLineId());
 
-        final List<Section> changedSections = sections.removeStation(sectionInfo.getStationId());
+        final List<Section> changedSections = sections.removeStation(deletingStationId);
+        updateSectionsWith(changedSections, deletingStationId);
+    }
+
+    private void updateSectionsWith(final List<Section> changedSections, final Long deletingStationId) {
         if (changedSections.size() == 2) {
-            updateSections(changedSections);
+            final Section firstSection = changedSections.get(0);
+            final Section secondSection = changedSections.get(1);
+            final Section connectSection = firstSection.shortenWith(secondSection);
+
+            sectionRepository.update(connectSection);
         }
-        if (changedSections.size() == 1) {
-            deleteSections(changedSections);
-        }
-    }
-
-    private void updateSections(final List<Section> changedSections) {
-        final Section updatingSection = changedSections.get(0);
-        final Section deletingSection = changedSections.get(1);
-
-        final Section updatedSection = updatingSection.shortenWith(deletingSection);
-
-        sectionRepository.update(updatedSection);
-        deleteSection(deletingSection);
-    }
-
-    private void deleteSections(final List<Section> sections) {
-        sections.forEach(this::deleteSection);
-    }
-
-    private void deleteSection(Section section) {
-        sectionRepository.delete(section.getId());
+        sectionRepository.deleteByStationId(deletingStationId);
     }
 
     public List<Station> orderedStationsByLineId(final Long lineId) {

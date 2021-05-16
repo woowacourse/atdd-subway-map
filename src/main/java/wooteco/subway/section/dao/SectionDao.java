@@ -63,4 +63,10 @@ public class SectionDao implements SectionRepository {
         final String sql = "DELETE FROM SECTION WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public void deleteByStationId(Long stationId) {
+        final String sql = "DELETE FROM SECTION WHERE up_station_id = ? OR down_station_id = ?";
+        jdbcTemplate.update(sql, stationId, stationId);
+    }
 }
