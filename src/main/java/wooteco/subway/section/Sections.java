@@ -2,7 +2,6 @@ package wooteco.subway.section;
 
 import wooteco.subway.exception.InvalidInsertException;
 import wooteco.subway.exception.NotFoundException;
-import wooteco.subway.exception.SubWayException;
 import wooteco.subway.station.Station;
 
 import java.util.*;
@@ -28,7 +27,7 @@ public class Sections {
         Queue<Section> waiting = new LinkedList<>(sections);
         Deque<Section> result = new ArrayDeque<>();
 
-        result.addLast(waiting.remove());
+        result.addLast(waiting.poll());
         sortUpToDown(waiting, result);
 
         return new ArrayList<>(result);
@@ -85,7 +84,7 @@ public class Sections {
         return upStationIds(sections).stream()
                 .filter(this::isNotMatchWithDownIds)
                 .findAny()
-                .orElseThrow(() -> new SubWayException("상행역이 없습니다."));
+                .orElseThrow(() -> new NotFoundException("상행역이 없습니다."));
     }
 
     private boolean isNotMatchWithDownIds(Long upId) {
@@ -97,7 +96,7 @@ public class Sections {
         return downStationIds(sections).stream()
                 .filter(this::isNotMatchWithUpIds)
                 .findAny()
-                .orElseThrow(() -> new SubWayException("하행역이 없습니다."));
+                .orElseThrow(() -> new NotFoundException("하행역이 없습니다."));
     }
 
     private boolean isNotMatchWithUpIds(Long downId) {
@@ -117,12 +116,12 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public boolean appendToUp(Section newSection) {
+    public boolean appendToForward(Section newSection) {
         return containUpIdInUpIds(newSection) &&
                 notContainDownIdInDownIds(newSection);
     }
 
-    public boolean appendBeforeDown(Section newSection) {
+    public boolean appendToBackward(Section newSection) {
         return containDownIdInDownIds(newSection) &&
                 notContainUpIdInUpIds(newSection);
     }
