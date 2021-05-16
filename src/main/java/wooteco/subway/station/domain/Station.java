@@ -30,10 +30,6 @@ public class Station {
         return name;
     }
 
-    public void changeName(Long id) {
-        this.id = id;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

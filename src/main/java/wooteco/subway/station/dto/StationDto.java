@@ -1,5 +1,7 @@
 package wooteco.subway.station.dto;
 
+import wooteco.subway.station.domain.Station;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
@@ -10,10 +12,6 @@ public class StationDto {
     private String name;
 
     public StationDto() {
-    }
-
-    public StationDto(wooteco.subway.station.domain.Station station) {
-        this(station.id(), station.name());
     }
 
     public StationDto(String name) {
