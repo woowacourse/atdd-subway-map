@@ -22,18 +22,6 @@ public class SectionRequest {
         this(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
     }
 
-    public Long getUpStationId() {
-        return upStationId;
-    }
-
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
     public Section toEntity() {
         Station upStation = new Station(upStationId, null);
         Station downStation = new Station(downStationId, null);
