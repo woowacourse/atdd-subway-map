@@ -15,7 +15,7 @@ public interface LineDao {
 
     void delete(Long id);
 
-    boolean validateDuplicateName(String name);
+    boolean isExistingName(String name);
 
-    boolean validateUsableName(String newName, String oldName);
+    boolean existNewNameExceptCurrentName(String newName, String oldName);
 }

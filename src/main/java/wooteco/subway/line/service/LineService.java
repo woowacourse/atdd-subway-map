@@ -1,6 +1,7 @@
 package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.exception.InvalidInsertException;
 import wooteco.subway.line.Line;
@@ -23,6 +24,7 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
+    @Transactional
     public LineResponse save(LineRequest lineRequest) {
         validateLineName(lineRequest);
         Line newLine = lineDao.save(lineRequest.toLine());
@@ -30,16 +32,18 @@ public class LineService {
         return new LineResponse(newLine);
     }
 
-    private void validateLineName(LineRequest lineRequest) {
-        if (checkNameDuplicate(lineRequest)) {
+    private void validateLineName(LineRequest lineReq) {
+        if (checkNameDuplicate(lineReq)) {
             throw new DuplicatedNameException("중복된 이름의 노선이 존재합니다.");
         }
+        sectionService.validateStations(lineReq.getUpStationId(), lineReq.getDownStationId());
     }
 
     private boolean checkNameDuplicate(LineRequest lineRequest) {
-        return lineDao.validateDuplicateName(lineRequest.getName());
+        return lineDao.isExistingName(lineRequest.getName());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id);
         List<Long> stationIds = sectionService.findAllSectionsId(id);
@@ -47,6 +51,7 @@ public class LineService {
         return new LineResponse(line, stations);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
@@ -54,20 +59,16 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void update(Long id, LineRequest lineRequest) {
-        Line updatedLine = validatesRequest(id, lineRequest);
-        lineDao.update(updatedLine);
-    }
-
-    private Line validatesRequest(Long id, LineRequest lineRequest) {
         Line currentLine = lineDao.findById(id);
-
-        validateUsableName(lineRequest.getName(), currentLine.getName());
-        return new Line(id, lineRequest.getName(), lineRequest.getColor());
+        validatesChangeName(lineRequest.getName(), currentLine.getName());
+        currentLine.update(lineRequest);
+        lineDao.update(currentLine);
     }
 
-    private void validateUsableName(String newName, String oldName) {
-        if (lineDao.validateUsableName(newName, oldName)) {
+    private void validatesChangeName(String newName, String currentName) {
+        if (lineDao.existNewNameExceptCurrentName(newName, currentName)) {
             throw new InvalidInsertException("변경할 수 없는 이름입니다.");
         }
     }

@@ -68,14 +68,14 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public boolean validateDuplicateName(String name) {
-        String query = "SELECT COUNT(*) FROM line WHERE name = (?)";
-        return jdbcTemplate.queryForObject(query, Integer.class, name) > 0;
+    public boolean isExistingName(String name) {
+        String query = "SELECT EXISTS (SELECT * FROM line WHERE name = (?))";
+        return jdbcTemplate.queryForObject(query, Boolean.class, name);
     }
 
     @Override
-    public boolean validateUsableName(String newName, String oldName) {
-        String query = "SELECT COUNT(*) FROM line WHERE name IN (?) AND name NOT IN (?)";
-        return jdbcTemplate.queryForObject(query, Integer.class, newName, oldName) > 0;
+    public boolean existNewNameExceptCurrentName(String newName, String oldName) {
+        String query = "SELECT EXISTS (SELECT * FROM line WHERE name IN (?) AND name NOT IN (?))";
+        return jdbcTemplate.queryForObject(query, Boolean.class, newName, oldName);
     }
 }
