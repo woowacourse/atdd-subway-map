@@ -3,8 +3,8 @@ package wooteco.subway.service;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.section.SectionDao;
+import wooteco.subway.domain.Section;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.web.dto.SectionRequest;
 import wooteco.subway.web.exception.SubwayHttpException;
 

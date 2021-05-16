@@ -2,7 +2,7 @@ package wooteco.subway.web.dto;
 
 import java.util.List;
 import java.util.Objects;
-import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.Line;
 
 public class LineResponse {
 

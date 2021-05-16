@@ -1,11 +1,14 @@
-package wooteco.subway.service;
+package wooteco.subway.facade;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.line.SortedStations;
-import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.Line;
+import wooteco.subway.domain.SortedStations;
+import wooteco.subway.domain.Section;
+import wooteco.subway.service.LineService;
+import wooteco.subway.service.SectionService;
+import wooteco.subway.service.StationService;
 import wooteco.subway.web.dto.LineResponse;
 import wooteco.subway.web.dto.SectionRequest;
 import wooteco.subway.web.dto.StationResponse;

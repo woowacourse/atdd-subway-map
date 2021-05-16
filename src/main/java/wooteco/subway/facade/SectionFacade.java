@@ -1,7 +1,9 @@
-package wooteco.subway.service;
+package wooteco.subway.facade;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.service.LineService;
+import wooteco.subway.service.SectionService;
 import wooteco.subway.web.dto.SectionRequest;
 
 @Service

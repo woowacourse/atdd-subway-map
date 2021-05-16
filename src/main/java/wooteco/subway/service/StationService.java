@@ -6,9 +6,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
-import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.station.Station;
-import wooteco.subway.domain.station.StationDao;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.web.dto.StationResponse;
 import wooteco.subway.web.exception.NotFoundException;
 

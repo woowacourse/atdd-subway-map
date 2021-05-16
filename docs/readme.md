@@ -93,3 +93,4 @@
 - [ ] validation에 메시지 추가하기(@NotNull(message = "하행역 정보를 입력해야합니다."))
 - [x] SimpleJdbcInsert 적용하기
 - [ ] 매직넘버 제거
+- [ ] 메서드 순서 정리, 중복제거

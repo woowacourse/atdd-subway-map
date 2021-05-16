@@ -1,11 +1,10 @@
-package wooteco.subway.service;
+package wooteco.subway.facade;
 
 import java.util.List;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.domain.station.Station;
-import wooteco.subway.web.exception.NotFoundException;
+import wooteco.subway.domain.Station;
+import wooteco.subway.service.StationService;
 
 @Service
 @Transactional

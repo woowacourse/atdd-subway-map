@@ -7,8 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.domain.line.SortedStations;
-import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.SortedStations;
+import wooteco.subway.domain.Section;
 import wooteco.subway.web.dto.StationResponse;
 
 public class SortedStationsTest {

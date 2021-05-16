@@ -1,7 +1,7 @@
 package wooteco.subway.web.dto;
 
 import java.util.Objects;
-import wooteco.subway.domain.station.Station;
+import wooteco.subway.domain.Station;
 
 public class StationResponse {
 

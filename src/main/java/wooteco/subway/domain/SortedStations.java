@@ -1,4 +1,4 @@
-package wooteco.subway.domain.line;
+package wooteco.subway.domain;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import wooteco.subway.domain.section.Section;
 import wooteco.subway.web.dto.StationResponse;
 
 public class SortedStations {

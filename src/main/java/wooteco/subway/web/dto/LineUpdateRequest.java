@@ -1,7 +1,7 @@
 package wooteco.subway.web.dto;
 
 import javax.validation.constraints.NotBlank;
-import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.Line;
 
 public class LineUpdateRequest {
 
