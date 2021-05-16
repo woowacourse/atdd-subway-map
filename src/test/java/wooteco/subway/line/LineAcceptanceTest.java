@@ -1,6 +1,5 @@
 package wooteco.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,7 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineRequest;
@@ -49,7 +47,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("분당선", "bg-red-600", 강남역_id, 잠실역_id, 0);
 
         // when
-        ExtractableResponse<Response> response = createPostResponse(분당선);
+        ExtractableResponse<Response> response = postLine(분당선);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -64,7 +62,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("분당선", "bg-red-600", 강남역_id, 강남역_id, 0);
 
         // when
-        ExtractableResponse<Response> response = createPostResponse(분당선);
+        ExtractableResponse<Response> response = postLine(분당선);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -82,9 +80,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("이호선", "bg-red-600", 3L, 4L, 0);
 
         // when
-        ExtractableResponse<Response> 분당선_생성_응답 = createPostResponse(분당선);
-        ExtractableResponse<Response> 신부당선_생성_응답 = createPostResponse(신분당선);
-        ExtractableResponse<Response> 이호선_생성_응답 = createPostResponse(이호선);
+        ExtractableResponse<Response> 분당선_생성_응답 = postLine(분당선);
+        ExtractableResponse<Response> 신부당선_생성_응답 = postLine(신분당선);
+        ExtractableResponse<Response> 이호선_생성_응답 = postLine(이호선);
 
         // then
         assertThat(분당선_생성_응답.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -102,8 +100,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("신분당선", "bg-red-600", 1L, null, 0);
 
         // when
-        ExtractableResponse<Response> 분당선_생성_응답 = createPostResponse(분당선);
-        ExtractableResponse<Response> 신분당선_생성_응답 = createPostResponse(신분당선);
+        ExtractableResponse<Response> 분당선_생성_응답 = postLine(분당선);
+        ExtractableResponse<Response> 신분당선_생성_응답 = postLine(신분당선);
 
         // then
         assertThat(분당선_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -122,8 +120,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         postStation(강남역);
         postStation(잠실역);
-        createPostResponse(분당선);
-        ExtractableResponse<Response> response = createPostResponse(분당선);
+        postLine(분당선);
+        ExtractableResponse<Response> response = postLine(분당선);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -140,16 +138,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("신분당선", "bg-red-600", 강남역_id, 잠실역_id, 0);
 
         // when
-        ExtractableResponse<Response> 분당선_생성_응답 = createPostResponse(분당선);
-        ExtractableResponse<Response> 신분당선_생성_응답 = createPostResponse(신분당선);
+        ExtractableResponse<Response> 분당선_생성_응답 = postLine(분당선);
+        ExtractableResponse<Response> 신분당선_생성_응답 = postLine(신분당선);
 
-        ExtractableResponse<Response> 모든노선조회_응답 = createGetResponse("/lines");
+        ExtractableResponse<Response> 모든노선조회_응답 = getResponseFrom("/lines");
 
         // then
         assertThat(모든노선조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         List<Long> 생성시_응답된_노선ID_리스트 = Stream.of(분당선_생성_응답, 신분당선_생성_응답)
-                .map(this::getLineId)
+                .map(this::getIdFromResponse)
                 .collect(Collectors.toList());
         List<Long> 조회시_응답된_노선ID_리스트 = 모든노선조회_응답.jsonPath().getList(".", LineResponse.class).stream()
                 .map(LineResponse::getId)
@@ -166,12 +164,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("분당선", "bg-red-600", 강남역_id, 잠실역_id, 0);
 
         // when
-        ExtractableResponse<Response> 분당선_생성_응답 = createPostResponse(분당선);
-        ExtractableResponse<Response> 노선_조회_응답 = createGetResponse("/lines/1");
+        ExtractableResponse<Response> 분당선_생성_응답 = postLine(분당선);
+        ExtractableResponse<Response> 노선_조회_응답 = getResponseFrom("/lines/1");
 
         // then
         assertThat(노선_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
-        Long expectedLineId = getLineId(분당선_생성_응답);
+        Long expectedLineId = getIdFromResponse(분당선_생성_응답);
         Long resultLineId = 노선_조회_응답.as(LineResponse.class).getId();
 
         assertThat(resultLineId).isEqualTo(expectedLineId);
@@ -185,8 +183,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("이호선", "bg-red-600", 강남역_id, 잠실역_id, 0);
 
         // when
-        createPostResponse(이호선);
-        ExtractableResponse<Response> 이호선_조회_응답 = createGetResponse("/lines/1");
+        postLine(이호선);
+        ExtractableResponse<Response> 이호선_조회_응답 = getResponseFrom("/lines/1");
 
         // then
         assertThat(이호선_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -212,9 +210,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 
         // when
-        createPostResponse(이호선);
-        ExtractableResponse<Response> 이호선_신분당선으로_수정 = createPutResponse("/lines/1", 신분당선);
-        ExtractableResponse<Response> 수정된_노선_응답 = createGetResponse("/lines/1");
+        postLine(이호선);
+        ExtractableResponse<Response> 이호선_신분당선으로_수정 = putLine("/lines/1", 신분당선);
+        ExtractableResponse<Response> 수정된_노선_응답 = getResponseFrom("/lines/1");
 
         // then
         assertThat(이호선_신분당선으로_수정.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -236,9 +234,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 
         // when
-        createPostResponse(이호선);
-        createPostResponse(신분당선);
-        ExtractableResponse<Response> expectedResponse = createPutResponse("/lines/1", 신분당선);
+        postLine(이호선);
+        postLine(신분당선);
+        ExtractableResponse<Response> expectedResponse = putLine("/lines/1", 신분당선);
 
         // then
         assertThat(expectedResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -253,63 +251,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 
         // when
-        ExtractableResponse<Response> 분당선_생성_응답 = createPostResponse(분당선);
+        ExtractableResponse<Response> 분당선_생성_응답 = postLine(분당선);
         int originalSize = lineRepository.findAll().size();
-        String uri = 분당선_생성_응답.header("Location");
-        ExtractableResponse<Response> response = deleteResponse(uri);
+        String path = 분당선_생성_응답.header("Location");
+        ExtractableResponse<Response> response = deleteResponseFrom(path);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         assertThat(lineRepository.findAll()).hasSize(originalSize - 1);
-    }
-
-    private long getLineId(ExtractableResponse<Response> it) {
-        return Long.parseLong(it.header("Location").split("/")[2]);
-    }
-
-    private ExtractableResponse<Response> createPostResponse(LineRequest lineRequest) {
-        return RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> postStation(StationRequest stationRequest) {
-        return RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> createGetResponse(String path) {
-        return RestAssured.given().log().all()
-                .when()
-                .get(path)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> createPutResponse(String path, LineRequest params) {
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put(path)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> deleteResponse(String uri) {
-        return RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
     }
 }

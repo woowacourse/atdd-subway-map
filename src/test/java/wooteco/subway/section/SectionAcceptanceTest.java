@@ -1,13 +1,11 @@
 package wooteco.subway.section;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineRequest;
@@ -30,12 +28,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationRequest 잠실역 = new StationRequest("잠실역");
         StationRequest 당산역 = new StationRequest("당산역");
 
-        postResponse("/stations", 강남역);
-        postResponse("/stations", 잠실역);
-        postResponse("/stations", 당산역);
+        postStation(강남역);
+        postStation(잠실역);
+        postStation(당산역);
 
         LineRequest 이호선 = new LineRequest("이호선", "green", 강남역_id, 잠실역_id, 5);
-        postResponse("/lines", 이호선);
+        postLine(이호선);
     }
 
     @Test
@@ -45,7 +43,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 잠실에서당산 = new SectionRequest(잠실역_id, 당산역_id, 5);
 
         // when
-        ExtractableResponse<Response> 구간_생성_응답 = postResponse("/lines/1/sections", 잠실에서당산);
+        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 잠실에서당산);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -58,7 +56,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 당산에서강남 = new SectionRequest(당산역_id, 강남역_id, 5);
 
         // when
-        ExtractableResponse<Response> 구간_생성_응답 = postResponse("/lines/1/sections", 당산에서강남);
+        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 당산에서강남);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -71,7 +69,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 강남에서잠실 = new SectionRequest(강남역_id, 잠실역_id, 5);
 
         // when
-        ExtractableResponse<Response> 구간_생성_응답 = postResponse("/lines/1/sections", 강남에서잠실);
+        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 강남에서잠실);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -87,11 +85,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 왕십리에서신림 = new SectionRequest(4L, 5L, 2);
 
         // when
-        postResponse("/stations", 왕십리역);
-        postResponse("/stations", 신림역);
-        postResponse("/lines/1/sections", 잠실에서당산);
+        postStation(왕십리역);
+        postStation(신림역);
+        postSection("/lines/1/sections", 잠실에서당산);
 
-        ExtractableResponse<Response> 구간_생성_응답 = postResponse("/lines/1/sections", 왕십리에서신림);
+        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 왕십리에서신림);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -104,7 +102,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 당산에서없는역 = new SectionRequest(당산역_id, 4L, 5);
 
         // when
-        ExtractableResponse<Response> 구간_생성_응답 = postResponse("/lines/1/sections", 당산에서없는역);
+        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 당산에서없는역);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -117,7 +115,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 상행하행_동일 = new SectionRequest(강남역_id, 강남역_id, 5);
 
         // when
-        ExtractableResponse<Response> 구간_생성_응답 = postResponse("/lines/1/sections", 상행하행_동일);
+        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 상행하행_동일);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -133,9 +131,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 당산에서왕십리 = new SectionRequest(당산역_id, 4L, 6);
 
         // when
-        postResponse("/stations", 왕십리역);
-        postResponse("/lines/1/sections", 잠실에서왕십리);
-        ExtractableResponse<Response> 구간_생성_응답 = postResponse("/lines/1/sections", 당산에서왕십리);
+        postStation(왕십리역);
+        postSection("/lines/1/sections", 잠실에서왕십리);
+        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 당산에서왕십리);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -151,9 +149,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 당산에서왕십리 = new SectionRequest(당산역_id, 4L, 3);
 
         // when
-        postResponse("/stations", 왕십리역);
-        postResponse("/lines/1/sections", 잠실에서왕십리);
-        ExtractableResponse<Response> 구간_생성_응답 = postResponse("/lines/1/sections", 당산에서왕십리);
+        postStation(왕십리역);
+        postSection("/lines/1/sections", 잠실에서왕십리);
+        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 당산에서왕십리);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -169,9 +167,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 당산에서왕십리 = new SectionRequest(잠실역_id, 당산역_id, 3);
 
         // when
-        postResponse("/stations", 왕십리역);
-        postResponse("/lines/1/sections", 잠실에서왕십리);
-        ExtractableResponse<Response> 구간_생성_응답 = postResponse("/lines/1/sections", 당산에서왕십리);
+        postStation(왕십리역);
+        postSection("/lines/1/sections", 잠실에서왕십리);
+        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 당산에서왕십리);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -187,9 +185,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 당산에서왕십리 = new SectionRequest(잠실역_id, 당산역_id, 5);
 
         // when
-        postResponse("/stations", 왕십리역);
-        postResponse("/lines/1/sections", 잠실에서왕십리);
-        ExtractableResponse<Response> 구간_생성_응답 = postResponse("/lines/1/sections", 당산에서왕십리);
+        postStation(왕십리역);
+        postSection("/lines/1/sections", 잠실에서왕십리);
+        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 당산에서왕십리);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -202,48 +200,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 잠실에서당산 = new SectionRequest(잠실역_id, 당산역_id, 5);
 
         // when
-        postResponse("/lines/1/sections", 잠실에서당산);
-        ExtractableResponse<Response> 구간_삭제_응답 = deleteResponse("/lines/1/sections?stationId=2");
+        postSection("/lines/1/sections", 잠실에서당산);
+        ExtractableResponse<Response> 구간_삭제_응답 = deleteResponseFrom("/lines/1/sections?stationId=2");
 
         // then
         assertThat(구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private ExtractableResponse<Response> postResponse(String path, StationRequest req) {
-        return RestAssured.given().log().all()
-                .body(req)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(path)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> postResponse(String path, LineRequest req) {
-        return RestAssured.given().log().all()
-                .body(req)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(path)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> postResponse(String path, SectionRequest req) {
-        return RestAssured.given().log().all()
-                .body(req)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(path)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> deleteResponse(String path) {
-        return RestAssured.given().log().all()
-                .when()
-                .delete(path)
-                .then().log().all()
-                .extract();
     }
 }
