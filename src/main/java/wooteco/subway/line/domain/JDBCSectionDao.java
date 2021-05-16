@@ -1,6 +1,5 @@
 package wooteco.subway.line.domain;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,20 +19,14 @@ public class JDBCSectionDao implements SectionDao {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Section> sectionRowMapper;
 
-    @Autowired
     public JDBCSectionDao(final JdbcTemplate jdbcTemplate) {
-        this(jdbcTemplate,
-                (rs, rowNum) ->
-                        new Section(rs.getLong("id"),
-                                new Line(rs.getLong("line_id")),
-                                new Station(rs.getLong("up_station_id")),
-                                new Station(rs.getLong("down_station_id")),
-                                rs.getInt("distance")));
-    }
-
-    public JDBCSectionDao(final JdbcTemplate jdbcTemplate, final RowMapper<Section> sectionRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
-        this.sectionRowMapper = sectionRowMapper;
+        this.sectionRowMapper =  (rs, rowNum) ->
+                new Section(rs.getLong("id"),
+                        new Line(rs.getLong("line_id")),
+                        new Station(rs.getLong("up_station_id")),
+                        new Station(rs.getLong("down_station_id")),
+                        rs.getInt("distance"));
     }
 
     @Override

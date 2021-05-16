@@ -1,6 +1,5 @@
 package wooteco.subway.line.domain;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -18,17 +17,12 @@ public class JDBCLineDao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Line> lineRowMapper;
 
-    @Autowired
     public JDBCLineDao(final JdbcTemplate jdbcTemplate) {
-        this(jdbcTemplate, (rs, rowNum) ->
+        this.jdbcTemplate = jdbcTemplate;
+        this.lineRowMapper = (rs, rowNum) ->
                 new Line(rs.getLong("id"),
                         rs.getString("name"),
-                        rs.getString("color")));
-    }
-
-    public JDBCLineDao(final JdbcTemplate jdbcTemplate, final RowMapper<Line> lineRowMapper) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.lineRowMapper = lineRowMapper;
+                        rs.getString("color"));
     }
 
     @Override
