@@ -10,7 +10,7 @@ class SectionTest {
 
     @DisplayName("주어진 구간이 종점 구간인지 확인한다.")
     @Test
-    public void endPoint(){
+    public void endPoint() {
         Section section1 = new Section(1L, 1L, 2L, 1);
         Section section2 = new Section(1L, 2L, 4L, 2);
         Section section3 = new Section(1L, 4L, 5L, 1);

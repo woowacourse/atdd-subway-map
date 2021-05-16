@@ -17,7 +17,6 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
-import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -28,6 +27,26 @@ class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> response;
     private Long upId;
     private Long downId;
+
+    public static ExtractableResponse<Response> addLine(LineRequest request) {
+        return RestAssured.given().log().all()
+            .body(request)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+    }
+
+    public static List<LineResponse> getLineResponses() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines")
+            .then().log().all()
+            .extract();
+
+        return response.jsonPath().getList(".", LineResponse.class);
+    }
 
     @Override
     @BeforeEach
@@ -114,25 +133,5 @@ class LineAcceptanceTest extends AcceptanceTest {
             .extract();
 
         assertThat(actualResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    public static ExtractableResponse<Response> addLine(LineRequest request) {
-        return RestAssured.given().log().all()
-            .body(request)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
-    }
-
-    public static List<LineResponse> getLineResponses() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/lines")
-            .then().log().all()
-            .extract();
-
-        return response.jsonPath().getList(".", LineResponse.class);
     }
 }

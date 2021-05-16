@@ -19,7 +19,8 @@ public class SectionService {
         this.stationService = stationService;
     }
 
-    public void createSectionOfNewLine(Long lineId, Long upStationId, Long downStationId, int distance){
+    public void createSectionOfNewLine(Long lineId, Long upStationId, Long downStationId,
+        int distance) {
         Section section = new Section(lineId, upStationId,
             downStationId, distance);
         sectionDao.save(section);

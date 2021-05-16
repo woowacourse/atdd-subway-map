@@ -23,13 +23,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> response;
 
-    @Override
-    @BeforeEach
-    public void setUp() {
-        super.setUp();
-        response = addStation("강남역");
-    }
-
     public static ExtractableResponse<Response> addStation(String name) {
         return RestAssured.given().log().all()
             .body(new StationRequest(name))
@@ -38,6 +31,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .post("/stations")
             .then().log().all()
             .extract();
+    }
+
+    @Override
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        response = addStation("강남역");
     }
 
     @DisplayName("지하철역을 생성한다.")

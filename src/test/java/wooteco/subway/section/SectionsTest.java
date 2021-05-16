@@ -20,7 +20,7 @@ class SectionsTest {
 
     @DisplayName("추가되는 구간의 역 중 하나만 노선에 포함되어 있어야 한다.")
     @Test
-    public void validateStationsOfSection(){
+    public void validateStationsOfSection() {
         Section newSection = new Section(1L, 7L, 6L, 3);
         assertThatThrownBy(() -> sections.validateSectionStations(newSection))
             .isInstanceOf(NoneOrAllStationsExistingInLineException.class);
@@ -28,7 +28,7 @@ class SectionsTest {
 
     @DisplayName("구간이 중간에 추가될 시 기존 구간보다 거리가 짧아야 한다.")
     @Test
-    public void validateDistance(){
+    public void validateDistance() {
         Section newSection = new Section(1L, 2L, 3L, 3);
         assertThatThrownBy(() -> sections.validateSectionDistance(newSection))
             .isInstanceOf(InvalidSectionDistanceException.class);
@@ -36,7 +36,7 @@ class SectionsTest {
 
     @DisplayName("구간을 순서에 맞게 정렬한다.")
     @Test
-    public void sort(){
+    public void sort() {
         List<Long> sortedStationsIds = new LinkedList<>(sections.sortedStationIds());
         List<Long> expectedIds = new LinkedList<>(Arrays.asList(1L, 2L, 4L, 5L));
         assertThat(sortedStationsIds).isEqualTo(expectedIds);

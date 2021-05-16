@@ -94,13 +94,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .then().log().all();
     }
 
-    private ExtractableResponse<Response> deleteStationOfSection(Long id){
+    private ExtractableResponse<Response> deleteStationOfSection(Long id) {
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .queryParam("stationId", id)
             .when()
             .delete("/lines/{id}/sections", response.header("Location").split("/")[2])
             .then().log().all()
-        .extract();
+            .extract();
     }
 }
