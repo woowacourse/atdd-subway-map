@@ -13,11 +13,11 @@ public class Stations {
 
     public Stations sortStationsByIds(List<Long> stationsIds) {
         List<Station> sortContainer = new ArrayList<>();
-        stationsIds.forEach(stationsId -> sortContainer.add(getStation(stationsId)));
+        stationsIds.forEach(stationsId -> sortContainer.add(findById(stationsId)));
         return new Stations(sortContainer);
     }
 
-    private Station getStation(Long id) {
+    private Station findById(Long id) {
         return stations.stream()
                 .filter(station -> station.isSameId(id))
                 .findAny().orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역 ID 입니다."));
