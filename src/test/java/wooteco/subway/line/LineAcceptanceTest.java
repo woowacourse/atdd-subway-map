@@ -13,7 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
-import wooteco.subway.line.repository.JdbcLineDao;
+import wooteco.subway.line.repository.LineDao;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
@@ -26,11 +26,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("노선 관련 기능")
 @Sql("classpath:test.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private static final long EXIST_GANGNAM = 1L;
-    private static final long EXIST_JAMSIL = 2L;
+    private final long 강남역_id = 1L;
+    private final long 잠실역_id = 2L;
 
     @Autowired
-    private JdbcLineDao lineRepository;
+    private LineDao lineRepository;
 
     @BeforeEach
     void setUpStations() {
@@ -46,7 +46,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // given
         LineRequest 분당선 =
-                new LineRequest("분당선", "bg-red-600", EXIST_GANGNAM, EXIST_JAMSIL, 0);
+                new LineRequest("분당선", "bg-red-600", 강남역_id, 잠실역_id, 0);
 
         // when
         ExtractableResponse<Response> response = createPostResponse(분당선);
@@ -61,7 +61,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWhenSameStations() {
         // given
         LineRequest 분당선 =
-                new LineRequest("분당선", "bg-red-600", EXIST_GANGNAM, EXIST_GANGNAM, 0);
+                new LineRequest("분당선", "bg-red-600", 강남역_id, 강남역_id, 0);
 
         // when
         ExtractableResponse<Response> response = createPostResponse(분당선);
@@ -75,21 +75,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWhenNotExistStations() {
         // given
         LineRequest 분당선 =
-                new LineRequest("분당선", "bg-red-600", EXIST_GANGNAM, 3L, 0);
+                new LineRequest("분당선", "bg-red-600", 강남역_id, 3L, 0);
         LineRequest 신분당선 =
-                new LineRequest("신분당선", "bg-red-600", 3L, EXIST_GANGNAM, 0);
+                new LineRequest("신분당선", "bg-red-600", 3L, 강남역_id, 0);
         LineRequest 이호선 =
                 new LineRequest("이호선", "bg-red-600", 3L, 4L, 0);
 
         // when
-        ExtractableResponse<Response> response1 = createPostResponse(분당선);
-        ExtractableResponse<Response> response2 = createPostResponse(신분당선);
-        ExtractableResponse<Response> response3 = createPostResponse(이호선);
+        ExtractableResponse<Response> 분당선_생성_응답 = createPostResponse(분당선);
+        ExtractableResponse<Response> 신부당선_생성_응답 = createPostResponse(신분당선);
+        ExtractableResponse<Response> 이호선_생성_응답 = createPostResponse(이호선);
 
         // then
-        assertThat(response1.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-        assertThat(response3.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(분당선_생성_응답.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(신부당선_생성_응답.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(이호선_생성_응답.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -102,12 +102,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("신분당선", "bg-red-600", 1L, null, 0);
 
         // when
-        ExtractableResponse<Response> response1 = createPostResponse(분당선);
-        ExtractableResponse<Response> response2 = createPostResponse(신분당선);
+        ExtractableResponse<Response> 분당선_생성_응답 = createPostResponse(분당선);
+        ExtractableResponse<Response> 신분당선_생성_응답 = createPostResponse(신분당선);
 
         // then
-        assertThat(response1.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(분당선_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(신분당선_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("이미 존재하는 노선의 이름으로 생성 요청 시 BAD_REQUEST를 응답한다.")
@@ -134,27 +134,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         /// given
         LineRequest 분당선 =
-                new LineRequest("분당선", "bg-red-600", 1L, 2L, 0);
+                new LineRequest("분당선", "bg-red-600", 강남역_id, 잠실역_id, 0);
 
         LineRequest 신분당선 =
-                new LineRequest("신분당선", "bg-red-600", 1L, 2L, 0);
+                new LineRequest("신분당선", "bg-red-600", 강남역_id, 잠실역_id, 0);
 
         // when
-        ExtractableResponse<Response> createResponse1 = createPostResponse(분당선);
-        ExtractableResponse<Response> createResponse2 = createPostResponse(신분당선);
-        ExtractableResponse<Response> response = createGetResponse("/lines");
+        ExtractableResponse<Response> 분당선_생성_응답 = createPostResponse(분당선);
+        ExtractableResponse<Response> 신분당선_생성_응답 = createPostResponse(신분당선);
+
+        ExtractableResponse<Response> 모든노선조회_응답 = createGetResponse("/lines");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(모든노선조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+        List<Long> 생성시_응답된_노선ID_리스트 = Stream.of(분당선_생성_응답, 신분당선_생성_응답)
+                .map(this::getLineId)
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+        List<Long> 조회시_응답된_노선ID_리스트 = 모든노선조회_응답.jsonPath().getList(".", LineResponse.class).stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
 
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertThat(조회시_응답된_노선ID_리스트).containsAll(생성시_응답된_노선ID_리스트);
     }
 
     @DisplayName("노선 하나를 조회한다.")
@@ -162,16 +163,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         /// given
         LineRequest 분당선 =
-                new LineRequest("분당선", "bg-red-600", 1L, 2L, 0);
+                new LineRequest("분당선", "bg-red-600", 강남역_id, 잠실역_id, 0);
 
         // when
-        ExtractableResponse<Response> createResponse = createPostResponse(분당선);
-        ExtractableResponse<Response> response = createGetResponse("/lines/1");
+        ExtractableResponse<Response> 분당선_생성_응답 = createPostResponse(분당선);
+        ExtractableResponse<Response> 노선_조회_응답 = createGetResponse("/lines/1");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        Long expectedLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
-        Long resultLineId = response.as(LineResponse.class).getId();
+        assertThat(노선_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+        Long expectedLineId = getLineId(분당선_생성_응답);
+        Long resultLineId = 노선_조회_응답.as(LineResponse.class).getId();
 
         assertThat(resultLineId).isEqualTo(expectedLineId);
     }
@@ -181,22 +182,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void testGetLine() {
         /// given
         LineRequest 이호선 =
-                new LineRequest("이호선", "bg-red-600", 1L, 2L, 0);
+                new LineRequest("이호선", "bg-red-600", 강남역_id, 잠실역_id, 0);
 
         // when
         createPostResponse(이호선);
-        ExtractableResponse<Response> response = createGetResponse("/lines/1");
+        ExtractableResponse<Response> 이호선_조회_응답 = createGetResponse("/lines/1");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        LineResponse result = response.as(LineResponse.class);
+        assertThat(이호선_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineResponse 이호선_응답 = 이호선_조회_응답.as(LineResponse.class);
 
-        assertThat(result.getName()).isEqualTo("이호선");
-        assertThat(result.getColor()).isEqualTo("bg-red-600");
-        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(이호선_응답.getName()).isEqualTo("이호선");
+        assertThat(이호선_응답.getColor()).isEqualTo("bg-red-600");
+        assertThat(이호선_응답.getId()).isEqualTo(1L);
 
-        assertThat(result.getStations()).usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(new StationResponse(1L, "강남역"), new StationResponse(2L, "잠실역"));
+        assertThat(이호선_응답.getStations()).usingRecursiveFieldByFieldElementComparator()
+                .containsExactly(new StationResponse(강남역_id, "강남역"), new StationResponse(잠실역_id, "잠실역"));
     }
 
     @DisplayName("노선을 수정한다.")
@@ -204,22 +205,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         LineRequest 이호선 =
-                new LineRequest("이호선", "bg-blue-600", 1L, 2L, 0);
+                new LineRequest("이호선", "bg-blue-600", 강남역_id, 잠실역_id, 0);
 
         LineRequest 신분당선 =
-                new LineRequest("신분당선", "bg-red-400", 1L, 2L, 0);
+                new LineRequest("신분당선", "bg-red-400", 강남역_id, 잠실역_id, 0);
 
 
         // when
         createPostResponse(이호선);
-        ExtractableResponse<Response> expectedResponse = createPutResponse("/lines/1", 신분당선);
-        ExtractableResponse<Response> updatedResponse = createGetResponse("/lines/1");
+        ExtractableResponse<Response> 이호선_신분당선으로_수정 = createPutResponse("/lines/1", 신분당선);
+        ExtractableResponse<Response> 수정된_노선_응답 = createGetResponse("/lines/1");
 
         // then
-        assertThat(expectedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(updatedResponse.body().as(LineResponse.class).getName())
+        assertThat(이호선_신분당선으로_수정.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(수정된_노선_응답.body().as(LineResponse.class).getName())
                 .isEqualTo("신분당선");
-        assertThat(updatedResponse.body().as(LineResponse.class).getColor())
+        assertThat(수정된_노선_응답.body().as(LineResponse.class).getColor())
                 .isEqualTo("bg-red-400");
     }
 
@@ -228,10 +229,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLineWhenDuplicateName() {
         // given
         LineRequest 이호선 =
-                new LineRequest("이호선", "bg-blue-600", 1L, 2L, 0);
+                new LineRequest("이호선", "bg-blue-600", 강남역_id, 잠실역_id, 0);
 
         LineRequest 신분당선 =
-                new LineRequest("신분당선", "bg-red-600", 1L, 2L, 0);
+                new LineRequest("신분당선", "bg-red-600", 강남역_id, 잠실역_id, 0);
 
 
         // when
@@ -248,18 +249,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         LineRequest 분당선 =
-                new LineRequest("분당선", "bg-red-600", 1L, 2L, 0);
+                new LineRequest("분당선", "bg-red-600", 강남역_id, 잠실역_id, 0);
 
 
         // when
-        ExtractableResponse<Response> createResponse = createPostResponse(분당선);
+        ExtractableResponse<Response> 분당선_생성_응답 = createPostResponse(분당선);
         int originalSize = lineRepository.findAll().size();
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = createDeleteResponse(uri);
+        String uri = 분당선_생성_응답.header("Location");
+        ExtractableResponse<Response> response = deleteResponse(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         assertThat(lineRepository.findAll()).hasSize(originalSize - 1);
+    }
+
+    private long getLineId(ExtractableResponse<Response> it) {
+        return Long.parseLong(it.header("Location").split("/")[2]);
     }
 
     private ExtractableResponse<Response> createPostResponse(LineRequest lineRequest) {
@@ -300,7 +305,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> createDeleteResponse(String uri) {
+    private ExtractableResponse<Response> deleteResponse(String uri) {
         return RestAssured.given().log().all()
                 .when()
                 .delete(uri)
