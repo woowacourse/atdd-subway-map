@@ -35,7 +35,7 @@ public class SectionServiceDto {
             section.getLineId(),
             section.getUpStationId(),
             section.getDownStationId(),
-            section.getDistance()
+            section.getDistanceValue()
         );
     }
 
@@ -47,10 +47,6 @@ public class SectionServiceDto {
     public static SectionServiceDto from(CreateSectionDto dto) {
         return new SectionServiceDto(dto.getLineId(), dto.getUpStationId(), dto.getDownStationId(),
             dto.getDistance());
-    }
-
-    public Section toEntity() {
-        return new Section(lineId, upStationId, downStationId, distance);
     }
 
     public Long getId() {

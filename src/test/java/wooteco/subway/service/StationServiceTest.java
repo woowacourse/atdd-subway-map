@@ -15,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.domain.Stations;
 import wooteco.subway.service.dto.StationServiceDto;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,26 +64,5 @@ class StationServiceTest {
         assertThat(requestedDtos.get(1).getName()).isEqualTo(stations.get(1).getName());
         assertThat(requestedDtos.get(2).getId()).isEqualTo(stations.get(2).getId());
         assertThat(requestedDtos.get(2).getName()).isEqualTo(stations.get(2).getName());
-    }
-
-    @Test
-    @DisplayName("서비스에서 전체 역 객체 호출")
-    void finaAll() {
-        // given
-        List<Station> stationList = Arrays.asList(
-            new Station(1L, "성서공단역"),
-            new Station(2L, "이곡역"),
-            new Station(3L, "용산역")
-        );
-
-        when(mockStationDao.showAll()).thenReturn(stationList);
-
-        // when
-        Stations stations = stationService.findAll();
-
-        // then
-        assertThat(stations.findById(1L)).isEqualTo(stationList.get(0));
-        assertThat(stations.findById(2L)).isEqualTo(stationList.get(1));
-        assertThat(stations.findById(3L)).isEqualTo(stationList.get(2));
     }
 }

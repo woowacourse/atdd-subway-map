@@ -44,7 +44,7 @@ public class LineServiceTest {
         String color = "파란색";
 
         when(mockLineDao.create(any(Line.class))).thenReturn(new Line(id, name, color));
-        when(mockSectionService.saveByLineCreate(any())).thenReturn(null);
+        when(mockSectionService.saveByLineCreate(any(Line.class), any())).thenReturn(null);
 
         // when
         CreateLineDto createLineDto = new CreateLineDto(name, color, UPSTATION_ID, DOWNSTATION_ID,

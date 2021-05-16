@@ -18,54 +18,57 @@ public class Sections {
     }
 
     public boolean isBothEndSection(Section section) {
-        Deque<Long> ids = sortedStationIds();
-        return section.hasSameStation(ids.peekFirst()) || section.hasSameStation(ids.peekLast());
+        Deque<Station> stations = sortedStations();
+        return section.hasSameStation(stations.peekFirst())
+            || section.hasSameStation(stations.peekLast());
     }
 
-    public boolean isBothEndStation(Long stationId) {
-        Deque<Long> ids = sortedStationIds();
-        return stationId.equals(ids.peekFirst())
-            || stationId.equals(ids.peekLast());
+    public boolean isBothEndStation(Station station) {
+        Deque<Station> stations = sortedStations();
+        return station.equals(stations.peekFirst())
+            || station.equals(stations.peekLast());
     }
 
-    public Deque<Long> sortedStationIds() {
-        Deque<Long> stationIds = new ArrayDeque<>();
-        Map<Long, Long> upStationIds = new LinkedHashMap<>();
-        Map<Long, Long> downStationIds = new LinkedHashMap<>();
+    public Deque<Station> sortedStations() {
+        Deque<Station> stations = new ArrayDeque<>();
+        Map<Station, Station> upStationIds = new LinkedHashMap<>();
+        Map<Station, Station> downStationIds = new LinkedHashMap<>();
 
-        initStationIds(stationIds, upStationIds, downStationIds);
-        sortStationsById(stationIds, upStationIds, downStationIds);
-        return new ArrayDeque<>(stationIds);
+        initStations(stations, upStationIds, downStationIds);
+        sortStations(stations, upStationIds, downStationIds);
+        return new ArrayDeque<>(stations);
     }
 
-    private void initStationIds(Deque<Long> stationIds, Map<Long, Long> upStationIds,
-        Map<Long, Long> downStationIds) {
+    private void initStations(Deque<Station> stations, Map<Station, Station> upStations,
+        Map<Station, Station> downStations) {
+
         for (Section section : sections) {
-            upStationIds.put(section.getUpStationId(), section.getDownStationId());
-            downStationIds.put(section.getDownStationId(), section.getUpStationId());
+            upStations.put(section.getUpStation(), section.getDownStation());
+            downStations.put(section.getDownStation(), section.getUpStation());
         }
 
         Section section = sections.get(0);
-        stationIds.addFirst(section.getUpStationId());
-        stationIds.addLast(section.getDownStationId());
+        stations.addFirst(section.getUpStation());
+        stations.addLast(section.getDownStation());
     }
 
-    private void sortStationsById(Deque<Long> stationIds, Map<Long, Long> upStationIds,
-        Map<Long, Long> downStationIds) {
-        while (upStationIds.containsKey(stationIds.peekLast())) {
-            Long id = stationIds.peekLast();
-            stationIds.addLast(upStationIds.get(id));
+    private void sortStations(Deque<Station> stations, Map<Station, Station> upStations,
+        Map<Station, Station> downStations) {
+
+        while (upStations.containsKey(stations.peekLast())) {
+            Station tailStation = stations.peekLast();
+            stations.addLast(upStations.get(tailStation));
         }
 
-        while (downStationIds.containsKey(stationIds.peekFirst())) {
-            Long id = stationIds.peekFirst();
-            stationIds.addFirst(downStationIds.get(id));
+        while (downStations.containsKey(stations.peekFirst())) {
+            Station headStation = stations.peekFirst();
+            stations.addFirst(downStations.get(headStation));
         }
     }
 
     public void validateInsertable(Section section) {
-        boolean isUpStationExisted = isNotExistOnLine(section.getUpStationId());
-        boolean isDownStationExisted = isNotExistOnLine(section.getDownStationId());
+        boolean isUpStationExisted = isNotExistOnLine(section.getUpStation());
+        boolean isDownStationExisted = isNotExistOnLine(section.getDownStation());
 
         if (isUpStationExisted == isDownStationExisted) {
             throw new InvalidSectionOnLineException();
@@ -78,24 +81,25 @@ public class Sections {
         }
     }
 
-    public void validateExistStation(Long stationId) {
-        if (isNotExistOnLine(stationId)) {
+    public void validateExistStation(Station station) {
+        if (isNotExistOnLine(station)) {
             throw new NotFoundException();
         }
     }
 
-    private boolean isNotExistOnLine(Long stationId) {
+    private boolean isNotExistOnLine(Station station) {
         return sections.stream()
-            .noneMatch(section -> section.hasSameStation(stationId));
+            .noneMatch(section -> section.hasSameStation(station));
     }
 
     public boolean isNotEmpty() {
         return !sections.isEmpty();
     }
 
-    public Section findByStationId(Section section) {
+    public Section findByMatchStation(Section section) {
         return sections.stream()
-            .filter(section::hasSameStationBySection)
+            .filter(it -> section.isMatchUpStation(it.getUpStation())
+                || section.isMatchDownStation(it.getDownStation()))
             .findAny()
             .orElseThrow(InvalidSectionOnLineException::new);
     }

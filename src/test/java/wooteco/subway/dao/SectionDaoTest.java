@@ -10,175 +10,175 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.domain.Distance;
+import wooteco.subway.domain.Id;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.exception.InvalidSectionOnLineException;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql("classpath:initializeTable.sql")
 public class SectionDaoTest {
 
-    private Long lineId;
-    private Long stationSinSeolId;
-    private Long stationDongMyoId;
-    private Long stationDongDaeMoonId;
-    private int distance;
+    private Line 일호선 = new Line(1L, "1호선", "bg-blue-100");
+    private Station 신설역 = new Station(1L, "신설역");
+    private Station 동묘역 = new Station(2L, "동묘역");
+    private Station 동대문역 = new Station(3L, "동대문역");
+    private Distance 거리 = new Distance(10);
 
     @Autowired
     private SectionDao sectionDao;
+    @Autowired
+    private LineDao lineDao;
+    @Autowired
+    private StationDao stationDao;
 
     @BeforeEach
     void setUp() {
-        lineId = 1L;
-        stationSinSeolId = 1L;
-        stationDongMyoId = 2L;
-        stationDongDaeMoonId = 3L;
-        distance = 10;
+        lineDao.create(일호선);
+        stationDao.save(신설역);
+        stationDao.save(동묘역);
+        stationDao.save(동대문역);
 
-        Section sinSeolAndDongMyo = new Section(lineId, stationSinSeolId, stationDongMyoId,
-            distance);
-        Section dongMyoAndDongDaeMoon = new Section(lineId, stationDongMyoId, stationDongDaeMoonId,
-            distance);
+        Section 신설역_동묘역 = new Section(일호선, 신설역, 동묘역, 거리);
+        Section 동묘역_동대문역 = new Section(일호선, 동묘역, 동대문역, 거리);
 
-        sectionDao.save(sinSeolAndDongMyo);
-        sectionDao.save(dongMyoAndDongDaeMoon);
+        sectionDao.save(신설역_동묘역);
+        sectionDao.save(동묘역_동대문역);
     }
 
     @Test
     @DisplayName("Section 저장 테스트")
     public void save() {
         // given
-        Long lineId = 1L;
-        Long upStationId = 1L;
-        Long downStationId = 2L;
-        int distance = 10;
-
-        Section targetSection = new Section(lineId, upStationId, downStationId, distance);
+        Section targetSection = new Section(일호선, 신설역, 동대문역, 거리);
 
         // when
         Section savedSection = sectionDao.save(targetSection);
 
         // then
-        assertThat(savedSection.getLineId()).isEqualTo(lineId);
-        assertThat(savedSection.getUpStationId()).isEqualTo(upStationId);
-        assertThat(savedSection.getDownStationId()).isEqualTo(downStationId);
-        assertThat(savedSection.getDistance()).isEqualTo(distance);
+        assertThat(savedSection.getLine()).isEqualTo(일호선);
+        assertThat(savedSection.getUpStation()).isEqualTo(신설역);
+        assertThat(savedSection.getDownStation()).isEqualTo(동대문역);
+        assertThat(savedSection.getDistance()).isEqualTo(거리);
     }
 
     @Test
     @DisplayName("노선에 있는 Section들 반환 테스트")
-    public void findAllByLineId() {
+    public void findAllByLine() {
         // given
 
         // when
-        List<Section> sections = sectionDao.findAllByLineId(lineId);
-        Section savedSinSeolAndDongMyo = sections.get(0);
-        Section savedDongMyoAndDongDaeMoon = sections.get(1);
+        List<Section> sections = sectionDao.findAllByLine(일호선);
+        Section 저장되어있는_신설_동묘_구간 = sections.get(0);
+        Section 저장되어있는_동묘_동대문_구간 = sections.get(1);
 
         // then
-        assertThat(savedSinSeolAndDongMyo.getLineId()).isEqualTo(lineId);
-        assertThat(savedSinSeolAndDongMyo.getUpStationId()).isEqualTo(stationSinSeolId);
-        assertThat(savedSinSeolAndDongMyo.getDownStationId()).isEqualTo(stationDongMyoId);
-        assertThat(savedSinSeolAndDongMyo.getDistance()).isEqualTo(distance);
-        assertThat(savedDongMyoAndDongDaeMoon.getLineId()).isEqualTo(lineId);
-        assertThat(savedDongMyoAndDongDaeMoon.getUpStationId()).isEqualTo(stationDongMyoId);
-        assertThat(savedDongMyoAndDongDaeMoon.getDownStationId()).isEqualTo(stationDongDaeMoonId);
-        assertThat(savedDongMyoAndDongDaeMoon.getDistance()).isEqualTo(distance);
+        assertThat(저장되어있는_신설_동묘_구간.getLine()).isEqualTo(일호선);
+        assertThat(저장되어있는_신설_동묘_구간.getUpStation()).isEqualTo(신설역);
+        assertThat(저장되어있는_신설_동묘_구간.getDownStation()).isEqualTo(동묘역);
+        assertThat(저장되어있는_신설_동묘_구간.getDistance()).isEqualTo(거리);
+        assertThat(저장되어있는_동묘_동대문_구간.getLine()).isEqualTo(일호선);
+        assertThat(저장되어있는_동묘_동대문_구간.getUpStation()).isEqualTo(동묘역);
+        assertThat(저장되어있는_동묘_동대문_구간.getDownStation()).isEqualTo(동대문역);
+        assertThat(저장되어있는_동묘_동대문_구간.getDistance()).isEqualTo(거리);
     }
 
     @Test
     @DisplayName("노선에 있는 상행역 조회 테스트")
-    public void findByLineIdAndUpStationId() {
+    public void findByLineIdAndUpStation() {
         // given
 
         // when
-        Section section = sectionDao.findByLineIdAndUpStationId(lineId, stationSinSeolId)
+        Section section = sectionDao.findByLineAndUpStation(일호선, 신설역)
             .orElseThrow(InvalidSectionOnLineException::new);
 
         // then
-        assertThat(section.getLineId()).isEqualTo(lineId);
-        assertThat(section.getUpStationId()).isEqualTo(stationSinSeolId);
-        assertThat(section.getDownStationId()).isEqualTo(stationDongMyoId);
-        assertThat(section.getDistance()).isEqualTo(distance);
+        assertThat(section.getLine()).isEqualTo(일호선);
+        assertThat(section.getUpStation()).isEqualTo(신설역);
+        assertThat(section.getDownStation()).isEqualTo(동묘역);
+        assertThat(section.getDistance()).isEqualTo(거리);
     }
 
     @Test
     @DisplayName("노선에 있는 하행역 조회 테스트")
-    public void findByLineIdAndDownStationId() {
+    public void findByLineIdAndDownStation() {
         // given
 
         // when
-        Section section = sectionDao.findByLineIdAndDownStationId(lineId, stationDongMyoId)
+        Section section = sectionDao.findByLineAndDownStation(일호선, 동묘역)
             .orElseThrow(InvalidSectionOnLineException::new);
 
         // then
-        assertThat(section.getLineId()).isEqualTo(lineId);
-        assertThat(section.getUpStationId()).isEqualTo(stationSinSeolId);
-        assertThat(section.getDownStationId()).isEqualTo(stationDongMyoId);
-        assertThat(section.getDistance()).isEqualTo(distance);
+        assertThat(section.getLine()).isEqualTo(일호선);
+        assertThat(section.getUpStation()).isEqualTo(신설역);
+        assertThat(section.getDownStation()).isEqualTo(동묘역);
+        assertThat(section.getDistance()).isEqualTo(거리);
     }
 
     @Test
     @DisplayName("노선에 있는 상/하행역 조회 예외처리")
-    public void findByLineIdAndStationId() {
+    public void findByLineIdAndStation() {
         // given
+        Station 없는역 = new Station(9L, "없는역");
+        Line 없는노선 = new Line(2L, "없는노선", "bg-white-999");
 
         // when
 
         // then
-        assertThat(sectionDao.findByLineIdAndUpStationId(lineId, 9L)).isEmpty();
-        assertThat(sectionDao.findByLineIdAndUpStationId(2L, stationDongMyoId)).isEmpty();
-        assertThat(sectionDao.findByLineIdAndDownStationId(2L, stationDongMyoId)).isEmpty();
-        assertThat(sectionDao.findByLineIdAndUpStationId(lineId, stationDongDaeMoonId)).isEmpty();
+        assertThat(sectionDao.findByLineAndUpStation(일호선, 없는역)).isEmpty();
+        assertThat(sectionDao.findByLineAndUpStation(없는노선, 동묘역)).isEmpty();
+        assertThat(sectionDao.findByLineAndDownStation(없는노선, 동묘역)).isEmpty();
+        assertThat(sectionDao.findByLineAndUpStation(일호선, 동대문역)).isEmpty();
     }
 
     @Test
     @DisplayName("구간 중 상행역 제거")
-    public void deleteByLineIdAndUpStationId() {
+    public void deleteByLineIdAndUpStation() {
         // given
-        Long targetRemoveStationId = 1L;
 
         // when
-        List<Section> beforeAllByLineId = sectionDao.findAllByLineId(lineId);
-        int result = sectionDao.deleteByLineIdAndUpStationId(lineId, targetRemoveStationId);
-        List<Section> afterAllByLindId = sectionDao.findAllByLineId(lineId);
+        List<Section> 제거전_전체_역 = sectionDao.findAllByLine(일호선);
+        int 제거된_역_개수 = sectionDao.deleteByLineAndUpStation(일호선, 신설역);
+        List<Section> 제거후_전체_역 = sectionDao.findAllByLine(일호선);
 
         //then
-        assertThat(result).isEqualTo(1);
-        assertThat(beforeAllByLineId).hasSize(2);
-        assertThat(afterAllByLindId).hasSize(1);
+        assertThat(제거된_역_개수).isEqualTo(1);
+        assertThat(제거전_전체_역).hasSize(2);
+        assertThat(제거후_전체_역).hasSize(1);
     }
 
     @Test
     @DisplayName("구간 중 하행역 제거")
-    public void deleteByLineIdAndDownStationId() {
-        Long targetRemoveStationId = 3L;
+    public void deleteByLineIdAndDownStation() {
+        // given
 
         // when
-        List<Section> beforeAllByLineId = sectionDao.findAllByLineId(lineId);
-        int result = sectionDao.deleteByLineIdAndDownStationId(lineId, targetRemoveStationId);
-        List<Section> afterAllByLindId = sectionDao.findAllByLineId(lineId);
+        List<Section> 제거전_전체_역 = sectionDao.findAllByLine(일호선);
+        int 제거된_역_개수 = sectionDao.deleteByLineAndDownStation(일호선, 동대문역);
+        List<Section> 제거후_전체_역 = sectionDao.findAllByLine(일호선);
 
         //then
-        assertThat(result).isEqualTo(1);
-        assertThat(beforeAllByLineId).hasSize(2);
-        assertThat(afterAllByLindId).hasSize(1);
+        assertThat(제거된_역_개수).isEqualTo(1);
+        assertThat(제거전_전체_역).hasSize(2);
+        assertThat(제거후_전체_역).hasSize(1);
     }
 
     @Test
     @DisplayName("구간 제거")
     public void delete() {
         // given
-        Long targetRemoveSectionId = 1L;
-        Section section = new Section(1L, 1L, 2L, 3L, 10);
+        Section section = new Section(new Id(2L), 일호선, 동묘역, 동대문역, 거리);
 
         // when
-        List<Section> beforeAllByLineId = sectionDao.findAllByLineId(lineId);
-        int result = sectionDao.delete(section);
-        List<Section> afterAllByLindId = sectionDao.findAllByLineId(lineId);
+        List<Section> 제거전_전체_역 = sectionDao.findAllByLine(일호선);
+        int 제거된_역_개수 = sectionDao.delete(section);
+        List<Section> 제거후_전체_역 = sectionDao.findAllByLine(일호선);
 
         // then
-        assertThat(result).isEqualTo(1);
-        assertThat(beforeAllByLineId).hasSize(2);
-        assertThat(afterAllByLindId).hasSize(1);
+        assertThat(제거된_역_개수).isEqualTo(1);
+        assertThat(제거전_전체_역).hasSize(2);
+        assertThat(제거후_전체_역).hasSize(1);
     }
 }

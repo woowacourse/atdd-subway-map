@@ -13,7 +13,6 @@ import wooteco.subway.domain.Lines;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.service.dto.CreateLineDto;
 import wooteco.subway.service.dto.CreateSectionDto;
-import wooteco.subway.service.dto.DeleteStationDto;
 import wooteco.subway.service.dto.LineServiceDto;
 import wooteco.subway.service.dto.ReadLineDto;
 import wooteco.subway.service.dto.SectionServiceDto;
@@ -40,7 +39,7 @@ public class LineService {
         Line saveLine = lineDao.create(line);
 
         SectionServiceDto sectionServiceDto = SectionServiceDto.of(saveLine, createLineDto);
-        sectionService.saveByLineCreate(sectionServiceDto);
+        sectionService.saveByLineCreate(saveLine, sectionServiceDto);
         return LineServiceDto.from(saveLine);
     }
 
@@ -55,7 +54,7 @@ public class LineService {
     @Transactional
     public ReadLineDto findOne(@Valid LineServiceDto lineServiceDto) {
         Line line = lineDao.show(lineServiceDto.getId());
-        List<StationResponse> stationResponses = sectionService.findAllbyLindId(line.getId());
+        List<StationResponse> stationResponses = sectionService.findAllByLind(line);
         return ReadLineDto.of(line, stationResponses);
     }
 
@@ -79,13 +78,14 @@ public class LineService {
 
     @Transactional
     public void createSection(@Valid CreateSectionDto createSectionDto) {
+        Line line = lineDao.show(createSectionDto.getLineId());
         SectionServiceDto sectionServiceDto = SectionServiceDto.from(createSectionDto);
-        sectionService.save(sectionServiceDto);
+        sectionService.save(line, sectionServiceDto);
     }
 
     @Transactional
     public void deleteStation(@NotNull Long lineId, @NotNull Long stationId) {
-        DeleteStationDto deleteStationDto = new DeleteStationDto(lineId, stationId);
-        sectionService.delete(deleteStationDto);
+        Line line = lineDao.show(lineId);
+        sectionService.delete(line, stationId);
     }
 }

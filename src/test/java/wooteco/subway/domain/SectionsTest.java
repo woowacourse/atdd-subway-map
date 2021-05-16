@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,11 +17,18 @@ class SectionsTest {
 
     private Sections sections;
 
+    private final Line 칠호선 = new Line(7L, "7호선", "bg-green-100");
+    private final Station 상봉역 = new Station(1L, "상봉역");
+    private final Station 면목역 = new Station(2L, "면목역");
+    private final Station 사가정역 = new Station(3L, "사가정역");
+    private final Station 용마산역 = new Station(4L, "용마산역");
+    private final Distance 거리 = new Distance(10);
+
     @BeforeEach
     void setUp() {
-        Section section1 = new Section(1L, 1L, 2L, 10);
-        Section section2 = new Section(1L, 2L, 3L, 10);
-        Section section3 = new Section(1L, 3L, 4L, 10);
+        Section section1 = new Section(칠호선, 상봉역, 면목역, 거리);
+        Section section2 = new Section(칠호선, 면목역, 사가정역, 거리);
+        Section section3 = new Section(칠호선, 사가정역, 용마산역, 거리);
 
         sections = new Sections(Arrays.asList(section1, section2, section3));
     }
@@ -31,45 +37,30 @@ class SectionsTest {
     @DisplayName("제공된 구간이 노선의 상/하행 끝 구간인지 확인")
     void isBothEndSection() {
         // given
-        Section upHeadSection = new Section(1L, 1L, 2L, 10);
-        Section upMiddleSection = new Section(1L, 2L, 3L, 10);
-        Section upTailSection = new Section(1L, 3L, 4L, 10);
-
-        Section downHeadSection = new Section(1L, 4L, 3L, 10);
-        Section downMiddleSection = new Section(1L, 3L, 2L, 10);
-        Section downTailSection = new Section(1L, 2L, 1L, 10);
+        Section headSection = new Section(칠호선, 상봉역, 면목역, 거리);
+        Section middleSection = new Section(칠호선, 면목역, 사가정역, 거리);
+        Section tailSection = new Section(칠호선, 사가정역, 용마산역, 거리);
 
         // when
-        boolean upHeadSectionResult = sections.isBothEndSection(upHeadSection);
-        boolean upMiddleSectionResult = sections.isBothEndSection(upMiddleSection);
-        boolean upTailSectionResult = sections.isBothEndSection(upTailSection);
-
-        boolean downHeadSectionResult = sections.isBothEndSection(downHeadSection);
-        boolean downMiddleSectionResult = sections.isBothEndSection(downMiddleSection);
-        boolean downTailSectionResult = sections.isBothEndSection(downTailSection);
+        boolean headSectionResult = sections.isBothEndSection(headSection);
+        boolean middleSectionResult = sections.isBothEndSection(middleSection);
+        boolean tailSectionResult = sections.isBothEndSection(tailSection);
 
         // then
-        assertThat(upHeadSectionResult).isTrue();
-        assertThat(upMiddleSectionResult).isFalse();
-        assertThat(upTailSectionResult).isTrue();
-
-        assertThat(downHeadSectionResult).isTrue();
-        assertThat(downMiddleSectionResult).isFalse();
-        assertThat(downTailSectionResult).isTrue();
+        assertThat(headSectionResult).isTrue();
+        assertThat(middleSectionResult).isFalse();
+        assertThat(tailSectionResult).isTrue();
     }
 
     @Test
     @DisplayName("제공된 지하철 역이 노선의 상/하행 끝 역인지 확인")
     void isBothEndStation() {
         // given
-        Long headStationId = 1L;
-        Long middleStationId = 2L;
-        Long tailStationId = 4L;
 
         // when
-        boolean headStationResult = sections.isBothEndStation(headStationId);
-        boolean middleStationResult = sections.isBothEndStation(middleStationId);
-        boolean tailStationResult = sections.isBothEndStation(tailStationId);
+        boolean headStationResult = sections.isBothEndStation(상봉역);
+        boolean middleStationResult = sections.isBothEndStation(면목역);
+        boolean tailStationResult = sections.isBothEndStation(용마산역);
 
         // then
         assertThat(headStationResult).isTrue();
@@ -81,19 +72,17 @@ class SectionsTest {
     @DisplayName("정렬된 지하철 역 아이디 반환")
     void sortedStationIds() {
         // given
-        List<Section> legacySections = Arrays.asList(
-            new Section(1L, 3L, 4L, 10),
-            new Section(1L, 1L, 2L, 10),
-            new Section(1L, 2L, 3L, 10)
-        );
+        Section 사가정_용마산 = new Section(칠호선, 사가정역, 용마산역, 거리);
+        Section 상봉_면목 = new Section(칠호선, 상봉역, 면목역, 거리);
+        Section 면목_사가정 = new Section(칠호선, 면목역, 사가정역, 거리);
 
-        sections = new Sections(legacySections);
+        sections = new Sections(Arrays.asList(사가정_용마산, 상봉_면목, 면목_사가정));
 
         // when
-        Deque<Long> sortedStationIds = sections.sortedStationIds();
+        Deque<Station> 오름차순_정렬된_역목록 = sections.sortedStations();
 
         // then
-        assertThat(sortedStationIds).containsExactly(1L, 2L, 3L, 4L);
+        assertThat(오름차순_정렬된_역목록).containsExactly(상봉역, 면목역, 사가정역, 용마산역);
     }
 
 
@@ -101,15 +90,17 @@ class SectionsTest {
     @DisplayName("이미 등록되어 있는 구간이거나, 구간 등록을 위한 역이 1개도 없는지 확인")
     void validateInsertable() {
         // given
-        Section alreadyExistSection = new Section(1L, 1L, 2L, 10);
-        Section nonExistSection = new Section(1L, 5L, 6L, 10);
+        Station 새로운역1 = new Station(5L, "새로운역1");
+        Station 새로운역2 = new Station(6L, "새로운역2");
+        Section 이미_양역이_함께_구간으로_등록 = new Section(칠호선, 상봉역, 면목역, 거리);
+        Section 구간으로_등록된_역이_없음 = new Section(칠호선, 새로운역1, 새로운역2, 거리);
 
         // when
 
         // then
-        assertThatThrownBy(() -> sections.validateInsertable(alreadyExistSection))
+        assertThatThrownBy(() -> sections.validateInsertable(이미_양역이_함께_구간으로_등록))
             .isInstanceOf(InvalidSectionOnLineException.class);
-        assertThatThrownBy(() -> sections.validateInsertable(nonExistSection))
+        assertThatThrownBy(() -> sections.validateInsertable(구간으로_등록된_역이_없음))
             .isInstanceOf(InvalidSectionOnLineException.class);
     }
 
@@ -118,7 +109,7 @@ class SectionsTest {
     void validateDeletableCount() {
         // given
         Sections sections = new Sections(Collections.singletonList(
-            new Section(1L, 1L, 2L, 10)
+            new Section(칠호선, 상봉역, 면목역, 거리)
         ));
 
         // when
@@ -132,12 +123,12 @@ class SectionsTest {
     @DisplayName("현재 노선에 지하철 역이 존재하는지 검증")
     void validateExistStation() {
         // given
-        Long nonExistStationId = 9L;
+        Station 새로운역 = new Station(9L, "새로운역");
 
         // when
 
         // then
-        assertThatThrownBy(() -> sections.validateExistStation(nonExistStationId))
+        assertThatThrownBy(() -> sections.validateExistStation(새로운역))
             .isInstanceOf(NotFoundException.class);
     }
 
@@ -160,10 +151,10 @@ class SectionsTest {
     @DisplayName("현재 노선에서 지하철 상/하행 역이 일치하는 구간을 찾아서 반환")
     void findByStationId() {
         // given
-        Section section = new Section(1L, 1L, 2L, 10);
+        Section section = new Section(칠호선, 상봉역, 면목역, 거리);
 
         // when
-        Section foundSection = sections.findByStationId(section);
+        Section foundSection = sections.findByMatchStation(section);
 
         // then
         assertThat(foundSection.hasSameStationBySection(section)).isTrue();
@@ -174,12 +165,14 @@ class SectionsTest {
     @DisplayName("현재 노선에서 지하철 상/하행 역이 일치하는 구간이 없을 경우 예외처리")
     void findByStationIdException() {
         // given
-        Section invalidSection = new Section(1L, 51L, 9L, 10);
+        Station 새로운역1 = new Station(5L, "새로운역1");
+        Station 새로운역2 = new Station(6L, "새로운역2");
+        Section invalidSection = new Section(칠호선, 새로운역1, 새로운역2, 거리);
 
         // when
 
         // then
-        assertThatThrownBy(() -> sections.findByStationId(invalidSection))
+        assertThatThrownBy(() -> sections.findByMatchStation(invalidSection))
             .isInstanceOf(InvalidSectionOnLineException.class);
     }
 }

@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.NotFoundException;
 
 @Repository
 public class StationDao {
@@ -39,12 +41,21 @@ public class StationDao {
     }
 
     public List<Station> showAll() {
-        String statement = "SELECT * FROM STATION";
-        return jdbcTemplate.query(statement, rowMapper);
+        String sql = "SELECT * FROM STATION";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public int delete(long id) {
-        String statement = "DELETE FROM station WHERE id = ?";
-        return jdbcTemplate.update(statement, id);
+    public Station showById(Long id) {
+        try {
+            String sql = "SELECT * FROM station WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException();
+        }
+    }
+
+    public int delete(Long id) {
+        String sql = "DELETE FROM station WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 }
