@@ -78,7 +78,7 @@ public class JdbcSectionDao implements SectionDao {
     @Override
     public void updateSectionToBackward(Long lineId, Section newSection, int changedDistance) {
         String query = "UPDATE section SET down_station_id = ?, distance = ? WHERE down_station_id = ? AND line_id = ?";
-        jdbcTemplate.update(query, newSection.getUpStationId(), changedDistance, newSection.getDownStationId());
+        jdbcTemplate.update(query, newSection.getUpStationId(), changedDistance, newSection.getDownStationId(), lineId);
     }
 
     @Override
