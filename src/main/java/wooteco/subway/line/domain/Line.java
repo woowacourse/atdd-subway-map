@@ -2,9 +2,6 @@ package wooteco.subway.line.domain;
 
 import wooteco.subway.line.state.State;
 import wooteco.subway.line.state.StateFactory;
-import wooteco.subway.name.domain.LineName;
-import wooteco.subway.name.domain.Name;
-import wooteco.subway.name.domain.NullName;
 import wooteco.subway.station.domain.Station;
 
 import java.util.List;
@@ -12,12 +9,12 @@ import java.util.Objects;
 
 public class Line {
     private final Long id;
-    private Name name;
+    private LineName name;
     private String color;
     private final State state;
 
     public Line(final Long id) {
-        this(id, new NullName(), null);
+        this(id, LineName.emptyName(), null);
     }
 
     public Line(final String name, final String color) {
@@ -28,7 +25,7 @@ public class Line {
         this(id, new LineName(name), color);
     }
 
-    public Line(final Long id, final Name name, final String color) {
+    public Line(final Long id, final LineName name, final String color) {
         this(id, name, color, StateFactory.initialize(new Sections()));
     }
 
@@ -36,7 +33,7 @@ public class Line {
         this(id, new LineName(name), color, StateFactory.initialize(new Sections(sections)));
     }
 
-    public Line(final Long id, final Name name, final String color, final State state) {
+    public Line(final Long id, final LineName name, final String color, final State state) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -47,7 +44,7 @@ public class Line {
         return id;
     }
 
-    public Name name() {
+    public LineName name() {
         return name;
     }
 
