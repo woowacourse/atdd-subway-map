@@ -47,4 +47,8 @@ public class LineRequest {
     public Line toLine(final Long id) {
         return new Line(id, name, color, upStationId, downStationId);
     }
+
+    public Line toLine(final Long id) {
+        return new Line(id, name, color, upStationId, downStationId, distance);
+    }
 }
