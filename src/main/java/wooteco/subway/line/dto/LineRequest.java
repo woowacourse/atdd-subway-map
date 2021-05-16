@@ -55,7 +55,7 @@ public class LineRequest {
 
     public Section toLinesEntity() {
         return new Section(
-                new Line(null, name, color),
+                new Line(name, color),
                 new Station(upStationId),
                 new Station(downStationId),
                 distance);

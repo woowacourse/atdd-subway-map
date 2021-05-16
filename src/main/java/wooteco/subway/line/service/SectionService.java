@@ -1,6 +1,7 @@
 package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.dao.SectionDao;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.dto.LineRequest;
@@ -11,6 +12,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Transactional
 @Service
 public class SectionService {
     private final SectionDao sectionDao;
@@ -34,6 +36,7 @@ public class SectionService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findSectionById(Long id) {
         List<Section> sections = sectionDao.findSectionBylineId(id);
         List<Station> stations = stationsOfLine(sections);

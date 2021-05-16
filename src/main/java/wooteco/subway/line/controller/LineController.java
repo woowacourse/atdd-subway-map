@@ -3,7 +3,6 @@ package wooteco.subway.line.controller;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.service.LineService;
@@ -63,7 +62,7 @@ public class LineController {
     @PostMapping("/{id}/sections")
     public ResponseEntity<LineResponse> addSection(@PathVariable Long id, @RequestBody @Valid LineRequest lineRequest) {
         sectionService.saveSectionOfExistLine(id, lineRequest);
-        LineResponse lineResponse = lineService.findById(id); // TODO : 오.. 진짜 개이상하다. LineResponse 받고 또 다시 생성
+        LineResponse lineResponse = lineService.findById(id); // TODO :LineResponse 받고 또 다시 생성?  쉣.. 말도 안되지 다시 수정 ㄱ
         List<StationResponse> section = sectionService.findSectionById(id);
         return ResponseEntity.ok(new LineResponse(id, lineResponse.getName(), lineResponse.getColor(), section));
     }
