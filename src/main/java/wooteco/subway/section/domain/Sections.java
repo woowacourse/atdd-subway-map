@@ -6,7 +6,6 @@ import java.util.List;
 import wooteco.subway.exception.DeleteSectionException;
 import wooteco.subway.exception.DuplicatedSectionException;
 import wooteco.subway.exception.NotContainStationsException;
-import wooteco.subway.exception.NotExistStationException;
 import wooteco.subway.exception.NotFoundTerminalStationException;
 import wooteco.subway.station.domain.Station;
 
@@ -23,27 +22,28 @@ public class Sections {
 
     private List<Section> sortedSections(List<Section> sections) {
         List<Section> sortedSection = new ArrayList<>();
-        Station upStation = upTerminalSection(sections).getUpStation();
+        Station currentStation = upTerminalSection(sections).getUpStation();
 
         for (int i = 0; i < sections.size(); i++) {
-            for (Section section : sections) {
-                if (section.getUpStation().equals(upStation)) {
-                    sortedSection.add(section);
-                    upStation = section.getDownStation();
-                }
-            }
+            currentStation = addSection(sections, sortedSection, currentStation);
         }
         return sortedSection;
     }
 
-    private Section upTerminalSection(List<Section> sections) {
-        List<Long> upStationIds = new LinkedList<>();
-        List<Long> downStationIds = new LinkedList<>();
+    private Station addSection(List<Section> sections, List<Section> sortedSections,
+        Station currentStation) {
+        for (Section section : sections) {
+            if (section.isEqualsUpStation(currentStation)) {
+                sortedSections.add(section);
+                return section.getDownStation();
+            }
+        }
+        throw new IllegalArgumentException();
+    }
 
-        sections.forEach(section -> {
-            upStationIds.add(section.getUpStationId());
-            downStationIds.add(section.getDownStationId());
-        });
+    private Section upTerminalSection(List<Section> sections) {
+        List<Long> upStationIds = stationIds(sections, true);
+        List<Long> downStationIds = stationIds(sections, false);
 
         upStationIds.removeAll(downStationIds);
         Long upTerminalStationId = upStationIds.get(0);
@@ -54,29 +54,49 @@ public class Sections {
             .orElseThrow(NotFoundTerminalStationException::new);
     }
 
+    private List<Long> stationIds(List<Section> sections, boolean isUpStation) {
+        List<Long> stationIds = new LinkedList<>();
+        sections.forEach(section -> {
+            if (isUpStation) {
+                stationIds.add(section.getUpStationId());
+                return;
+            }
+            stationIds.add(section.getDownStationId());
+        });
+        return stationIds;
+    }
+
     public boolean isTerminalSection(Section section) {
-        return sections.get(0).getUpStation().equals(section.getDownStation())
-            || sections.get(sections.size() - 1).getDownStation().equals(section.getUpStation());
+        return isEqualsTerminalUpSection(section)
+            || isEqualsTerminalDownSection(section);
+    }
+
+    private boolean isEqualsTerminalUpSection(Section section) {
+        return sections.get(0).isPreviousSection(section);
+    }
+
+    private boolean isEqualsTerminalDownSection(Section section) {
+        return sections.get(sections.size() - 1).isNextSection(section);
     }
 
     public boolean isTerminalStation(Station station) {
-        return sections.get(0).getUpStation().equals(station)
-            || sections.get(sections.size() - 1).getDownStation().equals(station);
+        return sections.get(0).isEqualsUpStation(station)
+            || sections.get(sections.size() - 1).isEqualsDownStation(station);
     }
 
     public void validateAddable(Section section) {
         validateDuplicatedSection(section);
-        validateContainStation(section);
+        validateExistStation(section);
     }
 
     public void validateDuplicatedSection(Section section) {
         if (sections.stream()
-            .noneMatch((it -> section.equals(section)))) {
+            .anyMatch((it -> it.equals(section)))) {
             throw new DuplicatedSectionException();
         }
     }
 
-    public void validateContainStation(Section section) {
+    public void validateExistStation(Section section) {
         List<Station> stations = sortedStations();
 
         if (!stations.contains(section.getUpStation())
@@ -86,47 +106,46 @@ public class Sections {
     }
 
     public void validateRemovable(Station station) {
+        validateSectionsSize();
+        validateExistStation(station);
+    }
+
+    public void validateSectionsSize() {
         if (sections.size() == 1) {
             throw new DeleteSectionException();
         }
-
-        for (Section section : sections) {
-            if (section.getUpStation().equals(station)
-                || section.getDownStation().equals(station)) {
-                return;
-            }
-        }
-        throw new NotExistStationException();
     }
 
-    public Section createdSectionByAddSection(Section section) {
+    public void validateExistStation(Station station) {
+        List<Station> stations = sortedStations();
+        if (!stations.contains(station)) {
+            throw new NotContainStationsException();
+        }
+    }
+
+    public Section createdSectionByAddInternalSection(Section section) {
         for (Section currentSection : sections) {
-            if (currentSection.isSameUpStation(section)) {
-                return new Section(section.getLineId(), section.getDownStation(),
-                    currentSection.getDownStation(), currentSection.minusDistance(section));
+            if (currentSection.isEqualsUpStation(section)) {
+                return currentSection.createdDownSection(section);
             }
-            if (currentSection.isSameDownStation(section)) {
-                return new Section(section.getLineId(), currentSection.getUpStation(),
-                    section.getUpStation(), currentSection.minusDistance(section));
+            if (currentSection.isEqualsDownStation(section)) {
+                return currentSection.createdUpSection(section);
             }
         }
         throw new IllegalArgumentException();
     }
 
-    public Section removedSectionByAddSection(Section section) {
-        for (Section currentSection : sections) {
-            if (currentSection.isSameUpStation(section) || currentSection
-                .isSameDownStation(section)) {
-                return currentSection;
-            }
-        }
-        throw new IllegalArgumentException();
+    public Section removedSectionByAddInternalSection(Section section) {
+        return sections.stream()
+            .filter((it) -> it.isContainEqualsStation(section))
+            .findAny()
+            .orElseThrow(IllegalArgumentException::new);
     }
 
     public Section createdSectionByRemoveStation(Long lineId, Station station) {
         for (int i = 0; i < sections.size(); i++) {
             Section currentSection = sections.get(i);
-            if (currentSection.getUpStation().equals(station)) {
+            if (currentSection.isEqualsUpStation(station)) {
                 Section prevSection = sections.get(i - 1);
                 int newDistance = prevSection.getDistance() + currentSection.getDistance();
                 return new Section(lineId, prevSection.getUpStation(),
@@ -138,7 +157,6 @@ public class Sections {
 
     public List<Section> removedSectionsByRemoveStation(Station station) {
         List<Section> removedSections = new ArrayList<>();
-
         for (int i = 0; i < sections.size(); i++) {
             Section currentSection = sections.get(i);
             if (currentSection.getUpStation().equals(station)) {
@@ -152,12 +170,12 @@ public class Sections {
 
     public Section removedTerminalSectionByRemoveStation(Station station) {
         Section upTerminalSection = sections.get(0);
-        if (upTerminalSection.getUpStation().equals(station)) {
+        if (upTerminalSection.isEqualsUpStation(station)) {
             return upTerminalSection;
         }
 
         Section downTerminalSection = sections.get(sections.size() - 1);
-        if (downTerminalSection.getDownStation().equals(station)) {
+        if (downTerminalSection.isEqualsDownStation(station)) {
             return downTerminalSection;
         }
         throw new IllegalArgumentException();

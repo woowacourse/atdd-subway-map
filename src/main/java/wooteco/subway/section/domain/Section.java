@@ -33,16 +33,44 @@ public class Section {
         }
     }
 
-    public boolean isSameUpStation(Section section) {
+    public boolean isContainEqualsStation(Section section){
+        return isEqualsUpStation(section) || isEqualsDownStation(section);
+    }
+
+    public boolean isEqualsUpStation(Section section) {
         return upStation.equals(section.getUpStation());
     }
 
-    public boolean isSameDownStation(Section section) {
+    public boolean isEqualsDownStation(Section section) {
         return downStation.equals(section.getDownStation());
+    }
+
+    public boolean isEqualsUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isEqualsDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public int minusDistance(Section section) {
         return distance - section.getDistance();
+    }
+
+    public boolean isPreviousSection(Section section) {
+        return upStation.equals(section.downStation);
+    }
+
+    public boolean isNextSection(Section section) {
+        return downStation.equals(section.upStation);
+    }
+
+    public Section createdDownSection(Section section) {
+        return new Section(lineId, section.getDownStation(), downStation, minusDistance(section));
+    }
+
+    public Section createdUpSection(Section section) {
+        return new Section(lineId, upStation, section.getUpStation(), minusDistance(section));
     }
 
     public Station getUpStation() {
@@ -92,4 +120,5 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id, lineId, upStation, downStation, distance);
     }
+
 }

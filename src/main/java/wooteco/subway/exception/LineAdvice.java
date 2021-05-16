@@ -1,4 +1,4 @@
-package wooteco.subway.line.controller;
+package wooteco.subway.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -43,4 +43,13 @@ public class LineAdvice {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
+    @ExceptionHandler(DuplicateStationNameException.class)
+    public ResponseEntity<String> handleDuplicateStationNameException(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(NotExistStationException.class)
+    public ResponseEntity<String> handleNotExistStationException(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }

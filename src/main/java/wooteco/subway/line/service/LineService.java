@@ -1,7 +1,6 @@
 package wooteco.subway.line.service;
 
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.DuplicateLineNameException;
@@ -45,11 +44,8 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public Line findLine(Long id) {
-        Optional<Line> line = lineRepository.findById(id);
-        if (line.isPresent()) {
-            return line.get();
-        }
-        throw new NotExistLineException();
+        return lineRepository.findById(id)
+            .orElseThrow(NotExistLineException::new);
     }
 
     @Transactional(readOnly = true)
@@ -90,13 +86,12 @@ public class LineService {
         Section newSection = section(lineId, lineRequest);
         sections.validateAddable(newSection);
 
-        if (sections.isTerminalSection(newSection)) {
-            sectionService.create(lineId, new SectionRequest(newSection));
-            return;
+        if (!sections.isTerminalSection(newSection)) {
+            sectionService.create(lineId, new SectionRequest(sections.createdSectionByAddInternalSection(newSection)));
+            sectionService.delete(lineId, new SectionRequest(sections.removedSectionByAddInternalSection(newSection)));
         }
-        sectionService.create(lineId, new SectionRequest(sections.createdSectionByAddSection(newSection)));
+
         sectionService.create(lineId, new SectionRequest(newSection));
-        sectionService.delete(lineId, new SectionRequest(sections.removedSectionByAddSection(newSection)));
     }
 
     @Transactional
