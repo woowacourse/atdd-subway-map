@@ -56,7 +56,6 @@ public class Sections {
 
     private void setMapToFindStations(Map<Station, Station> upStationToFindDown, Map<Station, Station> downStationToFindUp) {
         for (Section section : sections) {
-            System.out.println(section);
             upStationToFindDown.put(section.getUpStation(), section.getDownStation());
             downStationToFindUp.put(section.getDownStation(), section.getUpStation());
         }
