@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.exception.SubwayException;
@@ -16,6 +17,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handle(SubwayException e) {
         logger.error(String.valueOf(e.getBody()));
         return ResponseEntity.status(e.getHttpStatus()).body(e.getBody());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleValidException(Exception e) {
+        logger.error(String.valueOf(e.getMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
