@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,26 +45,13 @@ public class SectionService {
             route.put(section.getDownStationId(),
                 route.getOrDefault(section.getDownStationId(), 0L) - 1);
         }
-        return findEndPointInRoute(route);
+
+        SectionRoutes sectionRoutes = new SectionRoutes(route);
+        return sectionRoutes.findEndPointInRoute(route);
     }
-
-    private LineEndPoint findEndPointInRoute(Map<Long, Long> route) {
-        long upStationId = 0L;
-        long downStationId = 0L;
-
-        for (Entry<Long, Long> entry : route.entrySet()) {
-            if (entry.getValue() == 1L) {
-                upStationId = entry.getKey();
-            }
-            if (entry.getValue() == -1L) {
-                downStationId = entry.getKey();
-            }
-        }
-        return new LineEndPoint(upStationId, downStationId);
-    }
-
 
     public List<Station> findStationsByLineId(long lineId) {
+
         LineEndPoint sectionEndPoint = findSectionEndPoint(lineId);
 
         List<Station> stations = new ArrayList<>();
