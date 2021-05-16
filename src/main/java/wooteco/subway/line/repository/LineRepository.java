@@ -18,21 +18,26 @@ import java.util.Objects;
 @Repository
 public class LineRepository {
     private static final int NO_EXIST_COUNT = 0;
+
     private final JdbcTemplate jdbcTemplate;
-
-    public LineRepository(final JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
             resultSet.getLong("id"),
             resultSet.getString("color"),
             resultSet.getString("name")
     );
 
+    public LineRepository(final JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     public boolean isExistName(final Line line) {
         String query = "SELECT EXISTS(SELECT * FROM Line WHERE name = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, line.getName());
+    }
+
+    public boolean isExistId(final Long lineId) {
+        String query = "SELECT EXISTS(SELECT * FROM Line WHERE id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, lineId);
     }
 
     public Line save(final Line line) {

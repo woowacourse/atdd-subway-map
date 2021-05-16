@@ -18,7 +18,6 @@ import java.util.Objects;
 public class StationRepository {
     public static final int NO_EXIST_COUNT = 0;
     private final JdbcTemplate jdbcTemplate;
-
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
             resultSet.getLong("id"),
             resultSet.getString("name")
@@ -31,6 +30,11 @@ public class StationRepository {
     public boolean isExistName(final Station station) {
         String query = "SELECT EXISTS(SELECT * FROM STATION WHERE name = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, station.getName());
+    }
+
+    public boolean isExistId(final Long id) {
+        String query = "SELECT EXISTS(SELECT * FROM STATION WHERE id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, id);
     }
 
     public Station save(final Station station) {

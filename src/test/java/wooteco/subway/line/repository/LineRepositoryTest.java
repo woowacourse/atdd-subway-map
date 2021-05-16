@@ -126,4 +126,11 @@ class LineRepositoryTest {
         assertThatThrownBy(() -> lineRepository.deleteById(100L))
                 .isInstanceOf(NotFoundException.class);
     }
+
+    @DisplayName("존재하지 id의 Line을 가져오려고하면, true가 리턴된다")
+    @Test
+    void isExistId() {
+        assertThat(lineRepository.isExistId(1L)).isTrue();
+        assertThat(lineRepository.isExistId(100L)).isFalse();
+    }
 }

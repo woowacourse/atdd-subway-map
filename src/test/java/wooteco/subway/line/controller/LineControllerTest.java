@@ -11,26 +11,59 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.dto.SectionRequest;
+import wooteco.subway.station.dto.StationResponse;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Sql("classpath:tableInit.sql")
 class LineControllerTest extends AcceptanceTest {
     private ExtractableResponse<Response> response;
-    private Map<String, String> params;
+    private Map<String, Object> params;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
 
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "강남역");
+        final ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "역삼역");
+        final ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
+        Map<String, String> params3 = new HashMap<>();
+        params3.put("name", "판교역");
+        final ExtractableResponse<Response> createResponse3 = RestAssured.given().log().all()
+                .body(params3)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
         params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
+        params.put("upStationId", 1L);
+        params.put("downStationId", 2L);
+        params.put("distance", 77);
         response = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -52,6 +85,68 @@ class LineControllerTest extends AcceptanceTest {
         assertThat(response.as(LineResponse.class).getName()).isEqualTo("신분당선");
     }
 
+    @DisplayName("필드값이 없는 Request를 보내면, 400 상태 코드를 받는다.")
+    @Test
+    void emptyFieldFail() {
+        Map<String, Object> wrongParams = new HashMap<>();
+        wrongParams.put("color", "bg-red-600");
+        wrongParams.put("name", "잘못된 분당선");
+
+        response = RestAssured.given().log().all()
+                .body(wrongParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("상행선과 하행선이 동일하게 노선을 생성하면, 400 상태 코드를 받는다.")
+    @Test
+    void duplicateStationFail() {
+        Map<String, Object> wrongParams = new HashMap<>();
+        wrongParams.put("color", "bg-red-600");
+        wrongParams.put("name", "잘못된 분당선");
+        wrongParams.put("upStationId", 1L);
+        wrongParams.put("downStationId", 1L);
+        wrongParams.put("distance", 77);
+
+        response = RestAssured.given().log().all()
+                .body(wrongParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("없는 station들을 가지고 노선을 생성하면, 404 상태코드를 받는다.")
+    @Test
+    void createLineNotExistStation() {
+
+        Map<String, Object> wrongParams = new HashMap<>();
+        wrongParams.put("color", "bg-red-600");
+        wrongParams.put("name", "분당선");
+        wrongParams.put("upStationId", 100L);
+        wrongParams.put("downStationId", 200L);
+        wrongParams.put("distance", 77);
+
+        // then
+        response = RestAssured.given().log().all()
+                .body(wrongParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
     @DisplayName("중복된 이름을 가진 노선을 추가하는것을 시도하면, 409 conflict 상태코드를 받는다.")
     @Test
     void createLineFail() {
@@ -70,9 +165,13 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("전체 노선을 조회하면 저장된 모든 노선들을 반환한다 ")
     @Test
     void getLines() {
-        Map<String, String> params1 = new HashMap<>();
+        Map<String, Object> params1 = new HashMap<>();
         params1.put("color", "bg-green-600");
         params1.put("name", "2호선");
+        params1.put("upStationId", 1L);
+        params1.put("downStationId", 2L);
+        params1.put("distance", 77);
+
         RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -97,9 +196,9 @@ class LineControllerTest extends AcceptanceTest {
         assertThat(line2.get("name")).isEqualTo("2호선");
     }
 
-    @DisplayName("id를 통해 노선을 조회하면, 해당 노선 정보를 반환한다.")
+    @DisplayName("id를 통해 노선을 조회하면, 해당 노선 정보와 담고 있는 stations List를 상행선, 하행선 순으로 반환한다.")
     @Test
-    void getLine() {
+    void getLineWithStationResponses() {
         ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -107,13 +206,25 @@ class LineControllerTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        List<StationResponse> expectedStationResponses = Arrays.asList(new StationResponse(1L, "강남역"), new StationResponse(2L, "역삼역"));
         LineResponse expectedLineResponse = new LineResponse(
                 1L,
                 "신분당선",
-                "bg-red-600"
+                "bg-red-600",
+                expectedStationResponses
         );
         assertThat(getResponse.as(LineResponse.class)).usingRecursiveComparison().
                 isEqualTo(expectedLineResponse);
+
+        List<StationResponse> wrongStationResponses = Arrays.asList(new StationResponse(2L, "역삼역"), new StationResponse(1L, "강남역"));
+        expectedLineResponse = new LineResponse(
+                1L,
+                "신분당선",
+                "bg-red-600",
+                wrongStationResponses
+        );
+        assertThat(getResponse.as(LineResponse.class)).usingRecursiveComparison().
+                isNotEqualTo(expectedLineResponse);
     }
 
     @DisplayName("잘못된 id를 통해 노선을 조회하면, 404 상태 코드를 받는다.")
@@ -189,5 +300,259 @@ class LineControllerTest extends AcceptanceTest {
                 .extract();
 
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("구간 추가시, 존재하지 않는 LineId에 접근하면 404 상태 코드를 받는다.")
+    @Test
+    void invalidLineIdSectionAdd() {
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/100/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("구간 추가시, 상행선과 하행선이 같게 요청을 보내면 400 상태 코드를 받는다.")
+    @Test
+    void invalidStationsSectionAdd() {
+        SectionRequest sectionRequest = new SectionRequest(1L, 1L, 10);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("구간 추가시, 상행선과 하행선이 둘다 노선에 이미 있으면, 409 상태 코드를 받는다.")
+    @Test
+    void duplicateSectionAdd() {
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+    }
+
+    @DisplayName("구간 추가시, 상행선과 하행선이 둘다 노선에 없으면, 404 상태 코드를 받는다.")
+    @Test
+    void notFoundSectionAdd() {
+        SectionRequest sectionRequest = new SectionRequest(3L, 4L, 10);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("하행선을 갱신하며 구간 추가에 성공하면, 200 상태 코드를 받는다.")
+    @Test
+    void sectionAddBaseOnUpStationId() {
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 10);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("출발지 기준으로 갱신하며, 중간 구간 추가에 성공하면, 200 상태 코드를 받는다.")
+    @Test
+    void sectionAddBaseOnUpStationIdBetweenStations() {
+        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 2);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("출발지 기준으로 갱신하며, 기존의 구간 보다 길거나 같은 구간을 삽입하여 실패한 경우, 400 상태 코드를 받는다.")
+    @Test
+    void sectionAddBaseOnUpStationIdBetweenStationsFail() {
+        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 77);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("상행선을 갱신하며 구간 추가에 성공하면, 200 상태 코드를 받는다.")
+    @Test
+    void sectionAddBaseOnDownStationId() {
+        SectionRequest sectionRequest = new SectionRequest(3L, 1L, 10);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("목적지를 기준으로 갱신하며, 중간 구간 추가에 성공하면, 200 상태 코드를 받는다.")
+    @Test
+    void sectionAddBaseOnDownStationIdBetweenStations() {
+        SectionRequest sectionRequest = new SectionRequest(3L, 2L, 10);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("목적지 기준으로 갱신하며, 기존의 구간 보다 길거나 같은 구간을 삽입하여 실패한 경우, 400 상태 코드를 받는다.")
+    @Test
+    void sectionAddBaseOnDownStationIdBetweenStationsFail() {
+        SectionRequest sectionRequest = new SectionRequest(3L, 2L, 77);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("잘못된 line id로, 구간 삭제를 시도하면, 404 상태코드를 받는다.")
+    @Test
+    void notFoundLineIdWhenDeleteSection() {
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/100/sections?stationId=1")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("잘못된 station id로, 구간 삭제를 시도하면, 404 상태코드를 받는다.")
+    @Test
+    void notFoundStationIdWhenDeleteSection() {
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1/sections?stationId=100")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("라인이 2개 이하의 구간를 가진 상태에서 구간 삭제를 시도하면, 400 상태코드를 받는다.")
+    @Test
+    void sizeFailWhenDeleteSection() {
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1/sections?stationId=1")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("상행선 구간 삭제에 성공하면, 204 상태코드를 받는다.")
+    @Test
+    void successDeleteSection() {
+        // 중간 구간 삽입
+        // 1 <-> 3 <-> 2
+        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 2);
+        RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all();
+
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1/sections?stationId=1")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("중간에 존재하던 구간 삭제에 성공하면, 204 상태코드를 받는다.")
+    @Test
+    void successDeleteSectionBetween() {
+        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 2);
+        RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all();
+
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1/sections?stationId=3")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("하행선 구간 삭제에 성공하면, 204 상태코드를 받는다.")
+    @Test
+    void successDeleteSectionDownStation() {
+        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 2);
+        RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all();
+
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1/sections?stationId=2")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
