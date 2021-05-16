@@ -40,16 +40,6 @@ class OrderedSectionsTest {
                 .isNotNull();
     }
 
-    @DisplayName("사이즈가 2보다 작은 구간 일급 컬렉션을 만들려 하면 예외")
-    @Test
-    void whenCreateTooSmallSections() {
-        //given
-        //when
-        //then
-        assertThatThrownBy(() -> new OrderedSections(Collections.emptyList()))
-                .isInstanceOf(SectionsSizeTooSmallException.class);
-    }
-
     @DisplayName("노선구간의 종점이 1개가 아니면 예외")
     @Test
     void whenEndStationsSizeNotOne() {

@@ -9,7 +9,7 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineColor;
 import wooteco.subway.line.domain.LineName;
 import wooteco.subway.line.exception.WrongLineIdException;
-import wooteco.subway.section.domain.EmptySections;
+import wooteco.subway.section.domain.OrderedSections;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -22,7 +22,7 @@ public class H2LineDao implements LineDao {
         long id = rs.getLong("id");
         String name = rs.getString("name");
         String color = rs.getString("color");
-        return new Line(id, name, color, new EmptySections());
+        return new Line(id, name, color, OrderedSections.emptySections());
     };
 
     public H2LineDao(JdbcTemplate jdbcTemplate) {
@@ -41,7 +41,7 @@ public class H2LineDao implements LineDao {
             return ps;
         }, keyHolder);
         long lineId = keyHolder.getKey().longValue();
-        return new Line(lineId, line.getName(), line.getColor(), new EmptySections());
+        return new Line(lineId, line.getName(), line.getColor(), OrderedSections.emptySections());
     }
 
     @Override

@@ -9,7 +9,6 @@ import wooteco.subway.line.domain.LineColor;
 import wooteco.subway.line.domain.LineName;
 import wooteco.subway.line.exception.InvalidLineNameException;
 import wooteco.subway.line.exception.WrongLineIdException;
-import wooteco.subway.section.domain.EmptySections;
 import wooteco.subway.section.domain.OrderedSections;
 import wooteco.subway.section.service.SectionService;
 
@@ -36,7 +35,7 @@ public class LineService {
         if (isDuplicatedColor(new LineColor(color))) {
             throw new InvalidLineNameException(String.format("노선 색상이 중복되었습니다. 중복된 노선 색상 : %s", color));
         }
-        Line nonIdLine = new Line(lineName, color, new EmptySections());
+        Line nonIdLine = new Line(lineName, color, OrderedSections.emptySections());
         Line idLine = lineDao.save(nonIdLine);
         OrderedSections lineSections = sectionService.add(idLine.getId(), upStationId, downStationId, distance);
 
@@ -79,7 +78,7 @@ public class LineService {
         if (!lineDao.checkExistId(lineId)) {
             throw new WrongLineIdException("노선이 존재하지 않습니다.");
         }
-        lineDao.update(new Line(lineId, lineName, color, new EmptySections()));
+        lineDao.update(new Line(lineId, lineName, color, OrderedSections.emptySections()));
     }
 
     public void delete(Long lineId) {

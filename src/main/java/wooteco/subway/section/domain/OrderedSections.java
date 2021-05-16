@@ -35,18 +35,18 @@ public class OrderedSections implements Sections {
     }
 
     public OrderedSections(List<Section> sections) {
-        checkMinimumSize(sections);
         checkDuplicateSection(sections);
         this.sections = validateAndSort(sections);
     }
 
-    private void checkMinimumSize(List<Section> sections) {
-        if (sections.size() < SECTIONS_MINIMUM_SIZE) {
-            throw new SectionsSizeTooSmallException(String.format("최소 %d 이상이어야 합니다. 현재 사이즈 : %d, ", SECTIONS_MINIMUM_SIZE, sections.size()));
-        }
+    public static OrderedSections emptySections() {
+        return new OrderedSections(Collections.emptyList());
     }
 
     private void checkDuplicateSection(List<Section> sections) {
+        if (isMinimumSize(sections)) {
+            return;
+        }
         Map<Section, Long> duplicateChecker = sections.stream()
                 .collect(groupingBy(identity(), counting()));
 
@@ -63,7 +63,14 @@ public class OrderedSections implements Sections {
         }
     }
 
+    private boolean isMinimumSize(List<Section> sections) {
+        return sections.size() <= SECTIONS_MINIMUM_SIZE;
+    }
+
     private List<Section> validateAndSort(List<Section> sections) {
+        if (isMinimumSize(sections)) {
+            return sections;
+        }
         Section firstSection = validateAndFindFirstSection(sections);
         return sortUpToDown(sections, firstSection);
     }
@@ -191,6 +198,9 @@ public class OrderedSections implements Sections {
 
     @Override
     public OrderedSections removeSection(Station station) {
+        if (isMinimumSize(sections)) {
+            throw new SectionsSizeTooSmallException(String.format("최소 %d 이상이어야 합니다. 현재 사이즈 : %d, ", SECTIONS_MINIMUM_SIZE, sections.size()));
+        }
         List<Section> sequences = findSequentialSectionsAndCheckPresent(station);
         this.sections.removeAll(sequences);
 
