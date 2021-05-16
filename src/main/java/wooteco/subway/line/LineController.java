@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.exception.DeleteMinimumSizeException;
 import wooteco.subway.exception.ShortDistanceException;
 import wooteco.subway.section.Section;
-import wooteco.subway.section.SectionDao;
 import wooteco.subway.section.SectionService;
 
 @RestController
@@ -30,13 +29,11 @@ import wooteco.subway.section.SectionService;
 public class LineController {
 
     private LineDao lineDao;
-    private SectionDao sectionDao;
     private SectionService sectionService;
 
     @Autowired
-    public LineController(LineDao lineDao, SectionDao sectionDao, SectionService sectionService) {
+    public LineController(LineDao lineDao, SectionService sectionService) {
         this.lineDao = lineDao;
-        this.sectionDao = sectionDao;
         this.sectionService = sectionService;
     }
 
@@ -47,7 +44,7 @@ public class LineController {
         Section sectionAddDto = new Section(id, lineRequest.getUpStationId(),
             lineRequest.getDownStationId(),
             lineRequest.getDistance());
-        sectionDao.save(sectionAddDto);
+        sectionService.save(sectionAddDto);
         LineResponse lineResponse = new LineResponse(id, line.getName(),
             line.getColor());
         return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);

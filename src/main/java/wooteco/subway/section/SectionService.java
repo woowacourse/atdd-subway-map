@@ -206,4 +206,8 @@ public class SectionService {
             expectedDeleteSection.getDistance() + prevDeleteSection
                 .getDistance());
     }
+
+    public void save(Section sectionAddDto) {
+        sectionDao.save(sectionAddDto);
+    }
 }
