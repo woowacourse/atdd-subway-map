@@ -70,26 +70,14 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public Section appendToUp(Long lineId, Section newSection, int changedDistance) {
-        updateAndAppendToUp(lineId, newSection, changedDistance);
-        return save(lineId, newSection);
-    }
-
-    @Override
-    public Section appendBeforeDown(Long lineId, Section newSection, int changedDistance) {
-        updateAndAppendBeforeDown(newSection, changedDistance);
-        return save(lineId, newSection);
-    }
-
-    @Override
-    public void updateAndAppendToUp(Long lineId, Section newSection, int changedDistance) {
+    public void updateSectionToForward(Long lineId, Section newSection, int changedDistance) {
         String query = "UPDATE section SET up_station_id = ?, distance = ? WHERE up_station_id = ? AND line_id = ?";
         jdbcTemplate.update(query, newSection.getDownStationId(), changedDistance, newSection.getUpStationId(), lineId);
     }
 
     @Override
-    public void updateAndAppendBeforeDown(Section newSection, int changedDistance) {
-        String query = "UPDATE section SET down_station_id = ?, distance = ? WHERE down_station_id = ?";
+    public void updateSectionToBackward(Long lineId, Section newSection, int changedDistance) {
+        String query = "UPDATE section SET down_station_id = ?, distance = ? WHERE down_station_id = ? AND line_id = ?";
         jdbcTemplate.update(query, newSection.getUpStationId(), changedDistance, newSection.getDownStationId());
     }
 

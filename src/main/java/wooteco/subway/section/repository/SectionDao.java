@@ -16,15 +16,11 @@ public interface SectionDao {
 
     void delete(Section section);
 
-    void updateAndAppendToUp(Long lineId, Section newSection, int changedDistance);
+    void updateSectionToForward(Long lineId, Section newSection, int changedDistance);
 
-    void updateAndAppendBeforeDown(Section newSection, int changedDistance);
+    void updateSectionToBackward(Long lineId, Section newSection, int changedDistance);
 
     void deleteFirstSection(Long lineId, Long stationId);
 
     void deleteLastSection(Long lineId, Long stationId);
-
-    Section appendToUp(Long lineId, Section newSection, int changedDistance);
-
-    Section appendBeforeDown(Long lineId, Section newSection, int changedDistance);
 }

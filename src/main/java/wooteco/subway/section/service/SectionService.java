@@ -63,15 +63,29 @@ public class SectionService {
     }
 
     private SectionResponse saveAtMiddle(Long lineId, Section newSection, Sections sections) {
-        if (sections.appendToUp(newSection)) {
-            int changedDistance = compareDistanceWhenAppendToUp(lineId, newSection);
-            return SectionResponse.from(sectionDao.appendToUp(lineId, newSection, changedDistance));
+        if (sections.appendToForward(newSection)) {
+            Section changedSection = insertSectionToForward(lineId, newSection);
+            return SectionResponse.from(changedSection);
         }
-        if (sections.appendBeforeDown(newSection)) {
-            int changedDistance = compareDistanceWhenAppendToBottom(lineId, newSection);
-            return SectionResponse.from(sectionDao.appendBeforeDown(lineId, newSection, changedDistance));
+        if (sections.appendToBackward(newSection)) {
+            Section changedSection = insertSectionToBackward(lineId, newSection);
+            return SectionResponse.from(changedSection);
         }
         throw new InvalidInsertException("해당 구간에 추가할 수 없습니다.");
+    }
+
+    private Section insertSectionToBackward(Long lineId, Section newSection) {
+        int changedDistance = compareDistanceWhenAppendToBottom(lineId, newSection);
+        sectionDao.updateSectionToBackward(lineId, newSection, changedDistance);
+        Section changedSection = sectionDao.save(lineId, newSection);
+        return changedSection;
+    }
+
+    private Section insertSectionToForward(Long lineId, Section newSection) {
+        int changedDistance = compareDistanceWhenAppendToUp(lineId, newSection);
+        sectionDao.updateSectionToForward(lineId, newSection, changedDistance);
+        Section changedSection = sectionDao.save(lineId, newSection);
+        return changedSection;
     }
 
     private int compareDistanceWhenAppendToBottom(Long lineId, Section newSection) {
