@@ -59,16 +59,22 @@ public class SectionDao {
         return namedParameterJdbcTemplate.query(sql, params, SECTION_ROW_MAPPER);
     }
 
-    public void delete(Long id) {
-        final String sql = "DELETE FROM section WHERE id = :id";
+    public List<Section> findSectionsByStationId(Long lineId, Long stationId) {
+        final String sql = "SELECT id, line_id, up_station_id, down_station_id, distance "
+                + "FROM section "
+                + "WHERE "
+                + "line_id = :line_id "
+                + "AND "
+                + "(up_station_id = :id OR down_station_id = :id)";
 
         final MapSqlParameterSource params = getParamSource();
-        params.addValue(ID, id);
+        params.addValue(LINE_ID, lineId);
+        params.addValue(ID, stationId);
 
-        namedParameterJdbcTemplate.update(sql, params);
+        return namedParameterJdbcTemplate.query(sql, params, SECTION_ROW_MAPPER);
     }
 
-    public Optional<Section> priorSection(Long lineId, Long upStationId, Long downStationId) {
+    public Optional<Section> findPriorSection(Long lineId, Long upStationId, Long downStationId) {
         final String sql = "SELECT id, line_id, up_station_id, down_station_id, distance "
                 + "FROM section "
                 + "WHERE line_id = :line_id "
@@ -103,21 +109,6 @@ public class SectionDao {
         return namedParameterJdbcTemplate.queryForObject(sql, params, Long.class);
     }
 
-    public List<Section> countSectionByStationId(Long lineId, Long stationId) {
-        final String sql = "SELECT id, line_id, up_station_id, down_station_id, distance "
-                + "FROM section "
-                + "WHERE "
-                + "line_id = :line_id "
-                + "AND "
-                + "(up_station_id = :id OR down_station_id = :id)";
-
-        final MapSqlParameterSource params = getParamSource();
-        params.addValue(LINE_ID, lineId);
-        params.addValue(ID, stationId);
-
-        return namedParameterJdbcTemplate.query(sql, params, SECTION_ROW_MAPPER);
-    }
-
     public Long countSectionByLineAndStationId(Long lineId, Long stationId) {
         final String sql = "SELECT COUNT(*) "
                 + "FROM section "
@@ -132,7 +123,16 @@ public class SectionDao {
         return namedParameterJdbcTemplate.queryForObject(sql, params, Long.class);
     }
 
-    public void deleteSectionByStationId(Long lineId, Long stationId) {
+    public void delete(Long id) {
+        final String sql = "DELETE FROM section WHERE id = :id";
+
+        final MapSqlParameterSource params = getParamSource();
+        params.addValue(ID, id);
+
+        namedParameterJdbcTemplate.update(sql, params);
+    }
+
+    public void deleteSectionsByStationId(Long lineId, Long stationId) {
         final String sql = "DELETE FROM section "
                 + "WHERE "
                 + "line_id = :line_id "

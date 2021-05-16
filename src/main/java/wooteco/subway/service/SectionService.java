@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.Arrays;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
@@ -11,8 +10,7 @@ import wooteco.subway.web.exception.SubwayHttpException;
 @Service
 public class SectionService {
 
-    private static final List<Integer> VALID_COUNT = Arrays.asList(1, 2);
-
+    private static final int ZERO = 0;
     private final SectionDao sectionDao;
 
     public SectionService(SectionDao sectionDao) {
@@ -24,15 +22,15 @@ public class SectionService {
     }
 
     public void validateOnlyOneStationExists(Long lineId, SectionRequest sectionRequest) {
-        Long sectionCountOfSameUp = sectionDao
+        Long sectionCountOfSameUpStationId = sectionDao
                 .countSectionByLineAndStationId(lineId, sectionRequest.getUpStationId());
-        Long sectionCountOfSameDown = sectionDao
+        Long sectionCountOfSameDownStationId = sectionDao
                 .countSectionByLineAndStationId(lineId, sectionRequest.getDownStationId());
 
-        if (sectionCountOfSameUp > 0 && sectionCountOfSameDown > 0) {
+        if (sectionCountOfSameUpStationId > ZERO && sectionCountOfSameDownStationId > ZERO) {
             throw new SubwayHttpException("추가하려는 구간의 상/하행역 둘다 노선에 존재");
         }
-        if (sectionCountOfSameDown == 0 && sectionCountOfSameUp == 0) {
+        if (sectionCountOfSameDownStationId == ZERO && sectionCountOfSameUpStationId == ZERO) {
             throw new SubwayHttpException("추가하려는 구간의 상/하행역 모두 노선에 없음");
         }
     }
@@ -41,7 +39,7 @@ public class SectionService {
         Long upStationId = sectionRequest.getUpStationId();
         Long downStationId = sectionRequest.getDownStationId();
 
-        sectionDao.priorSection(lineId, upStationId, downStationId)
+        sectionDao.findPriorSection(lineId, upStationId, downStationId)
                 .ifPresent(prior -> shortenPriorSection(lineId, prior, sectionRequest));
     }
 
@@ -56,7 +54,7 @@ public class SectionService {
         Integer priorDistance = priorSection.getDistance();
         Integer newDistance = sectionRequest.getDistance();
         if (priorDistance <= newDistance) {
-            throw new SubwayHttpException("추가하려는 구간의 거리가 기존 구간거리보다 크거나 같음");
+            throw new SubwayHttpException("추가하려는 구간의 거리가 기존 구간거리보다 크거나 같습니다");
         }
     }
 
@@ -85,14 +83,13 @@ public class SectionService {
     public void validateLineHasMoreThanOneSection(Long lineId) {
         Long sectionCount = sectionDao.countSectionByLineId(lineId);
         if (sectionCount <= 1) {
-            throw new SubwayHttpException("노선에 구간이 하나밖에 없어");
+            throw new SubwayHttpException("노선에 구간이 하나밖에 없습니다");
         }
     }
 
     public void mergePriorSectionsIfExists(Long lineId, Long stationId) {
-        List<Section> sections = sectionDao.countSectionByStationId(lineId, stationId);
+        List<Section> sections = sectionDao.findSectionsByStationId(lineId, stationId);
         validateLineHasStation(sections);
-        validateCountOfSections(sections.size());
         if (priorSectionExists(sections)) {
             mergePriorSections(lineId, stationId, sections);
         }
@@ -100,13 +97,7 @@ public class SectionService {
 
     private void validateLineHasStation(List<Section> sections) {
         if (sections.isEmpty()) {
-            throw new SubwayHttpException("노선에 존재하지 않는 역이야");
-        }
-    }
-
-    private void validateCountOfSections(int sectionCount) {
-        if (!VALID_COUNT.contains(sectionCount)) {
-            throw new SubwayHttpException("삭제하려는 역을 포함하는 구간이 2개 이상임");
+            throw new SubwayHttpException("역이 노선에 포함되지 않은 역임");
         }
     }
 
@@ -115,7 +106,7 @@ public class SectionService {
     }
 
     private void mergePriorSections(Long lineId, Long stationId, List<Section> sections) {
-        Section first = sections.get(0);
+        Section first = sections.get(ZERO);
         Section second = sections.get(1);
 
         Section mergedSection = getMergedSection(lineId, stationId, first, second);
@@ -153,6 +144,6 @@ public class SectionService {
     }
 
     public void deleteSectionByStationId(Long lineId, Long stationId) {
-        sectionDao.deleteSectionByStationId(lineId, stationId);
+        sectionDao.deleteSectionsByStationId(lineId, stationId);
     }
 }
