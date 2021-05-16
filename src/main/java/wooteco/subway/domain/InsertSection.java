@@ -2,15 +2,15 @@ package wooteco.subway.domain;
 
 import java.util.Objects;
 
-public class SimpleSection {
+public class InsertSection {
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
-    public SimpleSection() {
+    public InsertSection() {
     }
 
-    public SimpleSection(Long upStationId, Long downStationId, int distance) {
+    public InsertSection(Long upStationId, Long downStationId, int distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
@@ -32,7 +32,6 @@ public class SimpleSection {
         return upStationId.equals(downStationId);
     }
 
-
     public boolean isDistanceMoreThanZero() {
         return distance > 0;
     }
@@ -41,7 +40,7 @@ public class SimpleSection {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SimpleSection that = (SimpleSection) o;
+        InsertSection that = (InsertSection) o;
         if (distance != that.distance) return false;
         if (!Objects.equals(upStationId, that.upStationId)) return false;
         return Objects.equals(downStationId, that.downStationId);

@@ -15,7 +15,7 @@ public class Distance {
         return Math.min(distance, comparedDistance.distance);
     }
 
-    public boolean isLongerDistanceThan(SimpleSection section) {
+    public boolean isLongerDistanceThan(InsertSection section) {
         return distance > section.getDistance();
     }
 

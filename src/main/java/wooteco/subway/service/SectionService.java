@@ -6,7 +6,7 @@ import org.springframework.util.CollectionUtils;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
-import wooteco.subway.domain.SimpleSection;
+import wooteco.subway.domain.InsertSection;
 import wooteco.subway.exception.section.DeleteSectionIsNotPermittedException;
 import wooteco.subway.exception.section.NoneOfSectionIncludedInLine;
 import wooteco.subway.exception.section.SectionCanNotInsertException;
@@ -25,15 +25,15 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public void insert(Long lineId, SimpleSection section) {
-        sectionDao.insert(new Section(lineId, section));
+    public void insert(Section section) {
+        sectionDao.insert(section);
     }
 
     public List<Section> findAllByLineId(Long id) {
         return sectionDao.findAllByLineId(id);
     }
 
-    public void validateCanBeInserted(Long lineId, SimpleSection section) {
+    public void validateCanBeInserted(Long lineId, InsertSection section) {
         if (section.isSameBetweenUpAndDownStation()) {
             throw new SectionCanNotInsertException();
         }
@@ -49,7 +49,7 @@ public class SectionService {
         return sectionDao.countsByLineId(lineId);
     }
 
-    public void insertSections(Long lineId, SimpleSection insertSection) {
+    public void insertSections(Long lineId, InsertSection insertSection) {
         final Optional<Section> optionalSectionConversed =
                 sectionDao.findOneIfIncludeConversed(new Section(lineId, insertSection));
         if (optionalSectionConversed.isPresent()) {

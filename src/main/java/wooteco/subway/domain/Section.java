@@ -13,8 +13,12 @@ public class Section {
 
     }
 
-    public Section(Long lineId, SimpleSection section) {
+    public Section(Long lineId, InsertSection section) {
         this(lineId, section.getUpStationId(), section.getDownStationId(), new Distance(section.getDistance()));
+    }
+
+    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
+        this(lineId, upStationId, downStationId, new Distance(distance));
     }
 
     public Section(Long lineId, Long upStationId, Long downStationId, Distance distance) {
@@ -60,23 +64,23 @@ public class Section {
         return distance.getDistance();
     }
 
-    public boolean isEqualUpStationId(SimpleSection section) {
+    public boolean isEqualUpStationId(InsertSection section) {
         return upStationId.equals(section.getUpStationId());
     }
 
-    public boolean isLongerDistanceThan(SimpleSection section) {
+    public boolean isLongerDistanceThan(InsertSection section) {
         return distance.isLongerDistanceThan(section);
     }
 
-    public int calculateMaxDistance(SimpleSection simpleSection) {
-        return distance.calculateMax(new Distance(simpleSection.getDistance()));
+    public int calculateMaxDistance(InsertSection insertSection) {
+        return distance.calculateMax(new Distance(insertSection.getDistance()));
     }
 
-    public int calculateMinDistance(SimpleSection simpleSection) {
-        return distance.calculateMin(new Distance(simpleSection.getDistance()));
+    public int calculateMinDistance(InsertSection insertSection) {
+        return distance.calculateMin(new Distance(insertSection.getDistance()));
     }
 
-    public Section makeSectionsToStraight(Long lineId, SimpleSection insertSection) {
+    public Section makeSectionsToStraight(Long lineId, InsertSection insertSection) {
         validateCanBeInsertedByDistance(insertSection);
         if (isEqualUpStationId(insertSection)) {
             return new Section(
@@ -97,15 +101,15 @@ public class Section {
         );
     }
 
-    private void validateCanBeInsertedByDistance(SimpleSection insertSection) {
+    private void validateCanBeInsertedByDistance(InsertSection insertSection) {
         if (!isLongerDistanceThan(insertSection)) {
             throw new SectionDistanceMismatchException();
         }
     }
 
-    public int updateDistance(Section section, SimpleSection simpleSection) {
-        final int maxDistance = section.calculateMaxDistance(simpleSection);
-        final int minDistance = section.calculateMinDistance(simpleSection);
+    public int updateDistance(Section section, InsertSection insertSection) {
+        final int maxDistance = section.calculateMaxDistance(insertSection);
+        final int minDistance = section.calculateMinDistance(insertSection);
         return maxDistance - minDistance;
     }
 }

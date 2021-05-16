@@ -28,7 +28,7 @@ public class SubwayFacade {
     public LineDto createLine(LineAndSectionCreateRequest lineAndSectionCreateRequest) {
         lineService.validate(lineAndSectionCreateRequest);
         final Line line = lineService.create(lineAndSectionCreateRequest.toLine());
-        sectionService.insert(line.getId(), lineAndSectionCreateRequest.toSimpleSection());
+        sectionService.insert(lineAndSectionCreateRequest.toSectionWithLineId(line.getId()));
         return new LineDto(line);
     }
 
