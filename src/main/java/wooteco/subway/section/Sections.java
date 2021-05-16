@@ -102,6 +102,16 @@ public class Sections {
     public Section findByOverlappedStation(final Section section) {
         return sections.stream()
             .filter(
+                it -> (section.isIncludeUpStation(it) ||
+                    section.isIncludeDownStation(it))
+            )
+            .findAny()
+            .orElseThrow(InvalidSectionOnLineException::new);
+    }
+
+    public Section sectionForInterval(final Section section) {
+        return sections.stream()
+            .filter(
                 it -> (section.isSameUpStation(it) ||
                     section.isSameDownStation(it))
             )
