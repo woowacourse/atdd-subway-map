@@ -9,6 +9,7 @@ import wooteco.subway.exception.station.StationNotFoundException;
 import wooteco.subway.station.dao.JdbcStationDao;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -22,19 +23,27 @@ public class StationService {
         return stationDao.findById(id);
     }
 
-    public List<Station> findAll() {
-        return stationDao.findAll();
+    public List<StationResponse> findAll() {
+        List<Station> stations = stationDao.findAll();
+
+        List<StationResponse> stationResponses = stations.stream()
+                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .collect(Collectors.toList());
+
+        return stationResponses;
     }
 
     @Transactional
-    public Station save(Station station) {
+    public StationResponse save(StationRequest stationRequest) {
+        Station station = Station.create(stationRequest.getName());
         validateExistName(station);
 
-        return stationDao.create(station);
+        Station createdStation = stationDao.create(station);
+        return StationResponse.create(createdStation);
     }
 
     @Transactional
-    public void remove(Long id) {
+    public void removeById(Long id) {
         stationDao.remove(id);
     }
 

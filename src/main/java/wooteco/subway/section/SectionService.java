@@ -41,7 +41,7 @@ public class SectionService {
     }
 
     @Transactional
-    public void remove(Long lineId, Long stationId) {
+    public void removeByLineAndStationIds(Long lineId, Long stationId) {
         validateRemovable(lineId, stationId);
 
         Station station = stationDao.findById(stationId);

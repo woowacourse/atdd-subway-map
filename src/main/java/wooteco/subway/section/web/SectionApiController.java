@@ -37,7 +37,7 @@ public class SectionApiController {
 
     @DeleteMapping
     public ResponseEntity<Void> removeSection(@PathVariable Long lineId, @RequestParam Long stationId) {
-        sectionService.remove(lineId, stationId);
+        sectionService.removeByLineAndStationIds(lineId, stationId);
         return ResponseEntity.noContent().build();
     }
 }

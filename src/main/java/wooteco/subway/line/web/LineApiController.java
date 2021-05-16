@@ -5,23 +5,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.domain.Line;
 import wooteco.subway.exception.line.LineInsufficientRequestException;
 import wooteco.subway.line.LineService;
-import wooteco.subway.station.StationService;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/lines")
 public class LineApiController {
-
     private final LineService lineService;
-    private final StationService stationService;
 
     @InitBinder("lineRequest")
     private void initBind(WebDataBinder webDataBinder) {
@@ -31,12 +26,9 @@ public class LineApiController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showAll() {
-        List<Line> lines = lineService.findAll();
-        List<LineResponse> responses = new ArrayList<>();
-        for (Line line : lines) {
-            responses.add(LineResponse.create(line));
-        }
-        return ResponseEntity.ok().body(responses);
+        List<LineResponse> lineResponses = lineService.findAll();
+
+        return ResponseEntity.ok().body(lineResponses);
     }
 
     @PostMapping
@@ -44,17 +36,15 @@ public class LineApiController {
         if (bindingResult.hasErrors()) {
             throw new LineInsufficientRequestException();
         }
+        LineResponse lineResponse = lineService.create(lineRequest);
 
-        Line line = lineService.create(lineRequest);
-
-        LineResponse lineResponse = LineResponse.create(line);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping("/{lineId}")
     public ResponseEntity<LineResponse> readLine(@PathVariable Long lineId) {
-        Line line = lineService.find(lineId);
-        return ResponseEntity.ok(LineResponse.create(line));
+        LineResponse lineResponse = lineService.findById(lineId);
 
+        return ResponseEntity.ok().body(lineResponse);
     }
 }

@@ -8,9 +8,11 @@ import wooteco.subway.exception.line.LineDuplicatedInformationException;
 import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.line.dao.JdbcLineDao;
 import wooteco.subway.line.web.LineRequest;
+import wooteco.subway.line.web.LineResponse;
 import wooteco.subway.section.SectionService;
 import wooteco.subway.station.StationService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -20,28 +22,32 @@ public class LineService {
     private final SectionService sectionService;
     private final StationService stationService;
 
-    public Line find(Long lineId) {
+    public LineResponse findById(Long lineId) {
         validateExistById(lineId);
 
         Line line = lineDao.findById(lineId);
         Sections sections = sectionService.findAllByLineId(lineId);
         line.setStationsBySections(sections);
 
-        return line;
+        return LineResponse.create(line);
     }
 
-    public List<Line> findAll() {
+    public List<LineResponse> findAll() {
         List<Line> lines = lineDao.showAll();
         for (Line line : lines) {
             Sections sections = sectionService.findAllByLineId(line.getId());
             line.setStationsBySections(sections);
         }
+        List<LineResponse> lineResponses = new ArrayList<>();
+        for (Line line : lines) {
+            lineResponses.add(LineResponse.create(line));
+        }
 
-        return lines;
+        return lineResponses;
     }
 
     @Transactional
-    public Line create(LineRequest lineRequest) {
+    public LineResponse create(LineRequest lineRequest) {
         String name = lineRequest.getName();
         String color = lineRequest.getColor();
         int distance = lineRequest.getDistance();
@@ -55,7 +61,7 @@ public class LineService {
         sectionService.createInitial(section, line.getId());
         line.setStationsBySections(Sections.create(section));
 
-        return line;
+        return LineResponse.create(line);
     }
 
     private void validateExistInfo(String name, String color) {
