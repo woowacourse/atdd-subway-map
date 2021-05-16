@@ -1,9 +1,11 @@
 package wooteco.subway.domain.section;
 
 import org.springframework.http.HttpStatus;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.SubwayException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -20,7 +22,7 @@ public class Sections {
                 .collect(Collectors.toList());
 
         List<Long> downStationIds = unOrderedSections.stream()
-                .map(Section::getUpStationId)
+                .map(Section::getDownStationId)
                 .collect(Collectors.toList());
 
         upStationIds.removeAll(downStationIds);
@@ -49,19 +51,20 @@ public class Sections {
                 .anyMatch(section -> section.hasUpwardStation(downStationId));
     }
 
-    public void addSection(Section section) {
-        validateIfAlreadyExistsInLine(section);
-        validateIfBothStationNotExistsInLine(section);
+    public void validateIfPossibleToInsert(Section addedSection) {
+        validateIfAlreadyExistsInLine(addedSection);
+        validateIfBothStationNotExistsInLine(addedSection);
+        validateDistance(addedSection);
     }
 
-    private void validateIfAlreadyExistsInLine(Section section) {
-        if (isBothStationExistsInLine(section)) {
+    private void validateIfAlreadyExistsInLine(Section addedSection) {
+        if (isBothStationExistsInLine(addedSection)) {
             throw new SubwayException(HttpStatus.BAD_REQUEST, "두 역이 이미 노선에 등록되어 있습니다.");
         }
     }
 
-    private boolean isBothStationExistsInLine(Section section) {
-        return isStationExists(section.getUpStationId()) && isStationExists(section.getDownStationId());
+    private boolean isBothStationExistsInLine(Section addedSection) {
+        return isStationExists(addedSection.getUpStationId()) && isStationExists(addedSection.getDownStationId());
     }
 
     private boolean isStationExists(Long stationId) {
@@ -73,8 +76,8 @@ public class Sections {
         return upwardExistence || downwardExistence;
     }
 
-    private void validateIfBothStationNotExistsInLine(Section section) {
-        if (!isStationExists(section.getUpStationId()) && !isStationExists(section.getDownStationId())) {
+    private void validateIfBothStationNotExistsInLine(Section addedSection) {
+        if (!isStationExists(addedSection.getUpStationId()) && !isStationExists(addedSection.getDownStationId())) {
             throw new SubwayException(HttpStatus.BAD_REQUEST, "노선에 역들이 존재하지 않습니다.");
         }
     }
@@ -82,6 +85,116 @@ public class Sections {
     public void validateIfPossibleToDelete() {
         if (this.sections.size() == 1) {
             throw new SubwayException(HttpStatus.BAD_REQUEST, "구간이 하나뿐이므로 삭제 불가능합니다.");
+        }
+    }
+
+    public boolean hasUpwardSection(Long stationId) {
+        return this.sections.stream()
+                .anyMatch(section -> section.hasDownwardStation(stationId));
+    }
+
+    public boolean hasDownwardSection(Long stationId) {
+        return this.sections.stream()
+                .anyMatch(section -> section.hasUpwardStation(stationId));
+    }
+
+    public Section createMergedSectionAfterDeletion(Long stationId) {
+        Section upwardSection = sections.stream()
+                .filter(section -> section.hasDownwardStation(stationId))
+                .findAny()
+                .get();
+
+        Section downwardSection = sections.stream()
+                .filter(section -> section.hasUpwardStation(stationId))
+                .findAny()
+                .get();
+
+        return new Section(upwardSection.getUpwardStation(), downwardSection.getDownwardStation(), calculateNewDistanceAfterDeletion(stationId));
+    }
+
+    private int calculateNewDistanceAfterDeletion(Long stationId) {
+        int upwardSectionDistance = sections.stream()
+                .filter(section -> section.hasDownwardStation(stationId))
+                .findAny()
+                .get()
+                .getDistance();
+
+        int downwardSectionDistance = sections.stream()
+                .filter(section -> section.hasUpwardStation(stationId))
+                .findAny()
+                .get()
+                .getDistance();
+        return upwardSectionDistance + downwardSectionDistance;
+    }
+
+    public Section getBottomSection() {
+        return sections.get(sections.size() - 1);
+    }
+
+    public Section getTopSection() {
+        return sections.get(0);
+    }
+
+    //TODO indent
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        for (Section section : this.sections) {
+            extractStation(stations, section);
+        }
+        return stations;
+    }
+
+    private void extractStation(List<Station> stations, Section section) {
+        if (!stations.contains(section.getUpwardStation())) {
+            stations.add(section.getUpwardStation());
+        }
+        stations.add(section.getDownwardStation());
+    }
+
+    private void validateDistance(Section addedSection) {
+        if (!isSideInsertion(addedSection)) {
+            compare(addedSection);
+        }
+    }
+
+    private boolean isSideInsertion(Section addedSection) {
+        if (addedSection.hasDownwardStation(getTopSection().getUpStationId())) {
+            return true;
+        }
+        return addedSection.hasUpwardStation(getBottomSection().getDownStationId());
+    }
+
+    private void compare(Section addedSection) {
+        Section existingSection = null;
+        if (isNewStationUpward(addedSection)) {
+            existingSection = sections.stream()
+                    .filter(section -> section.hasDownwardStation(addedSection.getDownStationId()))
+                    .findAny()
+                    .get();
+        }
+
+        if (isNewStationDownward(addedSection)) {
+            existingSection = sections.stream()
+                    .filter(section -> section.hasUpwardStation(addedSection.getUpStationId()))
+                    .findAny()
+                    .get();
+        }
+        compareDistance(addedSection, existingSection);
+    }
+
+    private boolean isNewStationUpward(Section addedSection) {
+        return sections.stream()
+                .anyMatch(section -> section.hasDownwardStation(addedSection.getDownStationId()));
+    }
+
+    public boolean isNewStationDownward(Section addedSection) {
+        return sections.stream()
+                .anyMatch(section -> section.hasUpwardStation(addedSection.getUpStationId()));
+    }
+
+    private void compareDistance(Section addedSection, Section existingSection) {
+        if (addedSection.hasLongerDistanceThan(existingSection)) {
+            throw new SubwayException(HttpStatus.BAD_REQUEST, "거리 오류");
         }
     }
 }

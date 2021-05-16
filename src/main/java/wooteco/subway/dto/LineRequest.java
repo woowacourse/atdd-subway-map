@@ -1,7 +1,6 @@
 package wooteco.subway.dto;
 
 import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.section.Section;
 
 public class LineRequest {
     private String name;
@@ -27,7 +26,7 @@ public class LineRequest {
     }
 
     public Line createLine() {
-        return new Line(this.name, this.color, this.upStationId, this.downStationId);
+        return new Line(this.name, this.color);
     }
 
     public SectionRequest createSectionRequest() {
