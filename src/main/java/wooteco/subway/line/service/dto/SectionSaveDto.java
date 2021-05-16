@@ -1,4 +1,4 @@
-package wooteco.subway.section.service.dto;
+package wooteco.subway.line.service.dto;
 
 public class SectionSaveDto {
     private Long upStationId;

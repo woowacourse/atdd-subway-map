@@ -2,7 +2,7 @@ package wooteco.subway.section;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.section.domain.Distance;
+import wooteco.subway.line.domain.section.Distance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

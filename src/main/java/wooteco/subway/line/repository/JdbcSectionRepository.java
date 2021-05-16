@@ -1,4 +1,4 @@
-package wooteco.subway.section.repository;
+package wooteco.subway.line.repository;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
@@ -8,8 +8,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DuplicatedNameException;
-import wooteco.subway.section.domain.Distance;
-import wooteco.subway.section.domain.Section;
+import wooteco.subway.line.domain.section.Distance;
+import wooteco.subway.line.domain.section.Section;
 
 import java.sql.PreparedStatement;
 import java.util.Optional;

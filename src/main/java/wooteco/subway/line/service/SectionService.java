@@ -1,10 +1,10 @@
-package wooteco.subway.section.service;
+package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.section.domain.Distance;
-import wooteco.subway.section.domain.Section;
-import wooteco.subway.section.repository.SectionRepository;
-import wooteco.subway.section.service.dto.SectionSaveDto;
+import wooteco.subway.line.domain.section.Distance;
+import wooteco.subway.line.domain.section.Section;
+import wooteco.subway.line.repository.SectionRepository;
+import wooteco.subway.line.service.dto.SectionSaveDto;
 
 @Service
 public class SectionService {

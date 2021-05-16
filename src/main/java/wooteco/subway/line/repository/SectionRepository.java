@@ -1,7 +1,7 @@
-package wooteco.subway.section.repository;
+package wooteco.subway.line.repository;
 
 import org.springframework.stereotype.Repository;
-import wooteco.subway.section.domain.Section;
+import wooteco.subway.line.domain.section.Section;
 
 import java.util.Optional;
 

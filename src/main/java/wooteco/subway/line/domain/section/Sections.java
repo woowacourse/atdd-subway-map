@@ -1,4 +1,4 @@
-package wooteco.subway.section.domain;
+package wooteco.subway.line.domain.section;
 
 import java.util.List;
 import java.util.stream.Collectors;

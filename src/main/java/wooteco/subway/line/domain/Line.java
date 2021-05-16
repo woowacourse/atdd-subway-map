@@ -1,6 +1,6 @@
 package wooteco.subway.line.domain;
 
-import wooteco.subway.section.domain.Sections;
+import wooteco.subway.line.domain.section.Sections;
 
 public class Line {
     private final Long id;

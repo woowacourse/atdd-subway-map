@@ -5,11 +5,11 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.LineNotFoundException;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.repository.LineRepository;
-import wooteco.subway.line.repository.dto.LineDto;
+import wooteco.subway.line.service.dto.LineDto;
 import wooteco.subway.line.service.dto.LineSaveDto;
-import wooteco.subway.section.domain.Distance;
-import wooteco.subway.section.domain.Section;
-import wooteco.subway.section.repository.SectionRepository;
+import wooteco.subway.line.domain.section.Distance;
+import wooteco.subway.line.domain.section.Section;
+import wooteco.subway.line.repository.SectionRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
