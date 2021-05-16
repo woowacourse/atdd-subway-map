@@ -192,7 +192,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         assertThat(이호선_응답.getName()).isEqualTo("이호선");
         assertThat(이호선_응답.getColor()).isEqualTo("bg-red-600");
-        assertThat(이호선_응답.getId()).isEqualTo(1L);
+        assertThat(이호선_응답.getId()).isEqualTo(강남역_id);
 
         assertThat(이호선_응답.getStations()).usingRecursiveFieldByFieldElementComparator()
                 .containsExactly(new StationResponse(강남역_id, "강남역"), new StationResponse(잠실역_id, "잠실역"));

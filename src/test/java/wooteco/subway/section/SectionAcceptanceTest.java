@@ -9,8 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.station.dto.StationRequest;
+import wooteco.subway.station.dto.StationResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -194,16 +196,66 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("구간 삭제")
-    void deleteSection() {
+    @DisplayName("구간 삭제 - 삭제하려는 역이 구간의 출발지인 경우")
+    void deleteSectionThatIsAtStart() {
+        // given
+        SectionRequest 잠실에서당산 = new SectionRequest(잠실역_id, 당산역_id, 5);
+
+        // when
+        postSection("/lines/1/sections", 잠실에서당산);
+        ExtractableResponse<Response> 구간_삭제_응답 = deleteResponseFrom("/lines/1/sections?stationId=1");
+        ExtractableResponse<Response> 일호선_조회_응답 = getResponseFrom("/lines/1");
+        LineResponse 일호선 = 일호선_조회_응답.as(LineResponse.class);
+        StationResponse 첫번째역 = 일호선.getStations().get(0);
+
+        //then
+        assertThat(구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(일호선.getStations()).hasSize(2);
+        assertThat(첫번째역.getId()).isEqualTo(잠실역_id);
+        assertThat(첫번째역.getName()).isEqualTo("잠실역");
+    }
+
+    @Test
+    @DisplayName("구간 삭제 - 삭제하려는 역이 구간의 종착지인 경우")
+    void deleteSectionThatIsAtEnd() {
+        // given
+        SectionRequest 당산에서강남 = new SectionRequest(당산역_id, 강남역_id, 5);
+
+        // when
+        postSection("/lines/1/sections", 당산에서강남);
+        ExtractableResponse<Response> 구간_삭제_응답 = deleteResponseFrom("/lines/1/sections?stationId=2");
+        ExtractableResponse<Response> 일호선_조회_응답 = getResponseFrom("/lines/1");
+        LineResponse 일호선 = 일호선_조회_응답.as(LineResponse.class);
+        StationResponse 첫번째역 = 일호선.getStations().get(0);
+
+        //then
+        assertThat(구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(일호선.getStations()).hasSize(2);
+        assertThat(첫번째역.getId()).isEqualTo(당산역_id);
+        assertThat(첫번째역.getName()).isEqualTo("당산역");
+    }
+
+    @Test
+    @DisplayName("구간 삭제 - 삭제하려는 역이 구간의 중간인 경우")
+    void deleteSectionThatIsInMiddle() {
         // given
         SectionRequest 잠실에서당산 = new SectionRequest(잠실역_id, 당산역_id, 5);
 
         // when
         postSection("/lines/1/sections", 잠실에서당산);
         ExtractableResponse<Response> 구간_삭제_응답 = deleteResponseFrom("/lines/1/sections?stationId=2");
+        ExtractableResponse<Response> 일호선_조회_응답 = getResponseFrom("/lines/1");
+        LineResponse 일호선 = 일호선_조회_응답.as(LineResponse.class);
+        StationResponse 첫번째역 = 일호선.getStations().get(0);
+        StationResponse 마지막역 = 일호선.getStations().get(1);
 
-        // then
+        //then
         assertThat(구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(일호선.getStations()).hasSize(2);
+        assertThat(첫번째역.getId()).isEqualTo(강남역_id);
+        assertThat(첫번째역.getName()).isEqualTo("강남역");
+
+        assertThat(마지막역.getId()).isEqualTo(당산역_id);
+        assertThat(마지막역.getName()).isEqualTo("당산역");
     }
 }
