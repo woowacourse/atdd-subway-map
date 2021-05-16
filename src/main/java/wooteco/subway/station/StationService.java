@@ -36,9 +36,9 @@ public class StationService {
             newStation.getName());
     }
 
-    public StationResponse findById(Long id) {
+    public Station findById(Long id) {
         Station station = stationDao.findById(id);
-        return new StationResponse(station.getId(), station.getName());
+        return new Station(station.getId(), station.getName());
     }
 
     public List<StationResponse> findAllByIds(List<Long> sortedStationIds) {

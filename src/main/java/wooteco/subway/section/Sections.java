@@ -12,11 +12,9 @@ import java.util.stream.Collectors;
 import wooteco.subway.exception.InvalidSectionDistanceException;
 import wooteco.subway.exception.InvalidStationException;
 import wooteco.subway.exception.NoneOrAllStationsExistingInLineException;
+import wooteco.subway.station.Station;
 
 public class Sections {
-
-    private static final int MIDDLE_SECTION_CRITERIA = 2;
-    private static final int VALID_SECTION_DUPLICATE_STATION_ID_CRITERIA = 1;
 
     private final List<Section> sections;
 
@@ -31,17 +29,17 @@ public class Sections {
     }
 
     public void validateSectionStations(Section newSection) {
-        List<Long> stationIds = sections.stream()
-            .map(section -> Arrays.asList(section.getUpStationId(), section.getDownStationId()))
+        List<Station> stations = sections.stream()
+            .map(section -> Arrays.asList(section.getUpStation(), section.getDownStation()))
             .flatMap(List::stream)
             .distinct()
             .collect(Collectors.toList());
 
-        List<Long> newSectionStationsId = Arrays.asList(newSection.getUpStationId(),
-            newSection.getDownStationId());
+        List<Station> newSectionStations = Arrays.asList(newSection.getUpStation(),
+            newSection.getDownStation());
 
-        stationIds.retainAll(newSectionStationsId);
-        if (stationIds.size() != VALID_SECTION_DUPLICATE_STATION_ID_CRITERIA) {
+        stations.retainAll(newSectionStations);
+        if (stations.size() != 1) {
             throw new NoneOrAllStationsExistingInLineException();
         }
     }
@@ -53,24 +51,44 @@ public class Sections {
         }
     }
 
-    public boolean isNotEndPoint() {
-        return sections.size() == MIDDLE_SECTION_CRITERIA;
-    }
-
-    public Long findUpStationId(Long stationId) {
-        return findStationId(section -> section.isUpStation(stationId));
-    }
-
-    public Long findDownStationId(Long stationId) {
-        return findStationId(section -> section.isDownStation(stationId));
-    }
-
-    private long findStationId(Predicate<Section> predicate) {
+    public Section sectionToBeDivided(Section newSection) {
         return sections.stream()
-            .filter(predicate)
+            .filter(section -> hasSameUpOrDownStationId(newSection, section))
             .findAny()
-            .orElseThrow(InvalidStationException::new)
-            .getUpStationId();
+            .orElseThrow(InvalidStationException::new);
+    }
+
+    public List<Station> sortedStations() {
+        Deque<Station> sortedStations = new ArrayDeque<>();
+        Map<Station, Station> upIds = new LinkedHashMap<>();
+        Map<Station, Station> downIds = new LinkedHashMap<>();
+
+        initializeByIds(sortedStations, upIds, downIds);
+        sort(sortedStations, upIds, downIds);
+
+        return new ArrayList<>(sortedStations);
+    }
+
+    public Section divideSection(Section newSection) {
+        Section existingSection = sectionToBeDivided(newSection);
+        if (existingSection.isUpStation(newSection.getUpStation())) {
+            return new Section(newSection.getDownStation(),
+                existingSection.getDownStation(), existingSection.deductDistance(newSection));
+        }
+        return new Section(existingSection.getUpStation(), newSection.getUpStation(),
+            existingSection.deductDistance(newSection));
+    }
+
+    public boolean isNotEndPoint() {
+        return sections.size() == 2;
+    }
+
+    public Station findDownStation(Long stationId) {
+        return findStation(section -> section.getDownStation().getId().equals(stationId));
+    }
+
+    public Station findUpStation(Long stationId) {
+        return findStation(section -> section.getUpStation().getId().equals(stationId));
     }
 
     public int sumDistance() {
@@ -79,62 +97,40 @@ public class Sections {
             .sum();
     }
 
-    public Section sectionToBeDivided(Section newSection) {
-        return sections.stream()
-            .filter(section -> hasSameUpOrDownStationId(newSection, section))
-            .findAny()
-            .orElseThrow(InvalidStationException::new);
-    }
-
-    public Section divideSection(Long lindId, Section newSection) {
-        Section existingSection = sectionToBeDivided(newSection);
-        if (existingSection.isUpStation(newSection.getUpStationId())) {
-            return new Section(lindId, newSection.getDownStationId(),
-                existingSection.getDownStationId(), existingSection.deductDistance(newSection));
-        }
-        return new Section(lindId, existingSection.getUpStationId(), newSection.getUpStationId(),
-            existingSection.deductDistance(newSection));
-    }
-
     private boolean hasSameUpOrDownStationId(Section newSection, Section section) {
-        return section.getUpStationId().equals(newSection.getUpStationId()) || section
-            .getDownStationId().equals(newSection.getDownStationId());
+        return section.getUpStation().equals(newSection.getUpStation()) || section
+            .getDownStation().equals(newSection.getDownStation());
     }
 
-    public boolean isEmpty() {
-        return sections.size() == 0;
-    }
 
-    public List<Long> sortedStationIds() {
-        Deque<Long> sortedIds = new ArrayDeque<>();
-        Map<Long, Long> upIds = new LinkedHashMap<>();
-        Map<Long, Long> downIds = new LinkedHashMap<>();
-
-        initializeByIds(sortedIds, upIds, downIds);
-        sort(sortedIds, upIds, downIds);
-
-        return new ArrayList<>(sortedIds);
-    }
-
-    private void initializeByIds(Deque<Long> sortedIds, Map<Long, Long> upIds,
-        Map<Long, Long> downIds) {
+    private void initializeByIds(Deque<Station> sortedIds, Map<Station, Station> upIds,
+        Map<Station, Station> downIds) {
         for (Section section : sections) {
-            upIds.put(section.getDownStationId(), section.getUpStationId());
-            downIds.put(section.getUpStationId(), section.getDownStationId());
+            upIds.put(section.getDownStation(), section.getUpStation());
+            downIds.put(section.getUpStation(), section.getDownStation());
         }
-
         Section now = sections.get(0);
-        sortedIds.addFirst(now.getUpStationId());
+        sortedIds.addFirst(now.getUpStation());
     }
 
-    private void sort(Deque<Long> sortedIds, Map<Long, Long> upIds, Map<Long, Long> downIds) {
+    private void sort(
+        Deque<Station> sortedIds, Map<Station, Station> upIds, Map<Station, Station> downIds) {
         while (upIds.containsKey(sortedIds.peekFirst())) {
-            Long currentId = sortedIds.peekFirst();
-            sortedIds.addFirst(upIds.get(currentId));
+            Station current = sortedIds.peekFirst();
+            sortedIds.addFirst(upIds.get(current));
         }
         while (downIds.containsKey(sortedIds.peekLast())) {
-            Long currentId = sortedIds.peekLast();
-            sortedIds.addLast(downIds.get(currentId));
+            Station current = sortedIds.peekLast();
+            sortedIds.addLast(downIds.get(current));
         }
+    }
+
+    private Station findStation(Predicate<Section> predicate) {
+        return sections.stream()
+            .filter(predicate)
+            .findAny()
+            .orElseThrow(InvalidStationException::new)
+            .getUpStation()
+            ;
     }
 }

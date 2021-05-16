@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ class StationDaoTest {
 
     @Test
     void save() {
-        assertThat(station).isEqualTo(STATION_1);
+        assertThat(station.getName()).isEqualTo(STATION_1.getName());
     }
 
     @Test
@@ -48,8 +49,11 @@ class StationDaoTest {
     @Test
     void findAll() {
         List<Station> stations = stationDao.findAll();
+        List<String> stationNames = stations.stream()
+            .map(Station::getName)
+            .collect(Collectors.toList());
 
-        assertThat(stations).containsExactly(STATION_1, STATION_2);
+        assertThat(stationNames).containsExactly(STATION_1.getName(), STATION_2.getName());
     }
 
     @Test
@@ -64,6 +68,10 @@ class StationDaoTest {
     void findAllByIds() {
         List<Station> stations = stationDao
             .findAllByIds(Arrays.asList(station.getId(), station2.getId()));
-        assertThat(stations).containsExactly(STATION_1, STATION_2);
+        List<String> stationNames = stations.stream()
+            .map(Station::getName)
+            .collect(Collectors.toList());
+
+        assertThat(stationNames).containsExactly(STATION_1.getName(), STATION_2.getName());
     }
 }

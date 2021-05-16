@@ -53,7 +53,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         ExtractableResponse<Response> duplicateResponse = addStation("강남역");
 
-        assertThat(duplicateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(duplicateResponse.statusCode())
+            .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @DisplayName("지하철역을 조회한다.")

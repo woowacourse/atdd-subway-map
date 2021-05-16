@@ -1,5 +1,7 @@
 package wooteco.subway.section;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static wooteco.subway.line.LineAcceptanceTest.addLine;
 import static wooteco.subway.line.LineAcceptanceTest.getLineResponses;
@@ -23,6 +25,9 @@ import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.dto.SectionRequest;
+import wooteco.subway.section.dto.SectionResponse;
+import wooteco.subway.station.Station;
+import wooteco.subway.station.StationService;
 import wooteco.subway.station.dto.StationResponse;
 
 @Sql("/truncate.sql")
@@ -31,6 +36,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     SectionDao sectionDao;
+
+    @Autowired
+    StationService stationService;
 
     private ExtractableResponse<Response> response;
     private Long upId;
@@ -70,11 +78,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         deleteStationOfSection(upId);
 
         LineResponse lineResponse = getLineResponses().get(0);
-        List<Section> sectionList = sectionDao.findSectionsByLineId(lineResponse.getId());
-        Sections sections = new Sections(sectionList);
+        List<SectionResponse> sectionList = sectionDao.findSectionsByLineId(lineResponse.getId());
+        Sections sections = convertToSection(sectionList);
+        List<Long> actual = convertToIds(sections.sortedStations());
         List<Long> expected = new LinkedList<>(Arrays.asList(middleId, downId));
 
-        assertThat(sections.sortedStationIds()).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("구간이 1개일 때, 종점인 역을 제거할 수 없다.")
@@ -83,6 +92,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         deleteStationOfSection(upId);
         ExtractableResponse<Response> actualResponse = deleteStationOfSection(downId);
         assertThat(actualResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private Sections convertToSection(List<SectionResponse> sectionList) {
+        return sectionList.stream()
+            .map(response -> new Section(response.getId()
+                , stationService.findById(response.getUpStationId())
+                , stationService.findById(response.getDownStationId())
+                , response.getDistance()))
+            .collect(collectingAndThen(toList(), Sections::new));
+    }
+
+    private List<Long> convertToIds(List<Station> sortedStations) {
+        return sortedStations.stream()
+            .map(Station::getId)
+            .collect(toList());
     }
 
     private void addSection(SectionRequest sectionRequest) {

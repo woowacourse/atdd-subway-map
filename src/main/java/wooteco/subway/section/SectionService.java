@@ -1,9 +1,14 @@
 package wooteco.subway.section;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
+
 import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.UniqueSectionDeleteException;
 import wooteco.subway.section.dao.SectionDao;
+import wooteco.subway.section.dto.SectionResponse;
+import wooteco.subway.station.Station;
 import wooteco.subway.station.StationService;
 import wooteco.subway.station.dto.StationResponse;
 
@@ -21,56 +26,78 @@ public class SectionService {
 
     public void createSectionOfNewLine(Long lineId, Long upStationId, Long downStationId,
         int distance) {
-        Section section = new Section(lineId, upStationId,
-            downStationId, distance);
-        sectionDao.save(section);
+        Section section = makeSection(upStationId, downStationId, distance);
+        sectionDao.save(lineId, section);
     }
 
     public void create(Long lineId, Long upStationId, Long downStationId, int distance) {
-        Section section = new Section(lineId, upStationId,
-            downStationId, distance);
-        List<Section> sectionList = sectionDao.findSectionsByLineId(lineId);
-        Sections sections = new Sections(sectionList, section);
+        Section section = makeSection(upStationId, downStationId, distance);
+        Sections sections = findSections(lineId);
         if (section.isEndPointOf(sections)) {
-            sectionDao.save(section);
+            sectionDao.save(lineId, section);
             return;
         }
         createSectionBetweenSections(lineId, section, sections);
     }
 
-    private void createSectionBetweenSections(Long lindId, Section section, Sections sections) {
-        Section dividedSection = sections.divideSection(lindId, section);
-        sectionDao.deleteBySectionId(dividedSection.getId());
-        sectionDao.save(dividedSection);
-        sectionDao.save(section);
-    }
-
     public List<StationResponse> findAllByLineId(Long lineId) {
-        List<Section> sectionList = sectionDao.findSectionsByLineId(lineId);
-        Sections sections = new Sections(sectionList);
-        return stationService.findAllByIds(sections.sortedStationIds());
+        Sections sections = findSections(lineId);
+        List<Long> stationIds = convertToIds(sections.sortedStations());
+        return stationService.findAllByIds(stationIds);
     }
 
     public void deleteById(Long lineId, Long stationId) {
         if (isUniqueSectionOfLine(lineId)) {
             throw new UniqueSectionDeleteException();
         }
-        List<Section> sectionList = sectionDao.findById(lineId, stationId);
-        Sections sections = new Sections(sectionList);
-        sectionDao.deleteById(lineId, stationId);
+        Sections sections = convertToSection(sectionDao.findById(lineId, stationId));
+        sectionDao.deleteByStationId(lineId, stationId);
         if (sections.isNotEndPoint()) {
-            Long upStationId = sections.findUpStationId(stationId);
-            Long downStationId = sections.findDownStationId(stationId);
+            Station upStation = sections.findUpStation(stationId);
+            Station downStation = sections.findDownStation(stationId);
             sectionDao
-                .save(new Section(lineId, upStationId, downStationId, sections.sumDistance()));
+                .save(lineId, new Section(lineId, upStation, downStation, sections.sumDistance()));
         }
     }
 
-    private boolean isUniqueSectionOfLine(Long lineId) {
-        return sectionDao.findSectionsByLineId(lineId).size() == 1;
+    private Section makeSection(Long upStationId, Long downStationId, int distance) {
+        Station upStation = stationService.findById(upStationId);
+        Station downStation = stationService.findById(downStationId);
+        return new Section(upStation, downStation, distance);
     }
 
     public void deleteAllByLineId(Long lineId) {
         sectionDao.deleteAllById(lineId);
+    }
+
+    private void createSectionBetweenSections(Long lineId, Section section, Sections sections) {
+        Section dividedSection = sections.divideSection(section);
+        sectionDao.deleteById(dividedSection.getId());
+        sectionDao.save(lineId, dividedSection);
+        sectionDao.save(lineId, section);
+    }
+
+    private Sections findSections(Long lineId) {
+        return convertToSection(sectionDao.findSectionsByLineId(lineId));
+    }
+
+    private Sections convertToSection(List<SectionResponse> responses) {
+        return responses.stream()
+            .map(response -> new Section(response.getId()
+                , stationService.findById(response.getUpStationId())
+                , stationService.findById(response.getDownStationId())
+                , response.getDistance()))
+            .collect(collectingAndThen(toList(), Sections::new))
+            ;
+    }
+
+    private List<Long> convertToIds(List<Station> sortedStations) {
+        return sortedStations.stream()
+            .map(Station::getId)
+            .collect(toList());
+    }
+
+    private boolean isUniqueSectionOfLine(Long lineId) {
+        return sectionDao.findSectionsByLineId(lineId).size() == 1;
     }
 }
