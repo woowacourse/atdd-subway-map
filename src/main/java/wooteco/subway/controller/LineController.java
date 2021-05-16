@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +45,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
         Line createdLine = lineService.createLine(new Line(lineRequest));
         Section createdSection = new Section(createdLine.getId(), lineRequest);
 
@@ -71,7 +73,7 @@ public class LineController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Void> updateLine(@RequestBody LineRequest lineRequest, @PathVariable long id) {
+    public ResponseEntity<Void> updateLine(@RequestBody @Valid LineRequest lineRequest, @PathVariable long id) {
         Line line = new Line(lineRequest);
         lineService.updateLine(id, line);
         return ResponseEntity.ok().build();

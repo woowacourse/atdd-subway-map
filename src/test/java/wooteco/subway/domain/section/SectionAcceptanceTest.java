@@ -49,13 +49,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(1L, newStationId, 5);
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(sectionRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines/" + 1 + "/sections")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = addSection(sectionRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -70,6 +64,36 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 new StationResponse(2L, "약수역"),
                 new StationResponse(3L, "화정역")
             )));
+    }
+
+    @DisplayName("올바르지 않은 입력의 지하철 구간을 추가한다.")
+    @Test
+    void addSectionInvalidInputException() {
+        //given
+        long newStationId = addStation("화정역").getId();
+        SectionRequest sectionRequestUp = new SectionRequest(null, newStationId, 5);
+        SectionRequest sectionRequestDown = new SectionRequest(1L, null, 5);
+        SectionRequest sectionRequestDistance = new SectionRequest(1L, newStationId, 0);
+
+        //when
+        ExtractableResponse<Response> responseUp = addSection(sectionRequestUp);
+        ExtractableResponse<Response> responseDown = addSection(sectionRequestDown);
+        ExtractableResponse<Response> responseDistance = addSection(sectionRequestDistance);
+
+        // then
+        assertThat(responseUp.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(responseDown.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(responseDistance.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> addSection(SectionRequest sectionRequestUp) {
+        return RestAssured.given().log().all()
+            .body(sectionRequestUp)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/" + 1 + "/sections")
+            .then().log().all()
+            .extract();
     }
 
     @DisplayName("지하철 구간을 삭제한다.")

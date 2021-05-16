@@ -37,6 +37,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
+    @DisplayName("올바르지 않은 지하철역을 입력해 생성한다.")
+    @Test
+    void createStationException() {
+        // given
+        ExtractableResponse<Response> response = addStation("");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {

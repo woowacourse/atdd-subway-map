@@ -1,4 +1,4 @@
-package wooteco.subway.domain;
+package wooteco.subway.domain.line;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -55,6 +55,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+    }
+
+    @DisplayName("올바르지 않은 입력의 지하철 노선을 생성한다.")
+    @Test
+    void createLineExceptionInvalidInput() {
+        // when
+        ExtractableResponse<Response> responseName = addLine("", color, upStationId, downStationId, distance);
+        ExtractableResponse<Response> responseColor = addLine(name, "", upStationId, downStationId, distance);
+        ExtractableResponse<Response> responseDistance = addLine(name, color, upStationId, downStationId, 0);
+
+        // then
+        assertThat(responseName.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(responseColor.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(responseDistance.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("잘못된 역 id로 지하철 노선을 생성한다.")

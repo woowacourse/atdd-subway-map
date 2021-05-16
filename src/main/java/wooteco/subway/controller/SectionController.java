@@ -2,6 +2,8 @@ package wooteco.subway.controller;
 
 import java.net.URI;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,7 +35,7 @@ public class SectionController {
 
     @PostMapping
     public ResponseEntity<LineResponse> addSection(@PathVariable long lineId,
-        @RequestBody SectionRequest sectionRequest) {
+        @RequestBody @Valid SectionRequest sectionRequest) {
         Section section = new Section(lineId, sectionRequest);
         sectionService.addSection(section);
 
