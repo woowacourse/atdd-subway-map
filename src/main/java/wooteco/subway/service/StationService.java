@@ -5,6 +5,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.station.response.StationResponse;
 import wooteco.subway.exception.station.StationDuplicateException;
+import wooteco.subway.exception.station.StationNotExistException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +25,6 @@ public class StationService {
                     throw new StationDuplicateException(name);
                 });
         return new StationResponse(stationDao.insert(name));
-
     }
 
     public List<StationResponse> showAll() {
@@ -32,6 +32,11 @@ public class StationService {
         return stations.stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    public Station showById(Long stationId) {
+        return stationDao.findById(stationId)
+                .orElseThrow(() -> new StationNotExistException(stationId));
     }
 
     public void deleteById(Long id) {

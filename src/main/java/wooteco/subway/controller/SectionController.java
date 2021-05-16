@@ -22,7 +22,7 @@ public class SectionController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SectionInsertResponse> createSection(@PathVariable Long lineId, @Valid @RequestBody SectionInsertRequest sectionInsertRequest) {
 
-        SectionInsertResponse sectionInsertResponse = sectionService.create(lineId, sectionInsertRequest);
+        SectionInsertResponse sectionInsertResponse = sectionService.add(lineId, sectionInsertRequest);
         return ResponseEntity
                 .created(URI.create("/lines/" + lineId + "/sections/" + sectionInsertResponse.getId()))
                 .body(sectionInsertResponse);
@@ -30,7 +30,7 @@ public class SectionController {
 
     @DeleteMapping
     public ResponseEntity<Void> deleteSectionById(@PathVariable Long lineId, @RequestParam Long stationId) {
-        sectionService.deleteSectionById(lineId, stationId);
+        sectionService.deleteById(lineId, stationId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import wooteco.subway.exception.section.SectionAlreadyExistBothStationException;
+import wooteco.subway.exception.section.SectionMiniMumDeleteException;
 import wooteco.subway.exception.section.SectionNotExistBothStationException;
 import wooteco.subway.exception.section.SectionNotExistException;
 
@@ -9,20 +10,27 @@ import java.util.stream.Collectors;
 
 public class Sections {
 
+    public static final int MINIMUM_SECTION_SIZE = 1;
+
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
         this.sections = sections;
     }
 
-    public void validate(Section section) {
+    public void validateAddableNewStation(Section section) {
         Deque<Long> stationIdsInOrder = getSortedStationIds();
         if (stationIdsInOrder.contains(section.getUpStationId()) && stationIdsInOrder.contains(section.getDownStationId())) {
             throw new SectionAlreadyExistBothStationException(section);
         }
-
         if (!stationIdsInOrder.contains(section.getUpStationId()) && !stationIdsInOrder.contains(section.getDownStationId())) {
             throw new SectionNotExistBothStationException(section);
+        }
+    }
+
+    public void validateSectionSize(Long lineId) {
+        if (getSectionsSize() == MINIMUM_SECTION_SIZE) {
+            throw new SectionMiniMumDeleteException(lineId);
         }
     }
 
@@ -31,23 +39,34 @@ public class Sections {
         Map<Long, Long> upStationIds = new LinkedHashMap<>();
         Map<Long, Long> downStationIds = new LinkedHashMap<>();
 
+        initSortedStationId(sortedStationIds, upStationIds, downStationIds);
+        sortPreviousStationIds(sortedStationIds, upStationIds);
+        sortFollowingStationIds(sortedStationIds, downStationIds);
+
+        return sortedStationIds;
+    }
+
+    private void initSortedStationId(Deque<Long> sortedStationIds, Map<Long, Long> upStationIds, Map<Long, Long> downStationIds) {
         for (Section section : sections) {
             upStationIds.put(section.getDownStationId(), section.getUpStationId());
             downStationIds.put(section.getUpStationId(), section.getDownStationId());
         }
         Section now = sections.get(0);
         sortedStationIds.addFirst(now.getUpStationId());
+    }
 
+    private void sortPreviousStationIds(Deque<Long> sortedStationIds, Map<Long, Long> upStationIds) {
         while (upStationIds.containsKey(sortedStationIds.peekFirst())) {
             Long currentId = sortedStationIds.peekFirst();
             sortedStationIds.addFirst(upStationIds.get(currentId));
         }
+    }
 
+    private void sortFollowingStationIds(Deque<Long> sortedStationIds, Map<Long, Long> downStationIds) {
         while (downStationIds.containsKey(sortedStationIds.peekLast())) {
             Long currentId = sortedStationIds.peekLast();
             sortedStationIds.addLast(downStationIds.get(currentId));
         }
-        return sortedStationIds;
     }
 
     private List<Long> getUpStationIds() {

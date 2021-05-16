@@ -32,8 +32,12 @@ public class Section {
         this.distance = distance;
     }
 
-    public boolean isShorterThan(Section otherSection) {
-        return distance < otherSection.getDistance();
+    public int minusDistance(Section otherSection) {
+        return this.distance - otherSection.distance;
+    }
+
+    public boolean isGreaterOrEqualThan(Section otherSection) {
+        return distance >= otherSection.getDistance();
     }
 
     public Long getId() {

@@ -20,9 +20,9 @@ public class SectionsTest {
     @BeforeAll
     static void beforeAll() {
         Section section1 = new Section(1L, LINE_ID, STATION_1.getId(), STATION_2.getId(), DEFAULT_SECTION_DISTANCE);
-        Section section2 = new Section(3L, LINE_ID, STATION_3.getId(), STATION_4.getId(), DEFAULT_SECTION_DISTANCE);
-        Section section3 = new Section(2L, LINE_ID, STATION_2.getId(), STATION_3.getId(), DEFAULT_SECTION_DISTANCE);
-        sections = new Sections(Arrays.asList(section1, section2, section3));
+        Section section3 = new Section(3L, LINE_ID, STATION_3.getId(), STATION_4.getId(), DEFAULT_SECTION_DISTANCE);
+        Section section2 = new Section(2L, LINE_ID, STATION_2.getId(), STATION_3.getId(), DEFAULT_SECTION_DISTANCE);
+        sections = new Sections(Arrays.asList(section1, section3, section2));
     }
 
     @Test

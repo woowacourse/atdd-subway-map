@@ -7,7 +7,6 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.section.request.SectionInsertRequest;
 import wooteco.subway.dto.section.response.SectionInsertResponse;
 import wooteco.subway.exception.section.SectionDistanceException;
-import wooteco.subway.exception.section.SectionMiniMumDeleteException;
 
 @Service
 public class SectionService {
@@ -18,75 +17,82 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public SectionInsertResponse create(Long lineId, SectionInsertRequest sectionInsertRequest) {
+    public void create(Section section) {
+        sectionDao.insert(section);
+    }
+
+    public SectionInsertResponse add(Long lineId, SectionInsertRequest sectionInsertRequest) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         Section newSection = sectionInsertRequest.toEntity(lineId);
 
-        sections.validate(newSection);
+        sections.validateAddableNewStation(newSection);
 
         if (sections.isExistInUpStationIds(newSection.getUpStationId())) {
-            Section previousSection = sections.getPreviousSection(newSection);
-            validateDistanceAndUpdateUpStationId(lineId, newSection, previousSection);
+            updateUpStationId(lineId, sections, newSection);
         }
+
         if (sections.isExistInDownStationIds(newSection.getDownStationId())) {
-            Section followingSection = sections.getFollowingSection(newSection);
-            validateDistanceAndUpdateDownStationId(lineId, newSection, followingSection);
+            updateDownStationId(lineId, sections, newSection);
         }
-        Section insertedSection = sectionDao.insert(newSection);
-        return new SectionInsertResponse(insertedSection);
+        return new SectionInsertResponse(sectionDao.insert(newSection));
     }
 
-    public void deleteSectionById(Long lineId, Long stationIdToDelete) {
-        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
-        if (sections.getSectionsSize() == 1) {
-            throw new SectionMiniMumDeleteException(lineId);
+    private void updateUpStationId(Long lineId, Sections sections, Section newSection) {
+        Section previousSection = sections.getPreviousSection(newSection);
+        validateDistance(newSection, previousSection);
+        int updatedPreviousDistance = previousSection.minusDistance(newSection);
+        sectionDao.updateUpStationId(
+                newSection.getDownStationId(),
+                updatedPreviousDistance,
+                previousSection.getUpStationId(),
+                previousSection.getDownStationId(),
+                lineId);
+    }
+
+    private void updateDownStationId(Long lineId, Sections sections, Section newSection) {
+        Section followingSection = sections.getFollowingSection(newSection);
+        validateDistance(newSection, followingSection);
+        int updatedFollowingDistance = followingSection.minusDistance(newSection);
+        sectionDao.updateDownStationId(
+                newSection.getUpStationId(),
+                updatedFollowingDistance,
+                followingSection.getUpStationId(),
+                followingSection.getDownStationId(),
+                lineId);
+    }
+
+    private void validateDistance(Section newSection, Section previousSection) {
+        if (newSection.isGreaterOrEqualThan(previousSection)) {
+            throw new SectionDistanceException(newSection, previousSection);
         }
-        if (sections.isFirstOrLastStation(stationIdToDelete)) {
-            deleteFirstOrLastStation(sections, stationIdToDelete);
+    }
+
+    public Sections findAllByLineId(Long lineId) {
+        return new Sections(sectionDao.findAllByLineId(lineId));
+    }
+
+    public void deleteById(Long lineId, Long stationId) {
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        sections.validateSectionSize(lineId);
+
+        if (sections.isFirstOrLastStation(stationId)) {
+            deleteFirstOrLastStation(sections, stationId);
             return;
         }
-        deleteStationFromMiddleOfLine(lineId, stationIdToDelete, sections);
+        deleteStationFromMiddleOfLine(lineId, stationId, sections);
     }
 
-    private void deleteFirstOrLastStation(Sections sections, Long stationIdToDelete) {
-        Long sectionIdToDelete = sections.getSectionIdToDelete(stationIdToDelete);
-        sectionDao.deleteById(sectionIdToDelete);
+    private void deleteFirstOrLastStation(Sections sections, Long stationId) {
+        Long sectionId = sections.getSectionIdToDelete(stationId);
+        sectionDao.deleteById(sectionId);
     }
 
-    private void deleteStationFromMiddleOfLine(Long lineId, Long stationIdToDelete, Sections sections) {
-        Long UpStationSectionId = sections.getUpStationSectionId(stationIdToDelete);
-        Long DownStationSectionId = sections.getDownStationSectionId(stationIdToDelete);
-        Section newSection = sections.getNewSection(lineId, stationIdToDelete);
+    private void deleteStationFromMiddleOfLine(Long lineId, Long stationId, Sections sections) {
+        Long UpStationSectionId = sections.getUpStationSectionId(stationId);
+        Long DownStationSectionId = sections.getDownStationSectionId(stationId);
+        Section newSection = sections.getNewSection(lineId, stationId);
         sectionDao.deleteById(UpStationSectionId);
         sectionDao.deleteById(DownStationSectionId);
         sectionDao.insert(newSection);
-    }
-
-    private void validateDistanceAndUpdateUpStationId(Long lineId, Section newSection, Section previousSection) {
-        if (newSection.isShorterThan(previousSection)) {
-            int updatedPreviousDistance = previousSection.getDistance() - newSection.getDistance();
-            sectionDao.updateUpStationId(
-                    newSection.getDownStationId(),
-                    updatedPreviousDistance,
-                    previousSection.getUpStationId(),
-                    previousSection.getDownStationId(),
-                    lineId);
-            return;
-        }
-        throw new SectionDistanceException(newSection, previousSection);
-    }
-
-    private void validateDistanceAndUpdateDownStationId(Long lineId, Section newSection, Section followingSection) {
-        if (newSection.isShorterThan(followingSection)) {
-            int updatedFollowingDistance = followingSection.getDistance() - newSection.getDistance();
-            sectionDao.updateDownStationId(
-                    newSection.getUpStationId(),
-                    updatedFollowingDistance,
-                    followingSection.getUpStationId(),
-                    followingSection.getDownStationId(),
-                    lineId);
-            return;
-        }
-        throw new SectionDistanceException(newSection, followingSection);
     }
 }
