@@ -34,26 +34,6 @@ public class Section {
         }
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Line getLine() {
-        return line;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
     public boolean isBefore(Section first) {
         return downStation.equals(first.getUpStation());
     }
@@ -76,6 +56,26 @@ public class Section {
 
     public int plusDistance(Section after) {
         return this.distance + after.distance;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     public Long getUpStationId() {

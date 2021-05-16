@@ -1,5 +1,6 @@
 package wooteco.subway.line;
 
+import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.station.Station;
 
 import java.util.ArrayList;
@@ -27,18 +28,9 @@ public class Line {
         this.stations = stations;
     }
 
-    public boolean isSameName(String name) {
-        return this.name.equals(name);
-    }
-
-    public boolean isSameId(Long id) {
-        return this.id.equals(id);
-    }
-
-    public void update(Line updatedLine) {
-        this.id = updatedLine.getId();
-        this.name = updatedLine.getName();
-        this.color = updatedLine.getColor();
+    public void update(LineRequest lineRequest) {
+        this.name = lineRequest.getName();
+        this.color = lineRequest.getColor();
     }
 
     public Long getId() {

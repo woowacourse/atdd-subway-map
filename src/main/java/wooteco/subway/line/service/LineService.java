@@ -27,7 +27,7 @@ public class LineService {
     @Transactional
     public LineResponse save(LineRequest lineRequest) {
         validateLineName(lineRequest);
-        Line newLine = lineDao.save(lineRequest.toLine());
+        Line newLine = lineDao.save(lineRequest.toEntity());
         sectionService.save(newLine, lineRequest);
         return new LineResponse(newLine);
     }

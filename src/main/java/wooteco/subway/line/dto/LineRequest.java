@@ -28,6 +28,10 @@ public class LineRequest {
         this.distance = distance;
     }
 
+    public Line toEntity() {
+        return new Line(this.name, this.color);
+    }
+
     public String getName() {
         return name;
     }
@@ -46,9 +50,5 @@ public class LineRequest {
 
     public int getDistance() {
         return distance;
-    }
-
-    public Line toLine() {
-        return new Line(this.name, this.color);
     }
 }

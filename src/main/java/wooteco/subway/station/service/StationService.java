@@ -66,4 +66,8 @@ public class StationService {
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
     }
+
+    public boolean isExistingStation(Station station) {
+        return stationDao.isExistingStation(station);
+    }
 }

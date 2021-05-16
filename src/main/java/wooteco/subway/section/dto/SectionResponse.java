@@ -20,6 +20,13 @@ public class SectionResponse {
         this.distance = distance;
     }
 
+    public static SectionResponse from(Section section) {
+        Line line = section.getLine();
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+        return new SectionResponse(section.getId(), line.getId(), upStation.getId(), downStation.getId(), section.getDistance());
+    }
+
     public Long getId() {
         return id;
     }
@@ -38,12 +45,5 @@ public class SectionResponse {
 
     public int getDistance() {
         return distance;
-    }
-
-    public static SectionResponse from(Section section) {
-        Line line = section.getLine();
-        Station upStation = section.getUpStation();
-        Station downStation = section.getDownStation();
-        return new SectionResponse(section.getId(), line.getId(), upStation.getId(), downStation.getId(), section.getDistance());
     }
 }
