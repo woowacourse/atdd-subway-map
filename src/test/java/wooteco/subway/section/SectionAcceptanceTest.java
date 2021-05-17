@@ -30,12 +30,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationRequest 잠실역 = new StationRequest("잠실역");
         StationRequest 당산역 = new StationRequest("당산역");
 
-        postStation(강남역);
-        postStation(잠실역);
-        postStation(당산역);
+        post("/stations", 강남역);
+        post("/stations", 잠실역);
+        post("/stations", 당산역);
 
         LineRequest 이호선 = new LineRequest("이호선", "green", 강남역_id, 잠실역_id, 5);
-        postLine(이호선);
+        post("/lines", 이호선);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 잠실에서당산 = new SectionRequest(잠실역_id, 당산역_id, 5);
 
         // when
-        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 잠실에서당산);
+        ExtractableResponse<Response> 구간_생성_응답 = post("/lines/1/sections", 잠실에서당산);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -58,7 +58,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 당산에서강남 = new SectionRequest(당산역_id, 강남역_id, 5);
 
         // when
-        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 당산에서강남);
+        ExtractableResponse<Response> 구간_생성_응답 = post("/lines/1/sections", 당산에서강남);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -71,7 +71,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 강남에서잠실 = new SectionRequest(강남역_id, 잠실역_id, 5);
 
         // when
-        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 강남에서잠실);
+        ExtractableResponse<Response> 구간_생성_응답 = post("/lines/1/sections", 강남에서잠실);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -87,11 +87,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 왕십리에서신림 = new SectionRequest(4L, 5L, 2);
 
         // when
-        postStation(왕십리역);
-        postStation(신림역);
-        postSection("/lines/1/sections", 잠실에서당산);
+        post("/stations", 왕십리역);
+        post("/stations", 신림역);
+        post("/lines/1/sections", 잠실에서당산);
 
-        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 왕십리에서신림);
+        ExtractableResponse<Response> 구간_생성_응답 = post("/lines/1/sections", 왕십리에서신림);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -104,7 +104,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 당산에서없는역 = new SectionRequest(당산역_id, 4L, 5);
 
         // when
-        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 당산에서없는역);
+        ExtractableResponse<Response> 구간_생성_응답 = post("/lines/1/sections", 당산에서없는역);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -117,7 +117,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 상행하행_동일 = new SectionRequest(강남역_id, 강남역_id, 5);
 
         // when
-        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 상행하행_동일);
+        ExtractableResponse<Response> 구간_생성_응답 = post("/lines/1/sections", 상행하행_동일);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -133,9 +133,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 당산에서왕십리 = new SectionRequest(당산역_id, 4L, 6);
 
         // when
-        postStation(왕십리역);
-        postSection("/lines/1/sections", 잠실에서왕십리);
-        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 당산에서왕십리);
+        post("/stations", 왕십리역);
+        post("/lines/1/sections", 잠실에서왕십리);
+        ExtractableResponse<Response> 구간_생성_응답 = post("/lines/1/sections", 당산에서왕십리);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -151,9 +151,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 당산에서왕십리 = new SectionRequest(당산역_id, 4L, 3);
 
         // when
-        postStation(왕십리역);
-        postSection("/lines/1/sections", 잠실에서왕십리);
-        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 당산에서왕십리);
+        post("/stations", 왕십리역);
+        post("/lines/1/sections", 잠실에서왕십리);
+        ExtractableResponse<Response> 구간_생성_응답 = post("/lines/1/sections", 당산에서왕십리);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -169,9 +169,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 당산에서왕십리 = new SectionRequest(잠실역_id, 당산역_id, 3);
 
         // when
-        postStation(왕십리역);
-        postSection("/lines/1/sections", 잠실에서왕십리);
-        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 당산에서왕십리);
+        post("/stations", 왕십리역);
+        post("/lines/1/sections", 잠실에서왕십리);
+        ExtractableResponse<Response> 구간_생성_응답 = post("/lines/1/sections", 당산에서왕십리);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -187,9 +187,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 당산에서왕십리 = new SectionRequest(잠실역_id, 당산역_id, 5);
 
         // when
-        postStation(왕십리역);
-        postSection("/lines/1/sections", 잠실에서왕십리);
-        ExtractableResponse<Response> 구간_생성_응답 = postSection("/lines/1/sections", 당산에서왕십리);
+        post("/stations", 왕십리역);
+        post("/lines/1/sections", 잠실에서왕십리);
+        ExtractableResponse<Response> 구간_생성_응답 = post("/lines/1/sections", 당산에서왕십리);
 
         // then
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -202,9 +202,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 잠실에서당산 = new SectionRequest(잠실역_id, 당산역_id, 5);
 
         // when
-        postSection("/lines/1/sections", 잠실에서당산);
-        ExtractableResponse<Response> 구간_삭제_응답 = deleteResponseFrom("/lines/1/sections?stationId=1");
-        ExtractableResponse<Response> 일호선_조회_응답 = getResponseFrom("/lines/1");
+        post("/lines/1/sections", 잠실에서당산);
+        ExtractableResponse<Response> 구간_삭제_응답 = delete("/lines/1/sections?stationId=1");
+        ExtractableResponse<Response> 일호선_조회_응답 = get("/lines/1");
         LineResponse 일호선 = 일호선_조회_응답.as(LineResponse.class);
         StationResponse 첫번째역 = 일호선.getStations().get(0);
 
@@ -222,9 +222,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 당산에서강남 = new SectionRequest(당산역_id, 강남역_id, 5);
 
         // when
-        postSection("/lines/1/sections", 당산에서강남);
-        ExtractableResponse<Response> 구간_삭제_응답 = deleteResponseFrom("/lines/1/sections?stationId=2");
-        ExtractableResponse<Response> 일호선_조회_응답 = getResponseFrom("/lines/1");
+        post("/lines/1/sections", 당산에서강남);
+        ExtractableResponse<Response> 구간_삭제_응답 = delete("/lines/1/sections?stationId=2");
+        ExtractableResponse<Response> 일호선_조회_응답 = get("/lines/1");
         LineResponse 일호선 = 일호선_조회_응답.as(LineResponse.class);
         StationResponse 첫번째역 = 일호선.getStations().get(0);
 
@@ -242,9 +242,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest 잠실에서당산 = new SectionRequest(잠실역_id, 당산역_id, 5);
 
         // when
-        postSection("/lines/1/sections", 잠실에서당산);
-        ExtractableResponse<Response> 구간_삭제_응답 = deleteResponseFrom("/lines/1/sections?stationId=2");
-        ExtractableResponse<Response> 일호선_조회_응답 = getResponseFrom("/lines/1");
+        post("/lines/1/sections", 잠실에서당산);
+        ExtractableResponse<Response> 구간_삭제_응답 = delete("/lines/1/sections?stationId=2");
+        ExtractableResponse<Response> 일호선_조회_응답 = get("/lines/1");
         LineResponse 일호선 = 일호선_조회_응답.as(LineResponse.class);
         StationResponse 첫번째역 = 일호선.getStations().get(0);
         StationResponse 마지막역 = 일호선.getStations().get(1);

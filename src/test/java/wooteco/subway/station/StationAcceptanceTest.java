@@ -32,7 +32,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest 신논현역 = new StationRequest("신논현역");
 
         // when
-        ExtractableResponse<Response> 신논현역_생성_응답 = postStation(신논현역);
+        ExtractableResponse<Response> 신논현역_생성_응답 = post("/stations", 신논현역);
 
         // then
         assertThat(신논현역_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -44,10 +44,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         StationRequest 강남역 = new StationRequest("강남역");
-        postStation(강남역);
+        post("/stations", 강남역);
 
         // when
-        ExtractableResponse<Response> 강남역_생성_응답 = postStation(강남역);
+        ExtractableResponse<Response> 강남역_생성_응답 = post("/stations", 강남역);
 
         // then
         assertThat(강남역_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -58,13 +58,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void getStations() {
         /// given
         StationRequest 강남역 = new StationRequest("강남역");
-        ExtractableResponse<Response> 강남역_생성_응답 = postStation(강남역);
+        ExtractableResponse<Response> 강남역_생성_응답 = post("/stations", 강남역);
 
         StationRequest 역삼역 = new StationRequest("역삼역");
-        ExtractableResponse<Response> 역삼역_생성_응답 = postStation(역삼역);
+        ExtractableResponse<Response> 역삼역_생성_응답 = post("/stations", 역삼역);
 
         // when
-        ExtractableResponse<Response> 모든역_조회_응답 = getResponseFrom("/stations");
+        ExtractableResponse<Response> 모든역_조회_응답 = get("/stations");
 
         // then
         assertThat(모든역_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -88,10 +88,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest 강남역 = new StationRequest("강남역");
 
         // when
-        ExtractableResponse<Response> 강남역_생성_응답 = postStation(강남역);
+        ExtractableResponse<Response> 강남역_생성_응답 = post("/stations", 강남역);
         int 모든역의_개수 = stationRepository.findAll().size();
         String path = 강남역_생성_응답.header("Location");
-        ExtractableResponse<Response> 강남역_삭제_응답 = deleteResponseFrom(path);
+        ExtractableResponse<Response> 강남역_삭제_응답 = delete(path);
 
         // then
         assertThat(강남역_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());

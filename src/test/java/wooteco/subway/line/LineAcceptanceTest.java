@@ -35,8 +35,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         StationRequest 강남역 = new StationRequest("강남역");
         StationRequest 잠실역 = new StationRequest("잠실역");
 
-        postStation(강남역);
-        postStation(잠실역);
+        post("/stations", 강남역);
+        post("/stations", 잠실역);
     }
 
     @DisplayName("노선을 생성한다.")
@@ -47,7 +47,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("분당선", "bg-red-600", 강남역_id, 잠실역_id, 0);
 
         // when
-        ExtractableResponse<Response> response = postLine(분당선);
+        ExtractableResponse<Response> response = post("/lines", 분당선);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -62,7 +62,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("분당선", "bg-red-600", 강남역_id, 강남역_id, 0);
 
         // when
-        ExtractableResponse<Response> response = postLine(분당선);
+        ExtractableResponse<Response> response = post("/lines", 분당선);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -80,9 +80,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("이호선", "bg-red-600", 3L, 4L, 0);
 
         // when
-        ExtractableResponse<Response> 분당선_생성_응답 = postLine(분당선);
-        ExtractableResponse<Response> 신부당선_생성_응답 = postLine(신분당선);
-        ExtractableResponse<Response> 이호선_생성_응답 = postLine(이호선);
+        ExtractableResponse<Response> 분당선_생성_응답 = post("/lines", 분당선);
+        ExtractableResponse<Response> 신부당선_생성_응답 = post("/lines", 신분당선);
+        ExtractableResponse<Response> 이호선_생성_응답 = post("/lines", 이호선);
 
         // then
         assertThat(분당선_생성_응답.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -100,8 +100,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("신분당선", "bg-red-600", 1L, null, 0);
 
         // when
-        ExtractableResponse<Response> 분당선_생성_응답 = postLine(분당선);
-        ExtractableResponse<Response> 신분당선_생성_응답 = postLine(신분당선);
+        ExtractableResponse<Response> 분당선_생성_응답 = post("/lines", 분당선);
+        ExtractableResponse<Response> 신분당선_생성_응답 = post("/lines", 신분당선);
 
         // then
         assertThat(분당선_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -118,10 +118,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("분당선", "bg-red-600", 1L, 2L, 0);
 
         // when
-        postStation(강남역);
-        postStation(잠실역);
-        postLine(분당선);
-        ExtractableResponse<Response> response = postLine(분당선);
+        post("/stations", 강남역);
+        post("/stations", 잠실역);
+        post("/lines", 분당선);
+        ExtractableResponse<Response> response = post("/lines", 분당선);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -138,10 +138,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("신분당선", "bg-red-600", 강남역_id, 잠실역_id, 0);
 
         // when
-        ExtractableResponse<Response> 분당선_생성_응답 = postLine(분당선);
-        ExtractableResponse<Response> 신분당선_생성_응답 = postLine(신분당선);
+        ExtractableResponse<Response> 분당선_생성_응답 = post("/lines", 분당선);
+        ExtractableResponse<Response> 신분당선_생성_응답 = post("/lines", 신분당선);
 
-        ExtractableResponse<Response> 모든노선조회_응답 = getResponseFrom("/lines");
+        ExtractableResponse<Response> 모든노선조회_응답 = get("/lines");
 
         // then
         assertThat(모든노선조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -164,8 +164,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("분당선", "bg-red-600", 강남역_id, 잠실역_id, 0);
 
         // when
-        ExtractableResponse<Response> 분당선_생성_응답 = postLine(분당선);
-        ExtractableResponse<Response> 노선_조회_응답 = getResponseFrom("/lines/1");
+        ExtractableResponse<Response> 분당선_생성_응답 = post("/lines", 분당선);
+        ExtractableResponse<Response> 노선_조회_응답 = get("/lines/1");
 
         // then
         assertThat(노선_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -183,8 +183,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("이호선", "bg-red-600", 강남역_id, 잠실역_id, 0);
 
         // when
-        postLine(이호선);
-        ExtractableResponse<Response> 이호선_조회_응답 = getResponseFrom("/lines/1");
+        post("/lines", 이호선);
+        ExtractableResponse<Response> 이호선_조회_응답 = get("/lines/1");
 
         // then
         assertThat(이호선_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -210,9 +210,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 
         // when
-        postLine(이호선);
+        post("/lines", 이호선);
         ExtractableResponse<Response> 이호선_신분당선으로_수정 = putLine("/lines/1", 신분당선);
-        ExtractableResponse<Response> 수정된_노선_응답 = getResponseFrom("/lines/1");
+        ExtractableResponse<Response> 수정된_노선_응답 = get("/lines/1");
 
         // then
         assertThat(이호선_신분당선으로_수정.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -234,8 +234,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 
         // when
-        postLine(이호선);
-        postLine(신분당선);
+        post("/lines", 이호선);
+        post("/lines", 신분당선);
         ExtractableResponse<Response> expectedResponse = putLine("/lines/1", 신분당선);
 
         // then
@@ -251,10 +251,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 
         // when
-        ExtractableResponse<Response> 분당선_생성_응답 = postLine(분당선);
+        ExtractableResponse<Response> 분당선_생성_응답 = post("/lines", 분당선);
         int originalSize = lineRepository.findAll().size();
         String path = 분당선_생성_응답.header("Location");
-        ExtractableResponse<Response> response = deleteResponseFrom(path);
+        ExtractableResponse<Response> response = delete(path);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
