@@ -58,7 +58,7 @@ public class StationDao {
     public Optional<Station> findById(Long id) {
         try {
             String sql = "SELECT * FROM station WHERE id = ?";
-            return Optional.ofNullable(
+            return Optional.of(
                     jdbcTemplate.queryForObject(sql,
                             (rs, rowNum) -> new Station(
                                     rs.getLong("id"),

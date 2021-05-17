@@ -4,12 +4,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.dao.SectionDao;
 import wooteco.subway.line.domain.Section;
+import wooteco.subway.line.domain.Sections;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationResponse;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -38,10 +38,8 @@ public class SectionService {
 
     @Transactional(readOnly = true)
     public List<StationResponse> findSectionById(Long id) {
-        List<Section> sections = sectionDao.findSectionBylineId(id);
-        List<Station> stations = orderedStations(sections);
-
-        return stations.stream()
+        Sections sections = new Sections(sectionDao.findSectionBylineId(id));
+        return sections.getOrderedStations().stream()
                 .map(station ->
                         new StationResponse(
                                 station.getId(),
@@ -50,131 +48,48 @@ public class SectionService {
                 .collect(Collectors.toList());
     }
 
-    private List<Station> orderedStations(List<Section> sections) {
-        Map<Station, Station> stationMap = sections.stream().collect(Collectors.toMap(
-                Section::getUpStation,
-                Section::getDownStation
-        ));
-        Station firstUpStation = findFirstUpStation(stationMap);
-        return orderStationsByFirstUpStation(stationMap, firstUpStation);
-    }
-
-    private List<Station> orderStationsByFirstUpStation(Map<Station, Station> sectionMap, Station upStation) {
-        List<Station> stationsOfLine = new ArrayList<>();
-        stationsOfLine.add(upStation);
-        while (sectionMap.get(upStation) != null) {
-            upStation = sectionMap.get(upStation);
-            stationsOfLine.add(upStation);
-        }
-        return stationsOfLine;
-    }
-
-    private Station findFirstUpStation(Map<Station, Station> sectionMap) {
-        Set<Station> upStations = new HashSet<>(sectionMap.keySet());
-        Set<Station> downStations = new HashSet<>(sectionMap.values());
-        upStations.removeAll(downStations);
-        return upStations.iterator().next();
-    }
-
     public void saveSectionOfExistLine(Long lineId, LineRequest lineRequest) {
         Long upStationId = lineRequest.getUpStationId();
         Long downStationId = lineRequest.getDownStationId();
-        int distance = lineRequest.getDistance();
-
         duplicateInputStations(upStationId, downStationId);
 
-        List<Section> sections = sectionDao.findSectionBylineId(lineId);
-        Station station = findSameStationInSection(upStationId, downStationId, sections);
+        Sections sections = new Sections(sectionDao.findSectionBylineId(lineId));
+        Station station = sections.findSameStationsOfSection(upStationId, downStationId);
 
-        Section newSection = new Section(lineId, upStationId, downStationId, distance);
+        Section newSection = new Section(lineId, upStationId, downStationId, lineRequest.getDistance());
         updateNewStation(station, sections, newSection);
         sectionDao.save(newSection);
     }
 
-    private Station findSameStationInSection(Long upStationId, Long downStationId, List<Section> sections) {
-        List<Station> orderedStations = orderedStations(sections);
-        List<Station> duplicateStation = findSameUpAndDownStationInStations(upStationId, downStationId, orderedStations);
-        if (duplicateStation.size() != 1) {
-            throw new IllegalArgumentException("구간은 하나의 역만 중복될 수 있습니다.");
-        }
+    private void updateNewStation(Station station, Sections sections, Section newSection) {
+        Long lineId = newSection.getLine().getId();
+        Long upStationId = newSection.getUpStation().getId();
+        Long downStationId = newSection.getDownStation().getId();
+        int distance = newSection.getDistance();
 
-        return duplicateStation.get(0);
-    }
-
-    private List<Station> findSameUpAndDownStationInStations(Long upStationId, Long downStationId, List<Station> stationsOfLine) {
-        return stationsOfLine.stream()
-                .filter(station -> station.isSame(upStationId) || station.isSame(downStationId))
-                .collect(Collectors.toList());
-    }
-
-    private void updateNewStation(Station station, List<Section> sections, Section section) {
-        Long lineId = section.getLine().getId();
-        Long upStationId = section.getUpStation().getId();
-        Long downStationId = section.getDownStation().getId();
-        int distance = section.getDistance();
-
-        if (station.isSame(upStationId)) {
-            Section selectSection = findSelectedSection(sections, true, upStationId);
-            validateDistance(selectSection, distance);
-            sectionDao.updateUpStation(lineId, upStationId, downStationId, selectSection.getDistance() - distance);
+        boolean isUpStation = station.isSame(upStationId);
+        Section selectedSection = sections.findSelectedSection(isUpStation, newSection);
+        if (isUpStation) {
+            sectionDao.updateUpStation(lineId, upStationId, downStationId, selectedSection.getDistance() - distance);
             return;
         }
-
-        Section selectSection = findSelectedSection(sections, false, downStationId);
-        validateDistance(selectSection, distance);
-        sectionDao.updateDownStation(lineId, downStationId, upStationId, selectSection.getDistance() - distance);
-    }
-
-    private void validateDistance(Section selectSection, int distance) {
-        if (selectSection.isLessOrSameDistance(distance)) {
-            throw new IllegalArgumentException("거리가 현재 존재하는 구간보다 크거나 같습니다!");
-        }
-    }
-
-    private Section findSelectedSection(List<Section> sections, boolean isUpStation, Long stationId) {
-        Function<Section, Station> sectionFunction = findFunction(isUpStation);
-        return sections.stream()
-                .filter(section -> sectionFunction.apply(section).isSame(stationId))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("중복되는 역이 없습니다!!"));
-    }
-
-    private Function<Section, Station> findFunction(boolean isUpStation) {
-        if (isUpStation) {
-            return Section::getUpStation;
-        }
-        return Section::getDownStation;
+        sectionDao.updateDownStation(lineId, downStationId, upStationId, selectedSection.getDistance() - distance);
     }
 
     public void deleteSection(Long lineId, Long stationId) {
-        List<Section> sections = sectionDao.findSectionBylineId(lineId);
-        validSectionSizeWhenDelete(sections);
+        Sections sections = new Sections(sectionDao.findSectionBylineId(lineId));
+        sections.validDeletableSection();
 
         sectionDao.deleteByStationId(lineId, stationId);
-        addSectionIfNotEndStation(stationId, lineId, sections);
-    }
 
-    private void addSectionIfNotEndStation(Long stationId, Long lineId, List<Section> sections) {
-        Optional<Section> sectionBySameUpStation = sections.stream()
-                .filter(section -> section.getUpStation().isSame(stationId))
-                .findAny();
-        Optional<Section> sectionBySameDownStation = sections.stream()
-                .filter(section -> section.getDownStation().isSame(stationId))
-                .findAny();
+        if (sections.notEndStation(stationId)) {
+            Section sectionOfSameUpStation = sections.selectedSection(true, stationId);
+            Section sectionOfSameDownStation = sections.selectedSection(false, stationId);
 
-        if (sectionBySameUpStation.isPresent() && sectionBySameDownStation.isPresent()) {
             sectionDao.save(lineId,
-                    sectionBySameDownStation.get().getUpStation().getId(),
-                    sectionBySameUpStation.get().getDownStation().getId(),
-                    sectionBySameUpStation.get().getDistance() + sectionBySameDownStation.get().getDistance());
-        }
-    }
-
-    private void validSectionSizeWhenDelete(List<Section> sections) {
-        List<Station> stations = orderedStations(sections);
-
-        if (stations.size() == 2) {
-            throw new IllegalArgumentException("종점역만 남은 경우 삭제를 수행할 수 없습니다!");
+                    sectionOfSameDownStation.getUpStation().getId(),
+                    sectionOfSameUpStation.getDownStation().getId(),
+                    sectionOfSameUpStation.getDistance() + sectionOfSameDownStation.getDistance());
         }
     }
 }
