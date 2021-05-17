@@ -64,7 +64,14 @@ public class StationDao {
 
     public Optional<Station> findByName(final String name) {
         final String sql = "SELECT * FROM station WHERE name = :name";
-        final List<Station> stations = namedParameterJdbcTemplate.query(sql, Collections.singletonMap("name", name), stationRowMapper);
+        final List<Station> stations = namedParameterJdbcTemplate.query(
+            sql, Collections.singletonMap("name", name), stationRowMapper
+        );
         return Optional.ofNullable(DataAccessUtils.singleResult(stations));
+    }
+
+    public List<Station> findByIds(final List<Long> ids) {
+        final String sql = "SELECT * FROM station WHERE id IN (:ids)";
+        return namedParameterJdbcTemplate.query(sql, Collections.singletonMap("ids", ids), stationRowMapper);
     }
 }

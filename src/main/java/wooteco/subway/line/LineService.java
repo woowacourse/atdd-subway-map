@@ -11,7 +11,6 @@ import wooteco.subway.line.section.SectionDao;
 import wooteco.subway.line.section.SectionRequest;
 import wooteco.subway.line.section.SectionResponse;
 import wooteco.subway.line.section.Sections;
-import wooteco.subway.station.Station;
 import wooteco.subway.station.StationService;
 import wooteco.subway.station.Stations;
 
@@ -80,11 +79,7 @@ public class LineService {
     }
 
     private Stations composeStations(final Sections sections) {
-        final List<Station> stationsGroup = sections.distinctStationIds()
-            .stream()
-            .map(stationService::findById)
-            .collect(Collectors.toList());
-        return new Stations(stationsGroup);
+        return stationService.findByIds(sections.distinctStationIds());
     }
 
     public List<LineResponse> findLines() {

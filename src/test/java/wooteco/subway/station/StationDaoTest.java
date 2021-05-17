@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -99,5 +100,20 @@ class StationDaoTest {
 
         assertThat(station.getId()).isEqualTo(createdStation.getId());
         assertThat(station.getName()).isEqualTo(createdStation.getName());
+    }
+
+    @DisplayName("여러 id의 지하철역들을 조회한다.")
+    @Test
+    void findByIds() {
+        final List<String> stationNames = Arrays.asList("잠실역", "강남역", "건대입구역");
+        final List<Long> ids = stationNames.stream()
+            .map(Station::new)
+            .map(stationDao::save)
+            .map(Station::getId)
+            .collect(Collectors.toList());
+
+        assertThat(stationDao.findByIds(ids))
+            .extracting("id")
+            .isEqualTo(ids);
     }
 }
