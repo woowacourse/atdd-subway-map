@@ -32,10 +32,10 @@ public class SectionsTest {
         Sections sections = new Sections(sectionList);
         assertThat(sections.sortedStations())
                 .containsExactly(
-                        new StationResponse(2L, "가양역"),
-                        new StationResponse(4L, "증미역"),
-                        new StationResponse(3L, "등촌역"),
-                        new StationResponse(1L, "염창역")
+                        new Station(2L, "가양역"),
+                        new Station(4L, "증미역"),
+                        new Station(3L, "등촌역"),
+                        new Station(1L, "염창역")
                 );
     }
 }

@@ -7,14 +7,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.common.ErrorResponse;
-import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class SectionAcceptanceTest extends AcceptanceTest {
 
@@ -25,10 +26,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Autowired
     private StationDao stationDao;
 
-    private Station firstStation;
-    private Station secondStation;
-    private Station thirdStation;
-
     @BeforeEach
     void beforeEach() {
         jdbcTemplate.execute("SET foreign_key_checks=0;");
@@ -36,13 +33,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         jdbcTemplate.execute("alter table SECTION alter column ID restart with 1");
         jdbcTemplate.execute("truncate table STATION");
         jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
+        jdbcTemplate.execute("truncate table LINE");
         jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
         jdbcTemplate.execute("insert into LINE (name, color) values ('9호선', '황토')");
         jdbcTemplate.execute("insert into LINE (name, color) values ('2호선', '초록')");
         jdbcTemplate.execute("SET foreign_key_checks=1;");
-        firstStation = stationDao.save("first");
-        secondStation = stationDao.save("second");
-        thirdStation = stationDao.save("third");
+        stationDao.save("first");
+        stationDao.save("second");
+        stationDao.save("third");
         stationDao.save("fourth");
         stationDao.save("fifth");
         String sql = "insert into SECTION (LINE_ID, UP_STATION_ID, DOWN_STATION_ID, DISTANCE) values(?,?,?,?)";
@@ -167,10 +165,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("종점이 포함된 역의 구간 삭제")
     public void deleteSectionWithContainingEndStationCase() {
-        ExtractableResponse<Response> response = deleteSectionResponse(1L);
+        deleteSectionResponse(1L);
+        SectionResponse sectionResponse = findByUpStationId(2L);
 
-        assertThat(sectionDao.findByUpStationId(1L, 1L).isPresent()).isFalse();
+        assertThatThrownBy(() -> findByUpStationId(1L))
+                .isInstanceOf(EmptyResultDataAccessException.class);
         assertThat(sectionDao.numberOfEnrolledSection(1L)).isEqualTo(1);
+        assertThat(sectionResponse)
+                .usingRecursiveComparison()
+                .isEqualTo(new SectionResponse(2L, 1L, 2L, 3L, 10));
     }
 
     @Test
@@ -178,11 +181,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     public void deleteSectionWithMiddleCase() {
         ExtractableResponse<Response> response = deleteSectionResponse(2L);
 
-        Section section = sectionDao.findByUpStationId(1L, 1L).get();
-        assertThat(section)
+        SectionResponse sectionResponse = findByUpStationId(1L);
+        assertThat(sectionResponse)
                 .usingRecursiveComparison()
-                .ignoringFields("id")
-                .isEqualTo(new Section(null, 1L, firstStation, thirdStation, 20));
+                .isEqualTo(new SectionResponse(1L, 1L, 1L, 3L, 20));
     }
 
     @Test
@@ -239,5 +241,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .delete(uri)
                 .then()
                 .extract();
+    }
+
+    private SectionResponse findByUpStationId(Long upStationId) {
+        return jdbcTemplate.queryForObject(
+                "select id, line_id, up_station_id, down_station_id, distance from SECTION where line_id = 1 and up_station_id = ?",
+                (rs, num) -> new SectionResponse(
+                        rs.getLong("id"),
+                        rs.getLong("line_id"),
+                        upStationId,
+                        rs.getLong("down_station_id"),
+                        rs.getInt("distance")
+                ), upStationId
+        );
     }
 }
