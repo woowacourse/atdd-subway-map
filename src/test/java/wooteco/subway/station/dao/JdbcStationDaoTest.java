@@ -14,12 +14,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJdbcTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-class JDBCStationDaoTest {
+class JdbcStationDaoTest {
 
-    private final JDBCStationDao jdbcStationDao;
+    private final JdbcStationDao jdbcStationDao;
 
-    public JDBCStationDaoTest(JdbcTemplate jdbcTemplate) {
-        this.jdbcStationDao = new JDBCStationDao(jdbcTemplate);
+    public JdbcStationDaoTest(JdbcTemplate jdbcTemplate) {
+        this.jdbcStationDao = new JdbcStationDao(jdbcTemplate);
     }
 
     @Test

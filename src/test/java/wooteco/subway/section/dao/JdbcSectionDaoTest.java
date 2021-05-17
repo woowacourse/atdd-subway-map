@@ -8,18 +8,18 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
-import wooteco.subway.station.dao.JDBCStationDao;
+import wooteco.subway.station.dao.JdbcStationDao;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-class JDBCSectionDaoTest {
+class JdbcSectionDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private JDBCSectionDao jdbcSectionDao;
+    private JdbcSectionDao jdbcSectionDao;
     private StationDao stationDao;
     private Station ganamStation;
     private Station yeoksamStation;
@@ -30,8 +30,8 @@ class JDBCSectionDaoTest {
     @BeforeEach
     void setUp() {
 
-        jdbcSectionDao = new JDBCSectionDao(jdbcTemplate);
-        stationDao = new JDBCStationDao(jdbcTemplate);
+        jdbcSectionDao = new JdbcSectionDao(jdbcTemplate);
+        stationDao = new JdbcStationDao(jdbcTemplate);
         ganamStation = new Station(1L, "강남역");
         yeoksamStation = new Station(2L, "역삼역");
         jamsilStation = new Station(3L, "잠실역");

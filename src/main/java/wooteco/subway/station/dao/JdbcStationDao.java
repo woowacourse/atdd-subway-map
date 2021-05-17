@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class JDBCStationDao implements StationDao {
+public class JdbcStationDao implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public JDBCStationDao(JdbcTemplate jdbcTemplate) {
+    public JdbcStationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
