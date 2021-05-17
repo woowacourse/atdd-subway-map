@@ -81,7 +81,7 @@ public class Section {
         return backStationId.equals(stationId);
     }
 
-    public boolean isIncludeStation(final Long stationId){
+    public boolean isIncludedStation(final Long stationId){
         return frontStationId.equals(stationId) || backStationId.equals(stationId);
     }
 

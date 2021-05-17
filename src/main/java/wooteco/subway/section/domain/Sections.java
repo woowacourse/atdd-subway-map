@@ -13,10 +13,6 @@ public class Sections {
         this.sections = sections;
     }
 
-    public void validateToAdd(final Section section) {
-        // TODO :: 둘 다 이미 존재하거나, 둘 다 없는 경우
-    }
-
     public Section findSectionInclude(final Section section) {
         return sections.stream()
                 .filter(sectionInLine -> sectionInLine.isSameBackStation(section)
@@ -27,16 +23,12 @@ public class Sections {
 
     public List<Section> sectionsIncludeStation(final Long stationId) {
         return sections.stream()
-                .filter(section -> section.isIncludeStation(stationId))
+                .filter(section -> section.isIncludedStation(stationId))
                 .collect(Collectors.toList());
     }
 
     public Order sort(final Long upStationId){
-        final Map<Long, Long> idTable = new HashMap<>();
-        for(final Section section : sections){
-            idTable.put(section.frontStationId(), section.backStationId());
-        }
-
+        final Map<Long, Long> idTable = idTable();
         final List<Long> ids = new LinkedList<>();
 
         Long frontStationId = upStationId;
@@ -47,5 +39,27 @@ public class Sections {
         ids.add(frontStationId);
 
         return new Order(ids);
+    }
+
+    private Map idTable(){
+        final Map<Long, Long> idTable = new HashMap<>();
+        for(final Section section : sections){
+            idTable.put(section.frontStationId(), section.backStationId());
+        }
+        return idTable;
+    }
+
+    public void validateAbleToAdd(final Section section) {
+        final boolean isFrontStationIncluded = isIncludedStation(section.frontStationId());
+        final boolean isBackStationIncluded = isIncludedStation(section.backStationId());
+
+        if(isFrontStationIncluded == isBackStationIncluded){
+            throw new LineException("하나의 역이 포함되어있어야 합니다.");
+        }
+    }
+
+    private boolean isIncludedStation(final Long stationId){
+        return sections.stream()
+                .anyMatch(section -> section.isIncludedStation(stationId));
     }
 }
