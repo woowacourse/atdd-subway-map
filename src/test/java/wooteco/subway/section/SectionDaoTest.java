@@ -114,7 +114,7 @@ class SectionDaoTest {
     public void findSectionsByLineId() {
         sectionDao.save(1L, 1L, 2L, 10);
         sectionDao.save(1L, 2L, 3L, 10);
-        List<Section> sections = sectionDao.findByLineId(1L);
+        List<Section> sections = sectionDao.findAllByLineId(1L);
 
         assertThat(sections).containsExactlyInAnyOrderElementsOf(
                 Arrays.asList(

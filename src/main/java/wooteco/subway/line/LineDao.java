@@ -48,7 +48,7 @@ public class LineDao {
         String sql = "select id, name, color from LINE where id = ?";
         try {
             Line line = jdbcTemplate.queryForObject(sql, lineRowMapper(), id);
-            line.setSections(new Sections(sectionDao.findByLineId(id)));
+            line.setSections(new Sections(sectionDao.findAllByLineId(id)));
             return Optional.ofNullable(line);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -59,7 +59,7 @@ public class LineDao {
         String sql = "select id, name, color from LINE where name = ?";
         try {
             Line line = jdbcTemplate.queryForObject(sql, lineRowMapper(), name);
-            line.setSections(new Sections(sectionDao.findByLineId(line.getId())));
+            line.setSections(new Sections(sectionDao.findAllByLineId(line.getId())));
             return Optional.ofNullable(line);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -70,7 +70,7 @@ public class LineDao {
         String sql = "select id, name, color from LINE";
         List<Line> lines = jdbcTemplate.query(sql, lineRowMapper());
         for (Line line : lines) {
-            line.setSections(new Sections(sectionDao.findByLineId(line.getId())));
+            line.setSections(new Sections(sectionDao.findAllByLineId(line.getId())));
         }
         return lines;
     }

@@ -38,6 +38,19 @@ public class Section {
         }
     }
 
+    public boolean isSameSection(SectionDto sectionDto) {
+        return lineId.equals(sectionDto.getLineId()) && upStation.getId().equals(sectionDto.getUpStationId())
+                && downStation.getId().equals(sectionDto.getDownStationId()) && distance == sectionDto.getDistance();
+    }
+
+    public boolean isSameUpStation(Long upStationId) {
+        return upStation.getId().equals(upStationId);
+    }
+
+    public boolean isSameDownStation(Long downStationId) {
+        return downStation.getId().equals(downStationId);
+    }
+
     public Long getId() {
         return id;
     }

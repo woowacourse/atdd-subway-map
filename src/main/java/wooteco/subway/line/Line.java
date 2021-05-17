@@ -3,6 +3,7 @@ package wooteco.subway.line;
 import wooteco.subway.line.exception.LineException;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.Sections;
+import wooteco.subway.station.Station;
 import wooteco.subway.station.StationResponse;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class Line {
         this.color = color;
     }
 
-    public List<StationResponse> stations() {
+    public List<Station> stations() {
         return sections.sortedStations();
     }
 

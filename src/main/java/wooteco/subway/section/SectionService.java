@@ -19,8 +19,10 @@ public class SectionService {
 
     public Section save(SectionDto sectionDto) {
         validateSectionInitialization(sectionDto.getLineId());
-        validateSectionInclusion(sectionDto);
-        if (hasEndStationInSection(sectionDto)) {
+        Sections sections = new Sections(sectionDao.findAllByLineId(sectionDto.getLineId()));
+        sections.validateSectionInclusion(sectionDto);
+
+        if (sections.attachesAfterEndStation(sectionDto)) {
             return sectionDao.save(sectionDto.getLineId(), sectionDto.getUpStationId(),
                     sectionDto.getDownStationId(), sectionDto.getDistance());
         }
@@ -63,28 +65,6 @@ public class SectionService {
         if (sectionDao.numberOfEnrolledSection(lineId) == 0) {
             throw new SectionInitializationException();
         }
-    }
-
-    private void validateSectionInclusion(SectionDto sectionDto) {
-        if (hasBothStations(sectionDto.getLineId(), sectionDto.getUpStationId(), sectionDto.getDownStationId()) ||
-                hasNeitherStations(sectionDto.getLineId(), sectionDto.getUpStationId(), sectionDto.getDownStationId())) {
-            throw new SectionInclusionException();
-        }
-    }
-
-    private boolean hasBothStations(Long lineId, Long upStationId, Long downStationId) {
-        return sectionDao.isExistingStation(lineId, upStationId) &&
-                sectionDao.isExistingStation(lineId, downStationId);
-    }
-
-    private boolean hasNeitherStations(Long lineId, Long upStationId, Long downStationId) {
-        return !sectionDao.isExistingStation(lineId, upStationId) &&
-                !sectionDao.isExistingStation(lineId, downStationId);
-    }
-
-    private boolean hasEndStationInSection(SectionDto sectionDto) {
-        return sectionDao.hasEndStationInSection(sectionDto.getLineId(),
-                sectionDto.getUpStationId(), sectionDto.getDownStationId());
     }
 
     private Section saveWithForkCase(SectionDto sectionDto) {
