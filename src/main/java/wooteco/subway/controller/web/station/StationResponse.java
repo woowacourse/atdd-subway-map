@@ -1,4 +1,6 @@
-package wooteco.subway.station.controller;
+package wooteco.subway.controller.web.station;
+
+import wooteco.subway.station.domain.Station;
 
 public class StationResponse {
     private Long id;
@@ -10,6 +12,10 @@ public class StationResponse {
     public StationResponse(Long id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public static StationResponse of(Station station) {
+        return new StationResponse(station.getId(), station.getName().text());
     }
 
     public Long getId() {

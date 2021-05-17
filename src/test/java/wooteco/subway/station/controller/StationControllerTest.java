@@ -5,26 +5,24 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.controller.web.station.StationRequest;
+import wooteco.subway.controller.web.station.StationResponse;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.station.controller.StationControllerTestUtils.지하철역을_생성한다;
 
 @DisplayName("지하철역 관련 기능")
 public class StationControllerTest extends AcceptanceTest {
-    private static final String TEST_STATION_NAME = "강남역";
-    private static final StationRequest REQUEST_BODY = new StationRequest(TEST_STATION_NAME);
-
-    @Autowired
-    private StationDao stationDao;
+    public static final String TEST_STATION_NAME = "강남역";
+    public static final StationRequest REQUEST_BODY = new StationRequest(TEST_STATION_NAME);
 
     @DisplayName("지하철역을 생성한다.")
     @Transactional
@@ -32,13 +30,7 @@ public class StationControllerTest extends AcceptanceTest {
     void createStation() {
         // given
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(REQUEST_BODY)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철역을_생성한다(REQUEST_BODY);
 
         final StationResponse stationResponse = response.body().as(StationResponse.class);
         // then
@@ -63,14 +55,7 @@ public class StationControllerTest extends AcceptanceTest {
                 .extract();
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(REQUEST_BODY)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철역을_생성한다(REQUEST_BODY);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -81,13 +66,7 @@ public class StationControllerTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(REQUEST_BODY)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse1 = 지하철역을_생성한다(REQUEST_BODY);
 
         StationRequest anotherResponse = new StationRequest("역삼역");
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
@@ -121,13 +100,7 @@ public class StationControllerTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(REQUEST_BODY)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = 지하철역을_생성한다(REQUEST_BODY);
 
         // when
         String uri = createResponse.header("Location");

@@ -1,16 +1,25 @@
-package wooteco.subway.line.controller;
+package wooteco.subway.controller.web.line;
 
-class LineRequest {
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+
+public class LineRequest {
+    @NotEmpty
     private String name;
+    @NotEmpty
     private String color;
+    @NotNull
     private Long upStationId;
+    @NotNull
     private Long downStationId;
-    private int distance;
+    @Positive
+    private Long distance;
 
     public LineRequest() {
     }
 
-    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public LineRequest(String name, String color, Long upStationId, Long downStationId, Long distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
@@ -34,7 +43,7 @@ class LineRequest {
         return downStationId;
     }
 
-    public int getDistance() {
+    public Long getDistance() {
         return distance;
     }
 }

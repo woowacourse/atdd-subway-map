@@ -6,7 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.exception.InvalidLineNameException;
+import wooteco.subway.section.domain.OrderedSections;
 
 import java.util.stream.Stream;
 
@@ -24,8 +25,8 @@ class LineTest {
         String soLongName = "나는20글자가넘는이름이다엄청나게긴이름이다대박사건";
 
         //when & then
-        assertThatThrownBy(() -> new Line(soLongName, TEST_COLOR))
-                .isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> new Line(soLongName, TEST_COLOR, OrderedSections.emptySections()))
+                .isInstanceOf(InvalidLineNameException.class)
                 .hasMessageContaining("노선 이름은 20자를 초과할 수 없습니다.");
     }
 
@@ -34,7 +35,7 @@ class LineTest {
     @MethodSource
     public void trimAndRemoveDuplicatedBlankTest(String rawName, String expectedName) {
         //given & when
-        Line line = new Line(rawName, TEST_COLOR);
+        Line line = new Line(rawName, TEST_COLOR, OrderedSections.emptySections());
 
         //then
         assertThat(line.getName().text()).isEqualTo(expectedName);
@@ -53,8 +54,8 @@ class LineTest {
     @ValueSource(strings = {"쓰다가 오타가 나버ㄹㄴ노선", "대쉬는-안되는데-노선", "슬래쉬도/안되는데/노선", "꿈은이루어진다★노선"})
     public void invalidNameTest(String invalidName) {
         //given & when & then
-        assertThatThrownBy(() -> new Line(invalidName, TEST_COLOR))
-                .isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> new Line(invalidName, TEST_COLOR, OrderedSections.emptySections()))
+                .isInstanceOf(InvalidLineNameException.class)
                 .hasMessageContaining("노선 이름에 유효하지 않은 문자가 있습니다.");
     }
 }

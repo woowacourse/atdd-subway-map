@@ -1,24 +1,37 @@
 package wooteco.subway.line.domain;
 
+import wooteco.subway.section.domain.OrderedSections;
+import wooteco.subway.section.domain.Sections;
+
 import java.util.Objects;
 
 public class Line {
     private Long id;
     private LineName name;
     private LineColor color;
+    private Sections sections;
 
-    public Line(String name, String color) {
-        this(null, name, color);
+    public Line(String name, String color, Sections sections) {
+        this(null, new LineName(name), new LineColor(color), sections);
     }
 
-    public Line(Long id, String name, String color) {
-        this(id, new LineName(name), new LineColor(color));
+    public Line(Long id, String name, String color, Sections sections) {
+        this(id, new LineName(name), new LineColor(color), sections);
     }
 
-    public Line(Long id, LineName name, LineColor color) {
+    public Line(Line idLine, OrderedSections sections) {
+        this(idLine.getId(), idLine.getName(), idLine.getColor(), sections);
+    }
+
+    public Line(Long id, LineName name, LineColor color, Sections sections) {
         this.id = id;
         this.name = name;
         this.color = color;
+        this.sections = sections;
+    }
+
+    public static Line createEntity(Line line, OrderedSections orderedSections) {
+        return new Line(line, orderedSections);
     }
 
     public Long getId() {
@@ -31,6 +44,10 @@ public class Line {
 
     public LineColor getColor() {
         return color;
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 
     @Override

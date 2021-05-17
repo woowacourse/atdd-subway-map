@@ -8,10 +8,11 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineColor;
 import wooteco.subway.line.domain.LineName;
+import wooteco.subway.line.exception.WrongLineIdException;
+import wooteco.subway.section.domain.OrderedSections;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Repository
 public class H2LineDao implements LineDao {
@@ -21,7 +22,7 @@ public class H2LineDao implements LineDao {
         long id = rs.getLong("id");
         String name = rs.getString("name");
         String color = rs.getString("color");
-        return new Line(id, name, color);
+        return new Line(id, name, color, OrderedSections.emptySections());
     };
 
     public H2LineDao(JdbcTemplate jdbcTemplate) {
@@ -40,7 +41,7 @@ public class H2LineDao implements LineDao {
             return ps;
         }, keyHolder);
         long lineId = keyHolder.getKey().longValue();
-        return new Line(lineId, line.getName(), line.getColor());
+        return new Line(lineId, line.getName(), line.getColor(), OrderedSections.emptySections());
     }
 
     @Override
@@ -65,7 +66,7 @@ public class H2LineDao implements LineDao {
         );
 
         if (queryResult.isEmpty()) {
-            throw new NoSuchElementException(String.format("데이터베이스에 해당 ID의 노선이 없습니다. ID : %d", id));
+            throw new WrongLineIdException(String.format("데이터베이스에 해당 ID의 노선이 없습니다. ID : %d", id));
         }
 
         return queryResult.get(0);
@@ -111,19 +112,11 @@ public class H2LineDao implements LineDao {
     }
 
     @Override
-    public void delete(Line line) {
+    public void delete(Long lineId) {
         String sql = "DELETE " +
                 "FROM LINE " +
                 "WHERE ID = ?";
 
-        jdbcTemplate.update(sql, line.getId());
-    }
-
-    @Override
-    public void deleteAll() {
-        String sql = "DELETE " +
-                "FROM LINE";
-
-        jdbcTemplate.update(sql);
+        jdbcTemplate.update(sql, lineId);
     }
 }
