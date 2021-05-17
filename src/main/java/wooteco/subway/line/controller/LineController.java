@@ -6,6 +6,7 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.service.LineService;
+import wooteco.subway.section.domain.StationIdsInLine;
 import wooteco.subway.station.service.StationService;
 
 import java.net.URI;
@@ -60,7 +61,7 @@ public class LineController {
     }
 
     private LineResponse lineResponse(final Line line) {
-        final List<Long> stationIds = lineService.allStationIdInLine(line);
-        return new LineResponse(line, stationService.idsToStations(stationIds));
+        final StationIdsInLine stationIdsInLine = lineService.allStationIdInLine(line);
+        return new LineResponse(line, stationService.idsToStations(stationIdsInLine.ids()));
     }
 }

@@ -3,7 +3,6 @@ package wooteco.subway.section.domain;
 import wooteco.subway.line.exception.LineException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Sections {
     private static final int MINIMUM_NUMBER_OF_STATION_IN_LINE = 2;
@@ -22,13 +21,14 @@ public class Sections {
                 .orElseThrow(()-> new LineException("해당 구간을 찾을 수 없습니다."));
     }
 
-    public List<Section> sectionsIncludeStation(final Long stationId) {
+    public Section finalSectionInclude(final Long stationId) {
         return sections.stream()
                 .filter(section -> section.isIncludedStation(stationId))
-                .collect(Collectors.toList());
+                .findFirst()
+                .orElseThrow(()-> new LineException("존재하지 않는 역입니다."));
     }
 
-    public final List<Long> sort(final Long upStationId){
+    public final StationIdsInLine sort(final Long upStationId){
         final Map<Long, Long> idTable = idTable();
         final List<Long> ids = new LinkedList<>();
 
@@ -38,7 +38,7 @@ public class Sections {
             frontStationId = idTable.get(frontStationId);
         }
         ids.add(frontStationId);
-        return ids;
+        return new StationIdsInLine(ids);
     }
 
     private Map idTable(){

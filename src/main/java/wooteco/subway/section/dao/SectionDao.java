@@ -92,6 +92,11 @@ public class SectionDao {
         jdbcTemplate.update(sql, section.id());
     }
 
+    public void delete(final Long lineId, final Long frontStationId, final Long backStationId) {
+        final String sql = "DELETE FROM SECTION WHERE line_id = ? AND front_station_id = ? AND back_station_id = ? ";
+        jdbcTemplate.update(sql, lineId, frontStationId, backStationId);
+    }
+
     public void deleteAllSectionInLine(final Long lineId) {
         final String sql = "DELETE FROM SECTION WHERE line_id = ?";
         jdbcTemplate.update(sql, lineId);

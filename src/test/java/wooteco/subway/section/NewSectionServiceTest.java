@@ -12,7 +12,8 @@ import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.exception.LineException;
 import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.dto.SectionRequest;
-import wooteco.subway.section.service.NewSectionService;
+//import wooteco.subway.section.service.NewSectionService;
+import wooteco.subway.section.service.SectionServiceTemp;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
@@ -27,7 +28,7 @@ public class NewSectionServiceTest {
     private LineService lineService;
 
     @Autowired
-    private NewSectionService sectionService;
+    private SectionServiceTemp sectionService;
 
     @Autowired
     private StationService stationService;

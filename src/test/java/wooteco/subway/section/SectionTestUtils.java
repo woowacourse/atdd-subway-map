@@ -22,21 +22,23 @@ public class SectionTestUtils {
     }
 
     public void printStationIds(final Line line){
-        for(final Long stationId : lineService.allStationIdInLine(line)){
+        for(final Long stationId : lineService.allStationIdInLine(line).ids()){
             System.out.print(stationId + " ");
         }
         System.out.println();
     }
 
     public void assertStationOrder(final Line line, final StationResponse... stations){
+        printStationIds(line);
+
         int index = 0;
-        for(final Long stationId : lineService.allStationIdInLine(line)){
+        for(final Long stationId : lineService.allStationIdInLine(line).ids()){
             assertThat(stationId).isEqualTo(stations[index++].getId());
         }
     }
 
     public void assertSectionDistance(final Line line, final int... distances){
-        final List<Long> stationIds = lineService.allStationIdInLine(line);
+        final List<Long> stationIds = lineService.allStationIdInLine(line).ids();
         final int numberOfStations = stationIds.size();
 
         for(int i =0; i<numberOfStations-1; i++){

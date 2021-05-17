@@ -8,11 +8,9 @@ import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.exception.LineException;
 import wooteco.subway.section.dao.SectionDao;
-import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
+import wooteco.subway.section.domain.StationIdsInLine;
 
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -74,11 +72,13 @@ public class LineService {
         return lineDao.findAll();
     }
 
-    public List<Long> allStationIdInLine(final Line line) {
+    public StationIdsInLine allStationIdInLine(final Line line) {
         final Long lineId = line.getId();
-        if (sectionDao.stationCountInLine(lineId) == 0) {
-            return Collections.EMPTY_LIST;
-        }
+
+        // TODO ::
+//        if (sectionDao.stationCountInLine(lineId) == 0) {
+//            return Collections.EMPTY_LIST;
+//        }
 
         final Sections sections = new Sections(sectionDao.findSections(lineId));
         return sections.sort(lineDao.findUpStationId(lineId));
