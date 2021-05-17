@@ -15,9 +15,8 @@ import wooteco.subway.section.domain.Sections;
 public class SectionDao implements SectionRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final KeyHolder keyHolder = new GeneratedKeyHolder();
 
-    private RowMapper<Section> rowMapper = (rs, rn) ->
+    private final RowMapper<Section> rowMapper = (rs, rn) ->
             new Section(
                     rs.getLong("id"),
                     rs.getLong("line_id"),
@@ -33,6 +32,7 @@ public class SectionDao implements SectionRepository {
     @Override
     public Section save(final Section section) {
         final String sql = "INSERT INTO SECTION (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             final PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, section.getLineId());
@@ -42,7 +42,7 @@ public class SectionDao implements SectionRepository {
             return ps;
         }, keyHolder);
         final Long id = keyHolder.getKeyAs(Long.class);
-        return new Section(id, section.getLineId(), section.getDownStationId(), section.getUpStationId(), section.getDistance());
+        return new Section(id, section.getLineId(), section.getUpStationId(), section.getDownStationId(), section.getDistance());
     }
 
     @Override
@@ -55,7 +55,7 @@ public class SectionDao implements SectionRepository {
     @Override
     public void update(final Section section) {
         final String sql = "UPDATE SECTION SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
-        jdbcTemplate.update(sql, section.getUpStationId(), section.getDownStationId(), section.getDistance(), section.getLineId());
+        jdbcTemplate.update(sql, section.getUpStationId(), section.getDownStationId(), section.getDistance(), section.getId());
     }
 
     @Override

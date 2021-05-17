@@ -84,11 +84,16 @@ public class Section {
     }
 
     public boolean canJoin(final Section another) {
-        return isSame(this.downStationId, another.downStationId) || isSame(this.upStationId, another.upStationId);
+        return (isSame(this.downStationId, another.downStationId) && isDifferent(this.upStationId, another.upStationId))
+                || (isSame(this.upStationId, another.upStationId) && isDifferent(this.downStationId, another.downStationId));
     }
 
     private boolean isSame(final Long firstId, final Long secondId) {
         return firstId.equals(secondId);
+    }
+
+    private boolean isDifferent(final Long firstId, final Long secondId) {
+        return !firstId.equals(secondId);
     }
 
     public boolean isRelated(final Section another) {

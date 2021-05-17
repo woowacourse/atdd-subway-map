@@ -30,8 +30,8 @@ public class SectionRequest {
     public SectionCreateDto toSectionCreateDto(final Long lineId) {
         return SectionCreateDto.ofExistingLine(
                 lineId,
-                downStationId,
                 upStationId,
+                downStationId,
                 distance
         );
     }

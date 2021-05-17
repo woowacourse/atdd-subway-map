@@ -30,7 +30,7 @@ public class SectionCreateDto {
         );
     }
 
-    public static SectionCreateDto ofExistingLine(final Long lineId, final Long downStationId, final Long upStationId, final int distance) {
+    public static SectionCreateDto ofExistingLine(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
         return new SectionCreateDto(
                 lineId,
                 upStationId,
