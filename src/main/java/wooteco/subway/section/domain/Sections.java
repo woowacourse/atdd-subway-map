@@ -80,4 +80,18 @@ public class Sections {
             throw new LineException("종점 뿐인 노선의 역을 제거할 수 없습니다.");
         }
     }
+
+    public Section findSectionByFrontStation(final Long stationId) {
+        return sections.stream()
+                .filter(section -> section.isFrontStationId(stationId))
+                .findFirst()
+                .orElseThrow(()->new LineException("존재하지 않는 구간입니다."));
+    }
+
+    public Section findSectionByBackStation(final Long stationId) {
+        return sections.stream()
+                .filter(section -> section.isBackStationId(stationId))
+                .findFirst()
+                .orElseThrow(()->new LineException("존재하지 않는 구간입니다."));
+    }
 }

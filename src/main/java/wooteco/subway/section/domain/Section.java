@@ -33,18 +33,12 @@ public class Section {
         this(null, null, frontStationId, backStationId, distance);
     }
 
-    public Section combine(Section section) {
-        final int sumDistance = this.distance + section.distance;
-
-        if (isBackStationId(section.frontStationId)) {
-            return new Section(lineId, this.frontStationId, section.backStationId, sumDistance);
+    public Section combine(final Section followSection) {
+        if (isBackStationId(followSection.frontStationId)) {
+            final int sumDistance = this.distance + followSection.distance;
+            return new Section(lineId, this.frontStationId, followSection.backStationId, sumDistance);
         }
-
-        if (isFrontStationId(section.backStationId)) {
-            return new Section(lineId, section.frontStationId, this.backStationId, sumDistance);
-        }
-
-        throw new LineException("두 구간에 중복되는 역이 없습니다.");
+        throw new LineException("두 구간은 합칠 수 있는 역이 아닙니다.");
     }
 
     public List<Section> divide(final Section section) {

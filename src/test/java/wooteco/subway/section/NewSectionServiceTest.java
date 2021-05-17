@@ -64,7 +64,9 @@ public class NewSectionServiceTest {
     public void addFinalUpStation(){
         SectionRequest sectionRequest = new SectionRequest(aStation.getId(), bStation.getId(), Integer.MAX_VALUE);
         sectionService.addSection(testLine.getId(), sectionRequest);
+
         sectionTestUtils.assertStationOrder(testLine, aStation, bStation, dStation);
+        sectionTestUtils.assertSectionDistance(testLine, Integer.MAX_VALUE, initialDistance);
     }
 
     @DisplayName("하행 종점을 등록한다.")
@@ -72,23 +74,38 @@ public class NewSectionServiceTest {
     public void addFinalDownStation(){
         SectionRequest sectionRequest = new SectionRequest(dStation.getId(), eStation.getId(), Integer.MAX_VALUE);
         sectionService.addSection(testLine.getId(), sectionRequest);
+
         sectionTestUtils.assertStationOrder(testLine, bStation, dStation, eStation);
+        sectionTestUtils.assertSectionDistance(testLine, initialDistance, Integer.MAX_VALUE);
     }
 
-    @DisplayName("중간 구간을 등록한다. 상행 기준")
+    @DisplayName("중간 구간을 등록한다. - 상행 기준")
     @Test
     public void addMiddleStationFromFront(){
         SectionRequest sectionRequest = new SectionRequest(bStation.getId(), cStation.getId(), insertDistance);
         sectionService.addSection(testLine.getId(), sectionRequest);
+
         sectionTestUtils.assertStationOrder(testLine, bStation, cStation, dStation);
+        sectionTestUtils.assertSectionDistance(testLine, insertDistance, initialDistance - insertDistance);
     }
 
-    @DisplayName("중간 구간을 등록한다. :: 하행 기준")
+    @DisplayName("중간 구간을 등록한다. - 하행 기준")
     @Test
     public void addMiddleStationFromBack(){
         SectionRequest sectionRequest = new SectionRequest(cStation.getId(), dStation.getId(), insertDistance);
         sectionService.addSection(testLine.getId(), sectionRequest);
+
         sectionTestUtils.assertStationOrder(testLine, bStation, cStation, dStation);
+        sectionTestUtils.assertSectionDistance(testLine, initialDistance-insertDistance, insertDistance);
+    }
+
+    @DisplayName("존재하지 않는 노선에 구간 추가 시 예외가 발생한다.")
+    @Test
+    public void addSectionInNonExistLine(){
+        assertThatThrownBy(()->{
+            SectionRequest sectionRequest = new SectionRequest(aStation.getId(), bStation.getId(), Integer.MAX_VALUE);
+            sectionService.addSection(Long.MAX_VALUE, sectionRequest);
+        }).isInstanceOf(LineException.class);
     }
 
     @DisplayName("존재하지 않는 구간을 등록 시 예외가 발생한다.")
@@ -123,8 +140,11 @@ public class NewSectionServiceTest {
     public void deleteMiddleStation() {
         SectionRequest sectionRequest = new SectionRequest(bStation.getId(), cStation.getId(), insertDistance);
         sectionService.addSection(testLine.getId(), sectionRequest);
+
         sectionService.deleteSection(testLine.getId(), cStation.getId());
+
         sectionTestUtils.assertStationOrder(testLine, bStation, dStation);
+        sectionTestUtils.assertSectionDistance(testLine, initialDistance);
     }
 
     @DisplayName("노선의 종점역을 제거한다.")
@@ -132,8 +152,19 @@ public class NewSectionServiceTest {
     public void deleteFinalStation() {
         SectionRequest sectionRequest = new SectionRequest(bStation.getId(), cStation.getId(), insertDistance);
         sectionService.addSection(testLine.getId(), sectionRequest);
+
         sectionService.deleteSection(testLine.getId(), dStation.getId());
+
         sectionTestUtils.assertStationOrder(testLine, bStation, cStation);
+        sectionTestUtils.assertSectionDistance(testLine, insertDistance);
+    }
+
+    @DisplayName("존재하지 않는 노선에 구간 삭제 시 예외가 발생한다.")
+    @Test
+    public void deleteSectionInNonExistLine(){
+        assertThatThrownBy(()->{
+            sectionService.deleteSection(Long.MAX_VALUE, bStation.getId());
+        }).isInstanceOf(LineException.class);
     }
 
     @DisplayName("노선에 존재하지 않는 역을 제거할 수 없다.")
@@ -148,20 +179,5 @@ public class NewSectionServiceTest {
     public void deleteSectionWhenExistOnlyFinalStations(){
         assertThatThrownBy(()-> sectionService.deleteSection(testLine.getId(), bStation.getId()))
                 .isInstanceOf(LineException.class);
-    }
-
-    @DisplayName("구간 추가 시의 구간 간격을 검증한다.")
-    @Test
-    public void validateSectionDistanceWhenAddSection(){
-        SectionRequest sectionRequest = new SectionRequest(aStation.getId(), bStation.getId(), insertDistance);
-        sectionService.addSection(testLine.getId(), sectionRequest);
-        sectionTestUtils.assertStationOrder(testLine, aStation, bStation, dStation);
-        sectionTestUtils.assertSectionDistance(testLine, insertDistance, initialDistance);
-    }
-
-    @DisplayName("구간 제거 시의 구간 간격을 검증한다.")
-    @Test
-    public void validateSectionDistanceWhenDeleteSection(){
-
     }
 }

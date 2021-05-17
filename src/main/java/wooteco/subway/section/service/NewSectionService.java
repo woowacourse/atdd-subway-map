@@ -54,7 +54,7 @@ public class NewSectionService {
         validateLineExist(lineId);
 
         final Sections sectionsInLine = new Sections(sectionDao.findSections(lineId));
-        validateAbleToDelete(sectionsInLine, stationId);
+        sectionsInLine.validateAbleToDelete(stationId);
 
         final FinalStations finalStations = lineDao.finalStations(lineId);
         if (finalStations.isFinalStation(stationId)) {
@@ -67,30 +67,35 @@ public class NewSectionService {
 
     private void deleteFinalSection(final Long lineId, final Long stationId, final FinalStations finalStations) {
         if (finalStations.isUpStation(stationId)) {
-            final Section section = sectionDao.findSectionByFrontStation(lineId, stationId);
-            lineDao.updateFinalStations(lineId, section.getOther(stationId), finalStations.downStationId());
-            sectionDao.delete(section);
+            deleteUpStation(lineId, stationId, finalStations);
             return;
         }
 
         if (finalStations.isDownStation(stationId)) {
-            final Section section = sectionDao.findSectionByBackStation(lineId, stationId);
-            lineDao.updateFinalStations(lineId, finalStations.upStationId(), section.getOther(stationId));
-            sectionDao.delete(section);
+            deleteDownStation(lineId, stationId, finalStations);
             return;
         }
     }
 
-    private void deleteMiddleSection(final Sections sectionsInLine, final Long stationId) {
-        final List<Section> sections = sectionsInLine.sectionsIncludeStation(stationId);
-
-        sectionDao.delete(sections.get(0));
-        sectionDao.delete(sections.get(1));
-        sectionDao.save(sections.get(0).combine(sections.get(1)));
+    private void deleteUpStation(final Long lineId, final Long stationId, final FinalStations finalStations) {
+        final Section section = sectionDao.findSectionByFrontStation(lineId, stationId);
+        lineDao.updateFinalStations(lineId, section.getOther(stationId), finalStations.downStationId());
+        sectionDao.delete(section);
     }
 
-    private void validateAbleToDelete(final Sections sectionsInLine, final Long stationId){
-        sectionsInLine.validateAbleToDelete(stationId);
+    private void deleteDownStation(final Long lineId, final Long stationId, final FinalStations finalStations) {
+        final Section section = sectionDao.findSectionByBackStation(lineId, stationId);
+        lineDao.updateFinalStations(lineId, finalStations.upStationId(), section.getOther(stationId));
+        sectionDao.delete(section);
+    }
+
+    private void deleteMiddleSection(final Sections sectionsInLine, final Long stationId) {
+        final Section frontSection = sectionsInLine.findSectionByBackStation(stationId);
+        final Section backSection = sectionsInLine.findSectionByFrontStation(stationId);
+
+        sectionDao.delete(frontSection);
+        sectionDao.delete(backSection);
+        sectionDao.save(frontSection.combine(backSection));
     }
 
     private void validateLineExist(final Long lineId){

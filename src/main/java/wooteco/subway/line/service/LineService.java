@@ -80,8 +80,7 @@ public class LineService {
             return Collections.EMPTY_LIST;
         }
 
-        final Long upStationId = lineDao.findUpStationId(lineId);
         final Sections sections = new Sections(sectionDao.findSections(lineId));
-        return sections.sort(upStationId);
+        return sections.sort(lineDao.findUpStationId(lineId));
     }
 }
