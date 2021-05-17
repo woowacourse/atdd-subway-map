@@ -160,12 +160,9 @@ public class Sections {
 
     public List<Section> removedSectionsByRemoveInternalStation(Station station) {
         List<Section> removedSections = new ArrayList<>();
-        for (int i = 0; i < sections.size(); i++) {
-            Section currentSection = sections.get(i);
-            if (currentSection.getUpStation().equals(station)) {
-                Section prevSection = sections.get(i - 1);
-                removedSections.add(prevSection);
-                removedSections.add(currentSection);
+        for (Section section : sections){
+            if(section.isEqualsUpStation(station) || section.isEqualsDownStation(station)){
+                removedSections.add(section);
             }
         }
         return removedSections;
