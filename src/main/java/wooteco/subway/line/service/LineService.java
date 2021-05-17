@@ -65,7 +65,7 @@ public class LineService {
     public void update(Long id, LineRequest lineRequest) {
         Line currentLine = lineDao.findById(id);
         validatesChangeName(lineRequest.getName(), currentLine.getName());
-        currentLine.update(lineRequest);
+        currentLine.update(lineRequest.getName(), lineRequest.getColor());
         lineDao.update(currentLine);
     }
 

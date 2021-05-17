@@ -1,6 +1,5 @@
 package wooteco.subway.line;
 
-import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.station.Station;
 
 import java.util.ArrayList;
@@ -28,9 +27,9 @@ public class Line {
         this.stations = stations;
     }
 
-    public void update(LineRequest lineRequest) {
-        this.name = lineRequest.getName();
-        this.color = lineRequest.getColor();
+    public void update(String updatedName, String updatedColor) {
+        this.name = updatedName;
+        this.color = updatedColor;
     }
 
     public Long getId() {
