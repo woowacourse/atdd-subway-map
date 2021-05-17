@@ -39,7 +39,7 @@ public class SectionService {
             sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
 
-        sections.validate(section);
+        sections.validateAdditionalSection(section);
         Optional<Section> overlappedSection = sectionDao.findByUpOrDownId(lineId, section);
 
         Section newSection = sectionDao.save(lineId, section);

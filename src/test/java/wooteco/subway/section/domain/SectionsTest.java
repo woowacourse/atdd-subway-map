@@ -45,21 +45,21 @@ class SectionsTest {
     @Test
     void addEndPointSection() {
         Section section = new Section(3L, 4L, 5);
-        assertDoesNotThrow(() -> sections.validate(section));
+        assertDoesNotThrow(() -> sections.validateAdditionalSection(section));
     }
 
     @DisplayName("중간역 구간 추가 검증 성공")
     @Test
     void addIntermediateSection() {
         Section section = new Section(2L, 4L, 2);
-        assertDoesNotThrow(() -> sections.validate(section));
+        assertDoesNotThrow(() -> sections.validateAdditionalSection(section));
     }
 
     @DisplayName("미연결 구간 추가 시 예외 발생")
     @Test
     void addDisconnectedSection() {
         Section section = new Section(5L, 6L, 2);
-        assertThatThrownBy(() -> sections.validate(section))
+        assertThatThrownBy(() -> sections.validateAdditionalSection(section))
             .hasMessage(new InvalidAddSectionException().getMessage());
     }
 
@@ -67,7 +67,7 @@ class SectionsTest {
     @Test
     void addExistingSection() {
         Section section = new Section(1L, 2L, 2);
-        assertThatThrownBy(() -> sections.validate(section))
+        assertThatThrownBy(() -> sections.validateAdditionalSection(section))
             .hasMessage(new InvalidAddSectionException().getMessage());
     }
 
@@ -75,7 +75,7 @@ class SectionsTest {
     @Test
     void addInvalidDistanceSection() {
         Section section = new Section(2L, 3L, 4);
-        assertThatThrownBy(() -> sections.validate(section))
+        assertThatThrownBy(() -> sections.validateAdditionalSection(section))
             .hasMessage(new InvalidAddSectionException().getMessage());
     }
 

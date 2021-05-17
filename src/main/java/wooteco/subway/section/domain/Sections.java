@@ -30,7 +30,7 @@ public class Sections {
         }
     }
 
-    public void validate(Section section) {
+    public void validateAdditionalSection(Section section) {
         validateConnected(section, this::isConnected);
         validateConnected(section, this::isNotExisted);
         validateDistance(section);
@@ -66,10 +66,10 @@ public class Sections {
         sections.stream()
             .filter(section -> section.isUpStation(newSection.getUpStationId()))
             .findAny()
-            .ifPresent(section -> isValidDistance(newSection, section));
+            .ifPresent(section -> validateDistance(newSection, section));
     }
 
-    private void isValidDistance(Section newSection, Section section) {
+    private void validateDistance(Section newSection, Section section) {
         if (section.isSameOrLongDistance(newSection)) {
             throw new InvalidAddSectionException();
         }
