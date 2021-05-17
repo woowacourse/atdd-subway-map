@@ -1,10 +1,16 @@
 package wooteco.subway.presentation.line.dto;
 
+import wooteco.subway.presentation.valid.RightNumberInput;
+
 import java.beans.ConstructorProperties;
 
 public class SectionRequest {
+
+    @RightNumberInput
     private final Long upStationId;
+    @RightNumberInput
     private final Long downStationId;
+    @RightNumberInput
     private final Long distance;
 
     @ConstructorProperties({"upStationId", "downStationId", "distance"})

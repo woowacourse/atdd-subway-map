@@ -17,6 +17,7 @@ import wooteco.subway.presentation.line.dto.LineRequest;
 import wooteco.subway.presentation.line.dto.LineResponse;
 import wooteco.subway.presentation.line.dto.SectionRequest;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +37,7 @@ public class LineController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> createNewLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createNewLine(@Valid @RequestBody LineRequest lineRequest) {
         final Line line = createNewLineFrom(lineRequest);
 
         final Line savedLine = lineService.save(line);
@@ -55,13 +56,11 @@ public class LineController {
 
         final Sections sections = new Sections(Collections.singletonList(section));
 
-        final Line line = new Line(
+        return new Line(
                 new LineName(lineRequest.getName()),
                 new LineColor(lineRequest.getColor()),
                 sections
         );
-
-        return line;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -82,7 +81,7 @@ public class LineController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> modifyById(@PathVariable Long id,
-                                           @RequestBody LineRequest lineRequest) {
+                                           @Valid @RequestBody LineRequest lineRequest) {
         final Line line = new Line(
                 new LineId(id),
                 new LineName(lineRequest.getName()),
@@ -111,7 +110,7 @@ public class LineController {
     }
 
     @PostMapping(value = "/{lineId}/sections")
-    public ResponseEntity<LineResponse> addNewSection(@RequestBody SectionRequest sectionRequest,
+    public ResponseEntity<LineResponse> addNewSection(@Valid @RequestBody SectionRequest sectionRequest,
                                                       @PathVariable Long lineId) {
         Section section = new Section(
                 new LineId(lineId),
@@ -122,8 +121,9 @@ public class LineController {
 
         lineService.addNewSection(lineId, section);
         Line line = lineService.findById(lineId);
+        LineResponse line1 = lineDtoAssembler.line(line);
 
-        return ResponseEntity.ok(lineDtoAssembler.line(line));
+        return ResponseEntity.ok(line1);
     }
 
 }

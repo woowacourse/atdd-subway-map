@@ -1,9 +1,13 @@
 package wooteco.subway.presentation.station.dto;
 
+import wooteco.subway.presentation.valid.RightStringInput;
+
 import java.beans.ConstructorProperties;
 
 public class StationRequest {
-    private String name;
+
+    @RightStringInput
+    private final String name;
 
     @ConstructorProperties({"name"})
     public StationRequest(String name) {
@@ -13,4 +17,5 @@ public class StationRequest {
     public String getName() {
         return name;
     }
+
 }
