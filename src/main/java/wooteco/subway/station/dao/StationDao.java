@@ -1,6 +1,7 @@
 package wooteco.subway.station.dao;
 
 import java.sql.PreparedStatement;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -69,6 +70,14 @@ public class StationDao {
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("존재하지 않는 역 ID 입니다.");
         }
+    }
+
+    public List<Station> findAllByIds(List<Long> stationIds) {
+
+        String inSql = String.join(",", Collections.nCopies(stationIds.size(), "?"));
+
+        String sql = "SELECT id, name FROM station WHERE id IN (%s)";
+        return jdbcTemplate.query(String.format(sql, inSql), mapperStation(), stationIds.toArray());
     }
 
     private RowMapper<Station> mapperStation() {
