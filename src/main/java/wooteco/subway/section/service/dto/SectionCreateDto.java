@@ -1,6 +1,6 @@
 package wooteco.subway.section.service.dto;
 
-import wooteco.subway.line.controller.dto.LineCreateDto;
+import wooteco.subway.line.service.dto.LineCreateDto;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.section.domain.Section;
 
