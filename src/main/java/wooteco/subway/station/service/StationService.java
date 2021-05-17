@@ -6,6 +6,7 @@ import wooteco.subway.line.dao.SectionDao;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.dto.StationDto;
 
 import java.util.List;
 
@@ -20,9 +21,9 @@ public class StationService {
     }
 
     @Transactional
-    public Station save(Station station) {
+    public StationDto save(Station station) {
         validateDuplicate(station.name());
-        return stationDao.save(station);
+        return StationDto.toDto(stationDao.save(station));
     }
 
     private void validateDuplicate(final String name) {
@@ -31,13 +32,8 @@ public class StationService {
         }
     }
 
-    public List<Station> findAll() {
-        return stationDao.findAll();
-    }
-
-    public Station findById(Long id) {
-        return stationDao.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("[ERROR] 존재하지 않는 역입니다."));
+    public List<StationDto> findAll() {
+        return StationDto.toDtos(stationDao.findAll());
     }
 
     @Transactional

@@ -4,6 +4,7 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationDto;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,16 +17,23 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Line line) {
-        this(line.id(), line.name(), line.color(), line.stations());
-    }
-
     public LineResponse(Long id, String name, String color, List<Station> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations.stream()
                 .map(station -> new StationDto(station.id(), station.name()))
+                .collect(Collectors.toList());
+    }
+
+    public static LineResponse toDto(Line line) {
+        line.stations().forEach(station -> System.out.println(station.name()));
+        return new LineResponse(line.id(), line.name(), line.color(), line.stations());
+    }
+
+    public static List<LineResponse> toDtos(List<Line> lines) {
+        return lines.stream()
+                .map(line -> new LineResponse(line.id(), line.name(), line.color(), Collections.emptyList()))
                 .collect(Collectors.toList());
     }
 

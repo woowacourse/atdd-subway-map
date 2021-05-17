@@ -7,11 +7,11 @@ import java.util.Objects;
 public class Section {
     public static final Section EMPTY = new Section(0L, new Station(0L), new Station(0L), 0);
 
-    private Long id;
-    private Long lineId;
-    private Station upStation;
-    private Station downStation;
-    private int distance;
+    private final Long id;
+    private final Long lineId;
+    private final Station upStation;
+    private final Station downStation;
+    private final int distance;
 
     public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
         this(0L, lineId, new Station(upStationId), new Station(downStationId), distance);

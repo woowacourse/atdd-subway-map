@@ -7,9 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Line {
-    private Long id;
-    private String name;
-    private String color;
+    private final Long id;
+    private final String name;
+    private final String color;
     private Sections sections;
 
     public Line(String name, String color) {

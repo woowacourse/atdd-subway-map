@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.SectionRequest;
 import wooteco.subway.line.repository.LineRepository;
 import wooteco.subway.station.domain.Station;
@@ -22,10 +23,11 @@ public class LineService {
     }
 
     @Transactional
-    public Line save(final LineRequest lineRequest) {
+    public LineResponse save(final LineRequest lineRequest) {
         validateDuplicate(lineRequest.getName());
-        return lineRepository.save(lineRequest.getName(), lineRequest.getColor(),
+        Line savedLine = lineRepository.save(lineRequest.getName(), lineRequest.getColor(),
                 lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        return LineResponse.toDto(savedLine);
     }
 
     private void validateDuplicate(final String name) {
@@ -34,12 +36,12 @@ public class LineService {
         }
     }
 
-    public List<Line> findAll() {
-        return lineRepository.findAll();
+    public List<LineResponse> findAll() {
+        return LineResponse.toDtos(lineRepository.findAll());
     }
 
-    public Line findById(final Long id) {
-        return lineRepository.findById(id);
+    public LineResponse findById(final Long id) {
+        return LineResponse.toDto(lineRepository.findById(id));
     }
 
     @Transactional
@@ -57,7 +59,7 @@ public class LineService {
         lineRepository.deleteSection(lineId, stationId);
         if (sections.size() == 2) {
             lineRepository.addSection(
-                    lineId,sections.get(0).upStation().id(), sections.get(1).downStation().id(),sections.get(0).addDistance(sections.get(1)));
+                    lineId, sections.get(0).upStation().id(), sections.get(1).downStation().id(), sections.get(0).addDistance(sections.get(1)));
         }
     }
 

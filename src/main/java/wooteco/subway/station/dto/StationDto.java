@@ -4,6 +4,8 @@ import wooteco.subway.station.domain.Station;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class StationDto {
     private Long id;
@@ -21,6 +23,16 @@ public class StationDto {
     public StationDto(Long id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public static StationDto toDto(Station station) {
+        return new StationDto(station.id(), station.name());
+    }
+
+    public static List<StationDto> toDtos(List<Station> stations) {
+        return stations.stream()
+                .map(StationDto::toDto)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {
