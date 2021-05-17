@@ -3,13 +3,11 @@ package wooteco.subway.line.dto;
 import javax.validation.constraints.Positive;
 
 public class SectionRequest {
-    @Positive
+    @Positive(message = "상행역 입력값이 올바르지 않습니다.")
     private Long upStationId;
-
-    @Positive
+    @Positive(message = "하행역 입력값이 올바르지 않습니다.")
     private Long downStationId;
-
-    @Positive
+    @Positive(message = "구간의 거리는 양수만 가능합니다.")
     private int distance;
 
     public SectionRequest() {
