@@ -44,8 +44,11 @@ public class LineService {
     }
 
     private void validateStationIdExisting(Line line) {
-        line.getUnorderedStationIds()
-                .forEach(stationRepository::findById);
+        line.getUnorderedStationIds().stream()
+                .filter(stationRepository::contains)
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("stationId가 존재하지 않습니다."));
+
     }
 
     public List<Line> allLines() {

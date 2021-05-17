@@ -40,4 +40,10 @@ public class StationRepositoryImpl implements StationRepository {
 
         return stationDao.delete(id);
     }
+
+    @Override
+    public boolean contains(Long id) {
+        return stationDao.contains(id);
+    }
+
 }

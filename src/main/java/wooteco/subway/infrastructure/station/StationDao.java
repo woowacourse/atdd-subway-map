@@ -78,4 +78,9 @@ public class StationDao {
         return jdbcTemplate.queryForObject(sql, Long.class, id, id) != 0;
     }
 
+    public boolean contains(Long id) {
+        final String sql = "SELECT count(*) FROM STATION WHERE id = ?";
+
+        return jdbcTemplate.queryForObject(sql, Long.class, id) != 0;
+    }
 }

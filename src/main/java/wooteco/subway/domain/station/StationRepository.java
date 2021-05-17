@@ -7,4 +7,5 @@ public interface StationRepository {
     Station findById(Long id);
     List<Station> findAll();
     int delete(Long id);
+    boolean contains(Long id);
 }
