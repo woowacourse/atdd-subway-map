@@ -1,12 +1,12 @@
 package wooteco.subway.line.dao;
 
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.exception.station.StationNotFoundException;
 import wooteco.subway.line.Line;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class InMemoryLineDao implements LineDao {
     private static Long seq = 0L;
@@ -32,45 +32,30 @@ public class InMemoryLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findByName(String name) {
-        return lines.stream()
-                .filter(line -> line.isSameName(name))
-                .findAny();
-    }
-
-    @Override
-    public Optional<Line> findById(Long id) {
+    public Line findById(Long id) {
         return lines.stream()
                 .filter(line -> line.isSameId(id))
-                .findAny();
+                .findAny()
+                .orElseThrow(StationNotFoundException::new);
     }
 
     @Override
     public void update(Line updatedLine) {
-        findById(updatedLine.getId())
-                .ifPresent(line -> {
-                    int index = lines.indexOf(line);
-                    lines.set(index, updatedLine);
-                });
-    }
-
-    private Line findByIdIfExist(Long id) {
-        return findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+        Line line = findById(updatedLine.getId());
+        int index = lines.indexOf(line);
+        lines.set(index, updatedLine);
     }
 
     @Override
     public void delete(Long id) {
-        Line line = findByIdIfExist(id);
+        Line line = findById(id);
         lines.remove(line);
     }
 
     @Override
-    public Optional<String> findByNameAndNotInOriginalName(String name, String originalName) {
+    public boolean existByNameAndNotInOriginalName(String name, String originalName) {
         return lines.stream()
                 .filter(line -> !line.isSameName(originalName))
-                .filter(line -> line.isSameName(name))
-                .map(Line::getName)
-                .findAny();
+                .anyMatch(line -> line.isSameName(name));
     }
 }

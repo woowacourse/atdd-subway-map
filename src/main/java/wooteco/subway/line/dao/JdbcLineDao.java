@@ -1,15 +1,16 @@
 package wooteco.subway.line.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.line.Line;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class JdbcLineDao implements LineDao {
@@ -50,17 +51,13 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findById(Long id) {
-        String query = "SELECT * FROM line WHERE id = ?";
-        List<Line> results = jdbcTemplate.query(query, lineRowMapper(), id);
-        return results.stream().findAny();
-    }
-
-    @Override
-    public Optional<Line> findByName(String name) {
-        String query = "SELECT * FROM line WHERE name = ?";
-        List<Line> results = jdbcTemplate.query(query, lineRowMapper(), name);
-        return results.stream().findAny();
+    public Line findById(Long id) {
+        try {
+            String query = "SELECT * FROM line WHERE id = ?";
+            return jdbcTemplate.queryForObject(query, lineRowMapper(), id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new LineNotFoundException();
+        }
     }
 
     @Override
@@ -79,14 +76,8 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<String> findByNameAndNotInOriginalName(String name, String originalName) {
-        String query = "SELECT name FROM line WHERE name = ? AND name NOT IN (?)";
-        List<String> results = jdbcTemplate.query(query, NameRowMapper(), name, originalName);
-        return results.stream().findAny();
-    }
-
-    private RowMapper<String> NameRowMapper() {
-        return (rs, rowNum) ->
-                rs.getString("name");
+    public boolean existByNameAndNotInOriginalName(String name, String originalName) {
+        String query = "SELECT EXISTS (SELECT * FROM line WHERE name = ? AND name NOT IN (?))";
+        return jdbcTemplate.queryForObject(query, Boolean.class, name, originalName);
     }
 }

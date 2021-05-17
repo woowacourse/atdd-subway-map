@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.exception.station.StationDuplicatedNameException;
+import wooteco.subway.exception.station.StationNotFoundException;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dao.JdbcStationDao;
 import wooteco.subway.station.dao.StationDao;
@@ -55,13 +56,13 @@ class StationServiceTest {
     void StationDuplicatedNameException() {
         // given
         StationRequest 왕십리역 = new StationRequest("왕십리");
-        given(stationDao.findByName(any(String.class)))
-                .willThrow(StationDuplicatedNameException.class);
+        given(stationDao.existByName(any(String.class)))
+                .willReturn(true);
 
         // when & then
         assertThatThrownBy(() -> stationService.save(왕십리역))
                 .isInstanceOf(StationDuplicatedNameException.class);
-        verify(stationDao).findByName(any(String.class));
+        verify(stationDao).existByName(any(String.class));
     }
 
     @DisplayName("모든 지하철 역 조회")
@@ -70,9 +71,9 @@ class StationServiceTest {
         // given
         given(stationDao.findAll())
                 .willReturn(Arrays.asList(
-                        new Station("왕십리"),
-                        new Station("잠실"),
-                        new Station("강남")
+                        new Station(1L, "왕십리"),
+                        new Station(2L, "잠실"),
+                        new Station(3L, "강남")
                 ));
 
         // when
@@ -102,5 +103,33 @@ class StationServiceTest {
 
         // then
         verify(stationDao).delete(any(Long.class));
+    }
+
+    @DisplayName("id로 지하철 역 조회")
+    @Test
+    void findById() {
+        // given
+        Station 강남역 = new Station(1L, "강남역");
+        given(stationDao.findById(1L))
+                .willReturn(강남역);
+
+        // when
+        Station station = stationService.findById(1L);
+
+        // then
+        assertThat(station)
+                .isEqualTo(강남역);
+    }
+
+    @DisplayName("존재하지 않는 id로 지하철 역 조회")
+    @Test
+    void findByIdWithNotExistId() {
+        // given
+        given(stationDao.findById(1L))
+                .willThrow(StationNotFoundException.class);
+
+        // when & then
+        assertThatThrownBy(() -> stationService.findById(1L))
+                .isInstanceOf(StationNotFoundException.class);
     }
 }

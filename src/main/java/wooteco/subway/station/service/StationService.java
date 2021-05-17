@@ -25,31 +25,35 @@ public class StationService {
 
     @Transactional
     public StationResponse save(StationRequest stationRequest) {
-        validatesNameDuplication(stationRequest);
         Station station = new Station(stationRequest.getName());
+        validatesNameDuplication(station);
         Station newStation = stationDao.save(station);
         log.info("{} 이 생성되었습니다.", newStation.getName());
-        return new StationResponse(newStation.getId(), newStation.getName());
+        return new StationResponse(newStation);
     }
 
-    private void validatesNameDuplication(StationRequest stationRequest) {
-        stationDao.findByName(stationRequest.getName())
-                .ifPresent(l -> {
-                    throw new StationDuplicatedNameException();
-                });
+    private void validatesNameDuplication(Station station) {
+        boolean isExist = stationDao.existByName(station.getName());
+        if (isExist) {
+            throw new StationDuplicatedNameException();
+        }
     }
 
     public List<StationResponse> findAll() {
         List<Station> stations = stationDao.findAll();
         log.info("등록된 지하철 역 조회 성공");
         return stations.stream()
-                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .map(StationResponse::new)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public void delete(Long id) {
-        stationDao.delete(id);
+    public void delete(Long stationId) {
+        stationDao.delete(stationId);
         log.info("지하철 역 삭제 성공");
+    }
+
+    public Station findById(Long stationId) {
+        return stationDao.findById(stationId);
     }
 }

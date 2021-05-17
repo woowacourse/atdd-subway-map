@@ -5,9 +5,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.dto.request.LineCreateRequest;
 import wooteco.subway.line.dto.request.LineUpdateRequest;
+import wooteco.subway.line.dto.response.LineCreateResponse;
 import wooteco.subway.line.dto.response.LineResponse;
+import wooteco.subway.line.dto.response.LineStationsResponse;
 import wooteco.subway.line.service.LineService;
+import wooteco.subway.section.dto.request.SectionCreateRequest;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -21,9 +25,10 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineCreateRequest lineCreateRequest) {
-        LineResponse newLine = lineService.save(lineCreateRequest);
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(newLine);
+    public ResponseEntity<LineCreateResponse> createLine(@RequestBody @Valid LineCreateRequest request) {
+        LineCreateResponse response = lineService.create(request);
+        return ResponseEntity.created(URI.create("/lines/" + response.getId()))
+                .body(response);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -33,20 +38,35 @@ public class LineController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        LineResponse line = lineService.findBy(id);
-        return ResponseEntity.ok().body(line);
+    public ResponseEntity<LineStationsResponse> showLine(@PathVariable Long id) {
+        LineStationsResponse response = lineService.findBy(id);
+        return ResponseEntity.ok().body(response);
     }
 
+    @PostMapping(value = "/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> addSection(@PathVariable Long id,
+                                           @RequestBody @Valid SectionCreateRequest request) {
+        lineService.addSection(id, request);
+        return ResponseEntity.ok().build();
+    }
+
+
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest lineUpdateRequest) {
-        lineService.update(id, lineUpdateRequest);
+    public ResponseEntity<Void> updateLine(@PathVariable Long id,
+                                           @RequestBody @Valid LineUpdateRequest request) {
+        lineService.update(id, request);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/sections")
+    public ResponseEntity<Void> deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
+        lineService.deleteStationInSection(id, stationId);
         return ResponseEntity.noContent().build();
     }
 }

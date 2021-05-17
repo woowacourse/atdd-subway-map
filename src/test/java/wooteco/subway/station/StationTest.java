@@ -40,4 +40,19 @@ class StationTest {
         assertTrue(sameName);
         assertFalse(notSameName);
     }
+
+    @DisplayName("id가 같다면 같은 지하철 역")
+    @Test
+    void sameId() {
+        // given
+        Station 강남역 = new Station(1L);
+
+        // when
+        boolean isSame = 강남역.equals(new Station(1L));
+        boolean isNotSame = 강남역.equals(new Station(2L));
+
+        // then
+        assertTrue(isSame);
+        assertFalse(isNotSame);
+    }
 }

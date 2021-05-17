@@ -1,13 +1,8 @@
-package wooteco.subway.line.dto.request;
+package wooteco.subway.section.dto.request;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-public class LineCreateRequest {
-    @NotBlank
-    private String name;
-    @NotBlank
-    private String color;
+public class SectionCreateRequest {
     @NotNull
     private long upStationId;
     @NotNull
@@ -15,23 +10,13 @@ public class LineCreateRequest {
     @NotNull
     private int distance;
 
-    public LineCreateRequest() {
+    public SectionCreateRequest() {
     }
 
-    public LineCreateRequest(String name, String color, long upStationId, long downStationId, int distance) {
-        this.name = name;
-        this.color = color;
+    public SectionCreateRequest(long upStationId, long downStationId, int distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
     }
 
     public long getUpStationId() {
