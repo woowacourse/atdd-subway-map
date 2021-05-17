@@ -30,6 +30,30 @@ public class Section {
         this(SectionId.empty(), LineId.empty(), upStationId, downStationId, distance);
     }
 
+    public boolean hasSameUpStationId(Section section) {
+        return upStationId.equals(section.upStationId);
+    }
+
+    public boolean hasSameUpStationId(Long stationId) {
+        return upStationId.longValue() == stationId;
+    }
+
+    public boolean hasSameDownStationId(Section section) {
+        return downStationId.equals(section.downStationId);
+    }
+
+    public boolean hasSameDownStationId(Long stationId) {
+        return downStationId.longValue() == stationId;
+    }
+
+    public boolean hasSameId(Section changedSection) {
+        return id.equals(changedSection.id);
+    }
+
+    public boolean hasSameId(SectionId sectionId) {
+        return id.equals(sectionId);
+    }
+
     public Long getId() {
         return id.longValue();
     }
@@ -65,5 +89,4 @@ public class Section {
     public int hashCode() {
         return Objects.hash(lineId, upStationId, downStationId, distance);
     }
-
 }

@@ -18,13 +18,13 @@ public class MatchedSection {
 
     private Optional<Section> findMatchedSectionWithUpSection(List<Section> sections, Long stationId) {
         return sections.stream()
-                .filter(section -> Objects.equals(section.getUpStationId(), stationId))
+                .filter(section -> section.hasSameUpStationId(stationId))
                 .findAny();
     }
 
     private Optional<Section> findMatchedSectionWithDownSection(List<Section> sections, Long stationId) {
         return sections.stream()
-                .filter(section -> Objects.equals(section.getDownStationId(), stationId))
+                .filter(section -> section.hasSameDownStationId(stationId))
                 .findAny();
     }
 

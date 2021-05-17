@@ -8,7 +8,6 @@ import wooteco.subway.domain.station.value.StationId;
 import wooteco.subway.exception.line.SectionLengthException;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public class DownStationExists implements SectionAddRule {
@@ -42,9 +41,7 @@ public class DownStationExists implements SectionAddRule {
 
     private Optional<Section> getSectionThatHasSameDownStationFromSections(List<Section> sections, Section sourceSection) {
         return sections.stream()
-                .filter(
-                        section -> Objects.equals(sourceSection.getDownStationId(), section.getDownStationId())
-                )
+                .filter(sourceSection::hasSameDownStationId)
                 .findAny();
     }
 

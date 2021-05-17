@@ -14,8 +14,8 @@ public class RegisterTerminal implements SectionAddRule {
     public boolean isSatisfiedBy(List<Section> sections, Section section) {
         Deque<Long> stationIds = new ArrayDeque<>(new OrderedStationId(sections).asList());
 
-        return Objects.equals(stationIds.getFirst(), section.getDownStationId()) ||
-                Objects.equals(stationIds.getLast(), section.getUpStationId());
+        return section.hasSameDownStationId(stationIds.getFirst()) ||
+                section.hasSameUpStationId(stationIds.getLast());
     }
 
     @Override

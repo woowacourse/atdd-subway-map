@@ -62,7 +62,7 @@ class MatchedSectionTest {
         assertThat(matchedSection.isMiddleStationsDelete()).isTrue();
     }
 
-    @DisplayName("중간역 삭제 가능 여부 실")
+    @DisplayName("중간역 삭제 가능 여부 실패")
     @Test
     void isMiddleStationsDelete_inFalseCase() {
         List<Section> sections = createSection();

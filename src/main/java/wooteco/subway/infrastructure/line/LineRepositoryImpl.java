@@ -82,8 +82,7 @@ public class LineRepositoryImpl implements LineRepository {
         List<Section> changedSections = line.getSections();
 
         for (Section changedSection : changedSections) {
-            originSections.removeIf(section ->
-                    Objects.equals(section.getId(), changedSection.getId()));
+            originSections.removeIf(section -> section.hasSameId(changedSection));
         }
 
         List<Section> deletedSections = originSections;
@@ -94,15 +93,11 @@ public class LineRepositoryImpl implements LineRepository {
         }
 
         List<Section> creatableSection = changedSections.stream()
-                .filter(section ->
-                        section.getId() == SectionId.empty().longValue()
-                )
+                .filter(section -> section.hasSameId(SectionId.empty()))
                 .collect(toList());
 
         List<Section> updatableSections = changedSections.stream()
-                .filter(section ->
-                        section.getId() != SectionId.empty().longValue()
-                )
+                .filter(section -> !section.hasSameId(SectionId.empty()))
                 .collect(toList());
 
         lineDao.update(line);

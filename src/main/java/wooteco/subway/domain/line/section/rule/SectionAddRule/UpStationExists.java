@@ -43,9 +43,7 @@ public class UpStationExists implements SectionAddRule {
 
     private Optional<Section> getSectionThatHasSameUpStationByFromSections(List<Section> sections, Section sourceSection) {
         return sections.stream()
-                .filter(
-                        section -> Objects.equals(sourceSection.getUpStationId(), section.getUpStationId())
-                )
+                .filter(sourceSection::hasSameUpStationId)
                 .findAny();
     }
 

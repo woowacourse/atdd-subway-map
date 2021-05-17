@@ -138,8 +138,8 @@ class SectionsTest {
 
     private Long findDistanceByUpAndDownStationId(Long upStationId, Long downStationId) {
         return sections.getSections().stream()
-                .filter(section -> Objects.equals(section.getUpStationId(), upStationId))
-                .filter(section -> Objects.equals(section.getDownStationId(), downStationId))
+                .filter(section -> section.hasSameUpStationId(upStationId))
+                .filter(section -> section.hasSameDownStationId(downStationId))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("matching failed"))
                 .getDistance();
