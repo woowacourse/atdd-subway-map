@@ -44,17 +44,8 @@ public class LineService {
     }
 
     private void validateStationIdExisting(Line line) {
-        List<Long> stations = line.getSections().stream()
-                .flatMap(
-                        section -> Stream.of(
-                                section.getUpStationId(),
-                                section.getDownStationId()
-                        )
-                )
-                .distinct()
-                .collect(toList());
-
-        stations.forEach(stationRepository::findById);
+        line.getUnorderedStationIds()
+                .forEach(stationRepository::findById);
     }
 
     public List<Line> allLines() {

@@ -59,6 +59,10 @@ public class Line {
         return sections.getStationIds();
     }
 
+    public List<Long> getUnorderedStationIds() {
+        return sections.getUnOrderedStationIds();
+    }
+
     public void deleteSectionByStationId(Long stationId) {
         sections.deleteSectionByStationId(stationId);
     }

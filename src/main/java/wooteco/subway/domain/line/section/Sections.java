@@ -101,4 +101,14 @@ public class Sections {
         }
     }
 
+    public List<Long> getUnOrderedStationIds() {
+        return sections.stream()
+                .flatMap(section -> Stream.of(
+                                section.getUpStationId(),
+                                section.getDownStationId()
+                        ))
+                .distinct()
+                .collect(toList());
+    }
+
 }
