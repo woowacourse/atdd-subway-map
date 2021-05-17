@@ -38,7 +38,7 @@ public class Station {
     }
 
     private void validateNotEmpty(String name) {
-        if ("".equals(name.substring(0, name.length()-1))) {
+        if ("".equals(name.substring(0, name.length() - 1))) {
             throw new EmptyInputException();
         }
     }

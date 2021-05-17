@@ -2,7 +2,6 @@ package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.exception.line.NoLineException;
 import wooteco.subway.exception.station.NoStationException;
 import wooteco.subway.exception.station.StationDuplicationException;
 import wooteco.subway.station.dao.StationDao;
