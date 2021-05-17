@@ -4,7 +4,6 @@ import wooteco.subway.line.exception.LineException;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.Sections;
 import wooteco.subway.station.Station;
-import wooteco.subway.station.StationResponse;
 
 import java.util.List;
 import java.util.Objects;

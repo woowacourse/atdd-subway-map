@@ -17,6 +17,10 @@ public class Station {
         this.name = name;
     }
 
+    public Station(String name) {
+        this.name = name;
+    }
+
     private void validateName(String name) {
         if (name == null || name.trim().length() <= 0) {
             throw new StationException("이름이 반드시 존재해야 합니다.");
@@ -25,10 +29,6 @@ public class Station {
 
     public boolean isSameId(Long id) {
         return this.id.equals(id);
-    }
-
-    public Station(String name) {
-        this.name = name;
     }
 
     public Long getId() {
