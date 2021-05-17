@@ -2,6 +2,7 @@ package wooteco.subway.service.section;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.controller.dto.request.LineRequest;
 import wooteco.subway.controller.dto.request.SectionRequest;
 import wooteco.subway.dao.section.SectionDao;
@@ -22,6 +23,7 @@ public class SectionService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public void createSection(LineRequest lineRequest, Long lineId) {
         Station upStation = stationDao.findById(lineRequest.getUpStationId())
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 역입니다."));
@@ -31,15 +33,18 @@ public class SectionService {
         sectionDao.save(section);
     }
 
+    @Transactional
     public void deleteSectionsByLineId(Long id) {
         List<Section> sections = sectionDao.findByLineId(id);
         sections.forEach(section -> sectionDao.deleteById(section.getId()));
     }
 
+    @Transactional(readOnly = true)
     public List<Section> findByLineId(Long id) {
         return sectionDao.findByLineId(id);
     }
 
+    @Transactional
     public void addSection(Long id, SectionRequest sectionRequest) {
         Station upStation = stationDao.findById(sectionRequest.getUpStationId())
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 역입니다."));
@@ -57,6 +62,7 @@ public class SectionService {
         sectionDao.update(updateSection);
     }
 
+    @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         Station requestStation = stationDao.findById(stationId)
