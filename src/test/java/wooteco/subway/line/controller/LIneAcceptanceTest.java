@@ -259,9 +259,21 @@ public class LIneAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("구간을 추가한다.")
-    void addSection() throws JsonProcessingException {
+    @DisplayName("상행 구간을 추가한다.")
+    void addSection1() throws JsonProcessingException {
         SectionRequest sectionRequest = new SectionRequest(1L, 3L, 3);
+        String content = objectMapper.writeValueAsString(sectionRequest);
+
+        ExtractableResponse<Response> response = addSection(content);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("하행 구간을 추가한다.")
+    void addSection2() throws JsonProcessingException {
+        SectionRequest sectionRequest = new SectionRequest(3L, 1L, 3);
         String content = objectMapper.writeValueAsString(sectionRequest);
 
         ExtractableResponse<Response> response = addSection(content);

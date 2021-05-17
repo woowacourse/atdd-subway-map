@@ -1,9 +1,9 @@
 package wooteco.subway.line.domain;
 
+import wooteco.subway.line.domain.rule.FindSectionStrategy;
 import wooteco.subway.station.domain.Station;
 
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static wooteco.subway.line.domain.Section.EMPTY;
@@ -13,10 +13,6 @@ public class Sections {
 
     public Sections(List<Section> sections) {
         this.sections = new ArrayList<>(sections);
-    }
-
-    public List<Section> sections() {
-        return sections;
     }
 
     public Station registeredStation(Section anotherSection) {
@@ -31,6 +27,15 @@ public class Sections {
             throw new IllegalStateException("[ERROR] 노선에 등록할 구간의 역이 하나만 등록되어 있어야 합니다.");
         }
         return stations.get(0);
+    }
+
+    public Section findSectionWithStation(Station targetStation, List<FindSectionStrategy> findSectionStrategies) {
+        return findSectionStrategies.stream()
+                .map(findSectionStrategy -> findSectionStrategy.findSection(sections, targetStation))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findAny()
+                .orElse(EMPTY);
     }
 
     public Section findSectionWithUpStation(Station upStation) {

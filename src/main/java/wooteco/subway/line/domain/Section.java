@@ -89,6 +89,23 @@ public class Section {
         return this.equals(EMPTY);
     }
 
+    public Section updateToAdd(Section toAddSection) {
+        checkDistance(toAddSection);
+        if (toAddSection.upStation.equals(upStation)) {
+            return new Section(id, lineId, toAddSection.downStation(), downStation, distance - toAddSection.distance);
+        }
+        if (toAddSection.downStation.equals(downStation)) {
+            return new Section(id, lineId, upStation, toAddSection.upStation(), distance - toAddSection.distance);
+        }
+        return EMPTY;
+    }
+
+    private void checkDistance(Section toAddSection) {
+        if (this.distance <= toAddSection.distance) {
+            throw new IllegalArgumentException("[ERROR] 기존 구간 길이보다 크거나 같으면 등록할 수 없습니다.");
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

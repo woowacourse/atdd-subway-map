@@ -1,5 +1,6 @@
 package wooteco.subway.line.domain;
 
+import wooteco.subway.line.domain.rule.FindSectionStrategy;
 import wooteco.subway.station.domain.Station;
 
 import java.util.ArrayList;
@@ -55,10 +56,6 @@ public class Line {
         this.sections = new Sections(sections);
     }
 
-    public List<Section> sections() {
-        return sections.sections();
-    }
-
     public List<Station> stations() {
         return sections.sortedStations();
     }
@@ -92,5 +89,9 @@ public class Line {
             sectionsWhichHasStation.add(findSectionWithUpStation(station));
         }
         return sectionsWhichHasStation;
+    }
+
+    public Section findSectionWithStation(Station targetStation, List<FindSectionStrategy> findSectionStrategies) {
+        return sections.findSectionWithStation(targetStation, findSectionStrategies);
     }
 }
