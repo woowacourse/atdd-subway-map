@@ -37,7 +37,7 @@ public class Line {
     }
 
     public Line update(final String name, final String color) {
-        return new Line(this.id, name, color);
+        return new Line(this.id, name, color, this.sections);
     }
 
     public List<Long> sortingSectionIds() {
