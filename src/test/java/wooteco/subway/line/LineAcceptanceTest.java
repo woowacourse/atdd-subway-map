@@ -4,15 +4,12 @@ package wooteco.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 
@@ -25,9 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    @Autowired
-    private LineDao lineDao;
-
     private LineRequest lineRequest1;
     private LineRequest lineRequest2;
 
@@ -35,11 +29,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void init() {
         lineRequest1 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
         lineRequest2 = new LineRequest("2호선", "bg-green-600", 2L, 3L, 15);
-    }
-
-    @AfterEach
-    void clear() {
-        lineDao.clear();
     }
 
     private ExtractableResponse<Response> postLines(LineRequest params) {

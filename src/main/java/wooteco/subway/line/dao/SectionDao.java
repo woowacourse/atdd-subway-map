@@ -49,11 +49,6 @@ public class SectionDao {
         };
     }
 
-    public void clear() {
-        String query = "DELETE FROM section";
-        jdbcTemplate.update(query);
-    }
-
     public void updateUpStation(Long lineId, Long upStationId, Long newUpStationId, int distance) {
         String query = "UPDATE section SET up_station_id = ?, distance = ? " +
                 "WHERE line_id = ? " +

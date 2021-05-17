@@ -56,14 +56,8 @@ public class LineDao {
     }
 
     public void delete(Long... id) {
-
         String sql = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(sql, id);
-    }
-
-    public void clear() {
-        String sql = "DELETE FROM line";
-        jdbcTemplate.update(sql);
     }
 
     @Transactional(readOnly = true)

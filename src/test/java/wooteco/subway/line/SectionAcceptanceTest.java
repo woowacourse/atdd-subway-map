@@ -2,17 +2,14 @@ package wooteco.subway.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.line.dao.SectionDao;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.SectionRequest;
 import wooteco.subway.station.dto.StationResponse;
@@ -23,8 +20,6 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SectionAcceptanceTest extends AcceptanceTest {
-    @Autowired
-    private SectionDao sectionDao;
 
     private SectionRequest sectionRequest;
     private Long lineId;
@@ -43,11 +38,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
         lineId = response.body().jsonPath().getLong("id");
-    }
-
-    @AfterEach
-    void clear() {
-        sectionDao.clear();
     }
 
     private ExtractableResponse<Response> postSections(SectionRequest request) {

@@ -46,11 +46,6 @@ public class StationDao {
         return jdbcTemplate.update(sql, id, id, id);
     }
 
-    public void clear() {
-        String sql = "DELETE FROM station";
-        jdbcTemplate.update(sql);
-    }
-
     public int countStationByName(String name) {
         String sql = "SELECT count(*) FROM station WHERE name = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, name);

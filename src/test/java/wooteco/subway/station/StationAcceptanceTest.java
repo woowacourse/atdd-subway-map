@@ -3,16 +3,13 @@ package wooteco.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineRequest;
-import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
@@ -24,10 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
-
-    @Autowired
-    private StationDao stationDao;
-
     private StationRequest stationRequest1;
     private StationRequest stationRequest2;
 
@@ -35,11 +28,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void init() {
         stationRequest1 = new StationRequest("사당역");
         stationRequest2 = new StationRequest("종합운동장역");
-    }
-
-    @AfterEach
-    void clear() {
-        stationDao.clear();
     }
 
     private ExtractableResponse<Response> postStation(StationRequest params) {
