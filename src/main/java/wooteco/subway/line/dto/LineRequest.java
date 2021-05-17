@@ -48,12 +48,4 @@ public class LineRequest {
     public Line toLineEntity() {
         return new Line(null, name, color);
     }
-
-    public Section toSectionEntity() {
-        return new Section(
-                new Line(name, color),
-                new Station(upStationId),
-                new Station(downStationId),
-                distance);
-    }
 }

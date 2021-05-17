@@ -9,10 +9,6 @@ public class Line {
         this(lineId, null, null);
     }
 
-    public Line(String name, String color) {
-        this(null, name, color);
-    }
-
     public Line(Long id, String name, String color) {
         this.id = id;
         this.name = name;
