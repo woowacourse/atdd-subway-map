@@ -32,7 +32,7 @@ class SectionsTest {
         );
     }
 
-    @DisplayName("정렬되어 있지 않은 여러 구간을 통해 생성시 상행 종점부터 하행 종점까지 자동 정렬합니다. - 1")
+    @DisplayName("구간 자동 정렬 - 정렬되지 않은 상태에서 맨 마지막 섹션이 제일 앞에, 맨 앞 섹션이 제일 뒤에 있을 경우 자동 정렬")
     @Test
     void sort1() {
         // given
@@ -52,28 +52,7 @@ class SectionsTest {
             );
     }
 
-    @DisplayName("정렬되어 있지 않은 여러 구간을 통해 생성시 상행 종점부터 하행 종점까지 자동 정렬합니다. - 2")
-    @Test
-    void sort2() {
-        // given
-        Section aToB = new Section(1L, lineId, a, b, 2);
-        Section bToC = new Section(2L, lineId, b, c, 2);
-        Section cToD = new Section(3L, lineId, c, d, 2);
-        Section dToE = new Section(4L, lineId, d, e, 2);
-        Section etoF = new Section(5L, lineId, e, f, 2);
-
-        // when
-        List<Section> sectionValues = Arrays.asList(cToD, etoF, bToC, dToE, aToB);
-        Sections sections = new Sections(sectionValues);
-
-        // then
-        assertThat(sections.getValues())
-            .containsExactly(
-                aToB, bToC, cToD, dToE, etoF
-            );
-    }
-
-    @DisplayName("정렬되어 있지 않은 여러 구간을 통해 생성시 상행 종점부터 하행 종점까지 자동 정렬합니다. - 3")
+    @DisplayName("구간 자동 정렬 - 구간이 하나만 있을 경우 자동 정렬")
     @Test
     void sort3() {
         // given
