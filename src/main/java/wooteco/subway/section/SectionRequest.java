@@ -1,13 +1,17 @@
 package wooteco.subway.section;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 public class SectionRequest {
-    @NotBlank
+    @NotNull
+    @Positive
     private Long upStationId;
-    @NotBlank
+    @NotNull
+    @Positive
     private Long downStationId;
-    @NotBlank
+    @NotNull
+    @Positive
     private int distance;
 
     public SectionRequest() {
