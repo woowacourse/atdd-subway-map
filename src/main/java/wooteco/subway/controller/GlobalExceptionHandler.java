@@ -11,13 +11,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<LineResponse> exceptionHandler(IllegalArgumentException e) {
-        System.out.println("@@@@@ " + "IllegalArgument 걸림: " + e.getMessage());
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Void> validationHandler(ConstraintViolationException e) {
-        System.out.println("@@@@@ " + "Validation 걸림");
         return ResponseEntity.badRequest().build();
     }
 }

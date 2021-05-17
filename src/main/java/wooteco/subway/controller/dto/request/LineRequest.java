@@ -1,8 +1,6 @@
 package wooteco.subway.controller.dto.request;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import wooteco.subway.domain.line.Line;
 
 public class LineRequest {
