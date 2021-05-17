@@ -5,12 +5,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.section.exception.SectionCantDeleteException;
 import wooteco.subway.section.exception.SectionDistanceException;
 import wooteco.subway.section.exception.SectionInclusionException;
 import wooteco.subway.section.exception.SectionInitializationException;
-import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,11 +28,6 @@ class SectionServiceTest {
     @Autowired
     private StationDao stationDao;
 
-    private Station firstStation;
-    private Station secondStation;
-    private Station thirdStation;
-    private Station fourthStation;
-
     @BeforeEach
     void setUp() {
         jdbcTemplate.execute("SET foreign_key_checks=0;");
@@ -40,13 +35,14 @@ class SectionServiceTest {
         jdbcTemplate.execute("alter table SECTION alter column ID restart with 1");
         jdbcTemplate.execute("truncate table STATION");
         jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
+        jdbcTemplate.execute("truncate table LINE");
         jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
         jdbcTemplate.execute("insert into LINE (name, color) values ('9호선', '황토')");
         jdbcTemplate.execute("SET foreign_key_checks=1;");
-        firstStation = stationDao.save("first");
-        secondStation = stationDao.save("second");
-        thirdStation = stationDao.save("third");
-        fourthStation = stationDao.save("fourth");
+        stationDao.save("first");
+        stationDao.save("second");
+        stationDao.save("third");
+        stationDao.save("fourth");
     }
 
     @Test
@@ -57,9 +53,15 @@ class SectionServiceTest {
         SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(2L, 4L, 1));
         sectionService.save(sectionDto);
 
-        assertThat(sectionDao.findByUpStationId(1L, 2L).get())
+        SectionResponse sectionResponse = findByUpStationId(2L);
+        assertThat(sectionResponse)
                 .usingRecursiveComparison()
-                .isEqualTo(new Section(3L, 1L, secondStation, fourthStation, 1));
+                .isEqualTo(new SectionResponse(3L, 1L, 2L, 4L, 1));
+
+        SectionResponse sectionResponse2 = findByUpStationId(4L);
+        assertThat(sectionResponse2)
+                .usingRecursiveComparison()
+                .isEqualTo(new SectionResponse(4L, 1L, 4L, 3L, 9));
     }
 
     @Test
@@ -91,9 +93,11 @@ class SectionServiceTest {
         SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(4L, 1L, 1));
         sectionService.save(sectionDto);
 
-        assertThat(sectionDao.findByUpStationId(1L, 4L).get())
+        SectionResponse sectionResponse = findByUpStationId(4L);
+
+        assertThat(sectionResponse)
                 .usingRecursiveComparison()
-                .isEqualTo(new Section(2L, 1L, fourthStation, firstStation, 1));
+                .isEqualTo(new SectionResponse(2L, 1L, 4L, 1L, 1));
     }
 
     @Test
@@ -103,9 +107,11 @@ class SectionServiceTest {
         SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(2L, 4L, 1));
         sectionService.save(sectionDto);
 
-        assertThat(sectionDao.findByUpStationId(1L, 2L).get())
+        SectionResponse sectionResponse = findByUpStationId(2L);
+
+        assertThat(sectionResponse)
                 .usingRecursiveComparison()
-                .isEqualTo(new Section(2L, 1L, secondStation, fourthStation, 1));
+                .isEqualTo(new SectionResponse(2L, 1L, 2L, 4L, 1));
     }
 
     @Test
@@ -137,7 +143,10 @@ class SectionServiceTest {
         sectionDao.save(1L, 1L, 2L, 10);
         sectionDao.save(1L, 2L, 3L, 10);
         sectionService.delete(1L, 1L);
+
         assertThat(sectionDao.numberOfEnrolledSection(1L)).isEqualTo(1);
+        assertThatThrownBy(() -> findByUpStationId(1L))
+                .isInstanceOf(EmptyResultDataAccessException.class);
     }
 
     @Test
@@ -163,11 +172,23 @@ class SectionServiceTest {
         sectionDao.save(1L, 3L, 4L, 10);
 
         sectionService.delete(1L, 2L);
-        Section section = sectionDao.findByUpStationId(1L, 1L).get();
+        SectionResponse sectionResponse = findByUpStationId(1L);
 
-        assertThat(section)
+        assertThat(sectionResponse)
                 .usingRecursiveComparison()
-                .ignoringFields("id")
-                .isEqualTo(new Section(null, 1L, firstStation, thirdStation, 20));
+                .isEqualTo(new SectionResponse(1L, 1L, 1L, 3L, 20));
+    }
+
+    private SectionResponse findByUpStationId(Long upStationId) {
+        return jdbcTemplate.queryForObject(
+                "select id, line_id, up_station_id, down_station_id, distance from SECTION where line_id = 1 and up_station_id = ?",
+                (rs, num) -> new SectionResponse(
+                        rs.getLong("id"),
+                        rs.getLong("line_id"),
+                        upStationId,
+                        rs.getLong("down_station_id"),
+                        rs.getInt("distance")
+                ), upStationId
+        );
     }
 }

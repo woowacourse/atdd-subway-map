@@ -27,8 +27,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
-    private SectionDao sectionDao;
-    @Autowired
     private StationDao stationDao;
 
     @BeforeEach
@@ -53,7 +51,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
 
-        assertThat(sectionDao.findByUpStationId(1L, 1L).isPresent()).isTrue();
+        Integer queryResult = jdbcTemplate.queryForObject(
+                "select count(*) from SECTION where line_id = 1 and up_station_id = 1", Integer.class);
+        assertThat(queryResult).isEqualTo(1);
     }
 
     @Test

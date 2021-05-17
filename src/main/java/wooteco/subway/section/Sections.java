@@ -4,7 +4,6 @@ import wooteco.subway.section.exception.SectionCantDeleteException;
 import wooteco.subway.section.exception.SectionInclusionException;
 import wooteco.subway.section.exception.SectionNotFoundException;
 import wooteco.subway.station.Station;
-import wooteco.subway.station.StationService;
 import wooteco.subway.station.exception.StationNotFoundException;
 
 import java.util.*;
@@ -24,7 +23,7 @@ public class Sections {
         return (firstStation.isSameId(sectionDto.getDownStationId())
                 && !stations.contains(new Station(sectionDto.getUpStationId(), "temp")))
                 || (lastStation.isSameId(sectionDto.getUpStationId())
-                        && !stations.contains(new Station(sectionDto.getDownStationId(), "temp")));
+                && !stations.contains(new Station(sectionDto.getDownStationId(), "temp")));
     }
 
     public SectionStandard calculateSectionStandard(SectionDto sectionDto) {
@@ -46,21 +45,23 @@ public class Sections {
     private boolean hasBothStations(SectionDto sectionDto) {
         return sections.stream()
                 .anyMatch(
-                        section -> section.isSameUpStation(sectionDto.getUpStationId()))
+                        section -> section.isSameUpStation(sectionDto.getUpStationId())
+                                || section.isSameDownStation(sectionDto.getUpStationId()))
                 &&
                 sections.stream()
                         .anyMatch(
-                                section -> section.isSameDownStation(sectionDto.getDownStationId()));
+                                section -> section.isSameUpStation(sectionDto.getDownStationId())
+                                        || section.isSameDownStation(sectionDto.getDownStationId())
+                        );
     }
 
     private boolean hasNeitherStations(SectionDto sectionDto) {
         return sections.stream()
                 .noneMatch(
-                        section -> section.isSameUpStation(section.getUpStationId()))
-                &&
-                sections.stream()
-                        .noneMatch(
-                                section -> section.isSameDownStation(sectionDto.getDownStationId()));
+                        section -> section.isSameUpStation(sectionDto.getUpStationId())
+                                || section.isSameDownStation(sectionDto.getUpStationId())
+                                || section.isSameUpStation(sectionDto.getDownStationId())
+                                || section.isSameDownStation(sectionDto.getDownStationId()));
     }
 
     public void validateNumberOfStation() {
