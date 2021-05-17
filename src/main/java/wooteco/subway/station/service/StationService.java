@@ -47,14 +47,15 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
-    public void validateId(Long stationId) {
-        stationDao.findById(stationId)
+    public Station findById(Long id) {
+        return stationDao.findById(id)
             .orElseThrow(NoStationException::new);
     }
 
     @Transactional(readOnly = true)
-    public Station findById(Long id) {
-        return stationDao.findById(id)
-            .orElseThrow(NoStationException::new);
+    public void validateId(Long id) {
+        if (stationDao.doesNotExist(id)) {
+            throw new NoStationException();
+        }
     }
 }

@@ -83,4 +83,10 @@ public class StationJdbcDao implements StationDao {
             return Optional.empty();
         }
     }
+
+    @Override
+    public boolean doesNotExist(Long id) {
+        String sql = "SELECT NOT EXISTS (SELECT * FROM STATION WHERE id=?) AS noExist";
+        return jdbcTemplate.queryForObject(sql, Boolean.TYPE, id);
+    }
 }

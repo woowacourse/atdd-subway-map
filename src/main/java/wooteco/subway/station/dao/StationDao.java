@@ -15,4 +15,6 @@ public interface StationDao {
     Optional<Station> findByName(String name);
 
     Optional<Station> findById(Long id);
+
+    boolean doesNotExist(Long id);
 }

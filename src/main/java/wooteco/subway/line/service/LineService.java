@@ -83,7 +83,8 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public void validateId(Long lineId) {
-        lineDao.findById(lineId)
-            .orElseThrow(NoLineException::new);
+        if (lineDao.doesNotExist(lineId)) {
+            throw new NoLineException();
+        }
     }
 }

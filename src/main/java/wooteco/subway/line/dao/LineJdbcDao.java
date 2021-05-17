@@ -113,4 +113,10 @@ public class LineJdbcDao implements LineDao {
             return Optional.empty();
         }
     }
+
+    @Override
+    public boolean doesNotExist(Long id) {
+        String sql = "SELECT NOT EXISTS (SELECT id, name, color FROM LINE WHERE id=?) AS noExist";
+        return jdbcTemplate.queryForObject(sql, Boolean.TYPE, id);
+    }
 }

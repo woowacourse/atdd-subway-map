@@ -58,4 +58,10 @@ class StationJdbcDaoTest {
 
         assertThat(stationDao.findAll()).containsExactlyInAnyOrderElementsOf(remainStation);
     }
+
+    @DisplayName("유효하지 않은 역 아이디 조회 시 true 반환")
+    @Test
+    void doesNotExist() {
+        assertThat(stationDao.doesNotExist(10L)).isTrue();
+    }
 }
