@@ -2,9 +2,7 @@ package wooteco.subway.line.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.exception.SubwayException;
 import wooteco.subway.line.dto.request.LineCreateRequest;
 import wooteco.subway.line.dto.request.LineUpdateRequest;
 import wooteco.subway.line.dto.response.LineCreateResponse;
@@ -27,10 +25,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineCreateResponse> createLine(@RequestBody @Valid LineCreateRequest request, Errors errors) {
-        if (errors.hasErrors()) {
-            throw new SubwayException("올바른 값이 아닙니다.");
-        }
+    public ResponseEntity<LineCreateResponse> createLine(@RequestBody @Valid LineCreateRequest request) {
         LineCreateResponse response = lineService.create(request);
         return ResponseEntity.created(URI.create("/lines/" + response.getId()))
                 .body(response);
@@ -50,10 +45,7 @@ public class LineController {
 
     @PostMapping(value = "/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> addSection(@PathVariable Long id,
-                                           @RequestBody @Valid SectionCreateRequest request, Errors errors) {
-        if (errors.hasErrors()) {
-            throw new SubwayException("올바른 값이 아닙니다.");
-        }
+                                           @RequestBody @Valid SectionCreateRequest request) {
         lineService.addSection(id, request);
         return ResponseEntity.ok().build();
     }
@@ -61,11 +53,7 @@ public class LineController {
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateLine(@PathVariable Long id,
-                                           @RequestBody @Valid LineUpdateRequest request, Errors errors) {
-        if (errors.hasErrors()) {
-            throw new SubwayException("올바른 값이 아닙니다.");
-        }
-
+                                           @RequestBody @Valid LineUpdateRequest request) {
         lineService.update(id, request);
         return ResponseEntity.ok().build();
     }
