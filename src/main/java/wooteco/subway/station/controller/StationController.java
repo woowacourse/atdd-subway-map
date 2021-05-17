@@ -3,6 +3,7 @@ package wooteco.subway.station.controller;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
@@ -16,9 +17,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/stations")
 public class StationController {
 
+    private final SectionService sectionService;
     private final StationService stationService;
 
-    public StationController(StationService stationService) {
+    public StationController(SectionService sectionService, StationService stationService) {
+        this.sectionService = sectionService;
         this.stationService = stationService;
     }
 
@@ -33,13 +36,14 @@ public class StationController {
     public ResponseEntity<List<StationResponse>> showStations() {
         List<Station> stations = stationService.stations();
         List<StationResponse> stationResponses = stations.stream()
-                .map(StationResponse::new)
-                .collect(Collectors.toList());
+            .map(StationResponse::new)
+            .collect(Collectors.toList());
         return ResponseEntity.ok(stationResponses);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+        sectionService.validateNotIncludedStation(id);
         stationService.delete(id);
         return ResponseEntity.noContent().build();
     }

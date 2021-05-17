@@ -1,7 +1,8 @@
 package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.exception.IllegalIdException;
+import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.exception.station.NoStationException;
 import wooteco.subway.exception.station.StationDuplicationException;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
@@ -10,11 +11,12 @@ import wooteco.subway.station.dto.StationRequest;
 import java.util.List;
 
 @Service
+@Transactional
 public class StationService {
 
     private final StationDao stationDao;
 
-    private StationService(StationDao stationDao) {
+    public StationService(StationDao stationDao) {
         this.stationDao = stationDao;
     }
 
@@ -33,6 +35,7 @@ public class StationService {
         throw new StationDuplicationException();
     }
 
+    @Transactional(readOnly = true)
     public List<Station> stations() {
         return stationDao.findAll();
     }
@@ -42,9 +45,16 @@ public class StationService {
         stationDao.delete(id);
     }
 
-    private void validateId(Long id) {
-        if (id <= 0) {
-            throw new IllegalIdException();
+    @Transactional(readOnly = true)
+    public Station findById(Long id) {
+        return stationDao.findById(id)
+            .orElseThrow(NoStationException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public void validateId(Long id) {
+        if (stationDao.doesNotExist(id)) {
+            throw new NoStationException();
         }
     }
 }

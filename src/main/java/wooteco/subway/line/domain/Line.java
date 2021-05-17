@@ -16,18 +16,21 @@ public class Line {
     public Line() {
     }
 
+    public Line(String name, String color) {
+        this(null, name, color);
+    }
+
     public Line(Long id, String name, String color) {
+        validate(name, color);
         this.id = id;
         this.name = name;
         this.color = color;
     }
 
-    public Line(String name, String color) {
+    private void validate(String name, String color) {
         validateNotNull(name, color);
-        validateNotEmpty(name, color);
         validateSuffix(name);
-        this.name = name;
-        this.color = color;
+        validateNotEmpty(name, color);
     }
 
     private void validateNotNull(String name, String color) {
@@ -37,7 +40,7 @@ public class Line {
     }
 
     private void validateNotEmpty(String name, String color) {
-        if ("".equals(name) || "".equals(color)) {
+        if ("".equals(name.substring(0, name.length() - 1)) || "".equals(color)) {
             throw new EmptyInputException();
         }
     }
@@ -50,18 +53,6 @@ public class Line {
 
     private boolean isNotEndsWithLine(String name) {
         return !name.endsWith(SUFFIX);
-    }
-
-    public boolean isSameId(Long id) {
-        return this.id.equals(id);
-    }
-
-    public boolean isSameName(Line line) {
-        return this.name.equals(line.name);
-    }
-
-    public boolean isSameColor(Line line) {
-        return this.color.equals(line.color);
     }
 
     public Long getId() {

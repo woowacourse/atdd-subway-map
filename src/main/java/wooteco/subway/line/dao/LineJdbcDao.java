@@ -1,5 +1,6 @@
 package wooteco.subway.line.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -12,11 +13,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public class LineH2Dao implements LineDao {
+public class LineJdbcDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public LineH2Dao(JdbcTemplate jdbcTemplate) {
+    public LineJdbcDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -36,17 +37,15 @@ public class LineH2Dao implements LineDao {
 
     @Override
     public List<Line> findAll() {
-        String sql = "SELECT * FROM LINE";
+        String sql = "SELECT id, name, color FROM LINE";
         return jdbcTemplate.query(
-                sql,
-                (rs, rowNum) -> {
-                    Line line = new Line(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getString("color")
-                    );
-                    return line;
-                });
+            sql,
+            (rs, rowNum) -> new Line(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("color")
+            )
+        );
     }
 
     @Override
@@ -56,56 +55,68 @@ public class LineH2Dao implements LineDao {
     }
 
     @Override
+    public Optional<Line> findById(Long id) {
+        String sql = "SELECT id, name, color FROM LINE WHERE id=?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                sql,
+                (rs, rowNum) -> new Line(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("color")
+                ),
+                id)
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public void delete(Long id) {
         String sql = "DELETE FROM LINE WHERE id=?";
         jdbcTemplate.update(sql, id);
     }
 
     @Override
-    public Optional<Line> findById(Long id) {
-        String sql = "SELECT * FROM LINE WHERE id=?";
-        return jdbcTemplate.query(sql,
-            (rs, rowNum) -> {
-                Line line = new Line(
-                    rs.getLong("id"),
-                    rs.getString("name"),
-                    rs.getString("color")
-                );
-                return line;
-            }, id)
-            .stream()
-            .findAny();
-    }
-
-    @Override
     public Optional<Line> findByName(String name) {
-        String sql = "SELECT * FROM LINE WHERE name=?";
-        return jdbcTemplate.query(sql,
-            (rs, rowNum) -> {
-                Line line = new Line(
+        String sql = "SELECT id, name, color FROM LINE WHERE name=?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                sql,
+                (rs, rowNum) -> new Line(
                     rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("color")
-                );
-                return line;
-            }, name)
-            .stream()
-            .findAny();
+                ),
+                name)
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Line> findByColor(String color) {
-        String sql = "SELECT * FROM LINE WHERE color=?";
-        return jdbcTemplate.query(sql,
-            (rs, rowNum) -> {
-                Line line = new Line(
+        String sql = "SELECT id, name, color FROM LINE WHERE color=?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                sql,
+                (rs, rowNum) -> new Line(
                     rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("color")
-                );
-                return line;
-            }, color)
-            .stream()
-            .findAny();
+                ),
+                color)
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public boolean doesNotExist(Long id) {
+        String sql = "SELECT NOT EXISTS (SELECT id, name, color FROM LINE WHERE id=?) AS noExist";
+        return jdbcTemplate.queryForObject(sql, Boolean.TYPE, id);
     }
 }

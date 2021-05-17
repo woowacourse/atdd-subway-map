@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.exception.line.NoLineException;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.Line;
 
@@ -13,9 +14,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-class LineH2DaoTest {
+class LineJdbcDaoTest {
 
     @Autowired
     private LineDao lineDao;
@@ -29,20 +31,21 @@ class LineH2DaoTest {
         jdbcTemplate.update("INSERT INTO LINE (name, color) VALUES (?, ?)", "2호선", "초록색");
     }
 
+    private final Line line = new Line("3호선", "주황색");
+
     @DisplayName("노선 저장 테스트")
     @Test
     void save() {
-        Line line = new Line("3호선", "주황색");
         Line savedLine = lineDao.save(line);
 
-        assertThat(savedLine.getName()).isEqualTo(line.getName());
-        assertThat(savedLine.getColor()).isEqualTo(line.getColor());
+        assertThat(savedLine).usingRecursiveComparison()
+            .ignoringFields("id")
+            .isEqualTo(line);
     }
 
     @DisplayName("노선 목록 조회 테스트")
     @Test
     void findAll() {
-        Line line = new Line("3호선", "주황색");
         List<Line> savedLines = Arrays.asList(line, new Line("2호선", "초록색"));
         lineDao.save(line);
 
@@ -75,12 +78,17 @@ class LineH2DaoTest {
     @DisplayName("노선 삭제 테스트")
     @Test
     void delete() {
-        Line line = new Line("3호선", "주황색");
         Line savedLine = lineDao.save(line);
         lineDao.delete(savedLine.getId());
 
         List<Line> remainLines = Arrays.asList(new Line("2호선", "초록색"));
 
         assertThat(lineDao.findAll()).containsExactlyInAnyOrderElementsOf(remainLines);
+    }
+
+    @DisplayName("유효하지 않은 노선 아이디 조회 시 true 반환")
+    @Test
+    void doesNotExist() {
+        assertThat(lineDao.doesNotExist(10L)).isTrue();
     }
 }

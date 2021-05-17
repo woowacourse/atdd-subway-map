@@ -21,4 +21,6 @@ public interface LineDao {
     Optional<Line> findByName(String name);
 
     Optional<Line> findByColor(String color);
+
+    boolean doesNotExist(Long id);
 }
