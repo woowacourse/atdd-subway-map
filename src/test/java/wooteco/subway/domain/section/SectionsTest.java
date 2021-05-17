@@ -46,7 +46,6 @@ class SectionsTest {
         Sections sections = new Sections(sectionValues);
 
         // then
-//        sections.getValues().forEach(section -> System.out.print(section.getUpStation().getName() + " - " + section.getDownStation().getName() + ", "));
         assertThat(sections.getValues())
             .containsExactly(
                 aToB, bToC, cToD, dToE

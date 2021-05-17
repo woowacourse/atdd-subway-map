@@ -12,8 +12,8 @@ class StationTest {
     @Test
     void create() {
         // given
-        Station station1 = new Station("잠실역");
-        Station station2 = new Station("잠실역");
+        Station station1 = new Station(0L, "잠실역");
+        Station station2 = new Station(0L, "잠실역");
 
         // then
         assertThat(station1).isEqualTo(station2);
