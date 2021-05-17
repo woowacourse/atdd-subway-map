@@ -21,9 +21,9 @@ public class StationService {
     }
 
     @Transactional
-    public StationDto save(Station station) {
-        validateDuplicate(station.name());
-        return StationDto.toDto(stationDao.save(station));
+    public StationDto save(StationDto stationRequest) {
+        validateDuplicate(stationRequest.getName());
+        return StationDto.toDto(stationDao.save(StationDto.toStation(stationRequest)));
     }
 
     private void validateDuplicate(final String name) {

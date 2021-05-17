@@ -35,6 +35,10 @@ public class StationDto {
                 .collect(Collectors.toList());
     }
 
+    public static Station toStation(StationDto stationDto) {
+        return new Station(stationDto.getId(), stationDto.getName());
+    }
+
     public Long getId() {
         return id;
     }
