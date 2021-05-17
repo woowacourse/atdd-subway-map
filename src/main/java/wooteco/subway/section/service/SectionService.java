@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.InvalidInsertException;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.line.Line;
-import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.Sections;
 import wooteco.subway.section.dto.SectionRequest;
@@ -19,8 +18,8 @@ import java.util.List;
 
 @Service
 public class SectionService {
-    private StationService stationService;
-    private SectionDao sectionDao;
+    private final StationService stationService;
+    private final SectionDao sectionDao;
 
     public SectionService(StationService stationService, SectionDao sectionDao) {
         this.stationService = stationService;
@@ -28,10 +27,8 @@ public class SectionService {
     }
 
     @Transactional
-    public void save(Line newLine, LineRequest lineRequest) {
-        SectionRequest sectionReq = new SectionRequest(lineRequest);
+    public void save(Line newLine, SectionRequest sectionReq) {
         validateExistStations(sectionReq.getUpStationId(), sectionReq.getDownStationId());
-
         sectionDao.save(newLine.getId(), sectionReq.toEntity());
     }
 

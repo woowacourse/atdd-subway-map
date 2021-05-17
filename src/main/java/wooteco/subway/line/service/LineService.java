@@ -8,6 +8,7 @@ import wooteco.subway.line.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.repository.LineDao;
+import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.dto.StationResponse;
 
@@ -28,7 +29,8 @@ public class LineService {
     public LineResponse save(LineRequest lineRequest) {
         validateLineName(lineRequest);
         Line newLine = lineDao.save(lineRequest.toEntity());
-        sectionService.save(newLine, lineRequest);
+        SectionRequest sectionReq = new SectionRequest(lineRequest);
+        sectionService.save(newLine, sectionReq);
         return new LineResponse(newLine);
     }
 
@@ -73,6 +75,7 @@ public class LineService {
         }
     }
 
+    @Transactional
     public void delete(Long id) {
         lineDao.delete(id);
     }
