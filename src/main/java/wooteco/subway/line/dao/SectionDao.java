@@ -3,6 +3,7 @@ package wooteco.subway.line.dao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.station.domain.Station;
@@ -32,6 +33,7 @@ public class SectionDao {
                 section.getDistance());
     }
 
+    @Transactional(readOnly = true)
     public List<Section> findSectionBylineId(Long lineId) {
         String query = "SELECT up_station_id, s1.name, down_station_id, s2.name, distance " +
                 "FROM section " +

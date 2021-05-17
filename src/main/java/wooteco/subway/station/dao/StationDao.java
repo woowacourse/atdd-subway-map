@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
@@ -33,6 +34,7 @@ public class StationDao {
         return keyHolder.getKey().longValue();
     }
 
+    @Transactional(readOnly = true)
     public List<Station> findAll() {
         String sql = "SELECT * FROM station";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new Station(
@@ -46,11 +48,13 @@ public class StationDao {
         return jdbcTemplate.update(sql, id, id, id);
     }
 
+    @Transactional(readOnly = true)
     public int countStationByName(String name) {
         String sql = "SELECT count(*) FROM station WHERE name = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, name);
     }
 
+    @Transactional(readOnly = true)
     public Optional<Station> findById(Long id) {
         try {
             String sql = "SELECT * FROM station WHERE id = ?";
