@@ -68,7 +68,7 @@ public class LineService {
     private Line lineSetting(Long lineId) {
         Line line = lineDao.findById(lineId);
         Sections sections = sectionService.findByLine(line);
-        line.updateSections(sections);
+        line.setSections(sections);
         return line;
     }
 

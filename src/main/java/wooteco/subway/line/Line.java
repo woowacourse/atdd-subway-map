@@ -48,7 +48,7 @@ public class Line {
         this.color = color;
     }
 
-    public void updateSections(Sections sections) {
+    public void setSections(Sections sections) {
         this.sections = sections;
     }
 

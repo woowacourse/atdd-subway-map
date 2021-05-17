@@ -72,7 +72,7 @@ class LineTest {
         );
 
         // when
-        이호선.updateSections(sections);
+        이호선.setSections(sections);
 
         // then
         assertThat(이호선.getSections().getSections()).hasSize(2);
