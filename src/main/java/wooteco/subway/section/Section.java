@@ -1,5 +1,6 @@
 package wooteco.subway.section;
 
+import wooteco.subway.section.exception.SectionDistanceException;
 import wooteco.subway.section.exception.SectionException;
 import wooteco.subway.station.Station;
 
@@ -38,9 +39,10 @@ public class Section {
         }
     }
 
-    public boolean isSameSection(SectionDto sectionDto) {
-        return lineId.equals(sectionDto.getLineId()) && upStation.getId().equals(sectionDto.getUpStationId())
-                && downStation.getId().equals(sectionDto.getDownStationId()) && distance == sectionDto.getDistance();
+    public void validateSectionDistance(SectionDto sectionDto) {
+        if (sectionDto.getDistance() >= this.getDistance()) {
+            throw new SectionDistanceException();
+        }
     }
 
     public boolean isSameUpStation(Long upStationId) {

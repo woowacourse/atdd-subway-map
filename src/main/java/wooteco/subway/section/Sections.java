@@ -16,7 +16,7 @@ public class Sections {
         this.sections = new ArrayList<>(sections);
     }
 
-    public boolean attachesAfterEndStation(SectionDto sectionDto) {
+    public boolean canAttachesAfterEndStation(SectionDto sectionDto) {
         List<Station> stations = sortedStations();
         Station firstStation = stations.get(0);
         Station lastStation = stations.get(stations.size() - 1);
@@ -25,6 +25,16 @@ public class Sections {
                 && !stations.contains(new Station(sectionDto.getUpStationId(), "temp")))
                 || (lastStation.isSameId(sectionDto.getUpStationId())
                         && !stations.contains(new Station(sectionDto.getDownStationId(), "temp")));
+    }
+
+    public SectionStandard calculateSectionStandard(SectionDto sectionDto) {
+        boolean condition = sections.stream()
+                .anyMatch(section -> section.isSameUpStation(sectionDto.getUpStationId()));
+
+        if (condition) {
+            return SectionStandard.FROM_UP_STATION;
+        }
+        return SectionStandard.FROM_DOWN_STATION;
     }
 
     public void validateSectionInclusion(SectionDto sectionDto) {

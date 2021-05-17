@@ -1,8 +1,7 @@
 package wooteco.subway.section;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.section.exception.*;
-import wooteco.subway.station.exception.StationNotFoundException;
+import wooteco.subway.section.exception.SectionInitializationException;
 
 @Service
 public class SectionService {
@@ -22,11 +21,11 @@ public class SectionService {
         Sections sections = new Sections(sectionDao.findAllByLineId(sectionDto.getLineId()));
         sections.validateSectionInclusion(sectionDto);
 
-        if (sections.attachesAfterEndStation(sectionDto)) {
+        if (sections.canAttachesAfterEndStation(sectionDto)) {
             return sectionDao.save(sectionDto.getLineId(), sectionDto.getUpStationId(),
                     sectionDto.getDownStationId(), sectionDto.getDistance());
         }
-        return saveWithForkCase(sectionDto);
+        return saveWithForkCase(sectionDto, sections);
     }
 
     public void delete(Long lineId, Long stationId) {
@@ -57,38 +56,30 @@ public class SectionService {
         }
     }
 
-    private Section saveWithForkCase(SectionDto sectionDto) {
-        Section findSection = findSectionWithExistingStation(sectionDto);
-        validateSectionDistance(sectionDto, findSection);
+    private Section saveWithForkCase(SectionDto sectionDto, Sections sections) {
+        SectionStandard sectionStandard = sections.calculateSectionStandard(sectionDto);
+        Section findSection = findSectionWithExistingStation(sectionStandard, sections, sectionDto);
+        findSection.validateSectionDistance(sectionDto);
 
         sectionDao.delete(findSection.getId());
         Section savedSection = sectionDao.save(sectionDto.getLineId(), sectionDto.getUpStationId(),
                 sectionDto.getDownStationId(), sectionDto.getDistance());
-        sectionDao.save(sectionDto.getLineId(), sectionDto.getDownStationId(),
-                findSection.getDownStationId(), findSection.getDistance() - sectionDto.getDistance());
+
+        if (sectionStandard == SectionStandard.FROM_UP_STATION) {
+            sectionDao.save(sectionDto.getLineId(), sectionDto.getDownStationId(),
+                    findSection.getDownStationId(), findSection.getDistance() - sectionDto.getDistance());
+            return savedSection;
+        }
+        sectionDao.save(sectionDto.getLineId(), findSection.getUpStationId(),
+                sectionDto.getUpStationId(), findSection.getDistance() - sectionDto.getDistance());
+
         return savedSection;
     }
 
-    private Section findSectionWithExistingStation(SectionDto sectionDto) {
-        SectionStandard sectionStandard = calculateSectionStandard(sectionDto);
+    private Section findSectionWithExistingStation(SectionStandard sectionStandard, Sections sections, SectionDto sectionDto) {
         if (sectionStandard == SectionStandard.FROM_UP_STATION) {
-            return sectionDao.findByUpStationId(sectionDto.getLineId(), sectionDto.getUpStationId())
-                    .orElseThrow(SectionNotFoundException::new);
+            return sections.findSectionByUpStationId(sectionDto.getUpStationId());
         }
-        return sectionDao.findByDownStationId(sectionDto.getLineId(), sectionDto.getDownStationId())
-                .orElseThrow(SectionNotFoundException::new);
-    }
-
-    private void validateSectionDistance(SectionDto sectionDto, Section findSection) {
-        if (sectionDto.getDistance() >= findSection.getDistance()) {
-            throw new SectionDistanceException();
-        }
-    }
-
-    private SectionStandard calculateSectionStandard(SectionDto sectionDto) {
-        if (sectionDao.isExistingStation(sectionDto.getLineId(), sectionDto.getUpStationId())) {
-            return SectionStandard.FROM_UP_STATION;
-        }
-        return SectionStandard.FROM_DOWN_STATION;
+        return sections.findSectionByDownStationId(sectionDto.getDownStationId());
     }
 }
