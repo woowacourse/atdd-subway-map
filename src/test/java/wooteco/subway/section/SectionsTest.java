@@ -1,24 +1,19 @@
 package wooteco.subway.section;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import wooteco.subway.line.LineDao;
 import wooteco.subway.station.Station;
-import wooteco.subway.station.StationDao;
-import wooteco.subway.station.StationResponse;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SectionsTest {
+    private Sections sections;
 
-    @Test
-    @DisplayName("Sections 내 Station 정렬 확인")
-    public void sortedStations() {
+    @BeforeEach
+    void setUp() {
         Station station1 = new Station(1L, "염창역");
         Station station2 = new Station(2L, "가양역");
         Station station3 = new Station(3L, "등촌역");
@@ -26,10 +21,12 @@ public class SectionsTest {
         Section section1 = new Section(1L, 1L, station2, station4, 10);
         Section section2 = new Section(2L, 1L, station4, station3, 10);
         Section section3 = new Section(3L, 1L, station3, station1, 10);
+        sections = new Sections(Arrays.asList(section3, section1, section2));
+    }
 
-        List<Section> sectionList = Arrays.asList(section3, section1, section2);
-
-        Sections sections = new Sections(sectionList);
+    @Test
+    @DisplayName("Sections 내 Station 정렬 확인")
+    public void sortedStations() {
         assertThat(sections.sortedStations())
                 .containsExactly(
                         new Station(2L, "가양역"),
@@ -37,5 +34,15 @@ public class SectionsTest {
                         new Station(3L, "등촌역"),
                         new Station(1L, "염창역")
                 );
+    }
+
+    @Test
+    @DisplayName("종점역에 구간을 붙이는지 여부 확인")
+    public void canAttachAfterEndStation() {
+        SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(1L, 5L, 10));
+        SectionDto sectionDto2 = SectionDto.of(1L, new SectionRequest(5L, 1L, 10));
+
+        assertThat(sections.canAttachesAfterEndStation(sectionDto)).isTrue();
+        assertThat(sections.canAttachesAfterEndStation(sectionDto2)).isFalse();
     }
 }
