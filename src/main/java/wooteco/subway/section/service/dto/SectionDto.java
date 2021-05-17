@@ -1,4 +1,4 @@
-package wooteco.subway.section.controller.dto;
+package wooteco.subway.section.service.dto;
 
 
 import wooteco.subway.section.domain.Section;

@@ -10,7 +10,7 @@ import wooteco.subway.line.controller.dto.LineCreateDto;
 import wooteco.subway.line.controller.dto.LineDto;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineRepository;
-import wooteco.subway.section.controller.dto.SectionCreateDto;
+import wooteco.subway.section.service.dto.SectionCreateDto;
 import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.domain.Station;
 

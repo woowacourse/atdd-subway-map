@@ -1,5 +1,7 @@
 package wooteco.subway.section.controller.dto;
 
+import wooteco.subway.section.service.dto.SectionCreateDto;
+
 public class SectionRequest {
 
     private Long upStationId;
