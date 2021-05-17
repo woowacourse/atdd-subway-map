@@ -60,4 +60,12 @@ public class FinalStations {
     public boolean isFinalStation(final Long stationId) {
         return upStationId.equals(stationId) || downStationId.equals(stationId);
     }
+
+    public boolean isUpStation(final Long stationId) {
+        return upStationId.equals(stationId);
+    }
+
+    public boolean isDownStation(final Long stationId) {
+        return downStationId.equals(stationId);
+    }
 }

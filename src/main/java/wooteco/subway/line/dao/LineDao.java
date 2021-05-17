@@ -116,4 +116,8 @@ public class LineDao {
                 rs.getLong("down_station_id")
         ), id);
     }
+
+    public void updateDownStationId(Long lineId, Long other) {
+
+    }
 }

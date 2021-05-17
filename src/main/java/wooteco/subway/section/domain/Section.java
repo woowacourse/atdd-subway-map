@@ -1,10 +1,8 @@
 package wooteco.subway.section.domain;
 
 import wooteco.subway.line.exception.LineException;
-import wooteco.subway.station.domain.Station;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 public class Section {
@@ -48,16 +46,15 @@ public class Section {
         throw new LineException("두 구간에 중복되는 역이 없습니다.");
     }
 
-    // TODO :: Sections와 합칠 수 있지 않을까
-    public List<Section> devide(final Section section) {
+    public List<Section> divide(final Section section) {
         final List<Section> sections = Arrays.asList(section);
 
-        if (isSameFrontStation(section)) {
+        if (isFrontStationId(section.frontStationId)) {
             sections.add(new Section(lineId, section.backStationId(), backStationId, distance - section.distance()));
             return sections;
         }
 
-        if (isSameBackStation(section)) {
+        if (isBackStationId(section.backStationId)) {
             sections.add(new Section(lineId, frontStationId, section.frontStationId(), distance - section.distance()));
             return sections;
         }
@@ -111,6 +108,4 @@ public class Section {
     public Long id() {
         return id;
     }
-
-
 }

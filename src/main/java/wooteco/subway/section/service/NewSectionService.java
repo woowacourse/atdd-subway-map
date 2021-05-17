@@ -2,9 +2,7 @@ package wooteco.subway.section.service;
 
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.FinalStations;
-import wooteco.subway.line.exception.LineException;
 import wooteco.subway.section.dao.SectionDao;
-import wooteco.subway.section.domain.Order;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
 
@@ -23,18 +21,17 @@ public class NewSectionService implements ISectionService {
 
     @Override
     public void addSection(final Long lineId, final Section section) {
-        final Order order = orderOfStationInLine(lineId);
-        order.validateAbleToAddSection(section);
+        final FinalStations finalStations = lineDao.finalStations(lineId);
 
-        if(order.isFinalSection(section)){
-            insertFinalSection(lineId, section, order.finalStations());
+        if (finalStations.isFinalSection(section)) {
+            insertFinalSection(lineId, section, finalStations);
             return;
         }
 
         insertMiddleSection(lineId, section);
     }
 
-    private void insertFinalSection(final Long lineId, final Section section, final FinalStations finalStations){
+    private void insertFinalSection(final Long lineId, final Section section, final FinalStations finalStations) {
         sectionDao.save(section);
         lineDao.updateFinalStations(lineId, finalStations.addStations(section));
     }
@@ -43,52 +40,46 @@ public class NewSectionService implements ISectionService {
         final Sections sectionsInLine = new Sections(sectionDao.findSections(lineId));
         final Section insertingSection = sectionsInLine.findSectionInclude(section);
 
-        // TODO :: Dao에서 배열로 save, delete해도 될까?
-        // sectionDao.save(sectionsToDelete);
-
-        for(final Section sectionToSave : insertingSection.devide(section)){
+        for (final Section sectionToSave : insertingSection.divide(section)) {
             sectionDao.save(sectionToSave);
         }
         sectionDao.delete(insertingSection);
     }
 
-    private Order orderOfStationInLine(final Long lineId){
-        final Sections sectionsInLine = new Sections(sectionDao.findSections(lineId));
-        return sectionsInLine.sort(lineDao.findUpStationId(lineId));
-    }
-
     @Override
     public void deleteSection(final Long lineId, final Long stationId) {
-        final Sections sectionsInLine = new Sections(sectionDao.findSections(lineId));
-        final List<Section> sections = sectionsInLine.sectionsIncludeStation(stationId);
         final FinalStations finalStations = lineDao.finalStations(lineId);
 
-        if(finalStations.isFinalStation(stationId)){
-            final Section section = sections.get(0);
-            final Long beforeFinalStationId = section.getOther(stationId);
-
-            deleteFinalSection(lineId, section, finalStations.change(beforeFinalStationId, stationId));
+        if (finalStations.isFinalStation(stationId)) {
+            deleteFinalSection(lineId, stationId, finalStations);
             return;
         }
 
-        deleteMiddleSection(sections.get(0), sections.get(1));
+        deleteMiddleSection(lineId, stationId);
     }
 
-    private void deleteFinalSection(final Long lineId, final Section section, final FinalStations finalStations) {
-        lineDao.updateFinalStations(lineId, finalStations);
-        sectionDao.delete(section);
+    private void deleteFinalSection(final Long lineId, final Long stationId, final FinalStations finalStations) {
+        if (finalStations.isUpStation(stationId)) {
+            final Section section = sectionDao.findSectionByFrontStation(lineId, stationId);
+            lineDao.updateFinalStations(lineId, section.getOther(stationId), finalStations.downStationId());
+            sectionDao.delete(section);
+            return;
+        }
+
+        if (finalStations.isDownStation(stationId)) {
+            final Section section = sectionDao.findSectionByBackStation(lineId, stationId);
+            lineDao.updateFinalStations(lineId, finalStations.upStationId(), section.getOther(stationId));
+            sectionDao.delete(section);
+            return;
+        }
     }
 
-    // TODO :: 변수명 질문하기, section1, section2 이런식으로 변수명을 쓰기도 하나
-    private void deleteMiddleSection(final Section section1, final Section section2) {
-        sectionDao.delete(section1);
-        sectionDao.delete(section2);
-        sectionDao.save(section1.combine(section2));
-    }
+    private void deleteMiddleSection(final Long lineId, final Long stationId) {
+        final Sections sectionsInLine = new Sections(sectionDao.findSections(lineId));
+        final List<Section> sections = sectionsInLine.sectionsIncludeStation(stationId);
 
-    @Override
-    public void addSection(Long lineId, Long front, Long back, int distance) {
-        // TODO :: 변경을 위해 남겨둠
-        addSection(lineId, new Section(front, back, distance));
+        sectionDao.delete(sections.get(0));
+        sectionDao.delete(sections.get(1));
+        sectionDao.save(sections.get(0).combine(sections.get(1)));
     }
 }
