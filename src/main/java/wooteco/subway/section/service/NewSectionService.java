@@ -1,16 +1,17 @@
 package wooteco.subway.section.service;
 
+import org.springframework.stereotype.Service;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.FinalStations;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
+import wooteco.subway.section.dto.SectionRequest;
 
 import java.util.List;
 
-public class NewSectionService implements ISectionService {
-    private static final int LIMIT_NUMBER_OF_STATION_IN_LINE = 2;
-
+@Service
+public class NewSectionService {
     private final SectionDao sectionDao;
     private final LineDao lineDao;
 
@@ -19,16 +20,19 @@ public class NewSectionService implements ISectionService {
         this.lineDao = lineDao;
     }
 
-    @Override
-    public void addSection(final Long lineId, final Section section) {
-        final FinalStations finalStations = lineDao.finalStations(lineId);
+    public void addSection(final Long lineId, final SectionRequest sectionRequest) {
+        final Section section = sectionRequest.toSection(lineId);
 
+        final Sections sectionsInLine = new Sections(sectionDao.findSections(lineId));
+        sectionsInLine.validateAbleToAdd(section);
+
+        final FinalStations finalStations = lineDao.finalStations(lineId);
         if (finalStations.isFinalSection(section)) {
             insertFinalSection(lineId, section, finalStations);
             return;
         }
 
-        insertMiddleSection(lineId, section);
+        insertMiddleSection(sectionsInLine, section);
     }
 
     private void insertFinalSection(final Long lineId, final Section section, final FinalStations finalStations) {
@@ -36,17 +40,14 @@ public class NewSectionService implements ISectionService {
         lineDao.updateFinalStations(lineId, finalStations.addStations(section));
     }
 
-    private void insertMiddleSection(final Long lineId, final Section section) {
-        final Sections sectionsInLine = new Sections(sectionDao.findSections(lineId));
+    private void insertMiddleSection(final Sections sectionsInLine, final Section section) {
         final Section insertingSection = sectionsInLine.findSectionInclude(section);
-
         for (final Section sectionToSave : insertingSection.divide(section)) {
             sectionDao.save(sectionToSave);
         }
         sectionDao.delete(insertingSection);
     }
 
-    @Override
     public void deleteSection(final Long lineId, final Long stationId) {
         final FinalStations finalStations = lineDao.finalStations(lineId);
 

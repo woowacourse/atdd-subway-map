@@ -27,18 +27,17 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public Order sort(final Long upStationId){
+    public final List<Long> sort(final Long upStationId){
         final Map<Long, Long> idTable = idTable();
         final List<Long> ids = new LinkedList<>();
 
         Long frontStationId = upStationId;
-        while(idTable.containsValue(frontStationId)){
+        while(idTable.containsKey(frontStationId)){
             ids.add(frontStationId);
-            frontStationId = idTable.get(upStationId);
+            frontStationId = idTable.get(frontStationId);
         }
         ids.add(frontStationId);
-
-        return new Order(ids);
+        return ids;
     }
 
     private Map idTable(){

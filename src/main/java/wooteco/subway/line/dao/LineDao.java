@@ -110,14 +110,10 @@ public class LineDao {
     }
 
     public FinalStations finalStations(final Long id) {
-        final String sql = "SELECT up_station_id FROM LINE WHERE id = ?";
+        final String sql = "SELECT up_station_id, down_station_id FROM LINE WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, (rs, rowNum)-> new FinalStations(
                 rs.getLong("up_station_id"),
                 rs.getLong("down_station_id")
         ), id);
-    }
-
-    public void updateDownStationId(Long lineId, Long other) {
-
     }
 }

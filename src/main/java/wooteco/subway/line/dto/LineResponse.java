@@ -46,8 +46,4 @@ public class LineResponse {
     public List<StationResponse> getStations() {
         return stations;
     }
-
-    public Line toLine() {
-        return new Line(id, name, color);
-    }
 }

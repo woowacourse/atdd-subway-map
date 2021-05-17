@@ -3,6 +3,7 @@ package wooteco.subway.section.domain;
 import wooteco.subway.line.exception.LineException;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Section {
@@ -47,7 +48,8 @@ public class Section {
     }
 
     public List<Section> divide(final Section section) {
-        final List<Section> sections = Arrays.asList(section);
+        final List<Section> sections = new LinkedList<>();
+        sections.add(section);
 
         if (isFrontStationId(section.frontStationId)) {
             sections.add(new Section(lineId, section.backStationId(), backStationId, distance - section.distance()));

@@ -28,7 +28,7 @@ public class SectionRequest {
         return distance;
     }
 
-    public Section toSection() {
-        return new Section(upStationId, downStationId, distance);
+    public Section toSection(final Long lineId) {
+        return new Section(lineId, upStationId, downStationId, distance);
     }
 }

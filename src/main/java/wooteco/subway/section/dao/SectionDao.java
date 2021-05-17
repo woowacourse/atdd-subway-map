@@ -107,6 +107,11 @@ public class SectionDao {
         return columnCount + 1;
     }
 
+    public List<Section> findSections(final Long lineId) {
+        final String sql = "SELECT * FROM SECTION WHERE line_id = ?";
+        return jdbcTemplate.query(sql, rowMapper(), lineId);
+    }
+
     private RowMapper<Section> rowMapper() {
         return (rs, rowNum) -> new Section(
                 rs.getLong("id"),
@@ -115,10 +120,5 @@ public class SectionDao {
                 rs.getLong("back_station_id"),
                 rs.getInt("distance")
         );
-    }
-
-    public List<Section> findSections(final Long lineId) {
-        final String sql = "SELECT * FROM SECTION line_id = ?";
-        return jdbcTemplate.query(sql, rowMapper(), lineId);
     }
 }
