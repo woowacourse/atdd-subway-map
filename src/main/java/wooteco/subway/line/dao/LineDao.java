@@ -55,7 +55,7 @@ public class LineDao {
         jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
-    public void delete(Long... id) {
+    public void delete(Long id) {
         String sql = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }

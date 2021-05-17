@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 public class Sections {
     private static final int INITIAL_STATION_SIZE = 2;
 
-    private List<Section> sections;
-    private List<Station> orderedStations;
+    private final List<Section> sections;
+    private final List<Station> orderedStations;
 
     public Sections(List<Section> sections) {
         this.sections = sections;
@@ -62,6 +62,7 @@ public class Sections {
     public Section findSelectedSection(boolean isUpStation, Section newSection) {
         Function<Section, Station> sectionFunction = findFunction(isUpStation);
         Long stationId = sectionFunction.apply(newSection).getId();
+
         Section selectedSection = selectedSection(isUpStation, stationId);
         validateDistance(selectedSection, newSection.getDistance());
         return selectedSection;

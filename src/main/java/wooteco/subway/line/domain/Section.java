@@ -3,10 +3,10 @@ package wooteco.subway.line.domain;
 import wooteco.subway.station.domain.Station;
 
 public class Section {
-    private Line line;
-    private Station upStation;
-    private Station downStation;
-    private int distance;
+    private final Line line;
+    private final Station upStation;
+    private final Station downStation;
+    private final int distance;
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
