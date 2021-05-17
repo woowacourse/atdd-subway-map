@@ -10,14 +10,14 @@ public class SectionRequest {
     public SectionRequest() {
     }
 
-    public Section toSection(Long lineId) {
-        return new Section(lineId, upStationId, downStationId, distance);
-    }
-
     public SectionRequest(Long upStationId, Long downStationId, int distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public Section toSection(Long lineId) {
+        return new Section(lineId, upStationId, downStationId, distance);
     }
 
     public Long getUpStationId() {

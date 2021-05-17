@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.dao.SectionDao;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.station.dao.StationDao;
-import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationDto;
 
 import java.util.List;

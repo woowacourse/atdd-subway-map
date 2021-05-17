@@ -1,7 +1,6 @@
 package wooteco.subway.line.domain.rule;
 
 import wooteco.subway.line.domain.Section;
-import wooteco.subway.line.domain.Sections;
 import wooteco.subway.station.domain.Station;
 
 import java.util.List;

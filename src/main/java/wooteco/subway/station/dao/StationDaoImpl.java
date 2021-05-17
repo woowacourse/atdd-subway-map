@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 

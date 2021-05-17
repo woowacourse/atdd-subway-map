@@ -18,8 +18,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static wooteco.subway.line.domain.Section.EMPTY;
-
 @Service
 public class LineService {
     private final LineRepository lineRepository;
