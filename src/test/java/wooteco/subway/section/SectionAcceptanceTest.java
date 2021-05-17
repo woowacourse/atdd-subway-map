@@ -10,10 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.dto.LineWithStationsResponse;
 import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
 
@@ -41,16 +40,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
 
-        LineResponse lineResponse = new LineResponse(new Line(1L, "2호선", "초록색"),
+        LineWithStationsResponse lineWithStationsResponse = new LineWithStationsResponse(new Line(1L, "2호선", "초록색"),
             Arrays.asList(
                 new Station(1L, "강남역"), new Station(2L, "역삼역"), new Station(3L, "아차산역")
             ));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        LineResponse resultResponse = response.jsonPath().getObject(".", LineResponse.class);
+        LineWithStationsResponse resultResponse = response.jsonPath().getObject(".", LineWithStationsResponse.class);
 
         assertThat(resultResponse).usingRecursiveComparison()
-            .isEqualTo(lineResponse);
+            .isEqualTo(lineWithStationsResponse);
     }
 
     @DisplayName("노선과 이어지지 않는 구간 생성시 예외를 발생한다.")
@@ -101,14 +100,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
 
-        LineResponse lineResponse = new LineResponse(new Line(2L, "경의중앙선", "하늘색"),
+        LineWithStationsResponse lineWithStationsResponse = new LineWithStationsResponse(new Line(2L, "경의중앙선", "하늘색"),
             Arrays.asList(new Station(4L, "탄현역"), new Station(6L, "홍대입구역")));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        LineResponse resultResponse = response.jsonPath().getObject(".", LineResponse.class);
+        LineWithStationsResponse resultResponse = response.jsonPath().getObject(".", LineWithStationsResponse.class);
 
         assertThat(resultResponse).usingRecursiveComparison()
-            .isEqualTo(lineResponse);
+            .isEqualTo(lineWithStationsResponse);
     }
 
     @DisplayName("마지막 지하철구간을 삭제시 예외를 발생한다.")

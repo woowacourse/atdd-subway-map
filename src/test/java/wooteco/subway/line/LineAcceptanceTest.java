@@ -13,6 +13,7 @@ import wooteco.subway.AcceptanceTest;
 import wooteco.subway.exception.line.LineDuplicationException;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.dto.LineWithStationsResponse;
 import wooteco.subway.station.dto.StationRequest;
 
 import java.util.List;
@@ -99,8 +100,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = lineGetRequest(uri);
 
-        LineResponse expectedResponse = createResponse.jsonPath().getObject(".", LineResponse.class);
-        LineResponse resultResponse = response.jsonPath().getObject(".", LineResponse.class);
+        LineWithStationsResponse expectedResponse = createResponse.jsonPath().getObject(".", LineWithStationsResponse.class);
+        LineWithStationsResponse resultResponse = response.jsonPath().getObject(".", LineWithStationsResponse.class);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultResponse).usingRecursiveComparison()
