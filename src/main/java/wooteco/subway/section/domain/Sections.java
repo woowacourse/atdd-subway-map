@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Sections {
+    private static final int MINIMUM_NUMBER_OF_STATION_IN_LINE = 2;
 
     private final List<Section> sections;
 
@@ -62,5 +63,21 @@ public class Sections {
                 .anyMatch(section -> section.isIncludedStation(stationId));
     }
 
+    private int numberOfStationInLine(){
+        int numberOfSection = sections.size();
+        if(numberOfSection == 0){
+            return 0;
+        }
+        return numberOfSection+1;
+    }
 
+    public void validateAbleToDelete(final Long stationId) {
+        if(!isIncludedStation(stationId)){
+            throw new LineException("노선에 존재하지 않는 역을 제거할 수 없습니다.");
+        }
+
+        if(numberOfStationInLine() <= MINIMUM_NUMBER_OF_STATION_IN_LINE){
+            throw new LineException("종점 뿐인 노선의 역을 제거할 수 없습니다.");
+        }
+    }
 }

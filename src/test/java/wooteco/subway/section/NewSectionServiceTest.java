@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
@@ -14,7 +13,6 @@ import wooteco.subway.line.exception.LineException;
 import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.service.NewSectionService;
-import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
@@ -118,5 +116,19 @@ public class NewSectionServiceTest {
             SectionRequest sectionRequest = new SectionRequest(bStation.getId(), cStation.getId(), Integer.MAX_VALUE);
             sectionService.addSection(testLine.getId(), sectionRequest);
         }).isInstanceOf(LineException.class);
+    }
+
+    @DisplayName("종점뿐인 노선에서 구간을 제거할 수 없다.")
+    @Test
+    public void deleteSectionWhenExistOnlyFinalStations(){
+        assertThatThrownBy(()-> sectionService.deleteSection(testLine.getId(), bStation.getId()))
+                .isInstanceOf(LineException.class);
+    }
+
+    @DisplayName("노선에 존재하지 않는 역을 제거할 수 없다.")
+    @Test
+    public void deleteNonExistStation(){
+        assertThatThrownBy(()-> sectionService.deleteSection(testLine.getId(), aStation.getId()))
+                .isInstanceOf(LineException.class);
     }
 }
