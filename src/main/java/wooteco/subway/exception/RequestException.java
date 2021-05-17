@@ -2,15 +2,15 @@ package wooteco.subway.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class RequestException extends RuntimeException {
+public class RequestException extends BusinessException {
 
-    private static final HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+    private static final HttpStatus HTTP_STATUS = HttpStatus.BAD_REQUEST;
 
     public RequestException(String message) {
         super(message);
     }
 
     public int status() {
-        return httpStatus.value();
+        return HTTP_STATUS.value();
     }
 }

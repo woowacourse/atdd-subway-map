@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import wooteco.subway.exception.BusinessException;
+import wooteco.subway.exception.DatabaseException;
 import wooteco.subway.exception.RequestException;
 
 @ControllerAdvice
@@ -15,8 +17,8 @@ public final class GlobalAdvice {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
     }
 
-    @ExceptionHandler(RequestException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(final RequestException e) {
+    @ExceptionHandler({RequestException.class, DatabaseException.class})
+    public ResponseEntity<String> handleIllegalArgumentException(final BusinessException e) {
         return ResponseEntity.status(e.status()).body(e.getMessage());
     }
 }
