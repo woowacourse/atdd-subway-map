@@ -8,7 +8,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static wooteco.subway.DummyData.*;
+import static wooteco.subway.line.LineFixture.신분당선;
+import static wooteco.subway.line.LineFixture.이호선;
+import static wooteco.subway.station.StationFixture.*;
 
 @DisplayName("지하철 구간 도메인 테스트")
 class SectionTest {

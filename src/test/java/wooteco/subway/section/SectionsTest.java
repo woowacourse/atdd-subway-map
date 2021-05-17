@@ -11,7 +11,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static wooteco.subway.DummyData.*;
+import static wooteco.subway.line.LineFixture.이호선;
+import static wooteco.subway.station.StationFixture.*;
 
 @DisplayName("지하철 구간 일급 컬렉션 테스트")
 class SectionsTest {

@@ -10,7 +10,8 @@ import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static wooteco.subway.DummyData.*;
+import static wooteco.subway.section.SectionFixture.*;
+import static wooteco.subway.station.StationFixture.강남역;
 
 @DisplayName("지하철 노선 도메인 테스트")
 class LineTest {

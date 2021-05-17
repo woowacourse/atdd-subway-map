@@ -19,7 +19,8 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static wooteco.subway.DummyData.*;
+import static wooteco.subway.line.LineFixture.이호선;
+import static wooteco.subway.section.SectionFixture.*;
 
 @DisplayName("지하철 구간 비즈니스 로직 테스트")
 @ExtendWith(MockitoExtension.class)

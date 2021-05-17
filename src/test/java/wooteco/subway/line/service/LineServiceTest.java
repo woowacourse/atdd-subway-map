@@ -35,7 +35,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static wooteco.subway.DummyData.*;
+import static wooteco.subway.line.LineFixture.*;
+import static wooteco.subway.section.SectionFixture.*;
+import static wooteco.subway.station.StationFixture.*;
 
 @DisplayName("지하철 노선 비즈니스 로직 테스트")
 @ExtendWith(MockitoExtension.class)
