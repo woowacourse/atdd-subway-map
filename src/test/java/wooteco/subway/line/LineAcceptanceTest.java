@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.line.LineRequestForm.*;
 
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -205,7 +204,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createRequest("/stations", 잠실역);
         createRequest("/stations", 왕십리역);
         ExtractableResponse<Response> 분당선생성 = createRequest("/lines", 분당선_RED);
-        ExtractableResponse<Response> response = findByIdRequest("1");
+        ExtractableResponse<Response> response = findByLineIdRequest("1");
         Long expectedLineId = Long.parseLong(분당선생성.header("Location").split("/")[2]);
         LineStationsResponse result = response.as(LineStationsResponse.class);
 
@@ -233,8 +232,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createRequest("/stations", 잠실역);
         createRequest("/stations", 왕십리역);
         createRequest("/lines", 분당선_RED);
-        ExtractableResponse<Response> expectedResponse = updateRequest("1", 신분당선_YELLOW);
-        ExtractableResponse<Response> updatedResponse = findByIdRequest("1");
+        ExtractableResponse<Response> expectedResponse = updateLineRequest("1", 신분당선_YELLOW);
+        ExtractableResponse<Response> updatedResponse = findByLineIdRequest("1");
 
         // then
         assertThat(expectedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -256,7 +255,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         createRequest("/lines", 분당선_RED);
         createRequest("/lines", 신분당선_YELLOW);
-        ExtractableResponse<Response> response = updateRequest("1", new LineUpdateRequest("신분당선", "bg-yellow-600"));
+        ExtractableResponse<Response> response = updateLineRequest("1", new LineUpdateRequest("신분당선", "bg-yellow-600"));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
