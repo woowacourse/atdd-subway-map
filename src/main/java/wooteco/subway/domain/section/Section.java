@@ -2,6 +2,8 @@ package wooteco.subway.domain.section;
 
 import wooteco.subway.domain.station.Station;
 
+import java.util.Objects;
+
 public class Section {
     private Long id;
     private Station upwardStation;
@@ -51,5 +53,18 @@ public class Section {
 
     public boolean hasLongerDistanceThan(Section existingSection) {
         return this.distance >= existingSection.distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return distance == section.distance && Objects.equals(upwardStation, section.upwardStation) && Objects.equals(downwardStation, section.downwardStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(upwardStation, downwardStation, distance);
     }
 }

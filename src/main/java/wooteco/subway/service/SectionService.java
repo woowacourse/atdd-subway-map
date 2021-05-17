@@ -40,17 +40,17 @@ public class SectionService {
         Sections sections = sectionRepository.loadSections(lineId);
         sections.validateIfPossibleToDelete();
 
-        if (sections.hasUpwardSection(stationId) && sections.hasDownwardSection(stationId)) {
+        if (sections.hasStationAsDownward(stationId) && sections.hasStationAsUpward(stationId)) {
             sectionRepository.delete(lineId, stationId);
             sectionRepository.insert(lineId, sections.createMergedSectionAfterDeletion(stationId));
             return;
         }
 
-        if (sections.hasUpwardSection(stationId)) {
+        if (sections.hasStationAsDownward(stationId)) {
             sectionRepository.deleteBottomSection(lineId, sections.getBottomSection());
         }
 
-        if (sections.hasDownwardSection(stationId)) {
+        if (sections.hasStationAsUpward(stationId)) {
             sectionRepository.deleteTopSection(lineId, sections.getTopSection());
         }
     }

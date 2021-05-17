@@ -88,12 +88,12 @@ public class Sections {
         }
     }
 
-    public boolean hasUpwardSection(Long stationId) {
+    public boolean hasStationAsDownward(Long stationId) {
         return this.sections.stream()
                 .anyMatch(section -> section.hasDownwardStation(stationId));
     }
 
-    public boolean hasDownwardSection(Long stationId) {
+    public boolean hasStationAsUpward(Long stationId) {
         return this.sections.stream()
                 .anyMatch(section -> section.hasUpwardStation(stationId));
     }
@@ -135,7 +135,6 @@ public class Sections {
         return sections.get(0);
     }
 
-    //TODO indent
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
         for (Section section : this.sections) {
@@ -194,7 +193,7 @@ public class Sections {
 
     private void compareDistance(Section addedSection, Section existingSection) {
         if (addedSection.hasLongerDistanceThan(existingSection)) {
-            throw new SubwayException(HttpStatus.BAD_REQUEST, "거리 오류");
+            throw new SubwayException(HttpStatus.BAD_REQUEST, "추가되는 구간의 거리는 기존 구간보다 클 수 없습니다.");
         }
     }
 }
