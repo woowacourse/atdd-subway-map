@@ -86,7 +86,7 @@ class SectionsTest {
         //given
         Section 추가할_수_없는_구간 = new Section(1L, 3L, 10L, new Distance(10));
 
-        //then
+        //when then
         assertThatThrownBy(() -> sections.add(추가할_수_없는_구간))
                 .isInstanceOf(IllegalArgumentException.class).hasMessage("역과 역 사이 새로운 역을 추가할 때 기존 역 사이의 길이보다 크거나 같으면 등록할 수 없습니다.");
 
@@ -98,7 +98,7 @@ class SectionsTest {
         //given
         Section 추가할_수_없는_구간 = new Section(1L, 555L, 666L, new Distance(9));
 
-        //then
+        //when then
         assertThatThrownBy(() -> sections.add(추가할_수_없는_구간))
                 .isInstanceOf(IllegalArgumentException.class).hasMessage("연결할 수 있는 역이 구간내에 없습니다.");
     }
@@ -109,7 +109,7 @@ class SectionsTest {
         //given
         Section 추가할_수_없는_구간 = new Section(1L, 1L, 2L, new Distance(9));
 
-        //then
+        //when then
         assertThatThrownBy(() -> sections.add(추가할_수_없는_구간))
                 .isInstanceOf(IllegalArgumentException.class).hasMessage("상행역과 하행역이 이미 존재합니다.");
     }
@@ -133,13 +133,13 @@ class SectionsTest {
     void deleteEndPoint() {
         //given
         Long stationId = 1L;
-        int expectedSize = sections.toList().size();
+        int 종점_삭제_전_SIZE = sections.toList().size();
 
         //when
         sections.delete(stationId);
 
         //then
-        assertThat(sections.toList()).hasSize(expectedSize - 1);
+        assertThat(sections.toList()).hasSize(종점_삭제_전_SIZE - 1);
     }
 
     @DisplayName("구간이 하나 남았을 때 구간을 삭제한다.")
@@ -148,11 +148,10 @@ class SectionsTest {
         //given
         List<Section> singleSection =
                 Collections.singletonList(new Section(1L, 1L, 2L, new Distance(10)));
-        Sections sections = new Sections(singleSection);
+        Sections 구간_하나만_포함 = new Sections(singleSection);
 
-        //then
-        assertThatThrownBy(() -> {
-            sections.delete(1L);
-        }).isInstanceOf(IllegalStateException.class).hasMessage("구간이 하나 이하일 때는 삭제할 수 없습니다.");
+        //when then
+        assertThatThrownBy(() -> 구간_하나만_포함.delete(1L))
+                .isInstanceOf(IllegalStateException.class).hasMessage("구간이 하나 이하일 때는 삭제할 수 없습니다.");
     }
 }
