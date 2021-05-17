@@ -23,7 +23,7 @@ import wooteco.subway.domain.station.Station;
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("지하철 노선을 생성한다.")
+    @DisplayName("지하철 노선 생성")
     @Test
     void createLine() {
         //given
@@ -52,7 +52,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().get("name").toString()).isEqualTo("신분당선");
     }
 
-    @DisplayName("지하철 노선 생성시 입력 값이 제대로 들어오지 않으면 BadRequest를 던진다.")
+    @DisplayName("지하철 노선 생성 예외 - 지하철 노선 생성시 입력 값이 제대로 들어오지 않으면 BadRequest를 던진다.")
     @Test
     void createLine_validation() {
         // given
@@ -79,7 +79,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철 노선 목록을 조회한다.")
+    @DisplayName("지하철 노선 목록 조회")
     @Test
     void getLines() {
         // given
@@ -133,7 +133,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("지하철 노선 조회")
     @Test
     void showLine() {
         // given
@@ -174,7 +174,7 @@ class LineAcceptanceTest extends AcceptanceTest {
             );
     }
 
-    @DisplayName("지하철 노선을 수정한다.")
+    @DisplayName("지하철 노선 수정")
     @Test
     void updateLine() {
         // given
@@ -223,7 +223,7 @@ class LineAcceptanceTest extends AcceptanceTest {
             .isEqualTo(updateParam.get("color"));
     }
 
-    @DisplayName("지하철 노선 수정시 입력 값이 제대로 들어오지 않으면 BadRequest를 던진다.")
+    @DisplayName("지하철 노선 수정 예외 - 지하철 노선 수정시 입력 값이 제대로 들어오지 않으면 BadRequest를 던진다.")
     @Test
     void updateLine_validation() {
         // given
@@ -262,7 +262,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철 노선을 삭제한다.")
+    @DisplayName("지하철 노선 삭제")
     @Test
     void deleteLine() {
         // given

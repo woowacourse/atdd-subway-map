@@ -21,7 +21,7 @@ import wooteco.subway.controller.dto.response.StationResponse;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("지하철역을 생성한다.")
+    @DisplayName("지하철 역 생성")
     @Test
     void createStation() {
         // given
@@ -98,7 +98,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철 역 조회")
     @Test
     void getStations() {
         /// given
@@ -140,7 +140,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철역을 제거한다.")
+    @DisplayName("지하철 역 제거")
     @Test
     void deleteStation() {
         // given
