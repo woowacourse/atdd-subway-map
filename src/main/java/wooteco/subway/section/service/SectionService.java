@@ -40,7 +40,7 @@ public class SectionService {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
 
         sections.validate(section);
-        Optional<Section> overlappedSection = sectionDao.findBySameUpOrDownId(lineId, section);
+        Optional<Section> overlappedSection = sectionDao.findByUpOrDownId(lineId, section);
 
         Section newSection = sectionDao.save(lineId, section);
         overlappedSection.ifPresent(updateIntermediate(newSection));
@@ -66,7 +66,7 @@ public class SectionService {
 
     public void delete(Long lineId, Long stationId) {
         validateRemovableSize(lineId);
-        Sections sections = new Sections(sectionDao.findByStation(lineId, stationId));
+        Sections sections = new Sections(sectionDao.findByLineAndStationId(lineId, stationId));
         merge(lineId, stationId, sections);
         for (Long sectionId : sections.sectionIds()) {
             sectionDao.delete(sectionId);

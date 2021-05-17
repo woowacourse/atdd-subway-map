@@ -8,13 +8,13 @@ import java.util.Optional;
 public interface SectionDao {
     Section save(Long lineId, Section section);
 
-    Optional<Section> findBySameUpOrDownId(Long lineId, Section newSection);
+    Optional<Section> findByUpOrDownId(Long lineId, Section newSection);
 
     void updateUpStation(Long id, Long upStationId, int distance);
 
     void updateDownStation(Long id, Long downStationId, int distance);
 
-    List<Section> findByStation(Long lineId, Long stationId);
+    List<Section> findByLineAndStationId(Long lineId, Long stationId);
 
     void delete(Long id);
 

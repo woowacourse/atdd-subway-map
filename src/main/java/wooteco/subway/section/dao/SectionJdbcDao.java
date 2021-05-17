@@ -40,7 +40,7 @@ public class SectionJdbcDao implements SectionDao {
     }
 
     @Override
-    public Optional<Section> findBySameUpOrDownId(Long lineId, Section newSection) {
+    public Optional<Section> findByUpOrDownId(Long lineId, Section newSection) {
         String sql = "SELECT id, up_station_id, down_station_id, distance " +
             "FROM SECTION WHERE (line_id=? AND up_station_id=?) OR (line_id=? AND down_station_id=?)";
         try {
@@ -72,7 +72,7 @@ public class SectionJdbcDao implements SectionDao {
     }
 
     @Override
-    public List<Section> findByStation(Long lineId, Long stationId) {
+    public List<Section> findByLineAndStationId(Long lineId, Long stationId) {
         String sql = "SELECT id, up_station_id, down_station_id, distance " +
             "FROM SECTION WHERE (line_id=? AND up_station_id=?) OR (line_id=? AND down_station_id=?)";
         return jdbcTemplate.query(sql,
