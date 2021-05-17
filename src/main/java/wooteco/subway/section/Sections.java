@@ -117,17 +117,21 @@ public class Sections {
                 .get();
     }
 
-    private boolean matchUpStation(Long stationId, Section section) {
-        return section.isUpStation(stationId);
-    }
-
     private boolean matchDownStation(Long stationId, Section section) {
         return section.isDownStation(stationId);
+    }
+
+    private boolean matchUpStation(Long stationId, Section section) {
+        return section.isUpStation(stationId);
     }
 
     public List<Long> sectionIds() {
         return sections.stream()
                 .map(Section::getId)
                 .collect(toList());
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }
