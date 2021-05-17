@@ -137,6 +137,22 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(addSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("구간 추가 예외 - 입력 값이 제대로 들어오지 않으면 BadRequest를 던진다.")
+    @Test
+    void addSection_exception_validation() {
+        // given
+        Station station1 = createTestStation("addSection_exception_none1역");
+        Station station2 = createTestStation("addSection_exception_none2역");
+
+        Long lineId = createTestLine("addSection_exception_none선", station1.getId(), station2.getId(), 2);
+
+        // when
+        ExtractableResponse<Response> addSectionResponse = addTestSection(lineId, null, station1.getId(), 3);
+
+        // then
+        assertThat(addSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("구간 삭제 - 상행 종점 제거")
     @Test
     void deleteSection_top() {

@@ -52,6 +52,33 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().get("name").toString()).isEqualTo("신분당선");
     }
 
+    @DisplayName("지하철 노선 생성시 입력 값이 제대로 들어오지 않으면 BadRequest를 던진다.")
+    @Test
+    void createLine_validation() {
+        // given
+        Station station1 = createTestStation("createLine1역");
+        Station station2 = createTestStation("createLine2역");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-red-600");
+        params.put("name", "신분당선");
+        params.put("upStationId", "");
+        params.put("downStationId", String.valueOf(station2.getId()));
+        params.put("distance", "");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
@@ -194,6 +221,45 @@ class LineAcceptanceTest extends AcceptanceTest {
             .isEqualTo(updateParam.get("name"));
         assertThat(expectedResponse.body().jsonPath().get("color").toString())
             .isEqualTo(updateParam.get("color"));
+    }
+
+    @DisplayName("지하철 노선 수정시 입력 값이 제대로 들어오지 않으면 BadRequest를 던진다.")
+    @Test
+    void updateLine_validation() {
+        // given
+        Station station1 = createTestStation("updateLineValidation1역");
+        Station station2 = createTestStation("updateLineValidation2역");
+
+        Map<String, String> param1 = new HashMap<>();
+        param1.put("name", "5호선");
+        param1.put("color", "bg-blue-600");
+        param1.put("upStationId", String.valueOf(station1.getId()));
+        param1.put("downStationId", String.valueOf(station2.getId()));
+        param1.put("distance", "4");
+
+        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+            .body(param1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        // when
+        Map<String, String> updateParam = new HashMap<>();
+        updateParam.put("name", "");
+        updateParam.put("color", "bg-blue-600");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(updateParam)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/{id}", createResponse1.header("Location").split("/")[2])
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선을 삭제한다.")

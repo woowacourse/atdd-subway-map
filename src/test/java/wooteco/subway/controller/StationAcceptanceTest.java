@@ -42,12 +42,40 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("지하철 역 추가 예외 - 기존에 존재하는 지하철역 이름으로 지하철역을 생성시 BadRequest를 던진다.")
     @Test
-    void createStationWithDuplicateName() {
+    void createStation_exception_duplicatename() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "옥수역");
+        RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then()
+            .log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철 역 추가 예외 - 입력 값이 제대로 들어오지 않으면 BadRequest를 던진다.")
+    @Test
+    void createStation_exception_validation() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "");
         RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
