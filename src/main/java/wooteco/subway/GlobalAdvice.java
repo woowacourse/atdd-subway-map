@@ -13,9 +13,8 @@ public final class GlobalAdvice {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleUnknownException(final RuntimeException e) {
-//        final String message = "unhandled exceptions";
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        final String message = "unhandled exceptions";
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
     }
 
     @ExceptionHandler(StationException.class)

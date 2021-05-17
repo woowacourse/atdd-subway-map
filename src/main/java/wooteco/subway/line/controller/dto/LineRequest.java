@@ -6,6 +6,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 public class LineRequest {
+
     @Pattern(regexp = "^[가-힣a-zA-Z0-9]*선$", message = "지하철 노선 이름은 'XX선' 으로 끝나야합니다.")
     @Size(min=3, max=12, message = "지하철 노선 이름은 최소 3글자, 최대 12글자로 이루어져야합니다.")
     private String name;

@@ -3,6 +3,7 @@ package wooteco.subway.station.controller;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,7 +30,7 @@ public final class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(@RequestBody final StationRequest stationRequest) {
+    public ResponseEntity<StationResponse> createStation(@Valid @RequestBody final StationRequest stationRequest) {
         final StationCreateDto stationInfo = stationRequest.toStationCreateDto();
 
         final StationDto createdStationInfo = stationService.save(stationInfo);
