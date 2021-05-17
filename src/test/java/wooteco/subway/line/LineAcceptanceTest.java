@@ -37,6 +37,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         jdbcTemplate.execute("SET foreign_key_checks=1;");
         jdbcTemplate.execute("truncate table STATION");
         jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
+        jdbcTemplate.execute("truncate table SECTION");
+        jdbcTemplate.execute("alter table SECTION alter column ID restart with 1");
         stationDao.save("가양역");
         stationDao.save("증미역");
     }

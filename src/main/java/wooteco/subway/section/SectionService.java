@@ -1,6 +1,7 @@
 package wooteco.subway.section;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.section.exception.SectionInitializationException;
 
 @Service
@@ -16,6 +17,7 @@ public class SectionService {
                 sectionDto.getDownStationId(), sectionDto.getDistance());
     }
 
+    @Transactional
     public Section save(SectionDto sectionDto) {
         validateSectionInitialization(sectionDto.getLineId());
         Sections sections = new Sections(sectionDao.findAllByLineId(sectionDto.getLineId()));
@@ -28,6 +30,7 @@ public class SectionService {
         return saveWithForkCase(sectionDto, sections);
     }
 
+    @Transactional
     public void delete(Long lineId, Long stationId) {
         validateSectionInitialization(lineId);
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
