@@ -54,6 +54,11 @@ public class SectionDao {
         return jdbcTemplate.query(sql, sectionRowMapper(), lineId);
     }
 
+    public List<Section> findAll() {
+        String sql = "select id, line_id, up_station_id, down_station_id, distance from SECTION";
+        return jdbcTemplate.query(sql, sectionRowMapper());
+    }
+
     public void updateDistanceAndDownStation(Long lineId, Long upStationId, Long downStationId, int distance) {
         String query = "update SECTION set down_station_id = ?, distance = ? where line_id = ? and up_station_id = ?";
         jdbcTemplate.update(query, downStationId, distance, lineId, upStationId);

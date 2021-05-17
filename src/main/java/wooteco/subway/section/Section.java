@@ -53,6 +53,10 @@ public class Section {
         return downStation.getId().equals(downStationId);
     }
 
+    public boolean includeThisLine(Long id) {
+        return this.lineId.equals(id);
+    }
+
     public Long getId() {
         return id;
     }

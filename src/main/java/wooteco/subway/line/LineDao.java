@@ -6,10 +6,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.section.Section;
 import wooteco.subway.section.SectionDao;
 import wooteco.subway.section.Sections;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,9 +71,21 @@ public class LineDao {
     public List<Line> findAll() {
         String sql = "select id, name, color from LINE";
         List<Line> lines = jdbcTemplate.query(sql, lineRowMapper());
+        List<Section> sections = sectionDao.findAll();
+
         for (Line line : lines) {
-            line.setSections(new Sections(sectionDao.findAllByLineId(line.getId())));
+            List<Section> sectionList = new ArrayList<>();
+            for (Section section : sections) {
+                if (section.includeThisLine(line.getId())) {
+                    sectionList.add(section);
+                }
+            }
+            line.setSections(new Sections(sectionList));
         }
+
+//        for (Line line : lines) {
+//            line.setSections(new Sections(sectionDao.findAllByLineId(line.getId())));
+//        }
         return lines;
     }
 
