@@ -70,7 +70,7 @@ class SectionServiceTest {
         Line line = new Line(2L, "2호선", "green");
 
         // when
-        sectionService.synchronizeDB(line);
+        sectionService.updateSectionsInLine(line);
 
         // then
         verify(sectionDao).deleteByLineId(anyLong());

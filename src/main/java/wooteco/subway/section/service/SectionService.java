@@ -26,7 +26,7 @@ public class SectionService {
         return sectionDao.save(section);
     }
 
-    public void synchronizeDB(Line line) {
+    public void updateSectionsInLine(Line line) {
         deleteByLineId(line.getId());
         addSections(line.getSections());
     }

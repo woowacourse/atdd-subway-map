@@ -105,7 +105,7 @@ class LineServiceTest {
         lineService.addSection(2L, new SectionCreateRequest(1L, 6L, 3));
 
         // then
-        verify(sectionService).synchronizeDB(이호선);
+        verify(sectionService).updateSectionsInLine(이호선);
     }
 
     @DisplayName("모든 노선 조회 ")
@@ -234,7 +234,7 @@ class LineServiceTest {
         lineService.deleteStationInSection(1L, 2L);
 
         // then
-        verify(sectionService).synchronizeDB(any(Line.class));
+        verify(sectionService).updateSectionsInLine(any(Line.class));
     }
 
 }
