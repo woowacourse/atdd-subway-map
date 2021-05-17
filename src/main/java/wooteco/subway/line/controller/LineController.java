@@ -7,6 +7,7 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.service.LineService;
+import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationResponse;
 
 import java.net.URI;
@@ -26,11 +27,7 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line newLine = lineService.add(lineRequest);
-        List<StationResponse> stationsByLine =
-            lineService.findStationsByLineId(newLine.getId())
-            .stream()
-            .map(StationResponse::new)
-            .collect(Collectors.toList());
+        List<Station> stationsByLine = lineService.findStationsByLineId(newLine.getId());
 
         LineResponse lineResponse = new LineResponse(newLine, stationsByLine);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
@@ -48,11 +45,7 @@ public class LineController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
-        List<StationResponse> stationsByLine =
-            lineService.findStationsByLineId(id)
-                .stream()
-                .map(StationResponse::new)
-                .collect(Collectors.toList());
+        List<Station> stationsByLine = lineService.findStationsByLineId(line.getId());
 
         LineResponse lineResponse = new LineResponse(line, stationsByLine);
         return ResponseEntity.ok(lineResponse);

@@ -41,12 +41,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
 
-        StationResponse stationResponse1 = new StationResponse(new Station(1L, "강남역"));
-        StationResponse stationResponse2 = new StationResponse(new Station(2L, "역삼역"));
-        StationResponse stationResponse3 = new StationResponse(new Station(3L, "아차산역"));
-
         LineResponse lineResponse = new LineResponse(new Line(1L, "2호선", "초록색"),
-            Arrays.asList(stationResponse1, stationResponse2, stationResponse3));
+            Arrays.asList(
+                new Station(1L, "강남역"), new Station(2L, "역삼역"), new Station(3L, "아차산역")
+            ));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         LineResponse resultResponse = response.jsonPath().getObject(".", LineResponse.class);
@@ -103,11 +101,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
 
-        StationResponse stationResponse1 = new StationResponse(new Station(4L, "탄현역"));
-        StationResponse stationResponse2 = new StationResponse(new Station(6L, "홍대입구역"));
-
         LineResponse lineResponse = new LineResponse(new Line(2L, "경의중앙선", "하늘색"),
-            Arrays.asList(stationResponse1, stationResponse2));
+            Arrays.asList(new Station(4L, "탄현역"), new Station(6L, "홍대입구역")));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         LineResponse resultResponse = response.jsonPath().getObject(".", LineResponse.class);
