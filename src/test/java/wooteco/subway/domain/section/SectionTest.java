@@ -3,9 +3,6 @@ package wooteco.subway.domain.section;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static wooteco.subway.domain.StationFixture.a;
-import static wooteco.subway.domain.StationFixture.b;
-import static wooteco.subway.domain.StationFixture.c;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +11,9 @@ import wooteco.subway.domain.station.Station;
 
 class SectionTest {
 
+    private static final Station a = new Station(1L, "a역");
+    private static final Station b = new Station(2L,"b역");
+    private static final Station c = new Station(3L,"c역");
     private static final Long lineId = 0L;
     private Station upStation;
     private Station downStation;

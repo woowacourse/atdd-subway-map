@@ -1,9 +1,6 @@
 package wooteco.subway.dao.section;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.domain.StationFixture.a;
-import static wooteco.subway.domain.StationFixture.b;
-import static wooteco.subway.domain.StationFixture.c;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +14,10 @@ import wooteco.subway.domain.station.Station;
 
 @JdbcTest
 class SectionDaoTest {
+
+    private static final Station a = new Station(1L, "a역");
+    private static final Station b = new Station(2L,"b역");
+    private static final Station c = new Station(3L,"c역");
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

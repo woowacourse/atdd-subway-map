@@ -4,21 +4,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static wooteco.subway.domain.StationFixture.a;
-import static wooteco.subway.domain.StationFixture.b;
-import static wooteco.subway.domain.StationFixture.c;
-import static wooteco.subway.domain.StationFixture.d;
-import static wooteco.subway.domain.StationFixture.e;
-import static wooteco.subway.domain.StationFixture.f;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.domain.station.Station;
 
 class SectionsTest {
 
+    private static final Station a = new Station(1L, "a역");
+    private static final Station b = new Station(2L,"b역");
+    private static final Station c = new Station(3L,"c역");
+    private static final Station d = new Station(4L, "d역");
+    private static final Station e = new Station(5L, "e역");
+    private static final Station f = new Station(6L, "f역");
     private static Long lineId = 0L;
 
     @DisplayName("빈 구간 리스트를 생성할 수 없습니다.")
