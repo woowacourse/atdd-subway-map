@@ -56,45 +56,6 @@ public class SectionDao {
         return jdbcTemplate.query(sql, sectionRowMapper(), lineId);
     }
 
-    public boolean isExistingStation(Long lineId, Long stationId) {
-        String sql = "select count(*) from SECTION where line_id = ? and (up_station_id = ? or down_station_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Integer.class, lineId, stationId, stationId) != 0;
-    }
-
-    public Optional<Section> findByDownStationId(Long lineId, Long downStationId) {
-        String sql = "select * from SECTION where line_id = ? and down_station_id = ?";
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper(), lineId, downStationId));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    public Optional<Section> findByUpStationId(Long lineId, Long upStationId) {
-        String sql = "select * from SECTION where line_id = ? and up_station_id = ?";
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper(), lineId, upStationId));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    public boolean hasEndStationInSection(Long lineId, Long upStationId, Long downStationId) {
-        return isEndStation(lineId, upStationId) || isEndStation(lineId, downStationId);
-    }
-
-    public boolean isEndStation(Long lineId, Long stationId) {
-        String upStationIdCondition = "select count(*) from SECTION where line_id = ? and up_station_id = ?";
-        String downStationIdCondition = "select count(*) from SECTION where line_id = ? and down_station_id = ?";
-
-        boolean condition1 = jdbcTemplate.queryForObject(upStationIdCondition, Integer.class, lineId, stationId) == 1
-                && jdbcTemplate.queryForObject(downStationIdCondition, Integer.class, lineId, stationId) == 0;
-        boolean condition2 = jdbcTemplate.queryForObject(upStationIdCondition, Integer.class, lineId, stationId) == 0
-                && jdbcTemplate.queryForObject(downStationIdCondition, Integer.class, lineId, stationId) == 1;
-
-        return condition1 || condition2;
-    }
-
     public void updateDistanceAndDownStation(Long lineId, Long upStationId, Long downStationId, int distance) {
         String query = "update SECTION set down_station_id = ?, distance = ? where line_id = ? and up_station_id = ?";
         jdbcTemplate.update(query, downStationId, distance, lineId, upStationId);

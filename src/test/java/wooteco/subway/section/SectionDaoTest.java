@@ -55,54 +55,7 @@ class SectionDaoTest {
     }
 
     @Test
-    @DisplayName("구간 삭제 확인")
-    public void delete() {
-        sectionDao.save(1L, 1L, 2L, 10);
-        assertThat(sectionDao.findByUpStationId(1L, 1L).isPresent()).isTrue();
-
-        sectionDao.delete(1L);
-        assertThat(sectionDao.findByUpStationId(1L, 1L).isPresent()).isFalse();
-    }
-
-    @Test
-    @DisplayName("구간에 존재하는 역인지 확인")
-    public void isExistingStation() {
-        assertThat(sectionDao.isExistingStation(1L, 1L)).isFalse();
-
-        sectionDao.save(1L, 1L, 2L, 10);
-        assertThat(sectionDao.isExistingStation(1L, 1L)).isTrue();
-        assertThat(sectionDao.isExistingStation(1L, 2L)).isTrue();
-        assertThat(sectionDao.isExistingStation(2L, 1L)).isFalse();
-        assertThat(sectionDao.isExistingStation(2L, 2L)).isFalse();
-    }
-
-    @Test
-    @DisplayName("역 ID로 구간 검색")
-    public void findSectionByStationId() {
-        sectionDao.save(1L, 1L, 2L, 10);
-
-        assertThat(sectionDao.findByUpStationId(1L, 1L).isPresent()).isTrue();
-        assertThat(sectionDao.findByUpStationId(1L, 2L).isPresent()).isFalse();
-
-        assertThat(sectionDao.findByDownStationId(1L, 2L).isPresent()).isTrue();
-        assertThat(sectionDao.findByDownStationId(1L, 1L).isPresent()).isFalse();
-    }
-
-    @Test
-    @DisplayName("구간에 포함된 역 중 종점역이 존재하는지 확인")
-    public void isStationEndStiation() {
-        sectionDao.save(1L, 1L, 2L, 10);
-        sectionDao.save(1L, 2L, 3L, 10);
-        sectionDao.save(1L, 3L, 4L, 10);
-
-        assertThat(sectionDao.hasEndStationInSection(1L, 1L, 2L)).isTrue();
-        assertThat(sectionDao.hasEndStationInSection(1L, 2L, 3L)).isFalse();
-        assertThat(sectionDao.hasEndStationInSection(1L, 3L, 4L)).isTrue();
-        assertThat(sectionDao.hasEndStationInSection(1L, 4L, 5L)).isTrue();
-    }
-
-    @Test
-    @DisplayName("노선에 등록된 구간 수 확")
+    @DisplayName("노선에 등록된 구간 수 확인")
     public void isExistingLine() {
         assertThat(sectionDao.numberOfEnrolledSection(1L)).isEqualTo(0);
         sectionDao.save(1L, 1L, 2L, 10);
@@ -121,5 +74,43 @@ class SectionDaoTest {
                         new Section(1L, 1L, firstStation, secondStation, 10),
                         new Section(2L, 1L, secondStation, thirdStation, 10))
         );
+    }
+
+    @Test
+    @DisplayName("구간 삭제 확인")
+    public void delete() {
+        sectionDao.save(1L, 1L, 2L, 10);
+        assertThat(sectionDao.numberOfEnrolledSection(1L)).isEqualTo(1);
+        sectionDao.delete(1L);
+        assertThat(sectionDao.numberOfEnrolledSection(1L)).isEqualTo(0);
+
+        sectionDao.save(1L, 1L, 2L, 10);
+        assertThat(sectionDao.numberOfEnrolledSection(1L)).isEqualTo(1);
+        sectionDao.delete(1L, 1L);
+        assertThat(sectionDao.numberOfEnrolledSection(1L)).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("구간 수정 확인")
+    public void update() {
+        sectionDao.save(1L, 1L, 2L, 10);
+        sectionDao.updateDistanceAndDownStation(1L, 1L, 3L, 20);
+
+        SectionResponse sectionResponse = jdbcTemplate.queryForObject(
+                "select line_id, up_station_id, down_station_id, distance from SECTION where id=1",
+                (rs, rowNum) ->
+                        new SectionResponse(
+                                1L,
+                                rs.getLong("line_id"),
+                                rs.getLong("up_station_id"),
+                                rs.getLong("down_station_id"),
+                                rs.getInt("distance")
+                        )
+        );
+
+        assertThat(sectionResponse)
+                .usingRecursiveComparison()
+                .isEqualTo(new SectionResponse(1L, 1L, 1L, 3L, 20));
+
     }
 }
