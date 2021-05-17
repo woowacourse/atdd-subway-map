@@ -39,7 +39,7 @@ public class SectionService {
     @Transactional(readOnly = true)
     public List<StationResponse> findSectionById(Long id) {
         List<Section> sections = sectionDao.findSectionBylineId(id);
-        List<Station> stations = stationsOfLine(sections);
+        List<Station> stations = orderedStations(sections);
 
         return stations.stream()
                 .map(station ->
@@ -50,16 +50,16 @@ public class SectionService {
                 .collect(Collectors.toList());
     }
 
-    private List<Station> stationsOfLine(List<Section> sections) {
+    private List<Station> orderedStations(List<Section> sections) {
         Map<Station, Station> stationMap = sections.stream().collect(Collectors.toMap(
                 Section::getUpStation,
                 Section::getDownStation
         ));
         Station firstUpStation = findFirstUpStation(stationMap);
-        return orderStationsOfLine(stationMap, firstUpStation);
+        return orderStationsByFirstUpStation(stationMap, firstUpStation);
     }
 
-    private List<Station> orderStationsOfLine(Map<Station, Station> sectionMap, Station upStation) {
+    private List<Station> orderStationsByFirstUpStation(Map<Station, Station> sectionMap, Station upStation) {
         List<Station> stationsOfLine = new ArrayList<>();
         stationsOfLine.add(upStation);
         while (sectionMap.get(upStation) != null) {
@@ -86,14 +86,14 @@ public class SectionService {
         List<Section> sections = sectionDao.findSectionBylineId(lineId);
         Station station = findSameStationInSection(upStationId, downStationId, sections);
 
-        Section section = new Section(lineId, upStationId, downStationId, distance);
-        updateNewStation(station, sections, section);
-        sectionDao.save(section);
+        Section newSection = new Section(lineId, upStationId, downStationId, distance);
+        updateNewStation(station, sections, newSection);
+        sectionDao.save(newSection);
     }
 
     private Station findSameStationInSection(Long upStationId, Long downStationId, List<Section> sections) {
-        List<Station> stations = stationsOfLine(sections);
-        List<Station> duplicateStation = findStationsOfSectionByStation(upStationId, downStationId, stations);
+        List<Station> orderedStations = orderedStations(sections);
+        List<Station> duplicateStation = findSameUpAndDownStationInStations(upStationId, downStationId, orderedStations);
         if (duplicateStation.size() != 1) {
             throw new IllegalArgumentException("구간은 하나의 역만 중복될 수 있습니다.");
         }
@@ -101,7 +101,7 @@ public class SectionService {
         return duplicateStation.get(0);
     }
 
-    private List<Station> findStationsOfSectionByStation(Long upStationId, Long downStationId, List<Station> stationsOfLine) {
+    private List<Station> findSameUpAndDownStationInStations(Long upStationId, Long downStationId, List<Station> stationsOfLine) {
         return stationsOfLine.stream()
                 .filter(station -> station.isSame(upStationId) || station.isSame(downStationId))
                 .collect(Collectors.toList());
@@ -164,14 +164,14 @@ public class SectionService {
 
         if (sectionBySameUpStation.isPresent() && sectionBySameDownStation.isPresent()) {
             sectionDao.save(lineId,
-                    sectionBySameUpStation.get().getUpStation().getId(),
-                    stationId,
+                    sectionBySameDownStation.get().getUpStation().getId(),
+                    sectionBySameUpStation.get().getDownStation().getId(),
                     sectionBySameUpStation.get().getDistance() + sectionBySameDownStation.get().getDistance());
         }
     }
 
     private void validSectionSizeWhenDelete(List<Section> sections) {
-        List<Station> stations = stationsOfLine(sections);
+        List<Station> stations = orderedStations(sections);
 
         if (stations.size() == 2) {
             throw new IllegalArgumentException("종점역만 남은 경우 삭제를 수행할 수 없습니다!");

@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.domain.Line;
 
 import java.sql.PreparedStatement;
@@ -43,6 +44,7 @@ public class LineDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
+    @Transactional(readOnly = true)
     public List<Line> findAll() {
         String sql = "SELECT * FROM line";
         return jdbcTemplate.query(sql, getLineRowMapper());
@@ -53,7 +55,8 @@ public class LineDao {
         jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
-    public void delete(Long id) {
+    public void delete(Long... id) {
+
         String sql = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
@@ -63,23 +66,21 @@ public class LineDao {
         jdbcTemplate.update(sql);
     }
 
+    @Transactional(readOnly = true)
     public Optional<Line> findById(Long id) {
         try {
             String sql = "SELECT * FROM line WHERE id = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql,
-                    getLineRowMapper(),
-                    id));
+            return Optional.of(jdbcTemplate.queryForObject(sql, getLineRowMapper(), id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
+    @Transactional(readOnly = true)
     public Optional<Line> findByName(String name) {
         try {
             String sql = "SELECT * FROM line WHERE name = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql,
-                    getLineRowMapper(),
-                    name));
+            return Optional.of(jdbcTemplate.queryForObject(sql, getLineRowMapper(), name));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

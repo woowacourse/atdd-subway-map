@@ -8,7 +8,6 @@ import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Transactional
