@@ -1,15 +1,19 @@
 package wooteco.subway.line.domain;
 
-import java.util.List;
-
 public interface LineRepository {
-    long save(Line line);
+    Line save(Line line);
 
-    List<Line> findAll();
+    Lines findAll();
 
     Line findById(Long id);
+
+    boolean hasLine(String name);
 
     void update(Line line);
 
     void deleteById(Long id);
+
+    void addSection(Long id, Section section);
+
+    void deleteSection(Long id, Section section);
 }

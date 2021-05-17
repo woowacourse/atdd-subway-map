@@ -1,13 +1,14 @@
 package wooteco.subway.line.ui;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.exception.LineNotFoundException;
 import wooteco.subway.line.service.LineService;
-import wooteco.subway.line.ui.dto.LineRequest;
+import wooteco.subway.line.ui.dto.LineCreateRequest;
+import wooteco.subway.line.ui.dto.LineModifyRequest;
 import wooteco.subway.line.ui.dto.LineResponse;
+import wooteco.subway.line.ui.dto.SectionAddRequest;
 
 import java.net.URI;
 import java.util.List;
@@ -25,60 +26,31 @@ public class LineController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> createNewLine(@RequestBody LineRequest lineRequest) {
-        final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        final Line savedLine = lineService.create(line);
+    public ResponseEntity<LineResponse> createNewLine(@RequestBody LineCreateRequest lineCreateRequest) {
+        LineResponse lineResponse = lineService.create(lineCreateRequest);
 
         return ResponseEntity
-                .created(
-                        URI.create("/lines/" + savedLine.getId())
-                )
-                .body(
-                        new LineResponse(
-                                savedLine.getId(),
-                                savedLine.getName(),
-                                savedLine.getColor()
-                        )
-                );
+                .created(URI.create("/lines/" + lineResponse.getId()))
+                .body(lineResponse);
     }
 
-    @GetMapping(
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> allLines() {
-        final List<LineResponse> lineResponses = lineService.allLines().stream()
-                .map(line ->
-                        new LineResponse(
-                                line.getId(),
-                                line.getName(),
-                                line.getColor()
-                        )
-                ).collect(toList());
+        final List<LineResponse> lineResponses = lineService.allLines().toList().stream()
+                .map(line -> new LineResponse(line, lineService.getStations(line.getId())))
+                .collect(toList());
 
         return ResponseEntity.ok(lineResponses);
     }
 
-    @GetMapping(value = "/{id}",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> findById(@PathVariable Long id) {
-        final Line line = lineService.findById(id);
-
-        return ResponseEntity.ok(
-                new LineResponse(
-                        line.getId(),
-                        line.getName(),
-                        line.getColor()
-                )
-        );
+        return ResponseEntity.ok(lineService.findById(id));
     }
 
-    @PutMapping(value = "/{id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE
-    )
-    public ResponseEntity<Void> modifyById(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        final Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
-        lineService.update(line);
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> modifyById(@PathVariable Long id, @RequestBody LineModifyRequest lineModifyRequest) {
+        lineService.update(id, lineModifyRequest);
 
         return ResponseEntity.noContent().build();
     }
@@ -90,10 +62,23 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler({DataAccessException.class, IllegalArgumentException.class})
-    private ResponseEntity<String> handleDatabaseExceptions(Exception e) {
-        System.out.println("msg :" + e.getMessage());
-        return ResponseEntity.badRequest().body(e.getMessage());
+    @PostMapping(value = "/{id}/sections", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> addSection(@PathVariable final Long id,
+                                           @RequestBody final SectionAddRequest sectionAddRequest) {
+
+        lineService.addSection(id, sectionAddRequest);
+        return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/{id}/sections")
+    public ResponseEntity<Void> deleteSection(@PathVariable final Long id, @RequestParam final Long stationId) {
+        lineService.deleteSection(id, stationId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler({LineNotFoundException.class, IllegalArgumentException.class})
+    private ResponseEntity<String> handleDatabaseExceptions(Exception e) {
+        System.out.println(e.getMessage());
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }

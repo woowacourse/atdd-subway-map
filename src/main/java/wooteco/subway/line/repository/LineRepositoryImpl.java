@@ -1,37 +1,50 @@
 package wooteco.subway.line.repository;
 
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.domain.LineRepository;
+import wooteco.subway.line.domain.*;
+import wooteco.subway.line.exception.LineNotFoundException;
 
 import java.util.List;
 
 @Repository
 public class LineRepositoryImpl implements LineRepository {
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
 
-    public LineRepositoryImpl(JdbcTemplate jdbcTemplate) {
-        this.lineDao = new LineDao(jdbcTemplate);
+    public LineRepositoryImpl(final LineDao lineDao, final SectionDao sectionDao) {
+        this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
     @Override
-    public long save(Line line) {
-        return lineDao.save(line);
+    public Line save(final Line line) {
+        Line savedLine = lineDao.save(line);
+        sectionDao.saveAll(savedLine.getId(), savedLine.getSections());
+        return savedLine;
     }
 
     @Override
-    public List<Line> findAll() {
-        return lineDao.allLines();
+    public Lines findAll() {
+        return new Lines(lineDao.allLines());
     }
 
     @Override
     public Line findById(final Long id) {
-        return lineDao.findById(id);
+        Line line = lineDao.findById(id)
+                .orElseThrow(() -> new LineNotFoundException("해당 라인을 찾을 수 없습니다."));
+
+        List<Section> sections = sectionDao.findAll(id);
+        return new Line(line.getId(), line.getName(), line.getColor(), new Sections(sections));
     }
 
     @Override
-    public void update(Line line) {
+    public boolean hasLine(final String name) {
+        return lineDao.findByName(name).isPresent();
+    }
+
+
+    @Override
+    public void update(final Line line) {
         lineDao.update(line);
     }
 
@@ -40,4 +53,13 @@ public class LineRepositoryImpl implements LineRepository {
         lineDao.deleteById(id);
     }
 
+    @Override
+    public void addSection(final Long id, final Section section) {
+        sectionDao.save(id, section);
+    }
+
+    @Override
+    public void deleteSection(final Long id, final Section section) {
+        sectionDao.delete(id, section);
+    }
 }
