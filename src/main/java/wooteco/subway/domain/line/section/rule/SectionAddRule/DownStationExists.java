@@ -15,14 +15,15 @@ public class DownStationExists implements SectionAddRule {
 
     @Override
     public boolean isSatisfiedBy(List<Section> sections, Section section) {
-        Optional<Section> wrappedSelectedSection = getSectionThatHasSameDownStationByFromSections(sections, section);
+        Optional<Section> wrappedSelectedSection = getSectionThatHasSameDownStationFromSections(sections, section);
 
         return wrappedSelectedSection.isPresent();
     }
 
     @Override
     public void execute(List<Section> sections, Section section) {
-        Section selectedSection = getSectionThatHasSameDownStationByFromSections(sections, section).get();
+        Section selectedSection = getSectionThatHasSameDownStationFromSections(sections, section)
+                .orElseThrow(IllegalStateException::new);
 
         validateThatSectionDistanceIsLowerThenExistingSection(section, selectedSection);
 
@@ -39,7 +40,7 @@ public class DownStationExists implements SectionAddRule {
         sections.add(newSection);
     }
 
-    private Optional<Section> getSectionThatHasSameDownStationByFromSections(List<Section> sections, Section sourceSection) {
+    private Optional<Section> getSectionThatHasSameDownStationFromSections(List<Section> sections, Section sourceSection) {
         return sections.stream()
                 .filter(
                         section -> Objects.equals(sourceSection.getDownStationId(), section.getDownStationId())

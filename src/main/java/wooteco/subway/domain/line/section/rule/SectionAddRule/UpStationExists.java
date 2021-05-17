@@ -23,8 +23,8 @@ public class UpStationExists implements SectionAddRule {
 
     @Override
     public void execute(List<Section> sections, Section section) {
-        Section selectedSection =
-                getSectionThatHasSameUpStationByFromSections(sections, section).get();
+        Section selectedSection = getSectionThatHasSameUpStationByFromSections(sections, section)
+                .orElseThrow(IllegalStateException::new);
 
         validateThatSectionDistanceIsLowerThenExistingSection(section, selectedSection);
 

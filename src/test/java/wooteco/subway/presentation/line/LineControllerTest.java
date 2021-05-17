@@ -176,7 +176,7 @@ class LineControllerTest {
 
     private void addNewSection_mockInitialize() {
         given(lineDtoAssembler.line(any(Line.class))).willReturn(
-                new LineResponse(1l, "분당선", "red", Arrays.asList(
+                new LineResponse(1L, "분당선", "red", Arrays.asList(
                         new StationResponse(1L, "일역"),
                         new StationResponse(2L, "이역")
                 ))
