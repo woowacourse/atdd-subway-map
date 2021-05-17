@@ -1,16 +1,21 @@
 package wooteco.subway.service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.domain.station.Station;
-import wooteco.subway.domain.station.dao.StationDao;
+import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
+import wooteco.subway.web.dto.StationResponse;
 import wooteco.subway.web.exception.NotFoundException;
 import wooteco.subway.web.exception.SubwayHttpException;
 
 @Service
-@Transactional
 public class StationService {
+
+    private static final String LINE_RESOURCE_NAME = "노선";
 
     private final StationDao stationDao;
 
@@ -18,27 +23,43 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station add(Station station) {
-        Long id = addStation(station);
-        return findById(id);
-    }
-
-    private Long addStation(Station station) {
-        return stationDao.save(station)
-                .orElseThrow(() -> new SubwayHttpException("중복된 역 이름입니다"));
-    }
-
     public List<Station> findAll() {
         return stationDao.findAll();
     }
 
-    private Station findById(Long id) {
+    public Station findStationById(Long id) {
         return stationDao.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 역입니다"));
+                .orElseThrow(() -> new NotFoundException(LINE_RESOURCE_NAME));
+    }
+
+    public List<StationResponse> findStationsBySections(List<Section> sections) {
+        Set<Long> stationIds = stationIds(sections);
+        return stationDao.findStationsByIds(stationIds)
+                .stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    private Set<Long> stationIds(List<Section> sections) {
+        Set<Long> stationIdSet = new HashSet<>();
+        for (Section section : sections) {
+            stationIdSet.add(section.getUpStationId());
+            stationIdSet.add(section.getDownStationId());
+        }
+
+        return stationIdSet;
+    }
+
+    public Long save(Station station) {
+        return stationDao.save(station);
     }
 
     public void delete(Long id) {
-        findById(id);
         stationDao.delete(id);
+    }
+
+    public void validateStationId(Long id) {
+        stationDao.findById(id)
+                .orElseThrow(() -> new SubwayHttpException("유효하지 않은 역입니다."));
     }
 }

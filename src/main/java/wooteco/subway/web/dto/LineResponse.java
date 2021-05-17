@@ -2,7 +2,7 @@ package wooteco.subway.web.dto;
 
 import java.util.List;
 import java.util.Objects;
-import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.Line;
 
 public class LineResponse {
 
@@ -12,6 +12,10 @@ public class LineResponse {
     private List<StationResponse> stations;
 
     public LineResponse() {
+    }
+
+    public LineResponse(Line line, List<StationResponse> stations) {
+        this(line.getId(), line.getName(), line.getColor(), stations);
     }
 
     public LineResponse(Line line) {

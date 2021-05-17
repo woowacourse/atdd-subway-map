@@ -32,9 +32,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     private static final long INVALID_ID = Long.MAX_VALUE;
 
     static {
-        DATA1.put(NAME, "잠실역");
-        DATA2.put(NAME, "강남역");
-        DATA_EMPTY_STRING.put(NAME, "");
+        DATA1.put(NAME, "A역");
+        DATA2.put(NAME, "B역");
+        DATA_EMPTY_STRING.put(NAME, " ");
         DATA_NULL.put(NAME, null);
     }
 
@@ -103,7 +103,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     private List<StationResponse> toStationDtos(ExtractableResponse<Response>... responses) {
         return Arrays.stream(responses)
-                .map(response -> response.jsonPath().getObject(".", StationResponse.class))
+                .map(response -> response.as(StationResponse.class))
                 .collect(Collectors.toList());
     }
 
@@ -134,7 +134,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = deleteStation(STATIONS_PATH + INVALID_ID);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> postStation(Map<String, String> data) {

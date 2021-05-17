@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,26 +13,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.domain.station.Station;
-import wooteco.subway.service.StationService;
+import wooteco.subway.domain.Station;
+import wooteco.subway.facade.StationFacade;
 import wooteco.subway.web.dto.StationRequest;
 import wooteco.subway.web.dto.StationResponse;
 
 @RestController
 @RequestMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
-@Validated
 public class StationController {
 
-    private final StationService stationService;
+    private final StationFacade stationFacade;
 
-    public StationController(StationService stationService) {
-        this.stationService = stationService;
+    public StationController(StationFacade stationFacade) {
+        this.stationFacade = stationFacade;
     }
 
     @PostMapping
     public ResponseEntity<StationResponse> create(
-            @Valid @RequestBody StationRequest stationRequest) {
-        Station station = stationService.add(stationRequest.toEntity());
+            @RequestBody @Valid StationRequest stationRequest) {
+        Station station = stationFacade.add(stationRequest.toEntity());
 
         return ResponseEntity
                 .created(URI.create("/stations/" + station.getId()))
@@ -42,21 +40,18 @@ public class StationController {
 
     @GetMapping
     public ResponseEntity<List<StationResponse>> list() {
-        List<StationResponse> stationResponses = stationService.findAll()
+        List<StationResponse> stationResponses = stationFacade.findAll()
                 .stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
 
-        return ResponseEntity
-                .ok(stationResponses);
+        return ResponseEntity.ok(stationResponses);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        stationService.delete(id);
+        stationFacade.delete(id);
 
-        return ResponseEntity
-                .noContent()
-                .build();
+        return ResponseEntity.noContent().build();
     }
 }
