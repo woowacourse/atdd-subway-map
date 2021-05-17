@@ -24,7 +24,8 @@ public final class GlobalAdvice {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<String> handleMethodArgumentNotValidException() {
+        final String message = "요청 값이 올바르지 않습니다.";
+        return ResponseEntity.badRequest().body(message);
     }
 }
