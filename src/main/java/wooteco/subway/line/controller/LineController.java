@@ -37,7 +37,10 @@ public class LineController {
         Line newLine = lineService.save(line);
         Section section = new Section(newLine.getId(), stationService.findById(lineRequest.getUpStationId()), stationService.findById(lineRequest.getDownStationId()), lineRequest.getDistance());
         sectionService.save(section);
-        LineResponse lineResponse = LineResponse.from(newLine);
+
+        List<Long> stationIds = sectionService.findByLineId(newLine.getId()).getStationsId();
+        List<Station> stations = stationService.findByIds(stationIds);
+        LineResponse lineResponse = LineResponse.from(newLine, stations);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
