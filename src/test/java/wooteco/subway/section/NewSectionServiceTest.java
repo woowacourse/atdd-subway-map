@@ -118,11 +118,22 @@ public class NewSectionServiceTest {
         }).isInstanceOf(LineException.class);
     }
 
-    @DisplayName("종점뿐인 노선에서 구간을 제거할 수 없다.")
+    @DisplayName("노선의 중간역을 제거한다.")
     @Test
-    public void deleteSectionWhenExistOnlyFinalStations(){
-        assertThatThrownBy(()-> sectionService.deleteSection(testLine.getId(), bStation.getId()))
-                .isInstanceOf(LineException.class);
+    public void deleteMiddleStation() {
+        SectionRequest sectionRequest = new SectionRequest(bStation.getId(), cStation.getId(), insertDistance);
+        sectionService.addSection(testLine.getId(), sectionRequest);
+        sectionService.deleteSection(testLine.getId(), cStation.getId());
+        sectionTestUtils.assertStationOrder(testLine, bStation, dStation);
+    }
+
+    @DisplayName("노선의 종점역을 제거한다.")
+    @Test
+    public void deleteFinalStation() {
+        SectionRequest sectionRequest = new SectionRequest(bStation.getId(), cStation.getId(), insertDistance);
+        sectionService.addSection(testLine.getId(), sectionRequest);
+        sectionService.deleteSection(testLine.getId(), dStation.getId());
+        sectionTestUtils.assertStationOrder(testLine, bStation, cStation);
     }
 
     @DisplayName("노선에 존재하지 않는 역을 제거할 수 없다.")
@@ -130,5 +141,27 @@ public class NewSectionServiceTest {
     public void deleteNonExistStation(){
         assertThatThrownBy(()-> sectionService.deleteSection(testLine.getId(), aStation.getId()))
                 .isInstanceOf(LineException.class);
+    }
+
+    @DisplayName("종점뿐인 노선에서 구간을 제거할 수 없다.")
+    @Test
+    public void deleteSectionWhenExistOnlyFinalStations(){
+        assertThatThrownBy(()-> sectionService.deleteSection(testLine.getId(), bStation.getId()))
+                .isInstanceOf(LineException.class);
+    }
+
+    @DisplayName("구간 추가 시의 구간 간격을 검증한다.")
+    @Test
+    public void validateSectionDistanceWhenAddSection(){
+        SectionRequest sectionRequest = new SectionRequest(aStation.getId(), bStation.getId(), insertDistance);
+        sectionService.addSection(testLine.getId(), sectionRequest);
+        sectionTestUtils.assertStationOrder(testLine, aStation, bStation, dStation);
+        sectionTestUtils.assertSectionDistance(testLine, insertDistance, initialDistance);
+    }
+
+    @DisplayName("구간 제거 시의 구간 간격을 검증한다.")
+    @Test
+    public void validateSectionDistanceWhenDeleteSection(){
+
     }
 }
