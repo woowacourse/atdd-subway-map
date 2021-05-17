@@ -21,4 +21,6 @@ public interface SectionDao {
     void deleteByLine(Long id);
 
     List<Section> findByLineId(Long lineId);
+
+    boolean isIncluded(Long stationId);
 }

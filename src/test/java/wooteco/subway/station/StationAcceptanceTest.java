@@ -9,7 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.exception.section.IncludedStationException;
 import wooteco.subway.exception.station.StationDuplicationException;
+import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
@@ -76,13 +79,27 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = stationPostRequest(request);
 
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .delete(uri)
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = stationDeleteRequest(uri);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("구간에 포함되어 있는 지하철역을 제거하면 예외가 발생한다.")
+    @Test
+    void deleteIncludedStation() {
+        StationRequest request2 = new StationRequest("역삼역");
+        LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 10);
+
+        ExtractableResponse<Response> createResponse = stationPostRequest(request);
+        stationPostRequest(request2);
+        linePostRequest(lineRequest);
+
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = stationDeleteRequest(uri);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString())
+            .isEqualTo(new IncludedStationException().getMessage());
     }
 
     private ExtractableResponse<Response> stationPostRequest(StationRequest request) {
@@ -91,6 +108,24 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/stations")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> stationDeleteRequest(String uri) {
+        return RestAssured.given().log().all()
+            .when()
+            .delete(uri)
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> linePostRequest(LineRequest lineRequest) {
+        return RestAssured.given().log().all()
+            .body(lineRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
             .then().log().all()
             .extract();
     }

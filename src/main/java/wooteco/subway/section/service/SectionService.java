@@ -2,6 +2,7 @@ package wooteco.subway.section.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.exception.section.IncludedStationException;
 import wooteco.subway.exception.section.InvalidDeleteSectionException;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.domain.Section;
@@ -97,5 +98,12 @@ public class SectionService {
         return sortedStationIds.stream()
             .map(stationService::findById)
             .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public void validateNotIncludedStation(Long stationId) {
+        if (sectionDao.isIncluded(stationId)) {
+            throw new IncludedStationException();
+        }
     }
 }

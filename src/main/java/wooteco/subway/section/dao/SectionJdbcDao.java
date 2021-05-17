@@ -111,4 +111,12 @@ public class SectionJdbcDao implements SectionDao {
             ), lineId
         );
     }
+
+    @Override
+    public boolean isIncluded(Long stationId) {
+        String sql = "SELECT EXISTS " +
+            "(SELECT * FROM SECTION WHERE up_station_id=? OR down_station_id=?) " +
+            "AS isIncluded";
+        return jdbcTemplate.queryForObject(sql, Boolean.TYPE, stationId, stationId);
+    }
 }
