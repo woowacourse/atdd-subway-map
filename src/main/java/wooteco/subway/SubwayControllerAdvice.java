@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.exception.*;
 import wooteco.subway.exception.notfoundexception.NotFoundException;
-import wooteco.subway.exception.notfoundexception.NotFoundStationException;
 
 @ControllerAdvice
 public class SubwayControllerAdvice {
@@ -22,7 +21,7 @@ public class SubwayControllerAdvice {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> notFoundException(NotFoundStationException e) {
+    public ResponseEntity<String> notFoundException(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
