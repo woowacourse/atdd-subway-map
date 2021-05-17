@@ -56,6 +56,12 @@ public class Section {
         return distance;
     }
 
+    private void validateSection(Station upStationId, Station downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new IllegalSectionArgumentException();
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -78,11 +84,5 @@ public class Section {
         result = 31 * result + getDownStation().hashCode();
         result = 31 * result + getDistance();
         return result;
-    }
-
-    private void validateSection(Station upStationId, Station downStationId) {
-        if (upStationId.equals(downStationId)) {
-            throw new IllegalSectionArgumentException();
-        }
     }
 }
