@@ -26,10 +26,10 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse save(LineRequest lineRequest) {
-        validateLineName(lineRequest);
-        Line newLine = lineDao.save(lineRequest.toEntity());
-        SectionRequest sectionReq = new SectionRequest(lineRequest);
+    public LineResponse save(LineRequest lineReq) {
+        validateLineName(lineReq);
+        Line newLine = lineDao.save(lineReq.toEntity());
+        SectionRequest sectionReq = new SectionRequest(lineReq.getUpStationId(), lineReq.getDownStationId(), lineReq.getDistance());
         sectionService.save(newLine, sectionReq);
         return new LineResponse(newLine);
     }
