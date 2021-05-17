@@ -11,16 +11,16 @@ public class Section {
     private final Long downStationId;
     private final int distance;
 
-    public Section(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
-        this(null, lineId, upStationId, downStationId, distance);
+    private Section(final Builder builder) {
+        this.id = builder.id;
+        this.lineId = builder.lineId;
+        this.upStationId = builder.upStationId;
+        this.downStationId = builder.downStationId;
+        this.distance = builder.distance;
     }
 
-    public Section(final Long id, final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
-        this.id = id;
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+    public static Builder Builder() {
+        return new Builder();
     }
 
     public void validateSmaller(final int distance) {
@@ -31,9 +31,21 @@ public class Section {
 
     public Section createUpdatedSection(final Long upStationId, final Long downStationId, final int distance) {
         if (this.upStationId.equals(upStationId)) {
-            return new Section(id, lineId, downStationId, this.downStationId, this.distance - distance);
+            return Section.Builder()
+                .id(id)
+                .lineId(lineId)
+                .upStationId(downStationId)
+                .downStationId(this.downStationId)
+                .distance(this.distance - distance)
+                .build();
         }
-        return new Section(id, lineId, this.upStationId, upStationId, this.distance - distance);
+        return Section.Builder()
+            .id(id)
+            .lineId(lineId)
+            .upStationId(this.upStationId)
+            .downStationId(upStationId)
+            .distance(this.distance - distance)
+            .build();
     }
 
     public Long getId() {
@@ -73,5 +85,46 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(id, lineId, upStationId, downStationId, distance);
+    }
+
+    public static class Builder {
+
+        public Long id;
+        private Long lineId;
+        private Long upStationId;
+        private Long downStationId;
+        private int distance;
+
+        private Builder() {
+        }
+
+        public Builder id(final Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder lineId(final Long lineId) {
+            this.lineId = lineId;
+            return this;
+        }
+
+        public Builder upStationId(final Long upStationId) {
+            this.upStationId = upStationId;
+            return this;
+        }
+
+        public Builder downStationId(final Long downStationId) {
+            this.downStationId = downStationId;
+            return this;
+        }
+
+        public Builder distance(final int distance) {
+            this.distance = distance;
+            return this;
+        }
+
+        public Section build() {
+            return new Section(this);
+        }
     }
 }

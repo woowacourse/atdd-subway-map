@@ -19,10 +19,10 @@ class LineTest {
     @BeforeEach
     void setUp() {
         final List<Section> sectionGroup = new ArrayList<>();
-        sectionGroup.add(new Section(1L, 3L, 2L, 10));
-        sectionGroup.add(new Section(1L, 4L, 5L, 5));
-        sectionGroup.add(new Section(1L, 2L, 1L, 6));
-        sectionGroup.add(new Section(1L, 1L, 4L, 8));
+        sectionGroup.add(Section.Builder().lineId(1L).upStationId(3L).downStationId(2L).distance(10).build());
+        sectionGroup.add(Section.Builder().lineId(1L).upStationId(4L).downStationId(5L).distance(5).build());
+        sectionGroup.add(Section.Builder().lineId(1L).upStationId(2L).downStationId(1L).distance(6).build());
+        sectionGroup.add(Section.Builder().lineId(1L).upStationId(1L).downStationId(4L).distance(8).build());
         final Sections sections = new Sections(sectionGroup);
 
         line = new Line(1L, "2호선", "black", sections);
@@ -56,7 +56,7 @@ class LineTest {
         assertThat(updatedTarget)
             .usingRecursiveComparison()
             .ignoringFields("id")
-            .isEqualTo(new Section(1L, 3L, 2L, 10));
+            .isEqualTo(Section.Builder().lineId(1L).upStationId(3L).downStationId(2L).distance(10).build());
     }
 
     @DisplayName("특정 상행역을 갖는 구간을 찾는다.")
@@ -65,7 +65,7 @@ class LineTest {
         assertThat(line.findSectionHasUpStation(2L))
             .usingRecursiveComparison()
             .ignoringFields("id")
-            .isEqualTo(new Section(1L, 2L, 1L, 6));
+            .isEqualTo(Section.Builder().lineId(1L).upStationId(2L).downStationId(1L).distance(6).build());
     }
 
     @DisplayName("특정 하행역을 갖는 구간을 찾는다.")
@@ -74,14 +74,14 @@ class LineTest {
         assertThat(line.findSectionHasDownStation(2L))
             .usingRecursiveComparison()
             .ignoringFields("id")
-            .isEqualTo(new Section(1L, 3L, 2L, 10));
+            .isEqualTo(Section.Builder().lineId(1L).upStationId(3L).downStationId(2L).distance(10).build());
     }
 
     @DisplayName("구간이 1개 이하라면, 구간을 제거할 수 없다.")
     @Test
     void validateSizeToDeleteSection() {
         final List<Section> sectionGroup = new ArrayList<>();
-        sectionGroup.add(new Section(1L, 3L, 2L, 10));
+        sectionGroup.add(Section.Builder().lineId(1L).upStationId(3L).downStationId(2L).distance(10).build());
 
         final Line newLine = new Line(1L, "temp", "black", sectionGroup);
         assertThatThrownBy(newLine::validateSizeToDeleteSection)
@@ -95,7 +95,7 @@ class LineTest {
         assertThat(line.findTerminalSection(3L))
             .usingRecursiveComparison()
             .ignoringFields("id")
-            .isEqualTo(new Section(1L, 3L, 2L, 10));
+            .isEqualTo(Section.Builder().lineId(1L).upStationId(3L).downStationId(2L).distance(10).build());
     }
 
     @DisplayName("하행 종점역을 찾는다.")
@@ -104,7 +104,7 @@ class LineTest {
         assertThat(line.findTerminalSection(5L))
             .usingRecursiveComparison()
             .ignoringFields("id")
-            .isEqualTo(new Section(1L, 4L, 5L, 5));
+            .isEqualTo(Section.Builder().lineId(1L).upStationId(4L).downStationId(5L).distance(5).build());
     }
 
     @DisplayName("종점역을 찾을 수 없으면 예외를 발생한다.")

@@ -16,13 +16,13 @@ import wooteco.subway.exception.repository.DataNotFoundException;
 public class SectionDao {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private final RowMapper<Section> sectionRowMapper = (resultSet, rowNum) -> new Section(
-        resultSet.getLong("id"),
-        resultSet.getLong("line_id"),
-        resultSet.getLong("up_station_id"),
-        resultSet.getLong("down_station_id"),
-        resultSet.getInt("distance")
-    );
+    private final RowMapper<Section> sectionRowMapper = (resultSet, rowNum) -> Section.Builder()
+        .id(resultSet.getLong("id"))
+        .lineId(resultSet.getLong("line_id"))
+        .upStationId(resultSet.getLong("up_station_id"))
+        .downStationId(resultSet.getLong("down_station_id"))
+        .distance(resultSet.getInt("distance"))
+        .build();
 
     public SectionDao(final NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;

@@ -121,12 +121,13 @@ public class LineService {
     private void deleteMiddleStation(final Long lineId, final Long stationId, final Line line) {
         final Section leftSection = line.findSectionHasDownStation(stationId);
         final Section rightSection = line.findSectionHasUpStation(stationId);
-        final Section newSection = new Section(
-            lineId,
-            leftSection.getUpStationId(),
-            rightSection.getDownStationId(),
-            leftSection.getDistance() + rightSection.getDistance()
-        );
+
+        final Section newSection = Section.Builder()
+            .lineId(lineId)
+            .upStationId(leftSection.getUpStationId())
+            .downStationId(rightSection.getDownStationId())
+            .distance(leftSection.getDistance() + rightSection.getDistance())
+            .build();
 
         sectionDao.deleteById(leftSection.getId());
         sectionDao.deleteById(rightSection.getId());

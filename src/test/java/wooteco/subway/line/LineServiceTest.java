@@ -17,10 +17,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import wooteco.subway.exception.service.ObjectNotFoundException;
 import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.SectionDao;
 import wooteco.subway.line.section.SectionRequest;
 import wooteco.subway.line.section.SectionResponse;
+import wooteco.subway.line.section.Sections;
 import wooteco.subway.station.StationService;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,13 +54,21 @@ class LineServiceTest {
         final LineRequest lineRequest = spy(new LineRequest(name, color, upStationId, downStationId, distance, extraFare));
         given(lineDao.save(line)).willReturn(new Line(1L, name, color));
 
-        final Section section = new Section(1L, upStationId, downStationId, distance);
-        given(sectionDao.save(section)).willReturn(new Section(1L, 1L, upStationId, downStationId, distance));
+        final Section section =
+            Section.Builder().lineId(1L).upStationId(upStationId).downStationId(downStationId).distance(distance).build();
+        given(sectionDao.save(section)).willReturn(
+            Section.Builder().id(1L).lineId(1L).upStationId(upStationId).downStationId(downStationId).distance(distance).build()
+        );
+        given(lineService.findLine(1L)).willReturn(new LineResponse());
+
+
         final LineResponse createdLine = lineService.createLine(lineRequest);
 
         verify(lineRequest, times(1)).toEntity();
         verify(lineDao, times(1)).save(line);
         verify(sectionDao, times(1)).save(section);
+        verify(lineService, times(1)).findLine(1L);
+
         assertThat(createdLine.getId()).isEqualTo(1L);
     }
 
@@ -66,8 +76,10 @@ class LineServiceTest {
     @Test
     void addSection() {
         final Line line = new Line(1L, "2호선", "black");
-        final Section sectionA = new Section(1L, 1L, 2L, 4L, 10);
-        final Section sectionB = new Section(2L, 1L, 4L, 6L, 10);
+        final Section sectionA =
+            Section.Builder().id(1L).lineId(1L).upStationId(2L).downStationId(4L).distance(10).build();
+        final Section sectionB =
+            Section.Builder().id(2L).lineId(1L).upStationId(4L).downStationId(6L).distance(10).build();
         final List<Section> sectionGroup = Arrays.asList(sectionA, sectionB);
 
         final Long lineId = 1L;
@@ -75,11 +87,13 @@ class LineServiceTest {
         given(lineDao.findById(1L)).willReturn(Optional.of(line));
         given(sectionDao.findByLineId(1L)).willReturn(sectionGroup);
 
-
-        final Section expectedSection = new Section(
-            10L, lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance()
-        );
-
+        final Section expectedSection = Section.Builder()
+            .id(10L)
+            .lineId(lineId)
+            .upStationId(sectionRequest.getUpStationId())
+            .downStationId(sectionRequest.getDownStationId())
+            .distance(sectionRequest.getDistance())
+            .build();
         given(sectionDao.save(sectionRequest.toEntity(lineId))).willReturn(expectedSection);
 
         final SectionResponse sectionResponse = lineService.addSection(lineId, sectionRequest);
@@ -95,8 +109,10 @@ class LineServiceTest {
     @Test
     void deleteSection() {
         final Line line = new Line(1L, "2호선", "black");
-        final Section sectionA = new Section(1L, 1L, 2L, 4L, 10);
-        final Section sectionB = new Section(2L, 1L, 4L, 6L, 10);
+        final Section sectionA =
+            Section.Builder().id(1L).lineId(1L).upStationId(2L).downStationId(4L).distance(10).build();
+        final Section sectionB =
+            Section.Builder().id(2L).lineId(1L).upStationId(4L).downStationId(6L).distance(10).build();
         final List<Section> sectionGroup = Arrays.asList(sectionA, sectionB);
 
         final Long lineId = 1L;
@@ -106,6 +122,8 @@ class LineServiceTest {
         lineService.deleteSection(lineId, 4L);
         verify(sectionDao, times(2)).deleteById(anyLong());
         verify(sectionDao, times(1))
-            .save(new Section(1L, 2L, 6L, 20));
+            .save(
+                Section.Builder().lineId(1L).upStationId(2L).downStationId(6L).distance(20).build()
+            );
     }
 }

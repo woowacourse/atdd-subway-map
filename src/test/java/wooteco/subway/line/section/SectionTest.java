@@ -9,7 +9,9 @@ import wooteco.subway.exception.service.ValidationFailureException;
 
 class SectionTest {
 
-    private static final Section SECTION = new Section(1L, 1L, 1L, 2L, 10);
+    private static final Section SECTION =
+        Section.Builder().id(1L).lineId(1L).upStationId(1L).downStationId(2L).distance(10).build();
+
 
     @DisplayName("새로 추가할 구간의 거리가 기존 구간의 거리보다 크거나 같으면 예외가 발생한다.")
     @Test
@@ -23,9 +25,13 @@ class SectionTest {
     @Test
     void createUpdatedSection() {
         Section updatedSection = SECTION.createUpdatedSection(1L, 3L, 3);
-        assertThat(updatedSection).isEqualTo(new Section(1L, 1L, 3L, 2L, 7));
+        assertThat(updatedSection).isEqualTo(
+            Section.Builder().id(1L).lineId(1L).upStationId(3L).downStationId(2L).distance(7).build()
+        );
 
         updatedSection = SECTION.createUpdatedSection(3L, 2L, 3);
-        assertThat(updatedSection).isEqualTo(new Section(1L, 1L, 1L, 3L, 7));
+        assertThat(updatedSection).isEqualTo(
+            Section.Builder().id(1L).lineId(1L).upStationId(1L).downStationId(3L).distance(7).build()
+        );
     }
 }

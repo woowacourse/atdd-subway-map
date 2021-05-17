@@ -37,8 +37,12 @@ class SectionDaoTest {
     @Test
     void save() {
         final Line createdLine = lineDao.save(new Line("2호선", "black"));
-
-        final Section section = new Section(createdLine.getId(), 2L, 4L, 10);
+        final Section section = Section.Builder()
+            .lineId(createdLine.getId())
+            .upStationId(2L)
+            .downStationId(4L)
+            .distance(10)
+            .build();
         final Section createdSection = sectionDao.save(section);
 
         assertThat(createdSection)
@@ -52,8 +56,8 @@ class SectionDaoTest {
     void findByLineId() {
         final Line createdLine = lineDao.save(new Line("2호선", "black"));
         final List<Section> sections = new ArrayList<>(Arrays.asList(
-            new Section(createdLine.getId(), 2L, 4L, 10),
-            new Section(createdLine.getId(), 4L, 6L, 20)
+            Section.Builder().lineId(createdLine.getId()).upStationId(2L).downStationId(4L).distance(10).build(),
+            Section.Builder().lineId(createdLine.getId()).upStationId(4L).downStationId(6L).distance(10).build()
         ));
         sections.forEach(section -> sectionDao.save(section));
 
@@ -66,7 +70,12 @@ class SectionDaoTest {
     @Test
     void findByName() {
         final Line createdLine = lineDao.save(new Line("2호선", "black"));
-        final Section section = new Section(createdLine.getId(), 2L, 4L, 10);
+        final Section section = Section.Builder()
+            .lineId(createdLine.getId())
+            .upStationId(2L)
+            .downStationId(4L)
+            .distance(10)
+            .build();
         final Section createdSection = sectionDao.save(section);
 
         assertThat(sectionDao.findById(createdSection.getId()).get())
@@ -79,12 +88,21 @@ class SectionDaoTest {
     @Test
     void update() {
         final Line createdLine = lineDao.save(new Line("2호선", "black"));
-        final Section section = new Section(createdLine.getId(), 2L, 4L, 10);
+        final Section section = Section.Builder()
+            .lineId(createdLine.getId())
+            .upStationId(2L)
+            .downStationId(4L)
+            .distance(10)
+            .build();
         final Section createdSection = sectionDao.save(section);
 
-        final Section updatedSection = new Section(
-            createdSection.getId(), createdLine.getId(), 4L, 6L, 20
-        );
+        final Section updatedSection = Section.Builder()
+            .id(createdSection.getId())
+            .lineId(createdLine.getId())
+            .upStationId(4L)
+            .downStationId(6L)
+            .distance(20)
+            .build();
         sectionDao.update(updatedSection);
 
         assertThat(sectionDao.findById(createdSection.getId()).get()).isEqualTo(updatedSection);
@@ -93,15 +111,18 @@ class SectionDaoTest {
     @DisplayName("존재하지 않는 구간의 Id로 구간을 수정하면 예외가 발생한다.")
     @Test
     void updateWithAbsentId() {
-        final Long id = getAbsentId();
-        assertThatThrownBy(() -> sectionDao.update(new Section(id, 1L, 1L, 10)))
+        final Line createdLine = lineDao.save(new Line("2호선", "black"));
+        final Long id = getAbsentId(createdLine.getId());
+        final Section section = Section.Builder()
+            .id(id).lineId(createdLine.getId()).upStationId(1L).downStationId(2L).build();
+        assertThatThrownBy(() -> sectionDao.update(section))
             .isInstanceOf(DataNotFoundException.class)
             .hasMessage("해당 Id의 구간이 없습니다.");
     }
 
-    private Long getAbsentId() {
-        final Line createdLine = lineDao.save(new Line("2호선", "black"));
-        final Section section = new Section(createdLine.getId(), 2L, 4L, 10);
+    private Long getAbsentId(final Long lineId) {
+        final Section section =
+            Section.Builder().lineId(lineId).upStationId(2L).downStationId(4L).distance(10).build();
         final Section createdSection = sectionDao.save(section);
 
         sectionDao.deleteById(createdSection.getId());
@@ -112,7 +133,12 @@ class SectionDaoTest {
     @Test
     void delete() {
         final Line createdLine = lineDao.save(new Line("2호선", "black"));
-        final Section section = new Section(createdLine.getId(), 2L, 4L, 10);
+        final Section section = Section.Builder()
+            .lineId(createdLine.getId())
+            .upStationId(2L)
+            .downStationId(4L)
+            .distance(10)
+            .build();
         final Section createdSection = sectionDao.save(section);
 
         sectionDao.deleteById(createdSection.getId());
@@ -122,7 +148,8 @@ class SectionDaoTest {
     @DisplayName("존재하지 않는 구간의 Id로 구간을 제거하면 예외가 발생한다.")
     @Test
     void deleteWithAbsentId() {
-        assertThatThrownBy(() -> sectionDao.deleteById(getAbsentId()))
+        final Line createdLine = lineDao.save(new Line("2호선", "black"));
+        assertThatThrownBy(() -> sectionDao.deleteById(getAbsentId(createdLine.getId())))
             .hasMessage("해당 Id의 구간이 없습니다.")
             .isInstanceOf(DataNotFoundException.class);
     }

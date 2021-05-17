@@ -16,7 +16,12 @@ public class SectionRequest {
     }
 
     public Section toEntity(final Long lineId) {
-        return new Section(lineId, upStationId, downStationId, distance);
+        return Section.Builder()
+            .lineId(lineId)
+            .upStationId(upStationId)
+            .downStationId(downStationId)
+            .distance(distance)
+            .build();
     }
 
     public Long getUpStationId() {

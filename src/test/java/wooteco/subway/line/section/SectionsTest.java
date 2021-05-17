@@ -18,10 +18,10 @@ public class SectionsTest {
     @BeforeEach
     void setUp() {
         final List<Section> sectionGroup = new ArrayList<>();
-        sectionGroup.add(new Section(1L, 3L, 2L, 10));
-        sectionGroup.add(new Section(1L, 4L, 5L, 5));
-        sectionGroup.add(new Section(1L, 2L, 1L, 6));
-        sectionGroup.add(new Section(1L, 1L, 4L, 8));
+        sectionGroup.add(Section.Builder().lineId(1L).upStationId(3L).downStationId(2L).distance(10).build());
+        sectionGroup.add(Section.Builder().lineId(1L).upStationId(4L).downStationId(5L).distance(5).build());
+        sectionGroup.add(Section.Builder().lineId(1L).upStationId(2L).downStationId(1L).distance(6).build());
+        sectionGroup.add(Section.Builder().lineId(1L).upStationId(1L).downStationId(4L).distance(8).build());
         sections = new Sections(sectionGroup);
     }
 
@@ -37,9 +37,9 @@ public class SectionsTest {
     @Test
     void create_fail() {
         final List<Section> sectionGroup = new ArrayList<>();
-        sectionGroup.add(new Section(1L, 1L, 3L, 10));
-        sectionGroup.add(new Section(1L, 3L, 2L, 5));
-        sectionGroup.add(new Section(1L, 2L, 1L, 6));
+        sectionGroup.add(Section.Builder().lineId(1L).upStationId(1L).downStationId(3L).distance(10).build());
+        sectionGroup.add(Section.Builder().lineId(1L).upStationId(3L).downStationId(2L).distance(5).build());
+        sectionGroup.add(Section.Builder().lineId(1L).upStationId(2L).downStationId(1L).distance(6).build());
 
         assertThatThrownBy(() -> new Sections(sectionGroup))
             .isInstanceOf(IllegalArgumentException.class)
@@ -80,7 +80,9 @@ public class SectionsTest {
         assertThat(sections.findSectionHasUpStation(2L))
             .usingRecursiveComparison()
             .ignoringFields("id")
-            .isEqualTo(new Section(1L, 2L, 1L, 6));
+            .isEqualTo(
+                Section.Builder().lineId(1L).upStationId(2L).downStationId(1L).distance(6).build()
+            );
     }
 
     @DisplayName("특정 하행역을 갖는 구간을 찾는다.")
@@ -89,7 +91,9 @@ public class SectionsTest {
         assertThat(sections.findSectionHasDownStation(2L))
             .usingRecursiveComparison()
             .ignoringFields("id")
-            .isEqualTo(new Section(1L, 3L, 2L, 10));
+            .isEqualTo(
+                Section.Builder().lineId(1L).upStationId(3L).downStationId(2L).distance(10).build()
+            );
     }
 
     @DisplayName("특정 상행역이나 하행역이 같은 구간을 찾는다.")
@@ -98,7 +102,9 @@ public class SectionsTest {
         assertThat(sections.findSameForm(6L, 5L))
             .usingRecursiveComparison()
             .ignoringFields("id")
-            .isEqualTo(new Section(1L, 4L, 5L, 5));
+            .isEqualTo(
+                Section.Builder().lineId(1L).upStationId(4L).downStationId(5L).distance(5).build()
+            );
     }
 
     @DisplayName("구간의 개수를 확인한다.")
