@@ -7,8 +7,8 @@ import wooteco.subway.station.domain.Station;
 public class Section {
 
     private static final int DISTANCE_MIN = 1;
-    private Long id;
     private final Long lineId;
+    private Long id;
     private Station upStation;
     private Station downStation;
     private int distance;
@@ -33,11 +33,11 @@ public class Section {
         }
     }
 
-    public boolean isContainEqualsStation(Section section){
+    public boolean isContainEqualsStation(Section section) {
         return isEqualsUpStation(section) || isEqualsDownStation(section);
     }
 
-    public boolean isContainEqualsStations(Section section){
+    public boolean isContainEqualsStations(Section section) {
         return isEqualsUpStation(section) && isEqualsDownStation(section);
     }
 

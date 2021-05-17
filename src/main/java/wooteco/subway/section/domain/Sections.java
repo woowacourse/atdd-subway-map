@@ -160,8 +160,8 @@ public class Sections {
 
     public List<Section> removedSectionsByRemoveInternalStation(Station station) {
         List<Section> removedSections = new ArrayList<>();
-        for (Section section : sections){
-            if(section.isEqualsUpStation(station) || section.isEqualsDownStation(station)){
+        for (Section section : sections) {
+            if (section.isEqualsUpStation(station) || section.isEqualsDownStation(station)) {
                 removedSections.add(section);
             }
         }

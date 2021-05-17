@@ -97,7 +97,8 @@ public class LineService {
         sections.validateRemovable(deletedStation);
 
         if (sections.isTerminalStation(deletedStation)) {
-            sectionService.delete(lineId, new SectionRequest(sections.removedSectionByRemoveTerminalStation(deletedStation)));
+            sectionService.delete(lineId,
+                new SectionRequest(sections.removedSectionByRemoveTerminalStation(deletedStation)));
             return;
         }
         sectionService.create(lineId, new SectionRequest(sections.createdSectionByRemoveInternalStation(lineId, deletedStation)));
