@@ -56,8 +56,8 @@ public class LineService {
     }
 
     @Transactional
-    public void addSection(Long id, SectionCreateRequest request) {
-        Line line = lineSetting(id);
+    public void addSection(Long lineId, SectionCreateRequest request) {
+        Line line = lineSetting(lineId);
         Station upStation = stationService.findById(request.getUpStationId());
         Station downStation = stationService.findById(request.getDownStationId());
         Section section = new Section(line, upStation, downStation, request.getDistance());
@@ -65,8 +65,8 @@ public class LineService {
         sectionService.synchronizeDB(line);
     }
 
-    private Line lineSetting(Long id) {
-        Line line = lineDao.findById(id);
+    private Line lineSetting(Long lineId) {
+        Line line = lineDao.findById(lineId);
         Sections sections = sectionService.findByLine(line);
         line.updateSections(sections);
         return line;
@@ -80,8 +80,8 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineStationsResponse findBy(Long id) {
-        Line line = lineSetting(id);
+    public LineStationsResponse findBy(Long lineId) {
+        Line line = lineSetting(lineId);
         sectionSetting(line.getSections());
         return new LineStationsResponse(line);
     }
@@ -96,8 +96,8 @@ public class LineService {
     }
 
     @Transactional
-    public void update(Long id, LineUpdateRequest request) {
-        Line line = lineDao.findById(id);
+    public void update(Long lineId, LineUpdateRequest request) {
+        Line line = lineDao.findById(lineId);
 
         validatesNameDuplicationExceptOriginalName(request, line);
 
@@ -114,8 +114,8 @@ public class LineService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        lineDao.delete(id);
+    public void delete(Long lineId) {
+        lineDao.delete(lineId);
         log.info("노선 삭제 성공");
     }
 

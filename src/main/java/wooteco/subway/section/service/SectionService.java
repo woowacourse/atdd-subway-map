@@ -31,8 +31,8 @@ public class SectionService {
         addSections(line.getSections());
     }
 
-    private void deleteByLineId(Long id) {
-        sectionDao.deleteByLineId(id);
+    private void deleteByLineId(Long lineId) {
+        sectionDao.deleteByLineId(lineId);
     }
 
     private void addSections(Sections sections) {

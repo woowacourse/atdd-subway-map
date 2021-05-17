@@ -48,12 +48,12 @@ public class StationService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        stationDao.delete(id);
+    public void delete(Long stationId) {
+        stationDao.delete(stationId);
         log.info("지하철 역 삭제 성공");
     }
 
-    public Station findById(Long id) {
-        return stationDao.findById(id);
+    public Station findById(Long stationId) {
+        return stationDao.findById(stationId);
     }
 }
