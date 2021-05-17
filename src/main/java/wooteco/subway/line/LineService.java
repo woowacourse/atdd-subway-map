@@ -1,6 +1,7 @@
 package wooteco.subway.line;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.line.LineDuplicationException;
 import wooteco.subway.exception.line.LineNonexistenceException;
 import wooteco.subway.section.Section;
@@ -10,6 +11,7 @@ import wooteco.subway.station.StationResponse;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class LineService {
 
     private final SectionService sectionService;
@@ -20,6 +22,7 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
+    @Transactional
     public Line add(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
 
@@ -41,6 +44,7 @@ public class LineService {
                 .orElseThrow(LineNonexistenceException::new);
     }
 
+    @Transactional
     public void update(Long id, LineRequest lineRequest) {
         validateDuplicatedName(lineRequest.getName());
         validateDuplicatedColor(lineRequest.getColor());
@@ -61,6 +65,7 @@ public class LineService {
         throw new LineDuplicationException();
     }
 
+    @Transactional
     public void delete(Long id) {
         lineDao.delete(id);
     }
