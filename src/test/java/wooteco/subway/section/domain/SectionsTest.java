@@ -107,7 +107,7 @@ class SectionsTest {
 
         Sections sections = new Sections(sectionList);
 
-        sections.deleteSection(section3.getLineId(), section3.getDownStation());
+        sections.findUpdateSectionAfterDelete(section3.getLineId(), section3.getDownStation());
 
         assertThat(sections.getSections()).hasSize(2);
         assertThat(sections.getSections()).containsExactly(section1, section2);
@@ -123,7 +123,7 @@ class SectionsTest {
 
         Sections sections = new Sections(sectionList);
 
-        assertThatThrownBy(() -> sections.deleteSection(section1.getLineId(), station1))
+        assertThatThrownBy(() -> sections.findUpdateSectionAfterDelete(section1.getLineId(), station1))
                 .isInstanceOf(SectionDeleteException.class);
     }
 }

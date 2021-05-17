@@ -179,7 +179,7 @@ public class Sections {
         }
     }
 
-    public Optional<Section> deleteSection(Long lineId, Station station) {
+    public Optional<Section> findUpdateSectionAfterDelete(Long lineId, Station station) {
         validateDeleteSection();
         if (isEndStation(station)) {
             endStationDelete(station);
@@ -198,9 +198,7 @@ public class Sections {
 
         Section updateSection = new Section(lineId, upSection.getUpStation(), downSection.getDownStation(), updateSectionDistance);
 
-        sections.remove(upSection);
-        sections.remove(downSection);
-        sections.add(updateSection);
+        deleteSection(upSection, downSection, updateSection);
 
         return Optional.of(updateSection);
     }
@@ -209,6 +207,12 @@ public class Sections {
         if (sections.size() == 1) {
             throw new SectionDeleteException("구간이 하나인 노선에서 마지막 구간을 제거할 수 없습니다.");
         }
+    }
+
+    private void deleteSection(Section upSection, Section downSection, Section updateSection) {
+        sections.remove(upSection);
+        sections.remove(downSection);
+        sections.add(updateSection);
     }
 
     private boolean isEndStation(Station station) {

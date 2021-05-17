@@ -33,7 +33,7 @@ public class SectionService {
     }
 
     public void deleteSection(Sections sections, Long lineId, Station station) {
-        Optional<Section> optSection = sections.deleteSection(lineId, station);
+        Optional<Section> optSection = sections.findUpdateSectionAfterDelete(lineId, station);
         sectionDao.delete(lineId, station);
         optSection.ifPresent(sectionDao::save);
     }
