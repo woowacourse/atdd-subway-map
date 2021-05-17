@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DuplicatedNameException;
+import wooteco.subway.exception.NoDataHasBeenAppliedException;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.repository.StationRepository;
 
@@ -32,7 +33,7 @@ public class JdbcStationRepository implements StationRepository {
     @Override
     public Station save(final Station station) {
         try {
-            String query = "INSERT INTO station (name) VALUES(?)";
+            String query = "INSERT INTO station(name) VALUES(?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             this.jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
@@ -75,7 +76,10 @@ public class JdbcStationRepository implements StationRepository {
     @Override
     public void delete(final Long id) {
         String query = "DELETE FROM station WHERE id = ?";
-        this.jdbcTemplate.update(query, id);
+        int update = this.jdbcTemplate.update(query, id);
+        if (update < 1) {
+            throw new NoDataHasBeenAppliedException("지하철 역을 삭제하는데 실패했습니다.");
+        }
     }
 
     @Override
