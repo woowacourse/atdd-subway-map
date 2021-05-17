@@ -83,9 +83,13 @@ public class Sections {
     }
 
     public void validateIfPossibleToDelete() {
-        if (this.sections.size() == 1) {
+        if (isNotRemovable()) {
             throw new SubwayException(HttpStatus.BAD_REQUEST, "구간이 하나뿐이므로 삭제 불가능합니다.");
         }
+    }
+
+    private boolean isNotRemovable() {
+        return this.sections.size() == 1;
     }
 
     public boolean hasStationAsDownward(Long stationId) {
