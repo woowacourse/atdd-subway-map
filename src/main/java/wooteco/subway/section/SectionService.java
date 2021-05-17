@@ -18,7 +18,7 @@ public class SectionService {
     private final StationService stationService;
     private final SectionDao sectionDao;
 
-    private SectionService(StationService stationService, SectionDao sectionDao) {
+    public SectionService(StationService stationService, SectionDao sectionDao) {
         this.stationService = stationService;
         this.sectionDao = sectionDao;
     }

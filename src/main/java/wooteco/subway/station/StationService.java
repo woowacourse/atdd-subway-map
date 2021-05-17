@@ -13,7 +13,7 @@ public class StationService {
 
     private final StationDao stationDao;
 
-    private StationService(StationDao stationDao) {
+    public StationService(StationDao stationDao) {
         this.stationDao = stationDao;
     }
 
