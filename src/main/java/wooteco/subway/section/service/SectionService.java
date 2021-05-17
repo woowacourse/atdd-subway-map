@@ -25,7 +25,8 @@ public class SectionService {
         return sectionDao.findByLineId(lineId);
     }
 
-    public void addSection(Sections sections, Section section) {
+    public void addSection(Section section, Long id) {
+        Sections sections = findByLineId(id);
         Section updateSection = sections.addSection(section);
         sectionDao.save(section);
         sectionDao.update(updateSection);
