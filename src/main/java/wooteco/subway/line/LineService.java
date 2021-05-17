@@ -115,22 +115,16 @@ public class LineService {
             sectionDao.deleteById(line.findTerminalSection(stationId).getId());
             return;
         }
-        deleteMiddleStation(lineId, stationId, line);
+        deleteMiddleStation(stationId, line);
     }
 
-    private void deleteMiddleStation(final Long lineId, final Long stationId, final Line line) {
+    private void deleteMiddleStation(final Long stationId, final Line line) {
         final Section leftSection = line.findSectionHasDownStation(stationId);
         final Section rightSection = line.findSectionHasUpStation(stationId);
-
-        final Section newSection = Section.Builder()
-            .lineId(lineId)
-            .upStationId(leftSection.getUpStationId())
-            .downStationId(rightSection.getDownStationId())
-            .distance(leftSection.getDistance() + rightSection.getDistance())
-            .build();
+        final Section connectedSection = line.createConnectedSection(leftSection, rightSection);
 
         sectionDao.deleteById(leftSection.getId());
         sectionDao.deleteById(rightSection.getId());
-        sectionDao.save(newSection);
+        sectionDao.save(connectedSection);
     }
 }

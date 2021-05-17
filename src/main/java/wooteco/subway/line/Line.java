@@ -71,6 +71,19 @@ public class Line {
         return sections.findSectionHasDownStation(existentStationId);
     }
 
+    public Section createConnectedSection(final Section leftSection, final Section rightSection) {
+        if (!leftSection.getDownStationId().equals(rightSection.getUpStationId())) {
+            throw new ValidationFailureException("연결된 구간이 아닙니다.");
+        }
+
+        return Section.Builder()
+            .lineId(leftSection.getLineId())
+            .upStationId(leftSection.getUpStationId())
+            .downStationId(rightSection.getDownStationId())
+            .distance(leftSection.getDistance() + rightSection.getDistance())
+            .build();
+    }
+
     public void validateSizeToDeleteSection() {
         if (sections.size() < MINIMUM_SECTION_DELETION_COUNT) {
             throw new ValidationFailureException(
@@ -114,9 +127,9 @@ public class Line {
             return false;
         }
         final Line line = (Line) o;
-        return Objects.equals(getId(), line.getId()) && Objects
-            .equals(getName(), line.getName()) && Objects.equals(getColor(), line.getColor())
-            && Objects.equals(getSections(), line.getSections());
+        return Objects.equals(getId(), line.getId()) && Objects.equals(getName(), line.getName())
+            && Objects.equals(getColor(), line.getColor()) && Objects
+            .equals(getSections(), line.getSections());
     }
 
     @Override

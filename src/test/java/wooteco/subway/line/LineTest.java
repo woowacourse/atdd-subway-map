@@ -14,6 +14,7 @@ import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.Sections;
 
 class LineTest {
+
     private Line line;
 
     @BeforeEach
@@ -75,6 +76,18 @@ class LineTest {
             .usingRecursiveComparison()
             .ignoringFields("id")
             .isEqualTo(Section.Builder().lineId(1L).upStationId(3L).downStationId(2L).distance(10).build());
+    }
+
+    @DisplayName("상행 하행 구간을 연결하는 새로운 구간을 만든다.")
+    @Test
+    void createConnectedSection() {
+        final Section leftSection = Section.Builder().lineId(1L).upStationId(1L).downStationId(2L).distance(3).build();
+        final Section rightSection = Section.Builder().lineId(1L).upStationId(2L).downStationId(3L).distance(7).build();
+
+        final Section connectedSection = line.createConnectedSection(leftSection, rightSection);
+        assertThat(connectedSection.getUpStationId()).isEqualTo(leftSection.getUpStationId());
+        assertThat(connectedSection.getDownStationId()).isEqualTo(rightSection.getDownStationId());
+        assertThat(connectedSection.getDistance()).isEqualTo(leftSection.getDistance() + rightSection.getDistance());
     }
 
     @DisplayName("구간이 1개 이하라면, 구간을 제거할 수 없다.")
