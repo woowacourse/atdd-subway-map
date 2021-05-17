@@ -10,6 +10,8 @@ import wooteco.subway.line.section.Sections;
 
 public class Line {
 
+    private static final int MINIMUM_SECTION_DELETION_COUNT = 2;
+
     private final Long id;
     private final String name;
     private final String color;
@@ -70,8 +72,10 @@ public class Line {
     }
 
     public void validateSizeToDeleteSection() {
-        if (sections.size() <= 1) {
-            throw new ValidationFailureException("구간이 한 개 이하면 지울 수 없습니다.");
+        if (sections.size() < MINIMUM_SECTION_DELETION_COUNT) {
+            throw new ValidationFailureException(
+                String.format("구간이 %s개 미만이면 지울 수 없습니다.", MINIMUM_SECTION_DELETION_COUNT)
+            );
         }
     }
 
