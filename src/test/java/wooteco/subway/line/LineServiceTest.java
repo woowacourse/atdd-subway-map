@@ -13,6 +13,7 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.exception.DeleteSectionException;
 import wooteco.subway.exception.DuplicateLineNameException;
+import wooteco.subway.exception.DuplicatedSectionException;
 import wooteco.subway.exception.NotExistLineException;
 import wooteco.subway.exception.NotExistStationException;
 import wooteco.subway.exception.SectionDistanceException;
@@ -322,7 +323,7 @@ public class LineServiceTest {
         // when then
         assertThatThrownBy(() -> {
             lineService.addSection(lineId, new LineRequest(1L, 3L, 100));
-        }).isInstanceOf(SectionDistanceException.class);
+        }).isInstanceOf(DuplicatedSectionException.class);
     }
 
     @DisplayName("추가하는 구간의 역이 둘 다 노선에 포함되지 않는다면, 예외를 던진다. (A-B에 X-Y 구간 추가시)")
