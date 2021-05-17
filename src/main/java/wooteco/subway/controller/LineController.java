@@ -2,13 +2,12 @@ package wooteco.subway.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.controller.request.LineAndSectionCreateRequest;
+import wooteco.subway.controller.request.SectionInsertRequest;
+import wooteco.subway.controller.response.LineCreateResponse;
 import wooteco.subway.controller.response.LineResponse;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.exception.line.LineNotFoundException;
-import wooteco.subway.service.LineService;
-import wooteco.subway.service.dto.LineDto;
+import wooteco.subway.service.SubwayFacade;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -19,48 +18,54 @@ import java.util.stream.Collectors;
 @RequestMapping("/lines")
 public class LineController {
 
-    private final LineService lineService;
+    private final SubwayFacade subwayFacade;
 
-    public LineController(LineService lineService) {
-        this.lineService = lineService;
+    public LineController(SubwayFacade subwayFacade) {
+        this.subwayFacade = subwayFacade;
     }
 
-    @InitBinder
-    public void initBinder(WebDataBinder webDataBinder) {
-        LineValidator lineValidator = new LineValidator();
-        webDataBinder.addValidators(lineValidator);
-    }
-
-    @PostMapping()
-    public ResponseEntity<LineResponse> create(@RequestBody @Valid LineRequest lineRequest) {
-        LineResponse lineResponse = new LineResponse(lineService.create(lineRequest));
+    @PostMapping
+    public ResponseEntity<LineCreateResponse> createLine(@RequestBody @Valid LineAndSectionCreateRequest lineAndSectionCreateRequest) {
+        LineCreateResponse lineResponse = new LineCreateResponse(subwayFacade.createLine(lineAndSectionCreateRequest));
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        final List<LineDto> lines = lineService.findAll();
-        final List<LineResponse> lineResponses = lines.stream()
+        final List<LineResponse> lineRetrieveResponses = subwayFacade.findAllLines().stream()
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(lineResponses);
-    }
-
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<LineResponse> showLines(@PathVariable Long id) throws LineNotFoundException {
-        LineResponse lineResponse = new LineResponse(lineService.findById(id));
-        return ResponseEntity.ok().body(lineResponse);
+        return ResponseEntity.ok().body(lineRetrieveResponses);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<LineResponse> update(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.updateById(id, lineRequest);
+    public ResponseEntity<LineResponse> update(@PathVariable Long id, @RequestBody LineAndSectionCreateRequest lineAndSectionCreateRequest) {
+        subwayFacade.updateLineById(id, lineAndSectionCreateRequest);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        lineService.deleteById(id);
+    @GetMapping(value = "/{lineId}")
+    public ResponseEntity<LineResponse> showSubwayLineInformation(@PathVariable Long lineId) {
+        LineResponse lineResponse = new LineResponse(subwayFacade.findAllInfoByLineId(lineId));
+        return ResponseEntity.ok().body(lineResponse);
+    }
+
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity<LineResponse> insertSectionInLine(@PathVariable Long lineId, @RequestBody SectionInsertRequest sectionInsertRequest) {
+        subwayFacade.insertSectionInLine(lineId, sectionInsertRequest);
+        LineResponse lineResponse = new LineResponse(subwayFacade.findAllInfoByLineId(lineId));
+        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections")).body(lineResponse);
+    }
+
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity<Void> deleteSectionInLine(@PathVariable Long lineId, @RequestParam("stationId") Long stationId) {
+        subwayFacade.deleteSectionInLine(lineId, stationId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping(value = "/{lineId}")
+    public ResponseEntity<Void> deleteLine(@PathVariable Long lineId) {
+        subwayFacade.deleteLine(lineId);
         return ResponseEntity.noContent().build();
     }
 }

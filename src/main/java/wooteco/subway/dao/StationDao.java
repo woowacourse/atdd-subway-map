@@ -45,11 +45,9 @@ public class StationDao {
         return jdbcTemplate.queryForObject(query, String.class, id);
     }
 
-    public Optional<Station> findById(Long id) {
+    public Station findById(Long id) {
         String query = "SELECT * FROM station WHERE id=?";
-        return jdbcTemplate.query(query, STATION_MAPPER, id)
-                .stream()
-                .findAny();
+        return jdbcTemplate.queryForObject(query, STATION_MAPPER, id);
     }
 
     public Optional<Station> findByName(String name) {
@@ -67,5 +65,11 @@ public class StationDao {
     public int countsByName(String name) {
         String query = "SELECT COUNT(name) FROM station WHERE name =?";
         return jdbcTemplate.queryForObject(query, Integer.class, name);
+    }
+
+    public boolean isExistById(Long id) {
+        String query = "SELECT COUNT(name) FROM station WHERE id =?";
+        final int cnt = jdbcTemplate.queryForObject(query, Integer.class, id);
+        return cnt > 0;
     }
 }

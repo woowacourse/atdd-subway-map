@@ -1,13 +1,16 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.controller.request.StationRequest;
+import wooteco.subway.controller.response.StationResponse;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
+import wooteco.subway.domain.StationId;
 import wooteco.subway.exception.station.StationDuplicateException;
 import wooteco.subway.exception.station.StationNotFoundException;
 import wooteco.subway.service.dto.StationDto;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +26,10 @@ public class StationService {
     public StationDto create(StationRequest stationRequest) {
         validate(stationRequest);
         final Long id = stationDao.insert(stationRequest.toEntity());
-        final Station station = stationDao.findById(id).orElseThrow(StationNotFoundException::new);
+        if (!stationDao.isExistById(id)) {
+            throw new StationNotFoundException();
+        }
+        final Station station = stationDao.findById(id);
         return new StationDto(station);
     }
 
@@ -36,6 +42,17 @@ public class StationService {
 
     public void deleteById(Long id) {
         stationDao.deleteById(id);
+    }
+
+    public List<StationResponse> makeStationResponses(List<StationId> stationIds) {
+        final List<StationResponse> stationResponses = new ArrayList<>();
+        for (StationId stationId : stationIds) {
+            if (!stationDao.isExistById(stationId.getId())) {
+                throw new StationNotFoundException();
+            }
+            stationResponses.add(new StationResponse(stationDao.findById(stationId.getId())));
+        }
+        return stationResponses;
     }
 
     private void validate(StationRequest stationRequest) {

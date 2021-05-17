@@ -1,3 +1,8 @@
+
+DROP TABLE SECTION;
+DROP TABLE LINE;
+DROP TABLE STATION;
+
 create table if not exists STATION (
     id bigint auto_increment not null,
     name varchar(255) not null unique,

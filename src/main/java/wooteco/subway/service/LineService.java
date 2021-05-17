@@ -1,12 +1,13 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.controller.request.LineAndSectionCreateRequest;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
 import wooteco.subway.exception.line.LineColorDuplicateException;
 import wooteco.subway.exception.line.LineNameDuplicateException;
 import wooteco.subway.exception.line.LineNotFoundException;
+import wooteco.subway.exception.section.BothEndStationsSameException;
 import wooteco.subway.service.dto.LineDto;
 
 import java.util.List;
@@ -21,11 +22,9 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public LineDto create(LineRequest lineRequest) {
-        validate(lineRequest);
-        final Long id = lineDao.insert(lineRequest.toEntity());
-        final Line line = lineDao.findById(id);
-        return new LineDto(line);
+    public Line create(Line line) {
+        final Long id = lineDao.insert(line);
+        return lineDao.findById(id);
     }
 
     public List<LineDto> findAll() {
@@ -43,17 +42,31 @@ public class LineService {
         return new LineDto(line);
     }
 
-    public void updateById(Long id, LineRequest lineRequest) {
-        lineDao.update(id, lineRequest.toEntity());
+    public void checkIfExistsById(Long id) {
+        if (!lineDao.isExistById(id)) {
+            throw new LineNotFoundException();
+        }
+    }
+
+    public void updateById(Long id, Line updateLine) {
+        lineDao.update(id, updateLine);
     }
 
     public void deleteById(Long id) {
         lineDao.delete(id);
     }
 
-    private void validate(LineRequest lineRequest) {
-        validateDuplicateName(lineRequest.getName());
-        validateDuplicateColor(lineRequest.getColor());
+    public void validate(LineAndSectionCreateRequest lineAndSectionCreateRequest) {
+        validateSameEndStations(lineAndSectionCreateRequest.getUpStationId(),
+                lineAndSectionCreateRequest.getDownStationId());
+        validateDuplicateName(lineAndSectionCreateRequest.getName());
+        validateDuplicateColor(lineAndSectionCreateRequest.getColor());
+    }
+
+    private void validateSameEndStations(Long upStationId, Long downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new BothEndStationsSameException();
+        }
     }
 
     private void validateDuplicateName(String name) {

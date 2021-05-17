@@ -2,9 +2,11 @@ package wooteco.subway.controller.response;
 
 import wooteco.subway.domain.Line;
 import wooteco.subway.service.dto.LineDto;
+import wooteco.subway.service.dto.LineWithStationsDto;
 
 import java.util.List;
 
+// 특정 노선 조회 시 사용되는 응답
 public class LineResponse {
     private Long id;
     private String color;
@@ -20,6 +22,11 @@ public class LineResponse {
 
     public LineResponse(LineDto lineDto) {
         this(lineDto.getId(), lineDto.getColor(), lineDto.getName());
+    }
+
+    public LineResponse(LineWithStationsDto lineWithStations) {
+        this(lineWithStations.getId(), lineWithStations.getColor(),
+                lineWithStations.getName(), lineWithStations.getStations());
     }
 
     public LineResponse(Long id, String color, String name) {

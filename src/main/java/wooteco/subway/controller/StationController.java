@@ -2,10 +2,9 @@ package wooteco.subway.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.controller.request.StationRequest;
 import wooteco.subway.controller.response.StationResponse;
-import wooteco.subway.dto.StationRequest;
 import wooteco.subway.service.StationService;
 import wooteco.subway.service.dto.StationDto;
 
@@ -22,12 +21,6 @@ public class StationController {
 
     public StationController(StationService stationService) {
         this.stationService = stationService;
-    }
-
-    @InitBinder
-    public void initBinder(WebDataBinder webDataBinder) {
-        StationValidator stationValidator = new StationValidator();
-        webDataBinder.addValidators(stationValidator);
     }
 
     @PostMapping()

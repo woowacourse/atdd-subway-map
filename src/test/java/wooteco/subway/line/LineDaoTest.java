@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.Rollback;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static wooteco.subway.Fixture.makeLine;
+import static wooteco.subway.fixture.Fixture.makeLine;
 
 @JdbcTest
 class LineDaoTest {
