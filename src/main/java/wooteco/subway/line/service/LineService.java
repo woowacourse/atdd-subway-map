@@ -27,21 +27,26 @@ public class LineService {
     }
 
     public void update(Long id, LineRequest lineRequest) {
-        Line duplicateLine = lineDao.findByName(lineRequest.getName())
-                .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
-
-        if (!duplicateLine.getId().equals(id)) {
-            throw new IllegalArgumentException("중복된 노선입니다.");
-        }
+        validLineId(id);
+        lineDao.findByName(lineRequest.getName())
+                .filter(line -> !line.sameAs(id))
+                .ifPresent(line -> {
+                    throw new IllegalArgumentException("중복된 노선입니다.");
+                });
 
         lineDao.update(id, lineRequest.toLineEntity());
     }
 
+    private void validLineId(Long id) {
+        lineDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
+    }
+
     private void validateLine(Line line) {
-        Optional<Line> duplicateLine = lineDao.findByName(line.getName());
-        if (duplicateLine.isPresent()) {
-            throw new IllegalArgumentException("중복된 노선입니다.");
-        }
+        lineDao.findByName(line.getName())
+                .ifPresent(matchedLine -> {
+                    throw new IllegalArgumentException("중복된 노선입니다.");
+                });
     }
 
     @Transactional(readOnly = true)

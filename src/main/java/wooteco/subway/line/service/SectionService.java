@@ -87,7 +87,7 @@ public class SectionService {
         Station station = findSameStationInSection(upStationId, downStationId, sections);
 
         Section section = new Section(lineId, upStationId, downStationId, distance);
-        updateNewStation(station, sections, new Section(lineId, upStationId, downStationId, distance));
+        updateNewStation(station, sections, section);
         sectionDao.save(section);
     }
 
