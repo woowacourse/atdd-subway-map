@@ -3,6 +3,7 @@ package wooteco.subway.domain.section;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import wooteco.subway.domain.station.Station;
 
@@ -25,7 +26,7 @@ public class Sections {
         for (int i = 0; i < sections.size() - 1; i++) {
             Section lastSection = sortedSections.get(sortedSections.size() - 1);
             for (Section section : sections) {
-                if (lastSection.getDownStation().equals(section.getUpStation())) {
+                if (lastSection.isConnectedBetweenDownAndUp(section)) {
                     sortedSections.add(section);
                     break;
                 }
@@ -36,23 +37,21 @@ public class Sections {
     }
 
     private Section findTopSection(List<Section> sections) {
-        int numOfSections = sections.size();
+        Map<Station, Station> upAndDownStations = toSectionMap(sections);
+        Station topStation =  upAndDownStations.keySet()
+            .stream()
+            .filter(station -> !upAndDownStations.containsValue(station))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("종점 지하철 역을 찾을 수 없습니다."));
 
-        for (int i = 0; i < numOfSections; i++) {
-            boolean isFound = true;
-            Section topSection = sections.get(i);
-            for (int j = 0; j < numOfSections; j++) {
-                Section temp = sections.get(j);
-                if (topSection.getUpStation().equals(temp.getDownStation())) {
-                    isFound = false;
-                    break;
-                }
-            }
-            if (isFound) {
-                return topSection;
-            }
-        }
-        throw new IllegalArgumentException("상행 종점 구간을 찾을 수 없습니다.");
+        return sections.stream()
+            .filter(section -> section.getUpStation().equals(topStation))
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("상행 종점 구간을 찾을 수 없습니다."));
+    }
+
+    private Map<Station, Station> toSectionMap(List<Section> sections) {
+        return sections.stream().collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
     }
 
     public boolean canAddToEndSection(Section section) {

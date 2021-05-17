@@ -55,7 +55,7 @@ class SectionsTest {
 
     @DisplayName("구간 자동 정렬 - 구간이 하나만 있을 경우 자동 정렬")
     @Test
-    void sort3() {
+    void sort2() {
         // given
         Section aToB = new Section(1L, lineId, a, b, 2);
 

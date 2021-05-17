@@ -65,6 +65,10 @@ public class Section {
         }
     }
 
+    public boolean isConnectedBetweenDownAndUp(Section section) {
+        return downStation.equals(section.upStation);
+    }
+
     public Long getId() {
         return id;
     }
