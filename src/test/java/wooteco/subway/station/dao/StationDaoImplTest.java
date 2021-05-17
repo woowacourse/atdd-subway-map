@@ -8,10 +8,10 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.station.domain.Station;
 
+import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 @JdbcTest
 @Sql(scripts = {"classpath:schema.sql", "classpath:data.sql"})
@@ -106,5 +106,13 @@ class StationDaoImplTest {
         //then
         assertThatThrownBy(() -> stationDao.delete(saveStation.id()))
                 .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    @DisplayName("id들로 역들을 찾는다.")
+    void findByIds() {
+        List<Long> ids = Arrays.asList(1L, 2L, 3L);
+        List<Station> stations = stationDao.findByIds(ids);
+        assertThat(stations).containsExactly(new Station(1L), new Station(2L), new Station(3L));
     }
 }

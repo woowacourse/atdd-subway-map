@@ -63,6 +63,10 @@ public class Line {
         return sections.sortedStations();
     }
 
+    public List<Long> stationIds() {
+        return sections.stationIds();
+    }
+
     public Station registeredStation(Section anotherSection) {
         return sections.registeredStation(anotherSection);
     }

@@ -41,8 +41,16 @@ public class Section {
         return upStation;
     }
 
+    public Long upStationId() {
+        return upStation.id();
+    }
+
     public Station downStation() {
         return downStation;
+    }
+
+    public Long downStationId() {
+        return downStation.id();
     }
 
     public int distance() {

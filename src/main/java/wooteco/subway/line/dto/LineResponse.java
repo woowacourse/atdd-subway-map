@@ -27,8 +27,11 @@ public class LineResponse {
     }
 
     public static LineResponse toDto(Line line) {
-        line.stations().forEach(station -> System.out.println(station.name()));
         return new LineResponse(line.id(), line.name(), line.color(), line.stations());
+    }
+
+    public static LineResponse toDto(Line line, List<Station> stations) {
+        return new LineResponse(line.id(), line.name(), line.color(), stations);
     }
 
     public static List<LineResponse> toDtos(List<Line> lines) {

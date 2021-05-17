@@ -3,6 +3,8 @@ package wooteco.subway.line.domain;
 import wooteco.subway.station.domain.Station;
 
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static wooteco.subway.line.domain.Section.EMPTY;
 
@@ -87,5 +89,11 @@ public class Sections {
 
     public int size() {
         return sections.size();
+    }
+
+    public List<Long> stationIds() {
+        return sortedStations().stream()
+                .map(Station::id)
+                .collect(Collectors.toList());
     }
 }

@@ -1,11 +1,17 @@
 package wooteco.subway.line.dto;
 
+import wooteco.subway.line.domain.Section;
+
 public class SectionRequest {
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
     public SectionRequest() {
+    }
+
+    public Section toSection(Long lineId) {
+        return new Section(lineId, upStationId, downStationId, distance);
     }
 
     public SectionRequest(Long upStationId, Long downStationId, int distance) {

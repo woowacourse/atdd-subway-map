@@ -2,6 +2,7 @@ package wooteco.subway.line.repository;
 
 import org.springframework.stereotype.Repository;
 import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.dao.SectionDao;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.Section;
 
@@ -11,11 +12,11 @@ import java.util.Optional;
 @Repository
 public class LineRepository {
     private final LineDao lineDao;
-    private final SectionRepository sectionRepository;
+    private final SectionDao sectionDao;
 
-    public LineRepository(LineDao lineDao, SectionRepository sectionRepository) {
+    public LineRepository(LineDao lineDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
-        this.sectionRepository = sectionRepository;
+        this.sectionDao = sectionDao;
     }
 
     public List<Line> findAll() {
@@ -26,7 +27,7 @@ public class LineRepository {
         Line line = lineDao.findById(id)
                 .orElseThrow(() ->
                         new IllegalArgumentException("[ERROR] 존재하지 않는 노선입니다."));
-        line.initSections(sectionRepository.findAllByLineId(id));
+        line.initSections(sectionDao.findAllByLineId(id));
         return line;
     }
 
@@ -40,20 +41,20 @@ public class LineRepository {
 
     public Line save(String name, String color, Long upStationId, Long downStationId, int distance) {
         Line line = lineDao.save(new Line(name, color));
-        Section section = sectionRepository.save(line.id(), upStationId, downStationId, distance);
+        Section section = sectionDao.save(new Section(line.id(), upStationId, downStationId, distance));
         return new Line(line.id(), line.name(), line.color(), section);
     }
 
     public void updateSection(Long lineId, Section section) {
-        sectionRepository.update(lineId, section);
+        sectionDao.update(new Section(section.id(), lineId, section.upStationId(), section.downStationId(), section.distance()));
     }
 
     public Section addSection(Long lineId, Long upStationId, Long downStationId, int distance) {
-        return sectionRepository.save(lineId, upStationId, downStationId, distance);
+        return sectionDao.save(new Section(lineId, upStationId, downStationId, distance));
     }
 
     public void deleteSection(Long lineId, Long stationId) {
-        sectionRepository.deleteByLineIdAndStationId(lineId, stationId);
+        sectionDao.deleteByLineIdAndStationId(lineId, stationId);
     }
 
     public void delete(Long id) {

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,11 +17,11 @@ import java.util.Optional;
 public class StationDaoImpl implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Station> stationsMapper;
+    private final RowMapper<Station> stationMapper;
 
     public StationDaoImpl(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.stationsMapper = (rs, rowNum) -> new Station(
+        this.stationMapper = (rs, rowNum) -> new Station(
                 rs.getLong("id"),
                 rs.getString("name"));
     }
@@ -44,7 +45,7 @@ public class StationDaoImpl implements StationDao {
         String sql = "SELECT * " +
                 "FROM STATION " +
                 "ORDER BY id DESC";
-        return jdbcTemplate.query(sql, stationsMapper);
+        return jdbcTemplate.query(sql, stationMapper);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class StationDaoImpl implements StationDao {
                 "FROM STATION " +
                 "WHERE id = ?";
 
-        List<Station> stations = jdbcTemplate.query(sql, stationsMapper, id);
+        List<Station> stations = jdbcTemplate.query(sql, stationMapper, id);
         return Optional.ofNullable(DataAccessUtils.singleResult(stations));
     }
 
@@ -63,8 +64,17 @@ public class StationDaoImpl implements StationDao {
                 "FROM STATION " +
                 "WHERE name = ?";
 
-        List<Station> stations = jdbcTemplate.query(sql, stationsMapper, name);
+        List<Station> stations = jdbcTemplate.query(sql, stationMapper, name);
         return Optional.ofNullable(DataAccessUtils.singleResult(stations));
+    }
+
+    @Override
+    public List<Station> findByIds(List<Long> ids) {
+        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
+        String sql = String.format("SELECT * " +
+                "FROM STATION " +
+                "WHERE id IN (%s)", inSql);
+        return jdbcTemplate.query(sql, stationMapper, ids.toArray());
     }
 
     @Override
