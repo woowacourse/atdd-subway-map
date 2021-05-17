@@ -1,6 +1,7 @@
 package wooteco.subway.section.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,19 +22,13 @@ public class Sections {
 
     public Optional<Section> change(final Section requestedSection) {
         final List<Section> relatedSections = relatedSectionsOf(requestedSection);
+        validateAllDifferent(requestedSection, relatedSections);
         validateRelated(requestedSection, relatedSections);
-        for (final Section section : relatedSections) {
-            if (section.hasSameStations(requestedSection)) {
-                break;
-            }
-            if (section.canConnect(requestedSection) && relatedSections.size() == 1) {
-                return Optional.empty();
-            }
-            if (section.canJoin(requestedSection)) {
-                return Optional.ofNullable(section.combineWith(requestedSection));
-            }
-        }
-        throw new SectionException("해당 노선에 추가될 수 없는 구간입니다.");
+
+        return relatedSections.stream()
+                .filter(section -> section.canJoin(requestedSection))
+                .map(section -> section.combineWith(requestedSection))
+                .findFirst();
     }
 
     private List<Section> relatedSectionsOf(final Section requestedSection) {
@@ -48,7 +43,19 @@ public class Sections {
             final Section secondSection = relatedSections.get(SECOND);
 
             validateConnected(firstSection, secondSection);
-            validateDifferent(requestedSection, firstSection, secondSection);
+            validateNoFork(requestedSection, firstSection, secondSection);
+        }
+    }
+
+    private void validateAllDifferent(Section requestedSection, List<Section> relatedSections) {
+        for (final Section section : relatedSections) {
+            validateDifferent(section, requestedSection);
+        }
+    }
+
+    private void validateDifferent(Section firstSection, Section secondSection) {
+        if (firstSection.hasSameStations(secondSection)) {
+            throw new SectionException("이미 두 역을 연결하는 구간이 있습니다.");
         }
     }
 
@@ -62,7 +69,7 @@ public class Sections {
         return !firstSection.canConnect(secondSection);
     }
 
-    private void validateDifferent(final Section requestedSection, final Section firstSection, final Section secondSection) {
+    private void validateNoFork(final Section requestedSection, final Section firstSection, final Section secondSection) {
         if (isForked(requestedSection, firstSection, secondSection)) {
             throw new SectionException("갈래길을 형성할 수 없습니다.");
         }
@@ -126,6 +133,6 @@ public class Sections {
             orderedStationIds.add(nextId);
         }
 
-        return orderedStationIds;
+        return Collections.unmodifiableList(orderedStationIds);
     }
 }
