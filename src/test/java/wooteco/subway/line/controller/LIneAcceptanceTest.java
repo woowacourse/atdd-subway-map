@@ -178,16 +178,16 @@ public class LIneAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선을 수정시 필요한 정보가 빠졌을 경우 예외가 발생한다.")
     @Test
-    void updateLineException() {
+    void updateLineException() throws JsonProcessingException {
         // given
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("color", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("흑기선", null);
+        String content = objectMapper.writeValueAsString(lineRequest);
 
         // when
         long dummyId = 1L;
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params2)
+                .body(content)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put("/lines/{id}", dummyId)
