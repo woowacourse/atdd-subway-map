@@ -73,10 +73,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 초과 길이 구간 생성시 예외를 발생한다.")
     @Test
     void createInvalidDistanceSection() {
-        SectionRequest invalidDistanceSectionRequest = new SectionRequest(5L, 3L, 12);
-        ExtractableResponse<Response> response = sectionPostRequest(invalidDistanceSectionRequest, "/lines/2/sections");
+        SectionRequest invalidDistanceFrontSectionRequest = new SectionRequest(5L, 3L, 12);
+        ExtractableResponse<Response> response = sectionPostRequest(invalidDistanceFrontSectionRequest, "/lines/2/sections");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        SectionRequest invalidDistanceBackSectionRequest = new SectionRequest(2L, 6L, 15);
+        ExtractableResponse<Response> response2 = sectionPostRequest(invalidDistanceBackSectionRequest, "/lines/2/sections");
+
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철구간을 삭제한다.")

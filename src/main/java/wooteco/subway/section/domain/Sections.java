@@ -64,7 +64,8 @@ public class Sections {
 
     private void validateDistance(Section newSection) {
         sections.stream()
-            .filter(section -> section.isUpStation(newSection.getUpStationId()))
+            .filter(section -> section.isUpStation(newSection.getUpStationId()) ||
+                section.isDownStation(newSection.getDownStationId()))
             .findAny()
             .ifPresent(section -> validateDistance(newSection, section));
     }
