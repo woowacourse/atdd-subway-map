@@ -3,8 +3,8 @@ package wooteco.subway.section.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.exception.SectionDeleteException;
-import wooteco.subway.exception.SectionUpdateException;
+import wooteco.subway.exception.sectionsexception.SectionDeleteException;
+import wooteco.subway.exception.sectionsexception.SectionUpdateException;
 import wooteco.subway.station.domain.Station;
 
 import java.util.ArrayList;

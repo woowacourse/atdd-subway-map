@@ -4,8 +4,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import wooteco.subway.exception.*;
+import wooteco.subway.exception.DuplicatedNameException;
+import wooteco.subway.exception.SubwayException;
+import wooteco.subway.exception.illegalexception.IllegalException;
 import wooteco.subway.exception.notfoundexception.NotFoundException;
+import wooteco.subway.exception.sectionsexception.SectionsException;
 
 @ControllerAdvice
 public class SubwayControllerAdvice {
@@ -25,23 +28,13 @@ public class SubwayControllerAdvice {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
-    @ExceptionHandler(IllegalLineArgumentException.class)
-    public ResponseEntity<String> lineArgumentException(IllegalLineArgumentException e) {
+    @ExceptionHandler(IllegalException.class)
+    public ResponseEntity<String> illegalException(IllegalException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
-    @ExceptionHandler(IllegalSectionStatusException.class)
-    public ResponseEntity<String> sectionStatusException(IllegalSectionStatusException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-    }
-
-    @ExceptionHandler(SectionUpdateException.class)
-    public ResponseEntity<String> sectionUpdateException(SectionUpdateException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-    }
-
-    @ExceptionHandler(SectionDeleteException.class)
-    public ResponseEntity<String> sectionDeleteException(SectionDeleteException e) {
+    @ExceptionHandler(SectionsException.class)
+    public ResponseEntity<String> securityException(SectionsException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 }

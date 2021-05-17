@@ -1,6 +1,6 @@
 package wooteco.subway.section.domain;
 
-import wooteco.subway.exception.IllegalSectionArgumentException;
+import wooteco.subway.exception.illegalexception.IllegalSectionArgumentException;
 import wooteco.subway.station.domain.Station;
 
 public class Section {

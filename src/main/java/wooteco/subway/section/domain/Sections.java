@@ -1,8 +1,8 @@
 package wooteco.subway.section.domain;
 
-import wooteco.subway.exception.IllegalSectionStatusException;
-import wooteco.subway.exception.SectionDeleteException;
-import wooteco.subway.exception.SectionUpdateException;
+import wooteco.subway.exception.illegalexception.IllegalSectionStatusException;
+import wooteco.subway.exception.sectionsexception.SectionDeleteException;
+import wooteco.subway.exception.sectionsexception.SectionUpdateException;
 import wooteco.subway.exception.notfoundexception.NotFoundSectionException;
 import wooteco.subway.station.domain.Station;
 
