@@ -122,14 +122,14 @@ public class Sections {
 
     public Section findSectionHasUpStation(long stationId) {
         return sectionGroup.stream()
-            .filter(section -> section.getUpStationId() == stationId)
+            .filter(section -> section.getUpStationId().equals(stationId))
             .findAny()
             .orElseThrow(() -> new ObjectNotFoundException("해당 역을 상행역으로 가지는 구간을 찾을 수 없습니다."));
     }
 
     public Section findSectionHasDownStation(long stationId) {
         return sectionGroup.stream()
-            .filter(section -> section.getDownStationId() == stationId)
+            .filter(section -> section.getDownStationId().equals(stationId))
             .findAny()
             .orElseThrow(() -> new ObjectNotFoundException("해당 역을 하행역으로 가지는 구간을 찾을 수 없습니다."));
     }
@@ -140,7 +140,7 @@ public class Sections {
         return sectionGroup.stream()
             .filter(upStationFilter.or(downStationFilter))
             .findAny()
-            .orElseThrow(() -> new RuntimeException("구간을 추가하기에 적합한 곳을 찾지 못했습니다."));
+            .orElseThrow(() -> new ValidationFailureException("구간을 추가하기에 적합한 곳을 찾지 못했습니다."));
     }
 
     public int size() {

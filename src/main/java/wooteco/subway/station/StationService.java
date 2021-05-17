@@ -27,8 +27,8 @@ public class StationService {
     }
 
     public Station findById(final Long id) {
-        return stationDao.findById(id).
-            orElseThrow(() -> new ObjectNotFoundException("해당 Id의 지하철역이 없습니다."));
+        return stationDao.findById(id)
+            .orElseThrow(() -> new ObjectNotFoundException("해당 Id의 지하철역이 없습니다."));
     }
 
     public void deleteStation(final Long id) {

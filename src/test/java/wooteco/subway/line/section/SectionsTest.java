@@ -13,7 +13,7 @@ import wooteco.subway.exception.service.ValidationFailureException;
 
 public class SectionsTest {
 
-    public static Sections sections;
+    private static Sections sections;
 
     @BeforeEach
     void setUp() {
