@@ -69,15 +69,6 @@ public class StationDaoImpl implements StationDao {
     }
 
     @Override
-    public List<Station> findByIds(List<Long> ids) {
-        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
-        String sql = String.format("SELECT * " +
-                "FROM STATION " +
-                "WHERE id IN (%s)", inSql);
-        return jdbcTemplate.query(sql, stationMapper, ids.toArray());
-    }
-
-    @Override
     public void delete(final Long id) {
         String sql = "DELETE FROM STATION " +
                 "WHERE id = ?";

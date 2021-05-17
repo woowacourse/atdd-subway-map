@@ -12,6 +12,7 @@ import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static wooteco.subway.line.domain.Section.EMPTY;
 
@@ -45,8 +46,12 @@ public class LineService {
 
     public LineResponse findById(final Long id) {
         Line findLine = lineRepository.findById(id);
-        List<Long> stationIds = findLine.stationIds();
-        List<Station> findStations = stationDao.findByIds(stationIds);
+        List<Station> findStations = findLine.stationIds()
+                .stream()
+                .map(stationId -> stationDao.findById(stationId)
+                        .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 역입니다.")))
+                .collect(Collectors.toList());
+
         return LineResponse.toDto(findLine, findStations);
     }
 
