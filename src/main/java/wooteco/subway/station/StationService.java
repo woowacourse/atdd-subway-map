@@ -35,7 +35,7 @@ public class StationService {
     public Stations findByIds(final List<Long> ids) {
         final List<Station> stationGroup = stationDao.findByIds(ids);
         if (stationGroup.size() != ids.size()) {
-            throw new ValidationFailureException("존재하지 않는 ID의 지하철역이 없습니다.");
+            throw new ValidationFailureException("존재하지 않는 ID의 지하철역이 있습니다.");
         }
         return new Stations(stationGroup);
     }

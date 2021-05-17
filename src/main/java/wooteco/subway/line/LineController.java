@@ -2,7 +2,7 @@ package wooteco.subway.line;
 
 import java.net.URI;
 import java.util.List;
-import org.springframework.http.MediaType;
+import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +27,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@Valid @RequestBody LineRequest lineRequest) {
         LineResponse lineResponse = lineService.createLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
             .body(lineResponse);
@@ -44,7 +44,7 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @Valid @RequestBody LineRequest lineRequest) {
         lineService.updateLine(id, lineRequest);
         return ResponseEntity.noContent()
             .build();
@@ -58,7 +58,9 @@ public class LineController {
     }
 
     @PostMapping("/{id}/sections")
-    public ResponseEntity<SectionResponse> createSection(@PathVariable long id, @RequestBody SectionRequest sectionRequest) {
+    public ResponseEntity<SectionResponse> createSection(@PathVariable long id,
+        @Valid @RequestBody SectionRequest sectionRequest) {
+
         final SectionResponse sectionResponse = lineService.addSection(id, sectionRequest);
         final String uri = String.format("/lines/%s/sections/%s", id, sectionResponse.getId());
         return ResponseEntity.created(URI.create(uri))

@@ -24,8 +24,8 @@
   
 ## 3단계 피드백 이후 리팩토링 목록
 - [x] NameParameterJdbcTemplate 으로 변경
-- [ ] Section Builder 패턴 적용 
-- [ ] 요청시 비어있는 값 검증
+- [x] Section Builder 패턴 적용 
+- [x] 요청시 비어있는 값 검증
 
 ## Commit Convention
 - 커밋 메시지 언어 : 한글.
