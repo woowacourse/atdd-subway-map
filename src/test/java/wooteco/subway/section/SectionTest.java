@@ -55,10 +55,15 @@ public class SectionTest {
     }
 
     @Test
-    @DisplayName("구간끼리의 거리를 비교한다.")
+    @DisplayName("추가하려는 구간의 거리가 기존 구간의 거리보다 긴 경우 예외를 발생한다.")
     void testCompareDistance() {
-        assertThat(성수에서건대.hasLongerDistanceThan(건대에서구의)).isTrue();
-        assertThat(건대에서구의.hasLongerDistanceThan(구의에서잠실)).isFalse();
+        assertThatThrownBy(() -> 성수에서건대.subtractDistance(구의에서잠실))
+                .isExactlyInstanceOf(InvalidInsertException.class)
+                .hasMessage("추가하려는 구간의 거리는 기존 구간의 거리를 넘을 수 없습니다.");
+
+        assertThatThrownBy(() -> 건대에서구의.subtractDistance(구의에서잠실))
+                .isExactlyInstanceOf(InvalidInsertException.class)
+                .hasMessage("추가하려는 구간의 거리는 기존 구간의 거리를 넘을 수 없습니다.");
     }
 
     @Test

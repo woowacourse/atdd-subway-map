@@ -85,24 +85,13 @@ public class SectionService {
     }
 
     private int compareDistanceWhenAppendToBottom(Long lineId, Section newSection) {
-        Section oldSection = sectionDao.findByDownStationId(lineId, newSection.getDownStation());
-        return differenceInDistance(newSection, oldSection);
-    }
-
-    private int compareDistanceWhenAppendToUp(Long lineId, Section newSection) {
-        Section oldSection = sectionDao.findByUpStationId(lineId, newSection.getUpStation());
-        return differenceInDistance(newSection, oldSection);
-    }
-
-    private int differenceInDistance(Section newSection, Section currentSection) {
-        validatesDistance(currentSection, newSection);
+        Section currentSection = sectionDao.findByDownStationId(lineId, newSection.getDownStation());
         return currentSection.subtractDistance(newSection);
     }
 
-    private void validatesDistance(Section oldSection, Section newSection) {
-        if (newSection.hasLongerDistanceThan(oldSection)) {
-            throw new InvalidInsertException("추가하려는 구간의 거리는 기존 구간의 거리를 넘을 수 없습니다.");
-        }
+    private int compareDistanceWhenAppendToUp(Long lineId, Section newSection) {
+        Section currentSection = sectionDao.findByUpStationId(lineId, newSection.getUpStation());
+        return currentSection.subtractDistance(newSection);
     }
 
     @Transactional(readOnly = true)

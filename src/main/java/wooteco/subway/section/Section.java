@@ -50,16 +50,19 @@ public class Section {
         return getDownStationId().equals(stationId);
     }
 
-    public boolean hasLongerDistanceThan(Section oldSection) {
-        return this.distance >= oldSection.distance;
-    }
-
     public int plusDistance(Section after) {
         return this.distance + after.distance;
     }
 
     public int subtractDistance(Section newSection) {
+        validatesDistance(newSection);
         return this.distance - newSection.distance;
+    }
+
+    private void validatesDistance(Section newSection) {
+        if (this.distance <= newSection.distance) {
+            throw new InvalidInsertException("추가하려는 구간의 거리는 기존 구간의 거리를 넘을 수 없습니다.");
+        }
     }
 
     public Long getId() {
