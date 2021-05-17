@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.RequestException;
-import wooteco.subway.station.controller.dto.StationCreateDto;
-import wooteco.subway.station.controller.dto.StationDto;
+import wooteco.subway.station.service.dto.StationCreateDto;
+import wooteco.subway.station.service.dto.StationDto;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationRepository;
 

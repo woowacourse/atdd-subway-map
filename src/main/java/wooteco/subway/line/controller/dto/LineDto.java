@@ -2,7 +2,7 @@ package wooteco.subway.line.controller.dto;
 
 import java.util.List;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.station.controller.dto.StationDto;
+import wooteco.subway.station.service.dto.StationDto;
 
 public class LineDto {
 

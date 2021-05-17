@@ -1,4 +1,4 @@
-package wooteco.subway.station.controller.dto;
+package wooteco.subway.station.service.dto;
 
 import java.util.List;
 import java.util.stream.Collectors;

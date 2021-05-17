@@ -2,6 +2,7 @@ package wooteco.subway.station.controller.dto;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import wooteco.subway.station.service.dto.StationDto;
 
 public class StationResponse {
 

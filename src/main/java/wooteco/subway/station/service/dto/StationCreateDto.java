@@ -1,4 +1,4 @@
-package wooteco.subway.station.controller.dto;
+package wooteco.subway.station.service.dto;
 
 public class StationCreateDto {
 
