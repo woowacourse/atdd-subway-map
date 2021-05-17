@@ -14,11 +14,11 @@ public class Line {
     private final Sections sections;
 
     public Line(String name, String color) {
-        this(null, name, color, null);
+        this(null, name, color, Sections.empty());
     }
 
     public Line(Long id, String name, String color) {
-        this(id, name, color, null);
+        this(id, name, color, Sections.empty());
     }
 
     public Line(Long id, String name, String color, Sections sections) {

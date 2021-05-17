@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Sections {
+    private static final Sections EMPTY = new Sections(Collections.EMPTY_LIST);
     private static final int DELETE_LIMIT_SIZE = 1;
     private static final int END_POINT_COUNT = 1;
 
@@ -12,6 +13,10 @@ public class Sections {
 
     public Sections(List<Section> sections) {
         this.sections = sections;
+    }
+
+    public static Sections empty() {
+        return EMPTY;
     }
 
     public void add(Section section) {
