@@ -13,7 +13,7 @@ import wooteco.subway.exception.SubwayLineControlException;
 public class ControllerHandler {
 
     @ExceptionHandler(SubwayLineControlException.class)
-    public ResponseEntity<String> notFoundElement(SubwayLineControlException e) {
+    public ResponseEntity<String> subwayLineException(SubwayLineControlException e) {
         return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
 
