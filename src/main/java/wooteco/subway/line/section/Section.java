@@ -12,11 +12,18 @@ public class Section {
     private final int distance;
 
     private Section(final Builder builder) {
+        validateDifferentStation(builder.upStationId, builder.downStationId);
         this.id = builder.id;
         this.lineId = builder.lineId;
         this.upStationId = builder.upStationId;
         this.downStationId = builder.downStationId;
         this.distance = builder.distance;
+    }
+
+    private void validateDifferentStation(final Long upStationId, final Long downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new ValidationFailureException("구간은 상행역과 하행역이 같을 수 없습니다.");
+        }
     }
 
     public static Builder Builder() {

@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.service.ObjectNotFoundException;
-import wooteco.subway.exception.service.ValidationFailureException;
 import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.SectionDao;
 import wooteco.subway.line.section.SectionRequest;
@@ -29,25 +28,13 @@ public class LineService {
 
     @Transactional
     public LineResponse createLine(final LineRequest lineRequest) {
-        final Line line = lineDao.save(lineRequest.toEntity());
-
-        final Long upStationId = lineRequest.getUpStationId();
-        final Long downStationId = lineRequest.getDownStationId();
-        final int distance = lineRequest.getDistance();
-        createSection(line.getId(), new SectionRequest(upStationId, downStationId, distance));
+        final Line line = lineDao.save(
+            lineRequest.toEntity()
+        );
+        sectionDao.save(
+            lineRequest.toSectionEntity(line.getId())
+        );
         return findLine(line.getId());
-    }
-
-    private SectionResponse createSection(final Long lineId, final SectionRequest sectionRequest) {
-        validateDifferentStation(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
-        final Section section = sectionDao.save(sectionRequest.toEntity(lineId));
-        return SectionResponse.from(section);
-    }
-
-    private void validateDifferentStation(final Long upStationId, final Long downStationId) {
-        if (upStationId.equals(downStationId)) {
-            throw new ValidationFailureException("상행역과 하행역이 같은 구간은 추가할 수 없습니다.");
-        }
     }
 
     @Transactional
@@ -55,19 +42,22 @@ public class LineService {
         final Line line = composeLine(lineId);
         final Long upStationId = sectionRequest.getUpStationId();
         final Long downStationId = sectionRequest.getDownStationId();
-        final int distance = sectionRequest.getDistance();
 
-        validateDifferentStation(upStationId, downStationId);
         line.validateStationsToAddSection(upStationId, downStationId);
 
         if (line.includesTerminalStation(upStationId, downStationId)) {
-            return createSection(lineId, sectionRequest);
+            return createSection(sectionRequest.toEntity(lineId));
         }
 
+        final int distance = sectionRequest.getDistance();
         final Section targetSection = line.findUpdatedTarget(upStationId, downStationId, distance);
         final Section updatedSection = targetSection.createUpdatedSection(upStationId, downStationId, distance);
         sectionDao.update(updatedSection);
-        return createSection(lineId, sectionRequest);
+        return createSection(sectionRequest.toEntity(lineId));
+    }
+
+    private SectionResponse createSection(final Section section) {
+        return SectionResponse.from(sectionDao.save(section));
     }
 
     private Line composeLine(final Long lineId) {
