@@ -37,6 +37,10 @@ public class Section {
         return isEqualsUpStation(section) || isEqualsDownStation(section);
     }
 
+    public boolean isContainEqualsStations(Section section){
+        return isEqualsUpStation(section) && isEqualsDownStation(section);
+    }
+
     public boolean isEqualsUpStation(Section section) {
         return upStation.equals(section.getUpStation());
     }

@@ -29,6 +29,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private StationResponse B역;
     private StationResponse C역;
     private StationResponse D역;
+    private StationResponse E역;
+    private StationResponse F역;
 
     @BeforeEach
     public void setUp() {
@@ -37,8 +39,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         B역 = 지하철_역_생성됨(new StationRequest("B"));
         C역 = 지하철_역_생성됨(new StationRequest("C"));
         D역 = 지하철_역_생성됨(new StationRequest("D"));
+        E역 = 지하철_역_생성됨(new StationRequest("E"));
+        F역 = 지하철_역_생성됨(new StationRequest("F"));
 
-        LineRequest lineRequest = new LineRequest("테스트용 노선", "bg-green-600", B역.getId(), C역.getId(), 100);
+        LineRequest lineRequest = new LineRequest("테스트용 노선", "bg-green-600", B역.getId(), C역.getId(),
+            100);
         테스트용_노선 = 지하철_노선_생성됨(lineRequest);
     }
 
@@ -94,6 +99,61 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_구간_추가됨(response, Arrays.asList(B역, D역, C역));
     }
 
+    @DisplayName("중복되는 구간을 추가할 수 없다.(B-C에 B-C 구간 추가시)")
+    @Test
+    void addSectionDuplicateException() {
+        // given
+        LineRequest addSectionRequest = new LineRequest(B역.getId(), C역.getId(), 50);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_추가_요청(테스트용_노선.getId(), addSectionRequest);
+
+        // then
+        지하철_구간_추가_실패됨(response);
+    }
+
+    @DisplayName("추가하는 구간의 역이 둘 다 노선에 포함되지 않다면, 구간을 추가할 수 없다. (B-C에 E-F 구간 추가시)")
+    @Test
+    void addNotExistSectionException() {
+        // given
+        LineRequest addSectionRequest = new LineRequest(E역.getId(), F역.getId(), 50);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_추가_요청(테스트용_노선.getId(), addSectionRequest);
+
+        // then
+        지하철_구간_추가_실패됨(response);
+    }
+
+    @DisplayName("노선 중간에 역을 추가할시 기존 역사이 길이보다 추가되는 구간 길이가 길면, 구간을 추가할 수 없다.")
+    @Test
+    void addSectionDistanceException() {
+        // given
+        LineRequest addSectionRequest = new LineRequest(B역.getId(), F역.getId(), 500);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_추가_요청(테스트용_노선.getId(), addSectionRequest);
+
+        // then
+        지하철_구간_추가_실패됨(response);
+    }
+
+    @DisplayName("노선 조회시 상행부터 하행까지 구간 기준으로 정렬된 역 리스트를 반환한다.")
+    @Test
+    void findLineStations() {
+        // given
+        지하철_구간_추가_요청(테스트용_노선.getId(), new LineRequest(A역.getId(), B역.getId(), 100));
+        지하철_구간_추가_요청(테스트용_노선.getId(), new LineRequest(C역.getId(), E역.getId(), 100));
+        지하철_구간_추가_요청(테스트용_노선.getId(), new LineRequest(D역.getId(), E역.getId(), 50));
+        지하철_구간_추가_요청(테스트용_노선.getId(), new LineRequest(E역.getId(), F역.getId(), 150));
+
+        // when
+        LineResponse lineResponse = 지하철_노선_조회됨(테스트용_노선.getId());
+
+        // then
+        정렬된_역_목록이_반환됨(lineResponse, Arrays.asList(A역, B역, C역, D역, E역, F역));
+    }
+
     @Test
     @DisplayName("노선에서 상행 종점역을 삭제한다. (A-B-C에서 A 삭제시, B-C)")
     void deleteUpTerminalSection() {
@@ -136,11 +196,31 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_구간_삭제됨(response, Arrays.asList(A역, C역));
     }
 
+    @DisplayName("구간이 하나밖에 존재하지 않는 노선에서 역을 삭제할 수 없다.")
+    @Test
+    void deleteSectionException1() {
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(테스트용_노선.getId(), B역.getId());
+
+        // then
+        지하철_구간_삭제_실패됨(response);
+    }
+
+    @DisplayName("노선에 포함되지 않는 역을 삭제한다면, 예외를 던진다.")
+    @Test
+    void deleteSectionException2() {
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(테스트용_노선.getId(), F역.getId());
+
+        // then
+        지하철_구간_삭제_실패됨(response);
+    }
+
     private ExtractableResponse<Response> 지하철_구간_삭제_요청(Long lineId, Long stationId) {
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .delete( "/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
+            .delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
             .then().log().all()
             .extract();
     }
@@ -151,6 +231,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         LineResponse lineResponse = 지하철_노선_조회됨(테스트용_노선.getId());
         정렬된_역_목록이_반환됨(lineResponse, expectedStationResponses);
+    }
+
+    private void 지하철_구간_삭제_실패됨(ExtractableResponse<Response> result) {
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> 지하철_구간_추가_요청(Long lineId, LineRequest lineRequest) {
@@ -169,6 +253,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         LineResponse lineResponse = 지하철_노선_조회됨(테스트용_노선.getId());
         정렬된_역_목록이_반환됨(lineResponse, expectedStationResponses);
+    }
+
+    private void 지하철_구간_추가_실패됨(ExtractableResponse<Response> result) {
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private void 정렬된_역_목록이_반환됨(LineResponse lineResponse,
@@ -194,7 +282,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private LineResponse 지하철_노선_조회됨(Long lineId){
+    private LineResponse 지하철_노선_조회됨(Long lineId) {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         return response.as(LineResponse.class);
@@ -210,7 +298,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private LineResponse 지하철_노선_생성됨(LineRequest lineRequest){
+    private LineResponse 지하철_노선_생성됨(LineRequest lineRequest) {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         return response.as(LineResponse.class);
@@ -226,7 +314,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private StationResponse 지하철_역_생성됨(StationRequest stationRequest){
+    private StationResponse 지하철_역_생성됨(StationRequest stationRequest) {
         ExtractableResponse<Response> response = 지하철_역_생성_요청(stationRequest);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         return response.as(StationResponse.class);
@@ -234,5 +322,3 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 }
 
- // 노선 인수 테스트에 노선 생성, 삭제 인수테스트 추가
- // Line이 sections 들고 있도록?!

@@ -94,7 +94,7 @@ public class Sections {
 
     public void validateDuplicatedSection(Section section) {
         if (sections.stream()
-            .anyMatch((it -> it.equals(section)))) {
+            .anyMatch((it -> it.isContainEqualsStations(section)))) {
             throw new DuplicatedSectionException();
         }
     }

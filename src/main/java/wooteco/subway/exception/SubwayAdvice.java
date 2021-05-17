@@ -17,6 +17,11 @@ import wooteco.subway.exception.NotRemoveSectionException;
 @ControllerAdvice
 public class SubwayAdvice {
 
+    @ExceptionHandler(DuplicateException.class)
+    public ResponseEntity<String> handleDuplicateException(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
     @ExceptionHandler(DuplicateStationNameException.class)
     public ResponseEntity<String> handleDuplicateStationNameException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
@@ -69,6 +74,11 @@ public class SubwayAdvice {
 
     @ExceptionHandler(SectionDistanceException.class)
     public ResponseEntity<String> handleSectionDistanceException(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(DeleteSectionException.class)
+    public ResponseEntity<String> handleDeleteSectionException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
