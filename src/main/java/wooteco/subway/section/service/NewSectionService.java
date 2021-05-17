@@ -8,7 +8,6 @@ import wooteco.subway.section.domain.Order;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class NewSectionService implements ISectionService {
@@ -26,29 +25,35 @@ public class NewSectionService implements ISectionService {
 
     @Override
     public void addSection(final Long lineId, final Section section) {
-        // TODO :: 유효성 검증 :: 존재하는 노선인지
-        if(lineDao.isNotExist(lineId)){
-            throw new LineException("존재하지 않는 노선입니다.");
-        }
+        validateLineExist(lineId);
 
-        final FinalStations finalStations = lineDao.finalStations(lineId);
-        if(finalStations.isFinalSection(section)){
-            insertFinalSection(lineId, section, finalStations);
+        final Sections sections = new Sections(sectionDao.findSections(lineId));
+        final Order order = sections.sort(lineDao.findUpStationId(lineId));
+        order.validateAbleToAddSection(section);
+
+        if(order.isFinalSection(section)){
+            insertFinalSection(lineId, section, order);
             return;
         }
 
-        if(order.isInMiddle){
-            insertMiddleSection(lineId, section);
-        }
+        insertMiddleSection(lineId, section);
+    }
 
+    private void validateLineExist(final Long lineId) {
+        if(lineDao.isNotExist(lineId)){
+            throw new LineException("존재하지 않는 노선입니다.");
+        }
     }
 
     // TODO :: Dao에서 배열로 save, delete해도 될까?
     // sectionDao.save(sectionsToDelete);
 
-    private void insertFinalSection(final Long lineId, final Section section, final FinalStations finalStations){
+    private void insertFinalSection(final Long lineId, final Section section, final Order order){
+        final FinalStations finalStations = order.finalStations();
+        final FinalStations newFinalStations = finalStations.addStations(section);
+
         sectionDao.save(section);
-        lineDao.updateFinalStations(lineId, finalStations.addStations(section));
+        lineDao.updateFinalStations(lineId, newFinalStations);
     }
 
     private void insertMiddleSection(final Long lineId, final Section section) {
@@ -61,15 +66,18 @@ public class NewSectionService implements ISectionService {
         sectionDao.delete(insertingSection);
     }
 
-
+    private Order orderOfStationInLine(final Long lineId){
+        final Sections sectionsInLine = new Sections(sectionDao.findSections(lineId));
+        return sectionsInLine.sort(lineDao.findUpStationId(lineId));
+    }
 
     @Override
     public void deleteSection(final Long lineId, final Long stationId) {
         // TODO :: 유효성 검증 :: 존재하는 노선인지, 노선 위에 존재하는 역인지
+        validateLineExist(lineId);
 
         final Sections sectionsInLine = new Sections(sectionDao.findSections(lineId));
-        final List<Section> sections = sectionsInLine.sectionsIncludeStation(stationId);
-        final FinalStations finalStations = lineDao.finalStations(lineId);
+        final List<Section> sections = sectionsInLine.sectionsIncludeStation(stationId);k        final FinalStations finalStations = lineDao.finalStations(lineId);
 
         if(finalStations.isFinalStation(stationId)){
             final Section sectionToDelete = sections.get(0);

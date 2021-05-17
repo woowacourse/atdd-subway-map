@@ -1,5 +1,9 @@
 package wooteco.subway.section.domain;
 
+import wooteco.subway.line.domain.FinalStations;
+import wooteco.subway.line.exception.LineException;
+
+import java.util.LinkedList;
 import java.util.List;
 
 public class Order {
@@ -15,12 +19,53 @@ public class Order {
     }
 
     public boolean isFirst(final Long stationId){
-        final Long firstStationId = orderedIds.get(0);
-        return firstStationId.equals(stationId);
+        return first().equals(stationId);
     }
 
     private boolean isLast(final Long stationId) {
-        final Long lastStationId = orderedIds.get(orderedIds.size() - 1);
-        return lastStationId.equals(stationId);
+        return last().equals(stationId);
+    }
+
+    public boolean isInclude(final Long stationId) {
+        return orderedIds.contains(stationId);
+    }
+
+    public Long first() {
+        return orderedIds.get(0);
+    }
+
+    public Long last(){
+        return orderedIds.get(orderedIds.size()-1);
+    }
+
+    public void validateAbleToAddSection(final Section section){
+        if(isInclude(section.frontStationId()) == isInclude(section.backStationId())){
+            throw new LineException("하나의 역이 포함되어있어야 합니다.");
+        }
+    }
+
+    public FinalStations finalStations(){
+        return new FinalStations(first(), last());
+    }
+
+    public Order addSection(final Section section) {
+        final List<Long> newIds = new LinkedList<>(orderedIds);
+
+        final int length = orderedIds.size();
+        for(int i =0; i<length; i++){
+            if(orderedIds.get(i).equals(section.frontStationId())){
+                newIds.add(i+1, section.backStationId());
+                return new Order(newIds);
+            }
+
+            if(orderedIds.get(i).equals()section.frontStationId()){
+                newIds.add(i+1, section.backStationId());
+                return new Order(newIds);
+            }
+        }
+    }
+
+    public boolean isFinalSection(Section section) {
+        return finalStations().isFinalSection(section);
     }
 }

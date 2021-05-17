@@ -27,7 +27,7 @@ public class Sections {
 
     public List<Section> sectionsIncludeStation(final Long stationId) {
         return sections.stream()
-                .filter(section -> section.isIncludeStation(stationId))
+                .filter(section -> section.isIncludedStation(stationId))
                 .collect(Collectors.toList());
     }
 
@@ -47,5 +47,19 @@ public class Sections {
         ids.add(frontStationId);
 
         return new Order(ids);
+    }
+
+    public void validateAbleToAdd(final Section section) {
+        final boolean isFrontStationIncluded = isIncludedStation(section.frontStationId());
+        final boolean isBackStationIncluded = isIncludedStation(section.backStationId());
+
+        if(isFrontStationIncluded == isBackStationIncluded){
+            throw new LineException("하나의 역이 포함되어있어야 합니다.");
+        }
+    }
+
+    private boolean isIncludedStation(final Long stationId){
+        return sections.stream()
+                .anyMatch(section -> section.isIncludedStation(stationId));
     }
 }
