@@ -17,7 +17,7 @@ import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
-@DisplayName("Station api")
+@DisplayName("Station API 인수테스트")
 @Sql("classpath:tableInit.sql")
 public class StationAcceptanceTest extends AcceptanceTest {
 

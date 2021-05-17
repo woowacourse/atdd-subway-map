@@ -20,7 +20,7 @@ import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
-@DisplayName("Line API 인수테스트")
+@DisplayName("Line API 인수테스트(구간 관련 기능)")
 @Sql("classpath:tableInit.sql")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
