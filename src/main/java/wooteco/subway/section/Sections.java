@@ -1,8 +1,11 @@
 package wooteco.subway.section;
 
+import wooteco.subway.section.exception.SectionCantDeleteException;
 import wooteco.subway.section.exception.SectionInclusionException;
+import wooteco.subway.section.exception.SectionNotFoundException;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationService;
+import wooteco.subway.station.exception.StationNotFoundException;
 
 import java.util.*;
 
@@ -48,6 +51,36 @@ public class Sections {
                 sections.stream()
                         .noneMatch(
                                 section -> section.isSameDownStation(sectionDto.getDownStationId()));
+    }
+
+    public void validateNumberOfStation() {
+        if (sections.size() <= 1) {
+            throw new SectionCantDeleteException();
+        }
+    }
+
+    public boolean isEndStation(Long stationId) {
+        List<Station> stations = sortedStations();
+        Station tempStation = new Station(stationId, "temp");
+
+        if (!stations.contains(tempStation)) {
+            throw new StationNotFoundException();
+        }
+        return stations.get(0).equals(tempStation) || stations.get(stations.size() - 1).equals(tempStation);
+    }
+
+    public Section findSectionByDownStationId(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.isSameDownStation(stationId))
+                .findAny()
+                .orElseThrow(SectionNotFoundException::new);
+    }
+
+    public Section findSectionByUpStationId(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.isSameUpStation(stationId))
+                .findAny()
+                .orElseThrow(SectionNotFoundException::new);
     }
 
     public List<Section> getSections() {

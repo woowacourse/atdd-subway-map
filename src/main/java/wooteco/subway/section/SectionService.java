@@ -31,28 +31,18 @@ public class SectionService {
 
     public void delete(Long lineId, Long stationId) {
         validateSectionInitialization(lineId);
-        validateSectionNumber(lineId);
-        if (!sectionDao.isExistingStation(lineId, stationId)) {
-            throw new StationNotFoundException();
-        }
-        if (sectionDao.isEndStation(lineId, stationId)) {
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        sections.validateNumberOfStation();
+        if (sections.isEndStation(stationId)) {
             sectionDao.delete(lineId, stationId);
             return;
         }
-        deleteAndConnectSection(lineId, stationId);
+        deleteAndConnectSection(lineId, stationId, sections);
     }
 
-    private void validateSectionNumber(Long lineId) {
-        if (sectionDao.numberOfEnrolledSection(lineId) <= 1) {
-            throw new SectionCantDeleteException();
-        }
-    }
-
-    private void deleteAndConnectSection(Long lineId, Long stationId) {
-        Section frontSection = sectionDao.findByDownStationId(lineId, stationId)
-                .orElseThrow(SectionNotFoundException::new);
-        Section backSection = sectionDao.findByUpStationId(lineId, stationId)
-                .orElseThrow(SectionNotFoundException::new);
+    private void deleteAndConnectSection(Long lineId, Long stationId, Sections sections) {
+        Section frontSection = sections.findSectionByDownStationId(stationId);
+        Section backSection = sections.findSectionByUpStationId(stationId);
 
         sectionDao.updateDistanceAndDownStation(
                 lineId, frontSection.getUpStationId(), backSection.getDownStationId(),
