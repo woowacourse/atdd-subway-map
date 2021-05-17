@@ -37,16 +37,6 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    private void validateRelated(final Section requestedSection, final List<Section> relatedSections) {
-        if (relatedSections.size() == 2) {
-            final Section firstSection = relatedSections.get(FIRST);
-            final Section secondSection = relatedSections.get(SECOND);
-
-            validateConnected(firstSection, secondSection);
-            validateNoFork(requestedSection, firstSection, secondSection);
-        }
-    }
-
     private void validateAllDifferent(Section requestedSection, List<Section> relatedSections) {
         for (final Section section : relatedSections) {
             validateDifferent(section, requestedSection);
@@ -56,6 +46,16 @@ public class Sections {
     private void validateDifferent(Section firstSection, Section secondSection) {
         if (firstSection.hasSameStations(secondSection)) {
             throw new SectionException("이미 두 역을 연결하는 구간이 있습니다.");
+        }
+    }
+
+    private void validateRelated(final Section requestedSection, final List<Section> relatedSections) {
+        if (relatedSections.size() == 2) {
+            final Section firstSection = relatedSections.get(FIRST);
+            final Section secondSection = relatedSections.get(SECOND);
+
+            validateConnected(firstSection, secondSection);
+            validateNoFork(requestedSection, firstSection, secondSection);
         }
     }
 
@@ -85,7 +85,7 @@ public class Sections {
 
         final List<Section> relatedSections = relatedSectionsOf(stationId);
         relatedSections.forEach(sections::remove);
-        return relatedSections;
+        return Collections.unmodifiableList(relatedSections);
     }
 
     private void validateSectionsLength() {
