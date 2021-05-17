@@ -7,205 +7,160 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.domain.Station;
+import wooteco.subway.dto.line.response.LineResponse;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.fixture.DomainFixtures.*;
+import static wooteco.subway.line.LineAcceptanceTestUtils.*;
+import static wooteco.subway.section.SectionAcceptanceTestUtils.createLineWithSections;
 
+@DisplayName("노선 관련 기능")
+@Sql("classpath:tableInit.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    private static final List<Station> STATIONS = Arrays.asList(STATION_1, STATION_2, STATION_3, STATION_4);
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        // given
-        Map<String, String> params = setLine("bg-red-600", "1호선");
-
-        // when
-        ExtractableResponse<Response> response = extractResponseWhenPost(params);
+        // given - when
+        ExtractableResponse<Response> response = createLineWithSections(STATIONS);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
+        assertThat(response.header("Location")).isEqualTo("/lines/" + LINE_ID);
+
+        assertThat(response.body().jsonPath().getLong("id")).isEqualTo(LINE_ID);
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo(LINE_NAME);
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
     @Test
     void createLineWithDuplicateName() {
         // given
-        Map<String, String> params = setLine("bg-red-600", "1호선");
-        extractResponseWhenPost(params);
+        createLineWithSections(STATIONS);
+        Long savedLineIdBeforeRequest = requestAndGetAllLineIds().get(0);
 
         // when
-        ExtractableResponse<Response> response = extractResponseWhenPost(params);
+        ExtractableResponse<Response> response = createLineWithSections(LINE_NAME, LINE_COLOR + 1, STATIONS);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
 
-    @DisplayName("올바르지 않은 이름으로 노선을 생성한다.")
-    @Test
-    void createLineWithWrongName() {
-        // given
-        Map<String, String> params = setLine("bg-red-600", "1호");
-        ExtractableResponse<Response> response = extractResponseWhenPost(params);
-
-        // when - then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @DisplayName("이름이 null로 들어왔을 때 예외처리.")
-    @Test
-    void createLineWithNullName() {
-        // given
-        Map<String, String> params = setLine("bg-red-600", null);
-        extractResponseWhenPost(params);
-
-        // when
-        ExtractableResponse<Response> response = extractResponseWhenPost(params);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        List<Long> allLineIds = requestAndGetAllLineIds();
+        assertThat(allLineIds).containsExactly(savedLineIdBeforeRequest);
     }
 
     @DisplayName("기존에 존재하는 색으로 노선을 생성한다.")
     @Test
     void createLineWithDuplicateColor() {
         // given
-        Map<String, String> params1 = setLine("bg-red-600", "1호선");
-        extractResponseWhenPost(params1);
+        createLineWithSections(STATIONS);
+        Long savedLineIdBeforeRequest = requestAndGetAllLineIds().get(0);
 
         // when
-        Map<String, String> params2 = setLine("bg-red-600", "2호선");
-        ExtractableResponse<Response> response = extractResponseWhenPost(params2);
+        ExtractableResponse<Response> response = createLineWithSections(LINE_NAME + 1, LINE_COLOR, STATIONS);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        List<Long> allSavedLineIds = requestAndGetAllLineIds();
+        assertThat(allSavedLineIds).containsExactly(savedLineIdBeforeRequest);
     }
 
-    @DisplayName("노선을 조회한다.")
+    @DisplayName("노선들을 조회한다.")
     @Test
     void getLines() {
-        // given
-        Map<String, String> params1 = setLine("bg-red-600", "1호선");
-        ExtractableResponse<Response> createResponse1 = extractResponseWhenPost(params1);
-
-        Map<String, String> params2 = setLine("bg-yellow-600", "2호선");
-        ExtractableResponse<Response> createResponse2 = extractResponseWhenPost(params2);
+        /// given
+        String 신분당선 = "신분당선";
+        String 빨강 = "bg-red-600";
+        createLineWithSections(신분당선, 빨강, STATIONS);
+        String 경춘선 = "경춘선";
+        String 초록 = "bg-green-600";
+        createLineWithSections(경춘선, 초록, STATIONS);
 
         // when
-        ExtractableResponse<Response> response = extractResponseWhenGet("lines");
+        List<LineResponse> lineResponseInOrder = getAllLinesInIdOrder();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        LineResponse firstLineResponse = lineResponseInOrder.get(0);
+        assertLineResponseDto(firstLineResponse, 1L, 신분당선, 빨강);
+
+        LineResponse secondLineResponse = lineResponseInOrder.get(1);
+        assertLineResponseDto(secondLineResponse, 2L, 경춘선, 초록);
     }
 
     @DisplayName("특정 노선을 조회한다.")
     @Test
     void getLine() {
         // given
-        Map<String, String> params1 = setLine("bg-red-600", "1호선");
-        extractResponseWhenPost(params1);
-
-        Map<String, String> params2 = setLine("bg-yellow-600", "2호선");
-        ExtractableResponse<Response> createResponse2 = extractResponseWhenPost(params2);
+        createLineWithSections(STATIONS);
+        Long savedLineId = requestAndGetAllLineIds().get(0);
 
         // when
-        String uri = createResponse2.header("Location");
-        ExtractableResponse<Response> response = extractResponseWhenGet(uri);
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .pathParam("id", savedLineId)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/{id}")
+                .then().log().all()
+                .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().get("id").toString()).isEqualTo(uri.split("/")[2]);
-        assertThat(response.body().jsonPath().get("name").toString()).isEqualTo("2호선");
-        assertThat(response.body().jsonPath().get("color").toString()).isEqualTo("bg-yellow-600");
+        assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
+
+        assertThat(response.body().jsonPath().getLong("id")).isEqualTo(LINE_ID);
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo(LINE_NAME);
+        assertThat(response.body().jsonPath().getString("color")).isEqualTo(LINE_COLOR);
     }
 
     @DisplayName("노선 업데이트한다.")
     @Test
     void updateLine() {
         // given
-        Map<String, String> params1 = setLine("bg-red-600", "1호선");
-        extractResponseWhenPost(params1);
+        createLineWithSections(STATIONS);
+        Long lineIdToUpdate = requestAndGetAllLineIds().get(0);
 
-        //when
-        Map<String, String> params2 = setLine("bg-yellow-600", "2호선");
-        ExtractableResponse<Response> response = extractResponseWhenPut(params2);
+        // when
+        String newLineName = "수정된분당선";
+        String newColor = "bg-blue-600";
+        ExtractableResponse<Response> response = requestUpdateLine(lineIdToUpdate, newLineName, newColor);
 
-        //then
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.header("Date")).isNotBlank();
+
+        LineResponse updatedLineResponse = getAllLinesInIdOrder().get(0);
+        assertLineResponseDto(updatedLineResponse, LINE_ID, newLineName, newColor);
     }
 
     @DisplayName("노선을 제거한다.")
     @Test
     void deleteLine() {
         // given
-        Map<String, String> params = setLine("bg-red-600", "3호선");
-        ExtractableResponse<Response> createResponse = extractResponseWhenPost(params);
+        createLineWithSections("신분당선", "bg-red-600", STATIONS);
+        createLineWithSections("2호선", "bg-green-600", STATIONS);
+        List<Long> allSavedLineIdsBeforeDelete = requestAndGetAllLineIds();
+        Long lineIdToDelete = allSavedLineIdsBeforeDelete.get(0);
+        Long lineIdNotToDelete = allSavedLineIdsBeforeDelete.get(1);
 
         // when
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = extractResponseWhenDelete(uri);
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/lines/{id}", lineIdToDelete)
+                .then().log().all()
+                .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
 
-    private ExtractableResponse<Response> extractResponseWhenGet(String path) {
-        return RestAssured.given().log().all()
-                .when()
-                .get(path)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> extractResponseWhenPost(Map<String, String> params) {
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> extractResponseWhenPut(Map<String, String> params2) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/lines/1")
-                .then().log().all()
-                .extract();
-        return response;
-    }
-
-    private ExtractableResponse<Response> extractResponseWhenDelete(String uri) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
-        return response;
-    }
-
-    private Map<String, String> setLine(String color, String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("color", color);
-        params.put("name", name);
-        return params;
+        List<Long> allSavedStationIdsAfterDelete = requestAndGetAllLineIds();
+        assertThat(allSavedStationIdsAfterDelete).containsExactly(lineIdNotToDelete);
     }
 }

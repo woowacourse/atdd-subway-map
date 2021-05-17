@@ -2,10 +2,10 @@ package wooteco.subway.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.dto.request.LineRequest;
-import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.dto.line.request.LineInsertRequest;
+import wooteco.subway.dto.line.request.LineUpdateRequest;
+import wooteco.subway.dto.line.response.LineResponse;
 import wooteco.subway.service.LineService;
 
 import javax.validation.Valid;
@@ -18,19 +18,13 @@ public class LineController {
 
     private final LineService lineService;
 
-    @InitBinder
-    public void initBinder(WebDataBinder webDataBinder) {
-        LineValidator lineValidator = new LineValidator();
-        webDataBinder.addValidators(lineValidator);
-    }
-
     public LineController(LineService lineService) {
         this.lineService = lineService;
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createStation(@RequestBody @Valid LineRequest lineRequest) {
-        LineResponse lineResponse = lineService.create(lineRequest.getColor(), lineRequest.getName());
+    public ResponseEntity<LineResponse> createdLine(@RequestBody @Valid LineInsertRequest lineInsertRequest) {
+        LineResponse lineResponse = lineService.create(lineInsertRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
@@ -47,8 +41,8 @@ public class LineController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.updateById(id, lineRequest.getColor(), lineRequest.getName());
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody @Valid LineUpdateRequest lineUpdateRequest) {
+        lineService.updateById(id, lineUpdateRequest.getColor(), lineUpdateRequest.getName());
         return ResponseEntity.ok().build();
     }
 

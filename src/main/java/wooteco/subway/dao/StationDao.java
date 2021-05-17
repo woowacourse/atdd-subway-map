@@ -4,7 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.station.Station;
+import wooteco.subway.domain.Station;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +39,13 @@ public class StationDao {
     public List<Station> findAll() {
         String query = "SELECT * FROM station";
         return jdbcTemplate.query(query, STATION_ROW_MAPPER);
+    }
+
+    public Optional<Station> findById(Long id) {
+        String query = "SELECT * FROM station WHERE id=?";
+        return jdbcTemplate.query(query, STATION_ROW_MAPPER, id)
+                .stream()
+                .findAny();
     }
 
     public Optional<Station> findByName(String name) {

@@ -4,7 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.Line;
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,16 +52,9 @@ public class LineDao {
                 .findAny();
     }
 
-    public Optional<Line> findByName(String name) {
-        String query = "SELECT * FROM line WHERE name = ?";
-        return jdbcTemplate.query(query, LINE_ROW_MAPPER, name)
-                .stream()
-                .findAny();
-    }
-
-    public Optional<Line> findByColor(String color) {
-        String query = "SELECT * FROM line WHERE color = ?";
-        return jdbcTemplate.query(query, LINE_ROW_MAPPER, color)
+    public Optional<Line> findByColorOrName(String color, String name) {
+        String query = "SELECT * FROM line WHERE color = ? OR name = ?";
+        return jdbcTemplate.query(query, LINE_ROW_MAPPER, color, name)
                 .stream()
                 .findAny();
     }
