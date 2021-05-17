@@ -141,10 +141,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_exception_validation() {
         // given
-        Station station1 = createTestStation("addSection_exception_none1역");
-        Station station2 = createTestStation("addSection_exception_none2역");
+        Station station1 = createTestStation("addSection_validation1역");
+        Station station2 = createTestStation("addSection_validation2역");
 
-        Long lineId = createTestLine("addSection_exception_none선", station1.getId(), station2.getId(), 2);
+        Long lineId = createTestLine("addSection_validation선", station1.getId(), station2.getId(), 2);
 
         // when
         ExtractableResponse<Response> addSectionResponse = addTestSection(lineId, null, station1.getId(), 3);

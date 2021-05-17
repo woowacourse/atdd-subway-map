@@ -32,7 +32,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
+        params.put("name", "00선");
         params.put("upStationId", String.valueOf(station1.getId()));
         params.put("downStationId", String.valueOf(station2.getId()));
         params.put("distance", "2");
@@ -49,15 +49,15 @@ class LineAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-        assertThat(response.body().jsonPath().get("name").toString()).isEqualTo("신분당선");
+        assertThat(response.body().jsonPath().get("name").toString()).isEqualTo("00선");
     }
 
     @DisplayName("지하철 노선 생성 예외 - 지하철 노선 생성시 입력 값이 제대로 들어오지 않으면 BadRequest를 던진다.")
     @Test
     void createLine_validation() {
         // given
-        Station station1 = createTestStation("createLine1역");
-        Station station2 = createTestStation("createLine2역");
+        Station station1 = createTestStation("createLineValidation1역");
+        Station station2 = createTestStation("createLineValidation2역");
 
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
@@ -182,7 +182,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         Station station2 = createTestStation("updateLine2역");
 
         Map<String, String> param1 = new HashMap<>();
-        param1.put("name", "5호선");
+        param1.put("name", "02호선");
         param1.put("color", "bg-blue-600");
         param1.put("upStationId", String.valueOf(station1.getId()));
         param1.put("downStationId", String.valueOf(station2.getId()));
@@ -198,7 +198,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         Map<String, String> updateParam = new HashMap<>();
-        updateParam.put("name", "6호선");
+        updateParam.put("name", "03호선");
         updateParam.put("color", "bg-blue-600");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()

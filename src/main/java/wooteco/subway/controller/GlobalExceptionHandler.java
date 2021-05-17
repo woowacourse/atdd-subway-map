@@ -11,7 +11,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<LineResponse> exceptionHandler(IllegalArgumentException e) {
-        System.out.println("@@@@@ " + "IllegalArgument 걸림");
+        System.out.println("@@@@@ " + "IllegalArgument 걸림: " + e.getMessage());
         return ResponseEntity.badRequest().build();
     }
 

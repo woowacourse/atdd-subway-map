@@ -4,67 +4,72 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.controller.dto.request.LineRequest;
 import wooteco.subway.controller.dto.request.SectionRequest;
+import wooteco.subway.dao.section.SectionDao;
+import wooteco.subway.dao.station.StationDao;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.repository.SectionRepository;
-import wooteco.subway.repository.StationRepository;
 
 @Service
 public class SectionService {
 
-    private final SectionRepository sectionRepository;
-    private final StationRepository stationRepository;
+    private final SectionDao sectionDao;
+    private final StationDao stationDao;
 
-    public SectionService(SectionRepository sectionRepository,
-        StationRepository stationRepository) {
-        this.sectionRepository = sectionRepository;
-        this.stationRepository = stationRepository;
+    public SectionService(SectionDao sectionDao,
+        StationDao stationDao) {
+        this.sectionDao = sectionDao;
+        this.stationDao = stationDao;
     }
 
     public void createSection(LineRequest lineRequest, Long lineId) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId());
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId());
+        Station upStation = stationDao.findById(lineRequest.getUpStationId())
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 역입니다."));
+        Station downStation = stationDao.findById(lineRequest.getDownStationId())
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 역입니다."));
         Section section = new Section(lineId, upStation, downStation, lineRequest.getDistance());
-        sectionRepository.save(section);
+        sectionDao.save(section);
     }
 
     public void deleteSectionsByLineId(Long id) {
-        List<Section> sections = sectionRepository.findByLineId(id);
-        sections.forEach(section -> sectionRepository.delete(section));
+        List<Section> sections = sectionDao.findByLineId(id);
+        sections.forEach(section -> sectionDao.deleteById(section.getId()));
     }
 
     public List<Section> findByLineId(Long id) {
-        return sectionRepository.findByLineId(id);
+        return sectionDao.findByLineId(id);
     }
 
     public void addSection(Long id, SectionRequest sectionRequest) {
-        Station upStation = stationRepository.findById(sectionRequest.getUpStationId());
-        Station downStation = stationRepository.findById(sectionRequest.getDownStationId());
+        Station upStation = stationDao.findById(sectionRequest.getUpStationId())
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 역입니다."));
+        Station downStation = stationDao.findById(sectionRequest.getDownStationId())
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 역입니다."));
         Section newSection = new Section(id, upStation, downStation, sectionRequest.getDistance());
 
-        Sections sections = new Sections(sectionRepository.findByLineId(id));
+        Sections sections = new Sections(sectionDao.findByLineId(id));
         if (sections.canAddToEndSection(newSection)) {
-            sectionRepository.save(newSection);
+            sectionDao.save(newSection);
             return;
         }
-        sectionRepository.save(newSection);
+        sectionDao.save(newSection);
         Section updateSection = sections.addToBetweenExistedSection(newSection);
-        sectionRepository.update(updateSection);
+        sectionDao.update(updateSection);
     }
 
     public void deleteSection(Long lineId, Long stationId) {
-        Sections sections = new Sections(sectionRepository.findByLineId(lineId));
-        Station requestStation = stationRepository.findById(stationId);
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        Station requestStation = stationDao.findById(stationId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 역입니다."));
         if (sections.canRemoveEndSection(requestStation)) {
             Section removeSection = sections.findUpdateAndRemoveSections(requestStation).get(0);
-            sectionRepository.delete(removeSection);
+            sectionDao.deleteById(removeSection.getId());
             return;
         }
         List<Section> updateAndRemoveSections = sections.findUpdateAndRemoveSections(requestStation);
         Section updateSection = updateAndRemoveSections.get(0);
         Section removeSection = updateAndRemoveSections.get(1);
-        sectionRepository.update(updateSection.mergeAndUpdate(removeSection));
-        sectionRepository.delete(removeSection);
+        sectionDao.update(updateSection.mergeAndUpdate(removeSection));
+        sectionDao.deleteById(removeSection.getId());
     }
 }
