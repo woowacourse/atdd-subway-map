@@ -3,13 +3,13 @@ package wooteco.subway.section.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.exception.RequestException;
 import wooteco.subway.section.controller.dto.SectionCreateDto;
 import wooteco.subway.section.controller.dto.SectionDeleteDto;
 import wooteco.subway.section.controller.dto.SectionDto;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.SectionRepository;
 import wooteco.subway.section.domain.Sections;
-import wooteco.subway.section.exception.SectionException;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.service.StationService;
 
@@ -20,8 +20,8 @@ public class SectionService {
     private final SectionRepository sectionRepository;
     private final StationService stationService;
 
-    public SectionService(final SectionRepository sectionDao, final StationService stationService) {
-        this.sectionRepository = sectionDao;
+    public SectionService(final SectionRepository sectionService, final StationService stationService) {
+        this.sectionRepository = sectionService;
         this.stationService = stationService;
     }
 
@@ -55,7 +55,7 @@ public class SectionService {
 
     private void validateDifferent(final Long downStationId, final Long upStationId) {
         if (downStationId.equals(upStationId)) {
-            throw new SectionException("구간의 양 끝은 서로 다른 역이어야 합니다.");
+            throw new RequestException("구간의 양 끝은 서로 다른 역이어야 합니다.");
         }
     }
 

@@ -1,6 +1,6 @@
 package wooteco.subway.section.domain;
 
-import wooteco.subway.section.exception.SectionException;
+import wooteco.subway.exception.RequestException;
 
 public class Section {
 
@@ -62,7 +62,7 @@ public class Section {
 
     private void validateDistance(final Section another) {
         if (this.distance <= another.distance) {
-            throw new SectionException("구간의 거리가 노선에 이미 존재하는 관련 구간의 거리보다 길거나 같습니다.");
+            throw new RequestException("구간의 거리가 노선에 이미 존재하는 관련 구간의 거리보다 길거나 같습니다.");
         }
     }
 

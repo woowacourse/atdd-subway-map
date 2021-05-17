@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import wooteco.subway.section.exception.SectionException;
+import wooteco.subway.exception.RequestException;
 
 public class Sections {
 
@@ -45,7 +45,7 @@ public class Sections {
 
     private void validateDifferent(Section firstSection, Section secondSection) {
         if (firstSection.hasSameStations(secondSection)) {
-            throw new SectionException("이미 두 역을 연결하는 구간이 있습니다.");
+            throw new RequestException("이미 두 역을 연결하는 구간이 있습니다.");
         }
     }
 
@@ -61,7 +61,7 @@ public class Sections {
 
     private void validateConnected(final Section firstSection, final Section secondSection) {
         if (connectedFarAway(firstSection, secondSection)) {
-            throw new SectionException("이미 노선에서 서로 연결된 역들입니다.");
+            throw new RequestException("이미 노선에서 서로 연결된 역들입니다.");
         }
     }
 
@@ -71,7 +71,7 @@ public class Sections {
 
     private void validateNoFork(final Section requestedSection, final Section firstSection, final Section secondSection) {
         if (isForked(requestedSection, firstSection, secondSection)) {
-            throw new SectionException("갈래길을 형성할 수 없습니다.");
+            throw new RequestException("갈래길을 형성할 수 없습니다.");
         }
     }
 
@@ -90,7 +90,7 @@ public class Sections {
 
     private void validateSectionsLength() {
         if (sections.size() == 1) {
-            throw new SectionException("구간이 하나밖에 없는 노선에서는 역을 제거할 수 없습니다.");
+            throw new RequestException("구간이 하나밖에 없는 노선에서는 역을 제거할 수 없습니다.");
         }
     }
 
@@ -120,7 +120,7 @@ public class Sections {
         return stationIdMap.keySet().stream()
                 .filter(key -> !stationIdMap.containsValue(key))
                 .findFirst()
-                .orElseThrow(() -> new SectionException("노선의 구간이 올바르게 정렬되지 않았습니다."));
+                .orElseThrow(() -> new RequestException("노선의 구간이 올바르게 정렬되지 않았습니다."));
     }
 
     private List<Long> createOrderedStationIdList(final Long beginningUpStation, final Map<Long, Long> stationIdMap) {

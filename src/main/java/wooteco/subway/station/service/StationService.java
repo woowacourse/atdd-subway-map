@@ -5,12 +5,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.exception.RequestException;
 import wooteco.subway.station.controller.dto.StationCreateDto;
 import wooteco.subway.station.controller.dto.StationDto;
-import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationRepository;
-import wooteco.subway.station.exception.StationException;
 
 @Service
 @Transactional(readOnly = true)
@@ -18,7 +17,7 @@ public class StationService {
 
     private final StationRepository stationRepository;
 
-    public StationService(final StationDao stationRepository) {
+    public StationService(final StationRepository stationRepository) {
         this.stationRepository = stationRepository;
     }
 
@@ -28,7 +27,7 @@ public class StationService {
         final Optional<Station> station = stationRepository.findByName(requestedStation.getName());
 
         if (station.isPresent()) {
-            throw new StationException("이미 존재하는 역 이름입니다.");
+            throw new RequestException("이미 존재하는 역 이름입니다.");
         }
 
         final Station createdStation = stationRepository.save(requestedStation);
@@ -50,7 +49,7 @@ public class StationService {
 
     public Station findById(final Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new StationException("존재하지 않는 역입니다"));
+                .orElseThrow(() -> new RequestException("존재하지 않는 역입니다"));
     }
 
     public List<Station> findAllById(final List<Long> stationIds) {

@@ -5,11 +5,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.exception.RequestException;
 import wooteco.subway.line.controller.dto.LineCreateDto;
 import wooteco.subway.line.controller.dto.LineDto;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineRepository;
-import wooteco.subway.line.exception.LineException;
 import wooteco.subway.section.controller.dto.SectionCreateDto;
 import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.domain.Station;
@@ -28,7 +28,7 @@ public class LineService {
 
     @Transactional
     public LineDto save(final LineCreateDto lineInfo) {
-        validateExistingName(lineInfo.getName());
+        validateName(lineInfo.getName());
         sectionService.validateSection(lineInfo.getDownStationId(), lineInfo.getUpStationId());
 
         final Line requestedLine = lineInfo.toLineWithNoId();
@@ -58,7 +58,7 @@ public class LineService {
 
     @Transactional
     public void update(final Line requestedLine) {
-        validateNameById(requestedLine.getName(), requestedLine.getId());
+        validateIdByName(requestedLine.getName(), requestedLine.getId());
 
         lineRepository.update(requestedLine);
     }
@@ -71,27 +71,24 @@ public class LineService {
 
     private Line findById(final Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new LineException("노선이 존재하지 않습니다."));
+                .orElseThrow(() -> new RequestException("노선이 존재하지 않습니다."));
     }
 
-    private void validateExistingName(final String name) {
+    private void validateName(final String name) {
         final Optional<Line> line = lineRepository.findByName(name);
         if (line.isPresent()) {
-            throw new LineException("이미 존재하는 노선 이름입니다.");
+            throw new RequestException("이미 존재하는 노선 이름입니다.");
         }
     }
 
-    private void validateNameById(final String name, final Long id) {
-        final Optional<Line> possibleLine = lineRepository.findByName(name);
-        if (possibleLine.isPresent()) {
-            final Line line = possibleLine.get();
-            checkId(line, id);
-        }
+    private void validateIdByName(final String name, final Long id) {
+        lineRepository.findByName(name)
+                .ifPresent(line -> checkId(line, id));
     }
 
     private void checkId(final Line line, final Long id) {
         if (!line.isId(id)) {
-            throw new LineException("이미 존재하는 노선 이름입니다.");
+            throw new RequestException("이미 존재하는 노선 이름입니다.");
         }
     }
 }
