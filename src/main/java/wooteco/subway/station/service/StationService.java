@@ -34,7 +34,7 @@ public class StationService {
 
     @Transactional
     public void delete(final Long id) {
-        if (stationDao.doesIdExist(id)) {
+        if (stationDao.doesIdNotExist(id)) {
             throw new NoSuchStationException();
         }
         stationDao.deleteById(id);

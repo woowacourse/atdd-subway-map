@@ -76,8 +76,9 @@ public class LineService {
 
     @Transactional
     public void updateLine(final Long id, final LineRequest lineRequest) {
-        Line line = new Line(id, lineRequest.getColor(), lineRequest.getName());
         validateId(id);
+        validateDuplicateName(lineRequest.getName());
+        Line line = new Line(id, lineRequest.getColor(), lineRequest.getName());
         lineDao.update(line);
     }
 
