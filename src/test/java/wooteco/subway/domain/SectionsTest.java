@@ -164,6 +164,6 @@ public class SectionsTest {
         assertThat(sections.hasStationAsDownward(1L)).isFalse();
         assertThat(sections.hasStationAsDownward(2L)).isTrue();
         assertThat(sections.hasStationAsDownward(3L)).isTrue();
-        assertThat(sections.hasStationAsDownward(4L)).isFalse();
+        assertThat(sections.hasStationAsDownward(4L)).isTrue();
     }
 }
