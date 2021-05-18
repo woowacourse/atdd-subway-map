@@ -1,9 +1,9 @@
-package wooteco.subway.line;
+package wooteco.subway.section;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.line.exception.SectionError;
-import wooteco.subway.line.exception.SectionException;
+import wooteco.subway.section.exception.SectionError;
+import wooteco.subway.section.exception.SectionException;
 import wooteco.subway.station.Station;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

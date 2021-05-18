@@ -1,4 +1,4 @@
-package wooteco.subway.line.exception;
+package wooteco.subway.section.exception;
 
 public enum SectionError {
     SAME_STATION_INPUT(400, "하행과 상행이 같은 역일 수 없습니다."),

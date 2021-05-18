@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.section;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

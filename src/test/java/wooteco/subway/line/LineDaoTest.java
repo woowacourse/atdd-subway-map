@@ -79,7 +79,8 @@ class LineDaoTest {
         Long savedLineId = lineDao.save(lineName2, color2);
         lineDao.update(savedLineId, updateName, updateColor);
 
-        LineEntity updatedLineEntity = lineDao.findById(savedLineId).orElseThrow(()->new LineException(LineError.NOT_EXIST_LINE_ID));
+        LineEntity updatedLineEntity = lineDao.findById(savedLineId)
+                                              .orElseThrow(() -> new LineException(LineError.NOT_EXIST_LINE_ID));
 
         assertThat(updatedLineEntity.getName()).isEqualTo(updateName);
         assertThat(updatedLineEntity.getColor()).isEqualTo(updateColor);

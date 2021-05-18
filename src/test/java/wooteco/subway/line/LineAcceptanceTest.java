@@ -117,7 +117,8 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         Long id = Long.valueOf(uri.split("/")[2]);
 
-        assertThat(lineResponse).usingRecursiveComparison().isEqualTo(lineService.findById(id));
+        assertThat(lineResponse).usingRecursiveComparison()
+                                .isEqualTo(lineService.findById(id));
         assertThat(lineResponse.getColor()).isEqualTo(color1);
         assertThat(lineResponse.getName()).isEqualTo(name1);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());

@@ -1,7 +1,7 @@
-package wooteco.subway.line;
+package wooteco.subway.section;
 
-import wooteco.subway.line.exception.SectionError;
-import wooteco.subway.line.exception.SectionException;
+import wooteco.subway.section.exception.SectionError;
+import wooteco.subway.section.exception.SectionException;
 import wooteco.subway.station.Station;
 
 public class Section {

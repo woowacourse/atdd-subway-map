@@ -1,7 +1,7 @@
-package wooteco.subway.line;
+package wooteco.subway.section;
 
-import wooteco.subway.line.exception.SectionError;
-import wooteco.subway.line.exception.SectionException;
+import wooteco.subway.section.exception.SectionError;
+import wooteco.subway.section.exception.SectionException;
 import wooteco.subway.station.Station;
 
 import java.util.*;
@@ -166,7 +166,7 @@ public class Sections {
         Section upper = sectionsFromDownStation().get(station);
         Section lower = sectionsFromUpStation().get(station);
 
-        if (upper == null && lower ==null) {
+        if (upper == null && lower == null) {
             throw new SectionException(SectionError.NO_STATION_TO_DELETE);
         }
 
