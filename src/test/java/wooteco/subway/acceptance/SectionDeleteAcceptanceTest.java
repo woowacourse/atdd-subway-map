@@ -1,4 +1,4 @@
-package wooteco.subway.section;
+package wooteco.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -6,8 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import wooteco.subway.AcceptanceTest;
-import wooteco.subway.RestAssuredHelper;
+
 import wooteco.subway.controller.dto.LineResponse;
 import wooteco.subway.controller.dto.SectionResponse;
 import wooteco.subway.controller.dto.StationResponse;

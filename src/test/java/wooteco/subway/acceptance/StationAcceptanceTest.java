@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.acceptance;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -7,8 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import wooteco.subway.AcceptanceTest;
-import wooteco.subway.RestAssuredHelper;
+
 import wooteco.subway.controller.dto.StationResponse;
 
 import java.util.HashMap;

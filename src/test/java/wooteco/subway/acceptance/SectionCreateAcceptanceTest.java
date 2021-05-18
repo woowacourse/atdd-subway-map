@@ -1,16 +1,14 @@
-package wooteco.subway.section;
+package wooteco.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import wooteco.subway.AcceptanceTest;
-import wooteco.subway.RestAssuredHelper;
+
 import wooteco.subway.controller.dto.LineResponse;
 import wooteco.subway.controller.dto.SectionResponse;
 import wooteco.subway.controller.dto.StationResponse;
-import wooteco.subway.domain.Section;
 import wooteco.subway.exception.response.ErrorResponse;
 
 import java.util.HashMap;
@@ -40,7 +38,7 @@ public class SectionCreateAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
 
-        final Section section = response.body().as(Section.class);
+        final SectionResponse section = response.body().as(SectionResponse.class);
         assertThat(section.getLineId()).isEqualTo(1L);
         assertThat(section.getDownStationId()).isEqualTo(1L);
         assertThat(section.getUpStationId()).isEqualTo(3L);
@@ -66,7 +64,7 @@ public class SectionCreateAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
 
-        final Section section = response.body().as(Section.class);
+        final SectionResponse section = response.body().as(SectionResponse.class);
         assertThat(section.getLineId()).isEqualTo(1L);
         assertThat(section.getDownStationId()).isEqualTo(3L);
         assertThat(section.getUpStationId()).isEqualTo(2L);
@@ -93,7 +91,7 @@ public class SectionCreateAcceptanceTest extends AcceptanceTest {
         final String location = response.header("Location");
         assertThat(location).isNotBlank();
 
-        final Section section = response.body().as(Section.class);
+        final SectionResponse section = response.body().as(SectionResponse.class);
         assertThat(section.getLineId()).isEqualTo(1L);
         assertThat(section.getDownStationId()).isEqualTo(3L);
         assertThat(section.getUpStationId()).isEqualTo(1L);
@@ -128,7 +126,7 @@ public class SectionCreateAcceptanceTest extends AcceptanceTest {
         final String location = response.header("Location");
         assertThat(location).isNotBlank();
 
-        final Section section = response.body().as(Section.class);
+        final SectionResponse section = response.body().as(SectionResponse.class);
         assertThat(section.getLineId()).isEqualTo(1L);
         assertThat(section.getDownStationId()).isEqualTo(2L);
         assertThat(section.getUpStationId()).isEqualTo(3L);
