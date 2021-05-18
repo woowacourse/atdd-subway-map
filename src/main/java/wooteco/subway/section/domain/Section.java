@@ -2,7 +2,6 @@ package wooteco.subway.section.domain;
 
 import wooteco.subway.line.exception.LineException;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -74,15 +73,8 @@ public class Section {
         return backStationId.equals(stationId);
     }
 
-    public boolean isIncludedStation(final Long stationId){
+    public boolean isIncludedStation(final Long stationId) {
         return frontStationId.equals(stationId) || backStationId.equals(stationId);
-    }
-
-    public Long getOther(final Long stationId){
-        if(frontStationId.equals(stationId)){
-            return backStationId;
-        }
-        return frontStationId;
     }
 
     public Long frontStationId() {

@@ -20,22 +20,6 @@ public class FinalStations {
         return downStationId;
     }
 
-    public FinalStations addStations(final Section section) {
-        return addStations(section.frontStationId(), section.backStationId());
-    }
-
-    public FinalStations addStations(final Long frontStationId, final Long backStationId) {
-        if (this.upStationId.equals(backStationId)) {
-            return new FinalStations(frontStationId, this.downStationId);
-        }
-
-        if (this.downStationId.equals(frontStationId)) {
-            return new FinalStations(this.upStationId, backStationId);
-        }
-
-        return this;
-    }
-
     public boolean isFinalSection(final Section section) {
         return isFinalSection(section.frontStationId(), section.backStationId());
     }
@@ -67,5 +51,25 @@ public class FinalStations {
 
     public boolean isDownStation(final Long stationId) {
         return downStationId.equals(stationId);
+    }
+
+    public FinalStations addSection(final Section section) {
+        return update(section.backStationId(), section.frontStationId());
+    }
+
+    public FinalStations deleteSection(final Section section) {
+        return update(section.frontStationId(), section.backStationId());
+    }
+
+    private FinalStations update(final Long station1, final Long station2){
+        if (this.upStationId.equals(station1)) {
+            return new FinalStations(station2, this.downStationId);
+        }
+
+        if (this.downStationId.equals(station2)) {
+            return new FinalStations(this.upStationId, station1);
+        }
+
+        throw new LineException("종점이 아닙니다.");
     }
 }

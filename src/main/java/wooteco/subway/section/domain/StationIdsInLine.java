@@ -1,6 +1,7 @@
 package wooteco.subway.section.domain;
 
 import wooteco.subway.line.exception.LineException;
+import wooteco.subway.station.domain.Station;
 
 import java.util.List;
 
@@ -70,5 +71,17 @@ public class StationIdsInLine {
 
     public boolean isFinalStation(final Long stationId) {
         return isFirstStation(stationId) || isLastStation(stationId);
+    }
+
+    public Long frontOf(final Long stationId){
+        return ids.get(ids.indexOf(stationId)-1);
+    }
+
+    public Long backOf(final Long stationId){
+        return ids.get(ids.indexOf(stationId)+1);
+    }
+
+    private boolean isInLine(final Long stationId){
+        return ids.contains(stationId);
     }
 }

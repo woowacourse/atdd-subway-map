@@ -75,11 +75,6 @@ public class LineService {
     public StationIdsInLine allStationIdInLine(final Line line) {
         final Long lineId = line.getId();
 
-        // TODO ::
-//        if (sectionDao.stationCountInLine(lineId) == 0) {
-//            return Collections.EMPTY_LIST;
-//        }
-
         final Sections sections = new Sections(sectionDao.findSections(lineId));
         return sections.sort(lineDao.findUpStationId(lineId));
     }

@@ -49,15 +49,6 @@ public class Sections {
         return idTable;
     }
 
-    public void validateAbleToAdd(final Section section) {
-        final boolean isFrontStationIncluded = isIncludedStation(section.frontStationId());
-        final boolean isBackStationIncluded = isIncludedStation(section.backStationId());
-
-        if(isFrontStationIncluded == isBackStationIncluded){
-            throw new LineException("하나의 역이 포함되어있어야 합니다.");
-        }
-    }
-
     private boolean isIncludedStation(final Long stationId){
         return sections.stream()
                 .anyMatch(section -> section.isIncludedStation(stationId));
@@ -69,6 +60,15 @@ public class Sections {
             return 0;
         }
         return numberOfSection+1;
+    }
+
+    public void validateAbleToAdd(final Section section) {
+        final boolean isFrontStationIncluded = isIncludedStation(section.frontStationId());
+        final boolean isBackStationIncluded = isIncludedStation(section.backStationId());
+
+        if(isFrontStationIncluded == isBackStationIncluded){
+            throw new LineException("하나의 역이 포함되어있어야 합니다.");
+        }
     }
 
     public void validateAbleToDelete(final Long stationId) {

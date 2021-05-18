@@ -2,11 +2,11 @@ package wooteco.subway.section.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.domain.FinalStations;
 import wooteco.subway.line.exception.LineException;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
-import wooteco.subway.section.domain.StationIdsInLine;
 import wooteco.subway.section.dto.SectionRequest;
 
 @Service
@@ -20,25 +20,24 @@ public class SectionServiceTemp {
     }
 
     public void addSection(final Long lineId, final SectionRequest sectionRequest) {
+        validateLineExist(lineId);
         final Section section = sectionRequest.toSection(lineId);
 
-        final Sections sectionsInLine = sections(lineId);
+        final Sections sectionsInLine = new Sections(sectionDao.findSections(lineId));
         sectionsInLine.validateAbleToAdd(section);
 
-        final StationIdsInLine ids = sectionsInLine.sort(lineDao.findUpStationId(lineId));
-        if(ids.isFinalSection(section)){
-            insertFinalSection(lineId, section, ids);
+        final FinalStations finalStations = lineDao.finalStations(lineId);
+        if (finalStations.isFinalSection(section)) {
+            insertFinalSection(lineId, section, finalStations.addSection(section));
             return;
         }
 
         insertMiddleSection(sectionsInLine, section);
     }
 
-    // TODO :: StationsORderInLine 불변으로 만들기
-    private void insertFinalSection(final Long lineId, final Section section, final StationIdsInLine ids) {
-        ids.addSection(section);
+    private void insertFinalSection(final Long lineId, final Section section, final FinalStations finalStations) {
         sectionDao.save(section);
-        lineDao.updateFinalStations(lineId, ids.firstStationId(), ids.lastStationId());
+        lineDao.updateFinalStations(lineId, finalStations);
     }
 
     private void insertMiddleSection(final Sections sectionsInLine, final Section section) {
@@ -50,27 +49,24 @@ public class SectionServiceTemp {
     }
 
     public void deleteSection(final Long lineId, final Long stationId) {
-        final Sections sections = sections(lineId);
+        validateLineExist(lineId);
+
+        final Sections sections = new Sections(sectionDao.findSections(lineId));
         sections.validateAbleToDelete(stationId);
 
-        final StationIdsInLine ids = sections.sort(lineDao.findUpStationId(lineId));
-        if(ids.isFinalStation(stationId)){
-            deleteFinalStation(lineId, stationId, sections, ids);
+        final FinalStations finalStations = lineDao.finalStations(lineId);
+        if (finalStations.isFinalStation(stationId)) {
+            final Section sectionToDelete = sections.finalSectionInclude(stationId);
+            deleteFinalStation(lineId, sectionToDelete, finalStations);
             return;
         }
 
         deleteMiddleStation(sections, stationId);
     }
 
-    private Sections sections(Long lineId) {
-        validateLineExist(lineId);
-        return new Sections(sectionDao.findSections(lineId));
-    }
-
-    private void deleteFinalStation(final Long lineId, final Long stationId, final Sections sectionsInLine, final StationIdsInLine ids) {
-        final Section sectionToDelete = sectionsInLine.finalSectionInclude(stationId);
-        sectionDao.delete(sectionToDelete);
-        lineDao.updateFinalStations(lineId, ids.firstStationId(), ids.lastStationId());
+    private void deleteFinalStation(final Long lineId, final Section section, final FinalStations finalStations) {
+        sectionDao.delete(section);
+        lineDao.updateFinalStations(lineId, finalStations.deleteSection(section));
     }
 
     private void deleteMiddleStation(final Sections sectionsInLine, final Long stationId) {
@@ -82,8 +78,8 @@ public class SectionServiceTemp {
         sectionDao.save(frontSection.combine(backSection));
     }
 
-    private void validateLineExist(final Long lineId){
-        if(lineDao.isNotExist(lineId)){
+    private void validateLineExist(final Long lineId) {
+        if (lineDao.isNotExist(lineId)) {
             throw new LineException("존재하지 않는 노선입니다.");
         }
     }

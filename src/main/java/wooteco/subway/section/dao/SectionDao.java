@@ -57,34 +57,9 @@ public class SectionDao {
         }
     }
 
-    public Section findSectionByFrontStation(final Long lineId, final Long frontStationId) {
-        final String sql = "SELECT * from SECTION WHERE line_id = ? AND front_station_id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper(), lineId, frontStationId);
-    }
-
-    public Section findSectionByBackStation(final Long lineId, final Long backStationId) {
-        final String sql = "SELECT * from SECTION WHERE line_id = ? AND back_station_id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper(), lineId, backStationId);
-    }
-
     public boolean isExistingStation(final Long stationId) {
         final String sql = "SELECT EXISTS(SELECT from SECTION WHERE (front_station_id = ? OR back_station_id = ?))";
         return jdbcTemplate.queryForObject(sql, Boolean.class, stationId, stationId);
-    }
-
-    public boolean isExistingStationInLine(final Long lineId, final Long stationId) {
-        final String sql = "SELECT EXISTS(SELECT from SECTION WHERE line_id = ? AND (front_station_id = ? OR back_station_id = ?))";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId, stationId);
-    }
-
-    public boolean isExistingFrontStation(final Long lineId, final Long stationId) {
-        final String sql = "SELECT EXISTS(SELECT from SECTION WHERE line_id = ? AND front_station_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId);
-    }
-
-    public boolean isExistingBackStation(final Long lineId, final Long stationId) {
-        final String sql = "SELECT EXISTS(SELECT from SECTION WHERE line_id = ? AND back_station_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId);
     }
 
     public void delete(final Section section) {
@@ -92,24 +67,9 @@ public class SectionDao {
         jdbcTemplate.update(sql, section.id());
     }
 
-    public void delete(final Long lineId, final Long frontStationId, final Long backStationId) {
-        final String sql = "DELETE FROM SECTION WHERE line_id = ? AND front_station_id = ? AND back_station_id = ? ";
-        jdbcTemplate.update(sql, lineId, frontStationId, backStationId);
-    }
-
     public void deleteAllSectionInLine(final Long lineId) {
         final String sql = "DELETE FROM SECTION WHERE line_id = ?";
         jdbcTemplate.update(sql, lineId);
-    }
-
-    public Long stationCountInLine(final Long lineId) {
-        final String sql = "SELECT COUNT(*) from SECTION WHERE line_id = ?";
-        final Long columnCount = jdbcTemplate.queryForObject(sql, Long.class, lineId);
-
-        if (columnCount == 0) {
-            return columnCount;
-        }
-        return columnCount + 1;
     }
 
     public List<Section> findSections(final Long lineId) {
