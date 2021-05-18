@@ -2,8 +2,8 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.repository.LineRepository;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.LineRequest;
@@ -17,11 +17,11 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-    private final LineRepository lineRepository;
+    private final LineDao lineDao;
     private final SectionService sectionService;
 
-    public LineService(LineRepository lineRepository, SectionService sectionService) {
-        this.lineRepository = lineRepository;
+    public LineService(LineDao lineDao, SectionService sectionService) {
+        this.lineDao = lineDao;
         this.sectionService = sectionService;
     }
 
@@ -30,21 +30,21 @@ public class LineService {
         Line line = lineRequest.createLine();
         SectionRequest sectionRequest = lineRequest.createSectionRequest();
 
-        Long lineId = lineRepository.insert(line);
+        Long lineId = lineDao.insert(line);
         sectionService.createSection(lineId, sectionRequest);
         return new LineResponse(lineId, line);
     }
 
     @Transactional
     public List<LineResponse> findLines() {
-        List<Line> lines = lineRepository.selectAll();
+        List<Line> lines = lineDao.selectAll();
         return lines.stream()
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLineWithStations(Long id) {
-        Line line = lineRepository.select(id);
+        Line line = lineDao.select(id);
         List<StationResponse> stationResponses = getStationsInLine(id).stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
@@ -58,12 +58,12 @@ public class LineService {
 
     @Transactional
     public void modifyLine(Long id, LineRequest lineRequest) {
-        lineRepository.update(id, lineRequest.createLine());
+        lineDao.update(id, lineRequest.createLine());
     }
 
     @Transactional
     public void deleteLine(Long id) {
-        lineRepository.delete(id);
+        lineDao.delete(id);
     }
 }
 
