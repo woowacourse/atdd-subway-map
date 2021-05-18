@@ -17,7 +17,7 @@ public class SectionService {
     }
 
     @Transactional
-    public Long save(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
+    public Section save(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
         Sections sections = sectionDao.findAllByLineId(lineId);
         Section sectionToSave = new Section(
                 lineId,
@@ -42,7 +42,7 @@ public class SectionService {
         }
     }
 
-    private long add(final Sections sections, final Section sectionToSave) {
+    private Section add(final Sections sections, final Section sectionToSave) {
         if (sections.isNotEndStationSave(sectionToSave)) {
             Section originalSection = sections.findOriginalSection(sectionToSave);
             Section adjustedSection = originalSection.adjustBy(sectionToSave);

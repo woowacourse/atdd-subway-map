@@ -20,7 +20,7 @@ public class SectionDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long save(final Section section) {
+    public Section save(final Section section) {
         String query = "INSERT INTO section(line_id, up_station_id, down_station_id, distance) VALUES(?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -33,7 +33,13 @@ public class SectionDao {
             return ps;
         }, keyHolder);
 
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return new Section(
+                Objects.requireNonNull(keyHolder.getKey()).longValue(),
+                section.getLineId(),
+                section.getUpStation(),
+                section.getDownStation(),
+                section.getDistance()
+        );
     }
 
     public void deleteByStationId(final Long lineId, final Long stationId) {

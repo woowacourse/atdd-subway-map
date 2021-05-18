@@ -50,10 +50,6 @@ public class Line {
         return name;
     }
 
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
     public void setSections(final Sections sections) {
         this.sections = sections;
     }

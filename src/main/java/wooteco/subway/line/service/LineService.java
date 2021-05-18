@@ -42,14 +42,12 @@ public class LineService {
         Line line = new Line(lineRequest.getColor(), lineRequest.getName());
 
         validateDuplicateName(line);
-        long lineId = lineDao.save(line);
-        line.setId(lineId);
+        Line newLine = lineDao.save(line);
 
-        Long sectionId = sectionService.save(lineId, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
-        Sections sections = getSections(sectionId, lineId, lineRequest);
-        line.setSections(sections);
+        Section section = sectionService.save(newLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        Sections sections = getSections(section);
 
-        return LineResponse.toDto(line);
+        return LineResponse.toDto(new Line(newLine.getId(), newLine.getColor(), newLine.getName(), sections));
     }
 
     private void validateDuplicateName(final Line line) {
@@ -59,12 +57,14 @@ public class LineService {
         }
     }
 
-    private Sections getSections(final Long sectionId, final long lineId, final LineRequest lineRequest) {
-        Station upStation = stationService.findById(lineRequest.getUpStationId());
-        Station downStation = stationService.findById(lineRequest.getDownStationId());
+    private Sections getSections(final Section section) {
+        Station upStation = stationService.findById(section.getUpStationId());
+        Station downStation = stationService.findById(section.getDownStationId());
 
         return new Sections(
-                Collections.singletonList(new Section(sectionId, lineId, upStation, downStation, lineRequest.getDistance()))
+                Collections.singletonList(
+                        new Section(section.getId(), section.getLineId(), upStation, downStation, section.getDistance())
+                )
         );
     }
 

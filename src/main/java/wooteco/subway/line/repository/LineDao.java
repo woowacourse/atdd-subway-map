@@ -26,7 +26,7 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long save(final Line line) {
+    public Line save(final Line line) {
         String query = "INSERT INTO line(color, name) VALUES(?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -37,7 +37,11 @@ public class LineDao {
             return ps;
         }, keyHolder);
 
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return new Line(
+                Objects.requireNonNull(keyHolder.getKey()).longValue(),
+                line.getColor(),
+                line.getName()
+        );
     }
 
     public Lines findAll() {

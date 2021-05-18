@@ -22,10 +22,7 @@ public class StationService {
         Station station = new Station(name);
         validateDuplicateName(station);
 
-        long lineId = stationDao.save(station);
-        station.setId(lineId);
-
-        return StationResponse.toDto(station);
+        return StationResponse.toDto(stationDao.save(station));
     }
 
     private void validateDuplicateName(final Station station) {

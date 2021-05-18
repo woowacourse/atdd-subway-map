@@ -25,7 +25,7 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long save(final Station station) {
+    public Station save(final Station station) {
         String query = "INSERT INTO STATION(name) VALUES (?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -35,7 +35,10 @@ public class StationDao {
             return ps;
         }, keyHolder);
 
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return new Station(
+                Objects.requireNonNull(keyHolder.getKey()).longValue(),
+                station.getName()
+        );
     }
 
     public Stations findAll() {
