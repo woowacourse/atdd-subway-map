@@ -10,12 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.domain.Id;
 import wooteco.subway.exception.section.InvalidSectionOnLineException;
-import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.section.domain.Distance;
 import wooteco.subway.section.domain.Section;
-import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.domain.Station;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql("classpath:initializeTable.sql")
@@ -25,7 +27,7 @@ public class SectionDaoTest {
     private final Station stationSinSeol = new Station(1L, "신설동역");
     private final Station stationDongMyo = new Station(2L, "동묘앞역");
     private final Station stationDongDaeMoon = new Station(3L, "동대문역");
-    private final int distance = 10;
+    private final Distance distance = new Distance(10);
 
     @Autowired
     private SectionDao sectionDao;
@@ -56,7 +58,7 @@ public class SectionDaoTest {
         Line line = lineDao.show(1L).get();
         Station upStation = stationDao.showStation(1L).get();
         Station downStation = stationDao.showStation(2L).get();
-        int distance = 10;
+        Distance distance = new Distance(10);
 
         Section targetSection = new Section(line, upStation, downStation, distance);
 
@@ -67,7 +69,7 @@ public class SectionDaoTest {
         assertThat(savedSection.getLine()).isEqualTo(line);
         assertThat(savedSection.getUpStation()).isEqualTo(upStation);
         assertThat(savedSection.getDownStation()).isEqualTo(downStation);
-        assertThat(savedSection.getDistance().value()).isEqualTo(distance);
+        assertThat(savedSection.getDistance()).isEqualTo(distance);
     }
 
     @Test
@@ -84,11 +86,11 @@ public class SectionDaoTest {
         assertThat(savedSinSeolAndDongMyo.getLine()).isEqualTo(line);
         assertThat(savedSinSeolAndDongMyo.getUpStation()).isEqualTo(stationSinSeol);
         assertThat(savedSinSeolAndDongMyo.getDownStation()).isEqualTo(stationDongMyo);
-        assertThat(savedSinSeolAndDongMyo.getDistance().value()).isEqualTo(distance);
+        assertThat(savedSinSeolAndDongMyo.getDistance()).isEqualTo(distance);
         assertThat(savedDongMyoAndDongDaeMoon.getLine()).isEqualTo(line);
         assertThat(savedDongMyoAndDongDaeMoon.getUpStation()).isEqualTo(stationDongMyo);
         assertThat(savedDongMyoAndDongDaeMoon.getDownStation()).isEqualTo(stationDongDaeMoon);
-        assertThat(savedDongMyoAndDongDaeMoon.getDistance().value()).isEqualTo(distance);
+        assertThat(savedDongMyoAndDongDaeMoon.getDistance()).isEqualTo(distance);
     }
 
     @Test
@@ -104,7 +106,7 @@ public class SectionDaoTest {
         assertThat(section.getLine()).isEqualTo(line);
         assertThat(section.getUpStation()).isEqualTo(stationSinSeol);
         assertThat(section.getDownStation()).isEqualTo(stationDongMyo);
-        assertThat(section.getDistance().value()).isEqualTo(distance);
+        assertThat(section.getDistance()).isEqualTo(distance);
     }
 
     @Test
@@ -120,7 +122,7 @@ public class SectionDaoTest {
         assertThat(section.getLine()).isEqualTo(line);
         assertThat(section.getUpStation()).isEqualTo(stationSinSeol);
         assertThat(section.getDownStation()).isEqualTo(stationDongMyo);
-        assertThat(section.getDistance().value()).isEqualTo(distance);
+        assertThat(section.getDistance()).isEqualTo(distance);
     }
 
     @Test
@@ -174,8 +176,10 @@ public class SectionDaoTest {
     @DisplayName("구간 제거")
     public void delete() {
         // given
+        Id id = new Id(1L);
+        Distance distance = new Distance(10);
         Long targetRemoveSectionId = 1L;
-        Section section = new Section(1L, line, stationSinSeol, stationDongMyo, 10);
+        Section section = new Section(id, line, stationSinSeol, stationDongMyo, distance);
         section = sectionDao.save(section);
 
         // when

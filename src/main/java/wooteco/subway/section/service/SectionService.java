@@ -68,7 +68,7 @@ public class SectionService {
         Station downStation = stationService.showOne(sectionServiceDto.getDownStationId());
         Line line = lineService.show(sectionServiceDto.getLineId());
         Distance distance = new Distance(sectionServiceDto.getDistance());
-        return new Section(line, upStation, downStation, sectionServiceDto.getDistance());
+        return new Section(line, upStation, downStation, distance);
     }
 
     private void checkExistedStation(SectionServiceDto sectionServiceDto) {

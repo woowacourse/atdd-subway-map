@@ -9,9 +9,11 @@ import java.util.Deque;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.domain.Id;
 import wooteco.subway.exception.section.InvalidSectionOnLineException;
 import wooteco.subway.exception.station.NotFoundStationException;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.section.domain.Distance;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
 import wooteco.subway.station.domain.Station;
@@ -24,7 +26,7 @@ class SectionsTest {
     private final Station SINLIM_STATION = new Station(3L, "신림역");
     private final Station BONGCHEON_STATION = new Station(4L, "봉천역");
     private final Station DAELIM_STATION = new Station(5L, "대림역");
-    private final int STANDARD_DISTANCE = 10;
+    private final Distance STANDARD_DISTANCE = new Distance(10);
     private final Sections SECTIONS = new Sections(Arrays.asList(
         new Section(TWO_LINE, GURO_STATION, SINDAEBANG_STATION, STANDARD_DISTANCE),
         new Section(TWO_LINE, SINDAEBANG_STATION, SINLIM_STATION, STANDARD_DISTANCE),
@@ -68,12 +70,13 @@ class SectionsTest {
         long daelimID = 5L;
         long guroID = 1L;
         Station sindomrimStation = new Station(6L, "신도림역");
+        Distance distance = new Distance(10);
 
         //when
         boolean daeLimGuroCase = SECTIONS
-            .isBothEndSection(new Section(TWO_LINE, DAELIM_STATION, GURO_STATION, 10));
+            .isBothEndSection(new Section(TWO_LINE, DAELIM_STATION, GURO_STATION, distance));
         boolean sindorimDaelimCase = SECTIONS
-            .isBothEndSection(new Section(TWO_LINE, sindomrimStation, DAELIM_STATION, 10));
+            .isBothEndSection(new Section(TWO_LINE, sindomrimStation, DAELIM_STATION, distance));
 
         //then
         assertThat(sindorimDaelimCase).isTrue();
@@ -86,7 +89,8 @@ class SectionsTest {
         //given
         long daelimID = 5L;
         long guroID = 1L;
-        Section section = new Section(TWO_LINE, DAELIM_STATION, BONGCHEON_STATION, 10);
+        Distance distance = new Distance(10);
+        Section section = new Section(TWO_LINE, DAELIM_STATION, BONGCHEON_STATION, distance);
 
         //when
 
@@ -114,9 +118,11 @@ class SectionsTest {
     @DisplayName("역 삭제 실패 테스트")
     void failDeleteTest() {
         //given
+        Id id = new Id(1L);
         Station startStation = new Station(1L, "잠실새내역");
         Station endStation = new Station(2L, "잠실역");
-        Section section = new Section(1L, TWO_LINE, startStation, endStation, 10);
+        Distance distance = new Distance(10);
+        Section section = new Section(id, TWO_LINE, startStation, endStation, distance);
         List<Section> rawSections = new ArrayList<>();
         Sections sections = new Sections(rawSections);
         //when
@@ -134,8 +140,9 @@ class SectionsTest {
         Station startStation = new Station(11L, "시청역");
         Station endStation = new Station(12L, "신당역");
         Station sindorimStation = new Station(10L, "신도림역");
-        Section section = new Section(TWO_LINE, startStation, endStation, 10);
-        Section targetSection = new Section(TWO_LINE, sindorimStation, DAELIM_STATION, 10);
+        Distance distance = new Distance(10);
+        Section section = new Section(TWO_LINE, startStation, endStation, distance);
+        Section targetSection = new Section(TWO_LINE, sindorimStation, DAELIM_STATION, distance);
 
         //when
         Section responseSection = SECTIONS.findByOverlappedStation(targetSection);
@@ -151,7 +158,8 @@ class SectionsTest {
     void checkIntervalSection() {
         //given
         Station startStation = new Station(11L, "까치산역");
-        Section section = new Section(TWO_LINE, GURO_STATION, startStation, 5);
+        Distance distance = new Distance(5);
+        Section section = new Section(TWO_LINE, GURO_STATION, startStation, distance);
 
         //when
         Section responseSection = SECTIONS.sectionForInterval(section);

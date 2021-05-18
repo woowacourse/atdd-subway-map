@@ -1,5 +1,6 @@
 package wooteco.subway.section.domain;
 
+import java.util.Objects;
 import wooteco.subway.exception.section.InvalidDistanceException;
 
 public class Distance {
@@ -29,5 +30,22 @@ public class Distance {
 
     public int value() {
         return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Distance distance = (Distance) o;
+        return value == distance.value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.section.DuplicateStationException;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.section.domain.Distance;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.station.domain.Station;
 
@@ -14,7 +15,7 @@ class SectionTest {
     private final Station UP_STATION = new Station( 1L, "동묘앞역");
     private final Station DOWN_STATION = new Station(2L, "신설동역");
     private final Line LINE = new Line(1L, "1호선", "파란");
-    private final int DISTANCE = 10;
+    private final Distance DISTANCE = new Distance(10);
     private final Section SECTION = new Section(LINE, UP_STATION, DOWN_STATION, DISTANCE);
 
 
@@ -25,7 +26,7 @@ class SectionTest {
         Station upStation = new Station( 1L, "신설동역");
         Station downStation = new Station(1L, "신설동역");
         Line line = new Line("1호선", "파란");
-        int distance = 1;
+        Distance distance = new Distance(1);
 
         // when
 
@@ -41,7 +42,7 @@ class SectionTest {
         Station upStation = new Station( 1L,"동묘앞역");
         Station downStation = new Station(3L, "동대문역");
         Line line = new Line("1호선", "파란");
-        int distance = 1;
+        Distance distance = new Distance(1);
 
         //when
         Section newSection = new Section(line, upStation, downStation, distance);
@@ -58,7 +59,7 @@ class SectionTest {
         Station upStation = new Station( 3L,"동대문역");
         Station downStation = new Station(2L,"신설동역");
         Line line = new Line(1L, "1호선", "파란");
-        int distance = 1;
+        Distance distance = new Distance(1);
 
         //when
         Section newSection = new Section(line, upStation, downStation, distance);
@@ -74,7 +75,7 @@ class SectionTest {
         Station upStation = new Station( 2L,"신설동역");
         Station downStation = new Station(4L,"구로디지털단지역");
         Line line = new Line(1L, "1호선", "파란");
-        int distance = 1;
+        Distance distance = new Distance(1);
 
         //when
         Section newSection = new Section(line, upStation, downStation, distance);
@@ -90,7 +91,7 @@ class SectionTest {
         Station upStation = new Station( 4L, "구로디지털단지역");
         Station downStation = new Station(2L, "신설동역");
         Line line = new Line(1L, "1호선", "파란");
-        int distance = 1;
+        Distance distance = new Distance(1);
 
         //when
         Section newSection = new Section(line, upStation, downStation, distance);
@@ -105,7 +106,7 @@ class SectionTest {
         //given
         Station downStation = new Station(3L, "봉천역");
         Line line = new Line(1L, "1호선", "파란");
-        int distance = 5;
+        Distance distance = new Distance(5);
         Section newSection = new Section(line, UP_STATION, downStation, distance);
 
         //when
@@ -124,7 +125,7 @@ class SectionTest {
         Station downStation = new Station( 3L, "구로디지털단지역");
         Station upStation = new Station(2L, "신설동역");
         Line line = new Line(1L, "1호선", "파란");
-        int distance = 10;
+        Distance distance = new Distance(10);
         Section newSection = new Section(line, upStation, downStation, distance);
 
         //when
