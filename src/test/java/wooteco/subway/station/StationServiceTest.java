@@ -53,7 +53,7 @@ class StationServiceTest {
         when(mockStationDao.showAll()).thenReturn(stations);
 
         // when
-        List<StationServiceDto> requestedDtos = stationService.showStations();
+        List<StationServiceDto> requestedDtos = stationService.showAllDto();
 
         // then
         assertThat(requestedDtos.get(0).getId()).isEqualTo(stations.get(0).getId());

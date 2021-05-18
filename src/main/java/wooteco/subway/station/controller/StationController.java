@@ -42,7 +42,7 @@ public class StationController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<StationServiceDto> stationServiceDtos = stationService.showStations();
+        List<StationServiceDto> stationServiceDtos = stationService.showAllDto();
         List<StationResponse> stationResponses = stationServiceDtos.stream()
             .map(StationResponse::from)
             .collect(Collectors.toList());

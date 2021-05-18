@@ -20,12 +20,12 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station showStation(final long id) {
+    public Station showOne(final long id) {
         return stationDao.showStation(id)
             .orElseThrow(() -> new NotFoundStationException());
     }
 
-    public List<StationServiceDto> showStations() {
+    public List<StationServiceDto> showAllDto() {
         List<Station> stations = stationDao.showAll();
 
         return stations.stream()

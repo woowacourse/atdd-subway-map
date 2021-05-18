@@ -60,15 +60,15 @@ public class SectionService {
     }
 
     private Section assembleSectionFromSectionServiceDto(SectionServiceDto sectionServiceDto) {
-        Station upStation = stationService.showStation(sectionServiceDto.getUpStationId());
-        Station downStation = stationService.showStation(sectionServiceDto.getDownStationId());
+        Station upStation = stationService.showOne(sectionServiceDto.getUpStationId());
+        Station downStation = stationService.showOne(sectionServiceDto.getDownStationId());
         Line line = lineService.show(sectionServiceDto.getLineId());
         Distance distance = new Distance(sectionServiceDto.getDistance());
         return new Section(line, upStation, downStation, sectionServiceDto.getDistance());
     }
 
     private void checkExistedStation(SectionServiceDto sectionServiceDto) {
-        List<StationServiceDto> dtos = stationService.showStations();
+        List<StationServiceDto> dtos = stationService.showAllDto();
         Long upStationId = sectionServiceDto.getUpStationId();
         Long downStationId = sectionServiceDto.getDownStationId();
         checkOneStation(upStationId, dtos);
@@ -95,7 +95,7 @@ public class SectionService {
 
     public void delete(@Valid final DeleteStationDto deleteDto) {
         Sections sections = new Sections(sectionDao.findAllByLineId(deleteDto.getLineId()));
-        Station targetStation = stationService.showStation(deleteDto.getStationId());
+        Station targetStation = stationService.showOne(deleteDto.getStationId());
         sections.validateDeletableCount();
         sections.validateExistStation(targetStation);
 
@@ -134,7 +134,7 @@ public class SectionService {
     }
 
     private StationResponse stationResponseById(final Long id) {
-        StationServiceDto dto = stationService.showStations()
+        StationServiceDto dto = stationService.showAllDto()
             .stream()
             .filter(element -> id.equals(element.getId()))
             .findAny()
