@@ -11,7 +11,6 @@ import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.CreateLineDto;
 import wooteco.subway.line.dto.LineServiceDto;
 
-@Transactional
 @Service
 public class LineService {
 
@@ -23,6 +22,7 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
+    @Transactional
     public Line save(final Line line) {
         Line rawLine = line;
         return lineDao.save(rawLine);
@@ -53,6 +53,7 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public void update(@Valid final LineServiceDto lineServiceDto) {
         Line line = lineServiceDto.toEntity();
 
@@ -61,6 +62,7 @@ public class LineService {
         }
     }
 
+    @Transactional
     public void delete(@Valid final LineServiceDto lineServiceDto) {
         if (lineDao.delete(lineServiceDto.getId()) == NOT_FOUND) {
             throw new NotFoundLineException();
