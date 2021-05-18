@@ -17,4 +17,6 @@ public interface SectionDao {
     void updateDownStation(Long id, Long downStationId, int distance);
 
     void delete(Long id);
+
+    Optional<Section> existsByLineId(Long lineId);
 }

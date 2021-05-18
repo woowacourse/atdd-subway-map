@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.line.LineNonexistenceException;
 import wooteco.subway.exception.section.SectionDeletionException;
-import wooteco.subway.line.LineDao;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -13,17 +12,15 @@ import java.util.function.Consumer;
 @Transactional(readOnly = true)
 public class SectionService {
 
-    private final LineDao lineDao;
     private final SectionDao sectionDao;
 
-    public SectionService(LineDao lineDao, SectionDao sectionDao) {
-        this.lineDao = lineDao;
+    public SectionService(SectionDao sectionDao) {
         this.sectionDao = sectionDao;
     }
 
     @Transactional
     public Section add(Long lineId, SectionRequest sectionRequest) {
-        validateLineId(lineId);
+        validateExistence(lineId);
 
         Section section = new Section(sectionRequest.getUpStationId(),
                 sectionRequest.getDownStationId(),
@@ -55,7 +52,8 @@ public class SectionService {
 
     @Transactional
     public void delete(Long lineId, Long stationId) {
-        validate(lineId);
+        validateExistence(lineId);
+        validateRemovableSize(lineId);
 
         Sections sections = new Sections(sectionDao.findByStation(lineId, stationId));
         merge(lineId, stationId, sections);
@@ -64,13 +62,8 @@ public class SectionService {
         }
     }
 
-    private void validate(Long lineId) {
-        validateLineId(lineId);
-        validateRemovableSize(lineId);
-    }
-
-    private void validateLineId(Long lineId) {
-        lineDao.findById(lineId)
+    private void validateExistence(Long lineId) {
+        sectionDao.existsByLineId(lineId)
                 .orElseThrow(LineNonexistenceException::new);
     }
 

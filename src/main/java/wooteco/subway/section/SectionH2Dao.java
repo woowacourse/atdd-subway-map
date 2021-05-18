@@ -103,4 +103,24 @@ public class SectionH2Dao implements SectionDao {
         String sql = "DELETE FROM SECTION WHERE id=?";
         jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public Optional<Section> existsByLineId(Long lineId) {
+        String sql = "SELECT * FROM SECTION WHERE EXISTS(SELECT * FROM LINE WHERE id=?) LIMIT 1";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                    sql,
+                    (rs, rowNum) -> {
+                        Section section = new Section(
+                                rs.getLong("id"),
+                                rs.getLong("up_station_id"),
+                                rs.getLong("down_station_id"),
+                                rs.getInt("distance")
+                        );
+                        return section;
+                    }, lineId));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }
