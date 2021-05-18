@@ -66,7 +66,7 @@ class SectionApiControllerTest extends AcceptanceTest {
 
 
         // then
-        assertThat(result.statusCode()).isEqualTo(CREATED);
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(result.header("Location")).isNotNull();
         assertThat(stationsResult).hasSize(3);
         assertThat(stationsResult).containsExactly("강남역", "잠실역", "잠실새내역");
@@ -94,7 +94,7 @@ class SectionApiControllerTest extends AcceptanceTest {
                 .collect(Collectors.toList());
 
         // then
-        assertThat(result.statusCode()).isEqualTo(CREATED);
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(result.header("Location")).isNotNull();
         assertThat(stationsResult).hasSize(3);
         assertThat(stationsResult).containsExactly("잠실역", "잠실새내역", "강남역");
@@ -121,7 +121,7 @@ class SectionApiControllerTest extends AcceptanceTest {
                 .collect(Collectors.toList());
 
         // then
-        assertThat(result.statusCode()).isEqualTo(CREATED);
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(result.header("Location")).isNotNull();
         assertThat(stationsResult).hasSize(3);
         assertThat(stationsResult).containsExactly("잠실역", "강남역", "잠실새내역");
@@ -149,7 +149,7 @@ class SectionApiControllerTest extends AcceptanceTest {
                 .collect(Collectors.toList());
 
         // then
-        assertThat(result.statusCode()).isEqualTo(CREATED);
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(result.header("Location")).isNotNull();
         assertThat(stationsResult).hasSize(3);
         assertThat(stationsResult).containsExactly("잠실역", "강남역", "잠실새내역");
@@ -180,7 +180,7 @@ class SectionApiControllerTest extends AcceptanceTest {
                 .collect(Collectors.toList());
 
         // then
-        assertThat(result.statusCode()).isEqualTo(CREATED);
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(result.header("Location")).isNotNull();
         assertThat(stationsResult).hasSize(5);
         assertThat(stationsResult).containsExactly("강남역", "잠실역", "수서역", "잠실새내역", "동탄역");
@@ -205,7 +205,7 @@ class SectionApiControllerTest extends AcceptanceTest {
 
 
         ExtractableResponse<Response> result = postSection(new SectionRequest(수서역_id, 잠실새내_id, 2), lineId);
-        assertThat(result.statusCode()).isEqualTo(CREATED);
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         ExtractableResponse<Response> lineResult = get("/lines/" + lineId);
         List<String> stationsResult = lineResult.jsonPath().getList("stations", StationResponse.class)
                 .stream()

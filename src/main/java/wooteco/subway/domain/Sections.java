@@ -9,7 +9,6 @@ import wooteco.subway.exception.station.StationNotFoundException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -96,10 +95,6 @@ public class Sections {
         return sections.stream().noneMatch(section -> section.isAdjacent(target));
     }
 
-    public List<Section> sections() {
-        return Collections.unmodifiableList(sections);
-    }
-
     public List<Section> removeRelatedSections(Station station) {
         validateRemovable(station);
 
@@ -157,12 +152,11 @@ public class Sections {
         return modified;
     }
 
-
     public boolean isSizeOf(int size) {
         return sections.size() == size;
     }
 
-    public List<Section> getList() {
+    public List<Section> getSections() {
         return new ArrayList<>(sections);
     }
 }

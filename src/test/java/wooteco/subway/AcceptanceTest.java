@@ -16,10 +16,6 @@ import wooteco.subway.station.web.StationRequest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
 
-    public static final int BAD_REQUEST = 400;
-    public static final int NOT_FOUND = 404;
-    public static final int OK = 200;
-    public static final int CREATED = 201;
     @LocalServerPort
     int port;
 
@@ -71,18 +67,6 @@ public class AcceptanceTest {
                 .post("/lines/" + lineId + "/sections/")
                 .then().log().all()
                 .extract();
-    }
-
-    public static Long postSectionAndGetId(SectionRequest sectionRequest, Long lineId) {
-        ExtractableResponse<Response> result = RestAssured.given().log().all()
-                .body(sectionRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/" + lineId + "/sections/")
-                .then().log().all()
-                .extract();
-
-        return getIdInLocation(result);
     }
 
     public static Long postLineAndGetId(LineRequest lineRequest) {

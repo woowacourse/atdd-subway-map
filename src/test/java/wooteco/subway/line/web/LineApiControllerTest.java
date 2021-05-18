@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.web.StationRequest;
 
@@ -71,7 +72,7 @@ class LineApiControllerTest extends AcceptanceTest {
         ExtractableResponse<Response> result = postLine(중복노선);
 
         // then
-        assertThat(result.statusCode()).isEqualTo(BAD_REQUEST);
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(result.body().asString()).isEqualTo("중복되는 라인 정보가 존재합니다.");
     }
 
@@ -92,7 +93,7 @@ class LineApiControllerTest extends AcceptanceTest {
         ExtractableResponse<Response> result = postLine(일호선);
 
         // then
-        assertThat(result.statusCode()).isEqualTo(BAD_REQUEST);
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(result.body().asString()).isEqualTo("중복되는 라인 정보가 존재합니다.");
     }
 
@@ -109,7 +110,7 @@ class LineApiControllerTest extends AcceptanceTest {
         ExtractableResponse<Response> result = postLine(이름없는노선);
 
         // then
-        assertThat(result.statusCode()).isEqualTo(BAD_REQUEST);
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(result.body().asString()).isEqualTo("필수값이 잘못 되었습니다.");
     }
 
@@ -124,7 +125,7 @@ class LineApiControllerTest extends AcceptanceTest {
         ExtractableResponse<Response> result = postLine(삼호선);
 
         // then
-        assertThat(result.statusCode()).isEqualTo(NOT_FOUND);
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -139,7 +140,7 @@ class LineApiControllerTest extends AcceptanceTest {
         ExtractableResponse<Response> result = postLine(이호선);
 
         // then
-        assertThat(result.statusCode()).isEqualTo(BAD_REQUEST);
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(result.body().asString()).isEqualTo("상행,하행역이 같은 구간입니다.");
     }
 
@@ -150,7 +151,7 @@ class LineApiControllerTest extends AcceptanceTest {
         ExtractableResponse<Response> result = get("/lines/" + Long.MAX_VALUE);
 
         //then
-        assertThat(result.statusCode()).isEqualTo(NOT_FOUND);
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("노선 조회 - 성공")
@@ -166,7 +167,7 @@ class LineApiControllerTest extends AcceptanceTest {
         ExtractableResponse<Response> result = get("/lines/" + lineId);
 
         // then
-        assertThat(result.statusCode()).isEqualTo(OK);
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(result.jsonPath().getString("stations[0].name")).isEqualTo("잠실역");
         assertThat(result.jsonPath().getString("stations[1].name")).isEqualTo("잠실새내역");
     }

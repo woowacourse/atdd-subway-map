@@ -10,11 +10,18 @@ public class Stations {
     private final List<Section> sections;
 
     public Stations(Sections sections) {
-        this.sections = sections.getList();
+        this.sections = sections.getSections();
     }
 
     public Stations() {
         this(new Sections());
+    }
+
+    public List<Station> getStations() {
+        if (sections.size() == 0) {
+            throw new StationNotFoundException();
+        }
+        return convertToSortedStations();
     }
 
     private List<Station> convertToSortedStations() {
@@ -46,13 +53,6 @@ public class Stations {
             upStationToFindDown.put(section.getUpStation(), section.getDownStation());
             downStationToFindUp.put(section.getDownStation(), section.getUpStation());
         }
-    }
-
-    public List<Station> getStations() {
-        if (sections.size() == 0) {
-            throw new StationNotFoundException();
-        }
-        return convertToSortedStations();
     }
 
 }

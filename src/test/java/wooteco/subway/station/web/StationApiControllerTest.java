@@ -52,14 +52,12 @@ public class StationApiControllerTest extends AcceptanceTest {
     void read_성공() {
         // given
         StationRequest 병점역 = new StationRequest("병점역");
-        ExtractableResponse<Response> 병점역_생성 = postStation(병점역);
+        Long 병점역_id = postStationAndGetId(병점역);
 
         StationRequest 역삼역 = new StationRequest("역삼역");
-        ExtractableResponse<Response> 역삼역_생성 = postStation(역삼역);
+        Long 역삼역_id = postStationAndGetId(역삼역);
 
-        List<Long> expectedLineIds = Arrays.asList(병점역_생성, 역삼역_생성).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
+        List<Long> expectedLineIds = Arrays.asList(병점역_id, 역삼역_id);
 
         // when
         ExtractableResponse<Response> result = 역_불러오기();
