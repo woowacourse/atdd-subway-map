@@ -118,7 +118,7 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public List<Section> sortSection() {
+    private Sections sortSection() {
         Deque<Section> sectionDeque = new ArrayDeque<>();
         sectionDeque.add(sections.get(0));
 
@@ -133,7 +133,11 @@ public class Sections {
         while (downStationIdMap.containsKey(sectionDeque.peekFirst().getUpStationId())) {
             sectionDeque.addFirst(downStationIdMap.get(sectionDeque.peekFirst().getUpStationId()));
         }
-        return new ArrayList<>(sectionDeque);
+        return new Sections(new ArrayList<>(sectionDeque));
+    }
+
+    public List<Long> sortSectionsId() {
+        return sortSection().stationIds();
     }
 
     public List<Section> toList() {

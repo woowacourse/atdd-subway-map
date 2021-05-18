@@ -10,6 +10,7 @@ import wooteco.subway.exception.SubwayException;
 @ControllerAdvice
 public class SubwayControllerAdvice {
 
+    //TODO 예외 HttpStatus 확장 가능하게 수정
     @ExceptionHandler(SubwayException.class)
     public ResponseEntity<ExceptionMessageDto> duplicatedException(final SubwayException subwayException) {
         return ResponseEntity

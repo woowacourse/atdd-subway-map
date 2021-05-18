@@ -41,11 +41,7 @@ public class Line {
     }
 
     public List<Long> sortingSectionIds() {
-        List<Section> sortSection = sections.sortSection();
-        return sortSection.stream()
-                .flatMap(section -> Stream.of(section.getUpStationId(), section.getDownStationId()))
-                .distinct()
-                .collect(Collectors.toList());
+        return sections.sortSectionsId();
     }
 
     public Long getId() {
