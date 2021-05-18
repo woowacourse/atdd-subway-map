@@ -37,7 +37,7 @@ public class SectionService {
     }
 
     @Transactional(readOnly = true)
-    public List<StationResponse> findSectionById(Long id) {
+    public List<StationResponse> findSectionByLineId(Long id) {
         Sections sections = new Sections(sectionDao.findSectionBylineId(id));
         return sections.getOrderedStations().stream()
                 .map(station ->
@@ -91,5 +91,9 @@ public class SectionService {
                     sectionOfSameUpStation.getDownStation().getId(),
                     sectionOfSameUpStation.getDistance() + sectionOfSameDownStation.getDistance());
         }
+    }
+
+    public void deleteSectionByLineId(Long lineId) {
+        sectionDao.deleteByLineId(lineId);
     }
 }

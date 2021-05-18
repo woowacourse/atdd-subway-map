@@ -44,8 +44,8 @@ public class StationDao {
     }
 
     public int delete(Long id) {
-        String sql = "DELETE FROM station Where id = ? AND NOT EXISTS(SELECT * FROM section WHERE up_station_id = ? OR down_station_id = ?)";
-        return jdbcTemplate.update(sql, id, id, id);
+        String sql = "DELETE FROM station Where id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 
     @Transactional(readOnly = true)

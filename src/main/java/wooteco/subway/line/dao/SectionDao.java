@@ -69,4 +69,14 @@ public class SectionDao {
         String query = "DELETE FROM section WHERE line_id = ? AND up_station_id = ? OR down_station_id = ?";
         jdbcTemplate.update(query, lineId, stationId, stationId);
     }
+
+    public void deleteByLineId(Long lineId) {
+        String query = "DELETE FROM section WHERE line_id = ?";
+        jdbcTemplate.update(query, lineId);
+    }
+
+    public int countSectionByStationId(Long id) {
+        String query = "SELECT count(*) FROM section WHERE up_station_id = ? OR down_station_id = ?";
+        return jdbcTemplate.queryForObject(query, Integer.class, id, id);
+    }
 }

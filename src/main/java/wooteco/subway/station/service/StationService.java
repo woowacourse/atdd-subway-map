@@ -2,6 +2,7 @@ package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.line.dao.SectionDao;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
@@ -14,9 +15,11 @@ import java.util.stream.Collectors;
 public class StationService {
 
     private final StationDao stationDao;
+    private final SectionDao sectionDao;
 
-    public StationService(StationDao stationDao) {
+    public StationService(StationDao stationDao, SectionDao sectionDao) {
         this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
     }
 
     public Long save(StationRequest stationRequest) {
@@ -35,7 +38,11 @@ public class StationService {
     }
 
     public void delete(Long id) {
-        int affectedRowCount = stationDao.delete(id);
+        int affectedRowCount = 0;
+        if (sectionDao.countSectionByStationId(id) == 0) {
+            affectedRowCount = stationDao.delete(id);
+        }
+
         if (affectedRowCount == 0) {
             throw new IllegalArgumentException("해당 지하철 역을 삭제할 수 없습니다.");
         }

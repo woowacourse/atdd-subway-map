@@ -6,6 +6,7 @@ import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.station.dto.StationResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,16 +14,20 @@ import java.util.stream.Collectors;
 @Transactional
 @Service
 public class LineService {
+    private final SectionService sectionService;
     private final LineDao lineDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(SectionService sectionService, LineDao lineDao) {
+        this.sectionService = sectionService;
         this.lineDao = lineDao;
     }
 
     public Long save(LineRequest lineRequest) {
         Line line = lineRequest.toLineEntity();
         validateLine(line);
-        return lineDao.save(line);
+        Long lineId = lineDao.save(line);
+        sectionService.save(lineId, lineRequest);
+        return lineId;
     }
 
     public void update(Long id, LineRequest lineRequest) {
@@ -58,6 +63,7 @@ public class LineService {
 
     public void delete(Long id) {
         lineDao.delete(id);
+        sectionService.deleteSectionByLineId(id);
     }
 
     @Transactional(readOnly = true)
@@ -65,5 +71,18 @@ public class LineService {
         return lineDao.findById(id)
                 .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
                 .orElseThrow(() -> new IllegalArgumentException("해당 지하철 역이 없습니다."));
+    }
+
+    public LineResponse findSectionsById(Long lineId) {
+        LineResponse line = findById(lineId);
+        List<StationResponse> sections = sectionService.findSectionByLineId(lineId);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), sections);
+    }
+
+    public LineResponse saveSection(Long lineId, LineRequest lineRequest) {
+        sectionService.saveSectionOfExistLine(lineId, lineRequest);
+        LineResponse lineResponse = findById(lineId);
+        List<StationResponse> section = sectionService.findSectionByLineId(lineId);
+        return new LineResponse(lineId, lineResponse.getName(), lineResponse.getColor(), section);
     }
 }
