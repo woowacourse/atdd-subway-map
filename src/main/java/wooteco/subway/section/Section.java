@@ -40,12 +40,12 @@ public class Section {
         }
     }
 
-    public boolean isUpStation(Long id) {
-        return upStationId.equals(id);
+    public boolean isUpStation(Long stationId) {
+        return upStationId.equals(stationId);
     }
 
-    public boolean isDownStation(Long id) {
-        return downStationId.equals(id);
+    public boolean isDownStation(Long stationId) {
+        return downStationId.equals(stationId);
     }
 
     public boolean isSameOrLongDistance(Section newSection) {
