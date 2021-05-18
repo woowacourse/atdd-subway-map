@@ -3,7 +3,6 @@ package wooteco.subway.station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.station.StationDuplicationException;
-import wooteco.subway.exception.station.StationNonexistenceException;
 
 import java.util.List;
 
@@ -39,11 +38,5 @@ public class StationService {
     @Transactional
     public void delete(Long id) {
         stationDao.delete(id);
-    }
-
-    public StationResponse findById(Long id) {
-        return new StationResponse(stationDao.findById(id)
-                        .orElseThrow(StationNonexistenceException::new)
-        );
     }
 }
