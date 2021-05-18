@@ -1,5 +1,8 @@
 package wooteco.subway.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import wooteco.subway.domain.Section;
 
 public class SectionResponse {
@@ -9,13 +12,18 @@ public class SectionResponse {
     private final Long downStationId;
     private final int distance;
 
-    public SectionResponse(final Section section) {
-        this(section.getId(), section.getLineId(), section.getUpStationId(), section.getDownStationId(),
-                section.getDistance());
+    public SectionResponse(Long lineId, Section section) {
+        this(section.getId(), lineId, section.getUpStation().getId(), section.getDownStation()
+                                                                             .getId(), section.getDistance());
     }
 
-    public SectionResponse(final Long id, final Long lineId, final Long upStationId, final Long downStationId,
-                           final int distance) {
+    @JsonCreator
+    public SectionResponse(
+            @JsonProperty(value = "id") final Long id,
+            @JsonProperty(value = "lineId") final Long lineId,
+            @JsonProperty(value = "upStationId") final Long upStationId,
+            @JsonProperty(value = "downStationId") final Long downStationId,
+            @JsonProperty(value = "distance") final int distance) {
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;

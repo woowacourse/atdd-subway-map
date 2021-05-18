@@ -1,11 +1,15 @@
 package wooteco.subway.controller.dto;
 
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 
 public class LineRequest {
 
@@ -21,12 +25,16 @@ public class LineRequest {
     @NotNull
     private final Long downStationId;
 
-    @NotNull
     @Positive
     private final int distance;
 
-    public LineRequest(final String name, final String color, final Long upStationId, final Long downStationId,
-                       final int distance) {
+    @JsonCreator
+    public LineRequest(
+            @JsonProperty(value = "name") final String name,
+            @JsonProperty(value = "color") final String color,
+            @JsonProperty(value = "upStationId") final Long upStationId,
+            @JsonProperty(value = "downStationId") final Long downStationId,
+            @JsonProperty(value = "distance") final int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
@@ -54,11 +62,7 @@ public class LineRequest {
         return distance;
     }
 
-    public Line toLineEntity() {
-        return new Line(null, name, color, upStationId, downStationId);
-    }
-
-    public Section toSectionEntity() {
-        return new Section(null, null, upStationId, downStationId, distance);
+    public Line toEntity(Section section) {
+        return new Line(null, name, color, new Sections(section));
     }
 }

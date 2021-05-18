@@ -1,8 +1,11 @@
 package wooteco.subway.controller.dto;
 
-import wooteco.subway.domain.Station;
-
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import wooteco.subway.domain.Station;
 
 public class StationResponse {
     private final Long id;
@@ -12,7 +15,10 @@ public class StationResponse {
         this(station.getId(), station.getName());
     }
 
-    public StationResponse(Long id, String name) {
+    @JsonCreator
+    public StationResponse(
+            @JsonProperty(value = "id") Long id,
+            @JsonProperty(value = "name") String name) {
         this.id = id;
         this.name = name;
     }

@@ -1,9 +1,11 @@
 package wooteco.subway.controller.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import wooteco.subway.domain.Station;
-
 import javax.validation.constraints.NotBlank;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import wooteco.subway.domain.Station;
 
 public class StationRequest {
 
@@ -11,7 +13,7 @@ public class StationRequest {
     private final String name;
 
     @JsonCreator
-    public StationRequest(String name) {
+    public StationRequest(@JsonProperty(value = "name") String name) {
         this.name = name;
     }
 

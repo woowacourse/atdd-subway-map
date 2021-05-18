@@ -1,8 +1,11 @@
 package wooteco.subway.controller.dto;
 
-import wooteco.subway.domain.Line;
-
 import javax.validation.constraints.NotBlank;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import wooteco.subway.domain.Line;
 
 public class LineEditRequest {
 
@@ -12,12 +15,23 @@ public class LineEditRequest {
     @NotBlank
     private final String color;
 
-    public LineEditRequest(String name, String color) {
+    @JsonCreator
+    public LineEditRequest(
+            @JsonProperty(value = "name") String name,
+            @JsonProperty(value = "color") String color) {
         this.name = name;
         this.color = color;
     }
 
-    public Line toEntity() {
-        return new Line(null, name, color, null, null);
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public Line toEntity(Line line) {
+        return new Line(line.getId(), name, color, line.getSections());
     }
 }
