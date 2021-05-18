@@ -34,6 +34,7 @@ import static org.mockito.BDDMockito.given;
 class LineServiceTest {
     private static final Station JAMSIL_STATION = new Station(1L, "잠실역");
     private static final Station GANGNAM_STATION = new Station(2L, "강남역");
+    private static final Station GANGBYUN_STATION = new Station(3L, "강변역");
     private static final LineRequest LINE_REQUEST = new LineRequest("2호선", "초록색", 1L, 2L, 3);
     private static final List<StationResponse> STATION_RESPONSES = Stream.of(JAMSIL_STATION, GANGNAM_STATION)
                                                                          .map(StationResponse::new)
@@ -44,7 +45,6 @@ class LineServiceTest {
 
     @Autowired
     private LineService lineService;
-    private static final Station GANGBYUN_STATION = new Station(3L, "강변역");
 
     @BeforeEach
     void setUp() {

@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.section.SectionRequest;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
@@ -35,6 +36,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     private static final Station JAMSIL_STATION = new Station(1L, "잠실역");
     private static final Station GANGNAM_STATION = new Station(2L, "강남역");
+    private static final Station GANGBYUN_STATION = new Station(3L, "강변역");
     private static final LineRequest LINE_2_REQUEST = new LineRequest("2호선", "초록색", 1L, 2L, 3);
     private static final LineRequest LINE_1_REQUEST = new LineRequest("1호선", "파란색", 1L, 2L, 0);
 
@@ -48,10 +50,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     void beforeEach() {
         given(stationDao.findById(1L)).willReturn(Optional.of(JAMSIL_STATION));
         given(stationDao.findById(2L)).willReturn(Optional.of(GANGNAM_STATION));
+        given(stationDao.findById(3L)).willReturn(Optional.of(GANGBYUN_STATION));
     }
 
-    @DisplayName("지하철 노선을 생성한다.")
     @Test
+    @DisplayName("지하철 노선을 생성한다.")
     void createLine() {
         // given
         ExtractableResponse<Response> response = createLineResponseBy(LINE_2_REQUEST);
@@ -61,8 +64,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성시 실패.")
     @Test
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성시 실패.")
     void createLineWithDuplicateName() {
         // given & when
         createLineResponseBy(LINE_2_REQUEST);
@@ -72,8 +75,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철 전체 노선을 조회한다.")
     @Test
+    @DisplayName("지하철 전체 노선을 조회한다.")
     void getLines() {
         /// given
         ExtractableResponse<Response> createResponse1 = createLineResponseBy(LINE_2_REQUEST);
@@ -100,8 +103,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철 노선 1개를 조회한다.")
     @Test
+    @DisplayName("지하철 노선 1개를 조회한다.")
     void getLine() {
         ExtractableResponse<Response> extract = createLineResponseBy(LINE_2_REQUEST);
         String uri = extract.header("Location");
@@ -124,8 +127,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("지하철 노선을 수정한다.")
     @Test
+    @DisplayName("지하철 노선을 수정한다.")
     void modifyLine() {
         ExtractableResponse<Response> extract = createLineResponseBy(LINE_2_REQUEST);
         String uri = extract.header("Location");
@@ -142,8 +145,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("지하철 노선을 삭제한다")
     @Test
+    @DisplayName("지하철 노선을 삭제한다")
     void deleteLine() {
         ExtractableResponse<Response> extract = createLineResponseBy(LINE_2_REQUEST);
 
@@ -154,6 +157,48 @@ class LineAcceptanceTest extends AcceptanceTest {
                                                             .delete(uri)
                                                             .then()
                                                             .extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    @DisplayName("구간을 추가한다")
+    void addSection() {
+        ExtractableResponse<Response> extract = createLineResponseBy(LINE_2_REQUEST);
+        String uri = extract.header("Location");
+
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 5);
+        ExtractableResponse<Response> response = RestAssured.given()
+                                                            .body(sectionRequest)
+                                                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                            .when()
+                                                            .post(uri + "/sections")
+                                                            .then()
+                                                            .extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    @DisplayName("구간을 삭제한다")
+    void deleteSection() {
+        ExtractableResponse<Response> extract = createLineResponseBy(LINE_2_REQUEST);
+        String uri = extract.header("Location");
+
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 5);
+        RestAssured.given()
+                   .body(sectionRequest)
+                   .contentType(MediaType.APPLICATION_JSON_VALUE)
+                   .when()
+                   .post(uri + "/sections")
+                   .then()
+                   .extract();
+
+        ExtractableResponse<Response> response = RestAssured.given()
+                                                            .param("stationId", 2L)
+                                                            .when()
+                                                            .delete(uri + "/sections")
+                                                            .then()
+                                                            .extract();
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
