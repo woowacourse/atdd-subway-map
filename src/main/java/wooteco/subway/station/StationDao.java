@@ -1,7 +1,7 @@
 package wooteco.subway.station;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -47,14 +47,20 @@ public class StationDao {
 
     public Optional<Station> findByName(String name) throws IncorrectResultSizeDataAccessException {
         String sql = "select id, name from STATION where name = ?";
-        List<Station> result = jdbcTemplate.query(sql, stationRowMapper(), name);
-        return Optional.ofNullable(DataAccessUtils.singleResult(result));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, stationRowMapper(), name));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public Optional<Station> findById(Long id) {
         String sql = "select id, name from STATION where id = ?";
-        List<Station> result = jdbcTemplate.query(sql, stationRowMapper(), id);
-        return Optional.ofNullable(DataAccessUtils.singleResult(result));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, stationRowMapper(), id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public void delete(Long id) {

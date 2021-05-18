@@ -1,7 +1,7 @@
 package wooteco.subway.line;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -44,14 +44,20 @@ public class LineDao {
 
     public Optional<LineEntity> findById(Long id) throws IncorrectResultSizeDataAccessException {
         String sql = "select id, name, color from LINE where id = ?";
-        List<LineEntity> result = jdbcTemplate.query(sql, lineRowMapper(), id);
-        return Optional.ofNullable(DataAccessUtils.singleResult(result));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineRowMapper(), id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public Optional<LineEntity> findByName(String name) throws IncorrectResultSizeDataAccessException {
         String sql = "select id, name, color from LINE where name = ?";
-        List<LineEntity> result = jdbcTemplate.query(sql, lineRowMapper(), name);
-        return Optional.ofNullable(DataAccessUtils.singleResult(result));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineRowMapper(), name));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public List<LineEntity> findAll() {

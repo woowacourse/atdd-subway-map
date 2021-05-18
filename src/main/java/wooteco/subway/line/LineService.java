@@ -1,6 +1,5 @@
 package wooteco.subway.line;
 
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
@@ -41,13 +40,9 @@ public class LineService {
     }
 
     private Line lineById(Long id) {
-        try {
-            LineEntity lineEntity = lineDao.findById(id)
-                                           .orElseThrow(() -> new LineException(LineError.NOT_EXIST_LINE_ID));
-            return new Line(lineEntity, sectionsByLineId(id));
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new LineException(LineError.INCORRECT_SIZE_LINE_FIND_BY_ID);
-        }
+        LineEntity lineEntity = lineDao.findById(id)
+                                       .orElseThrow(() -> new LineException(LineError.NOT_EXIST_LINE_ID));
+        return new Line(lineEntity, sectionsByLineId(id));
     }
 
     private Sections sectionsByLineId(Long id) {
@@ -55,6 +50,7 @@ public class LineService {
             throw new LineException(LineError.NOT_EXIST_LINE_ID);
         }
         List<SectionEntity> sectionEntities = sectionDao.findByLineId(id);
+
         List<Section> sections = new ArrayList<>();
         for (SectionEntity sectionEntity : sectionEntities) {
             sections.add(sectionOf(sectionEntity));
@@ -81,7 +77,7 @@ public class LineService {
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
-        if (isLineExist(lineRequest.getName())) {
+        if (isExistingLineByName(lineRequest.getName())) {
             throw new LineException(LineError.ALREADY_EXIST_LINE_NAME);
         }
         if (notExistingStation(lineRequest.getDownStationId()) || notExistingStation(lineRequest.getUpStationId())) {
@@ -103,13 +99,9 @@ public class LineService {
                        .isPresent();
     }
 
-    private boolean isLineExist(String name) {
-        try {
-            return lineDao.findByName(name)
-                          .isPresent();
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new LineException(LineError.INCORRECT_SIZE_LINE_FIND_BY_NAME);
-        }
+    private boolean isExistingLineByName(String name) {
+        return lineDao.findByName(name)
+                      .isPresent();
     }
 
     public void modifyLine(Long id, LineRequest lineRequest) {

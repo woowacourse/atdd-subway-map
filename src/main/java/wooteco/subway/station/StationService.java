@@ -1,6 +1,5 @@
 package wooteco.subway.station;
 
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.exception.StationError;
@@ -29,12 +28,8 @@ public class StationService {
     }
 
     private boolean isStationExist(String name) {
-        try {
-            return stationDao.findByName(name)
-                             .isPresent();
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new StationException(StationError.INCORRECT_SIZE_STATION_FIND_BY_ID);
-        }
+        return stationDao.findByName(name)
+                         .isPresent();
     }
 
     public void delete(Long id) {
