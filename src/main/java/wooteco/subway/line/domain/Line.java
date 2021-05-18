@@ -1,11 +1,8 @@
 package wooteco.subway.line.domain;
 
-import wooteco.subway.line.domain.section.Section;
 import wooteco.subway.line.domain.section.Sections;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Line {
     private final Long id;

@@ -22,9 +22,9 @@ class SectionsTest {
     @BeforeEach
     void setUp() {
         List<Section> sectionList = new ArrayList<>();
-                sectionList.add(new Section(1L, 1L, 2L, new Distance(10)));
-                sectionList.add(new Section(1L, 2L, 3L, new Distance(10)));
-                sectionList.add(new Section(1L, 3L, 4L, new Distance(10)));
+        sectionList.add(new Section(1L, 1L, 2L, new Distance(10)));
+        sectionList.add(new Section(1L, 2L, 3L, new Distance(10)));
+        sectionList.add(new Section(1L, 3L, 4L, new Distance(10)));
 
         sections = new Sections(sectionList);
     }
@@ -36,7 +36,7 @@ class SectionsTest {
         List<Section> sectionList = Arrays.asList(
                 new Section(1L, 1L, 2L, new Distance(10)),
                 new Section(1L, 2L, 3L, new Distance(10))
-                );
+        );
 
         //when
         Sections sections = new Sections(sectionList);

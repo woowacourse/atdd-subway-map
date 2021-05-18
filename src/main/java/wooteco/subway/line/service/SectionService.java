@@ -2,9 +2,9 @@ package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.controller.dto.SectionRequest;
+import wooteco.subway.line.domain.repository.SectionRepository;
 import wooteco.subway.line.domain.section.Distance;
 import wooteco.subway.line.domain.section.Section;
-import wooteco.subway.line.domain.repository.SectionRepository;
 import wooteco.subway.line.domain.section.Sections;
 
 import java.util.List;

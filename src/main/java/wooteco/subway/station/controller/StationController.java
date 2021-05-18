@@ -5,12 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.station.controller.dto.StationRequest;
 import wooteco.subway.station.controller.dto.StationResponse;
-import wooteco.subway.station.repository.dto.StationDto;
 import wooteco.subway.station.service.StationService;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/stations")

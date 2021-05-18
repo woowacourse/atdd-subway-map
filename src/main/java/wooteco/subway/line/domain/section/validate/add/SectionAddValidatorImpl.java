@@ -3,7 +3,7 @@ package wooteco.subway.line.domain.section.validate.add;
 import wooteco.subway.line.domain.section.Section;
 import wooteco.subway.line.domain.section.Sections;
 
-public class SectionAddValidatorImpl implements SectionAddValidator{
+public class SectionAddValidatorImpl implements SectionAddValidator {
 
     public void validatePossibleToAdd(Sections sections, Section newSection) {
         boolean existUpStation = sections.isExistStationId(newSection.getUpStationId());
