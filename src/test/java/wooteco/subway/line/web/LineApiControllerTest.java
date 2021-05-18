@@ -25,7 +25,7 @@ class LineApiControllerTest extends AcceptanceTest {
     }
 
     @AfterEach
-    void clear(){
+    void clear() {
         잠실역 = null;
         잠실새내역 = null;
         노원역 = null;

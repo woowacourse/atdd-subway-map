@@ -46,7 +46,6 @@ class SectionsTest {
     }
 
 
-
     @DisplayName("구간추가 - 성공(기존의 구간이 변경되는 경우)")
     @Test
     void addAndThenGetModifiedAdjacent() {

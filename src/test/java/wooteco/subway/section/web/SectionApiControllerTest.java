@@ -19,12 +19,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("[API] 구간관련 테스트")
 class SectionApiControllerTest extends AcceptanceTest {
+    private static final int ORIGINAL_DISTANCE = 10;
     private StationRequest 잠실역;
     private StationRequest 잠실새내역;
     private StationRequest 강남역;
     private StationRequest 동탄역;
     private StationRequest 수서역;
-    private static final int ORIGINAL_DISTANCE = 10;
 
     @BeforeEach
     void setUpStationRequest() {
