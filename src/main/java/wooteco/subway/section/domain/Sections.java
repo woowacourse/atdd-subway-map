@@ -1,7 +1,6 @@
 package wooteco.subway.section.domain;
 
 import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.domain.Stations;
 import wooteco.subway.station.service.NoSuchStationException;
 
 import java.util.*;
@@ -20,7 +19,7 @@ public class Sections {
         this.sections = sections;
     }
 
-    public Stations getOrderedStations() {
+    public List<Station> getOrderedStations() {
         Map<Station, Station> upAndDownStations = toSectionMap();
 
         Station firstStation = getFirstStation(upAndDownStations);
@@ -31,7 +30,7 @@ public class Sections {
             Station nextDownStation = upAndDownStations.get(currentDownEndStation);
             stations.add(nextDownStation);
         }
-        return new Stations(stations);
+        return stations;
     }
 
     private Map<Station, Station> toSectionMap() {
@@ -51,22 +50,20 @@ public class Sections {
     }
 
     public boolean bothStationsExist(final Section section) {
-        Stations stations = getStations();
-        return stations.containsAll(section);
+        List<Station> stations = getStations();
+        return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
     }
 
     public boolean bothStationsDoNotExist(final Section section) {
-        Stations stations = getStations();
-        return stations.containsNone(section);
+        List<Station> stations = getStations();
+        return !stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation());
     }
 
-    private Stations getStations() {
-        List<Station> stations = sections.stream()
+    private List<Station> getStations() {
+        return sections.stream()
                 .map(section -> Arrays.asList(section.getUpStation(), section.getDownStation()))
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
-
-        return new Stations(stations);
     }
 
     public Section findOriginalSection(final Section section) {

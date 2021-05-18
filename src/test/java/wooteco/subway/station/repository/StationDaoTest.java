@@ -8,9 +8,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.domain.Stations;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,16 +35,14 @@ public class StationDaoTest {
     void saveStation() {
         Station station = new Station("석촌역");
 
-        long stationId = stationDao.save(station);
-        assertThat(stationId).isEqualTo(3L);
+        Station newStation = stationDao.save(station);
+        assertThat(newStation.getId()).isEqualTo(3L);
     }
 
     @DisplayName("DB에 있는 station들을 조회하면, station을 담은 리스트를 반환한다.")
     @Test
     void findAll() {
-        Stations stations = new Stations(
-                Arrays.asList(new Station(1L, "잠실역"), new Station(2L, "잠실새내역"))
-        );
+        List<Station> stations = Arrays.asList(new Station(1L, "잠실역"), new Station(2L, "잠실새내역"));
         assertThat(stationDao.findAll()).isEqualTo(stations);
     }
 
@@ -52,9 +50,7 @@ public class StationDaoTest {
     @Test
     void findAll_noLinesSaved_emptyList() {
         jdbcTemplate.update("DELETE FROM station");
-
-        Stations stations = stationDao.findAll();
-        assertThat(stations.toList()).isEmpty();
+        assertThat(stationDao.findAll()).isEmpty();
     }
 
     @DisplayName("id를 통해 삭제 요청을 하면, DB에 있는 해당 id의 station을 삭제한다")

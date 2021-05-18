@@ -6,7 +6,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.domain.Lines;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -44,10 +43,9 @@ public class LineDao {
         );
     }
 
-    public Lines findAll() {
+    public List<Line> findAll() {
         String query = "SELECT id, color, name FROM line ORDER BY id";
-        List<Line> lines = jdbcTemplate.query(query, lineRowMapper);
-        return new Lines(lines);
+        return jdbcTemplate.query(query, lineRowMapper);
     }
 
     public Optional<Line> findById(final Long id) {

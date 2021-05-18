@@ -3,7 +3,6 @@ package wooteco.subway.line.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.domain.Lines;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.repository.LineDao;
@@ -13,6 +12,7 @@ import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.service.StationService;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,10 +29,10 @@ public class LineService {
     }
 
     public List<LineResponse> getLines() {
-        Lines lines = lineDao.findAll();
-        for (Line line : lines.toList()) {
+        List<Line> lines = new ArrayList<>();
+        for (Line line : lineDao.findAll()) {
             Sections sections = sectionService.findAllByLineId(line.getId());
-            line.setSections(sections);
+            lines.add(new Line(line.getId(), line.getColor(), line.getName(), sections));
         }
         return LineResponse.toDtos(lines);
     }

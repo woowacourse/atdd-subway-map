@@ -1,7 +1,6 @@
 package wooteco.subway.station.dto;
 
 import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.domain.Stations;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,9 +17,8 @@ public class StationResponse {
         this.name = name;
     }
 
-    public static List<StationResponse> toDtos(final Stations stations) {
-        return stations.toList()
-                .stream()
+    public static List<StationResponse> toDtos(final List<Station> stations) {
+        return stations.stream()
                 .map(StationResponse::toDto)
                 .collect(Collectors.toList());
     }

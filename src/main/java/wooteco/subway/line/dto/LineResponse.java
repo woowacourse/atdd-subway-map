@@ -1,8 +1,7 @@
 package wooteco.subway.line.dto;
 
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.domain.Lines;
-import wooteco.subway.station.domain.Stations;
+import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationResponse;
 
 import java.util.List;
@@ -26,15 +25,14 @@ public class LineResponse {
     }
 
     public static LineResponse toDto(final Line line) {
-        Stations stations = line.getAllStations();
+        List<Station> stations = line.getAllStations();
         List<StationResponse> stationResponses = StationResponse.toDtos(stations);
 
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
 
-    public static List<LineResponse> toDtos(final Lines lines) {
-        return lines.toList()
-                .stream()
+    public static List<LineResponse> toDtos(final List<Line> lines) {
+        return lines.stream()
                 .map(LineResponse::toDto)
                 .collect(Collectors.toList());
     }

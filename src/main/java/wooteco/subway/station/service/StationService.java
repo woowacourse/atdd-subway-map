@@ -3,7 +3,6 @@ package wooteco.subway.station.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.domain.Stations;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.repository.StationDao;
 
@@ -28,8 +27,7 @@ public class StationService {
     }
 
     public List<StationResponse> findAll() {
-        Stations stations = stationDao.findAll();
-        return StationResponse.toDtos(stations);
+        return StationResponse.toDtos(stationDao.findAll());
     }
 
     @Transactional

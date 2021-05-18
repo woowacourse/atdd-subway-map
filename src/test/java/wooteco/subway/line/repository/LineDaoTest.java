@@ -8,10 +8,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.domain.Lines;
 import wooteco.subway.line.service.NoSuchLineException;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,24 +31,22 @@ class LineDaoTest {
         jdbcTemplate.update(query, "bg-green-600", "2호선");
     }
 
-    @DisplayName("이름이랑 색깔을 입력받으면, DB에 line을 생성하고, id를 반환한다.")
+    @DisplayName("이름이랑 색깔을 입력받으면, DB에 line을 생성하고, id를 담은 line을 반환한다.")
     @Test
     void save() {
         Line line = new Line("bg-blue-600", "1호선");
-        assertThat(lineDao.save(line)).isEqualTo(3L);
+        assertThat(lineDao.save(line).getId()).isEqualTo(3L);
     }
 
     @DisplayName("전체 line을 조회하면, DB에 존재하는 line 리스트를 반환한다.")
     @Test
     void getLines() {
-        Lines expectedLines = new Lines(
-                Arrays.asList(
-                        new Line(1L, "bg-red-600", "신분당선"),
-                        new Line(2L, "bg-green-600", "2호선")
-                )
+        List<Line> expectedLines = Arrays.asList(
+                new Line(1L, "bg-red-600", "신분당선"),
+                new Line(2L, "bg-green-600", "2호선")
         );
 
-        Lines lines = lineDao.findAll();
+        List<Line> lines = lineDao.findAll();
         assertThat(lines).usingRecursiveComparison().isEqualTo(expectedLines);
     }
 
@@ -57,8 +55,8 @@ class LineDaoTest {
     void getLines_noLinesSaved_emptyList() {
         jdbcTemplate.update("DELETE FROM line");
 
-        Lines lines = lineDao.findAll();
-        assertThat(lines.toList()).isEmpty();
+        List<Line> lines = lineDao.findAll();
+        assertThat(lines).isEmpty();
     }
 
     @DisplayName("id를 통해 line을 조회하면, 해당 id에 매칭되는 line을 반환한다.")

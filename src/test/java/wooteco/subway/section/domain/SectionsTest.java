@@ -4,21 +4,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.domain.Stations;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class SectionsTest {
     private Sections sections;
-    private Station firstStation = new Station(1L, "해운대역");
-    private Station secondStation = new Station(2L, "몽촌토성역");
-    private Station thirdStation = new Station(3L, "광안역");
-    private Station fourthStation = new Station(4L, "잠실역");
-    private Station fifthStation = new Station(5L, "잠실나루역");
+    private final Station firstStation = new Station(1L, "해운대역");
+    private final Station secondStation = new Station(2L, "몽촌토성역");
+    private final Station thirdStation = new Station(3L, "광안역");
+    private final Station fourthStation = new Station(4L, "잠실역");
+    private final Station fifthStation = new Station(5L, "잠실나루역");
 
     @BeforeEach
     void setUp() {
@@ -36,10 +35,8 @@ class SectionsTest {
     @DisplayName("sections에 있는 상행선 하행선들을 상행 종점부터 순서대로 나열한 stations를 반환한다")
     @Test
     void getOrderedStations() {
-        Stations orderedStations = sections.getOrderedStations();
-        Stations expectedOrderedStations = new Stations(
-                Arrays.asList(firstStation, thirdStation, secondStation, fifthStation, fourthStation)
-        );
+        List<Station> orderedStations = sections.getOrderedStations();
+        List<Station> expectedOrderedStations = Arrays.asList(firstStation, thirdStation, secondStation, fifthStation, fourthStation);
         assertThat(orderedStations).isEqualTo(expectedOrderedStations);
     }
 

@@ -10,7 +10,6 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
 import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.domain.Stations;
 
 import java.util.Arrays;
 import java.util.List;
@@ -108,13 +107,11 @@ public class SectionDaoTest {
     @Test
     void findAllByLineId() {
         Sections sections = sectionDao.findAllByLineId(lineId);
-        Stations expectedUpAndDownStations = new Stations(
-                Arrays.asList(
-                        new Station(1L, "잠실역"),
-                        new Station(2L, "잠실새내역"),
-                        new Station(4L, "한성백제역"),
-                        new Station(3L, "몽촌토성역")
-                )
+        List<Station> expectedUpAndDownStations = Arrays.asList(
+                new Station(1L, "잠실역"),
+                new Station(2L, "잠실새내역"),
+                new Station(4L, "한성백제역"),
+                new Station(3L, "몽촌토성역")
         );
 
         assertThat(sections.getOrderedStations()).isEqualTo(expectedUpAndDownStations);

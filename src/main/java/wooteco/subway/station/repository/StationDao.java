@@ -6,7 +6,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.domain.Stations;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -41,10 +40,9 @@ public class StationDao {
         );
     }
 
-    public Stations findAll() {
+    public List<Station> findAll() {
         String query = "SELECT id, name FROM station ORDER BY id";
-        List<Station> stations = jdbcTemplate.query(query, stationRowMapper);
-        return new Stations(stations);
+        return jdbcTemplate.query(query, stationRowMapper);
     }
 
     public void deleteById(final Long id) {

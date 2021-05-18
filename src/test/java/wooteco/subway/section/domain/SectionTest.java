@@ -6,14 +6,13 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.station.domain.Station;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class SectionTest {
     private Section section;
     private Section newSection;
-    private Station firstStation = new Station(1L, "해운대역");
-    private Station secondStation = new Station(2L, "몽촌토성역");
-    private Station thirdStation = new Station(3L, "광안역");
+    private final Station firstStation = new Station(1L, "해운대역");
+    private final Station secondStation = new Station(2L, "몽촌토성역");
+    private final Station thirdStation = new Station(3L, "광안역");
 
     @BeforeEach
     void setUp() {
