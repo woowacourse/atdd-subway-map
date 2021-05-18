@@ -9,7 +9,8 @@ import wooteco.subway.station.StationService;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Transactional(readOnly = true)
@@ -30,10 +31,17 @@ public class SectionService {
 
     @Transactional
     public Section add(Long lineId, SectionRequest sectionRequest) {
-        Section section = new Section(
-                sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        Section section = new Section(sectionRequest.getUpStationId(),
+                sectionRequest.getDownStationId(),
+                sectionRequest.getDistance());
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
+
         sections.validate(section);
+
+        return saveAndUpdate(lineId, section);
+    }
+
+    private Section saveAndUpdate(Long lineId, Section section) {
         Optional<Section> overlappedSection = sectionDao.findBySameUpOrDownId(lineId, section);
         Section newSection = sectionDao.save(lineId, section);
         overlappedSection.ifPresent(updateIntermediate(newSection));
@@ -80,6 +88,6 @@ public class SectionService {
         List<Long> sortedStationIds = sections.sortedStationIds();
         return sortedStationIds.stream()
                 .map(stationService::findById)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 }

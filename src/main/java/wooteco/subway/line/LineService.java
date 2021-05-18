@@ -24,14 +24,16 @@ public class LineService {
 
     @Transactional
     public Line add(LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        validate(lineRequest);
 
-        validateDuplicatedName(line.getName());
-        validateDuplicatedColor(line.getColor());
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line savedLine = lineDao.save(line);
 
-        Section section = new Section(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        Section section = new Section(lineRequest.getUpStationId(),
+                lineRequest.getDownStationId(),
+                lineRequest.getDistance());
         sectionService.addInitial(savedLine.getId(), section);
+
         return savedLine;
     }
 
@@ -46,9 +48,13 @@ public class LineService {
 
     @Transactional
     public void update(Long id, LineRequest lineRequest) {
+        validate(lineRequest);
+        lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
+    }
+
+    private void validate(LineRequest lineRequest) {
         validateDuplicatedName(lineRequest.getName());
         validateDuplicatedColor(lineRequest.getColor());
-        lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
     }
 
     private void validateDuplicatedName(String name) {
