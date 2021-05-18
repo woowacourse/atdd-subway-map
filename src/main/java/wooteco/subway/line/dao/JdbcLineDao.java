@@ -32,7 +32,7 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public boolean existByInfo(String name, String color) {
+    public boolean existByNameAndColor(String name, String color) {
         String countMatchNameOrColorSql = "SELECT count(id) FROM line WHERE name = ? OR color = ?";
         int count = jdbcTemplate.queryForObject(countMatchNameOrColorSql, int.class, name, color);
         return count >= 1;

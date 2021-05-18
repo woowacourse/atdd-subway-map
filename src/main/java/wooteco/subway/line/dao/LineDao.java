@@ -7,7 +7,7 @@ import java.util.List;
 public interface LineDao {
     Line create(Line line);
 
-    boolean existByInfo(String name, String color);
+    boolean existByNameAndColor(String name, String color);
 
     List<Line> showAll();
 

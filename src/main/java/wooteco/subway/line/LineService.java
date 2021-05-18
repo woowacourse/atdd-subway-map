@@ -26,7 +26,7 @@ public class LineService {
     private final StationService stationService;
 
     public LineResponse findById(Long lineId) {
-        validateExistById(lineId);
+        validateExistLineById(lineId);
 
         Line line = lineDao.findById(lineId);
         Sections sections = sectionService.findAllByLineId(lineId);
@@ -57,25 +57,25 @@ public class LineService {
         Long upStationId = lineRequest.getUpStationId();
         Long downStationId = lineRequest.getDownStationId();
 
-        validateLineRequest(name, color, upStationId, downStationId);
+        validateLineRequest(name, color);
 
         Station upStation = stationService.findById(upStationId);
         Station downStation = stationService.findById(downStationId);
         Line line = lineDao.create(Line.create(name, color));
         Section section = Section.create(upStation, downStation, distance);
-        sectionService.createInitial(section, line.getId());
-        line.setStationsBySections(Sections.create(section));
+        Section createdSection = sectionService.createInitial(section, line.getId());
+        line.setStationsBySections(Sections.create(createdSection));
 
         return LineResponse.create(line);
     }
 
-    private void validateLineRequest(String name, String color, Long upStationId, Long downStationId) {
-        if (lineDao.existByInfo(name, color)) {
+    private void validateLineRequest(String name, String color) {
+        if (lineDao.existByNameAndColor(name, color)) {
             throw new LineDuplicatedInformationException();
         }
     }
 
-    public void validateExistById(Long lineId) {
+    public void validateExistLineById(Long lineId) {
         if (!lineDao.existById(lineId)) {
             throw new LineNotFoundException();
         }

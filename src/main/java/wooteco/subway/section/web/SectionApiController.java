@@ -24,7 +24,7 @@ public class SectionApiController {
         if (bindingResult.hasErrors()) {
             throw new DistanceNotPositiveException();
         }
-        lineService.validateExistById(lineId);
+        lineService.validateExistLineById(lineId);
 
         SectionResponse sectionResponse = sectionService.create(sectionRequest, lineId);
 

@@ -23,8 +23,10 @@ public class SectionService {
     private final SectionDao sectionDao;
 
     @Transactional
-    public void createInitial(Section section, Long lineId) {
-        sectionDao.create(section, lineId);
+    public Section createInitial(Section section, Long lineId) {
+        Section createdSection = sectionDao.create(section, lineId);
+
+        return createdSection;
     }
 
     @Transactional
