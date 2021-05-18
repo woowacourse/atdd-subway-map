@@ -3,7 +3,6 @@ package wooteco.subway.line.domain;
 import wooteco.subway.station.domain.Station;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -19,6 +18,10 @@ public class Sections {
 
     public List<Station> getOrderedStations() {
         return orderedStations;
+    }
+
+    public List<Section> getSections() {
+        return Collections.unmodifiableList(sections);
     }
 
     private List<Station> orderedStations() {
@@ -57,36 +60,6 @@ public class Sections {
         }
 
         return stations.get(0);
-    }
-
-    public Section findSelectedSection(boolean isUpStation, Section newSection) {
-        Function<Section, Station> sectionFunction = findFunction(isUpStation);
-        Long stationId = sectionFunction.apply(newSection).getId();
-
-        Section selectedSection = selectedSection(isUpStation, stationId);
-        validateDistance(selectedSection, newSection.getDistance());
-        return selectedSection;
-    }
-
-    public Section selectedSection(boolean isUpStation, Long stationId) {
-        Function<Section, Station> sectionFunction = findFunction(isUpStation);
-        return sections.stream()
-                .filter(section -> sectionFunction.apply(section).isSame(stationId))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("중복되는 역이 없습니다!!"));
-    }
-
-    private Function<Section, Station> findFunction(boolean isUpStation) {
-        if (isUpStation) {
-            return Section::getUpStation;
-        }
-        return Section::getDownStation;
-    }
-
-    private void validateDistance(Section selectSection, int distance) {
-        if (selectSection.isLessOrSameDistance(distance)) {
-            throw new IllegalArgumentException("거리가 현재 존재하는 구간보다 크거나 같습니다!");
-        }
     }
 
     public void validDeletableSection() {

@@ -5,11 +5,14 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.dao.SectionDao;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.domain.Sections;
+import wooteco.subway.line.domain.strategy.DownWardStrategy;
+import wooteco.subway.line.domain.strategy.Strategy;
+import wooteco.subway.line.domain.strategy.UpWardStrategy;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationResponse;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -62,18 +65,22 @@ public class SectionService {
     }
 
     private void updateNewStation(Station station, Sections sections, Section newSection) {
-        Long lineId = newSection.getLine().getId();
         Long upStationId = newSection.getUpStation().getId();
-        Long downStationId = newSection.getDownStation().getId();
-        int distance = newSection.getDistance();
+        Strategy strategy = findStrategy(station.isSame(upStationId));
+        Section section = strategy.selectedSection(sections, newSection);
 
-        boolean isUpStation = station.isSame(upStationId);
-        Section selectedSection = sections.findSelectedSection(isUpStation, newSection);
-        if (isUpStation) {
-            sectionDao.updateUpStation(lineId, upStationId, downStationId, selectedSection.getDistance() - distance);
-            return;
+        if (section.isLessOrSameDistance(newSection.getDistance())) {
+            throw new IllegalArgumentException("거리가 현재 존재하는 구간보다 크거나 같습니다!");
         }
-        sectionDao.updateDownStation(lineId, downStationId, upStationId, selectedSection.getDistance() - distance);
+
+        strategy.updateStation(sectionDao, section, newSection);
+    }
+
+    private Strategy findStrategy(boolean isUpStation) {
+        if (isUpStation) {
+            return new UpWardStrategy();
+        }
+        return new DownWardStrategy();
     }
 
     public void deleteSection(Long lineId, Long stationId) {
@@ -83,8 +90,8 @@ public class SectionService {
         sectionDao.deleteByStationId(lineId, stationId);
 
         if (sections.notEndStation(stationId)) {
-            Section sectionOfSameUpStation = sections.selectedSection(true, stationId);
-            Section sectionOfSameDownStation = sections.selectedSection(false, stationId);
+            Section sectionOfSameUpStation = findStrategy(true).selectedSection(sections.getSections(), stationId);
+            Section sectionOfSameDownStation = findStrategy(false).selectedSection(sections.getSections(), stationId);
 
             sectionDao.save(lineId,
                     sectionOfSameDownStation.getUpStation().getId(),
