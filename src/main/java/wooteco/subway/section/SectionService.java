@@ -37,7 +37,7 @@ public class SectionService {
     }
 
     public SectionServiceDto saveByLineCreate(@Valid final SectionServiceDto sectionServiceDto) {
-        Section section = assembleSectionFromSectionServiceDto(sectionServiceDto);
+        Section section = assembleFromSectionServiceDto(sectionServiceDto);
         final Long lineId = section.getLine().getId();
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         checkExistedStation(sectionServiceDto);
@@ -48,7 +48,7 @@ public class SectionService {
     }
 
     public SectionServiceDto save(@Valid final SectionServiceDto sectionServiceDto) {
-        Section section = assembleSectionFromSectionServiceDto(sectionServiceDto);
+        Section section = assembleFromSectionServiceDto(sectionServiceDto);
         final long lineId = sectionServiceDto.getLineId();
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         sections.insertAvailable(section);
@@ -59,7 +59,7 @@ public class SectionService {
         return saveSectionAtMiddle(section, sections);
     }
 
-    private Section assembleSectionFromSectionServiceDto(SectionServiceDto sectionServiceDto) {
+    private Section assembleFromSectionServiceDto(SectionServiceDto sectionServiceDto) {
         Station upStation = stationService.showOne(sectionServiceDto.getUpStationId());
         Station downStation = stationService.showOne(sectionServiceDto.getDownStationId());
         Line line = lineService.show(sectionServiceDto.getLineId());
@@ -158,7 +158,7 @@ public class SectionService {
         return ReadLineDto.of(line, stationResponses);
     }
 
-    public List<LineServiceDto> findAll() {
+    public List<LineServiceDto> findAllLineDto() {
         return lineService.findAll();
     }
 
@@ -170,7 +170,7 @@ public class SectionService {
         lineService.update(lineServiceDto);
     }
 
-    public void createSection(CreateSectionDto createSectionDto) {
+    public void create(CreateSectionDto createSectionDto) {
         SectionServiceDto sectionServiceDto = SectionServiceDto.from(createSectionDto);
         save(sectionServiceDto);
     }

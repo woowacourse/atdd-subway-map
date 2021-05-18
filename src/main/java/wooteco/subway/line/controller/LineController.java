@@ -47,7 +47,7 @@ public class LineController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineServiceDto> lines = sectionService.findAll();
+        List<LineServiceDto> lines = sectionService.findAllLineDto();
         List<LineResponse> lineResponses = lines.stream()
             .map(LineResponse::from)
             .collect(Collectors.toList());
@@ -77,7 +77,7 @@ public class LineController {
     public ResponseEntity<Void> createSection(@Valid @RequestBody final SectionRequest sectionRequest,
         @PathVariable final long lineId) {
         CreateSectionDto createSectionDto = CreateSectionDto.of(lineId, sectionRequest);
-        sectionService.createSection(createSectionDto);
+        sectionService.create(createSectionDto);
 
         return ResponseEntity.ok()
             .build();
