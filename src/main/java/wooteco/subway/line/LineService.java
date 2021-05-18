@@ -55,6 +55,7 @@ public class LineService {
         final Line line = lineDao.save(
             lineRequest.toEntity()
         );
+        line.validateDifferentStationIds(lineRequest.getUpStationId(), lineRequest.getDownStationId());
         sectionDao.save(
             lineRequest.toSectionEntity(line.getId())
         );

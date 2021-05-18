@@ -9,6 +9,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 import java.util.List;
@@ -114,6 +115,21 @@ class LineServiceTest {
 
         assertThat(lineResponse.getId()).isEqualTo(1L);
         assertThat(lineResponse.getStations()).extracting("id").containsExactlyInAnyOrder(1L, 2L);
+    }
+
+    @DisplayName("노선 생성시 상행과 하행이 같으면 예외발생")
+    @Test
+    void createLine_fail_sameStations() {
+        // given
+        final LineRequest lineRequest = new LineRequest("노선A", "black", 1L, 1L, 3, 100);
+        given(lineDao.save(lineRequest.toEntity())).willReturn(lineA);
+
+        // when, then
+        assertThatThrownBy(() -> lineService.createLine(lineRequest))
+            .isInstanceOf(ValidationFailureException.class)
+            .hasMessage("상행역과 하행역이 같은 구간은 추가할 수 없습니다.");
+
+        then(lineDao).should(times(1)).save(any(Line.class));
     }
 
     @DisplayName("추가하려는 구간의 상행과 하행이 둘 다 존재하면 예외발생.")

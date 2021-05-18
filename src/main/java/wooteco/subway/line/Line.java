@@ -37,8 +37,15 @@ public class Line {
     }
 
     public void validateStationsToAddSection(final Long upStationId, final Long downStationId) {
+        validateDifferentStationIds(upStationId, downStationId);
         sections.validateBothExistentStation(upStationId, downStationId);
         sections.validateNoneExistentStation(upStationId, downStationId);
+    }
+
+    public void validateDifferentStationIds(final Long upStationId, final Long downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new ValidationFailureException("상행역과 하행역이 같은 구간은 추가할 수 없습니다.");
+        }
     }
 
     public boolean includesTerminalStation(final Long upStationId, final Long downStationId) {
