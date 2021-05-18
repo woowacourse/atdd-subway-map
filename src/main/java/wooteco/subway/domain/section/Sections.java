@@ -103,32 +103,29 @@ public class Sections {
     }
 
     public Section createMergedSectionAfterDeletion(Long stationId) {
-        Section upwardSection = sections.stream()
-                .filter(section -> section.hasDownwardStation(stationId))
-                .findAny()
-                .get();
-
-        Section downwardSection = sections.stream()
-                .filter(section -> section.hasUpwardStation(stationId))
-                .findAny()
-                .get();
-
+        Section upwardSection = getUpwardSection(stationId);
+        Section downwardSection = getDownwardSection(stationId);
         return new Section(upwardSection.getUpwardStation(), downwardSection.getDownwardStation(), calculateNewDistanceAfterDeletion(stationId));
     }
 
     private int calculateNewDistanceAfterDeletion(Long stationId) {
-        int upwardSectionDistance = sections.stream()
+        int upwardSectionDistance = getUpwardSection(stationId).getDistance();
+        int downwardSectionDistance = getDownwardSection(stationId).getDistance();
+        return upwardSectionDistance + downwardSectionDistance;
+    }
+
+    private Section getUpwardSection(Long stationId) {
+        return sections.stream()
                 .filter(section -> section.hasDownwardStation(stationId))
                 .findAny()
-                .get()
-                .getDistance();
+                .get();
+    }
 
-        int downwardSectionDistance = sections.stream()
+    private Section getDownwardSection(Long stationId) {
+        return sections.stream()
                 .filter(section -> section.hasUpwardStation(stationId))
                 .findAny()
-                .get()
-                .getDistance();
-        return upwardSectionDistance + downwardSectionDistance;
+                .get();
     }
 
     public Section getBottomSection() {
@@ -170,17 +167,11 @@ public class Sections {
     private void compare(Section addedSection) {
         Section existingSection = null;
         if (isNewStationUpward(addedSection)) {
-            existingSection = sections.stream()
-                    .filter(section -> section.hasDownwardStation(addedSection.getDownStationId()))
-                    .findAny()
-                    .get();
+            existingSection = getUpwardSection(addedSection.getDownStationId());
         }
 
         if (isNewStationDownward(addedSection)) {
-            existingSection = sections.stream()
-                    .filter(section -> section.hasUpwardStation(addedSection.getUpStationId()))
-                    .findAny()
-                    .get();
+            existingSection = getDownwardSection(addedSection.getUpStationId());
         }
         compareDistance(addedSection, existingSection);
     }
