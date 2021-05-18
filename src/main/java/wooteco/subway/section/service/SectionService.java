@@ -10,11 +10,11 @@ import wooteco.subway.section.domain.Sections;
 import wooteco.subway.section.dto.SectionRequest;
 
 @Service
-public class SectionServiceTemp {
+public class SectionService {
     private final SectionDao sectionDao;
     private final LineDao lineDao;
 
-    public SectionServiceTemp(SectionDao sectionDao, LineDao lineDao) {
+    public SectionService(final SectionDao sectionDao, final LineDao lineDao) {
         this.sectionDao = sectionDao;
         this.lineDao = lineDao;
     }

@@ -38,8 +38,8 @@ create table if not exists LINE
 (
     20
 ) not null,
-    up_station_id bigint,
-    down_station_id bigint,
+    first_station_id bigint,
+    last_station_id bigint,
     primary key
 (
     id

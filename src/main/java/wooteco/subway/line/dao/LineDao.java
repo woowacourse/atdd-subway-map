@@ -24,14 +24,14 @@ public class LineDao {
     }
 
     public Long save(final Line line) {
-        final String sql = "INSERT INTO LINE (name, color, up_station_id, down_station_id) VALUES (?, ?, ?, ?)";
+        final String sql = "INSERT INTO LINE (name, color, first_station_id, last_station_id) VALUES (?, ?, ?, ?)";
 
         jdbcTemplate.update(con -> {
             final PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, line.getName());
             ps.setString(2, line.getColor());
-            ps.setLong(3, line.getUpStationId());
-            ps.setLong(4, line.getDownStationId());
+            ps.setLong(3, line.getFirstStationId());
+            ps.setLong(4, line.getLastStationId());
             return ps;
         }, keyHolder);
 
@@ -49,21 +49,12 @@ public class LineDao {
     }
 
     public void updateFinalStations(final Long id, final FinalStations finalStations) {
-        updateFinalStations(id, finalStations.upStationId(), finalStations.downStationId());
+        final String sql = "UPDATE LINE SET first_station_id = ?, last_station_id =? WHERE id = ?";
+        jdbcTemplate.update(sql, finalStations.firstStationId(), finalStations.lastStationId(), id);
     }
 
-    public void updateFinalStations(final Long id, final Long upStationId, final Long downStationId) {
-        final String sql = "UPDATE LINE SET up_station_id = ?, down_station_id =? WHERE id = ?";
-        jdbcTemplate.update(sql, upStationId, downStationId, id);
-    }
-
-    public Long findUpStationId(final Long id) {
-        final String sql = "SELECT up_station_id FROM LINE WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, Long.class, id);
-    }
-
-    public Long findDownStationId(final Long id) {
-        final String sql = "SELECT down_station_id FROM LINE WHERE id = ?";
+    public Long findFirstStationId(final Long id) {
+        final String sql = "SELECT first_station_id FROM LINE WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, id);
     }
 
@@ -92,10 +83,10 @@ public class LineDao {
     }
 
     public FinalStations finalStations(final Long id) {
-        final String sql = "SELECT up_station_id, down_station_id FROM LINE WHERE id = ?";
+        final String sql = "SELECT first_station_id, last_station_id FROM LINE WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new FinalStations(
-                rs.getLong("up_station_id"),
-                rs.getLong("down_station_id")
+                rs.getLong("first_station_id"),
+                rs.getLong("last_station_id")
         ), id);
     }
 
@@ -104,8 +95,8 @@ public class LineDao {
                 rs.getLong("id"),
                 rs.getString("name"),
                 rs.getString("color"),
-                rs.getLong("up_station_id"),
-                rs.getLong("down_station_id")
+                rs.getLong("first_station_id"),
+                rs.getLong("last_station_id")
         );
     }
 }

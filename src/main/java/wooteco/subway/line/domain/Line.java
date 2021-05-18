@@ -4,15 +4,15 @@ public class Line {
     private final Long id;
     private final String name;
     private final String color;
-    private final Long upStationId;
-    private final Long downStationId;
+    private final Long firstStationId;
+    private final Long lastStationId;
 
-    public Line(final Long id, final String name, final String color, final Long upStationId, final Long downStationId) {
+    public Line(final Long id, final String name, final String color, final Long firstStationId, final Long lastStationId) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.firstStationId = firstStationId;
+        this.lastStationId = lastStationId;
     }
 
     public boolean isDifferentName(final Line line) {
@@ -31,11 +31,11 @@ public class Line {
         return color;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
+    public Long getFirstStationId() {
+        return firstStationId;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
+    public Long getLastStationId() {
+        return lastStationId;
     }
 }

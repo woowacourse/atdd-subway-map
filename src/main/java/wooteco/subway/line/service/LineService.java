@@ -79,6 +79,6 @@ public class LineService {
         if (sections.numberOfStationInLine() == 0) {
             return Collections.EMPTY_LIST;
         }
-        return sections.sort(lineDao.findUpStationId(lineId));
+        return sections.sort(lineDao.findFirstStationId(lineId));
     }
 }

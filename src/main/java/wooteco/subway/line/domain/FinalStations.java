@@ -4,53 +4,20 @@ import wooteco.subway.line.exception.LineException;
 import wooteco.subway.section.domain.Section;
 
 public class FinalStations {
-    private final Long upStationId;
-    private final Long downStationId;
+    private final Long firstStationId;
+    private final Long lastStationId;
 
-    public FinalStations(final Long upStationId, final Long downStationId) {
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-    }
-
-    public Long upStationId() {
-        return upStationId;
-    }
-
-    public Long downStationId() {
-        return downStationId;
+    public FinalStations(final Long firstStationId, final Long lastStationId) {
+        this.firstStationId = firstStationId;
+        this.lastStationId = lastStationId;
     }
 
     public boolean isFinalSection(final Section section) {
-        return isFinalSection(section.frontStationId(), section.backStationId());
-    }
-
-    public boolean isFinalSection(final Long frontStationId, final Long backStationId) {
-        return this.upStationId.equals(backStationId) != this.downStationId.equals(frontStationId);
-    }
-
-    // TODO :: before에 해당하는 종점역을 after로 변경한다는 것인데, 괜찮을까...? 변수명은 어떻게 해야할까
-    public FinalStations change(final Long before, final Long after) {
-        if (upStationId.equals(before)) {
-            return new FinalStations(after, downStationId);
-        }
-
-        if (downStationId.equals(before)) {
-            return new FinalStations(upStationId, after);
-        }
-
-        throw new LineException("적절하지 않은 구간 삭제입니다.");
+        return this.firstStationId.equals(section.backStationId()) != this.lastStationId.equals(section.frontStationId());
     }
 
     public boolean isFinalStation(final Long stationId) {
-        return upStationId.equals(stationId) || downStationId.equals(stationId);
-    }
-
-    public boolean isUpStation(final Long stationId) {
-        return upStationId.equals(stationId);
-    }
-
-    public boolean isDownStation(final Long stationId) {
-        return downStationId.equals(stationId);
+        return firstStationId.equals(stationId) || lastStationId.equals(stationId);
     }
 
     public FinalStations addSection(final Section section) {
@@ -62,14 +29,22 @@ public class FinalStations {
     }
 
     private FinalStations update(final Long station1, final Long station2) {
-        if (this.upStationId.equals(station1)) {
-            return new FinalStations(station2, this.downStationId);
+        if (this.firstStationId.equals(station1)) {
+            return new FinalStations(station2, this.lastStationId);
         }
 
-        if (this.downStationId.equals(station2)) {
-            return new FinalStations(this.upStationId, station1);
+        if (this.lastStationId.equals(station2)) {
+            return new FinalStations(this.firstStationId, station1);
         }
 
         throw new LineException("종점이 아닙니다.");
+    }
+
+    public Long firstStationId() {
+        return firstStationId;
+    }
+
+    public Long lastStationId() {
+        return lastStationId;
     }
 }

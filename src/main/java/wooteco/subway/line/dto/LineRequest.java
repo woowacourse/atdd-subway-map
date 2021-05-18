@@ -5,18 +5,18 @@ import wooteco.subway.line.domain.Line;
 public class LineRequest {
     private String name;
     private String color;
-    private Long upStationId;
-    private Long downStationId;
+    private Long firstStationId;
+    private Long lastStationId;
     private int distance;
 
     public LineRequest() {
     }
 
-    public LineRequest(final String name, final String color, final Long upStationId, final Long downStationId, final int distance) {
+    public LineRequest(final String name, final String color, final Long firstStationId, final Long lastStationId, final int distance) {
         this.name = name;
         this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.firstStationId = firstStationId;
+        this.lastStationId = lastStationId;
         this.distance = distance;
     }
 
@@ -28,12 +28,12 @@ public class LineRequest {
         return color;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
+    public Long getFirstStationId() {
+        return firstStationId;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
+    public Long getLastStationId() {
+        return lastStationId;
     }
 
     public int getDistance() {
@@ -41,10 +41,10 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(null, name, color, upStationId, downStationId);
+        return new Line(null, name, color, firstStationId, lastStationId);
     }
 
     public Line toLine(final Long id) {
-        return new Line(id, name, color, upStationId, downStationId);
+        return new Line(id, name, color, firstStationId, lastStationId);
     }
 }

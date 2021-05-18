@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.section.dto.SectionRequest;
-import wooteco.subway.section.service.SectionServiceTemp;
+import wooteco.subway.section.service.SectionService;
 
 import java.util.List;
 
@@ -12,9 +12,9 @@ import java.util.List;
 @RequestMapping("/lines/{lineId}/sections")
 public class SectionController {
 
-    private final SectionServiceTemp sectionService;
+    private final SectionService sectionService;
 
-    public SectionController(SectionServiceTemp sectionService) {
+    public SectionController(SectionService sectionService) {
         this.sectionService = sectionService;
     }
 

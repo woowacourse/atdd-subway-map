@@ -12,7 +12,7 @@ import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.exception.LineException;
 import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.dto.SectionRequest;
-import wooteco.subway.section.service.SectionServiceTemp;
+import wooteco.subway.section.service.SectionService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +33,7 @@ public class LineServiceTest {
     private LineService lineService;
 
     @Autowired
-    private SectionServiceTemp sectionService;
+    private SectionService sectionService;
     private Line savedLine;
     private Long savedLineId;
 
