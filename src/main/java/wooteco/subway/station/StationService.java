@@ -9,7 +9,7 @@ import wooteco.subway.exception.station.NotFoundStationException;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.dto.StationServiceDto;
 
-@Transactional
+
 @Service
 public class StationService {
 
@@ -33,6 +33,7 @@ public class StationService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public StationServiceDto save(final StationServiceDto stationServiceDto) {
         Station station = stationServiceDto.toEntity();
         String name = stationServiceDto.getName();
@@ -46,6 +47,7 @@ public class StationService {
         return StationServiceDto.from(saveStation);
     }
 
+    @Transactional
     public void delete(final StationServiceDto stationServiceDto) {
         if (stationDao.delete(stationServiceDto.getId()) == NOT_FOUND) {
             throw new NotFoundStationException();
