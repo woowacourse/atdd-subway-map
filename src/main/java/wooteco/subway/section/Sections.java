@@ -53,7 +53,8 @@ public class Sections {
         stationIds.addLast(section.getDownStation().getId());
     }
 
-    private void sortStationsById(Deque<Long> stationIds, Map<Long, Long> upStationIds, Map<Long, Long> downStationIds) {
+    private void sortStationsById(Deque<Long> stationIds, Map<Long, Long> upStationIds,
+        Map<Long, Long> downStationIds) {
         while (upStationIds.containsKey(stationIds.peekLast())) {
             Long id = stationIds.peekLast();
             stationIds.addLast(upStationIds.get(id));

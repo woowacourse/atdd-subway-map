@@ -23,12 +23,12 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line saveLine(final Line line) {
+    public Line save(final Line line) {
         Line rawLine = line;
         return lineDao.save(rawLine);
     }
 
-    public Line showLine(final Long lineId) {
+    public Line show(final Long lineId) {
         return lineDao.show(lineId)
             .orElseThrow(() -> new NotFoundLineException());
     }
@@ -44,10 +44,6 @@ public class LineService {
         if (lineDao.countByName(name) != 0) {
             throw new DuplicateLineException();
         }
-    }
-
-    public Line showLine(final long lineId) {
-        return lineDao.show(lineId).get();
     }
 
     public List<LineServiceDto> findAll() {

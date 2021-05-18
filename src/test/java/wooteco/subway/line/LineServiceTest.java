@@ -45,7 +45,7 @@ public class LineServiceTest {
         // when
         CreateLineDto createLineDto = new CreateLineDto(name, color, UPSTATION_ID, DOWNSTATION_ID, DISTANCE);
         Line line = new Line(name, color);
-        Line createdLine = lineService.saveLine(line);
+        Line createdLine = lineService.save(line);
 
         // then
         assertThat(createdLine.getName()).isEqualTo(name);
@@ -91,7 +91,7 @@ public class LineServiceTest {
         when(mockLineDao.show(id)).thenReturn(candidate);
 
         // when
-        Line line = lineService.showLine(id);
+        Line line = lineService.show(id);
 
         // then
         assertThat(line.getId()).isEqualTo(id);
@@ -115,7 +115,7 @@ public class LineServiceTest {
         lineService.update(new LineServiceDto(id, updateName, updateColor));
 
         // then
-        Line updatedLine = lineService.showLine(id);
+        Line updatedLine = lineService.show(id);
         assertThat(updatedLine.getId()).isEqualTo(1);
         assertThat(updatedLine.getName()).isEqualTo(updateName);
         assertThat(updatedLine.getColor()).isEqualTo("녹담색");
@@ -136,7 +136,7 @@ public class LineServiceTest {
         lineService.delete(new LineServiceDto(id));
 
         // then
-        assertThatThrownBy(() -> lineService.showLine(id))
+        assertThatThrownBy(() -> lineService.show(id))
             .isInstanceOf(NotFoundLineException.class);
     }
 }

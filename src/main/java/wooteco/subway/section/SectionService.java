@@ -62,7 +62,7 @@ public class SectionService {
     private Section assembleSectionFromSectionServiceDto(SectionServiceDto sectionServiceDto) {
         Station upStation = stationService.showStation(sectionServiceDto.getUpStationId());
         Station downStation = stationService.showStation(sectionServiceDto.getDownStationId());
-        Line line = lineService.showLine(sectionServiceDto.getLineId());
+        Line line = lineService.show(sectionServiceDto.getLineId());
         Distance distance = new Distance(sectionServiceDto.getDistance());
         return new Section(line, upStation, downStation, sectionServiceDto.getDistance());
     }
@@ -145,7 +145,7 @@ public class SectionService {
     @Transactional
     public LineServiceDto createLine(@Valid final CreateLineDto createLineDto) {
         Line line = createLineDto.toLineEntity();
-        Line saveLine = lineService.saveLine(line);
+        Line saveLine = lineService.save(line);
         SectionServiceDto sectionServiceDto = SectionServiceDto.of(saveLine, createLineDto);
         saveByLineCreate(sectionServiceDto);
         return LineServiceDto.from(saveLine);
@@ -153,7 +153,7 @@ public class SectionService {
 
     public ReadLineDto findOne(@Valid final LineServiceDto lineServiceDto) {
         final Long lineId = lineServiceDto.getId();
-        Line line =lineService.showLine(lineId);
+        Line line =lineService.show(lineId);
         List<StationResponse> stationResponses = findAllbyLindId(line.getId());
         return ReadLineDto.of(line, stationResponses);
     }
