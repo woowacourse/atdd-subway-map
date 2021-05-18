@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.exception.NoRowAffectedException;
+import wooteco.subway.exception.StationNotFoundException;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.repository.StationRepository;
 
@@ -40,7 +41,7 @@ public class JdbcStationRepository implements StationRepository {
                 ps.setString(1, station.getName());
                 return ps;
             }, keyHolder);
-            return findById(keyHolder.getKey().longValue()).get();
+            return findById(keyHolder.getKey().longValue()).orElseThrow(StationNotFoundException::new);
         } catch (DuplicateKeyException e) {
             throw new DuplicatedNameException("이미 존재하는 지하철 역 이름입니다.", e.getCause());
         }
