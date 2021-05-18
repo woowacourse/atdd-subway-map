@@ -11,10 +11,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.exception.section.InvalidSectionOnLineException;
-import wooteco.subway.line.Line;
+import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dao.LineDao;
-import wooteco.subway.section.Section;
-import wooteco.subway.station.Station;
+import wooteco.subway.section.domain.Section;
+import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dao.StationDao;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)

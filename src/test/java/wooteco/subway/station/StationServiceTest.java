@@ -13,7 +13,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationServiceDto;
+import wooteco.subway.station.service.StationService;
 
 @ExtendWith(MockitoExtension.class)
 class StationServiceTest {

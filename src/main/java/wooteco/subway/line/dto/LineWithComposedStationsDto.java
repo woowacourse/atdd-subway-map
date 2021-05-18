@@ -2,7 +2,7 @@ package wooteco.subway.line.dto;
 
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
-import wooteco.subway.line.Line;
+import wooteco.subway.line.domain.Line;
 import wooteco.subway.station.dto.StationResponse;
 
 public class LineWithComposedStationsDto {

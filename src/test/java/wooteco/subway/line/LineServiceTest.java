@@ -17,8 +17,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.exception.line.NotFoundLineException;
 import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.CreateLineDto;
 import wooteco.subway.line.dto.LineServiceDto;
+import wooteco.subway.line.service.LineService;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceTest {

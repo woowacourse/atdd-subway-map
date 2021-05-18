@@ -1,19 +1,19 @@
-package wooteco.subway.line;
+package wooteco.subway.line.domain;
 
 import java.util.Objects;
-import wooteco.subway.exception.NullNameException;
+import wooteco.subway.exception.line.NullColorException;
 
-public class Name {
+public class Color {
     private final String value;
 
-    public Name(final String value) {
+    public Color(final String value) {
         this.value = value;
         validateNull(this.value);
     }
 
     private void validateNull(final String value) {
         if (Objects.isNull(value)) {
-            throw new NullNameException();
+            throw new NullColorException();
         }
     }
 

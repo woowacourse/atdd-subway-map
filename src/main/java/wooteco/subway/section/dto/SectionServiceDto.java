@@ -1,9 +1,9 @@
 package wooteco.subway.section.dto;
 
 import javax.validation.constraints.NotNull;
-import wooteco.subway.line.Line;
+import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.CreateLineDto;
-import wooteco.subway.section.Section;
+import wooteco.subway.section.domain.Section;
 
 public class SectionServiceDto {
 

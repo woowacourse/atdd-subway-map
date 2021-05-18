@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.line.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.line.DuplicateLineException;
 import wooteco.subway.exception.line.NotFoundLineException;
 import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.CreateLineDto;
 import wooteco.subway.line.dto.LineServiceDto;
 

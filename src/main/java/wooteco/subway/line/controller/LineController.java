@@ -21,7 +21,7 @@ import wooteco.subway.line.dto.LineServiceDto;
 import wooteco.subway.line.dto.LineWithComposedStationsDto;
 import wooteco.subway.line.dto.SectionRequest;
 import wooteco.subway.line.dto.UpdateLineRequest;
-import wooteco.subway.section.SectionService;
+import wooteco.subway.section.service.SectionService;
 import wooteco.subway.section.dto.CreateSectionDto;
 
 @RestController

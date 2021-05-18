@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.station.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.station.DuplicatedStationTitleException;
 import wooteco.subway.exception.station.NotFoundStationException;
 import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationServiceDto;
 
 

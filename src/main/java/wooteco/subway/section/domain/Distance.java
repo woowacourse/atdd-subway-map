@@ -1,4 +1,4 @@
-package wooteco.subway.section;
+package wooteco.subway.section.domain;
 
 import wooteco.subway.exception.section.InvalidDistanceException;
 

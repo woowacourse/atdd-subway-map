@@ -15,9 +15,12 @@ import wooteco.subway.exception.section.InvalidDistanceException;
 import wooteco.subway.exception.station.NotFoundStationException;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.section.dao.SectionDao;
+import wooteco.subway.section.domain.Section;
+import wooteco.subway.section.domain.Sections;
 import wooteco.subway.section.dto.DeleteStationDto;
 import wooteco.subway.section.dto.SectionServiceDto;
-import wooteco.subway.station.Station;
+import wooteco.subway.section.service.SectionService;
+import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dao.StationDao;
 
 @SpringBootTest

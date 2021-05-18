@@ -1,4 +1,4 @@
-package wooteco.subway.section;
+package wooteco.subway.section.domain;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import wooteco.subway.exception.section.InvalidSectionOnLineException;
 import wooteco.subway.exception.station.NotFoundStationException;
-import wooteco.subway.station.Station;
+import wooteco.subway.station.domain.Station;
 
 public class Sections {
 

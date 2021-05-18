@@ -2,7 +2,7 @@ package wooteco.subway.line.dto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import wooteco.subway.line.Line;
+import wooteco.subway.line.domain.Line;
 
 public class LineServiceDto {
 

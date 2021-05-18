@@ -6,8 +6,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.section.DuplicateStationException;
-import wooteco.subway.line.Line;
-import wooteco.subway.station.Station;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.section.domain.Section;
+import wooteco.subway.station.domain.Station;
 
 class SectionTest {
     private final Station UP_STATION = new Station( 1L, "동묘앞역");

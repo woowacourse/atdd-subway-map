@@ -1,4 +1,4 @@
-package wooteco.subway.section;
+package wooteco.subway.section.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,17 +7,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.section.InvalidSectionOnLineException;
 import wooteco.subway.exception.station.NotFoundStationException;
-import wooteco.subway.line.Line;
-import wooteco.subway.line.LineService;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.service.LineService;
 import wooteco.subway.line.dto.CreateLineDto;
 import wooteco.subway.line.dto.LineServiceDto;
 import wooteco.subway.line.dto.LineWithComposedStationsDto;
 import wooteco.subway.section.dao.SectionDao;
+import wooteco.subway.section.domain.Distance;
+import wooteco.subway.section.domain.Section;
+import wooteco.subway.section.domain.Sections;
 import wooteco.subway.section.dto.CreateSectionDto;
 import wooteco.subway.section.dto.DeleteStationDto;
 import wooteco.subway.section.dto.SectionServiceDto;
-import wooteco.subway.station.Station;
-import wooteco.subway.station.StationService;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.service.StationService;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.dto.StationServiceDto;
 

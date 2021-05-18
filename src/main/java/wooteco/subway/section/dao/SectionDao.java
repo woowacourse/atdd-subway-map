@@ -11,10 +11,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Id;
-import wooteco.subway.line.Line;
-import wooteco.subway.section.Distance;
-import wooteco.subway.section.Section;
-import wooteco.subway.station.Station;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.section.domain.Distance;
+import wooteco.subway.section.domain.Section;
+import wooteco.subway.station.domain.Station;
 
 @Repository
 public class SectionDao {

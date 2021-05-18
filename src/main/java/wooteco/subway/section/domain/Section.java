@@ -1,10 +1,10 @@
-package wooteco.subway.section;
+package wooteco.subway.section.domain;
 
 import java.util.Objects;
 import wooteco.subway.domain.Id;
 import wooteco.subway.exception.section.DuplicateStationException;
-import wooteco.subway.line.Line;
-import wooteco.subway.station.Station;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.station.domain.Station;
 
 public class Section {
 

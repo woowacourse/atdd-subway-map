@@ -11,8 +11,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.section.InvalidSectionOnLineException;
 import wooteco.subway.exception.station.NotFoundStationException;
-import wooteco.subway.line.Line;
-import wooteco.subway.station.Station;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.section.domain.Section;
+import wooteco.subway.section.domain.Sections;
+import wooteco.subway.station.domain.Station;
 
 class SectionsTest {
 
