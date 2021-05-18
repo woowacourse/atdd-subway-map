@@ -99,7 +99,7 @@ class LineTest {
         final Line newLine = new Line(1L, "temp", "black", sectionGroup);
         assertThatThrownBy(newLine::validateSizeToDeleteSection)
             .isInstanceOf(ValidationFailureException.class)
-            .hasMessage("구간이 한 개 이하면 지울 수 없습니다.");
+            .hasMessage("구간이 2개 미만이면 지울 수 없습니다.");
     }
 
     @DisplayName("상행 종점역을 찾는다.")

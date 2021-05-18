@@ -26,6 +26,30 @@ public class LineService {
         this.stationService = stationService;
     }
 
+    public List<LineResponse> findLines() {
+        return lineDao.findAll().
+            stream().
+            map(line -> findLine(line.getId())).
+            collect(Collectors.toList());
+    }
+
+    public LineResponse findLine(final Long id) {
+        final Line line = composeLine(id);
+        return LineResponse.from(line, composeStations(line.getSections()));
+    }
+
+    private Line composeLine(final Long lineId) {
+        final Line line = lineDao.findById(
+            lineId).orElseThrow(() -> new ObjectNotFoundException("해당 Id의 노선이 없습니다.")
+        );
+        final Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        return new Line(line.getId(), line.getName(), line.getColor(), sections);
+    }
+
+    private Stations composeStations(final Sections sections) {
+        return stationService.findByIds(sections.distinctStationIds());
+    }
+
     @Transactional
     public LineResponse createLine(final LineRequest lineRequest) {
         final Line line = lineDao.save(
@@ -58,30 +82,6 @@ public class LineService {
 
     private SectionResponse createSection(final Section section) {
         return SectionResponse.from(sectionDao.save(section));
-    }
-
-    private Line composeLine(final Long lineId) {
-        final Line line = lineDao.findById(
-            lineId).orElseThrow(() -> new ObjectNotFoundException("해당 Id의 노선이 없습니다.")
-        );
-        final Sections sections = new Sections(sectionDao.findByLineId(lineId));
-        return new Line(line.getId(), line.getName(), line.getColor(), sections);
-    }
-
-    private Stations composeStations(final Sections sections) {
-        return stationService.findByIds(sections.distinctStationIds());
-    }
-
-    public List<LineResponse> findLines() {
-        return lineDao.findAll().
-            stream().
-            map(line -> findLine(line.getId())).
-            collect(Collectors.toList());
-    }
-
-    public LineResponse findLine(final Long id) {
-        final Line line = composeLine(id);
-        return LineResponse.from(line, composeStations(line.getSections()));
     }
 
     public void updateLine(final Long id, final LineRequest lineRequest) {

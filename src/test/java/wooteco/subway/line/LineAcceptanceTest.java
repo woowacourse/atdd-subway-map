@@ -159,7 +159,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> createResponse = 노선_등록(LINE_2);
         final String uri = createResponse.header("Location");
 
-        final LineRequest updatedRequest = new LineRequest("3호선", "grey darken-2");
+        final LineRequest updatedRequest = new LineRequest("3호선", "grey darken-2", 1L, 2L, 10, 100);
         final ExtractableResponse<Response> response = 노선_수정(uri, updatedRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -178,7 +178,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("없는 노선을 수정하면 404 에러가 발생한다.")
     @Test
     void updateNotExistLine() {
-        final LineRequest updatedRequest = new LineRequest("3호선", "grey darken-2");
+        final LineRequest updatedRequest = new LineRequest("3호선", "grey darken-2", 1L, 2L, 10, 100);
         final ExtractableResponse<Response> response = 노선_수정("/lines/2000000", updatedRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
