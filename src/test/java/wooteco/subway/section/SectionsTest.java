@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static wooteco.subway.section.SectionTexture.*;
+import static wooteco.subway.section.SectionTestFixture.*;
 
 class SectionsTest {
     private Sections sections;

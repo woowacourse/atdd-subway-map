@@ -1,6 +1,6 @@
 package wooteco.subway.section;
 
-public class SectionTexture {
+public class SectionTestFixture {
     public static Section 강남_역삼 = new Section(1L, 2L, 10);
     public static Section 역삼_선릉 = new Section(2L, 3L, 6);
     public static Section 강남_선릉 = new Section(1L, 3L, 16);
