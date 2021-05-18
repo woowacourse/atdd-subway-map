@@ -9,7 +9,6 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.line.LineDuplicatedInformationException;
 import wooteco.subway.exception.line.LineNotFoundException;
-import wooteco.subway.exception.line.StationUpAndDownDuplicatedException;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.web.LineRequest;
 import wooteco.subway.line.web.LineResponse;
@@ -73,10 +72,6 @@ public class LineService {
     private void validateLineRequest(String name, String color, Long upStationId, Long downStationId) {
         if (lineDao.existByInfo(name, color)) {
             throw new LineDuplicatedInformationException();
-        }
-
-        if (upStationId.equals(downStationId)) {
-            throw new StationUpAndDownDuplicatedException();
         }
     }
 
