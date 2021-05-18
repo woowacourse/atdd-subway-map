@@ -17,6 +17,8 @@ import wooteco.subway.exception.DuplicatedFieldException;
 @Repository
 public class LineDao {
 
+    private static final int SUCCESSFUL_AFFECTED_COUNT = 1;
+
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
@@ -45,11 +47,11 @@ public class LineDao {
     public void deleteById(final long id) {
         final String sql = "DELETE FROM line WHERE id = :id";
 
-        int deletedCnt = namedParameterJdbcTemplate.update(
+        int deletedCount = namedParameterJdbcTemplate.update(
             sql, Collections.singletonMap("id", id)
         );
 
-        if (deletedCnt < 1) {
+        if (deletedCount < SUCCESSFUL_AFFECTED_COUNT) {
             throw new DataNotFoundException("해당 Id의 노선이 없습니다.");
         }
     }
@@ -80,7 +82,7 @@ public class LineDao {
         final SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(updatedLine);
         final int updateCount = namedParameterJdbcTemplate.update(sql, sqlParameterSource);
 
-        if (updateCount < 1) {
+        if (updateCount < SUCCESSFUL_AFFECTED_COUNT) {
             throw new DataNotFoundException("해당 Id의 노선이 없습니다.");
         }
     }

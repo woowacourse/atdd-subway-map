@@ -21,6 +21,8 @@ import wooteco.subway.exception.DuplicatedFieldException;
 @Repository
 public class StationDao {
 
+    private static final int SUCCESSFUL_AFFECTED_COUNT = 1;
+
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
         resultSet.getLong("id"),
@@ -46,9 +48,9 @@ public class StationDao {
 
     public void deleteById(final long id) {
         final String sql = "DELETE FROM station WHERE id = :id";
-        int deletedCnt = namedParameterJdbcTemplate.update(sql, Collections.singletonMap("id", id));
+        int deletedCount = namedParameterJdbcTemplate.update(sql, Collections.singletonMap("id", id));
 
-        if (deletedCnt < 1) {
+        if (deletedCount < SUCCESSFUL_AFFECTED_COUNT) {
             throw new DataNotFoundException("해당 Id의 지하철역이 없습니다.");
         }
     }

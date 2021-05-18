@@ -40,8 +40,7 @@ public class LineService {
 
     private Line composeLine(final Long lineId) {
         final Line line = lineDao.findById(lineId)
-            .orElseThrow(() -> new DataNotFoundException("해당 Id의 노선이 없습니다.")
-            );
+            .orElseThrow(() -> new DataNotFoundException("해당 Id의 노선이 없습니다."));
         final Sections sections = new Sections(sectionDao.findByLineId(lineId));
         return new Line(line.getId(), line.getName(), line.getColor(), sections);
     }
@@ -52,13 +51,9 @@ public class LineService {
 
     @Transactional
     public LineResponse createLine(final LineRequest lineRequest) {
-        final Line line = lineDao.save(
-            lineRequest.toEntity()
-        );
+        final Line line = lineDao.save(lineRequest.toEntity());
         line.validateDifferentStationIds(lineRequest.getUpStationId(), lineRequest.getDownStationId());
-        sectionDao.save(
-            lineRequest.toSectionEntity(line.getId())
-        );
+        sectionDao.save(lineRequest.toSectionEntity(line.getId()));
         return findLine(line.getId());
     }
 

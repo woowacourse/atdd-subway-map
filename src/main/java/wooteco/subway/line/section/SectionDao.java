@@ -15,6 +15,8 @@ import wooteco.subway.exception.DataNotFoundException;
 @Repository
 public class SectionDao {
 
+    private static final int SUCCESSFUL_AFFECTED_COUNT = 1;
+
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final RowMapper<Section> sectionRowMapper = (resultSet, rowNum) -> Section.Builder()
         .id(resultSet.getLong("id"))
@@ -57,17 +59,17 @@ public class SectionDao {
         final String sql = "UPDATE section "
             + "SET up_station_id = :upStationId, down_station_id = :downStationId, distance = :distance WHERE id = :id";
         final SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(updatedSection);
-        final int updatedCnt = namedParameterJdbcTemplate.update(sql, sqlParameterSource);
+        final int updatedCount = namedParameterJdbcTemplate.update(sql, sqlParameterSource);
 
-        if (updatedCnt < 1) {
+        if (updatedCount < SUCCESSFUL_AFFECTED_COUNT) {
             throw new DataNotFoundException("해당 Id의 구간이 없습니다.");
         }
     }
 
     public void deleteById(final long id) {
         final String sql = "DELETE FROM section WHERE id = :id";
-        int deletedCnt = namedParameterJdbcTemplate.update(sql, Collections.singletonMap("id", id));
-        if (deletedCnt < 1) {
+        int deletedCount = namedParameterJdbcTemplate.update(sql, Collections.singletonMap("id", id));
+        if (deletedCount < SUCCESSFUL_AFFECTED_COUNT) {
             throw new DataNotFoundException("해당 Id의 구간이 없습니다.");
         }
     }
