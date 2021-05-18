@@ -34,7 +34,7 @@ public class LineResponse {
         return new LineResponse(lineServiceDto.getId(), lineServiceDto.getName(), lineServiceDto.getColor());
     }
 
-    public static LineResponse from(ReadLineDto dto) {
+    public static LineResponse from(LineWithComposedStationsDto dto) {
         return new LineResponse(dto.getId(), dto.getName(), dto.getColor(), dto.getStationsResponses());
     }
 

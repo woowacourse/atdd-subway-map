@@ -18,7 +18,7 @@ import wooteco.subway.line.dto.CreateLineDto;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineServiceDto;
-import wooteco.subway.line.dto.ReadLineDto;
+import wooteco.subway.line.dto.LineWithComposedStationsDto;
 import wooteco.subway.line.dto.SectionRequest;
 import wooteco.subway.line.dto.UpdateLineRequest;
 import wooteco.subway.section.SectionService;
@@ -56,8 +56,8 @@ public class LineController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
-        ReadLineDto readLineDto = sectionService.findOne(new LineServiceDto(id));
-        LineResponse lineResponse = LineResponse.from(readLineDto);
+        LineWithComposedStationsDto lineWithComposedStationsDto = sectionService.findOne(new LineServiceDto(id));
+        LineResponse lineResponse = LineResponse.from(lineWithComposedStationsDto);
         return ResponseEntity.ok(lineResponse);
     }
 

@@ -11,7 +11,7 @@ import wooteco.subway.line.Line;
 import wooteco.subway.line.LineService;
 import wooteco.subway.line.dto.CreateLineDto;
 import wooteco.subway.line.dto.LineServiceDto;
-import wooteco.subway.line.dto.ReadLineDto;
+import wooteco.subway.line.dto.LineWithComposedStationsDto;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.dto.CreateSectionDto;
 import wooteco.subway.section.dto.DeleteStationDto;
@@ -153,11 +153,11 @@ public class SectionService {
         return LineServiceDto.from(saveLine);
     }
 
-    public ReadLineDto findOne(@Valid final LineServiceDto lineServiceDto) {
+    public LineWithComposedStationsDto findOne(@Valid final LineServiceDto lineServiceDto) {
         final Long lineId = lineServiceDto.getId();
         Line line =lineService.show(lineId);
         List<StationResponse> stationResponses = findAllbyLindId(line.getId());
-        return ReadLineDto.of(line, stationResponses);
+        return LineWithComposedStationsDto.of(line, stationResponses);
     }
 
     public List<LineServiceDto> findAllLineDto() {
