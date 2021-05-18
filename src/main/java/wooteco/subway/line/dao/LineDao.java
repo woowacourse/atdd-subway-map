@@ -67,14 +67,6 @@ public class LineDao {
         return jdbcTemplate.queryForObject(sql, Long.class, id);
     }
 
-    public boolean isUpStation(final Long id, final Long upStationId) {
-        return findUpStationId(id).equals(upStationId);
-    }
-
-    public boolean isDownStation(final Long id, final Long downStationId) {
-        return findDownStationId(id).equals(downStationId);
-    }
-
     public Line findById(final Long id) {
         try {
             final String sql = "SELECT * FROM LINE WHERE id = ?";
@@ -99,6 +91,14 @@ public class LineDao {
         return jdbcTemplate.query(sql, rowMapper());
     }
 
+    public FinalStations finalStations(final Long id) {
+        final String sql = "SELECT up_station_id, down_station_id FROM LINE WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new FinalStations(
+                rs.getLong("up_station_id"),
+                rs.getLong("down_station_id")
+        ), id);
+    }
+
     private RowMapper<Line> rowMapper() {
         return (rs, rowNum) -> new Line(
                 rs.getLong("id"),
@@ -107,13 +107,5 @@ public class LineDao {
                 rs.getLong("up_station_id"),
                 rs.getLong("down_station_id")
         );
-    }
-
-    public FinalStations finalStations(final Long id) {
-        final String sql = "SELECT up_station_id, down_station_id FROM LINE WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum)-> new FinalStations(
-                rs.getLong("up_station_id"),
-                rs.getLong("down_station_id")
-        ), id);
     }
 }

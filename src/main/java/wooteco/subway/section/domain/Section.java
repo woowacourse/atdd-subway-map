@@ -28,10 +28,6 @@ public class Section {
         this(null, LineId, frontStationId, backStationId, distance);
     }
 
-    public Section(final Long frontStationId, final Long backStationId, final int distance) {
-        this(null, null, frontStationId, backStationId, distance);
-    }
-
     public Section combine(final Section followSection) {
         if (isBackStationId(followSection.frontStationId)) {
             final int sumDistance = this.distance + followSection.distance;
@@ -55,14 +51,6 @@ public class Section {
         }
 
         throw new LineException("올바른 구간이 아닙니다.");
-    }
-
-    public boolean isSameFrontStation(final Section section) {
-        return frontStationId.equals(section.frontStationId);
-    }
-
-    public boolean isSameBackStation(final Section section) {
-        return backStationId.equals(section.backStationId);
     }
 
     public boolean isFrontStationId(final Long stationId) {

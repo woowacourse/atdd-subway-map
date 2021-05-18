@@ -12,6 +12,9 @@ public class LineResponse {
     private String color;
     private List<StationResponse> stations;
 
+    public LineResponse() {
+    }
+
     public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
@@ -20,15 +23,11 @@ public class LineResponse {
     }
 
     public LineResponse(final Line line) {
-        this(line.getId(), line.getName(), line.getColor());
+        this(line.getId(), line.getName(), line.getColor(), Collections.EMPTY_LIST);
     }
 
     public LineResponse(final Line line, final List<StationResponse> stationResponse) {
         this(line.getId(), line.getName(), line.getColor(), stationResponse);
-    }
-
-    public LineResponse(final Long id, final String name, final String color) {
-        this(id, name, color, Collections.EMPTY_LIST);
     }
 
     public Long getId() {

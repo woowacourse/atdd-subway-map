@@ -1,224 +1,196 @@
-//package wooteco.subway.section;
-//
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.transaction.annotation.Transactional;
-//import wooteco.subway.line.domain.Line;
-//import wooteco.subway.line.dto.LineRequest;
-//import wooteco.subway.line.dto.LineResponse;
-//import wooteco.subway.line.exception.LineException;
-//import wooteco.subway.line.service.LineService;
-//import wooteco.subway.section.domain.Distance;
-//import wooteco.subway.section.service.SectionService;
-//import wooteco.subway.station.dto.StationRequest;
-//import wooteco.subway.station.dto.StationResponse;
-//import wooteco.subway.station.service.StationService;
-//
-//import java.util.List;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//import static org.assertj.core.api.Assertions.assertThatThrownBy;
-//
-//@Transactional
-//@SpringBootTest
-//class SectionServiceTest {
-//
-//    @Autowired
-//    private LineService lineService;
-//
-//    @Autowired
-//    private StationService stationService;
-//
-//    @Autowired
-//    private SectionService sectionService;
-//
-//    private StationResponse aStation;
-//    private StationResponse bStation;
-//    private StationResponse cStation;
-//    private StationResponse dStation;
-//    private StationResponse eStation;
-//
-//    private Line testLine;
-//
-//    private Distance initialDistance = new Distance(10);
-//    private Distance insertDistance = new Distance(2);
-//
-//    @BeforeEach
-//    private void initLine() {
-//        aStation = stationService.save(new StationRequest("A역"));
-//        bStation = stationService.save(new StationRequest("B역"));
-//        cStation = stationService.save(new StationRequest("C역"));
-//        dStation = stationService.save(new StationRequest("D역"));
-//        eStation = stationService.save(new StationRequest("E역"));
-//
-//        final LineRequest sample = new LineRequest("코기선", "black",  bStation.getId(), dStation.getId(), initialDistance.value());
-//        final LineResponse lineResponse = lineService.create(sample);
-//        testLine = sample.toLine(lineResponse.getId());
-//    }
-//
-//    @DisplayName("노선 추가 시 상행, 하행 종점 추가")
-//    @Test
-//    public void saveTest() {
-//        validateStationOrder(bStation, dStation);
-//        validateStationDistance(bStation, dStation, initialDistance);
-//    }
-//
-//    @DisplayName("상행 종점역 -> 중간역 구간 등록")
-//    @Test
-//    public void addMiddleSectionFromFront() {
-//        sectionService.addSection(testLine.getId(), bStation.getId(), cStation.getId(), insertDistance.value());
-//
-//        validateStationOrder(bStation, cStation, dStation);
-//        validateStationDistance(bStation, cStation, insertDistance);
-//        validateStationDistance(cStation, dStation, initialDistance.sub(insertDistance));
-//    }
-//
-//    @DisplayName("중간역 -> 하행 종착역 구간 등록")
-//    @Test
-//    public void addMiddleSectionFromBack() {
-//        sectionService.addSection(testLine.getId(), cStation.getId(), dStation.getId(), insertDistance.value());
-//
-//        validateStationOrder(bStation, cStation, dStation);
-//        validateStationDistance(bStation, cStation, initialDistance.sub(insertDistance));
-//        validateStationDistance(cStation, dStation, insertDistance);
-//    }
-//
-//    @DisplayName("새로운 상행 종점역 구간 등록")
-//    @Test
-//    public void addFinalSectionFromFront() {
-//        sectionService.addSection(testLine.getId(), aStation.getId(), bStation.getId(), insertDistance.value());
-//
-//        List<Long> longs = lineService.allStationIdInLine(testLine);
-//        for(Long l : longs){
-//            System.out.println(l);
-//        }
-//
-//        validateStationOrder(aStation, bStation, dStation);
-//        validateStationDistance(aStation, bStation, insertDistance);
-//        validateStationDistance(bStation, dStation, initialDistance);
-//    }
-//
-//    @DisplayName("새로운 하행 종점역 구간 등록")
-//    @Test
-//    public void addFinalSectionFromDown() {
-//        sectionService.addSection(testLine.getId(), dStation.getId(), eStation.getId(), insertDistance.value());
-//
-//        validateStationOrder(bStation, dStation, eStation);
-//        validateStationDistance(bStation, dStation, initialDistance);
-//        validateStationDistance(dStation, eStation, insertDistance);
-//    }
-//
-//    @DisplayName("노선의 중간 역을 삭제한다.")
-//    @Test
-//    public void deleteStationInLine() {
-//        sectionService.addSection(testLine.getId(), cStation.getId(), dStation.getId(), insertDistance.value());
-//        sectionService.deleteSection(testLine.getId(), cStation.getId());
-//
-//        validateStationOrder(bStation, dStation);
-//        validateStationDistance(bStation, dStation, initialDistance);
-//    }
-//
-//    @DisplayName("노선의 상행 종점 역을 삭제한다.")
-//    @Test
-//    public void deleteFrontStationInLine() {
-//        sectionService.addSection(testLine.getId(), cStation.getId(), dStation.getId(), insertDistance.value());
-//        sectionService.deleteSection(testLine.getId(), bStation.getId());
-//
-//        List<Long> longs = lineService.allStationIdInLine(testLine);
-//        for(Long l : longs){
-//            System.out.println(l);
-//        }
-//
-//        validateStationOrder(cStation, dStation);
-//        validateStationDistance(cStation, dStation, insertDistance);
-//    }
-//
-//    @DisplayName("노선의 하행 종점 역을 삭제한다.")
-//    @Test
-//    public void deleteBackStationInLine() {
-//        sectionService.addSection(testLine.getId(), cStation.getId(), dStation.getId(), insertDistance.value());
-//        sectionService.deleteSection(testLine.getId(), dStation.getId());
-//
-//        validateStationOrder(bStation, cStation);
-//        validateStationDistance(bStation, cStation, initialDistance.sub(insertDistance));
-//    }
-//
-//    @DisplayName("노선이 종점 뿐 일 경우 역을 삭제할 수 없다.")
-//    @Test
-//    public void deleteFinalStation() {
-//        assertThatThrownBy(() -> {
-//            sectionService.deleteSection(testLine.getId(), dStation.getId());
-//        }).isInstanceOf(LineException.class);
-//    }
-//
-//    @DisplayName("노선에 존재하지 않는 역을 삭제할 수 없다.")
-//    @Test
-//    public void deleteNonExistentStation() {
-//        assertThatThrownBy(() -> {
-//            sectionService.deleteSection(testLine.getId(), aStation.getId());
-//        }).isInstanceOf(LineException.class);
-//    }
-//
-//    @DisplayName("노선에 둘 다 존재하지 않는 역으로 구간을 추가할 수 없다.")
-//    @Test
-//    public void addSectionWithNonExistentStations() {
-//        assertThatThrownBy(() -> {
-//            sectionService.addSection(testLine.getId(), aStation.getId(), eStation.getId(), initialDistance.value());
-//        }).isInstanceOf(LineException.class);
-//    }
-//
-//    @DisplayName("이미 존재하는 구간으로 구간을 추가할 수 없다.")
-//    @Test
-//    public void addSectionWithExistentSection() {
-//        assertThatThrownBy(() -> {
-//            sectionService.addSection(testLine.getId(), bStation.getId(), dStation.getId(), initialDistance.value());
-//        }).isInstanceOf(LineException.class);
-//    }
-//
-//    @DisplayName("상행 -> 중간역 삽입 시 상행 - 하행의 거리보다 같거나 큰 거리로 추가할 수 없다.")
-//    @Test
-//    public void addFrontSectionWithInvalidDistance() {
-//        assertThatThrownBy(() -> {
-//            final Distance biggerThanInitial = initialDistance.add(1);
-//            sectionService.addSection(testLine.getId(), bStation.getId(), cStation.getId(), biggerThanInitial.value());
-//        }).isInstanceOf(LineException.class);
-//    }
-//
-//    @DisplayName("중간역 -> 하행 삽입 시 상행 - 하행의 거리보다 같거나 큰 거리로 추가할 수 없다.")
-//    @Test
-//    public void addBackSectionWithInvalidDistance() {
-//        assertThatThrownBy(() -> {
-//            final Distance biggerThanInitial = initialDistance.add(1);
-//            sectionService.addSection(testLine.getId(), cStation.getId(), dStation.getId(), biggerThanInitial.value());
-//        }).isInstanceOf(LineException.class);
-//    }
-//
-//    private void validateStationOrder(final StationResponse... expectOrders) {
-//        final List<Long> stations = lineService.allStationIdInLine(testLine);
-//
-//        int index = 0;
-//        for (final StationResponse station : expectOrders) {
-//            System.out.println(station.getName() + station.getId());
-//            assertThat(stations.get(index++)).isEqualTo(station.getId());
-//        }
-//
-//        validateFinalStation(expectOrders[0], expectOrders[expectOrders.length - 1]);
-//    }
-//
-//    private void validateFinalStation(final StationResponse expectedUpStation, final StationResponse expectedDownStation) {
-//        final List<Long> ids = lineService.allStationIdInLine(testLine);
-//        final Long firstId = ids.get(0);
-//        final Long lastId = ids.get(ids.size() - 1);
-//
-//        assertThat(firstId).isEqualTo(expectedUpStation.getId());
-//        assertThat(lastId).isEqualTo(expectedDownStation.getId());
-//    }
-//
-//    private void validateStationDistance(final StationResponse upStation, final StationResponse downStation, final Distance expectedDistance) {
-//        final Distance actualDistance = sectionService.distance(testLine.getId(), upStation.getId(), downStation.getId());
-//        assertThat(expectedDistance).isEqualTo(actualDistance);
-//    }
-//}
+package wooteco.subway.section;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.exception.LineException;
+import wooteco.subway.line.service.LineService;
+import wooteco.subway.section.dto.SectionRequest;
+//import wooteco.subway.section.service.NewSectionService;
+import wooteco.subway.section.service.SectionServiceTemp;
+import wooteco.subway.station.dto.StationRequest;
+import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.service.StationService;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+@Transactional
+@SpringBootTest
+public class SectionServiceTest {
+
+    @Autowired
+    private LineService lineService;
+
+    @Autowired
+    private SectionServiceTemp sectionService;
+
+    @Autowired
+    private StationService stationService;
+
+    @Autowired
+    private SectionTestUtils sectionTestUtils;
+
+    private StationResponse aStation;
+    private StationResponse bStation;
+    private StationResponse cStation;
+    private StationResponse dStation;
+    private StationResponse eStation;
+
+    private Line testLine;
+
+    private int initialDistance = 10;
+    private int insertDistance = 2;
+
+    @BeforeEach
+    private void initLine() {
+        aStation = stationService.save(new StationRequest("A역"));
+        bStation = stationService.save(new StationRequest("B역"));
+        cStation = stationService.save(new StationRequest("C역"));
+        dStation = stationService.save(new StationRequest("D역"));
+        eStation = stationService.save(new StationRequest("E역"));
+
+        final LineRequest sample = new LineRequest("코기선", "black",  bStation.getId(), dStation.getId(), initialDistance);
+        final LineResponse lineResponse = lineService.create(sample);
+        testLine = sample.toLine(lineResponse.getId());
+    }
+
+    @DisplayName("상행 종점을 등록한다.")
+    @Test
+    public void addFinalUpStation(){
+        SectionRequest sectionRequest = new SectionRequest(aStation.getId(), bStation.getId(), Integer.MAX_VALUE);
+        sectionService.addSection(testLine.getId(), sectionRequest);
+
+        sectionTestUtils.assertStationOrder(testLine, aStation, bStation, dStation);
+        sectionTestUtils.assertSectionDistance(testLine, Integer.MAX_VALUE, initialDistance);
+    }
+
+    @DisplayName("하행 종점을 등록한다.")
+    @Test
+    public void addFinalDownStation(){
+        SectionRequest sectionRequest = new SectionRequest(dStation.getId(), eStation.getId(), Integer.MAX_VALUE);
+        sectionService.addSection(testLine.getId(), sectionRequest);
+
+        sectionTestUtils.assertStationOrder(testLine, bStation, dStation, eStation);
+        sectionTestUtils.assertSectionDistance(testLine, initialDistance, Integer.MAX_VALUE);
+    }
+
+    @DisplayName("중간 구간을 등록한다. - 상행 기준")
+    @Test
+    public void addMiddleStationFromFront(){
+        SectionRequest sectionRequest = new SectionRequest(bStation.getId(), cStation.getId(), insertDistance);
+        sectionService.addSection(testLine.getId(), sectionRequest);
+
+        sectionTestUtils.assertStationOrder(testLine, bStation, cStation, dStation);
+        sectionTestUtils.assertSectionDistance(testLine, insertDistance, initialDistance - insertDistance);
+    }
+
+    @DisplayName("중간 구간을 등록한다. - 하행 기준")
+    @Test
+    public void addMiddleStationFromBack(){
+        SectionRequest sectionRequest = new SectionRequest(cStation.getId(), dStation.getId(), insertDistance);
+        sectionService.addSection(testLine.getId(), sectionRequest);
+
+        sectionTestUtils.assertStationOrder(testLine, bStation, cStation, dStation);
+        sectionTestUtils.assertSectionDistance(testLine, initialDistance-insertDistance, insertDistance);
+    }
+
+    @DisplayName("존재하지 않는 노선에 구간 추가 시 예외가 발생한다.")
+    @Test
+    public void addSectionInNonExistLine(){
+        assertThatThrownBy(()->{
+            SectionRequest sectionRequest = new SectionRequest(aStation.getId(), bStation.getId(), Integer.MAX_VALUE);
+            sectionService.addSection(Long.MAX_VALUE, sectionRequest);
+        }).isInstanceOf(LineException.class);
+    }
+
+    @DisplayName("존재하지 않는 구간을 등록 시 예외가 발생한다.")
+    @Test
+    public void addNonExistSection(){
+        assertThatThrownBy(()->{
+            SectionRequest sectionRequest = new SectionRequest(aStation.getId(), cStation.getId(), insertDistance);
+            sectionService.addSection(testLine.getId(), sectionRequest);
+        }).isInstanceOf(LineException.class);
+    }
+
+    @DisplayName("중복 구간을 등록 시 예외가 발생한다.")
+    @Test
+    public void addDuplicatedSection(){
+        assertThatThrownBy(()->{
+            SectionRequest sectionRequest = new SectionRequest(bStation.getId(), dStation.getId(), insertDistance);
+            sectionService.addSection(testLine.getId(), sectionRequest);
+        }).isInstanceOf(LineException.class);
+    }
+
+    @DisplayName("중간 구간 추가시 기존 거리보다 더 큰 구간 거리로 등록할 수 없다.")
+    @Test
+    public void addBiggerDistance(){
+        assertThatThrownBy(()->{
+            SectionRequest sectionRequest = new SectionRequest(bStation.getId(), cStation.getId(), Integer.MAX_VALUE);
+            sectionService.addSection(testLine.getId(), sectionRequest);
+        }).isInstanceOf(LineException.class);
+    }
+
+    @DisplayName("노선의 중간역을 제거한다.")
+    @Test
+    public void deleteMiddleStation() {
+        SectionRequest sectionRequest = new SectionRequest(bStation.getId(), cStation.getId(), insertDistance);
+        sectionService.addSection(testLine.getId(), sectionRequest);
+
+        sectionService.deleteSection(testLine.getId(), cStation.getId());
+
+        sectionTestUtils.assertStationOrder(testLine, bStation, dStation);
+        sectionTestUtils.assertSectionDistance(testLine, initialDistance);
+    }
+
+    @DisplayName("노선의 상행 종점역을 제거한다.")
+    @Test
+    public void deleteFinalUpStation() {
+        SectionRequest sectionRequest = new SectionRequest(bStation.getId(), cStation.getId(), insertDistance);
+        sectionService.addSection(testLine.getId(), sectionRequest);
+
+        sectionService.deleteSection(testLine.getId(), bStation.getId());
+
+        sectionTestUtils.assertStationOrder(testLine, cStation, dStation);
+        sectionTestUtils.assertSectionDistance(testLine, initialDistance-insertDistance);
+    }
+
+    @DisplayName("노선의 하행 종점역을 제거한다.")
+    @Test
+    public void deleteFinalDownStation() {
+        SectionRequest sectionRequest = new SectionRequest(bStation.getId(), cStation.getId(), insertDistance);
+        sectionService.addSection(testLine.getId(), sectionRequest);
+
+        sectionService.deleteSection(testLine.getId(), dStation.getId());
+
+        sectionTestUtils.assertStationOrder(testLine, bStation, cStation);
+        sectionTestUtils.assertSectionDistance(testLine, insertDistance);
+    }
+
+    @DisplayName("존재하지 않는 노선에 구간 삭제 시 예외가 발생한다.")
+    @Test
+    public void deleteSectionInNonExistLine(){
+        assertThatThrownBy(()->{
+            sectionService.deleteSection(Long.MAX_VALUE, bStation.getId());
+        }).isInstanceOf(LineException.class);
+    }
+
+    @DisplayName("노선에 존재하지 않는 역을 제거할 수 없다.")
+    @Test
+    public void deleteNonExistStation(){
+        assertThatThrownBy(()-> sectionService.deleteSection(testLine.getId(), aStation.getId()))
+                .isInstanceOf(LineException.class);
+    }
+
+    @DisplayName("종점뿐인 노선에서 구간을 제거할 수 없다.")
+    @Test
+    public void deleteSectionWhenExistOnlyFinalStations(){
+        assertThatThrownBy(()-> sectionService.deleteSection(testLine.getId(), bStation.getId()))
+                .isInstanceOf(LineException.class);
+    }
+}

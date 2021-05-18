@@ -21,23 +21,23 @@ public class SectionServiceTemp {
 
     public void addSection(final Long lineId, final SectionRequest sectionRequest) {
         validateLineExist(lineId);
-        final Section section = sectionRequest.toSection(lineId);
+        final Section sectionToInsert = sectionRequest.toSection(lineId);
 
-        final Sections sectionsInLine = new Sections(sectionDao.findSections(lineId));
-        sectionsInLine.validateAbleToAdd(section);
+        final Sections sections = new Sections(sectionDao.findSections(lineId));
+        sections.validateAbleToAdd(sectionToInsert);
 
         final FinalStations finalStations = lineDao.finalStations(lineId);
-        if (finalStations.isFinalSection(section)) {
-            insertFinalSection(lineId, section, finalStations.addSection(section));
+        if (finalStations.isFinalSection(sectionToInsert)) {
+            insertFinalSection(lineId, sectionToInsert, finalStations);
             return;
         }
 
-        insertMiddleSection(sectionsInLine, section);
+        insertMiddleSection(sections, sectionToInsert);
     }
 
     private void insertFinalSection(final Long lineId, final Section section, final FinalStations finalStations) {
         sectionDao.save(section);
-        lineDao.updateFinalStations(lineId, finalStations);
+        lineDao.updateFinalStations(lineId, finalStations.addSection(section));
     }
 
     private void insertMiddleSection(final Sections sectionsInLine, final Section section) {
@@ -84,4 +84,3 @@ public class SectionServiceTemp {
         }
     }
 }
-

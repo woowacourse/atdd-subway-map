@@ -4,12 +4,14 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.station.dto.StationRequest;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,15 +24,44 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
 
+    private String upStationId;
+    private String downStationId;
+
+    @BeforeEach
+    void initStations(){
+        StationRequest createUpStationRequest = new StationRequest("강남역");
+
+        upStationId = RestAssured.given().log().all()
+                .body(createUpStationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract().body().jsonPath().get("id").toString();
+
+        StationRequest createDownStationRequest = new StationRequest("삼성역");
+
+        downStationId = RestAssured.given().log().all()
+                .body(createDownStationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract()
+                .body().jsonPath().get("id").toString();
+    }
+
+
     @DisplayName("지하철 노선 등록 성공")
     @Test
     void createLine() {
+
         // given
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
-        params.put("downStationId", "1");
-        params.put("upStationId", "2");
+        params.put("downStationId", upStationId);
+        params.put("upStationId", downStationId);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -54,8 +85,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
-        params.put("downStationId", "1");
-        params.put("upStationId", "2");
+        params.put("downStationId", upStationId);
+        params.put("upStationId", downStationId);
 
         RestAssured.given().log().all()
                 .body(params)
@@ -81,13 +112,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 목록 조회 성공")
     @Test
     void showLines() {
-
         // given
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");
         params1.put("name", "신분당선");
-        params1.put("downStationId", "1");
-        params1.put("upStationId", "2");
+        params1.put("downStationId", upStationId);
+        params1.put("upStationId", downStationId);
+        params1.put("distance", "2");
 
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
@@ -100,8 +131,10 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params2 = new HashMap<>();
         params2.put("color", "bg-green-600");
         params2.put("name", "2호선");
-        params2.put("downStationId", "1");
-        params2.put("upStationId", "2");
+        params2.put("downStationId", upStationId);
+        params2.put("upStationId", downStationId);
+        params2.put("distance", "2");
+
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -146,8 +179,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
-        params.put("downStationId", "1");
-        params.put("upStationId", "2");
+        params.put("downStationId", upStationId);
+        params.put("upStationId", downStationId);
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -161,8 +194,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> updateParams = new HashMap<>();
         updateParams.put("color", "bg-red-600");
         updateParams.put("name", "분당선");
-        updateParams.put("downStationId", "1");
-        updateParams.put("upStationId", "2");
+        updateParams.put("downStationId", upStationId);
+        updateParams.put("upStationId", downStationId);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(updateParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -183,8 +216,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
-        params.put("downStationId", "1");
-        params.put("upStationId", "2");
+        params.put("downStationId", upStationId);
+        params.put("upStationId", downStationId);
 
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)

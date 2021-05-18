@@ -9,8 +9,8 @@ import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.exception.LineException;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.domain.Sections;
-import wooteco.subway.section.domain.StationIdsInLine;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -72,10 +72,13 @@ public class LineService {
         return lineDao.findAll();
     }
 
-    public StationIdsInLine allStationIdInLine(final Line line) {
+    public List<Long> allStationIdInLine(final Line line) {
         final Long lineId = line.getId();
-
         final Sections sections = new Sections(sectionDao.findSections(lineId));
+
+        if (sections.numberOfStationInLine() == 0) {
+            return Collections.EMPTY_LIST;
+        }
         return sections.sort(lineDao.findUpStationId(lineId));
     }
 }

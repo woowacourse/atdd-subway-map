@@ -30,11 +30,11 @@ public class FinalStations {
 
     // TODO :: before에 해당하는 종점역을 after로 변경한다는 것인데, 괜찮을까...? 변수명은 어떻게 해야할까
     public FinalStations change(final Long before, final Long after) {
-        if(upStationId.equals(before)){
+        if (upStationId.equals(before)) {
             return new FinalStations(after, downStationId);
         }
 
-        if(downStationId.equals(before)){
+        if (downStationId.equals(before)) {
             return new FinalStations(upStationId, after);
         }
 
@@ -61,7 +61,7 @@ public class FinalStations {
         return update(section.frontStationId(), section.backStationId());
     }
 
-    private FinalStations update(final Long station1, final Long station2){
+    private FinalStations update(final Long station1, final Long station2) {
         if (this.upStationId.equals(station1)) {
             return new FinalStations(station2, this.downStationId);
         }
