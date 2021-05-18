@@ -3,13 +3,20 @@ package wooteco.subway.line;
 import wooteco.subway.exception.line.LineLengthException;
 import wooteco.subway.exception.line.LineSuffixException;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.Objects;
 
 public class Line {
     private static final String SUFFIX = "선";
 
+    @NotNull
+    @Positive
     private Long id;
+    @NotBlank
     private String name;
+    @NotBlank
     private String color;
 
     public Line() {

@@ -2,11 +2,21 @@ package wooteco.subway.section;
 
 import wooteco.subway.exception.section.SectionDuplicationException;
 
-public class Section {
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
+public class Section {
+    @NotNull
+    @Positive
     private Long id;
+    @NotNull
+    @Positive
     private Long upStationId;
+    @NotNull
+    @Positive
     private Long downStationId;
+    @NotNull
+    @Positive
     private int distance;
 
     public Section() {
