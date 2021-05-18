@@ -15,11 +15,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.section.dao.SectionDao;
+import wooteco.subway.section.dto.SectionDto;
 import wooteco.subway.section.dto.SectionRequest;
-import wooteco.subway.section.dto.SectionResponse;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationService;
 import wooteco.subway.station.dto.StationResponse;
@@ -29,6 +30,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     SectionDao sectionDao;
+
+    @Autowired
+    LineDao lineDao;
 
     @Autowired
     StationService stationService;
@@ -68,7 +72,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteSectionEndPoint() {
         deleteSection(upId, lineId);
 
-        List<SectionResponse> sectionList = sectionDao.findSectionsByLineId(lineId);
+        List<SectionDto> sectionList = sectionDao.findSectionsByLineId(lineId);
         Sections sections = convertToSection(sectionList);
         List<Long> actual = convertToIds(sections.sortedStations());
         List<Long> expected = new LinkedList<>(Arrays.asList(middleId, downId));
@@ -84,9 +88,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(actualResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private Sections convertToSection(List<SectionResponse> sectionList) {
+    private Sections convertToSection(List<SectionDto> sectionList) {
         return sectionList.stream()
             .map(response -> new Section(response.getId()
+                , lineDao.findById(response.getLineId())
                 , stationService.findById(response.getUpStationId())
                 , stationService.findById(response.getDownStationId())
                 , response.getDistance()))

@@ -76,10 +76,12 @@ public class Sections {
     public Section divideSection(Section newSection) {
         Section existingSection = sectionToBeDivided(newSection);
         if (existingSection.isUpStation(newSection.getUpStation())) {
-            return new Section(existingSection.getId(), newSection.getDownStation(),
+            return new Section(existingSection.getId(), existingSection.getLine(),
+                newSection.getDownStation(),
                 existingSection.getDownStation(), existingSection.deductDistance(newSection));
         }
-        return new Section(existingSection.getId(), existingSection.getUpStation(), newSection.getUpStation(),
+        return new Section(existingSection.getId(), existingSection.getLine(),
+            existingSection.getUpStation(), newSection.getUpStation(),
             existingSection.deductDistance(newSection));
     }
 

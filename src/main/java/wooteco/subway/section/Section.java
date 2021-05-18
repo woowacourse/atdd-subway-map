@@ -3,11 +3,13 @@ package wooteco.subway.section;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import wooteco.subway.exception.SameStationIdException;
+import wooteco.subway.line.Line;
 import wooteco.subway.station.Station;
 
 public class Section {
 
     private Long id;
+    private Line line;
     private Station upStation;
     private Station downStation;
     private int distance;
@@ -15,13 +17,14 @@ public class Section {
     private Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
-        this(null, upStation, downStation, distance);
+    public Section(Line line, Station upStation, Station downStation, int distance) {
+        this(null, line, upStation, downStation, distance);
     }
 
-    public Section(Long id, Station upStation, Station downStation, int distance) {
+    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
         validateDifferentStations(upStation, downStation);
         this.id = id;
+        this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -48,6 +51,10 @@ public class Section {
 
     public int deductDistance(Section newSection) {
         return this.distance - newSection.distance;
+    }
+
+    public Line getLine() {
+        return line;
     }
 
     public Station getUpStation() {

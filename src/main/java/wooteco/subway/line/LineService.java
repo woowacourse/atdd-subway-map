@@ -25,7 +25,7 @@ public class LineService {
     public LineResponse create(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineDao.save(line);
-        sectionService.createSectionOfNewLine(newLine.getId(), lineRequest.getUpStationId(),
+        sectionService.create(newLine.getId(), lineRequest.getUpStationId(),
             lineRequest.getDownStationId(), lineRequest.getDistance());
         List<StationResponse> stations = sectionService.findAllByLineId(newLine.getId());
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), stations);

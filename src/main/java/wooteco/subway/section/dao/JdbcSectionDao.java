@@ -7,18 +7,17 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.section.Section;
-import wooteco.subway.section.dto.SectionResponse;
+import wooteco.subway.section.dto.SectionDto;
 
 @Repository
 public class JdbcSectionDao implements SectionDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private final SectionMapper mapper2;
+    private final SectionMapper mapper;
 
-    public JdbcSectionDao(JdbcTemplate jdbcTemplate, SectionMapper mapper,
-        SectionMapper mapper2) {
+    public JdbcSectionDao(JdbcTemplate jdbcTemplate, SectionMapper mapper) {
         this.jdbcTemplate = jdbcTemplate;
-        this.mapper2 = mapper2;
+        this.mapper = mapper;
     }
 
     @Override
@@ -27,26 +26,32 @@ public class JdbcSectionDao implements SectionDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update((con) -> {
             PreparedStatement ps = con.prepareStatement(query, new String[]{"id"});
-            ps.setLong(1, lineId);
+            ps.setLong(1, section.getLine().getId());
             ps.setLong(2, section.getUpStation().getId());
             ps.setLong(3, section.getDownStation().getId());
             ps.setInt(4, section.getDistance());
             return ps;
         }, keyHolder);
-        return new Section(keyHolder.getKey().longValue(),
+        return new Section(keyHolder.getKey().longValue(), section.getLine(),
             section.getUpStation(), section.getDownStation(), section.getDistance());
     }
 
     @Override
-    public List<SectionResponse> findSectionsByLineId(Long lineId) {
-        String query = "select * from SECTION where line_id = ?";
-        return jdbcTemplate.query(query, mapper2, lineId);
+    public int countById(Long id) {
+        String query = "select count(*) from SECTION where line_id = ?";
+        return jdbcTemplate.queryForObject(query, Integer.class, id);
     }
 
     @Override
-    public List<SectionResponse> findById(Long lineId, Long id) {
+    public List<SectionDto> findSectionsByLineId(Long lineId) {
+        String query = "select * from SECTION where line_id = ?";
+        return jdbcTemplate.query(query, mapper, lineId);
+    }
+
+    @Override
+    public List<SectionDto> findById(Long lineId, Long id) {
         String query = "select * from SECTION where line_id = ? and (up_station_id =? or down_station_id =?)";
-        return jdbcTemplate.query(query, mapper2, lineId, id, id);
+        return jdbcTemplate.query(query, mapper, lineId, id, id);
     }
 
 

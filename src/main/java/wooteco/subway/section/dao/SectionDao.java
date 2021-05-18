@@ -2,15 +2,17 @@ package wooteco.subway.section.dao;
 
 import java.util.List;
 import wooteco.subway.section.Section;
-import wooteco.subway.section.dto.SectionResponse;
+import wooteco.subway.section.dto.SectionDto;
 
 public interface SectionDao {
 
     Section save(Long lineId, Section section);
 
-    List<SectionResponse> findSectionsByLineId(Long lineId);
+    int countById(Long lineId);
 
-    List<SectionResponse> findById(Long lineId, Long id);
+    List<SectionDto> findSectionsByLineId(Long lineId);
+
+    List<SectionDto> findById(Long lineId, Long id);
 
     void deleteByStationId(Long lineId, Long id);
 
