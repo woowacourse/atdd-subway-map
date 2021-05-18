@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,7 +44,7 @@ public class LineController {
             .body(lineResponse);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         List<LineServiceDto> lines = sectionService.findAllLineDto();
         List<LineResponse> lineResponses = lines.stream()
@@ -55,14 +54,14 @@ public class LineController {
         return ResponseEntity.ok(lineResponses);
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
         ReadLineDto readLineDto = sectionService.findOne(new LineServiceDto(id));
         LineResponse lineResponse = LineResponse.from(readLineDto);
         return ResponseEntity.ok(lineResponse);
     }
 
-    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}")
     public ResponseEntity<Void> updateLine(
         @Valid @RequestBody final UpdateLineRequest updateLineRequest, @PathVariable final Long id) {
 
@@ -73,10 +72,10 @@ public class LineController {
             .build();
     }
 
-    @PostMapping(value="/{lineId}/sections")
+    @PostMapping(value="/{id}/sections")
     public ResponseEntity<Void> createSection(@Valid @RequestBody final SectionRequest sectionRequest,
-        @PathVariable final long lineId) {
-        CreateSectionDto createSectionDto = CreateSectionDto.of(lineId, sectionRequest);
+        @PathVariable final long id) {
+        CreateSectionDto createSectionDto = CreateSectionDto.of(id, sectionRequest);
         sectionService.create(createSectionDto);
 
         return ResponseEntity.ok()

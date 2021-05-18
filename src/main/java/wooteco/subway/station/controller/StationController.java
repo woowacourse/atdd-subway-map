@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +39,7 @@ public class StationController {
             .body(stationResponse);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<List<StationResponse>> showStations() {
         List<StationServiceDto> stationServiceDtos = stationService.showAllDto();
         List<StationResponse> stationResponses = stationServiceDtos.stream()
