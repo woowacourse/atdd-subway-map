@@ -28,10 +28,6 @@ public class LineRequest {
     public LineRequest() {
     }
 
-    public LineRequest(final String name, final String color) {
-        this(name, color, null, null, 0, 0);
-    }
-
     public LineRequest(final String name, final String color, final Long upStationId, final Long downStationId,
         final int distance, final int extraFare) {
 
