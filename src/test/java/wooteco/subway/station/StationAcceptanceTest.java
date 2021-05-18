@@ -2,7 +2,6 @@ package wooteco.subway.station;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
@@ -11,47 +10,32 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
-@Sql("/truncate.sql")
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private ExtractableResponse<Response> response;
-
-    public static ExtractableResponse<Response> addStation(String name) {
-        return RestAssured.given().log().all()
-            .body(new StationRequest(name))
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
-    }
+    private StationResponse response;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
-        response = addStation("강남역");
+        response = 강남역_response.as(StationResponse.class);
     }
 
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
-        assertThat(response.as(StationResponse.class).getName()).isEqualTo("강남역");
+        assertThat(response.getName()).isEqualTo("강남역");
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
-        ExtractableResponse<Response> duplicateResponse = addStation("강남역");
+        ExtractableResponse<Response> duplicateResponse = postStation("강남역");
 
         assertThat(duplicateResponse.statusCode())
             .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -59,32 +43,24 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 조회한다.")
     @Test
-    void getStations() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/stations")
-            .then().log().all()
-            .extract();
+    void showStations() {
+        ExtractableResponse<Response> response = getStations();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<String> resultLineNames = response.jsonPath().getList(".", StationResponse.class)
             .stream()
             .map(StationResponse::getName)
             .collect(Collectors.toList());
-        assertThat(resultLineNames).hasSize(1);
-        assertThat(resultLineNames).containsExactly("강남역");
+        assertThat(resultLineNames).hasSize(3);
+        assertThat(resultLineNames).containsExactly("강남역", "역삼역", "도곡역");
     }
 
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
-        String uri = response.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .delete(uri)
-            .then().log().all()
-            .extract();
+        Long id = response.getId();
+        ExtractableResponse<Response> actualResponse = deleteStation(id);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(actualResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }

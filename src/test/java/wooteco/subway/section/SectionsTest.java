@@ -23,13 +23,13 @@ class SectionsTest {
     private final Section section1 = new Section(1L, station1, station2, 1);
     private final Section section2 = new Section(1L, station2, station4, 2);
     private final Section section3 = new Section(1L, station4, station5, 1);
-    private final Sections sections = new Sections(Arrays.asList(section1, section2, section3));
+    private final List<Section> sectionList = Arrays.asList(section1, section2, section3);
 
     @DisplayName("추가되는 구간의 역 중 하나만 노선에 포함되어 있어야 한다.")
     @Test
     public void validateStationsOfSection() {
         Section newSection = new Section(1L, station3, station6, 3);
-        assertThatThrownBy(() -> sections.validateSectionStations(newSection))
+        assertThatThrownBy(() -> new Sections(sectionList, newSection))
             .isInstanceOf(NoneOrAllStationsExistingInLineException.class);
     }
 
@@ -37,13 +37,14 @@ class SectionsTest {
     @Test
     public void validateDistance() {
         Section newSection = new Section(1L, station2, station3, 3);
-        assertThatThrownBy(() -> sections.validateSectionDistance(newSection))
+        assertThatThrownBy(() -> new Sections(sectionList, newSection))
             .isInstanceOf(InvalidSectionDistanceException.class);
     }
 
     @DisplayName("구간을 순서에 맞게 정렬한다.")
     @Test
     public void sort() {
+        Sections sections = new Sections(sectionList);
         List<Station> actual = new LinkedList<>(sections.sortedStations());
         List<Station> expected = new LinkedList<>(
             Arrays.asList(station1, station2, station4, station5));
