@@ -37,7 +37,6 @@ public class JdbcLineRepository implements LineRepository {
     @Override
     public Line save(final Line line) {
         try {
-            System.out.println(line);
             String query = "INSERT INTO line(name, color) VALUES(?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             this.jdbcTemplate.update(connection -> {
