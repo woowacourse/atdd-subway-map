@@ -2,6 +2,7 @@ package wooteco.subway.line;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -37,32 +38,15 @@ public class LineH2Dao implements LineDao {
     @Override
     public List<Line> findAll() {
         String sql = "SELECT * FROM LINE";
-        return jdbcTemplate.query(
-                sql,
-                (rs, rowNum) -> {
-                    Line line = new Line(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getString("color")
-                    );
-                    return line;
-                });
+        return jdbcTemplate.query(sql, rowMapper());
     }
 
     @Override
     public Optional<Line> findById(Long id) {
         String sql = "SELECT * FROM LINE WHERE id=?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(
-                    sql,
-                    (rs, rowNum) -> {
-                        return new Line(
-                                rs.getLong("id"),
-                                rs.getString("name"),
-                                rs.getString("color")
-                        );
-                    },
-                    id));
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(sql, rowMapper(), id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -72,16 +56,8 @@ public class LineH2Dao implements LineDao {
     public Optional<Line> findByName(String name) {
         String sql = "SELECT * FROM LINE WHERE name=?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(
-                    sql,
-                    (rs, rowNum) -> {
-                        return new Line(
-                                rs.getLong("id"),
-                                rs.getString("name"),
-                                rs.getString("color")
-                        );
-                    },
-                    name));
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(sql, rowMapper(), name));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -91,16 +67,8 @@ public class LineH2Dao implements LineDao {
     public Optional<Line> findByColor(String color) {
         String sql = "SELECT * FROM LINE WHERE color=?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(
-                    sql,
-                    (rs, rowNum) -> {
-                        return new Line(
-                                rs.getLong("id"),
-                                rs.getString("name"),
-                                rs.getString("color")
-                        );
-                    },
-                    color));
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(sql, rowMapper(), color));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -116,5 +84,15 @@ public class LineH2Dao implements LineDao {
     public void delete(Long id) {
         String sql = "DELETE FROM LINE WHERE id=?";
         jdbcTemplate.update(sql, id);
+    }
+
+    private RowMapper<Line> rowMapper() {
+        return (rs, rowNum) -> {
+            return new Line(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("color")
+            );
+        };
     }
 }

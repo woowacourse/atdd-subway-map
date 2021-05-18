@@ -2,6 +2,7 @@ package wooteco.subway.section;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -40,17 +41,10 @@ public class SectionH2Dao implements SectionDao {
     public Optional<Section> findBySameUpOrDownId(Long lineId, Section newSection) {
         String sql = "SELECT * FROM SECTION WHERE (line_id=? AND up_station_id=?) OR (line_id=? AND down_station_id=?)";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(
-                    sql,
-                    (rs, rowNum) -> {
-                        Section section = new Section(
-                                rs.getLong("id"),
-                                rs.getLong("up_station_id"),
-                                rs.getLong("down_station_id"),
-                                rs.getInt("distance")
-                        );
-                        return section;
-                    }, lineId, newSection.getUpStationId(), lineId, newSection.getDownStationId()));
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(sql, rowMapper(),
+                            lineId, newSection.getUpStationId(),
+                            lineId, newSection.getDownStationId()));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -59,31 +53,15 @@ public class SectionH2Dao implements SectionDao {
     @Override
     public List<Section> findByStation(Long lineId, Long stationId) {
         String sql = "SELECT * FROM SECTION WHERE (line_id=? AND up_station_id=?) OR (line_id=? AND down_station_id=?)";
-        return jdbcTemplate.query(sql,
-                (rs, rowNum) -> {
-                    Section section = new Section(
-                            rs.getLong("id"),
-                            rs.getLong("up_station_id"),
-                            rs.getLong("down_station_id"),
-                            rs.getInt("distance")
-                    );
-                    return section;
-                }, lineId, stationId, lineId, stationId);
+        return jdbcTemplate.query(sql, rowMapper(),
+                lineId, stationId,
+                lineId, stationId);
     }
 
     @Override
     public List<Section> findByLineId(Long lineId) {
         String sql = "SELECT * FROM SECTION WHERE line_id=?";
-        return jdbcTemplate.query(sql,
-                (rs, rowNum) -> {
-                    Section section = new Section(
-                            rs.getLong("id"),
-                            rs.getLong("up_station_id"),
-                            rs.getLong("down_station_id"),
-                            rs.getInt("distance")
-                    );
-                    return section;
-                }, lineId);
+        return jdbcTemplate.query(sql, rowMapper(), lineId);
     }
 
     @Override
@@ -108,19 +86,21 @@ public class SectionH2Dao implements SectionDao {
     public Optional<Section> existsByLineId(Long lineId) {
         String sql = "SELECT * FROM SECTION WHERE EXISTS(SELECT * FROM LINE WHERE id=?) LIMIT 1";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(
-                    sql,
-                    (rs, rowNum) -> {
-                        Section section = new Section(
-                                rs.getLong("id"),
-                                rs.getLong("up_station_id"),
-                                rs.getLong("down_station_id"),
-                                rs.getInt("distance")
-                        );
-                        return section;
-                    }, lineId));
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(sql, rowMapper(), lineId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    private RowMapper<Section> rowMapper() {
+        return (rs, rowNum) -> {
+            return new Section(
+                    rs.getLong("id"),
+                    rs.getLong("up_station_id"),
+                    rs.getLong("down_station_id"),
+                    rs.getInt("distance")
+            );
+        };
     }
 }

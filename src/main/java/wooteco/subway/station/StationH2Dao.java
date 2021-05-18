@@ -2,6 +2,7 @@ package wooteco.subway.station;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -36,30 +37,15 @@ public class StationH2Dao implements StationDao {
     @Override
     public List<Station> findAll() {
         String sql = "SELECT * FROM STATION";
-        return jdbcTemplate.query(
-                sql,
-                (rs, rowNum) -> {
-                    Station station = new Station(
-                            rs.getLong("id"),
-                            rs.getString("name")
-                    );
-                    return station;
-                });
+        return jdbcTemplate.query(sql, rowMapper());
     }
 
     @Override
     public Optional<Station> findById(Long id) {
         String sql = "SELECT * FROM STATION WHERE id=?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(
-                    sql,
-                    (rs, rowNum) -> {
-                        return new Station(
-                                rs.getLong("id"),
-                                rs.getString("name")
-                        );
-                    },
-                    id));
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(sql, rowMapper(), id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -69,15 +55,8 @@ public class StationH2Dao implements StationDao {
     public Optional<Station> findByName(String name) {
         String sql = "SELECT * FROM STATION WHERE name=?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(
-                    sql,
-                    (rs, rowNum) -> {
-                        return new Station(
-                                rs.getLong("id"),
-                                rs.getString("name")
-                        );
-                    },
-                    name));
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(sql, rowMapper(), name));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -87,5 +66,14 @@ public class StationH2Dao implements StationDao {
     public void delete(Long id) {
         String sql = "DELETE FROM STATION WHERE id=?";
         jdbcTemplate.update(sql, id);
+    }
+
+    private RowMapper<Station> rowMapper() {
+        return (rs, rowNum) -> {
+            return new Station(
+                    rs.getLong("id"),
+                    rs.getString("name")
+            );
+        };
     }
 }
