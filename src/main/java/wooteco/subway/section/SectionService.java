@@ -21,7 +21,6 @@ import wooteco.subway.station.StationService;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.dto.StationServiceDto;
 
-@Transactional
 @Service
 public class SectionService {
 
@@ -36,6 +35,7 @@ public class SectionService {
         this.lineService = lineService;
     }
 
+    @Transactional
     public SectionServiceDto saveByLineCreate(@Valid final SectionServiceDto sectionServiceDto) {
         Section section = assembleFromSectionServiceDto(sectionServiceDto);
         final Long lineId = section.getLine().getId();
@@ -47,6 +47,7 @@ public class SectionService {
         return saveSectionAtEnd(section);
     }
 
+    @Transactional
     public SectionServiceDto save(@Valid final SectionServiceDto sectionServiceDto) {
         Section section = assembleFromSectionServiceDto(sectionServiceDto);
         final long lineId = sectionServiceDto.getLineId();
@@ -93,6 +94,7 @@ public class SectionService {
         return SectionServiceDto.from(sectionDao.save(section));
     }
 
+    @Transactional
     public void delete(@Valid final DeleteStationDto deleteDto) {
         Sections sections = new Sections(sectionDao.findAllByLineId(deleteDto.getLineId()));
         Station targetStation = stationService.showOne(deleteDto.getStationId());
@@ -162,19 +164,23 @@ public class SectionService {
         return lineService.findAll();
     }
 
+    @Transactional
     public void deleteLine(LineServiceDto lineServiceDto) {
         lineService.delete(lineServiceDto);
     }
 
+    @Transactional
     public void updateLine(LineServiceDto lineServiceDto) {
         lineService.update(lineServiceDto);
     }
 
+    @Transactional
     public void create(CreateSectionDto createSectionDto) {
         SectionServiceDto sectionServiceDto = SectionServiceDto.from(createSectionDto);
         save(sectionServiceDto);
     }
 
+    @Transactional
     public void deleteStation(final long lineId, final long stationId) {
         DeleteStationDto deleteStationDto = new DeleteStationDto(lineId, stationId);
         delete(deleteStationDto);
