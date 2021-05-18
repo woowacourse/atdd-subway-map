@@ -23,7 +23,7 @@ public class SectionService {
     private final SectionDao sectionDao;
 
     @Transactional
-    public Section createInitial(Section section, Long lineId) {
+    public Section createForLineCreating(Section section, Long lineId) {
         Section createdSection = sectionDao.create(section, lineId);
 
         return createdSection;
@@ -37,7 +37,7 @@ public class SectionService {
 
         Sections sections = findAllByLineId(lineId);
 
-        Section modified = sections.modifyRelatedToAdd(newSection);
+        Section modified = sections.modifyRelatedSectionToAdd(newSection);
         sections.add(newSection);
 
         sectionDao.update(modified);
@@ -53,8 +53,8 @@ public class SectionService {
         Station station = stationService.findById(stationId);
         Sections sections = findAllByLineId(lineId);
 
-        List<Section> removed = sections.removeRelated(station);
-        Section modified = sections.reflectRemoved(removed, station);
+        List<Section> removed = sections.removeRelatedSections(station);
+        Section modified = sections.modifyRelatedSectionsToRemove(removed, station);
 
         for (Section section : removed) {
             Long upStationId = section.getUpStation().getId();

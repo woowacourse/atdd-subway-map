@@ -33,7 +33,7 @@ public class Sections {
         return new Sections(sections);
     }
 
-    public Section modifyRelatedToAdd(Section newSection) {
+    public Section modifyRelatedSectionToAdd(Section newSection) {
         validateAddable(newSection);
 
         List<Section> related = findRelated(newSection);
@@ -102,7 +102,7 @@ public class Sections {
         return Collections.unmodifiableList(sections);
     }
 
-    public List<Section> removeRelated(Station station) {
+    public List<Section> removeRelatedSections(Station station) {
         validateRemovable(station);
 
         List<Section> related = findRelated(station);
@@ -113,7 +113,7 @@ public class Sections {
         return related;
     }
 
-    public Section reflectRemoved(List<Section> related, Station station) {
+    public Section modifyRelatedSectionsToRemove(List<Section> related, Station station) {
         if (related.size() == IN_BETWEEN) {
             return mergeTwoIntoOne(related, station);
         }
@@ -160,7 +160,7 @@ public class Sections {
     }
 
 
-    public boolean hasSizeOf(int size) {
+    public boolean isSizeOf(int size) {
         return sections.size() == size;
     }
 

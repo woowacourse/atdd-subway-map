@@ -63,7 +63,7 @@ public class LineService {
         Station downStation = stationService.findById(downStationId);
         Line line = lineDao.create(Line.create(name, color));
         Section section = Section.create(upStation, downStation, distance);
-        Section createdSection = sectionService.createInitial(section, line.getId());
+        Section createdSection = sectionService.createForLineCreating(section, line.getId());
         line.setStationsBySections(Sections.create(createdSection));
 
         return LineResponse.create(line);
