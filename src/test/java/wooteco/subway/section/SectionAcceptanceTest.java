@@ -11,8 +11,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.Line;
+import wooteco.subway.line.LineRequest;
 import wooteco.subway.line.LineResponse;
 import wooteco.subway.station.Station;
+import wooteco.subway.station.StationRequest;
 import wooteco.subway.station.StationResponse;
 
 import java.util.Arrays;
@@ -20,21 +22,53 @@ import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관련 기능")
-@Sql("/data.sql")
+@Sql("/truncate.sql")
 public class SectionAcceptanceTest extends AcceptanceTest {
+    private static final StationRequest 강남역 = new StationRequest("강남역");
+    private static final StationRequest 역삼역 = new StationRequest("역삼역");
+    private static final StationRequest 아차산역 = new StationRequest("아차산역");
+    private static final StationRequest 탄현역 = new StationRequest("탄현역");
+    private static final StationRequest 일산역 = new StationRequest("일산역");
+    private static final StationRequest 홍대입구역 = new StationRequest("홍대입구역");
+    private static final StationRequest 판교역 = new StationRequest("판교역");
+    private static final StationRequest 정자역 = new StationRequest("정자역");
+
+    private static final LineRequest 이호선 =
+            new LineRequest("2호선", "초록색", 1L, 2L, 10);
+    private static final LineRequest 경의중앙선 =
+            new LineRequest("경의중앙선", "하늘색", 4L, 5L, 8);
+    private static final LineRequest 신분당선 =
+            new LineRequest("신분당선", "빨간색", 7L, 8L, 12);
+
+    private static final SectionRequest 강남_역삼 = new SectionRequest(1L, 2L, 10);
+    private static final SectionRequest 탄현_일산 = new SectionRequest(4L, 5L, 8);
+    private static final SectionRequest 일산_홍대입구 = new SectionRequest(5L, 6L, 10);
+    private static final SectionRequest 판교_정자 = new SectionRequest(7L, 8L, 12);
     private static final SectionRequest 역삼_아차산 = new SectionRequest(2L, 3L, 10);
 
     private ExtractableResponse<Response> sectionResponse;
 
     @BeforeEach
     void initialize() {
-        sectionResponse = RestAssured.given().log().all()
-                .body(역삼_아차산)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/1/sections")
-                .then().log().all()
-                .extract();
+        stationResponse(강남역);
+        stationResponse(역삼역);
+        stationResponse(아차산역);
+        stationResponse(탄현역);
+        stationResponse(일산역);
+        stationResponse(홍대입구역);
+        stationResponse(판교역);
+        stationResponse(정자역);
+
+        lineResponse(이호선);
+        lineResponse(경의중앙선);
+        lineResponse(신분당선);
+
+        sectionResponse(1L, 강남_역삼);
+        sectionResponse(2L, 탄현_일산);
+        sectionResponse(2L, 일산_홍대입구);
+        sectionResponse(3L, 판교_정자);
+
+        sectionResponse = sectionResponse(1L, 역삼_아차산);
     }
 
     @DisplayName("구간을 생성한다.")
@@ -166,5 +200,35 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> stationResponse(StationRequest stationRequest) {
+        return RestAssured.given().log().all()
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> lineResponse(LineRequest lineRequest) {
+        return RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> sectionResponse(Long lineId, SectionRequest sectionRequest) {
+        return RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
     }
 }
