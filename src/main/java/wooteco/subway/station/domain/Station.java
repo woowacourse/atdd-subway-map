@@ -11,8 +11,16 @@ public class Station {
     }
 
     public Station(final Long id, final String name) {
+        validateStation(name);
         this.id = id;
         this.name = name;
+    }
+
+    private void validateStation(String name) {
+        Objects.requireNonNull(name, "지하철 역의 이름은 null일 수 없습니다.");
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("지하철 역의 이름은 빈 값일 수 없습니다.");
+        }
     }
 
     public boolean isSameName(final String name) {
