@@ -1,21 +1,21 @@
-package wooteco.subway.station.repository;
+package wooteco.subway.station.infra;
 
 import wooteco.subway.station.domain.Station;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface StationRepository {
+public interface StationDao {
 
-    Station save(Station station);
+    Station save(final Station station);
 
-    Station findById(Long id);
+    Optional<Station> findById(final Long id);
 
     List<Station> findByIds(List<Long> ids);
 
     List<Station> findAll();
 
-    void delete(Long id);
+    void delete(final Long id);
 
     void deleteAll();
 }

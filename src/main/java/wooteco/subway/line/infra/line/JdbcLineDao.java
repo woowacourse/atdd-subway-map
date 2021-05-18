@@ -1,4 +1,4 @@
-package wooteco.subway.line.infra;
+package wooteco.subway.line.infra.line;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
@@ -6,12 +6,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.exception.LineNotFoundException;
 import wooteco.subway.exception.NoRowAffectedException;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.domain.repository.LineRepository;
 import wooteco.subway.line.domain.section.Distance;
 import wooteco.subway.line.domain.section.Section;
 import wooteco.subway.line.domain.section.Sections;
@@ -21,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public class JdbcLineRepository implements LineRepository {
+@Component
+public class JdbcLineDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
@@ -32,7 +31,7 @@ public class JdbcLineRepository implements LineRepository {
                     resultSet.getString("color")
             );
 
-    public JdbcLineRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcLineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

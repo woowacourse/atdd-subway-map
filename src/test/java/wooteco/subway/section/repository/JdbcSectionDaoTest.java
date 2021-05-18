@@ -7,18 +7,20 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 import wooteco.subway.line.domain.section.Distance;
 import wooteco.subway.line.domain.section.Section;
-import wooteco.subway.line.infra.JdbcSectionRepository;
+import wooteco.subway.line.domain.repository.SectionRepositoryImpl;
+import wooteco.subway.line.infra.section.JdbcSectionDao;
+import wooteco.subway.line.infra.section.SectionDao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJdbcTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-class JdbcSectionRepositoryTest {
+class JdbcSectionDaoTest {
 
-    private final JdbcSectionRepository jdbcSectionRepository;
+    private final SectionDao sectionDao;
 
-    public JdbcSectionRepositoryTest(JdbcTemplate jdbcTemplate) {
-        this.jdbcSectionRepository = new JdbcSectionRepository(jdbcTemplate);
+    public JdbcSectionDaoTest(JdbcTemplate jdbcTemplate) {
+        this.sectionDao = new JdbcSectionDao(jdbcTemplate);
     }
 
     @DisplayName("구간 저장된다.")
@@ -28,7 +30,7 @@ class JdbcSectionRepositoryTest {
         Section section = new Section(1L, 1L, 2L, new Distance(10));
 
         //when
-        Section savedSection = jdbcSectionRepository.save(section);
+        Section savedSection = sectionDao.save(section);
 
         //then
         assertThat(savedSection.getId()).isNotNull();
@@ -43,10 +45,10 @@ class JdbcSectionRepositoryTest {
     void findById() {
         //given
         Section section = new Section(1L, 1L, 2L, new Distance(10));
-        Section savedSection = jdbcSectionRepository.save(section);
+        Section savedSection = sectionDao.save(section);
 
         //when
-        Section findSection = jdbcSectionRepository.findById(savedSection.getId()).get();
+        Section findSection = sectionDao.findById(savedSection.getId()).get();
 
         //then
         assertThat(findSection.getId()).isEqualTo(savedSection.getId());

@@ -1,25 +1,27 @@
 package wooteco.subway.line.domain.repository;
 
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.section.Section;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface LineRepository {
 
-    Line save(Line line);
+    Line saveLine(final Line line);
+
+    Line findById(final Long id);
 
     List<Line> findAll();
 
-    Optional<Line> findById(Long id);
+    Line findLineSectionById(final Long id);
 
-    Optional<Line> findLineSectionById(Long id);
+    void delete(final Long id);
 
-    Optional<Line> findByName(String name);
+    void update(final Line line);
 
-    void delete(Long id);
+    Section saveSection(final Section section);
 
-    void update(Line line);
+    void addSection(Section section);
 
-    void deleteAll();
+    void deleteSection(Long lineId, Long stationId);
 }

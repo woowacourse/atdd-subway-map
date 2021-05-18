@@ -1,25 +1,23 @@
-package wooteco.subway.station.repository.infra;
+package wooteco.subway.station.infra;
 
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.exception.NoRowAffectedException;
 import wooteco.subway.exception.StationNotFoundException;
 import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.repository.StationRepository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Repository
-public class JdbcStationRepository implements StationRepository {
-
+@Component
+public class JdbcStationDao implements StationDao {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
             new Station(
@@ -27,7 +25,7 @@ public class JdbcStationRepository implements StationRepository {
                     resultSet.getString("name")
             );
 
-    public JdbcStationRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcStationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -51,12 +49,6 @@ public class JdbcStationRepository implements StationRepository {
     public Optional<Station> findById(final Long id) {
         String query = "SELECT * FROM station WHERE id = ?";
         return Optional.ofNullable(this.jdbcTemplate.queryForObject(query, stationRowMapper, id));
-    }
-
-    @Override
-    public Optional<Station> findByName(final String name) {
-        String query = "SELECT * FROM station WHERE name = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(query, stationRowMapper, name));
     }
 
     @Override

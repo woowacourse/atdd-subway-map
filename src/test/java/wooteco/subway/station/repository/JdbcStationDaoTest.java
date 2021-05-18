@@ -6,7 +6,8 @@ import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.repository.infra.JdbcStationRepository;
+import wooteco.subway.station.infra.JdbcStationDao;
+import wooteco.subway.station.infra.StationDao;
 
 import java.util.List;
 
@@ -14,19 +15,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJdbcTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-class JdbcStationRepositoryTest {
+class JdbcStationDaoTest {
 
     private Station station;
-    private StationRepository stationRepository;
+    private StationDao stationDao;
 
-    public JdbcStationRepositoryTest(JdbcTemplate jdbcTemplate) {
-        this.stationRepository = new JdbcStationRepository(jdbcTemplate);
+    public JdbcStationDaoTest(JdbcTemplate jdbcTemplate) {
+        this.stationDao = new JdbcStationDao(jdbcTemplate);
     }
 
     @BeforeEach
     void setUp() {
         station = new Station("강남역");
-        stationRepository.save(station);
+        stationDao.save(station);
     }
 
     @Test
@@ -36,7 +37,7 @@ class JdbcStationRepositoryTest {
         Station requestStation = new Station(requestName);
 
         //when
-        Station resultStation = stationRepository.save(requestStation);
+        Station resultStation = stationDao.save(requestStation);
         String resultName = resultStation.getName();
 
         //given
@@ -47,10 +48,10 @@ class JdbcStationRepositoryTest {
     void findAll() {
         //given
         String requestName = "역삼역";
-        stationRepository.save(new Station(requestName));
+        stationDao.save(new Station(requestName));
 
         //when
-        List<Station> resultStations = stationRepository.findAll();
+        List<Station> resultStations = stationDao.findAll();
 
         //then
         assertThat(resultStations).hasSize(2);
@@ -60,12 +61,12 @@ class JdbcStationRepositoryTest {
     void findById() {
         //given
         String requestName = "역삼역";
-        Station savedStation = stationRepository.save(new Station(requestName));
+        Station savedStation = stationDao.save(new Station(requestName));
         Long savedId = savedStation.getId();
         String savedName = savedStation.getName();
 
         //when
-        Station resultStation = stationRepository.findById(savedId).get();
+        Station resultStation = stationDao.findById(savedId).get();
         Long resultId = resultStation.getId();
         String resultName = resultStation.getName();
 
@@ -78,12 +79,12 @@ class JdbcStationRepositoryTest {
     void delete() {
         //given
         String requestName = "역삼역";
-        Station savedStation = stationRepository.save(new Station(requestName));
+        Station savedStation = stationDao.save(new Station(requestName));
         Long savedId = savedStation.getId();
 
         //when
-        stationRepository.delete(savedId);
-        List<Station> resultStations = stationRepository.findAll();
+        stationDao.delete(savedId);
+        List<Station> resultStations = stationDao.findAll();
 
         //then
         assertThat(resultStations).hasSize(1);

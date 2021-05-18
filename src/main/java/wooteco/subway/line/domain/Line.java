@@ -1,5 +1,6 @@
 package wooteco.subway.line.domain;
 
+import wooteco.subway.line.domain.section.Section;
 import wooteco.subway.line.domain.section.Sections;
 
 import java.util.List;
@@ -31,6 +32,10 @@ public class Line {
 
     public boolean isSameId(final Long id) {
         return this.id.equals(id);
+    }
+    
+    public void addSection(Section section) {
+        sections.add(section);
     }
 
     public Line update(final String name, final String color) {

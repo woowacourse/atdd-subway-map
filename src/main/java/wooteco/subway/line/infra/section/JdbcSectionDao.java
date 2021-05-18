@@ -1,12 +1,11 @@
-package wooteco.subway.line.infra;
+package wooteco.subway.line.infra.section;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
-import wooteco.subway.line.domain.repository.SectionRepository;
+import org.springframework.stereotype.Component;
 import wooteco.subway.line.domain.section.Distance;
 import wooteco.subway.line.domain.section.Section;
 
@@ -14,8 +13,8 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public class JdbcSectionRepository implements SectionRepository {
+@Component
+public class JdbcSectionDao implements SectionDao {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Section> sectionRowMapper = (resultSet, rowNum) ->
             new Section(
@@ -26,7 +25,7 @@ public class JdbcSectionRepository implements SectionRepository {
                     new Distance(resultSet.getInt("distance"))
             );
 
-    public JdbcSectionRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcSectionDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
