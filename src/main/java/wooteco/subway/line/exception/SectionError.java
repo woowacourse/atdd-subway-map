@@ -7,7 +7,9 @@ public enum SectionError {
     NO_SECTION_FOUND(400, "해당하는 구간은 찾을 수 없습니다."),
     CANNOT_DIVIDE_ORIGIN_SECTION(400, "해당 구간을 분리하여 갈림길 방지를 할 수 없습니다."),
     UNMATCHED_ADD_ERROR(500, "잘못된 추가 요청입니다."),
-    CANNOT_FIND_DIFFERENT_STATION(500, "구간으로부터 다른 역을 찾을 수 없습니다");
+    CANNOT_FIND_DIFFERENT_STATION(500, "구간으로부터 다른 역을 찾을 수 없습니다"),
+    CANNOT_DELETE_SECTION_SIZE_LESS_THAN_TWO(400, "구간이 하나인 노선에서 제거를 할 수 없습니다."),
+    NO_STATION_TO_DELETE(400, "해당 삭제 요청에 해당하는 역을 찾을 수가 없습니다");
 
 
     private final int statusCode;
@@ -25,4 +27,5 @@ public enum SectionError {
     public String getMessage() {
         return message;
     }
+
 }

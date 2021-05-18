@@ -8,6 +8,7 @@ import wooteco.subway.line.exception.SectionException;
 import wooteco.subway.station.Station;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,8 +18,10 @@ class SectionsTest {
     private static final Station SAMSUNG_STATION = new Station(2L, "삼성역");
     private static final Station GANGNAM_STATION = new Station(3L, "강남역");
 
-    private static final Section JAMSIL_TO_SAMSUNG = new Section(JAMSIL_STATION, SAMSUNG_STATION, 10);
-    private static final Section SAMSUNG_TO_GANGNAM = new Section(SAMSUNG_STATION, GANGNAM_STATION, 6);
+    private static final int DISTANCE_JAMSIL_SAMSUNG = 10;
+    private static final int DISTANCE_SAMSUNG_GANGNAM = 6;
+    private static final Section JAMSIL_TO_SAMSUNG = new Section(JAMSIL_STATION, SAMSUNG_STATION, DISTANCE_JAMSIL_SAMSUNG);
+    private static final Section SAMSUNG_TO_GANGNAM = new Section(SAMSUNG_STATION, GANGNAM_STATION, DISTANCE_SAMSUNG_GANGNAM);
 
     private Sections sections;
 
@@ -97,5 +100,43 @@ class SectionsTest {
         sections.add(section);
 
         assertThat(sections.path()).containsExactly(JAMSIL_STATION, SAMSUNG_STATION, station, GANGNAM_STATION);
+    }
+
+    @Test
+    @DisplayName("상행역 삭제")
+    void deleteUpStation() {
+        sections.delete(JAMSIL_STATION);
+
+        assertThat(sections.path()).containsExactly(SAMSUNG_STATION, GANGNAM_STATION);
+    }
+
+    @Test
+    @DisplayName("하행역 삭제")
+    void deleteDownStation() {
+        sections.delete(GANGNAM_STATION);
+
+        assertThat(sections.path()).containsExactly(JAMSIL_STATION, SAMSUNG_STATION);
+    }
+
+    @Test
+    @DisplayName("중간역 삭제")
+    void deleteMiddleStation() {
+        sections.delete(SAMSUNG_STATION);
+        List<Section> deletedSections = sections.getSections();
+        Section section = deletedSections.get(0);
+
+        assertThat(section.getDistance()).isEqualTo(DISTANCE_JAMSIL_SAMSUNG + DISTANCE_SAMSUNG_GANGNAM);
+
+        assertThat(sections.path()).containsExactly(JAMSIL_STATION, GANGNAM_STATION);
+    }
+
+    @Test
+    @DisplayName("1개 구간 이하일 때 삭제시 에러")
+    void deleteStationOverMinSize() {
+        sections.delete(SAMSUNG_STATION);
+
+        assertThatThrownBy(() -> sections.delete(GANGNAM_STATION))
+                .isInstanceOf(SectionException.class)
+                .hasMessage(SectionError.CANNOT_DELETE_SECTION_SIZE_LESS_THAN_TWO.getMessage());
     }
 }

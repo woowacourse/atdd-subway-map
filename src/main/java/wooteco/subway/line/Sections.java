@@ -7,6 +7,7 @@ import wooteco.subway.station.Station;
 import java.util.*;
 
 public class Sections {
+    private static final int SECTIONS_MIN_SIZE = 2;
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -87,34 +88,44 @@ public class Sections {
         List<Station> path = path();
         checkBothStationInPath(section, path);
         checkBothStationNotInPath(section, path);
+
         if (isEndPoint(section)) {
             sections.add(section);
             return;
         }
+
         if (isMiddleUpToDown(section)) {
-            Section origin = sectionsFromUpStation().get(section.getUpStation());
-            int replacedDistance = origin.getDistance() - section.getDistance();
-            if (replacedDistance <= 0) {
-                throw new SectionException(SectionError.CANNOT_DIVIDE_ORIGIN_SECTION);
-            }
-            Section newSection = new Section(section.getDownStation(), origin.getDownStation(), replacedDistance);
-            replaceSection(origin, newSection);
-            sections.add(section);
+            splitSectionFromUpToDown(section);
             return;
         }
 
         if (isMiddleDownToUp(section)) {
-            Section origin = sectionsFromDownStation().get(section.getDownStation());
-            int replacedDistance = origin.getDistance() - section.getDistance();
-            if (replacedDistance <= 0) {
-                throw new SectionException(SectionError.CANNOT_DIVIDE_ORIGIN_SECTION);
-            }
-            Section newSection = new Section(origin.getUpStation(), section.getUpStation(), replacedDistance);
-            replaceSection(origin, newSection);
-            sections.add(section);
+            splitSectionFromDownToUp(section);
             return;
         }
         throw new SectionException(SectionError.UNMATCHED_ADD_ERROR);
+    }
+
+    private void splitSectionFromUpToDown(Section section) {
+        Section origin = sectionsFromUpStation().get(section.getUpStation());
+        Section newSection = new Section(section.getDownStation(), origin.getDownStation(), replacedDistance(section, origin));
+        replaceSection(origin, newSection);
+        sections.add(section);
+    }
+
+    private void splitSectionFromDownToUp(Section section) {
+        Section origin = sectionsFromDownStation().get(section.getDownStation());
+        Section newSection = new Section(origin.getUpStation(), section.getUpStation(), replacedDistance(section, origin));
+        replaceSection(origin, newSection);
+        sections.add(section);
+    }
+
+    private int replacedDistance(Section section, Section origin) {
+        int replacedDistance = origin.getDistance() - section.getDistance();
+        if (replacedDistance <= 0) {
+            throw new SectionException(SectionError.CANNOT_DIVIDE_ORIGIN_SECTION);
+        }
+        return replacedDistance;
     }
 
     private void replaceSection(Section from, Section to) {
@@ -147,5 +158,40 @@ public class Sections {
 
     public List<Section> getSections() {
         return new ArrayList<>(sections);
+    }
+
+    public void delete(Station station) {
+        validateSectionsSize();
+
+        Section upper = sectionsFromDownStation().get(station);
+        Section lower = sectionsFromUpStation().get(station);
+
+        if (upper == null && lower ==null) {
+            throw new SectionException(SectionError.NO_STATION_TO_DELETE);
+        }
+
+        if (upper == null) {
+            sections.remove(lower);
+            return;
+        }
+
+        if (lower == null) {
+            sections.remove(upper);
+            return;
+        }
+
+        merge(upper, lower);
+    }
+
+    private void validateSectionsSize() {
+        if (sections.size() < SECTIONS_MIN_SIZE) {
+            throw new SectionException(SectionError.CANNOT_DELETE_SECTION_SIZE_LESS_THAN_TWO);
+        }
+    }
+
+    private void merge(Section upper, Section lower) {
+        sections.remove(lower);
+        sections.remove(upper);
+        sections.add(new Section(upper.getUpStation(), lower.getDownStation(), upper.getDistance() + lower.getDistance()));
     }
 }
