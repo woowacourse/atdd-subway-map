@@ -58,4 +58,14 @@ public class StationDao {
                 .stream()
                 .findFirst();
     }
+
+    public boolean doesNameExist(final String name) {
+        String query = "SELECT EXISTS (SELECT * FROM station WHERE name = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, name);
+    }
+
+    public boolean doesIdExist(final Long id) {
+        String query = "SELECT NOT EXISTS (SELECT * FROM station WHERE id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, id);
+    }
 }

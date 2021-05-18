@@ -79,7 +79,7 @@ public class SectionService {
         }
     }
 
-    public Sections findAll(final Long lineId) {
+    public Sections findAllByLineId(final Long lineId) {
         return sectionDao.findAllByLineId(lineId);
     }
 }

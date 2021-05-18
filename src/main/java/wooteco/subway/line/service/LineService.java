@@ -31,7 +31,7 @@ public class LineService {
     public List<LineResponse> getLines() {
         Lines lines = lineDao.findAll();
         for (Line line : lines.toList()) {
-            Sections sections = sectionService.findAll(line.getId());
+            Sections sections = sectionService.findAllByLineId(line.getId());
             line.setSections(sections);
         }
         return LineResponse.toDtos(lines);
@@ -41,7 +41,7 @@ public class LineService {
     public LineResponse save(final LineRequest lineRequest) {
         Line line = new Line(lineRequest.getColor(), lineRequest.getName());
 
-        validateDuplicateName(line);
+        validateDuplicateName(line.getName());
         Line newLine = lineDao.save(line);
 
         Section section = sectionService.save(newLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
@@ -50,9 +50,8 @@ public class LineService {
         return LineResponse.toDto(new Line(newLine.getId(), newLine.getColor(), newLine.getName(), sections));
     }
 
-    private void validateDuplicateName(final Line line) {
-        Lines lines = lineDao.findAll();
-        if (lines.doesNameExist(line.getName())) {
+    private void validateDuplicateName(final String name) {
+        if (lineDao.doesNameExist(name)) {
             throw new DuplicateLineNameException();
         }
     }
@@ -70,10 +69,9 @@ public class LineService {
 
     public LineResponse getLine(final Long id) {
         Line line = lineDao.findById(id).orElseThrow(NoSuchLineException::new);
-        Sections sections = sectionService.findAll(id);
-        line.setSections(sections);
+        Sections sections = sectionService.findAllByLineId(id);
 
-        return LineResponse.toDto(line);
+        return LineResponse.toDto(new Line(line.getId(), line.getColor(), line.getName(), sections));
     }
 
     @Transactional
@@ -90,8 +88,7 @@ public class LineService {
     }
 
     private void validateId(final Long id) {
-        Lines lines = lineDao.findAll();
-        if (lines.doesIdNotExist(id)) {
+        if (lineDao.doesIdNotExist(id)) {
             throw new NoSuchLineException();
         }
     }
