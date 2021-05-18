@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.UniqueSectionDeleteException;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.dto.SectionResponse;
@@ -24,12 +25,14 @@ public class SectionService {
         this.stationService = stationService;
     }
 
+    @Transactional
     public void createSectionOfNewLine(Long lineId, Long upStationId, Long downStationId,
         int distance) {
         Section section = makeSection(upStationId, downStationId, distance);
         sectionDao.save(lineId, section);
     }
 
+    @Transactional
     public void create(Long lineId, Long upStationId, Long downStationId, int distance) {
         Section section = makeSection(upStationId, downStationId, distance);
         Sections sections = findSections(lineId);
@@ -46,6 +49,7 @@ public class SectionService {
         return stationService.findAllByIds(stationIds);
     }
 
+    @Transactional
     public void deleteById(Long lineId, Long stationId) {
         if (isUniqueSectionOfLine(lineId)) {
             throw new UniqueSectionDeleteException();
@@ -56,18 +60,19 @@ public class SectionService {
             Station upStation = sections.findUpStation(stationId);
             Station downStation = sections.findDownStation(stationId);
             sectionDao
-                .save(lineId, new Section(lineId, upStation, downStation, sections.sumDistance()));
+                .save(lineId, new Section(upStation, downStation, sections.sumDistance()));
         }
+    }
+
+    @Transactional
+    public void deleteAllByLineId(Long lineId) {
+        sectionDao.deleteAllById(lineId);
     }
 
     private Section makeSection(Long upStationId, Long downStationId, int distance) {
         Station upStation = stationService.findById(upStationId);
         Station downStation = stationService.findById(downStationId);
         return new Section(upStation, downStation, distance);
-    }
-
-    public void deleteAllByLineId(Long lineId) {
-        sectionDao.deleteAllById(lineId);
     }
 
     private void createSectionBetweenSections(Long lineId, Section section, Sections sections) {

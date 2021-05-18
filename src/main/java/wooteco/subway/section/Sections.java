@@ -18,6 +18,10 @@ public class Sections {
 
     private final List<Section> sections;
 
+    public Sections() {
+        this.sections = new ArrayList<>();
+    }
+
     public Sections(List<Section> sections) {
         this.sections = sections;
     }
@@ -28,7 +32,7 @@ public class Sections {
         validateSectionDistance(section);
     }
 
-    public void validateSectionStations(Section newSection) {
+    private void validateSectionStations(Section newSection) {
         List<Station> stations = sections.stream()
             .map(section -> Arrays.asList(section.getUpStation(), section.getDownStation()))
             .flatMap(List::stream)
@@ -44,7 +48,7 @@ public class Sections {
         }
     }
 
-    public void validateSectionDistance(Section newSection) {
+    private void validateSectionDistance(Section newSection) {
         int distance = sectionToBeDivided(newSection).getDistance();
         if (newSection.largerThan(distance)) {
             throw new InvalidSectionDistanceException();
@@ -72,10 +76,10 @@ public class Sections {
     public Section divideSection(Section newSection) {
         Section existingSection = sectionToBeDivided(newSection);
         if (existingSection.isUpStation(newSection.getUpStation())) {
-            return new Section(newSection.getDownStation(),
+            return new Section(existingSection.getId(), newSection.getDownStation(),
                 existingSection.getDownStation(), existingSection.deductDistance(newSection));
         }
-        return new Section(existingSection.getUpStation(), newSection.getUpStation(),
+        return new Section(existingSection.getId(), existingSection.getUpStation(), newSection.getUpStation(),
             existingSection.deductDistance(newSection));
     }
 

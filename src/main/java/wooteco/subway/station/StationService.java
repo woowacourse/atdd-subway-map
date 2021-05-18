@@ -25,15 +25,17 @@ public class StationService {
             .collect(Collectors.toList());
     }
 
-    public void deleteById(Long id) {
-        stationDao.deleteById(id);
-    }
-
+    @Transactional
     public StationResponse create(StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
         Station newStation = stationDao.save(station);
         return new StationResponse(newStation.getId(),
             newStation.getName());
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        stationDao.deleteById(id);
     }
 
     public Station findById(Long id) {

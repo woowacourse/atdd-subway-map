@@ -25,13 +25,10 @@ public class LineService {
     public LineResponse create(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineDao.save(line);
-        sectionService
-            .createSectionOfNewLine(newLine.getId(), lineRequest.getUpStationId(),
-                lineRequest.getDownStationId(),
-                lineRequest.getDistance());
+        sectionService.createSectionOfNewLine(newLine.getId(), lineRequest.getUpStationId(),
+            lineRequest.getDownStationId(), lineRequest.getDistance());
         List<StationResponse> stations = sectionService.findAllByLineId(newLine.getId());
-        return new LineResponse(newLine.getId(), newLine.getName(),
-            newLine.getColor(), stations);
+        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), stations);
     }
 
     @Transactional(readOnly = true)
@@ -47,13 +44,12 @@ public class LineService {
             stationResponses);
     }
 
+    @Transactional
     public void updateById(Long id, LineRequest lineRequest) {
-        Line persistedLine = lineDao.findById(id);
-        Line updatedLine = new Line(persistedLine.getId(), lineRequest.getName(),
-            lineRequest.getColor());
-        lineDao.update(updatedLine);
+        lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
     }
 
+    @Transactional
     public void deleteById(Long id) {
         lineDao.deleteById(id);
         sectionService.deleteAllByLineId(id);
