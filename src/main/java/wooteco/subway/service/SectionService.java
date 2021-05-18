@@ -2,67 +2,85 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.domain.repository.SectionRepository;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
+import wooteco.subway.domain.station.Station;
+import wooteco.subway.domain.station.Stations;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.SectionResponse;
 
 @Service
 @Transactional(readOnly = true)
 public class SectionService {
-    private final SectionRepository sectionRepository;
+    private final SectionDao sectionDao;
+    private final StationDao stationDao;
 
-    public SectionService(SectionRepository sectionRepository) {
-        this.sectionRepository = sectionRepository;
+    public SectionService(SectionDao sectionDao, StationDao stationDao) {
+        this.sectionDao = sectionDao;
+        this.stationDao = stationDao;
     }
 
     @Transactional
     public SectionResponse createSection(Long lineId, SectionRequest sectionRequest) {
-        Section section = sectionRepository.createSection(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
-        Long sectionId = sectionRepository.insert(lineId, section);
+        Station upwardStation = stationDao.select(sectionRequest.getUpStationId());
+        Station downwardStation = stationDao.select(sectionRequest.getDownStationId());
+        int distance = sectionRequest.getDistance();
+
+        Section section = new Section(upwardStation, downwardStation, distance);
+        Long sectionId = sectionDao.insert(lineId, section);
         return new SectionResponse(sectionId, lineId, section);
     }
 
     @Transactional
     public SectionResponse addSection(Long lineId, SectionRequest sectionRequest) {
-        Section section = sectionRepository.createSection(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
-        Sections sections = sectionRepository.loadSections(lineId);
+        Station upwardStation = stationDao.select(sectionRequest.getUpStationId());
+        Station downwardStation = stationDao.select(sectionRequest.getDownStationId());
+        int distance = sectionRequest.getDistance();
+
+        Section section = new Section(upwardStation, downwardStation, distance);
+
+        Stations stations = new Stations(stationDao.selectAll());
+        Sections sections = new Sections(sectionDao.selectAll(lineId, stations));
         sections.validateIfPossibleToInsert(section);
 
         updateExistingSections(lineId, section, sections);
-        Long sectionId = sectionRepository.insert(lineId, section);
+        Long sectionId = sectionDao.insert(lineId, section);
         return new SectionResponse(sectionId, lineId, section);
-    }
-
-    @Transactional
-    public void deleteSection(Long lineId, Long stationId) {
-        Sections sections = sectionRepository.loadSections(lineId);
-        sections.validateIfPossibleToDelete();
-
-        if (sections.hasStationAsDownward(stationId) && sections.hasStationAsUpward(stationId)) {
-            sectionRepository.delete(lineId, stationId);
-            sectionRepository.insert(lineId, sections.createMergedSectionAfterDeletion(stationId));
-            return;
-        }
-
-        if (sections.hasStationAsDownward(stationId)) {
-            sectionRepository.deleteBottomSection(lineId, sections.getBottomSection());
-        }
-
-        if (sections.hasStationAsUpward(stationId)) {
-            sectionRepository.deleteTopSection(lineId, sections.getTopSection());
-        }
     }
 
     private void updateExistingSections(Long lineId, Section section, Sections sections) {
         if (sections.isNewStationDownward(section)) {
-            sectionRepository.updateWhenNewStationDownward(lineId, section);
+            sectionDao.updateWhenNewStationDownward(lineId, section);
+            return;
         }
-        sectionRepository.updateWhenNewStationUpward(lineId, section);
+        sectionDao.updateWhenNewStationUpward(lineId, section);
+    }
+
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Stations stations = new Stations(stationDao.selectAll());
+        Sections sections = new Sections(sectionDao.selectAll(lineId, stations));
+        sections.validateIfPossibleToDelete();
+
+        if (sections.hasStationAsDownward(stationId) && sections.hasStationAsUpward(stationId)) {
+            sectionDao.delete(lineId, stationId);
+            sectionDao.insert(lineId, sections.createMergedSectionAfterDeletion(stationId));
+            return;
+        }
+
+        if (sections.hasStationAsDownward(stationId)) {
+            sectionDao.deleteBottomSection(lineId, sections.getBottomSection());
+        }
+
+        if (sections.hasStationAsUpward(stationId)) {
+            sectionDao.deleteTopSection(lineId, sections.getTopSection());
+        }
     }
 
     public Sections loadSections(Long lineId) {
-        return sectionRepository.loadSections(lineId);
+        Stations stations = new Stations(stationDao.selectAll());
+        return new Sections(sectionDao.selectAll(lineId, stations));
     }
 }
