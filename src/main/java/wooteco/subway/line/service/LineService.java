@@ -76,9 +76,9 @@ public class LineService {
         final Long lineId = line.getId();
         final Sections sections = new Sections(sectionDao.findSections(lineId));
 
-        if (sections.numberOfStationInLine() == 0) {
+        if (sections.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
-        return sections.sort(lineDao.findFirstStationId(lineId));
+        return sections.orderedIds(lineDao.findFirstStationId(lineId));
     }
 }

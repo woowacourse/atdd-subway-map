@@ -31,7 +31,7 @@ public class Sections {
                 .orElseThrow(() -> new LineException("존재하지 않는 역입니다."));
     }
 
-    public final List<Long> sort(final Long upStationId) {
+    public final List<Long> orderedIds(final Long upStationId) {
         final Map<Long, Long> idTable = idTable();
         final List<Long> ids = new LinkedList<>();
 
@@ -58,14 +58,6 @@ public class Sections {
                 .anyMatch(section -> section.isIncludedStation(stationId));
     }
 
-    public int numberOfStationInLine() {
-        int numberOfSection = sections.size();
-        if (numberOfSection == 0) {
-            return 0;
-        }
-        return numberOfSection + 1;
-    }
-
     public void validateAbleToAdd(final Section section) {
         final boolean isFrontStationIncluded = isIncludedStation(section.frontStationId());
         final boolean isBackStationIncluded = isIncludedStation(section.backStationId());
@@ -80,7 +72,7 @@ public class Sections {
             throw new LineException("노선에 존재하지 않는 역을 제거할 수 없습니다.");
         }
 
-        if (numberOfStationInLine() <= MINIMUM_NUMBER_OF_STATION_IN_LINE) {
+        if (sections.size() <= MINIMUM_NUMBER_OF_STATION_IN_LINE) {
             throw new LineException("종점 뿐인 노선의 역을 제거할 수 없습니다.");
         }
     }
@@ -97,5 +89,9 @@ public class Sections {
                 .filter(section -> section.isBackStationId(stationId))
                 .findFirst()
                 .orElseThrow(() -> new LineException("존재하지 않는 구간입니다."));
+    }
+
+    public boolean isEmpty(){
+        return sections.isEmpty();
     }
 }
