@@ -21,7 +21,7 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long insert(Station station) {
+    public Long insert(Station station) {
         String query = "INSERT INTO station(name) VALUES(?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
