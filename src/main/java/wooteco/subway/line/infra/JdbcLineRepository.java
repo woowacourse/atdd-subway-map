@@ -8,6 +8,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DuplicatedNameException;
+import wooteco.subway.exception.LineNotFoundException;
+import wooteco.subway.exception.NoRowAffectedException;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.repository.LineRepository;
 import wooteco.subway.line.domain.section.Distance;
@@ -45,7 +47,7 @@ public class JdbcLineRepository implements LineRepository {
                 ps.setString(2, line.getColor());
                 return ps;
             }, keyHolder);
-            return findById(keyHolder.getKey().longValue()).get();
+            return findById(keyHolder.getKey().longValue()).orElseThrow(LineNotFoundException::new);
         } catch (DuplicateKeyException e) {
             throw new DuplicatedNameException("이미 존재하는 지하철 노선 이름입니다.", e.getCause());
         }
@@ -106,7 +108,10 @@ public class JdbcLineRepository implements LineRepository {
     public void update(final Line line) {
         try {
             String query = "UPDATE line SET name = ?, color = ? WHERE id = ?";
-            this.jdbcTemplate.update(query, line.getName(), line.getColor(), line.getId());
+            int updateRows = this.jdbcTemplate.update(query, line.getName(), line.getColor(), line.getId());
+            if (updateRows < 1) {
+                throw new NoRowAffectedException("수정된 지하철 노선이 없습니다.");
+            }
         } catch (DuplicateKeyException e) {
             throw new DuplicatedNameException("이미 존재하는 지하철 노선 이름입니다.", e.getCause());
         }
@@ -115,7 +120,10 @@ public class JdbcLineRepository implements LineRepository {
     @Override
     public void delete(final Long id) {
         String query = "DELETE FROM line WHERE id = ?";
-        this.jdbcTemplate.update(query, id);
+        int affectedRows = this.jdbcTemplate.update(query, id);
+        if (affectedRows < 1) {
+            throw new NoRowAffectedException("삭제된 지하철 노선이 없습니다.");
+        }
     }
 
     @Override

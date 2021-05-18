@@ -1,6 +1,5 @@
 package wooteco.subway.line.controller;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.controller.dto.LineNameColorResponse;
@@ -19,12 +18,10 @@ public class LineController {
 
     private final LineService lineService;
     private final SectionService sectionService;
-    private final ModelMapper modelMapper;
 
-    public LineController(LineService lineService, SectionService sectionService, ModelMapper modelMapper) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
         this.sectionService = sectionService;
-        this.modelMapper = modelMapper;
     }
 
     @PostMapping

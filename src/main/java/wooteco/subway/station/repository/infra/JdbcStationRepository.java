@@ -7,7 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DuplicatedNameException;
-import wooteco.subway.exception.NoDataHasBeenAppliedException;
+import wooteco.subway.exception.NoRowAffectedException;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.repository.StationRepository;
 
@@ -78,7 +78,7 @@ public class JdbcStationRepository implements StationRepository {
         String query = "DELETE FROM station WHERE id = ?";
         int update = this.jdbcTemplate.update(query, id);
         if (update < 1) {
-            throw new NoDataHasBeenAppliedException("지하철 역을 삭제하는데 실패했습니다.");
+            throw new NoRowAffectedException("지하철 역을 삭제하는데 실패했습니다.");
         }
     }
 
