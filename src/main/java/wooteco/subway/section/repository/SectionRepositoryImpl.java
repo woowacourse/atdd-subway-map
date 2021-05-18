@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.model.Line;
+import wooteco.subway.section.model.LineSection;
 import wooteco.subway.section.model.Section;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.model.Station;
@@ -30,49 +31,56 @@ public class SectionRepositoryImpl implements SectionRepository {
 
     @Override
     public List<Section> findSectionsByLineId(Long lineId) {
-        Line line = lineDao.findLineById(lineId)
-            .orElseThrow(() -> new NotFoundException("존재하지 않는 Line ID입니다."));
-        List<Long> distinctStations = findDistinctStationsByLineId(lineId);
-        List<Station> stations = stationDao.findAllByIds(distinctStations);
-        Map<Long, Station> map = stations.stream()
-            .collect(Collectors.toMap(Station::getId, Function.identity()));
         String sql = "SELECT id, line_id, up_station_id, down_station_id, distance"
             + " FROM section"
             + " WHERE line_id = ?";
-        return jdbcTemplate.query(sql, mapperToSection(line, map), lineId);
-    }
 
-    private List<Long> findDistinctStationsByLineId(Long lineId) {
-        List<Long> findStations = findUpStationIdsByLineId(lineId);
-        findStations.addAll(findDownStationIdsByLineId(lineId));
-        List<Long> distinctStations = findStations.stream()
-            .distinct()
+        List<LineSection> lineSections = jdbcTemplate
+            .query(sql, mapperLineSection(), lineId);
+
+        Line line = lineDao.findLineById(lineId)
+            .orElseThrow(() -> new NotFoundException("존재하지 않는 Line ID입니다."));
+        Map<Long, Station> stations = mapStationsById(lineSections);
+
+        return lineSections.stream()
+            .map(it -> Section.builder()
+                .id(it.getId())
+                .line(line)
+                .upStation(stations.get(it.getUpStationId()))
+                .downStation(stations.get(it.getDownStationId()))
+                .distance(it.getDistance())
+                .build())
             .collect(Collectors.toList());
-        return distinctStations;
     }
 
-    private List<Long> findUpStationIdsByLineId(Long lineId) {
-        String sql = "SELECT up_station_id"
-            + " FROM section"
-            + " WHERE line_id = ?";
-        return jdbcTemplate.queryForList(sql, Long.class, lineId);
+    private Map<Long, Station> mapStationsById(List<LineSection> lineSections) {
+        List<Long> stationIds = findDistinctStationsByLineId(lineSections);
+        List<Station> stations = stationDao.findAllByIds(stationIds);
+        Map<Long, Station> map = stations.stream()
+            .collect(Collectors.toMap(Station::getId, Function.identity()));
+        return map;
     }
 
-    private List<Long> findDownStationIdsByLineId(Long lineId) {
-        String sql = "SELECT down_station_id"
-            + " FROM section"
-            + " WHERE line_id = ?";
-        return jdbcTemplate.queryForList(sql, Long.class, lineId);
-    }
-
-    private RowMapper<Section> mapperToSection(Line line, Map<Long, Station> stations) {
-        return (rs, rowNum) -> Section.builder()
+    private RowMapper<LineSection> mapperLineSection() {
+        return (rs, rowNum) -> LineSection.builder()
             .id(rs.getLong("id"))
-            .line(line)
-            .upStation(stations.get(rs.getLong("up_station_id")))
-            .downStation(stations.get(rs.getLong("down_station_id")))
+            .lineId(rs.getLong("line_id"))
+            .upStationId(rs.getLong("up_station_id"))
+            .downStationId(rs.getLong("down_station_id"))
             .distance(rs.getInt("distance"))
             .build();
+    }
+
+    private List<Long> findDistinctStationsByLineId(List<LineSection> lineSections) {
+        List<Long> stationIds = lineSections.stream()
+            .map(LineSection::getUpStationId)
+            .collect(Collectors.toList());
+
+        List<Long> downStationIds = lineSections.stream()
+            .map(LineSection::getDownStationId)
+            .collect(Collectors.toList());
+        stationIds.addAll(downStationIds);
+        return stationIds;
     }
 
     @Override
