@@ -68,6 +68,14 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(createResponse.header("Location")).isNotBlank();
     }
 
+    @DisplayName("지하철 노선 등록 실패 - 유효하지 않은 요청 정보")
+    @Test
+    void createLineWithInvalidRequest() {
+        final LineRequest requestWithOutName = new LineRequest("", "black", firstStationId, lastStationId, 1);
+        ExtractableResponse<Response> createResponse =  createLine(requestWithOutName);
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("지하철 노선 등록 실패 - 중복된 노선 존재")
     @Test
     void createLineWithDuplicateName() {
@@ -86,22 +94,9 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<Long> expectedLineIds = Arrays.asList(
-                Long.parseLong(createResponse1.header("Location").split("/")[2]),
-                Long.parseLong(createResponse2.header("Location").split("/")[2])
-        );
-
+        List<Long> expectedLineIds = expectedLineIds(createResponse1, createResponse2);
         List<Long> resultLindIds = resultStationsIds(response);
         assertThat(resultLindIds).containsAll(expectedLineIds);
-    }
-
-    private List<Long> resultStationsIds(ExtractableResponse<Response> response) {
-        final JsonPath jsonPath = response.jsonPath();
-        final List<LineResponse> lineResponses = jsonPath.getList(".", LineResponse.class);
-
-        return lineResponses.stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
     }
 
     @DisplayName("지하철 노선 이름 변경 성공")
@@ -121,7 +116,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         ExtractableResponse<Response> createResponse = createLine(sampleRequest1);
 
-        ExtractableResponse<Response> response = deleteLine(createResponse);
+        final Long createdLineId = Long.valueOf(createResponse.body().jsonPath().get("id")+"");
+        ExtractableResponse<Response> response = deleteLine(createdLineId);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
@@ -155,13 +151,27 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> deleteLine(ExtractableResponse<Response> createResponse) {
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+    private ExtractableResponse<Response> deleteLine(final Long stationId) {
+        return RestAssured.given().log().all()
                 .when()
-                .delete(uri)
+                .delete("/lines/"+stationId)
                 .then()
                 .extract();
-        return response;
+    }
+
+    private List<Long> expectedLineIds(ExtractableResponse<Response> createResponse1, ExtractableResponse<Response> createResponse2) {
+        return Arrays.asList(
+                Long.parseLong(createResponse1.header("Location").split("/")[2]),
+                Long.parseLong(createResponse2.header("Location").split("/")[2])
+        );
+    }
+
+    private List<Long> resultStationsIds(ExtractableResponse<Response> response) {
+        final JsonPath jsonPath = response.jsonPath();
+        final List<LineResponse> lineResponses = jsonPath.getList(".", LineResponse.class);
+
+        return lineResponses.stream()
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
     }
 }
