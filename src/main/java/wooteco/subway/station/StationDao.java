@@ -1,8 +1,12 @@
 package wooteco.subway.station;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.RowMapper;
@@ -71,7 +75,17 @@ public class StationDao {
     }
 
     public List<Station> findByIds(final List<Long> ids) {
-        final String sql = "SELECT * FROM station WHERE id IN (:ids)";
-        return namedParameterJdbcTemplate.query(sql, Collections.singletonMap("ids", ids), stationRowMapper);
+        final List<Long> idsToDecode = IntStream.range(0, ids.size())
+            .mapToObj(i -> Arrays.asList(ids.get(i), i))
+            .flatMap(List::stream)
+            .map(Number::longValue)
+            .collect(Collectors.toList());
+
+        final HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put("ids", ids);
+        paramMap.put("idsToDecode", idsToDecode);
+
+        final String sql = "SELECT * FROM station WHERE id IN (:ids) ORDER BY DECODE(id, :idsToDecode)";
+        return namedParameterJdbcTemplate.query(sql, paramMap, stationRowMapper);
     }
 }
