@@ -78,7 +78,7 @@ public class SectionService {
     public Sections findAllByLineId(Long lineId) {
         List<SectionTable> sectionTables = sectionDao.findAllByLineId(lineId);
         List<Section> sections = convertToSections(sectionTables);
-        return Sections.create(sections);
+        return new Sections(sections);
     }
 
     private List<Section> convertToSections(List<SectionTable> sectionTables) {

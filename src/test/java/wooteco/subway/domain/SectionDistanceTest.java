@@ -7,7 +7,7 @@ import wooteco.subway.exception.section.DistancePreviousOverException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@DisplayName("[도메인] Distance")
+@DisplayName("[도메인] SectionDistance")
 class SectionDistanceTest {
 
     @Test

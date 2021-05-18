@@ -14,20 +14,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("[도메인] Line")
 class LineTest {
-    private static final Station 강남역 = new Station(1L, "강남역");
-    private static final Station 수서역 = new Station(2L, "수서역");
-    private static final Station 잠실역 = new Station(3L, "잠실역");
-    private static final Station 동탄역 = new Station(4L, "동탄역");
-    private static final Section 강남_수서 = new Section(강남역, 수서역, 10);
-    private static final Section 수서_잠실 = new Section(수서역, 잠실역, 10);
-    private static final Section 잠실_동탄 = new Section(잠실역, 동탄역, 10);
+    private final Station 강남역 = new Station(1L, "강남역");
+    private final Station 수서역 = new Station(2L, "수서역");
+    private final Station 잠실역 = new Station(3L, "잠실역");
+    private final Station 동탄역 = new Station(4L, "동탄역");
+    private final Section 강남_수서 = new Section(강남역, 수서역, 10);
+    private final Section 수서_잠실 = new Section(수서역, 잠실역, 10);
+    private final Section 잠실_동탄 = new Section(잠실역, 동탄역, 10);
 
     @DisplayName("노선의 역목록 가져오기")
     @Test
     void stations() {
         Line line = new Line("1호선", "bg-green-300");
         List<Section> sections = Arrays.asList(강남_수서, 수서_잠실, 잠실_동탄);
-        line.setStationsBySections(Sections.create(sections));
+        line.setStationsBySections(new Sections(sections));
 
         assertThat(line.getStations()).hasSize(4);
         assertThat(line.getStations()).containsExactly(강남역, 수서역, 잠실역, 동탄역);
@@ -65,23 +65,9 @@ class LineTest {
         Line line = new Line("1호선", "bg-green-300");
         assertThatThrownBy(line::getStations).isInstanceOf(StationNotFoundException.class);
 
-        line.setStationsBySections(Sections.create(강남_수서));
+        line.setStationsBySections(new Sections(강남_수서));
 
         assertThat(line.getStations()).hasSize(2);
     }
 
-    @DisplayName("구간 순서대로 역 보여주기")
-    @Test
-    void convertToSortedStations() {
-        Line line = new Line("샘플", "샘플");
-        List<Section> setting = Arrays.asList(수서_잠실, 강남_수서, 잠실_동탄);
-        Sections sections = Sections.create(setting);
-
-        line.setStationsBySections(sections);
-
-        List<Station> stations = line.getStations();
-
-        assertThat(stations).hasSize(4);
-        assertThat(stations).containsExactly(강남역, 수서역, 잠실역, 동탄역);
-    }
 }

@@ -14,7 +14,7 @@ public class Stations {
     }
 
     public Stations() {
-        this(Sections.create());
+        this(new Sections());
     }
 
     private List<Station> convertToSortedStations() {

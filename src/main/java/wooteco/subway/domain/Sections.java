@@ -1,7 +1,5 @@
 package wooteco.subway.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import wooteco.subway.exception.InternalLogicConflictException;
 import wooteco.subway.exception.section.SectionCycleException;
 import wooteco.subway.exception.section.SectionDuplicatedException;
@@ -15,7 +13,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Sections {
     private static final int FIRST_ELEMENT = 0;
     private static final int IN_BETWEEN = 2;
@@ -25,13 +22,14 @@ public class Sections {
 
     private List<Section> sections;
 
-    public static Sections create(Section... sections) {
-        return create(new ArrayList<>(Arrays.asList(sections)));
+    public Sections(Section... sections) {
+        this(new ArrayList<>(Arrays.asList(sections)));
     }
 
-    public static Sections create(List<Section> sections) {
-        return new Sections(sections);
+    public Sections(List<Section> sections) {
+        this.sections = sections;
     }
+
 
     public Section modifyRelatedSectionToAdd(Section newSection) {
         validateAddable(newSection);

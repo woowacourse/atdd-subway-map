@@ -50,7 +50,7 @@ class SectionsTest {
     @DisplayName("구간추가 - 성공(기존의 구간이 변경되는 경우)")
     @Test
     void addAndThenGetModifiedAdjacent() {
-        Sections sections = Sections.create(강남_수서);
+        Sections sections = new Sections(강남_수서);
 
         Section modified = sections.modifyRelatedSectionToAdd(양재_수서);
         sections.add(modified);
@@ -62,7 +62,7 @@ class SectionsTest {
     @DisplayName("구간추가 - 성공(기존의 구간이 변경되지 않는 경우)")
     @Test
     void addAndThenGetModifiedAdjacent_1() {
-        Sections sections = Sections.create(강남_수서);
+        Sections sections = new Sections(강남_수서);
 
         Section modified = sections.modifyRelatedSectionToAdd(수서_잠실);
         sections.add(수서_잠실);
@@ -74,7 +74,7 @@ class SectionsTest {
     @DisplayName("구간추가 - 성공(가운데 추가 경우, 베이스가 꼬리)")
     @Test
     void addAndThenGetModifiedAdjacent_꼬리베이스() {
-        Sections sections = Sections.create(수서_잠실);
+        Sections sections = new Sections(수서_잠실);
 
         sections.modifyRelatedSectionToAdd(강남_수서);
         sections.add(강남_수서);
@@ -89,7 +89,7 @@ class SectionsTest {
     @DisplayName("구간추가 - 성공(가운데 추가 경우, 베이스가 머리)")
     @Test
     void addAndThenGetModifiedAdjacent_머리베이스() {
-        Sections sections = Sections.create(수서_잠실);
+        Sections sections = new Sections(수서_잠실);
         sections.modifyRelatedSectionToAdd(강남_수서);
         sections.add(강남_수서);
         Section modified = sections.modifyRelatedSectionToAdd(수서_양재);
@@ -102,7 +102,7 @@ class SectionsTest {
     @DisplayName("구간추가 - 실패(의미상 같은 구간 추가)")
     @Test
     void addAndThenGetModifiedAdjacent_실패_같은구간() {
-        Sections sections = Sections.create(강남_수서);
+        Sections sections = new Sections(강남_수서);
 
         assertThatThrownBy(() -> sections.modifyRelatedSectionToAdd(수서_강남))
                 .isInstanceOf(SectionDuplicatedException.class);
@@ -113,7 +113,7 @@ class SectionsTest {
     @DisplayName("구간추가 - 실패(앞뒤역이 같은 구간 추가)")
     @Test
     void addAndThenGetModifiedAdjacent_실패_앞뒤같은구간() {
-        Sections sections = Sections.create(강남_수서);
+        Sections sections = new Sections(강남_수서);
 
         assertThatThrownBy(() -> sections.modifyRelatedSectionToAdd(new Section(강남역, 강남역, 10)))
                 .isInstanceOf(SectionHasSameUpAndDownException.class);
@@ -124,7 +124,7 @@ class SectionsTest {
     void addAndThenGetModifiedAdjacent_실패_연결불가() {
         List<Section> setting = Arrays.asList(수서_잠실, 강남_수서);
         Section section = new Section(동탄역, 양재역, 10);
-        Sections sections = Sections.create(setting);
+        Sections sections = new Sections(setting);
 
         assertThatThrownBy(() -> sections.modifyRelatedSectionToAdd(section))
                 .isInstanceOf(SectionUnlinkedException.class);
@@ -134,7 +134,7 @@ class SectionsTest {
     @Test
     void sections() {
         List<Section> setting = Arrays.asList(수서_잠실, 강남_수서, 잠실_동탄);
-        Sections sections = Sections.create(setting);
+        Sections sections = new Sections(setting);
 
         List<Section> result = sections.sections();
 
@@ -145,7 +145,7 @@ class SectionsTest {
     @Test
     void removeStationInBetween_내부구현로직이상() {
         List<Section> setting = Arrays.asList(수서_잠실);
-        Sections sections = Sections.create(setting);
+        Sections sections = new Sections(setting);
 
         assertThatThrownBy(() -> sections.removeRelatedSections(강남역))
                 .isInstanceOf(StationNotFoundException.class);
@@ -155,7 +155,7 @@ class SectionsTest {
     @Test
     void removeStationInBetween() {
         List<Section> setting = Arrays.asList(수서_잠실, 강남_수서);
-        Sections sections = Sections.create(setting);
+        Sections sections = new Sections(setting);
 
         List<Section> removed = sections.removeRelatedSections(수서역);
         Section result = sections.modifyRelatedSectionsToRemove(removed, 수서역);
@@ -168,7 +168,7 @@ class SectionsTest {
     void hasSize() {
         List<Section> setting = Arrays.asList(강남_수서, 수서_잠실);
 
-        Sections sections = Sections.create(setting);
+        Sections sections = new Sections(setting);
 
         assertTrue(sections.isSizeOf(2));
     }
