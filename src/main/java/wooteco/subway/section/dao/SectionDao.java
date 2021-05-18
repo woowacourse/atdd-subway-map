@@ -12,4 +12,6 @@ public interface SectionDao {
     void updateModified(Section section);
 
     void remove(Long lineId, Long upStationId, Long downStationId);
+
+    boolean isLast(Long lineId);
 }

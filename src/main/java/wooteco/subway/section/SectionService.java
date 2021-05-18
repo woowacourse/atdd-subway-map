@@ -68,7 +68,7 @@ public class SectionService {
     }
 
     private void validateIsLastRemainedSection(Long lineId) {
-        if (findAllByLineId(lineId).hasSizeOf(1)) {
+        if (sectionDao.isLast(lineId)) {
             throw new SectionLastRemainedException();
         }
     }

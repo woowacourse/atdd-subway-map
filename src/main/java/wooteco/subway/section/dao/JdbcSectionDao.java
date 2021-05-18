@@ -14,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Repository
 public class JdbcSectionDao implements SectionDao {
+    private static final int LAST_SECTION = 1;
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -65,6 +66,15 @@ public class JdbcSectionDao implements SectionDao {
         String deleteSql = "DELETE FROM section WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?";
 
         jdbcTemplate.update(deleteSql, lineId, upStationId, downStationId);
+    }
+
+    @Override
+    public boolean isLast(Long lineId) {
+        String countSql = "SELECT count(id) FROM section WHERE line_id = ?";
+
+        int count = jdbcTemplate.queryForObject(countSql, int.class, lineId);
+
+        return count == LAST_SECTION;
     }
 
 }
