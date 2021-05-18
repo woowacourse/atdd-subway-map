@@ -50,12 +50,6 @@ public class LineService {
         return LineResponse.toDto(new Line(newLine.getId(), newLine.getColor(), newLine.getName(), sections));
     }
 
-    private void validateDuplicateName(final String name) {
-        if (lineDao.doesNameExist(name)) {
-            throw new DuplicateLineNameException();
-        }
-    }
-
     private Sections getSections(final Section section) {
         Station upStation = stationService.findById(section.getUpStationId());
         Station downStation = stationService.findById(section.getDownStationId());
@@ -86,6 +80,12 @@ public class LineService {
     public void deleteById(final Long id) {
         validateId(id);
         lineDao.deleteById(id);
+    }
+
+    private void validateDuplicateName(final String name) {
+        if (lineDao.doesNameExist(name)) {
+            throw new DuplicateLineNameException();
+        }
     }
 
     private void validateId(final Long id) {
