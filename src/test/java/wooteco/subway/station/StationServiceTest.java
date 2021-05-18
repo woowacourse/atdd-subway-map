@@ -19,7 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wooteco.subway.exception.service.ValidationFailureException;
+import wooteco.subway.exception.DataNotFoundException;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -79,7 +79,7 @@ class StationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> stationService.findByIds(ids))
-            .isInstanceOf(ValidationFailureException.class)
+            .isInstanceOf(DataNotFoundException.class)
             .hasMessage("존재하지 않는 ID의 지하철역이 있습니다.");
 
         then(stationDao).should(times(1)).findByIds(anyList());

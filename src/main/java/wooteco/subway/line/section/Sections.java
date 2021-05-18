@@ -11,8 +11,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import wooteco.subway.exception.service.ObjectNotFoundException;
-import wooteco.subway.exception.service.ValidationFailureException;
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.ValidationFailureException;
 
 public class Sections {
 
@@ -52,13 +52,15 @@ public class Sections {
         return sections.stream()
             .filter(section -> terminalStationIds.contains(section.getUpStationId()))
             .findAny()
-            .orElseThrow(() -> new IllegalArgumentException("해당하는 상행역이 없습니다."));
+            .orElseThrow(() -> new DataNotFoundException("해당하는 상행역이 없습니다."));
     }
 
-    private void findNextSection(final Section current, final List<Section> sections, final List<Section> sortedSections) {
+    private void findNextSection(final Section current, final List<Section> sections,
+        final List<Section> sortedSections) {
+
         final long downStationId = current.getDownStationId();
         final Optional<Section> nextSection = sections.stream()
-            .filter(section -> section.getUpStationId() == downStationId)
+            .filter(section -> section.getUpStationId().equals(downStationId))
             .findAny();
 
         if (!nextSection.isPresent()) {
@@ -80,7 +82,7 @@ public class Sections {
     }
 
     private List<Long> findTerminalStationId(final Map<Long, Integer> frequency) {
-        final Predicate<Entry<Long, Integer>> terminalStationFilter = entry -> entry.getValue() == 1;
+        final Predicate<Entry<Long, Integer>> terminalStationFilter = entry -> entry.getValue().equals(1);
         return frequency.entrySet()
             .stream()
             .filter(terminalStationFilter)
@@ -124,14 +126,18 @@ public class Sections {
         return sectionGroup.stream()
             .filter(section -> section.getUpStationId().equals(stationId))
             .findAny()
-            .orElseThrow(() -> new ObjectNotFoundException("해당 역을 상행역으로 가지는 구간을 찾을 수 없습니다."));
+            .orElseThrow(() -> new DataNotFoundException(
+                String.format("해당 역을 상행역으로 가지는 구간을 찾을 수 없습니다. (id:%s)", stationId))
+            );
     }
 
     public Section findSectionHasDownStation(long stationId) {
         return sectionGroup.stream()
             .filter(section -> section.getDownStationId().equals(stationId))
             .findAny()
-            .orElseThrow(() -> new ObjectNotFoundException("해당 역을 하행역으로 가지는 구간을 찾을 수 없습니다."));
+            .orElseThrow(() -> new DataNotFoundException(
+                String.format("해당 역을 하행역으로 가지는 구간을 찾을 수 없습니다. (id:%s)", stationId))
+            );
     }
 
     public Section findSameForm(final Long upStationId, final Long downStationId) {

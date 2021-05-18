@@ -9,7 +9,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.exception.service.ValidationFailureException;
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.ValidationFailureException;
 
 public class SectionsTest {
 
@@ -42,7 +43,7 @@ public class SectionsTest {
         sectionGroup.add(Section.Builder().lineId(1L).upStationId(2L).downStationId(1L).distance(6).build());
 
         assertThatThrownBy(() -> new Sections(sectionGroup))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(DataNotFoundException.class)
             .hasMessage("해당하는 상행역이 없습니다.");
     }
 

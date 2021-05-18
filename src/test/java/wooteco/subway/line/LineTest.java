@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.exception.service.ValidationFailureException;
+import wooteco.subway.exception.ValidationFailureException;
 import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.Sections;
 

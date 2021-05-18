@@ -1,7 +1,7 @@
 package wooteco.subway.line.section;
 
 import java.util.Objects;
-import wooteco.subway.exception.service.ValidationFailureException;
+import wooteco.subway.exception.ValidationFailureException;
 
 public class Section {
 
@@ -20,14 +20,14 @@ public class Section {
         this.distance = builder.distance;
     }
 
+    public static Builder Builder() {
+        return new Builder();
+    }
+
     private void validateDifferentStation(final Long upStationId, final Long downStationId) {
         if (upStationId.equals(downStationId)) {
             throw new ValidationFailureException("구간은 상행역과 하행역이 같을 수 없습니다.");
         }
-    }
-
-    public static Builder Builder() {
-        return new Builder();
     }
 
     public void validateSmaller(final int distance) {

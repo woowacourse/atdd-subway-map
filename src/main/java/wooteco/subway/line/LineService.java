@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.exception.service.ObjectNotFoundException;
+import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.SectionDao;
 import wooteco.subway.line.section.SectionRequest;
@@ -39,9 +39,9 @@ public class LineService {
     }
 
     private Line composeLine(final Long lineId) {
-        final Line line = lineDao.findById(
-            lineId).orElseThrow(() -> new ObjectNotFoundException("해당 Id의 노선이 없습니다.")
-        );
+        final Line line = lineDao.findById(lineId)
+            .orElseThrow(() -> new DataNotFoundException("해당 Id의 노선이 없습니다.")
+            );
         final Sections sections = new Sections(sectionDao.findByLineId(lineId));
         return new Line(line.getId(), line.getName(), line.getColor(), sections);
     }

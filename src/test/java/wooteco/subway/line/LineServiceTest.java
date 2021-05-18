@@ -8,8 +8,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +21,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wooteco.subway.exception.service.ValidationFailureException;
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.ValidationFailureException;
 import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.SectionDao;
 import wooteco.subway.line.section.SectionRequest;
@@ -78,6 +79,21 @@ class LineServiceTest {
 
         assertThat(lineResponse.getId()).isEqualTo(1L);
         assertThat(lineResponse.getStations()).extracting("id").containsExactlyInAnyOrder(1L, 2L);
+    }
+
+    @DisplayName("없는 노선을 조회하면 예외가 발생한다.")
+    @Test
+    void findLine_fail_notExistent() {
+        // given
+        given(lineDao.findById(2L)).willThrow(DataNotFoundException.class);
+
+        // when, then
+        assertThatThrownBy(() -> lineService.findLine(2L))
+            .isInstanceOf(DataNotFoundException.class);
+
+        then(lineDao).should(times(1)).findById(anyLong());
+        then(sectionDao).should(never()).findByLineId(anyLong());
+        then(stationService).should(never()).findByIds(anyList());
     }
 
     private void given_findLine() {
@@ -149,7 +165,7 @@ class LineServiceTest {
     @Test
     void addSection_fail_notExistentStation() {
         // given
-        final SectionRequest sectionRequest = new SectionRequest(3L, 3L, 7);
+        final SectionRequest sectionRequest = new SectionRequest(3L, 4L, 7);
         given_composeLine();
 
         // when, then

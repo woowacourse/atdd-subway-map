@@ -4,7 +4,7 @@ package wooteco.subway.line;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import wooteco.subway.exception.service.ValidationFailureException;
+import wooteco.subway.exception.ValidationFailureException;
 import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.Sections;
 
