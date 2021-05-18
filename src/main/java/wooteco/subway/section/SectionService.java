@@ -38,7 +38,7 @@ public class SectionService {
         Section modified = sections.modifyRelatedToAdd(newSection);
         sections.add(newSection);
 
-        sectionDao.updateModified(modified);
+        sectionDao.update(modified);
         Section section = sectionDao.create(newSection, lineId);
 
         return SectionResponse.create(section);
