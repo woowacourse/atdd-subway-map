@@ -81,7 +81,7 @@ public class Section {
     }
 
     public Long getId() {
-        return id.getValue();
+        return id.value();
     }
 
     public Line getLine() {

@@ -36,7 +36,7 @@ public class SectionServiceDto {
             section.getLine().getId(),
             section.getUpStation().getId(),
             section.getDownStation().getId(),
-            section.getDistance().getValue()
+            section.getDistance().value()
         );
     }
 

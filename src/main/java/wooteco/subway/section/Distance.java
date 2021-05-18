@@ -19,15 +19,15 @@ public class Distance {
         }
     }
 
-    public int getValue() {
-        return value;
-    }
-
     public Distance add(final Distance distance) {
-        return new Distance(value + distance.getValue());
+        return new Distance(value + distance.value());
     }
 
     public Distance subtract(final Distance distance) {
-        return new Distance(value - distance.getValue());
+        return new Distance(value - distance.value());
+    }
+
+    public int value() {
+        return value;
     }
 }

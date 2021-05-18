@@ -17,7 +17,7 @@ public class Color {
         }
     }
 
-    public String getValue() {
+    public String value() {
         return value;
     }
 }

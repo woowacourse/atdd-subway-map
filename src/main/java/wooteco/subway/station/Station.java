@@ -24,7 +24,7 @@ public class Station {
         if (id == null) {
             return null;
         }
-        return id.getValue();
+        return id.value();
     }
 
     public String getName() {

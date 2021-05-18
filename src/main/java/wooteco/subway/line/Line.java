@@ -30,15 +30,15 @@ public class Line {
         if (id == null) {
             return null;
         }
-        return id.getValue();
+        return id.value();
     }
 
     public String getName() {
-        return name.getValue();
+        return name.value();
     }
 
     public String getColor() {
-        return color.getValue();
+        return color.value();
     }
 
     @Override

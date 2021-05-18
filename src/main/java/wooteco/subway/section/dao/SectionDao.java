@@ -64,7 +64,7 @@ public class SectionDao {
         params.put("line_id", section.getLine().getId());
         params.put("up_station_id", section.getUpStation().getId());
         params.put("down_station_id", section.getDownStation().getId());
-        params.put("distance", section.getDistance().getValue());
+        params.put("distance", section.getDistance().value());
 
         long key = jdbcInsert.executeAndReturnKey(params).longValue();
 

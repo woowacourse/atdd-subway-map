@@ -111,7 +111,7 @@ class SectionTest {
         Section dividedSectionForInsert = SECTION.dividedSectionForSave(newSection);
 
         //then
-        assertThat(dividedSectionForInsert.getDistance().getValue()).isEqualTo(5);
+        assertThat(dividedSectionForInsert.getDistance().value()).isEqualTo(5);
         assertThat(dividedSectionForInsert.getDownStation().getName()).isEqualTo(DOWN_STATION.getName());
         assertThat(dividedSectionForInsert.getUpStation().getName()).isEqualTo(downStation.getName());
     }
@@ -130,7 +130,7 @@ class SectionTest {
         Section combinedSectionForDelete = SECTION.assembledSectionForDelete(newSection);
 
         //then
-        assertThat(combinedSectionForDelete.getDistance().getValue()).isEqualTo(20);
+        assertThat(combinedSectionForDelete.getDistance().value()).isEqualTo(20);
         assertThat(combinedSectionForDelete.getUpStation().getName()).isEqualTo(UP_STATION.getName());
         assertThat(combinedSectionForDelete.getDownStation().getName()).isEqualTo(downStation.getName());
     }

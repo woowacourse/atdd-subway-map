@@ -17,7 +17,7 @@ public class Id {
         }
     }
 
-    public Long getValue() {
+    public Long value() {
         return value;
     }
 

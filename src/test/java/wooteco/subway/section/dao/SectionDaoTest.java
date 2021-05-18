@@ -67,7 +67,7 @@ public class SectionDaoTest {
         assertThat(savedSection.getLine()).isEqualTo(line);
         assertThat(savedSection.getUpStation()).isEqualTo(upStation);
         assertThat(savedSection.getDownStation()).isEqualTo(downStation);
-        assertThat(savedSection.getDistance().getValue()).isEqualTo(distance);
+        assertThat(savedSection.getDistance().value()).isEqualTo(distance);
     }
 
     @Test
@@ -84,11 +84,11 @@ public class SectionDaoTest {
         assertThat(savedSinSeolAndDongMyo.getLine()).isEqualTo(line);
         assertThat(savedSinSeolAndDongMyo.getUpStation()).isEqualTo(stationSinSeol);
         assertThat(savedSinSeolAndDongMyo.getDownStation()).isEqualTo(stationDongMyo);
-        assertThat(savedSinSeolAndDongMyo.getDistance().getValue()).isEqualTo(distance);
+        assertThat(savedSinSeolAndDongMyo.getDistance().value()).isEqualTo(distance);
         assertThat(savedDongMyoAndDongDaeMoon.getLine()).isEqualTo(line);
         assertThat(savedDongMyoAndDongDaeMoon.getUpStation()).isEqualTo(stationDongMyo);
         assertThat(savedDongMyoAndDongDaeMoon.getDownStation()).isEqualTo(stationDongDaeMoon);
-        assertThat(savedDongMyoAndDongDaeMoon.getDistance().getValue()).isEqualTo(distance);
+        assertThat(savedDongMyoAndDongDaeMoon.getDistance().value()).isEqualTo(distance);
     }
 
     @Test
@@ -104,7 +104,7 @@ public class SectionDaoTest {
         assertThat(section.getLine()).isEqualTo(line);
         assertThat(section.getUpStation()).isEqualTo(stationSinSeol);
         assertThat(section.getDownStation()).isEqualTo(stationDongMyo);
-        assertThat(section.getDistance().getValue()).isEqualTo(distance);
+        assertThat(section.getDistance().value()).isEqualTo(distance);
     }
 
     @Test
@@ -120,7 +120,7 @@ public class SectionDaoTest {
         assertThat(section.getLine()).isEqualTo(line);
         assertThat(section.getUpStation()).isEqualTo(stationSinSeol);
         assertThat(section.getDownStation()).isEqualTo(stationDongMyo);
-        assertThat(section.getDistance().getValue()).isEqualTo(distance);
+        assertThat(section.getDistance().value()).isEqualTo(distance);
     }
 
     @Test

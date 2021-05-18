@@ -99,7 +99,7 @@ public class SectionServiceTest {
         assertThat(savedDongDaeMoonAndHaegiDto.getDownStationId()).isEqualTo(targetDownStationId);
         assertThat(savedDongDaeMoonAndHaegiDto.getDistance()).isEqualTo(targetDistance);
 
-        assertThat(changedSection.getDistance().getValue()).isEqualTo(10 - targetDistance);
+        assertThat(changedSection.getDistance().value()).isEqualTo(10 - targetDistance);
         assertThat(changedSection.getUpStation().getId()).isEqualTo(4L);
     }
 
@@ -136,7 +136,7 @@ public class SectionServiceTest {
         // then
         assertThat(section.getUpStation().getId()).isEqualTo(stationSinSeolId);
         assertThat(section.getDownStation().getId()).isEqualTo(stationDongDaeMoonId);
-        assertThat(section.getDistance().getValue()).isEqualTo(20);
+        assertThat(section.getDistance().value()).isEqualTo(20);
     }
 
     @Test
