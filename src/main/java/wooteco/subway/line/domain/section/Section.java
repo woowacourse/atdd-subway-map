@@ -22,6 +22,17 @@ public class Section {
         this.distance = distance;
     }
 
+    private void validateSection(Long lineId, Long upStationId, Long downStationId, Distance distance) {
+        validateNull(lineId, upStationId, downStationId, distance);
+    }
+
+    private void validateNull(Long lineId, Long upStationId, Long downStationId, Distance distance) {
+        Objects.requireNonNull(lineId, "lineId는 null이 될 수 없습니다.");
+        Objects.requireNonNull(upStationId, "upStationId는 null이 될 수 없습니다.");
+        Objects.requireNonNull(downStationId, "downStationId는 null이 될 수 없습니다.");
+        Objects.requireNonNull(distance, "distance는 null이 될 수 없습니다.");
+    }
+
     public boolean hasUpStationIdOrDownStationId(Section section) {
         return this.isSameUpStationId(section) || this.isSameDownStationId(section);
     }
@@ -48,7 +59,6 @@ public class Section {
         return this.distance.minus(section.distance);
     }
 
-
     public Section mergeWithoutDuplicateStationId(Section section) {
         if (this.upStationId.equals(section.downStationId)) {
             return new Section(lineId, section.upStationId, this.downStationId, this.distance.plus(section.distance));
@@ -74,17 +84,6 @@ public class Section {
 
     public Distance getDistance() {
         return distance;
-    }
-
-    private void validateSection(Long lineId, Long upStationId, Long downStationId, Distance distance) {
-        validateNull(lineId, upStationId, downStationId, distance);
-    }
-
-    private void validateNull(Long lineId, Long upStationId, Long downStationId, Distance distance) {
-        Objects.requireNonNull(lineId, "lineId는 null이 될 수 없습니다.");
-        Objects.requireNonNull(upStationId, "upStationId는 null이 될 수 없습니다.");
-        Objects.requireNonNull(downStationId, "downStationId는 null이 될 수 없습니다.");
-        Objects.requireNonNull(distance, "distance는 null이 될 수 없습니다.");
     }
 
     @Override
