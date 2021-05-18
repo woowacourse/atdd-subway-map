@@ -3,6 +3,7 @@ package wooteco.subway.line;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -72,7 +73,7 @@ class LineServiceTest {
         // then
         then(lineDao).should(times(1)).findById(anyLong());
         then(sectionDao).should(times(1)).findByLineId(anyLong());
-        then(stationService).should(times(1)).findByIds(any(List.class));
+        then(stationService).should(times(1)).findByIds(anyList());
 
         assertThat(lineResponse.getId()).isEqualTo(1L);
         assertThat(lineResponse.getStations()).extracting("id").containsExactlyInAnyOrder(1L, 2L);

@@ -27,11 +27,6 @@ public class StationService {
             .collect(Collectors.toList());
     }
 
-    public Station findById(final Long id) {
-        return stationDao.findById(id)
-            .orElseThrow(() -> new ObjectNotFoundException("해당 ID의 지하철역이 없습니다."));
-    }
-
     public Stations findByIds(final List<Long> ids) {
         final List<Station> stationGroup = stationDao.findByIds(ids);
         if (stationGroup.size() != ids.size()) {
