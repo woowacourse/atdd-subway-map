@@ -27,7 +27,7 @@ public class JdbcStationDao implements StationDao {
             return ps;
         }, keyHolder);
 
-        return Station.create(keyHolder.getKey().longValue(), station.getName());
+        return new Station(keyHolder.getKey().longValue(), station.getName());
     }
 
     @Override
@@ -66,7 +66,7 @@ public class JdbcStationDao implements StationDao {
         return (rs, rowNum) -> {
             Long id = rs.getLong("id");
             String name = rs.getString("name");
-            return Station.create(id, name);
+            return new Station(id, name);
         };
     }
 

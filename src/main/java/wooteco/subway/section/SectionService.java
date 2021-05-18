@@ -16,8 +16,8 @@ import wooteco.subway.station.StationService;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class SectionService {
     private final StationService stationService;
     private final SectionDao sectionDao;
@@ -33,7 +33,7 @@ public class SectionService {
     public SectionResponse create(SectionRequest sectionRequest, Long lineId) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Section newSection = Section.create(upStation, downStation, sectionRequest.getDistance());
+        Section newSection = new Section(upStation, downStation, sectionRequest.getDistance());
 
         Sections sections = findAllByLineId(lineId);
 
@@ -86,7 +86,7 @@ public class SectionService {
         for (SectionTable sectionTable : sectionTables) {
             Station upStation = stationService.findById(sectionTable.getUpStationId());
             Station downStation = stationService.findById(sectionTable.getDownStationId());
-            sections.add(Section.create(sectionTable.getId(), upStation, downStation, sectionTable.getDistance()));
+            sections.add(new Section(sectionTable.getId(), upStation, downStation, sectionTable.getDistance()));
         }
         return sections;
     }

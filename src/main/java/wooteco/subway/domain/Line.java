@@ -1,12 +1,9 @@
 package wooteco.subway.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.List;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class Line {
     private Long id;
@@ -14,16 +11,19 @@ public class Line {
     private String color;
     private Stations stations;
 
-    public static Line create(String name, String color) {
-        return create(null, name, color);
+    public Line(String name, String color) {
+        this(null, name, color);
     }
 
-    public static Line create(Long id, String name, String color) {
-        return create(id, name, color, Stations.create());
+    public Line(Long id, String name, String color) {
+        this(id, name, color, new Stations());
     }
 
-    public static Line create(Long id, String name, String color, Stations stations) {
-        return new Line(id, name, color, stations);
+    public Line(Long id, String name, String color, Stations stations) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.stations = stations;
     }
 
     public List<Station> getStations() {
@@ -39,6 +39,6 @@ public class Line {
     }
 
     public void setStationsBySections(Sections sections) {
-        this.stations = Stations.create(sections);
+        this.stations = new Stations(sections);
     }
 }

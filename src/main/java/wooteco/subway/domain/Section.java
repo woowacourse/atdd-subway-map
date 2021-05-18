@@ -1,14 +1,11 @@
 package wooteco.subway.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import wooteco.subway.exception.section.SectionDuplicatedException;
 import wooteco.subway.exception.section.SectionHasSameUpAndDownException;
 
 import java.util.Objects;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class Section {
 
@@ -17,14 +14,17 @@ public class Section {
     private Station downStation;
     private SectionDistance distance;
 
-    public static Section create(Station upStation, Station downStation, int distance) {
-        return create(null, upStation, downStation, distance);
+    public Section(Station upStation, Station downStation, int distance) {
+        this(null, upStation, downStation, distance);
     }
 
-    public static Section create(Long id, Station upStation, Station downStation, int distance) {
+    public Section(Long id, Station upStation, Station downStation, int distance) {
         validateSameUpAndDown(upStation, downStation);
 
-        return new Section(id, upStation, downStation, new SectionDistance(distance));
+        this.id = id;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = new SectionDistance(distance);
     }
 
     private static void validateSameUpAndDown(Station upStation, Station downStation) {

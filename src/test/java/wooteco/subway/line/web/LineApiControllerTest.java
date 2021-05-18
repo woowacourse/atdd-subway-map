@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.station.StationRequest;
+import wooteco.subway.station.web.StationRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

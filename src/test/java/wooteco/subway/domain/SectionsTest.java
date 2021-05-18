@@ -32,17 +32,17 @@ class SectionsTest {
 
     @BeforeEach
     void setUp() {
-        강남역 = Station.create(1L, "강남역");
-        수서역 = Station.create(2L, "수서역");
-        잠실역 = Station.create(3L, "잠실역");
-        동탄역 = Station.create(4L, "동탄역");
-        양재역 = Station.create(5L, "양재역");
-        강남_수서 = Section.create(강남역, 수서역, 10);
-        양재_수서 = Section.create(양재역, 수서역, 5);
-        수서_양재 = Section.create(수서역, 양재역, 5);
-        수서_강남 = Section.create(수서역, 강남역, 4);
-        수서_잠실 = Section.create(수서역, 잠실역, 10);
-        잠실_동탄 = Section.create(잠실역, 동탄역, 10);
+        강남역 = new Station(1L, "강남역");
+        수서역 = new Station(2L, "수서역");
+        잠실역 = new Station(3L, "잠실역");
+        동탄역 = new Station(4L, "동탄역");
+        양재역 = new Station(5L, "양재역");
+        강남_수서 = new Section(강남역, 수서역, 10);
+        양재_수서 = new Section(양재역, 수서역, 5);
+        수서_양재 = new Section(수서역, 양재역, 5);
+        수서_강남 = new Section(수서역, 강남역, 4);
+        수서_잠실 = new Section(수서역, 잠실역, 10);
+        잠실_동탄 = new Section(잠실역, 동탄역, 10);
     }
 
 
@@ -56,7 +56,7 @@ class SectionsTest {
         sections.add(modified);
 
         assertThat(sections.sections()).hasSize(2);
-        assertThat(modified).isEqualTo(Section.create(강남역, 양재역, 5));
+        assertThat(modified).isEqualTo(new Section(강남역, 양재역, 5));
     }
 
     @DisplayName("구간추가 - 성공(기존의 구간이 변경되지 않는 경우)")
@@ -83,7 +83,7 @@ class SectionsTest {
         sections.add(양재_수서);
 
         assertThat(sections.sections()).hasSize(3);
-        assertThat(modified).isEqualTo(Section.create(강남역, 양재역, 5));
+        assertThat(modified).isEqualTo(new Section(강남역, 양재역, 5));
     }
 
     @DisplayName("구간추가 - 성공(가운데 추가 경우, 베이스가 머리)")
@@ -96,7 +96,7 @@ class SectionsTest {
         sections.add(수서_양재);
 
         assertThat(sections.sections()).hasSize(3);
-        assertThat(modified).isEqualTo(Section.create(양재역, 잠실역, 5));
+        assertThat(modified).isEqualTo(new Section(양재역, 잠실역, 5));
     }
 
     @DisplayName("구간추가 - 실패(의미상 같은 구간 추가)")
@@ -115,7 +115,7 @@ class SectionsTest {
     void addAndThenGetModifiedAdjacent_실패_앞뒤같은구간() {
         Sections sections = Sections.create(강남_수서);
 
-        assertThatThrownBy(() -> sections.modifyRelatedSectionToAdd(Section.create(강남역, 강남역, 10)))
+        assertThatThrownBy(() -> sections.modifyRelatedSectionToAdd(new Section(강남역, 강남역, 10)))
                 .isInstanceOf(SectionHasSameUpAndDownException.class);
     }
 
@@ -123,7 +123,7 @@ class SectionsTest {
     @Test
     void addAndThenGetModifiedAdjacent_실패_연결불가() {
         List<Section> setting = Arrays.asList(수서_잠실, 강남_수서);
-        Section section = Section.create(동탄역, 양재역, 10);
+        Section section = new Section(동탄역, 양재역, 10);
         Sections sections = Sections.create(setting);
 
         assertThatThrownBy(() -> sections.modifyRelatedSectionToAdd(section))
@@ -160,7 +160,7 @@ class SectionsTest {
         List<Section> removed = sections.removeRelatedSections(수서역);
         Section result = sections.modifyRelatedSectionsToRemove(removed, 수서역);
 
-        assertThat(result).isEqualTo((Section.create(강남역, 잠실역, 20)));
+        assertThat(result).isEqualTo((new Section(강남역, 잠실역, 20)));
     }
 
     @DisplayName("크기확인")

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wooteco.subway.domain.Section;
-import wooteco.subway.station.StationResponse;
+import wooteco.subway.station.web.StationResponse;
 
 @Getter
 @NoArgsConstructor

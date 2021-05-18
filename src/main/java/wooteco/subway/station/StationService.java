@@ -7,6 +7,8 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.exception.station.StationDuplicatedException;
 import wooteco.subway.exception.station.StationNotFoundException;
 import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.web.StationRequest;
+import wooteco.subway.station.web.StationResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,7 +37,7 @@ public class StationService {
 
     @Transactional
     public StationResponse save(StationRequest stationRequest) {
-        Station station = Station.create(stationRequest.getName());
+        Station station = new Station(stationRequest.getName());
         validateExistName(station);
 
         Station createdStation = stationDao.create(station);

@@ -9,16 +9,12 @@ public class Stations {
 
     private final List<Section> sections;
 
-    private Stations(Sections sections) {
+    public Stations(Sections sections) {
         this.sections = sections.getList();
     }
 
-    public static Stations create() {
-        return create(Sections.create());
-    }
-
-    public static Stations create(Sections sections) {
-        return new Stations(sections);
+    public Stations() {
+        this(Sections.create());
     }
 
     private List<Station> convertToSortedStations() {

@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import wooteco.subway.line.web.LineRequest;
 import wooteco.subway.section.web.SectionRequest;
-import wooteco.subway.station.StationRequest;
+import wooteco.subway.station.web.StationRequest;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

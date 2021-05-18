@@ -11,8 +11,8 @@ class StationTest {
     @Test
     @DisplayName("id가 같은지 확인")
     void isSameId() {
-        Station sample = Station.create(1L, "sample");
-        Station mock = Station.create(1L, "mock");
+        Station sample = new Station(1L, "sample");
+        Station mock = new Station(1L, "mock");
 
         assertTrue(sample.isSameId(mock.getId()));
     }
@@ -20,8 +20,8 @@ class StationTest {
     @Test
     @DisplayName("이름이 같은지 확인")
     void isSameName() {
-        Station sample = Station.create(1L, "name");
-        Station mock = Station.create(3L, "name");
+        Station sample = new Station(1L, "name");
+        Station mock = new Station(3L, "name");
 
         assertTrue(sample.isSameName(mock.getName()));
     }

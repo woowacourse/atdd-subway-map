@@ -1,23 +1,21 @@
 package wooteco.subway.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Objects;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class Station {
     private Long id;
     private String name;
 
-    public static Station create(String name) {
-        return create(null, name);
+    public Station(String name) {
+        this(null, name);
     }
 
-    public static Station create(Long id, String name) {
-        return new Station(id, name);
+    public Station(Long id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public boolean isSameId(Long id) {

@@ -28,7 +28,7 @@ public class JdbcLineDao implements LineDao {
             return ps;
         }, keyHolder);
 
-        return Line.create(keyHolder.getKey().longValue(), line.getName(), line.getColor());
+        return new Line(keyHolder.getKey().longValue(), line.getName(), line.getColor());
     }
 
     @Override
@@ -63,7 +63,7 @@ public class JdbcLineDao implements LineDao {
             Long id = rs.getLong("id");
             String name = rs.getString("name");
             String color = rs.getString("color");
-            return Line.create(id, name, color);
+            return new Line(id, name, color);
         };
     }
 }

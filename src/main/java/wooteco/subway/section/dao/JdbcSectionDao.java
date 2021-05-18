@@ -31,7 +31,7 @@ public class JdbcSectionDao implements SectionDao {
             return ps;
         }, keyHolder);
 
-        return Section.create(keyHolder.getKey().longValue(), section.getUpStation(), section.getDownStation(), section.getDistance());
+        return new Section(keyHolder.getKey().longValue(), section.getUpStation(), section.getDownStation(), section.getDistance());
     }
 
     @Override

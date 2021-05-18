@@ -148,13 +148,13 @@ public class Sections {
         if (firstRelated.isUpStation(station)) {
             Station downStation = firstRelated.getDownStation();
             Station upStation = secondRelated.getUpStation();
-            Section modified = Section.create(upStation, downStation, distance);
+            Section modified = new Section(upStation, downStation, distance);
             sections.add(modified);
             return modified;
         }
         Station upStation = firstRelated.getUpStation();
         Station downStation = secondRelated.getDownStation();
-        Section modified = Section.create(upStation, downStation, distance);
+        Section modified = new Section(upStation, downStation, distance);
         sections.add(modified);
         return modified;
     }

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wooteco.subway.domain.Line;
-import wooteco.subway.station.StationResponse;
+import wooteco.subway.station.web.StationResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;

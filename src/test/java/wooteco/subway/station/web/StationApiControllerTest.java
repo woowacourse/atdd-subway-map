@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.station.web;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.station.web.StationRequest;
+import wooteco.subway.station.web.StationResponse;
 
 import java.util.Arrays;
 import java.util.List;
