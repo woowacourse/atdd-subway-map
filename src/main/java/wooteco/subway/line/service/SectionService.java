@@ -1,11 +1,11 @@
 package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.line.controller.dto.SectionRequest;
 import wooteco.subway.line.domain.section.Distance;
 import wooteco.subway.line.domain.section.Section;
 import wooteco.subway.line.domain.repository.SectionRepository;
 import wooteco.subway.line.domain.section.Sections;
-import wooteco.subway.line.service.dto.section.SectionSaveDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,11 +18,11 @@ public class SectionService {
         this.sectionRepository = sectionRepository;
     }
 
-    public void addSection(Long lineId, SectionSaveDto sectionSaveDto) {
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
         Sections sections = new Sections(sectionRepository.findByLineId(lineId));
         List<Section> tempSections = sections.toList();
-        Section section = new Section(lineId, sectionSaveDto.getUpStationId(),
-                sectionSaveDto.getDownStationId(), new Distance(sectionSaveDto.getDistance()));
+        Section section = new Section(lineId, sectionRequest.getUpStationId(),
+                sectionRequest.getDownStationId(), new Distance(sectionRequest.getDistance()));
         sections.add(section);
         List<Section> updatedSections = sections.toList();
         updateSectionByChanged(tempSections, updatedSections);
