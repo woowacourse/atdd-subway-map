@@ -15,15 +15,13 @@ public class Sections {
         this.sections = new ArrayList<>(sections);
     }
 
-    public boolean canAttachesAfterEndStation(SectionDto sectionDto) {
+    public boolean canAttachAfterEndStation(Long upStationId, Long downStationId) {
         List<Station> stations = sortedStations();
         Station firstStation = stations.get(0);
         Station lastStation = stations.get(stations.size() - 1);
 
-        return (firstStation.isSameId(sectionDto.getDownStationId())
-                && !stations.contains(new Station(sectionDto.getUpStationId(), "temp")))
-                || (lastStation.isSameId(sectionDto.getUpStationId())
-                && !stations.contains(new Station(sectionDto.getDownStationId(), "temp")));
+        return (firstStation.isSameId(downStationId) && !stations.contains(new Station(upStationId, "temp")))
+                || (lastStation.isSameId(upStationId) && !stations.contains(new Station(downStationId, "temp")));
     }
 
     public SectionStandard calculateSectionStandard(SectionDto sectionDto) {
@@ -133,3 +131,4 @@ public class Sections {
         }
     }
 }
+

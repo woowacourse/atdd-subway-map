@@ -42,7 +42,9 @@ public class SectionsTest {
         SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(1L, 5L, 10));
         SectionDto sectionDto2 = SectionDto.of(1L, new SectionRequest(5L, 1L, 10));
 
-        assertThat(sections.canAttachesAfterEndStation(sectionDto)).isTrue();
-        assertThat(sections.canAttachesAfterEndStation(sectionDto2)).isFalse();
+        assertThat(sections.canAttachAfterEndStation(
+                sectionDto.getUpStationId(), sectionDto.getDownStationId())).isTrue();
+        assertThat(sections.canAttachAfterEndStation(
+                sectionDto2.getUpStationId(), sectionDto2.getDownStationId())).isFalse();
     }
 }

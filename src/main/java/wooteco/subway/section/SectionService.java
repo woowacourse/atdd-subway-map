@@ -23,7 +23,7 @@ public class SectionService {
         Sections sections = new Sections(sectionDao.findAllByLineId(sectionDto.getLineId()));
         sections.validateSectionInclusion(sectionDto);
 
-        if (sections.canAttachesAfterEndStation(sectionDto)) {
+        if (sections.canAttachAfterEndStation(sectionDto.getUpStationId(), sectionDto.getDownStationId())) {
             return sectionDao.save(sectionDto.getLineId(), sectionDto.getUpStationId(),
                     sectionDto.getDownStationId(), sectionDto.getDistance());
         }
