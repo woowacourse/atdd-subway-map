@@ -3,6 +3,7 @@ package wooteco.subway.station.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.DuplicatedNameException;
+import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class StationService {
-    private StationDao stationDao;
+    private final StationDao stationDao;
 
     public StationService(StationDao stationDao) {
         this.stationDao = stationDao;
@@ -35,6 +36,15 @@ public class StationService {
 
     private boolean checkNameDuplicate(StationRequest stationRequest) {
         return stationDao.findByName(stationRequest.getName());
+    }
+
+    public void validateExistStations(Long upId, Long downId) {
+        if (!isExistingStation(upId)) {
+            throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
+        }
+        if (!isExistingStation(downId)) {
+            throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
+        }
     }
 
     @Transactional(readOnly = true)

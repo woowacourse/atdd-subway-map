@@ -3,7 +3,6 @@ package wooteco.subway.section.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.InvalidInsertException;
-import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.line.Line;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.Sections;
@@ -28,13 +27,13 @@ public class SectionService {
 
     @Transactional
     public void save(Line newLine, SectionRequest sectionReq) {
-        validateExistStations(sectionReq.getUpStationId(), sectionReq.getDownStationId());
+        stationService.validateExistStations(sectionReq.getUpStationId(), sectionReq.getDownStationId());
         sectionDao.save(newLine.getId(), sectionReq.toEntity());
     }
 
     @Transactional
     public SectionResponse appendSection(Long lineId, SectionRequest sectionReq) {
-        validateExistStations(sectionReq.getUpStationId(), sectionReq.getDownStationId());
+        stationService.validateExistStations(sectionReq.getUpStationId(), sectionReq.getDownStationId());
         Section newSection = sectionReq.toEntity();
         Sections sections =  new Sections(sectionDao.findAllByLineId(lineId), newSection);
 
@@ -42,15 +41,6 @@ public class SectionService {
             return saveAtEnd(lineId, newSection);
         }
         return saveAtMiddle(lineId, newSection, sections);
-    }
-
-    public void validateExistStations(Long upId, Long downId) {
-        if (!stationService.isExistingStation(upId)) {
-            throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
-        }
-        if (!stationService.isExistingStation(downId)) {
-            throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
-        }
     }
 
     private SectionResponse saveAtEnd(Long lineId, Section newSection) {
@@ -134,10 +124,5 @@ public class SectionService {
 
         Section newSection = new Section(newUp, newDown, totalDistance);
         return newSection;
-    }
-
-    @Transactional(readOnly = true)
-    public List<StationResponse> findStationsByIds(List<Long> stationIds) {
-        return stationService.findStationsByIds(stationIds);
     }
 }
