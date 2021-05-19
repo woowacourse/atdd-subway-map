@@ -45,6 +45,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private Station 검프역;
     private Line 백기선;
 
+    private LineRequest 인천1호선_Request;
+    private LineRequest 인천2호선_Request;
+
     private static Stream<Arguments> stationIds() {
         return Stream.of(
                 Arguments.arguments(1L, 2L),
@@ -79,12 +82,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        String newLineName = "신분당선";
-        String newLineColor = "bg-black-500";
-        Long newUpStationId = 낙성대역.id();
-        Long newDownStationId = 검프역.id();
-        int newDistance = 5;
-        LineRequest lineRequest = new LineRequest(newLineName, newLineColor, newUpStationId, newDownStationId, newDistance);
+        LineRequest lineRequest = 지하철_노선_생성됨(인천1호선_Request);
 
         // when
         ExtractableResponse<Response> response = post_요청을_보냄(BASE_URL, lineRequest);
@@ -94,6 +92,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
         assertThat(stationResponsesToStrings(lineResponse.getStations())).containsExactly(낙성대역.name(), 검프역.name());
+    }
+
+    private LineRequest 지하철_노선_생성됨(LineRequest request) {
+        String newLineName = "신분당선";
+        String newLineColor = "bg-black-500";
+        Long newUpStationId = 낙성대역.id();
+        Long newDownStationId = 검프역.id();
+        int newDistance = 5;
+        return new LineRequest(newLineName, newLineColor, newUpStationId, newDownStationId, newDistance);
     }
 
     @DisplayName("기존에 존재하는 노선의 이름으로 노선을 생성하면 예외가 발생한다.")
