@@ -88,7 +88,7 @@ class SectionServiceTest {
 
     @Test
     @DisplayName("상행 종점 구간 등록")
-    public void saveSectionWithUpEndStiationCase() {
+    public void saveSectionWithUpEndStationCase() {
         sectionDao.save(1L, 1L, 2L, 10);
         SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(4L, 1L, 1));
         sectionService.save(sectionDto);
@@ -139,7 +139,7 @@ class SectionServiceTest {
 
     @Test
     @DisplayName("종점 역이 포함된 구간 삭제")
-    public void deleteSectionWithContainingEndStatonCase() {
+    public void deleteSectionWithContainingEndStationCase() {
         sectionDao.save(1L, 1L, 2L, 10);
         sectionDao.save(1L, 2L, 3L, 10);
         sectionService.delete(1L, 1L);
