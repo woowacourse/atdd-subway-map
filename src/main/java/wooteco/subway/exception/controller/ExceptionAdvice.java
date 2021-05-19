@@ -27,8 +27,9 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ExceptionResponse> handleNotFoundException() {
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<ExceptionResponse> handleNotFoundException(NotFoundException e) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(e.getMessage());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
