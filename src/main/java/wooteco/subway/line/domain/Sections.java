@@ -19,10 +19,6 @@ public class Sections {
         this.sections = new ArrayList<>(sections);
     }
 
-    public void addSection(final Section section) {
-        this.sections.add(section);
-    }
-
     public List<Section> sections() {
         return Collections.unmodifiableList(sections);
     }

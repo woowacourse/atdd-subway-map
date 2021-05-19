@@ -1,6 +1,5 @@
 package wooteco.subway.line.domain;
 
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,7 +12,6 @@ import wooteco.subway.station.domain.Station;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class JDBCSectionDao implements SectionDao {
@@ -22,7 +20,7 @@ public class JDBCSectionDao implements SectionDao {
 
     public JDBCSectionDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.sectionRowMapper =  (rs, rowNum) ->
+        this.sectionRowMapper = (rs, rowNum) ->
                 new Section(rs.getLong("id"),
                         new Line(rs.getLong("line_id")),
                         new Station(rs.getLong("up_station_id")),
@@ -65,40 +63,6 @@ public class JDBCSectionDao implements SectionDao {
                 " WHERE Line.id = ?";
 
         return jdbcTemplate.query(sql, sectionRowMapper, id);
-    }
-
-    @Override
-    public Optional<Section> findByLineIdWithUpStationId(final Long lineId, final Long stationId) {
-        String sql = "SELECT * FROM SECTION" +
-                " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
-                " WHERE LINE.id = ? AND SECTION.up_station_id = ?";
-        List<Section> sections = jdbcTemplate.query(sql, sectionRowMapper, lineId, stationId);
-
-        return Optional.ofNullable(DataAccessUtils.singleResult(sections));
-    }
-
-    @Override
-    public void deleteByLineIdWithUpStationId(Long lineId, Long upStationId) {
-        String sql = "DELETE FROM SECTION" +
-                " WHERE SECTION.line_id = ? AND SECTION.up_station_id = ?";
-        jdbcTemplate.update(sql, lineId, upStationId);
-    }
-
-    @Override
-    public Optional<Section> findByLineIdWithDownStationId(Long lineId, Long downStationId) {
-        String sql = "SELECT * FROM SECTION" +
-                " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
-                " WHERE LINE.id = ? AND SECTION.down_station_id = ?";
-        List<Section> sections = jdbcTemplate.query(sql, sectionRowMapper, lineId, downStationId);
-
-        return Optional.ofNullable(DataAccessUtils.singleResult(sections));
-    }
-
-    @Override
-    public void deleteByLineIdWithDownStationId(Long lineId, Long downStationId) {
-        String sql = "DELETE FROM SECTION" +
-                " WHERE SECTION.line_id = ? AND SECTION.down_station_id = ?";
-        jdbcTemplate.update(sql, lineId, downStationId);
     }
 
     @Override
