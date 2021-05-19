@@ -1,9 +1,6 @@
 package wooteco.subway.line.domain;
 
-import wooteco.subway.common.exception.AlreadyExistsException;
 import wooteco.subway.common.exception.NotFoundException;
-import wooteco.subway.line.state.State;
-import wooteco.subway.line.state.StateFactory;
 import wooteco.subway.station.domain.Station;
 
 import java.util.List;
@@ -13,7 +10,7 @@ public class Line {
     private final Long id;
     private LineName name;
     private String color;
-    private final State state;
+    private Sections sections;
 
     public Line(final Long id) {
         this(id, LineName.emptyName(), null);
@@ -28,18 +25,18 @@ public class Line {
     }
 
     public Line(final Long id, final LineName name, final String color) {
-        this(id, name, color, StateFactory.create(new Sections()));
+        this(id, name, color, new Sections());
     }
 
     public Line(final Long id, final String name, final String color, final List<Section> sections) {
-        this(id, new LineName(name), color, StateFactory.create(new Sections(sections)));
+        this(id, new LineName(name), color, new Sections(sections));
     }
 
-    public Line(final Long id, final LineName name, final String color, final State state) {
+    public Line(final Long id, final LineName name, final String color, final Sections sections) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.state = state;
+        this.sections = sections;
     }
 
     public Long id() {
@@ -54,34 +51,19 @@ public class Line {
         return color;
     }
 
-    public Sections sections() {
-        return state.sections();
-    }
-
     public List<Section> sortedSections() {
-        return state.sortedSections();
+        return sections.sortedSections();
     }
 
     public void addSection(final Section targetSection) {
         if (Objects.isNull(targetSection)) {
-            return;
+            throw new NotFoundException("타겟을 찾을 수 없음!");
         }
-
-        if (state.size() < 1) {
-            this.state.addSection(targetSection);
-            targetSection.changeLine(this);
-            return;
-        }
-
-        validateDuplicationStation(targetSection.upStation(), targetSection.downStation());
-        validateContain(targetSection.upStation(), targetSection.downStation());
-
-        state.addSection(targetSection);
-        targetSection.changeLine(this);
+        this.sections.addSection(targetSection);
     }
 
     public void deleteStation(final Station station) {
-        state.deleteStation(station);
+        sections.deleteStation(station);
     }
 
     public boolean sameName(final String name) {
@@ -98,17 +80,5 @@ public class Line {
 
     public void changeColor(String color) {
         this.color = color;
-    }
-
-    private void validateDuplicationStation(final Station upStation, final Station downStation) {
-        if (state.existSection(upStation, downStation)) {
-            throw new AlreadyExistsException("이미 등록되어 있는 구간임!");
-        }
-    }
-
-    private void validateContain(final Station upStation, final Station downStation) {
-        if (state.noContainStation(upStation, downStation)) {
-            throw new NotFoundException("상행, 하행역 둘다 노선에 등록되어 있지 않음!!");
-        }
     }
 }

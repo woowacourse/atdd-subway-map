@@ -1,6 +1,8 @@
 package wooteco.subway.line.domain;
 
+import wooteco.subway.common.exception.AlreadyExistsException;
 import wooteco.subway.common.exception.InvalidInputException;
+import wooteco.subway.common.exception.NotFoundException;
 import wooteco.subway.station.domain.Station;
 
 import java.util.*;
@@ -19,86 +21,93 @@ public class Sections {
         this.sections = new ArrayList<>(sections);
     }
 
-    public List<Section> sections() {
-        return Collections.unmodifiableList(sections);
+    public void addSection(final Section targetSection) {
+        if (sections.isEmpty()) {
+            sections.add(targetSection);
+            return;
+        }
+        validateDuplicationStation(targetSection.upStation(), targetSection.downStation());
+        validateContain(targetSection.upStation(), targetSection.downStation());
+
+        addSectionUpAndUp(targetSection);
+        addSectionDownAndDown(targetSection);
+        sections.add(targetSection);
     }
 
     public List<Section> sortedSections() {
-        List<Section> sortedSections = new LinkedList<>();
-        Section headSection = headSection();
-        sortedSections.add(headSection);
-        for (int i = 0; i < sections.size(); i++) {
-            Section finalHeadSection = headSection;
-            Optional<Section> findSection = sections.stream()
-                    .filter(section -> !section.equals(finalHeadSection))
-                    .filter(section -> section.upStation().equals(finalHeadSection.downStation()))
-                    .findFirst();
-            if (findSection.isPresent()) {
-                sortedSections.add(findSection.get());
-                headSection = findSection.get();
-            }
+        Section section = headSection();
+        List<Section> targetSections = new LinkedList<>();
+        targetSections.add(section);
+
+        while (nextSection(section).isPresent()) {
+            section = nextSection(section).get();
+            targetSections.add(section);
         }
-        return Collections.unmodifiableList(sortedSections);
+        return targetSections;
     }
 
-    public void upwardEndPointRegistration(final Section targetSection) {
-        Section headSection = headSection();
-        if (headSection.sameUpStation(targetSection.downStation())) {
-            this.sections.add(targetSection);
-        }
+    private Optional<Section> nextSection(final Section section) {
+        return sections.stream()
+                .filter(nextSection -> nextSection.sameUpStation(section.downStation()))
+                .findFirst();
     }
 
-    public void downwardEndPointRegistration(final Section targetSection) {
-        Section tailSection = tailSection();
-        if (tailSection.sameDownStation(targetSection.upStation())) {
-            this.sections.add(targetSection);
-        }
+    private void addSectionDownAndDown(final Section targetSection) {
+        sections.stream()
+                .filter(section -> section.sameUpStation(targetSection.upStation()))
+                .findFirst()
+                .ifPresent(section -> changeUpAndDown(section, targetSection));
     }
 
-    public void betweenUpwardRegistration(final Section targetSection) {
-        Section findSection = findByUpStationSection(targetSection.upStation());
-        if (Objects.isNull(findSection)) {
-            return;
-        }
-        validateDistance(findSection.distance(), targetSection.distance());
-
-        this.sections.remove(findSection);
-        this.sections.add(targetSection);
-        this.sections.add(new Section(targetSection.line(), targetSection.downStation(), findSection.downStation(),
-                findSection.distance() - targetSection.distance()));
+    private void addSectionUpAndUp(final Section targetSection) {
+        sections.stream()
+                .filter(section -> section.sameDownStation(targetSection.downStation()))
+                .findFirst()
+                .ifPresent(section -> changeDownAndUp(section, targetSection));
     }
 
-    public void betweenDownwardRegistration(final Section targetSection) {
-        Section findSection = findByDownStationSection(targetSection.downStation());
-        if (Objects.isNull(findSection)) {
-            return;
+    private void changeUpAndDown(final Section section, final Section targetSection) {
+        if (section.distance() <= targetSection.distance()) {
+            throw new InvalidInputException("기존의 구간보다 길이가 길 수 없음!!");
         }
-        validateDistance(findSection.distance(), targetSection.distance());
+        sections.remove(section);
+        sections.add(new Section(section.line(), targetSection.downStation(), section.downStation(), section.distance() - targetSection.distance()));
+    }
 
-        this.sections.remove(findSection);
-        this.sections.add(targetSection);
-        this.sections.add(new Section(targetSection.line(), findSection.upStation(), targetSection.upStation(),
-                findSection.distance() - targetSection.distance()));
+    private void changeDownAndUp(final Section section, final Section targetSection) {
+        if (section.distance() <= targetSection.distance()) {
+            throw new InvalidInputException("기존의 구간보다 길이가 길 수 없음!!");
+        }
+        sections.remove(section);
+        sections.add(new Section(section.line(), section.upStation(), targetSection.upStation(), section.distance() - targetSection.distance()));
     }
 
     public void deleteStation(final Station station) {
         validateSize();
-        Section upSection = findByUpStationSection(station);
-        Section downSection = findByDownStationSection(station);
+        Optional<Section> upSection = findSectionByUpStation(station);
+        Optional<Section> downSection = findSectionByDownStation(station);
 
-        if (!Objects.isNull(upSection) && !Objects.isNull(downSection)) {
-            this.sections.remove(upSection);
-            this.sections.remove(downSection);
-
-            this.sections.add(new Section(
-                    downSection.line(),
-                    downSection.upStation(),
-                    upSection.downStation(),
-                    upSection.distance() + downSection.distance()));
+        if (!upSection.isPresent() || !downSection.isPresent()) {
+            deleteUpEndPointStation(station);
+            deleteDownEndPointStation(station);
             return;
         }
-        deleteUpwardEndPointStation(station);
-        deleteDownwardEndPointStation(station);
+        changeSection(upSection.get(), downSection.get());
+    }
+
+    public int size() {
+        return sections.size();
+    }
+
+    private void changeSection(final Section upSection, final Section downSection) {
+        this.sections.remove(upSection);
+        this.sections.remove(downSection);
+
+        this.sections.add(new Section(
+                downSection.line(),
+                downSection.upStation(),
+                upSection.downStation(),
+                upSection.distance() + downSection.distance()));
     }
 
     private void validateSize() {
@@ -107,27 +116,15 @@ public class Sections {
         }
     }
 
-    public List<Section> dirtyChecking(final Sections sections) {
-        List<Section> changedSections = new ArrayList<>();
-        for (Section section : sections.sections) {
-            if (!this.sections.contains(section)) {
-                changedSections.add(section);
-            }
-        }
-        return changedSections;
-    }
-
-    public boolean existSection(final Station upStation, final Station downStation) {
+    private boolean existSection(final Station upStation, final Station downStation) {
         List<Station> stations = stations();
         List<Station> targetStation = Arrays.asList(upStation, downStation);
-
         return stations.containsAll(targetStation);
     }
 
-    public boolean noContainStation(final Station upStation, final Station downStation) {
+    private boolean containsStation(final Station upStation, final Station downStation) {
         List<Station> stations = stations();
-
-        return !stations.contains(upStation) && !stations.contains(downStation);
+        return stations.contains(upStation) || stations.contains(downStation);
     }
 
     private List<Station> stations() {
@@ -141,87 +138,50 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    private void deleteDownwardEndPointStation(final Station station) {
-        Section findSection = findByDownStationSection(station);
-        this.sections.remove(findSection);
+    private void deleteDownEndPointStation(final Station station) {
+        findSectionByDownStation(station)
+                .ifPresent(this.sections::remove);
     }
 
-    private void deleteUpwardEndPointStation(final Station station) {
-        Section findSection = findByUpStationSection(station);
-        this.sections.remove(findSection);
-    }
-
-    private void validateDistance(final int baseDistance, final int targetDistance) {
-        if (baseDistance <= targetDistance) {
-            throw new InvalidInputException("기존 역 사이 길이보다 크거나 같을 수 없습니다");
-        }
-    }
-
-    private Section tailSection() {
-        for (Section source : sections) {
-            if (tailMatchesCount(source) == 0) {
-                return source;
-            }
-        }
-        throw new InvalidInputException("구간이 제대로 등록되어있지 않음!");
+    private void deleteUpEndPointStation(final Station station) {
+        findSectionByUpStation(station)
+                .ifPresent(this.sections::remove);
     }
 
     private Section headSection() {
-        for (Section source : sections) {
-            if (headMatchesCount(source) == 0) {
-                return source;
-            }
-        }
-        throw new InvalidInputException("구간이 제대로 등록되어있지 않음!");
+        return sections.stream()
+                .filter(section -> !anyMatches(section))
+                .findFirst()
+                .orElseThrow(() -> new InvalidInputException("구간이 제대로 등록되어있지 않음!"));
     }
 
-    private int tailMatchesCount(final Section section) {
-        Long tailStationId = section.downStation().id();
-        int checkCount = 0;
-        for (Section target : sections) {
-            if (section.equals(target)) {
-                continue;
-            }
-            if (tailStationId.equals(target.upStation().id()) || tailStationId.equals(target.downStation().id())) {
-                checkCount++;
-            }
-        }
-        return checkCount;
+    private boolean anyMatches(final Section section) {
+        return sections.stream()
+                .filter(it -> !it.same(section))
+                .anyMatch(it -> it.sameDownStation(section.upStation()));
     }
 
-    private int headMatchesCount(final Section section) {
-        Long headStationId = section.upStation().id();
-        int checkCount = 0;
-        for (Section target : sections) {
-            if (section.equals(target)) {
-                continue;
-            }
-            if (headStationId.equals(target.upStation().id()) || headStationId.equals(target.downStation().id())) {
-                checkCount++;
-            }
-        }
-        return checkCount;
+    private Optional<Section> findSectionByUpStation(final Station station) {
+        return sections.stream()
+                .filter(section -> section.sameUpStation(station))
+                .findFirst();
     }
 
-    private Section findByUpStationSection(final Station targetUpStation) {
-        for (Section section : sections) {
-            if (section.sameUpStation(targetUpStation)) {
-                return section;
-            }
-        }
-        return null;
+    private Optional<Section> findSectionByDownStation(final Station station) {
+        return sections.stream()
+                .filter(section -> section.sameDownStation(station))
+                .findFirst();
     }
 
-    private Section findByDownStationSection(final Station targetDownStation) {
-        for (Section section : sections) {
-            if (section.sameDownStation(targetDownStation)) {
-                return section;
-            }
+    private void validateDuplicationStation(final Station upStation, final Station downStation) {
+        if (existSection(upStation, downStation)) {
+            throw new AlreadyExistsException("이미 등록되어 있는 구간임!");
         }
-        return null;
     }
 
-    public int size() {
-        return sections.size();
+    private void validateContain(final Station upStation, final Station downStation) {
+        if (!containsStation(upStation, downStation)) {
+            throw new NotFoundException("상행, 하행역 둘다 노선에 등록되어 있지 않음!!");
+        }
     }
 }

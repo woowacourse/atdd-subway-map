@@ -40,13 +40,6 @@ public class Section {
         return line;
     }
 
-    public void changeLine(Line line) {
-        if (Objects.isNull(line)) {
-            return;
-        }
-        this.line = line;
-    }
-
     public Station upStation() {
         return upStation;
     }
@@ -83,6 +76,10 @@ public class Section {
 
     public long downStationId() {
         return this.downStation.id();
+    }
+
+    public boolean same(Section section) {
+        return this.equals(section);
     }
 
     @Override

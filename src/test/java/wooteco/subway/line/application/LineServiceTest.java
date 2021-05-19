@@ -131,7 +131,6 @@ class LineServiceTest {
                 .isInstanceOf(AlreadyExistsException.class);
     }
 
-
     @Test
     @DisplayName("초기 구간 등록시 상행역과 하행역의 아이디가 없으면 예외가 발생한다. ")
     void registrationNotExistException() {
