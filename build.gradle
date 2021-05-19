@@ -26,6 +26,9 @@ dependencies {
 	// modelmapper
 	implementation 'org.modelmapper.extensions:modelmapper-spring:2.4.0'
 
+	// mokito
+	testImplementation 'org.mockito:mockito-core:3.9.0'
+
 	testImplementation 'io.rest-assured:rest-assured:3.3.0'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
