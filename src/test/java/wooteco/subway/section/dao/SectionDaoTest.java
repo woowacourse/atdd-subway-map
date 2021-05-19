@@ -56,8 +56,8 @@ public class SectionDaoTest {
     public void save() {
         // given
         Line line = lineDao.show(1L).get();
-        Station upStation = stationDao.showStation(1L).get();
-        Station downStation = stationDao.showStation(2L).get();
+        Station upStation = stationDao.show(1L).get();
+        Station downStation = stationDao.show(2L).get();
         Distance distance = new Distance(10);
 
         Section targetSection = new Section(line, upStation, downStation, distance);

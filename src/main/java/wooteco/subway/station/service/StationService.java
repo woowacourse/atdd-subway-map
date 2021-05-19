@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.station.DuplicatedStationTitleException;
 import wooteco.subway.exception.station.NotFoundStationException;
-import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationServiceDto;
 
@@ -15,14 +14,14 @@ import wooteco.subway.station.dto.StationServiceDto;
 public class StationService {
 
     private static final int NOT_FOUND = 0;
-    private final StationDao stationDao;
+    private final wooteco.subway.station.dao.StationDao stationDao;
 
-    public StationService(final StationDao stationDao) {
+    public StationService(final wooteco.subway.station.dao.StationDao stationDao) {
         this.stationDao = stationDao;
     }
 
     public Station showOne(final long id) {
-        return stationDao.showStation(id)
+        return stationDao.show(id)
             .orElseThrow(() -> new NotFoundStationException());
     }
 

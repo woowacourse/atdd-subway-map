@@ -21,23 +21,23 @@ import wooteco.subway.line.dto.LineServiceDto;
 import wooteco.subway.line.dto.LineWithComposedStationsDto;
 import wooteco.subway.line.dto.SectionRequest;
 import wooteco.subway.line.dto.UpdateLineRequest;
-import wooteco.subway.section.service.SectionService;
+import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.dto.CreateSectionDto;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
 
-    private final SectionService sectionService;
+    private final LineService lineService;
 
-    public LineController(final SectionService sectionService) {
-        this.sectionService = sectionService;
+    public LineController(final LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@Valid @RequestBody final LineRequest lineRequest) {
         CreateLineDto createLineDto = CreateLineDto.from(lineRequest);
-        LineServiceDto createdLineServiceDto = sectionService.createLine(createLineDto);
+        LineServiceDto createdLineServiceDto = lineService.createLine(createLineDto);
         LineResponse lineResponse = LineResponse.from(createdLineServiceDto);
 
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
@@ -46,7 +46,7 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineServiceDto> lines = sectionService.findAllLineDto();
+        List<LineServiceDto> lines = lineService.findAllDto();
         List<LineResponse> lineResponses = lines.stream()
             .map(LineResponse::from)
             .collect(Collectors.toList());
@@ -56,7 +56,7 @@ public class LineController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
-        LineWithComposedStationsDto lineWithComposedStationsDto = sectionService.findOne(new LineServiceDto(id));
+        LineWithComposedStationsDto lineWithComposedStationsDto = lineService.findOne(new LineServiceDto(id));
         LineResponse lineResponse = LineResponse.from(lineWithComposedStationsDto);
         return ResponseEntity.ok(lineResponse);
     }
@@ -66,7 +66,7 @@ public class LineController {
         @Valid @RequestBody final UpdateLineRequest updateLineRequest, @PathVariable final Long id) {
 
         LineServiceDto lineServiceDto = LineServiceDto.from(id, updateLineRequest);
-        sectionService.updateLine(lineServiceDto);
+        lineService.update(lineServiceDto);
 
         return ResponseEntity.ok()
             .build();
@@ -76,7 +76,7 @@ public class LineController {
     public ResponseEntity<Void> createSection(@Valid @RequestBody final SectionRequest sectionRequest,
         @PathVariable final long id) {
         CreateSectionDto createSectionDto = CreateSectionDto.of(id, sectionRequest);
-        sectionService.create(createSectionDto);
+        lineService.createSection(createSectionDto);
 
         return ResponseEntity.ok()
             .build();
@@ -85,7 +85,7 @@ public class LineController {
     @DeleteMapping(value="/{lineId}/sections")
     public ResponseEntity<Void> deleteStationOnSection(@PathVariable final long lineId,
         @RequestParam final long stationId) {
-        sectionService.deleteStation(lineId, stationId);
+        lineService.deleteStation(lineId, stationId);
 
         return ResponseEntity.noContent()
             .build();
@@ -93,7 +93,7 @@ public class LineController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable final Long id) {
-        sectionService.deleteLine(new LineServiceDto(id));
+        lineService.delete(new LineServiceDto(id));
 
         return ResponseEntity.noContent()
             .build();

@@ -39,7 +39,7 @@ public class StationDao {
         return new Station(id, station.getName());
     }
 
-    public Optional<Station> showStation(final Long stationId) {
+    public Optional<Station> show(final Long stationId) {
         String statement = "SELECT * FROM STATION WHERE id = ?";
         return Optional.ofNullable(jdbcTemplate.queryForObject(statement, rowMapper, stationId));
     }
