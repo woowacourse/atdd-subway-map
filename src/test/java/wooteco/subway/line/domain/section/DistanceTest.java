@@ -1,4 +1,4 @@
-package wooteco.subway.section;
+package wooteco.subway.line.domain.section;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

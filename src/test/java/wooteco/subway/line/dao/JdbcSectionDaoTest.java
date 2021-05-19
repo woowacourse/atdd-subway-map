@@ -1,4 +1,4 @@
-package wooteco.subway.section.repository;
+package wooteco.subway.line.dao;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 import wooteco.subway.line.domain.section.Distance;
 import wooteco.subway.line.domain.section.Section;
-import wooteco.subway.line.domain.repository.SectionRepositoryImpl;
 import wooteco.subway.line.infra.section.JdbcSectionDao;
 import wooteco.subway.line.infra.section.SectionDao;
 
