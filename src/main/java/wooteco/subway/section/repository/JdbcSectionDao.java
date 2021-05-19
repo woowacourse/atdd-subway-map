@@ -29,12 +29,12 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public Section save(Long lineId, Section section) {
+    public Section save(Section section) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String query = "INSERT INTO section (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(con -> {
             PreparedStatement pstmt = con.prepareStatement(query, new String[]{"id"});
-            pstmt.setLong(1, lineId);
+            pstmt.setLong(1, section.getLineId());
             pstmt.setLong(2, section.getUpStation().getId());
             pstmt.setLong(3, section.getDownStation().getId());
             pstmt.setInt(4, section.getDistance());
@@ -42,7 +42,7 @@ public class JdbcSectionDao implements SectionDao {
         }, keyHolder);
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new Section(id, new Line(lineId, null, null), section);
+        return new Section(id, new Line(section.getLineId(), null, null), section);
     }
 
     @Override
@@ -70,26 +70,20 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public void updateSectionToForward(Long lineId, Section newSection, int changedDistance) {
+    public void deleteByLineId(Line line) {
+        String query = "delete from SECTION where line_id = ?";
+        jdbcTemplate.update(query, line.getId());
+    }
+
+    @Override
+    public void updateSectionToForward(Section newSection, int changedDistance) {
         String query = "UPDATE section SET up_station_id = ?, distance = ? WHERE up_station_id = ? AND line_id = ?";
-        jdbcTemplate.update(query, newSection.getDownStationId(), changedDistance, newSection.getUpStationId(), lineId);
+        jdbcTemplate.update(query, newSection.getDownStationId(), changedDistance, newSection.getUpStationId(), newSection.getLineId());
     }
 
     @Override
-    public void updateSectionToBackward(Long lineId, Section newSection, int changedDistance) {
+    public void updateSectionToBackward(Section newSection, int changedDistance) {
         String query = "UPDATE section SET down_station_id = ?, distance = ? WHERE down_station_id = ? AND line_id = ?";
-        jdbcTemplate.update(query, newSection.getUpStationId(), changedDistance, newSection.getDownStationId(), lineId);
-    }
-
-    @Override
-    public void deleteFirstSection(Long lineId, Long stationId) {
-        String query = "DELETE FROM section WHERE line_id = ? AND up_station_id = ?";
-        jdbcTemplate.update(query, lineId, stationId);
-    }
-
-    @Override
-    public void deleteLastSection(Long lineId, Long stationId) {
-        String query = "DELETE FROM section WHERE line_id = ? AND down_station_id = ?";
-        jdbcTemplate.update(query, lineId, stationId);
+        jdbcTemplate.update(query, newSection.getUpStationId(), changedDistance, newSection.getDownStationId(), newSection.getLineId());
     }
 }

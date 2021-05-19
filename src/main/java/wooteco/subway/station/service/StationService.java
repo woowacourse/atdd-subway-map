@@ -38,6 +38,10 @@ public class StationService {
         return stationDao.findByName(stationRequest.getName());
     }
 
+    public Station findBy(Long id) {
+        return stationDao.findBy(id);
+    }
+
     public void validateExistStations(Long upId, Long downId) {
         if (!isExistingStation(upId)) {
             throw new NotFoundException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");

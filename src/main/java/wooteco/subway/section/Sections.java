@@ -2,6 +2,7 @@ package wooteco.subway.section;
 
 import wooteco.subway.exception.InvalidInsertException;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.line.Line;
 import wooteco.subway.station.Station;
 
 import java.util.*;
@@ -12,11 +13,13 @@ public class Sections {
     private static final int ALL_SECTION_EXIST_COUNT = 2;
     private static final int NONE_EXIST_SECTION_COUNT = 0;
     private static final int DELETABLE_COUNT = 2;
+    private static final int FIRST_SECTION = 0;
+
+
     private List<Section> sections;
 
     public Sections(List<Section> sections) {
         this.sections = sort(sections);
-        validateDeletable();
     }
 
     public Sections(List<Section> sections, Section section) {
@@ -55,7 +58,7 @@ public class Sections {
         waiting.add(current);
     }
 
-    public void validateSavableSection(Section section) {
+    private void validateSavableSection(Section section) {
         long matchCount = Stream.concat(upStationIds(sections).stream(), downStationIds(sections).stream())
                 .distinct()
                 .filter(id -> section.isSameAsUpId(id) || section.isSameAsDownId(id))
@@ -158,26 +161,54 @@ public class Sections {
     private Long lastStationId() {
         int lastIdx = sections.size() - 1;
         return sections.get(lastIdx).getDownStationId();
-
     }
 
-    public void validateDeletable() {
+    private void validateDeletable() {
         if (sections.size() < DELETABLE_COUNT) {
             throw new InvalidInsertException("구간이 한 개 이하라 삭제할 수 없습니다.");
         }
     }
 
-    public Section findSectionByDown(Long stationId) {
+    public void removeSection(Line line, Station station) {
+        validateDeletable();
+        if (isOnUpEdge(station.getId())) {
+            sections.remove(FIRST_SECTION);
+            return;
+        }
+        if (isOnDownEdge(station.getId())) {
+            sections.remove(sections.size()-1);
+            return;
+        }
+        removeSectionInMiddle(line, station);
+    }
+
+    private void removeSectionInMiddle(Line line, Station station) {
+        Section beforeSection = findSameAsUpStation(station);
+        Section afterSection = findSameAsDownStation(station);
+
+        Station newUpStation = beforeSection.getUpStation();
+        Station newDownStation = afterSection.getDownStation();
+        int distance = beforeSection.plusDistance(afterSection);
+        sections.add(new Section(line, newUpStation, newDownStation, distance));
+        sections.remove(beforeSection);
+        sections.remove(afterSection);
+    }
+
+    private Section findSameAsUpStation(Station station) {
         return sections.stream()
-                .filter(section -> section.isSameAsDownId(stationId))
+                .filter(it -> it.getDownStation().equals(station))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("일치하는 상행역이 없습니다."));
+    }
+
+    private Section findSameAsDownStation(Station station) {
+        return sections.stream()
+                .filter(it -> it.getUpStation().equals(station))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("일치하는 하행역이 없습니다."));
     }
 
-    public Section findSectionByUp(Long stationId) {
-        return sections.stream()
-                .filter(section -> section.isSameAsUpId(stationId))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("일치하는 상행역이 없습니다."));
+    public List<Section> toSortedSections() {
+        return sort(sections);
     }
 }
