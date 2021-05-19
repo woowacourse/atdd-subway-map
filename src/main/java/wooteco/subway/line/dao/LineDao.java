@@ -33,7 +33,7 @@ public class LineDao implements LineRepository {
     public Line save(final Line line) {
         final String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
         jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
+            final PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, line.getName());
             ps.setString(2, line.getColor());
             return ps;

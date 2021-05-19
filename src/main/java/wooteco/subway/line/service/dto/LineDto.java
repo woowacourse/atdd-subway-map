@@ -1,9 +1,8 @@
-package wooteco.subway.line.controller.dto;
+package wooteco.subway.line.service.dto;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.station.controller.dto.StationDto;
+import wooteco.subway.station.service.dto.StationDto;
 
 public class LineDto {
 
@@ -20,14 +19,11 @@ public class LineDto {
     }
 
     public static LineDto of(final Line line) {
-        final List<StationDto> stationDtos = line.getStations().stream()
-                .map(StationDto::of)
-                .collect(Collectors.toList());
         return new LineDto(
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                stationDtos
+                StationDto.toListDto(line.getStations())
         );
     }
 

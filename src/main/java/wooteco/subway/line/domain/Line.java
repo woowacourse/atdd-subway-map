@@ -18,6 +18,10 @@ public class Line {
         this(null, lineRequest);
     }
 
+    public Line(final String name, final String color) {
+        this(null, name, color);
+    }
+
     public Line(final Long id, final LineRequest lineRequest) {
         this(id, lineRequest.getName(), lineRequest.getColor(), new ArrayList<>());
     }
@@ -31,6 +35,10 @@ public class Line {
         this.name = name;
         this.color = color;
         this.stations = stations;
+    }
+
+    public void addStations(final List<Station> stations) {
+        this.stations.addAll(stations);
     }
 
     public boolean isId(Long id) {

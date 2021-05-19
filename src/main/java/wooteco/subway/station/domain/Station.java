@@ -1,15 +1,14 @@
 package wooteco.subway.station.domain;
 
 import java.util.Objects;
-import wooteco.subway.station.controller.dto.StationRequest;
 
 public class Station {
 
     private final Long id;
     private final String name;
 
-    public Station(StationRequest stationRequest) {
-        this(null, stationRequest.getName());
+    public Station(final String name) {
+        this(null, name);
     }
 
     public Station(final Long id, final String name) {

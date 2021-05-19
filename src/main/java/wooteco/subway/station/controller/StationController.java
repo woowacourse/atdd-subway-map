@@ -1,14 +1,20 @@
 package wooteco.subway.station.controller;
 
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
-import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.controller.dto.StationDto;
+import javax.validation.Valid;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.station.service.dto.StationCreateDto;
+import wooteco.subway.station.service.dto.StationDto;
 import wooteco.subway.station.controller.dto.StationRequest;
 import wooteco.subway.station.controller.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
@@ -24,10 +30,10 @@ public final class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(@RequestBody final StationRequest stationRequest) {
-        final Station requestedStation = new Station(stationRequest);
+    public ResponseEntity<StationResponse> createStation(@Valid @RequestBody final StationRequest stationRequest) {
+        final StationCreateDto stationInfo = stationRequest.toStationCreateDto();
 
-        final StationDto createdStationInfo = stationService.save(requestedStation);
+        final StationDto createdStationInfo = stationService.save(stationInfo);
 
         final StationResponse stationResponse = StationResponse.of(createdStationInfo);
         final Long stationId = stationResponse.getId();
