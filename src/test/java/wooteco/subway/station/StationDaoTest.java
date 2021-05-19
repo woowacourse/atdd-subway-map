@@ -70,9 +70,9 @@ class StationDaoTest {
     @DisplayName("역 삭제 확인")
     void delete() {
         Station savedStation = stationDao.save(STATIONNAME2);
-        assertThat(stationDao.findByName(savedStation.getName()).isPresent()).isTrue();
+        assertThat(stationDao.findByName(savedStation.getName())).isPresent();
 
         stationDao.delete(savedStation.getId());
-        assertThat(stationDao.findByName(savedStation.getName()).isPresent()).isFalse();
+        assertThat(stationDao.findByName(savedStation.getName())).isNotPresent();
     }
 }
