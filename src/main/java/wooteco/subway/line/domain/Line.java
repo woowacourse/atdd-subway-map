@@ -67,8 +67,8 @@ public class Line {
             return;
         }
 
-        if (state.sections().sections().size() < 1) {
-            this.state.sections().addSection(targetSection);
+        if (state.size() < 1) {
+            this.state.addSection(targetSection);
             targetSection.changeLine(this);
             return;
         }

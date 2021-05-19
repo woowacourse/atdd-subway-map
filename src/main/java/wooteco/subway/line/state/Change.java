@@ -69,6 +69,11 @@ public abstract class Change implements State {
         return sections.noContainStation(upStation, downStation);
     }
 
+    @Override
+    public int size() {
+        return sections.size();
+    }
+
     private boolean isChange(final Sections originSections) {
         return !originSections.dirtyChecking(this.sections).isEmpty();
     }

@@ -34,7 +34,7 @@ public class LineService {
     @Transactional
     public LineResponse save(final LineRequest lineRequest) {
         validateDuplication(lineRequest);
-        Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        Line line = lineDao.save(lineRequest.toEntity());
         line.addSection(saveSection(lineRequest, line));
         return new LineResponse(line);
     }

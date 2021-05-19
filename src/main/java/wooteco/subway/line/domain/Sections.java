@@ -224,4 +224,8 @@ public class Sections {
         }
         return null;
     }
+
+    public int size() {
+        return sections.size();
+    }
 }

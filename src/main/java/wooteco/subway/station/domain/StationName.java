@@ -3,6 +3,7 @@ package wooteco.subway.station.domain;
 import wooteco.subway.common.exception.InvalidInputException;
 
 import java.util.Objects;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StationName {
@@ -22,7 +23,8 @@ public class StationName {
     }
 
     public void validateName(final String name) {
-        if (!PATTERN.matcher(name).matches()) {
+        Matcher matcher = PATTERN.matcher(name);
+        if (!matcher.matches()) {
             throw new InvalidInputException("잘못된 역 이름입니다.");
         }
     }
@@ -33,10 +35,6 @@ public class StationName {
 
     public boolean sameName(final String name) {
         return this.name.equals(name);
-    }
-
-    public StationName changeName(final String name) {
-        return new StationName(name);
     }
 
     public boolean equals(Object o) {

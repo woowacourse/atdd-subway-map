@@ -18,4 +18,6 @@ public interface State {
     boolean existSection(Station upStation, Station downStation);
 
     boolean noContainStation(Station upStation, Station downStation);
+
+    int size();
 }

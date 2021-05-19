@@ -1,5 +1,7 @@
 package wooteco.subway.line.dto;
 
+import wooteco.subway.line.domain.Line;
+
 import java.util.Objects;
 
 public class LineRequest {
@@ -42,5 +44,9 @@ public class LineRequest {
 
     public boolean empty() {
         return Objects.isNull(upStationId) && Objects.isNull(downStationId);
+    }
+
+    public Line toEntity() {
+        return new Line(name, color);
     }
 }
