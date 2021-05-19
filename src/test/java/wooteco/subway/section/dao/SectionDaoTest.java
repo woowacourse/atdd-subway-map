@@ -67,8 +67,8 @@ public class SectionDaoTest {
 
         // then
         assertThat(savedSection.getLine()).isEqualTo(line);
-        assertThat(savedSection.getUpStation()).isEqualTo(upStation);
-        assertThat(savedSection.getDownStation()).isEqualTo(downStation);
+        assertThat(savedSection.upStation()).isEqualTo(upStation);
+        assertThat(savedSection.downStation()).isEqualTo(downStation);
         assertThat(savedSection.getDistance()).isEqualTo(distance);
     }
 
@@ -84,12 +84,12 @@ public class SectionDaoTest {
 
         // then
         assertThat(savedSinSeolAndDongMyo.getLine()).isEqualTo(line);
-        assertThat(savedSinSeolAndDongMyo.getUpStation()).isEqualTo(stationSinSeol);
-        assertThat(savedSinSeolAndDongMyo.getDownStation()).isEqualTo(stationDongMyo);
+        assertThat(savedSinSeolAndDongMyo.upStation()).isEqualTo(stationSinSeol);
+        assertThat(savedSinSeolAndDongMyo.downStation()).isEqualTo(stationDongMyo);
         assertThat(savedSinSeolAndDongMyo.getDistance()).isEqualTo(distance);
         assertThat(savedDongMyoAndDongDaeMoon.getLine()).isEqualTo(line);
-        assertThat(savedDongMyoAndDongDaeMoon.getUpStation()).isEqualTo(stationDongMyo);
-        assertThat(savedDongMyoAndDongDaeMoon.getDownStation()).isEqualTo(stationDongDaeMoon);
+        assertThat(savedDongMyoAndDongDaeMoon.upStation()).isEqualTo(stationDongMyo);
+        assertThat(savedDongMyoAndDongDaeMoon.downStation()).isEqualTo(stationDongDaeMoon);
         assertThat(savedDongMyoAndDongDaeMoon.getDistance()).isEqualTo(distance);
     }
 
@@ -104,8 +104,8 @@ public class SectionDaoTest {
 
         // then
         assertThat(section.getLine()).isEqualTo(line);
-        assertThat(section.getUpStation()).isEqualTo(stationSinSeol);
-        assertThat(section.getDownStation()).isEqualTo(stationDongMyo);
+        assertThat(section.upStation()).isEqualTo(stationSinSeol);
+        assertThat(section.downStation()).isEqualTo(stationDongMyo);
         assertThat(section.getDistance()).isEqualTo(distance);
     }
 
@@ -120,8 +120,8 @@ public class SectionDaoTest {
 
         // then
         assertThat(section.getLine()).isEqualTo(line);
-        assertThat(section.getUpStation()).isEqualTo(stationSinSeol);
-        assertThat(section.getDownStation()).isEqualTo(stationDongMyo);
+        assertThat(section.upStation()).isEqualTo(stationSinSeol);
+        assertThat(section.downStation()).isEqualTo(stationDongMyo);
         assertThat(section.getDistance()).isEqualTo(distance);
     }
 

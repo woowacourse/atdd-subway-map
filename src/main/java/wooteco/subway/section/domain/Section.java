@@ -63,21 +63,21 @@ public class Section {
     }
 
     public boolean isIncludeUpStation(Section section) {
-        return this.getUpStation().equals(section.getUpStation()) ||
-            this.getDownStation().equals(section.getUpStation());
+        return this.upStation().equals(section.upStation()) ||
+            this.downStation().equals(section.upStation());
     }
 
     public boolean isIncludeDownStation(Section section) {
-        return this.getDownStation().equals(section.getDownStation()) ||
-            this.getUpStation().equals(section.getDownStation());
+        return this.downStation().equals(section.downStation()) ||
+            this.upStation().equals(section.downStation());
     }
 
     public boolean isSameUpStation(Section section) {
-        return this.getUpStation().equals(section.getUpStation());
+        return this.upStation().equals(section.upStation());
     }
 
     public boolean isSameDownStation(Section section) {
-        return this.getDownStation().equals(section.getDownStation());
+        return this.downStation().equals(section.downStation());
     }
 
     public Long getId() {
@@ -88,11 +88,11 @@ public class Section {
         return line;
     }
 
-    public Station getUpStation() {
+    public Station upStation() {
         return upStation;
     }
 
-    public Station getDownStation() {
+    public Station downStation() {
         return downStation;
     }
 

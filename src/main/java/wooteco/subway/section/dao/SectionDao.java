@@ -62,8 +62,8 @@ public class SectionDao {
     public Section save(final Section section) {
         Map<String, Object> params = new HashMap<>();
         params.put("line_id", section.getLine().getId());
-        params.put("up_station_id", section.getUpStation().getId());
-        params.put("down_station_id", section.getDownStation().getId());
+        params.put("up_station_id", section.upStation().getId());
+        params.put("down_station_id", section.downStation().getId());
         params.put("distance", section.getDistance().value());
 
         long key = jdbcInsert.executeAndReturnKey(params).longValue();

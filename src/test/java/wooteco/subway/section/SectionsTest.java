@@ -150,7 +150,7 @@ class SectionsTest {
         //then
         assertThatThrownBy(() -> SECTIONS.findByOverlappedStation(section))
             .isInstanceOf(InvalidSectionOnLineException.class);
-        assertThat(responseSection.getUpStation().getName()).isEqualTo(DAELIM_STATION.getName());
+        assertThat(responseSection.upStation().getName()).isEqualTo(DAELIM_STATION.getName());
     }
 
     @Test
@@ -165,6 +165,6 @@ class SectionsTest {
         Section responseSection = SECTIONS.sectionForInterval(section);
 
         //then
-        assertThat(responseSection.getUpStation().getName()).isEqualTo(GURO_STATION.getName());
+        assertThat(responseSection.upStation().getName()).isEqualTo(GURO_STATION.getName());
     }
 }

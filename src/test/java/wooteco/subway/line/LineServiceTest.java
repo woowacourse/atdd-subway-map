@@ -103,7 +103,7 @@ public class LineServiceTest {
         assertThat(savedDongDaeMoonAndHaegiDto.getDistance()).isEqualTo(targetDistance);
 
         assertThat(changedSection.getDistance().value()).isEqualTo(10 - targetDistance);
-        assertThat(changedSection.getUpStation().getId()).isEqualTo(4L);
+        assertThat(changedSection.upStation().getId()).isEqualTo(4L);
     }
 
     @Test
@@ -137,8 +137,8 @@ public class LineServiceTest {
             .orElseThrow(NotFoundStationException::new);
 
         // then
-        assertThat(section.getUpStation().getId()).isEqualTo(stationSinSeolId);
-        assertThat(section.getDownStation().getId()).isEqualTo(stationDongDaeMoonId);
+        assertThat(section.upStation().getId()).isEqualTo(stationSinSeolId);
+        assertThat(section.downStation().getId()).isEqualTo(stationDongDaeMoonId);
         assertThat(section.getDistance().value()).isEqualTo(20);
     }
 
