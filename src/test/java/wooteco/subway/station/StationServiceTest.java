@@ -10,7 +10,6 @@ import wooteco.subway.line.LineDao;
 import wooteco.subway.section.SectionDao;
 import wooteco.subway.station.exception.StationDeleteException;
 import wooteco.subway.station.exception.StationExistenceException;
-import wooteco.subway.station.exception.StationNotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

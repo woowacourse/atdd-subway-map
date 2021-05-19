@@ -11,13 +11,11 @@ import wooteco.subway.section.SectionDao;
 import wooteco.subway.section.Sections;
 
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.groupingBy;
 
 @Repository
 public class LineDao {
