@@ -3,34 +3,42 @@ package wooteco.subway.station.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.repository.StationRepository;
+import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.repository.StationDao;
 
 import java.util.List;
 
 @Service
-@Transactional
 public class StationService {
-    private final StationRepository stationRepository;
+    private final StationDao stationDao;
 
-    public StationService(final StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
+    public StationService(final StationDao stationDao) {
+        this.stationDao = stationDao;
     }
 
-    public Station createStation(final Station station) {
-        if (stationRepository.doesNameExist(station)) {
+    @Transactional
+    public StationResponse save(final String name) {
+        if (stationDao.doesNameExist(name)) {
             throw new DuplicateStationNameException();
         }
-        return stationRepository.save(station);
+
+        Station station = new Station(name);
+        return StationResponse.toDto(stationDao.save(station));
     }
 
-    public List<Station> findAll() {
-        return stationRepository.getStations();
+    public List<StationResponse> findAll() {
+        return StationResponse.toDtos(stationDao.findAll());
     }
 
+    @Transactional
     public void delete(final Long id) {
-        if (stationRepository.doesIdNotExist(id)) {
+        if (stationDao.doesIdNotExist(id)) {
             throw new NoSuchStationException();
         }
-        stationRepository.deleteById(id);
+        stationDao.deleteById(id);
+    }
+
+    public Station findById(final Long stationId) {
+        return stationDao.findById(stationId).orElseThrow(NoSuchStationException::new);
     }
 }

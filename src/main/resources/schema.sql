@@ -18,7 +18,7 @@ create table if not exists SECTION (
     down_station_id bigint not null,
     distance int,
     PRIMARY KEY(id),
-    FOREIGN KEY (line_id) REFERENCES line(id) ON UPDATE CASCADE,
+    FOREIGN KEY (line_id) REFERENCES line(id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (up_station_id) REFERENCES station(id) ON UPDATE CASCADE,
     FOREIGN KEY (down_station_id) REFERENCES station(id) ON UPDATE CASCADE
     );

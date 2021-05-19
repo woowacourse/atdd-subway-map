@@ -2,7 +2,6 @@ package wooteco.subway.line.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.service.LineService;
@@ -21,29 +20,25 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getColor(), lineRequest.getName());
-        Line newLine = lineService.save(line);
-        LineResponse lineResponse = LineResponse.toDto(newLine);
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        LineResponse lineResponse = lineService.save(lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> getLines() {
-        List<Line> lines = lineService.getLines();
-        final List<LineResponse> lineResponses = LineResponse.toDtos(lines);
+        List<LineResponse> lineResponses = lineService.getLines();
         return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable final Long id) {
-        Line line = lineService.getLine(id);
-        LineResponse lineResponse = LineResponse.toDto(line);
+        LineResponse lineResponse = lineService.getLine(id);
         return ResponseEntity.ok().body(lineResponse);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable final Long id, @RequestBody LineRequest lineRequest) {
-        lineService.updateLine(new Line(id, lineRequest.getColor(), lineRequest.getName()));
+        lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 

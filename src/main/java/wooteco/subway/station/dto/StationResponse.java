@@ -9,22 +9,22 @@ public class StationResponse {
     private Long id;
     private String name;
 
-    private StationResponse() {
+    public StationResponse() {
     }
 
-    private StationResponse(final Long id, final String name) {
+    public StationResponse(final Long id, final String name) {
         this.id = id;
         this.name = name;
-    }
-
-    public static StationResponse toDto(final Station station) {
-        return new StationResponse(station.getId(), station.getName());
     }
 
     public static List<StationResponse> toDtos(final List<Station> stations) {
         return stations.stream()
                 .map(StationResponse::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public static StationResponse toDto(final Station station) {
+        return new StationResponse(station.getId(), station.getName());
     }
 
     public Long getId() {

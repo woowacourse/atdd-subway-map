@@ -1,56 +1,77 @@
 package wooteco.subway.line.repository;
 
-import org.springframework.util.ReflectionUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.Line;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
+@Repository
 public class LineDao {
-    private static final int INDEX_MATCHER = 1;
-    public static final long INITIAL_INDEX = 0L;
-    private static Long seq = 0L;
-    private static final List<Line> lines = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
+            resultSet.getLong("id"),
+            resultSet.getString("color"),
+            resultSet.getString("name")
+    );
 
-    public static Line save(final Line line) {
-        Line persistLine = createNewObject(line);
-        if (lines.contains(persistLine)) {
-            throw new IllegalArgumentException("이미 존재하는 노선 입니다.");
-        }
-        lines.add(persistLine);
-        return persistLine;
+    public LineDao(final JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+    public Line save(final Line line) {
+        String query = "INSERT INTO line(color, name) VALUES(?, ?)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
+            ps.setString(1, line.getColor());
+            ps.setString(2, line.getName());
+            return ps;
+        }, keyHolder);
+
+        return new Line(
+                Objects.requireNonNull(keyHolder.getKey()).longValue(),
+                line.getColor(),
+                line.getName()
+        );
     }
 
-    public static void deleteAll() {
-        seq = INITIAL_INDEX;
-        lines.clear();
+    public List<Line> findAll() {
+        String query = "SELECT id, color, name FROM line ORDER BY id";
+        return jdbcTemplate.query(query, lineRowMapper);
     }
 
-    public static List<Line> getLines() {
-        return new ArrayList<>(lines);
+    public Optional<Line> findById(final Long id) {
+        String query = "SELECT id, color, name FROM line WHERE id = ?";
+        return jdbcTemplate.query(query, lineRowMapper, id)
+                .stream()
+                .findFirst();
     }
 
-    public static Line getLine(final Long id) {
-        return lines.get(getIndexById(id));
+    public void update(final Line line) {
+        String query = "UPDATE line SET color = ?, name = ? WHERE id = ?";
+        jdbcTemplate.update(query, line.getColor(), line.getName(), line.getId());
     }
 
-    public static void updateLine(final Long id, final Line line) {
-        lines.set(getIndexById(id), line);
+    public void deleteById(final Long id) {
+        String query = "DELETE FROM line WHERE id = ?";
+        jdbcTemplate.update(query, id);
     }
 
-    public static void deleteById(final Long id) {
-        lines.remove(getIndexById(id));
+    public boolean doesNameExist(final String name) {
+        String query = "SELECT EXISTS (SELECT * FROM line WHERE name = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, name);
     }
 
-    private static int getIndexById(final Long id) {
-        return id.intValue() - INDEX_MATCHER;
+    public boolean doesIdNotExist(final Long id) {
+        String query = "SELECT NOT EXISTS (SELECT * FROM line WHERE id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, id);
     }
 }

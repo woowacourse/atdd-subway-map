@@ -29,22 +29,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        firstStationCreateResponse = RestAssured.given().log().all()
-                .body(firstStationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        firstStationCreateResponse = saveStation(firstStationRequest);
 
         StationRequest secondStationRequest = new StationRequest("역삼역");
-        secondStationCreateResponse = RestAssured.given().log().all()
-                .body(secondStationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        secondStationCreateResponse = saveStation(secondStationRequest);
     }
 
     @DisplayName("지하철역을 생성한다.")
@@ -54,13 +42,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest thirdStationRequest = new StationRequest("판교역");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(thirdStationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = saveStation(thirdStationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -71,14 +53,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(firstStationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = saveStation(firstStationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -130,5 +105,15 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         assertThat(station3Response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> saveStation(final StationRequest stationRequest) {
+        return RestAssured.given().log().all()
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
     }
 }

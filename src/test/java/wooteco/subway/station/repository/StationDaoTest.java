@@ -16,14 +16,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @Sql("classpath:tableInit.sql")
-public class StationRepositoryTest {
+public class StationDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private StationRepository stationRepository;
+    private StationDao stationDao;
 
     @BeforeEach
     void setUp() {
-        stationRepository = new StationRepository(jdbcTemplate);
+        stationDao = new StationDao(jdbcTemplate);
         String query = "INSERT INTO STATION(name) VALUES (?)";
 
         jdbcTemplate.update(query, "잠실역");
@@ -35,24 +35,22 @@ public class StationRepositoryTest {
     void saveStation() {
         Station station = new Station("석촌역");
 
-        Station savedStation = stationRepository.save(station);
-        assertThat(savedStation.getId()).isEqualTo(3L);
+        Station newStation = stationDao.save(station);
+        assertThat(newStation.getId()).isEqualTo(3L);
     }
 
     @DisplayName("DB에 있는 station들을 조회하면, station을 담은 리스트를 반환한다.")
     @Test
     void findAll() {
         List<Station> stations = Arrays.asList(new Station(1L, "잠실역"), new Station(2L, "잠실새내역"));
-        assertThat(stationRepository.getStations()).usingRecursiveComparison().isEqualTo(stations);
+        assertThat(stationDao.findAll()).isEqualTo(stations);
     }
 
     @DisplayName("전체 station을 조회할 때, DB에 존재하는 station이 없다면 빈 리스트를 반환한다.")
     @Test
     void findAll_noLinesSaved_emptyList() {
-        jdbcTemplate.update("TRUNCATE TABLE station");
-
-        List<Station> stations = stationRepository.getStations();
-        assertThat(stations).isEmpty();
+        jdbcTemplate.update("DELETE FROM station");
+        assertThat(stationDao.findAll()).isEmpty();
     }
 
     @DisplayName("id를 통해 삭제 요청을 하면, DB에 있는 해당 id의 station을 삭제한다")
@@ -63,7 +61,7 @@ public class StationRepositoryTest {
         String query = "SELECT EXISTS(SELECT * FROM station WHERE id = ?)";
         assertThat(jdbcTemplate.queryForObject(query, Boolean.class, id)).isTrue();
 
-        stationRepository.deleteById(id);
+        stationDao.deleteById(id);
         assertThat(jdbcTemplate.queryForObject(query, Boolean.class, id)).isFalse();
     }
 }
