@@ -3,6 +3,7 @@ package wooteco.subway.line.dao;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -73,12 +74,13 @@ public class LineDao {
         };
     }
 
-    public Line findLineById(Long id) {
+    public Optional<Line> findLineById(Long id) {
         String sql = "SELECT id, name, color FROM line WHERE id = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, mapperLine(), id);
+            Line line = jdbcTemplate.queryForObject(sql, mapperLine(), id);
+            return Optional.of(line);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("존재하지 않는 노선 ID 입니다.");
+            return Optional.empty();
         }
     }
 

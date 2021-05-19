@@ -7,20 +7,14 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import wooteco.subway.exception.DuplicationException;
-import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.SubwayLineControlException;
 
 @ControllerAdvice
 public class ControllerHandler {
 
-    @ExceptionHandler(DuplicationException.class)
-    public ResponseEntity<String> duplicatedName(DuplicationException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> notFoundElement(NotFoundException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    @ExceptionHandler(SubwayLineControlException.class)
+    public ResponseEntity<String> subwayLineException(SubwayLineControlException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -34,5 +28,4 @@ public class ControllerHandler {
         });
         return ResponseEntity.badRequest().body(errors);
     }
-
 }

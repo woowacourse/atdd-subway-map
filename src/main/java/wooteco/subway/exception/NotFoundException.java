@@ -1,8 +1,10 @@
 package wooteco.subway.exception;
 
-public class NotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class NotFoundException extends SubwayLineControlException {
 
     public NotFoundException(String message) {
-        super(message);
+        super(message, HttpStatus.BAD_REQUEST);
     }
 }

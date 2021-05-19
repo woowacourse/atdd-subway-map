@@ -2,9 +2,9 @@ package wooteco.subway.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class DuplicationException extends SubwayLineControlException {
+public class WrongDistanceException extends SubwayLineControlException {
 
-    public DuplicationException(String message) {
+    public WrongDistanceException(String message) {
         super(message, HttpStatus.BAD_REQUEST);
     }
 }

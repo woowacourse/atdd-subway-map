@@ -2,9 +2,9 @@ package wooteco.subway.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class DuplicationException extends SubwayLineControlException {
+public class SectionDeleteException extends SubwayLineControlException {
 
-    public DuplicationException(String message) {
+    public SectionDeleteException(String message) {
         super(message, HttpStatus.BAD_REQUEST);
     }
 }

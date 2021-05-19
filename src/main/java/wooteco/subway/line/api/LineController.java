@@ -3,7 +3,6 @@ package wooteco.subway.line.api;
 import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.line.api.dto.LineDetailsResponse;
 import wooteco.subway.line.api.dto.LineRequest;
 import wooteco.subway.line.api.dto.LineResponse;
 import wooteco.subway.line.service.LineService;
@@ -29,8 +28,9 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
-        LineResponse newLine = lineService.createLine(lineRequest);
+    public ResponseEntity<LineDetailsResponse> createLine(
+        @RequestBody @Valid LineRequest lineRequest) {
+        LineDetailsResponse newLine = lineService.createLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(newLine);
     }
 
@@ -41,18 +41,20 @@ public class LineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+    public ResponseEntity<LineDetailsResponse> showLine(@PathVariable Long id) {
         return ResponseEntity.ok(lineService.showLineById(id));
     }
 
     @PutMapping("/{id}")
-    public void updateLine(@PathVariable Long id, @RequestBody @Valid LineRequest lineRequest) {
+    public ResponseEntity<Void> updateLine(@PathVariable Long id,
+        @RequestBody @Valid LineRequest lineRequest) {
         lineService.update(id, lineRequest);
+        return ResponseEntity.ok().build();
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    public void deleteLine(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

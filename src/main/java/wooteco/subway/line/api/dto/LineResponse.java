@@ -1,28 +1,22 @@
 package wooteco.subway.line.api.dto;
 
-import org.springframework.lang.NonNull;
-import wooteco.subway.line.model.Line;
-import wooteco.subway.station.api.dto.StationResponse;
-
 import java.util.List;
+import java.util.stream.Collectors;
+import wooteco.subway.line.model.Line;
 
 public class LineResponse {
 
     private Long id;
-
-    @NonNull
     private String name;
     private String color;
-    private List<StationResponse> stations;
 
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
+    public LineResponse(Long id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = stations;
     }
 
     public LineResponse(Line newLine) {
@@ -36,6 +30,12 @@ public class LineResponse {
         this.color = color;
     }
 
+    public static List<LineResponse> listOf(List<Line> lines) {
+        return lines.stream()
+            .map(LineResponse::new)
+            .collect(Collectors.toList());
+    }
+
     public Long getId() {
         return id;
     }
@@ -46,9 +46,5 @@ public class LineResponse {
 
     public String getColor() {
         return color;
-    }
-
-    public List<StationResponse> getStations() {
-        return stations;
     }
 }
