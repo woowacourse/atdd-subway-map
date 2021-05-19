@@ -15,7 +15,6 @@ public class Sections {
     private static final int DELETABLE_COUNT = 2;
     private static final int FIRST_SECTION = 0;
 
-
     private List<Section> sections;
 
     public Sections(List<Section> sections) {

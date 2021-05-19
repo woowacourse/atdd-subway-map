@@ -1,6 +1,5 @@
 package wooteco.subway.section.controller;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.section.dto.SectionRequest;
@@ -18,13 +17,13 @@ public class SectionController {
         this.sectionService = sectionService;
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
     public ResponseEntity<SectionResponse> createSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
         SectionResponse newSection = sectionService.appendSection(lineId, sectionRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections")).body(newSection);
     }
 
-    @DeleteMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping
     public ResponseEntity<Void> deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
         sectionService.deleteSection(lineId, stationId);
         return ResponseEntity.noContent().build();

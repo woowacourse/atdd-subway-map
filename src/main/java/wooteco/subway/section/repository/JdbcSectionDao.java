@@ -52,18 +52,6 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public Section findByUpStationId(Long lineId, Station upStation) {
-        String query = "SELECT * FROM section WHERE up_station_id = ? AND line_id = ?";
-        return jdbcTemplate.query(query, sectionMapper, upStation.getId(), lineId).get(0);
-    }
-
-    @Override
-    public Section findByDownStationId(Long lineId, Station downStation) {
-        String query = "SELECT * FROM section WHERE down_station_id = ? AND line_id = ?";
-        return jdbcTemplate.query(query, sectionMapper, downStation.getId(), lineId).get(0);
-    }
-
-    @Override
     public void delete(Section section) {
         String query = "DELETE FROM section WHERE id = ?";
         jdbcTemplate.update(query, section.getId());
@@ -73,17 +61,5 @@ public class JdbcSectionDao implements SectionDao {
     public void deleteByLineId(Line line) {
         String query = "delete from SECTION where line_id = ?";
         jdbcTemplate.update(query, line.getId());
-    }
-
-    @Override
-    public void updateSectionToForward(Section newSection, int changedDistance) {
-        String query = "UPDATE section SET up_station_id = ?, distance = ? WHERE up_station_id = ? AND line_id = ?";
-        jdbcTemplate.update(query, newSection.getDownStationId(), changedDistance, newSection.getUpStationId(), newSection.getLineId());
-    }
-
-    @Override
-    public void updateSectionToBackward(Section newSection, int changedDistance) {
-        String query = "UPDATE section SET down_station_id = ?, distance = ? WHERE down_station_id = ? AND line_id = ?";
-        jdbcTemplate.update(query, newSection.getUpStationId(), changedDistance, newSection.getDownStationId(), newSection.getLineId());
     }
 }

@@ -72,6 +72,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public boolean isExistingStation(Long stationId) {
         return stationDao.isExistingStation(stationId);
     }
