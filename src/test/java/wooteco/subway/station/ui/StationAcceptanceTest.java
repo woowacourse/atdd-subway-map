@@ -1,6 +1,5 @@
 package wooteco.subway.station.ui;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,7 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
@@ -22,16 +20,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+    private static final String BASE_URL = "/stations";
+    private static final String BASE_URL_WITH_ID = "/stations/{id}";
     @Autowired
     private StationDao stationDao;
 
-    private Station station1;
-    private Station station2;
+    private Station 백기역;
+    private Station 흑기역;
 
     @BeforeEach
     void init() {
-        this.station1 = stationDao.save(new Station("백기역"));
-        this.station2 = stationDao.save(new Station("흑기역"));
+        this.백기역 = stationDao.save(new Station("백기역"));
+        this.흑기역 = stationDao.save(new Station("흑기역"));
     }
 
     @DisplayName("지하철역을 생성한다.")
@@ -42,7 +42,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest stationRequest = new StationRequest(name);
 
         // when
-        ExtractableResponse<Response> response = saveStationToHTTP(stationRequest);
+        ExtractableResponse<Response> response = post_요청을_보냄(BASE_URL, stationRequest);
         StationResponse saveResponse = response.body().as(StationResponse.class);
 
         // then
@@ -55,10 +55,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        StationRequest stationRequest = new StationRequest(station1.name());
+        StationRequest stationRequest = new StationRequest(백기역.name());
 
         // when
-        ExtractableResponse<Response> response = saveStationToHTTP(stationRequest);
+        ExtractableResponse<Response> response = post_요청을_보냄(BASE_URL, stationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -72,17 +72,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest stationRequest = new StationRequest(name);
 
         // when
-        ExtractableResponse<Response> saveStationResponse = saveStationToHTTP(stationRequest);
-        ExtractableResponse<Response> findStationResponse = findAllStationToHTTP();
+        ExtractableResponse<Response> saveResponse = post_요청을_보냄(BASE_URL, stationRequest);
+        ExtractableResponse<Response> findStationResponse = get_요청을_보냄(BASE_URL);
 
-        StationResponse stationResponse = saveStationResponse.body().as(StationResponse.class);
+        StationResponse stationResponse = saveResponse.body().as(StationResponse.class);
         List<Long> resultLineIds = findStationResponse.jsonPath().getList(".", StationResponse.class).stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
 
         // then
         assertThat(findStationResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(resultLineIds).containsExactly(stationResponse.getId(), station2.id(), station1.id());
+        assertThat(resultLineIds).containsExactly(stationResponse.getId(), 흑기역.id(), 백기역.id());
     }
 
     @DisplayName("지하철역을 제거한다.")
@@ -91,7 +91,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given
 
         // when
-        ExtractableResponse<Response> response = deleteStationByIdToHTTP(station1.id());
+        ExtractableResponse<Response> response = delete_요청을_보냄(BASE_URL_WITH_ID, 백기역.id());
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -103,35 +103,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given
 
         // when
-        ExtractableResponse<Response> response = deleteStationByIdToHTTP(-1L);
+        ExtractableResponse<Response> response = delete_요청을_보냄(BASE_URL_WITH_ID, -1L);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private ExtractableResponse<Response> saveStationToHTTP(StationRequest stationRequest) {
-        return RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> findAllStationToHTTP() {
-        return RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> deleteStationByIdToHTTP(Long stationId) {
-        return RestAssured.given().log().all()
-                .when()
-                .delete("/stations/{id}", stationId)
-                .then().log().all()
-                .extract();
     }
 }
