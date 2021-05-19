@@ -16,12 +16,12 @@ public class Sections {
         orderedStations = orderedStations();
     }
 
-    public List<Station> getOrderedStations() {
-        return orderedStations;
-    }
-
     public List<Section> getSections() {
         return Collections.unmodifiableList(sections);
+    }
+
+    public List<Station> getOrderedStations() {
+        return orderedStations;
     }
 
     private List<Station> orderedStations() {

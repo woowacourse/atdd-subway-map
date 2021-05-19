@@ -20,10 +20,6 @@ public class LineResponse {
         this(line.getId(), line.getName(), line.getColor(), Collections.emptyList());
     }
 
-    public LineResponse(Line newLine, List<StationResponse> stations) {
-        this(newLine.getId(), newLine.getName(), newLine.getColor(), stations);
-    }
-
     public LineResponse(Long id, String name, String color) {
         this(id, name, color, Collections.emptyList());
     }
