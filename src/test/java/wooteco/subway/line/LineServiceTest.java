@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.line.exception.LineExistenceException;
 import wooteco.subway.line.exception.LineNotFoundException;
-import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,8 +22,6 @@ class LineServiceTest {
     @Autowired
     private StationDao stationDao;
 
-    private Station station1;
-    private Station station2;
     private LineRequest lineRequest;
 
     @BeforeEach
@@ -36,8 +33,8 @@ class LineServiceTest {
         jdbcTemplate.execute("truncate table STATION");
         jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
 
-        station1 = stationDao.save("가양역");
-        station2 = stationDao.save("증미역");
+        stationDao.save("가양역");
+        stationDao.save("증미역");
         lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 10);
     }
 
