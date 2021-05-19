@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.station.dao;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -6,10 +6,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.exception.StationException;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class StationDao {
@@ -36,18 +37,23 @@ public class StationDao {
         jdbcTemplate.update(sql, id);
     }
 
-    public Optional<Station> findById(final Long id) {
+    public Station findById(final Long id) {
         try {
             final String sql = "SELECT * FROM STATION WHERE id = ?";
-            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper(), id));
+            return jdbcTemplate.queryForObject(sql, rowMapper(), id);
         } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
+            throw new StationException("존재하지 않는 역입니다.");
         }
     }
 
     public List<Station> findAll() {
         final String sql = "SELECT * FROM STATION";
         return jdbcTemplate.query(sql, rowMapper());
+    }
+
+    public boolean isNotExist(final Long id) {
+        final String sql = "SELECT EXISTS(SELECT * FROM STATION WHERE id = ?)";
+        return !jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
     public boolean isExistingName(final String name) {

@@ -1,5 +1,7 @@
 drop table if exists STATION;
+
 drop table if exists LINE;
+
 drop table if exists SECTION;
 
 create table if not exists STATION
@@ -36,6 +38,8 @@ create table if not exists LINE
 (
     20
 ) not null,
+    first_station_id bigint,
+    last_station_id bigint,
     primary key
 (
     id
@@ -53,11 +57,11 @@ create table if not exists SECTION
     bigint
     not
     null,
-    up_station_id
+    front_station_id
     bigint
     not
     null,
-    down_station_id
+    back_station_id
     bigint
     not
     null,
