@@ -16,6 +16,7 @@ public class Sections {
 
     public Sections(List<Section> sections) {
         this.sections = sort(sections);
+        validateDeletable();
     }
 
     public Sections(List<Section> sections, Section section) {

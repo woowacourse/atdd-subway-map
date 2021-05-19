@@ -92,7 +92,6 @@ public class SectionService {
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
-        sections.validateDeletable();
         if (sections.isOnUpEdge(stationId)) {
             sectionDao.deleteFirstSection(lineId, stationId);
             return;
