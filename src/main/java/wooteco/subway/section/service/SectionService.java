@@ -2,7 +2,6 @@ package wooteco.subway.section.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.exception.InvalidInsertException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.repository.LineDao;
 import wooteco.subway.section.Section;
@@ -38,52 +37,11 @@ public class SectionService {
         stationService.validateExistStations(sectionReq.getUpStationId(), sectionReq.getDownStationId());
         Section newSection = sectionReq.toEntity(lineDao.findById(lineId));
         Sections sections =  new Sections(sectionDao.findAllByLineId(lineId), newSection);
+        sections.addSection(lineDao.findById(lineId), newSection);
 
-        if (sections.isOnEdge(newSection)) {
-            return saveAtEnd(newSection);
-        }
-        return saveAtMiddle(newSection, sections);
-    }
-
-    private SectionResponse saveAtEnd(Section newSection) {
-        Section savedSection = sectionDao.save(newSection);
-        return SectionResponse.from(savedSection);
-    }
-
-    private SectionResponse saveAtMiddle(Section newSection, Sections sections) {
-        if (sections.appendToForward(newSection)) {
-            Section changedSection = insertSectionToForward(newSection);
-            return SectionResponse.from(changedSection);
-        }
-        if (sections.appendToBackward(newSection)) {
-            Section changedSection = insertSectionToBackward(newSection);
-            return SectionResponse.from(changedSection);
-        }
-        throw new InvalidInsertException("해당 구간에 추가할 수 없습니다.");
-    }
-
-    private Section insertSectionToBackward(Section newSection) {
-        int changedDistance = compareDistanceWhenAppendToBottom(newSection);
-        sectionDao.updateSectionToBackward(newSection, changedDistance);
-        Section changedSection = sectionDao.save(newSection);
-        return changedSection;
-    }
-
-    private Section insertSectionToForward(Section newSection) {
-        int changedDistance = compareDistanceWhenAppendToUp(newSection);
-        sectionDao.updateSectionToForward(newSection, changedDistance);
-        Section changedSection = sectionDao.save(newSection);
-        return changedSection;
-    }
-
-    private int compareDistanceWhenAppendToBottom(Section newSection) {
-        Section currentSection = sectionDao.findByDownStationId(newSection.getLineId(), newSection.getDownStation());
-        return currentSection.subtractDistance(newSection);
-    }
-
-    private int compareDistanceWhenAppendToUp(Section newSection) {
-        Section currentSection = sectionDao.findByUpStationId(newSection.getLineId(), newSection.getUpStation());
-        return currentSection.subtractDistance(newSection);
+        sectionDao.deleteByLineId(lineDao.findById(lineId));
+        sections.toSortedSections().forEach(sectionDao::save);
+        return SectionResponse.from(newSection);
     }
 
     @Transactional(readOnly = true)

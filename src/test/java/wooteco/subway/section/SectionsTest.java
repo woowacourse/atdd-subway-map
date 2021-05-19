@@ -75,56 +75,30 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("추가하려는 구간이 기존 구간의 상행종점에 연결되는지 테스트한다.")
-    void isOnUpEdge() {
-        Station 시청역 = new Station(5L, "시청역");
-
-        Section 시청에서성수 = new Section(이호선, 시청역, 성수역, 4);
-        Sections 이호선 = new Sections(이호선구간);
-
-        assertThat(이호선.isOnUpEdge(시청에서성수.getDownStationId())).isTrue();
-    }
-
-    @Test
-    @DisplayName("추가하려는 구간이 기존 구간의 하행종점에 연결되는지 테스트한다.")
-    void isOnDownEdge() {
-        Station 사당역 = new Station(6L, "사당역");
-
-        Section 잠실에서사당 = new Section(이호선, 잠실역, 사당역, 3);
-        Sections 이호선 = new Sections(이호선구간);
-
-        assertThat(이호선.isOnDownEdge(잠실에서사당.getUpStationId())).isTrue();
-    }
-
-    @Test
     @DisplayName("추가하려는 구간이 기존에 중간 구간의 상행역과 연결되는지 테스트한다.")
     void appendToForward() {
         Station 강변역 = new Station(5L, "강변역");
-        Station 잠실나루 = new Station(6L, "잠실나루역");
 
         Section 구의에서강변 = new Section(이호선, 구의역, 강변역, 3);
-        Section 강변에서잠실나루 = new Section(이호선, 강변역, 잠실나루, 2);
-        Sections 이호선 = new Sections(이호선구간);
+        Sections sections = new Sections(이호선구간);
 
-        assertThat(이호선.appendToForward(구의에서강변)).isTrue();
-        assertThat(이호선.appendToForward(강변에서잠실나루)).isFalse();
-        assertThat(이호선.appendToForward(성수에서건대)).isFalse();
+
+        sections.addSection(이호선, 구의에서강변);
+        assertThat(sections.toSortedSections()).hasSize(4);
+        assertThat(sections.toSortedSections()).contains(성수에서건대, 건대에서구의, 구의에서강변);
     }
 
     @Test
     @DisplayName("추가하려는 구간이 기존에 있는 중간 구간의 하행역과 연결되는지 테스트한다.")
     void appendToBackward() {
-        Station 강변역 = new Station(5L, "강변역");
         Station 잠실나루 = new Station(6L, "잠실나루역");
 
-        Section 구의에서강변 = new Section(이호선, 구의역, 강변역, 3);
-
         Section 잠실나루에서잠실 = new Section(이호선, 잠실나루, 잠실역, 3);
-        Sections 이호선 = new Sections(이호선구간);
+        Sections sections = new Sections(이호선구간);
 
-        assertThat(이호선.appendToBackward(잠실나루에서잠실)).isTrue();
-        assertThat(이호선.appendToBackward(구의에서강변)).isFalse();
-        assertThat(이호선.appendToBackward(건대에서구의)).isFalse();
+        sections.addSection(이호선, 잠실나루에서잠실);
+        assertThat(sections.toSortedSections()).hasSize(4);
+        assertThat(sections.toSortedSections()).contains(성수에서건대, 건대에서구의, 잠실나루에서잠실);
     }
 
     @Test

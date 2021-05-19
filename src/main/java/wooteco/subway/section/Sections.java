@@ -23,7 +23,7 @@ public class Sections {
     }
 
     public Sections(List<Section> sections, Section section) {
-        this.sections = sort(sections);
+        this(sections);
         validateSavableSection(section);
     }
 
@@ -69,6 +69,17 @@ public class Sections {
         }
     }
 
+    public void addSection(Line line, Section newSection) {
+        if (isOnEdge(newSection)) {
+            sections.add(newSection);
+            return;
+        }
+        appendToForward(line, newSection);
+        appendToBackward(line, newSection);
+
+        sections.add(newSection);
+    }
+
     public boolean isOnEdge(Section section) {
         Station downStation = section.getDownStation();
         Station upStation = section.getUpStation();
@@ -76,11 +87,11 @@ public class Sections {
                 || isOnDownEdge(upStation.getId());
     }
 
-    public boolean isOnUpEdge(Long downId) {
+    private boolean isOnUpEdge(Long downId) {
         return downId.equals(getFirstUpId());
     }
 
-    public boolean isOnDownEdge(Long upId) {
+    private boolean isOnDownEdge(Long upId) {
         return upId.equals(getLastDownId());
     }
 
@@ -120,53 +131,30 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public boolean appendToForward(Section newSection) {
-        return containUpIdInUpIds(newSection) &&
-                notContainDownIdInDownIds(newSection);
+    private void appendToForward(Line line, Section newSection) {
+         sections.stream()
+                .filter(section -> section.isSameAsUpId(newSection.getUpStation().getId()))
+                .findFirst()
+                .ifPresent(it -> addSectionToForward(it, newSection, line));
     }
 
-    public boolean appendToBackward(Section newSection) {
-        return containDownIdInDownIds(newSection) &&
-                notContainUpIdInUpIds(newSection);
+    private void addSectionToForward(Section section, Section newSection, Line line) {
+        int distance = section.subtractDistance(newSection);
+        sections.add(new Section(line, newSection.getDownStation(), section.getDownStation(), distance));
+        sections.remove(section);
     }
 
-    private boolean containUpIdInUpIds(Section newSection) {
-        return upStationIds(sections).stream()
-                .anyMatch(newSection::isSameAsUpId);
+    private void appendToBackward(Line line, Section newSection) {
+        sections.stream()
+                .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
+                .findFirst()
+                .ifPresent(section -> addSectionToBackward(section, newSection, line));
     }
 
-    private boolean notContainDownIdInDownIds(Section newSection) {
-        return downStationIds(sections).stream()
-                .noneMatch(newSection::isSameAsDownId);
-    }
-
-    private boolean containDownIdInDownIds(Section newSection) {
-        return downStationIds(sections).stream()
-                .anyMatch(newSection::isSameAsDownId);
-    }
-
-    private boolean notContainUpIdInUpIds(Section newSection) {
-        return upStationIds(sections).stream()
-                .noneMatch(newSection::isSameAsDownId);
-    }
-
-    public List<Long> toSortedStationIds() {
-        List<Long> stationIds = sections.stream()
-                .map(Section::getUpStationId)
-                .collect(Collectors.toList());
-        stationIds.add(lastStationId());
-        return stationIds;
-    }
-
-    private Long lastStationId() {
-        int lastIdx = sections.size() - 1;
-        return sections.get(lastIdx).getDownStationId();
-    }
-
-    private void validateDeletable() {
-        if (sections.size() < DELETABLE_COUNT) {
-            throw new InvalidInsertException("구간이 한 개 이하라 삭제할 수 없습니다.");
-        }
+    private void addSectionToBackward(Section section, Section newSection, Line line) {
+        int distance = section.subtractDistance(newSection);
+        sections.add(new Section(line, section.getUpStation(), newSection.getUpStation(), distance));
+        sections.remove(section);
     }
 
     public void removeSection(Line line, Station station) {
@@ -206,6 +194,25 @@ public class Sections {
                 .filter(it -> it.getUpStation().equals(station))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("일치하는 하행역이 없습니다."));
+    }
+
+    public List<Long> toSortedStationIds() {
+        List<Long> stationIds = sections.stream()
+                .map(Section::getUpStationId)
+                .collect(Collectors.toList());
+        stationIds.add(lastStationId());
+        return stationIds;
+    }
+
+    private Long lastStationId() {
+        int lastIdx = sections.size() - 1;
+        return sections.get(lastIdx).getDownStationId();
+    }
+
+    private void validateDeletable() {
+        if (sections.size() < DELETABLE_COUNT) {
+            throw new InvalidInsertException("구간이 한 개 이하라 삭제할 수 없습니다.");
+        }
     }
 
     public List<Section> toSortedSections() {
