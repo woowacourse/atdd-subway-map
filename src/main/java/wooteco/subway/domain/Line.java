@@ -1,23 +1,29 @@
 package wooteco.subway.domain;
 
+import java.util.List;
+import java.util.Objects;
+
+import wooteco.subway.exception.EntityNotFoundException;
+
 public class Line {
     private final Long id;
     private final String name;
     private final String color;
-    private final Long topStationId;
-    private final Long bottomStationId;
+    private final Sections sections;
 
-    public Line(final Long id, final Line line) {
-        this(id, line.name, line.color, line.topStationId, line.bottomStationId);
+    public Line(Long id, Line line) {
+        this(id, line.name, line.color, line.sections);
     }
 
-    public Line(final Long id, final String name, final String color, final Long topStationId,
-                final Long bottomStationId) {
+    public Line(Line line, Sections sections) {
+        this(line.id, line.name, line.color, sections);
+    }
+
+    public Line(Long id, String name, String color, Sections sections) {
         this.id = id;
-        this.name = name;
-        this.color = color;
-        this.topStationId = topStationId;
-        this.bottomStationId = bottomStationId;
+        this.name = Objects.requireNonNull(name);
+        this.color = Objects.requireNonNull(color);
+        this.sections = Objects.requireNonNull(sections);
     }
 
     public Long getId() {
@@ -32,31 +38,44 @@ public class Line {
         return color;
     }
 
-    public Long getTopStationId() {
-        return topStationId;
+    public Sections getSections() {
+        return sections;
     }
 
-    public Long getBottomStationId() {
-        return bottomStationId;
+    public List<Station> getStations() {
+        return sections.getSortedStations();
     }
 
-    public Line updateTopStationId(final Long topStationId) {
-        return new Line(id, name, color, topStationId, bottomStationId);
+    public boolean isNameEquals(String name) {
+        return this.name.equals(name);
     }
 
-    public Line updateBottomStationId(final Long bottomStationId) {
-        return new Line(id, name, color, topStationId, bottomStationId);
+    public Line insertSection(Section section) {
+        return new Line(this, sections.insert(section));
     }
 
-    public boolean isNameEquals(Line line) {
-        return this.name.equals(line.name);
+    public boolean shouldInsertAtSide(Section section) {
+        return sections.shouldInsertAtTop(section) || sections.shouldInsertAtBottom(section);
     }
 
-    public boolean isTopStationIdEquals(Long topStationId) {
-        return this.topStationId.equals(topStationId);
+    public boolean shouldInsertAtUpStationOfMiddle(final Section section) {
+        return sections.isStationInUpStations(section.getUpStation());
     }
 
-    public boolean isBottomStationIdEquals(Long bottomStationId) {
-        return this.bottomStationId.equals(bottomStationId);
+    public Section findSectionByUpStation(Station upStation) {
+        return sections.findByUpStation(upStation)
+                       .orElseThrow(() -> new EntityNotFoundException("해당 역과 일치하는 구간이 존재하지 않습니다."));
+    }
+
+    public boolean isTopStation(Station station) {
+        return sections.isTopStation(station);
+    }
+
+    public boolean isBottomStation(Station station) {
+        return sections.isBottomStation(station);
+    }
+
+    public Sections deleteStation(Station station) {
+        return this.sections.deleteStation(station);
     }
 }

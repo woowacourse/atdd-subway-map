@@ -68,11 +68,14 @@ public class Sections {
         }
     }
 
-    private boolean shouldInsertAtTop(Section newSection) {
-        final boolean isUpStationInDownStations = isStationInDownStations(newSection.getUpStation());
-        final boolean isUpStationInUpStations = isStationInUpStations(newSection.getUpStation());
+    public boolean shouldInsertAtTop(Section newSection) {
+        final boolean isTopStation = isTopStation(newSection.getDownStation());
         final boolean isDownStationInDownStations = isStationInDownStations(newSection.getDownStation());
-        return !(isUpStationInDownStations || isDownStationInDownStations || isUpStationInUpStations);
+        return isTopStation && !isDownStationInDownStations;
+    }
+
+    public boolean isTopStation(Station station) {
+        return !isStationInDownStations(station) && isStationInUpStations(station);
     }
 
     private boolean isStationInDownStations(Station station) {
@@ -90,18 +93,20 @@ public class Sections {
         return new Sections(sections);
     }
 
-    private boolean shouldInsertAtBottom(Section section) {
-        final boolean isDownStationInUpStations = isStationInUpStations(section.getDownStation());
+    public boolean shouldInsertAtBottom(Section section) {
         final boolean isUpStationInUpStations = isStationInUpStations(section.getUpStation());
-        final boolean isDownStationInDownStations = isStationInDownStations(section.getDownStation());
-        return !(isDownStationInUpStations || isUpStationInUpStations || isDownStationInDownStations);
+        return isBottomStation(section.getUpStation()) && !isUpStationInUpStations;
+    }
+
+    public boolean isBottomStation(Station station) {
+        return !isStationInUpStations(station) && isStationInDownStations(station);
     }
 
     public boolean isStationInUpStations(final Station station) {
         return findByUpStation(station).isPresent();
     }
 
-    private Optional<Section> findByUpStation(Station station) {
+    public Optional<Section> findByUpStation(Station station) {
         return sections.stream()
                        .filter(section -> section.isUpStationEquals(station))
                        .findAny();
@@ -114,6 +119,9 @@ public class Sections {
 
     private Sections insertAtUpStationOfMiddle(Section newSection) {
         final Section oldSection = findByUpStation(newSection.getUpStation()).get();
+        if (oldSection.getDistance() <= newSection.getDistance()) {
+            throw new InvalidRequestException("추가하려는 구간의 길이는 기존 구간의 길이보다 작아야 합니다.");
+        }
         final int distance = oldSection.getDistance() - newSection.getDistance();
         final Function<Section, Section> updateFunction = section -> section.updateUpStation(newSection.getDownStation())
                                                                             .updateDistance(distance);
@@ -122,7 +130,11 @@ public class Sections {
 
     private Sections insertAtDownStationOfMiddle(Section newSection) {
         final Section oldSection = findByDownStation(newSection.getDownStation()).get();
+        if (oldSection.getDistance() <= newSection.getDistance()) {
+            throw new InvalidRequestException("추가하려는 구간의 길이는 기존 구간의 길이보다 작아야 합니다.");
+        }
         final int distance = oldSection.getDistance() - newSection.getDistance();
+
         final Function<Section, Section> updateFunction = section -> section.updateDownStation(newSection.getUpStation())
                                                                             .updateDistance(distance);
         return insertAtMiddle(oldSection, updateFunction, newSection);
@@ -136,6 +148,10 @@ public class Sections {
     }
 
     public List<Station> getSortedStations() {
+        if (sections.isEmpty()) {
+            return new ArrayList<>();
+        }
+
         Map<Station, Station> sectionMap = makeSectionMap();
         Station station = findTopStation(sectionMap);
 
@@ -158,10 +174,58 @@ public class Sections {
     }
 
     private Station findTopStation(Map<Station, Station> sectionMap) {
-        return sectionMap.keySet()
-                         .stream()
-                         .filter(upStation -> !isStationInDownStations(upStation))
-                         .findAny()
-                         .orElseThrow(() -> new EntityNotFoundException("상행 종점역이 존재하지 않습니다."));
+        for (Station upStation : sectionMap.keySet()) {
+            if (sectionMap.values().stream().noneMatch(downStation -> downStation.equals(upStation))) {
+                return upStation;
+            }
+        }
+
+        throw new EntityNotFoundException("상행 종점역이 존재하지 않습니다.");
+    }
+
+    public Sections deleteStation(Station station) {
+        validateSectionToDelete();
+
+        if (isTopStation(station) || isBottomStation(station)) {
+            return deleteStationWithoutUpdate(station);
+        }
+
+        return deleteStationWithUpdate(station);
+    }
+
+    private void validateSectionToDelete() {
+        if (sections.isEmpty()) {
+            throw new InvalidRequestException("구간이 존재하지 않는 노선입니다.");
+        }
+
+        final boolean hasOnlyOneSection = sections.size() == 1;
+        if (hasOnlyOneSection) {
+            throw new InvalidRequestException("하나의 구간만 존재할 경우 삭제할 수 없습니다.");
+        }
+    }
+
+    private Sections deleteStationWithoutUpdate(Station station) {
+        final Section sectionContainingStation = findByUpStation(station)
+                .orElseThrow(() -> new EntityNotFoundException("해당 역과 일치하는 구간이 존재하지 않습니다."));
+
+        sections.remove(sectionContainingStation);
+        return new Sections(sections);
+    }
+
+    private Sections deleteStationWithUpdate(Station station) {
+        final Section sectionContainByUpStation = findByUpStation(station)
+                .orElseThrow(() -> new EntityNotFoundException("해당 역과 일치하는 구간이 존재하지 않습니다."));
+
+        final Section sectionContainByDownStation = findByDownStation(station)
+                .orElseThrow(() -> new EntityNotFoundException("해당 역과 일치하는 구간이 존재하지 않습니다."));
+
+        sections.remove(sectionContainByUpStation);
+        sections.remove(sectionContainByDownStation);
+
+        int distance = sectionContainByUpStation.getDistance() + sectionContainByDownStation.getDistance();
+        final Section updatedSection = sectionContainByDownStation.updateDownStation(sectionContainByUpStation.getDownStation())
+                                                                  .updateDistance(distance);
+        sections.add(updatedSection);
+        return new Sections(sections);
     }
 }
