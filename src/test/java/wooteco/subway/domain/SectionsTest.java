@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.assertj.core.api.ThrowableAssert;
 import wooteco.subway.exception.InvalidRequestException;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class SectionsTest {
 

@@ -1,11 +1,12 @@
 package wooteco.subway.acceptance;
 
+import java.util.Map;
+
+import org.springframework.http.MediaType;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.springframework.http.MediaType;
-
-import java.util.Map;
 
 public class RestAssuredHelper {
     private RestAssuredHelper() {}

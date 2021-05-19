@@ -1,18 +1,20 @@
 package wooteco.subway.acceptance;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
+
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 
 import wooteco.subway.controller.dto.LineResponse;
 import wooteco.subway.controller.dto.SectionResponse;
 import wooteco.subway.controller.dto.StationResponse;
 import wooteco.subway.exception.response.ErrorResponse;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -99,14 +101,6 @@ public class SectionCreateAcceptanceTest extends AcceptanceTest {
 
         final LineResponse lineResponse = RestAssuredHelper.jsonGet("/lines/1").body().as(LineResponse.class);
         assertThat(lineResponse.getStations()).containsExactly(gangnam, seolleung, yeoksam);
-
-        final SectionResponse oldSectionResponse = RestAssuredHelper.jsonGet("/lines/1/sections/1")
-                                                                    .body()
-                                                                    .as(SectionResponse.class);
-        assertThat(oldSectionResponse.getDistance()).isEqualTo(3);
-
-        final SectionResponse newSectionResponse = RestAssuredHelper.jsonGet(location).body().as(SectionResponse.class);
-        assertThat(newSectionResponse.getDistance()).isEqualTo(7);
     }
 
     @DisplayName("구간 생성 성공 - 종점이 아닌 중간 하행에 구간 추가")
@@ -133,14 +127,6 @@ public class SectionCreateAcceptanceTest extends AcceptanceTest {
         assertThat(section.getDistance()).isEqualTo(7);
 
         RestAssuredHelper.jsonGet("/lines/1");
-
-        final SectionResponse oldSectionResponse = RestAssuredHelper.jsonGet("/lines/1/sections/1")
-                                                                    .body()
-                                                                    .as(SectionResponse.class);
-        assertThat(oldSectionResponse.getDistance()).isEqualTo(3);
-
-        final SectionResponse newSectionResponse = RestAssuredHelper.jsonGet(location).body().as(SectionResponse.class);
-        assertThat(newSectionResponse.getDistance()).isEqualTo(7);
     }
 
     @DisplayName("구간 생성 실패 - 거리가 음수이면 예외 발생")
@@ -208,12 +194,11 @@ public class SectionCreateAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body()
-                           .as(ErrorResponse.class)
-                           .getReason()).isEqualTo("적어도 구간의 하나의 역은 이미 다른 구간에 저장되어 있어야 합니다.");
+        assertThat(response.body().as(ErrorResponse.class).getReason())
+                .isEqualTo("적어도 구간의 하나의 역은 이미 다른 구간에 저장되어 있어야 합니다.");
     }
 
-    @DisplayName("구간 생성 실패 - 추가하려는 구간의 길이가 기존 구간의 길이 이하일 경우 예외 발생")
+    @DisplayName("구간 생성 실패 - 추가하려는 구간의 길이가 기존 구간의 길이 이상일 경우 예외 발생")
     @Test
     void createSectionWithLessDistance() {
         // given
@@ -227,6 +212,6 @@ public class SectionCreateAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().as(ErrorResponse.class).getReason()).isEqualTo("추가하려는 구간의 길이는 기존 구간의 길이보다 커야 합니다.");
+        assertThat(response.body().as(ErrorResponse.class).getReason()).isEqualTo("추가하려는 구간의 길이는 기존 구간의 길이보다 작아야 합니다.");
     }
 }

@@ -1,18 +1,20 @@
 package wooteco.subway.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-
-import wooteco.subway.controller.dto.LineResponse;
-import wooteco.subway.exception.response.ErrorResponse;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+
+import wooteco.subway.controller.dto.LineResponse;
+import wooteco.subway.exception.response.ErrorResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -90,6 +92,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
+        params.put("distance", "1");
 
         // when
         ExtractableResponse<Response> response = RestAssuredHelper.jsonPost(params, "/lines");

@@ -1,16 +1,17 @@
 package wooteco.subway.exception.advice;
 
+import java.util.Objects;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.exception.EntityNotFoundException;
 import wooteco.subway.exception.InvalidRequestException;
 import wooteco.subway.exception.response.ErrorResponse;
-
-import java.util.Objects;
 
 @RestControllerAdvice
 public class SubwayAdvice {
