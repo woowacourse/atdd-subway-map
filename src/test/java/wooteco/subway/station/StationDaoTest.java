@@ -4,19 +4,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.line.LineDao;
-import wooteco.subway.section.SectionDao;
-import wooteco.subway.station.exception.StationDeleteException;
 
 import java.util.Arrays;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
+@JdbcTest
+@Import(StationDao.class)
 class StationDaoTest {
 
     private static final String STATIONNAME1 = "잠실역";
@@ -24,10 +22,6 @@ class StationDaoTest {
 
     @Autowired
     private StationDao stationDao;
-    @Autowired
-    private SectionDao sectionDao;
-    @Autowired
-    private LineDao lineDao;
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -87,9 +81,10 @@ class StationDaoTest {
     @Test
     @DisplayName("구간에 등록되어 있는 역 삭제")
     public void deleteStationWhenRegisteredInSection() {
-        lineDao.save("9호선", "황토색");
+        jdbcTemplate.update("insert into LINE (name, color) values ('9호선', '황토색')");
         stationDao.save(STATIONNAME2);
-        sectionDao.save(1L, 1L, 2L, 10);
+        jdbcTemplate.update(
+                "insert into SECTION (line_id, up_station_id, down_station_id, distance) values (1, 1, 2, 10)");
 
         assertThat(stationDao.delete(1L)).isEqualTo(0);
     }

@@ -38,11 +38,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         jdbcTemplate.execute("insert into LINE (name, color) values ('9호선', '황토')");
         jdbcTemplate.execute("insert into LINE (name, color) values ('2호선', '초록')");
         jdbcTemplate.execute("SET foreign_key_checks=1;");
-        stationDao.save("first");
-        stationDao.save("second");
-        stationDao.save("third");
-        stationDao.save("fourth");
-        stationDao.save("fifth");
+        stationDao.save("가양역");
+        stationDao.save("증미역");
+        stationDao.save("등촌역");
+        stationDao.save("염창역");
+        stationDao.save("신목동역");
         String sql = "insert into SECTION (LINE_ID, UP_STATION_ID, DOWN_STATION_ID, DISTANCE) values(?,?,?,?)";
         jdbcTemplate.update(sql, 1L, 1L, 2L, 10);
         jdbcTemplate.update(sql, 1L, 2L, 3L, 10);

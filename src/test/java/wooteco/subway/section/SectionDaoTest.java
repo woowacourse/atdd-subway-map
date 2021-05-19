@@ -4,7 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
@@ -14,7 +16,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@JdbcTest
+@Import({SectionDao.class, StationDao.class})
 class SectionDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -38,11 +41,11 @@ class SectionDaoTest {
         jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
         jdbcTemplate.execute("insert into LINE (name, color) values ('9호선', '황토')");
         jdbcTemplate.execute("SET foreign_key_checks=1;");
-        firstStation = stationDao.save("FirstStation");
-        secondStation = stationDao.save("SecondStation");
-        thirdStation = stationDao.save("ThirdStation");
-        stationDao.save("FourthStation");
-        stationDao.save("FifthStation");
+        firstStation = stationDao.save("가양역");
+        secondStation = stationDao.save("증미역");
+        thirdStation = stationDao.save("등촌역");
+        stationDao.save("염창역");
+        stationDao.save("신목동역");
     }
 
     @Test
