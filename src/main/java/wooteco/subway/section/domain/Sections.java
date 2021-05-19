@@ -102,7 +102,6 @@ public class Sections {
 
     public List<Long> toOrderedStationIds() {
         final Map<Long, Long> stationIdMap = createIdMap(sections);
-
         final Long beginningUpStation = findBeginningUpStation(stationIdMap);
 
         return createOrderedStationIdList(beginningUpStation, stationIdMap);
