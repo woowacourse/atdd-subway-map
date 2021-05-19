@@ -1,5 +1,7 @@
 package wooteco.subway.line;
 
+import wooteco.subway.section.Section;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -27,6 +29,14 @@ public class LineRequest {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public Line toLine() {
+        return new Line(this.name, this.color);
+    }
+
+    public Section toSection() {
+        return new Section(this.upStationId, this.downStationId, this.distance);
     }
 
     public String getName() {

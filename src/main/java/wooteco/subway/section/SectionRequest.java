@@ -23,6 +23,10 @@ public class SectionRequest {
         this.distance = distance;
     }
 
+    public Section toSection() {
+        return new Section(this.upStationId, this.downStationId, this.distance);
+    }
+
     public Long getUpStationId() {
         return upStationId;
     }

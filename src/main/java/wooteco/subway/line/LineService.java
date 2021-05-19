@@ -40,14 +40,12 @@ public class LineService {
     }
 
     private Line saveLine(LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        Line line = lineRequest.toLine();
         return lineDao.save(line);
     }
 
     private void saveSection(LineRequest lineRequest, Line savedLine) {
-        Section section = new Section(lineRequest.getUpStationId(),
-                lineRequest.getDownStationId(),
-                lineRequest.getDistance());
+        Section section = lineRequest.toSection();
         sectionDao.save(savedLine.getId(), section);
     }
 

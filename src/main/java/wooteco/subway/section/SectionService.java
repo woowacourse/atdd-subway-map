@@ -22,9 +22,7 @@ public class SectionService {
     public Section add(Long lineId, SectionRequest sectionRequest) {
         validateExistence(lineId);
 
-        Section section = new Section(sectionRequest.getUpStationId(),
-                sectionRequest.getDownStationId(),
-                sectionRequest.getDistance());
+        Section section = sectionRequest.toSection();
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
 
         sections.validate(section);
