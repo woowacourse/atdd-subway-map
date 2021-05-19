@@ -1,12 +1,14 @@
 package wooteco.subway.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateNameException;
-
-import java.util.List;
+import wooteco.subway.exception.EntityNotFoundException;
 
 @Transactional
 @Service
@@ -37,6 +39,11 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
+    public Station findById(Long id) {
+        return stationDao.findById(id)
+                         .orElseThrow(() -> new EntityNotFoundException("해당 ID와 일치하는 역이 존재하지 않습니다."));
+    }
+
     public void delete(final Long id) {
         stationDao.delete(id);
     }
