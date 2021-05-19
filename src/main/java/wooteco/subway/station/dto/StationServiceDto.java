@@ -22,6 +22,10 @@ public class StationServiceDto {
         this.name = name;
     }
 
+    public StationServiceDto(final Station station) {
+        this(station.getId(), station.getName());
+    }
+
     public static StationServiceDto from(final StationRequest stationRequest) {
         return new StationServiceDto(stationRequest.getName());
     }

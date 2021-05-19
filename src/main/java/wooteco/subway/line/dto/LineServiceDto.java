@@ -20,6 +20,10 @@ public class LineServiceDto {
         this(null, name, color);
     }
 
+    public LineServiceDto(final Line line) {
+        this(line.getId(), line.getName(), line.getColor());
+    }
+
     public LineServiceDto(final Long id, final String name, final String color) {
         this.id = id;
         this.name = name;

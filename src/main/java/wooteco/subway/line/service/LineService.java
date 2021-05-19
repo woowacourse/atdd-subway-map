@@ -80,7 +80,7 @@ public class LineService {
 
     private void checkExistedStation(SectionServiceDto sectionServiceDto) {
         List<StationServiceDto> dtos = stationDao.showAll().stream()
-            .map(station -> new StationServiceDto(station.getId(), station.getName()))
+            .map(station -> new StationServiceDto(station))
             .collect(Collectors.toList());
         Long upStationId = sectionServiceDto.getUpStationId();
         Long downStationId = sectionServiceDto.getDownStationId();
@@ -150,7 +150,7 @@ public class LineService {
     private StationResponse stationResponseById(final Long id) {
         StationServiceDto dto = stationDao.showAll()
             .stream()
-            .map(station -> new StationServiceDto(station.getId(), station.getName()))
+            .map(station -> new StationServiceDto(station))
             .filter(element -> id.equals(element.getId()))
             .findAny()
             .orElseThrow(NotFoundStationException::new);
@@ -190,7 +190,7 @@ public class LineService {
 
     public List<LineServiceDto> findAllDto() {
         return lineDao.showAll().stream()
-            .map(line -> new LineServiceDto(line.getId(), line.getName(), line.getColor()))
+            .map(line -> new LineServiceDto(line))
             .collect(Collectors.toList());
     }
 
