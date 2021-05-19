@@ -20,6 +20,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
     private static final StationRequest 강남역 = new StationRequest("강남역");
     private static final StationRequest 역삼역 = new StationRequest("역삼역");
 
+    public static ExtractableResponse<Response> 지하철역_등록(final StationRequest stationRequest) {
+        return RestAssured.given().log().all()
+            .body(stationRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+    }
+
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
@@ -31,25 +41,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철역_생성값_검증(final ExtractableResponse<Response> response, final StationRequest stationRequest) {
-        assertThat(response.body().as(StationResponse.class).getId()).isEqualTo(getCreatedId(response));
-        assertThat(response.body().as(StationResponse.class).getName()).isEqualTo(stationRequest.getName());
+        final StationResponse stationResponse = response.body().as(StationResponse.class);
+        assertThat(stationResponse.getId()).isEqualTo(getCreatedId(response));
+        assertThat(stationResponse.getName()).isEqualTo(stationRequest.getName());
     }
 
     private long getCreatedId(final ExtractableResponse<Response> response) {
         return Long.parseLong(response.header("Location").split("/")[2]);
     }
 
-    private ExtractableResponse<Response> 지하철역_등록(final StationRequest stationRequest) {
-        return RestAssured.given().log().all()
-            .body(stationRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
-    }
-
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성하면 400 에러가 발생한다.")
     @Test
     void createStationWithDuplicateName() {
         지하철역_등록(강남역);

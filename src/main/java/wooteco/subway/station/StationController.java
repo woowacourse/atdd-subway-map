@@ -2,7 +2,7 @@ package wooteco.subway.station;
 
 import java.net.URI;
 import java.util.List;
-import org.springframework.http.MediaType;
+import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,20 +22,22 @@ public class StationController {
         this.stationService = stationService;
     }
 
-    @PostMapping()
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
+    @PostMapping
+    public ResponseEntity<StationResponse> createStation(@Valid @RequestBody StationRequest stationRequest) {
         StationResponse stationResponse = stationService.createStation(stationRequest);
-        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
+        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId()))
+            .body(stationResponse);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<List<StationResponse>> showStations() {
-        return ResponseEntity.ok().body(stationService.findStations());
+        return ResponseEntity.ok(stationService.findStations());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.deleteStation(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+            .build();
     }
 }

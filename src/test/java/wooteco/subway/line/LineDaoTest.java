@@ -11,21 +11,21 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.exception.DataNotFoundException;
-import wooteco.subway.exception.DuplicatedNameException;
+import wooteco.subway.exception.DuplicatedFieldException;
 
 @JdbcTest
 class LineDaoTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private LineDao lineDao;
 
     @BeforeEach
     void setUp() {
-        lineDao = new LineDao(jdbcTemplate);
+        lineDao = new LineDao(namedParameterJdbcTemplate);
     }
 
     @DisplayName("노선을 생성한다.")
@@ -35,12 +35,11 @@ class LineDaoTest {
 
         final Line createdLine = lineDao.save(line);
 
-        assertThat(createdLine.getId()).isEqualTo(createdLine.getId());
-        assertThat(createdLine.getName()).isEqualTo(createdLine.getName());
-        assertThat(createdLine.getColor()).isEqualTo(createdLine.getColor());
+        assertThat(createdLine.getName()).isEqualTo(line.getName());
+        assertThat(createdLine.getColor()).isEqualTo(line.getColor());
     }
 
-    @DisplayName("기존에 존재하는 노선의 이름으로 노선을 생성한다.")
+    @DisplayName("기존에 존재하는 노선의 이름으로 노선을 생성하면 예외가 발생한다.")
     @Test
     void saveStationWithDuplicateName() {
         final Line line = new Line("2호선", "black");
@@ -48,7 +47,7 @@ class LineDaoTest {
 
         assertThatThrownBy(() -> lineDao.save(line))
             .hasMessage("중복된 이름의 노선입니다.")
-            .isInstanceOf(DuplicatedNameException.class);
+            .isInstanceOf(DuplicatedFieldException.class);
     }
 
     @DisplayName("노선을 제거한다.")
@@ -61,7 +60,7 @@ class LineDaoTest {
             .doesNotThrowAnyException();
     }
 
-    @DisplayName("존재하지 않는 노선의 이름으로 노선을 제거한다.")
+    @DisplayName("존재하지 않는 노선의 이름으로 노선을 제거하면 예외가 발생한다.")
     @Test
     void deleteWithAbsentName() {
         assertThatThrownBy(() -> lineDao.deleteById(1L))
