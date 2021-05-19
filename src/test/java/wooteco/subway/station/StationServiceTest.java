@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.line.LineDao;
+import wooteco.subway.section.SectionDao;
+import wooteco.subway.station.exception.StationDeleteException;
 import wooteco.subway.station.exception.StationExistenceException;
 import wooteco.subway.station.exception.StationNotFoundException;
 
@@ -17,7 +20,12 @@ class StationServiceTest {
 
     @Autowired
     private StationService stationService;
-
+    @Autowired
+    private StationDao stationDao;
+    @Autowired
+    private SectionDao sectionDao;
+    @Autowired
+    private LineDao lineDao;
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -58,6 +66,18 @@ class StationServiceTest {
     @DisplayName("존재하지 않은 역 삭제 테스트")
     public void deleteNotExistingStation() {
         assertThatThrownBy(() -> stationService.delete(1L))
-                .isInstanceOf(StationNotFoundException.class);
+                .isInstanceOf(StationDeleteException.class);
+    }
+
+    @Test
+    @DisplayName("구간에 등록되어 있는 역 삭제")
+    public void deleteWhenStationRegisteredInSection() {
+        stationDao.save("가양역");
+        stationDao.save("증미역");
+        lineDao.save("9호선", "황토색");
+        sectionDao.save(1L, 1L, 2L, 10);
+
+        assertThatThrownBy(() -> stationService.delete(1L))
+                .isInstanceOf(StationDeleteException.class);
     }
 }

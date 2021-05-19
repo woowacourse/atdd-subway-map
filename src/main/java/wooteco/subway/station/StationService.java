@@ -1,6 +1,7 @@
 package wooteco.subway.station;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.station.exception.StationDeleteException;
 import wooteco.subway.station.exception.StationExistenceException;
 import wooteco.subway.station.exception.StationNotFoundException;
 
@@ -27,7 +28,7 @@ public class StationService {
 
     public void delete(Long id) {
         if (stationDao.delete(id) == 0) {
-            throw new StationNotFoundException();
+            throw new StationDeleteException();
         }
     }
 

@@ -6,11 +6,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.line.LineDao;
+import wooteco.subway.section.SectionDao;
+import wooteco.subway.station.exception.StationDeleteException;
 
 import java.util.Arrays;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 class StationDaoTest {
@@ -20,6 +24,10 @@ class StationDaoTest {
 
     @Autowired
     private StationDao stationDao;
+    @Autowired
+    private SectionDao sectionDao;
+    @Autowired
+    private LineDao lineDao;
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -74,5 +82,15 @@ class StationDaoTest {
 
         stationDao.delete(savedStation.getId());
         assertThat(stationDao.findByName(savedStation.getName())).isNotPresent();
+    }
+
+    @Test
+    @DisplayName("구간에 등록되어 있는 역 삭제")
+    public void deleteStationWhenRegisteredInSection() {
+        lineDao.save("9호선", "황토색");
+        stationDao.save(STATIONNAME2);
+        sectionDao.save(1L, 1L, 2L, 10);
+
+        assertThat(stationDao.delete(1L)).isEqualTo(0);
     }
 }

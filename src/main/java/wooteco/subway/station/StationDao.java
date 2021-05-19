@@ -55,8 +55,9 @@ public class StationDao {
     }
 
     public int delete(Long id) {
-        String sql = "delete from STATION where id = ?";
-        return jdbcTemplate.update(sql, id);
+        String sql = "delete from STATION where id = ? and not exists (" +
+                "select * from SECTION where up_station_id = ? or down_station_id = ?)";
+        return jdbcTemplate.update(sql, id, id, id);
     }
 
     public Optional<Station> findById(Long id) {
