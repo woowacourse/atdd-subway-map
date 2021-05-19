@@ -6,19 +6,22 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.RequestException;
-import wooteco.subway.station.service.dto.StationCreateDto;
-import wooteco.subway.station.service.dto.StationDto;
+import wooteco.subway.section.domain.SectionRepository;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationRepository;
+import wooteco.subway.station.service.dto.StationCreateDto;
+import wooteco.subway.station.service.dto.StationDto;
 
 @Service
 @Transactional(readOnly = true)
 public class StationService {
 
     private final StationRepository stationRepository;
+    private final SectionRepository sectionRepository;
 
-    public StationService(final StationRepository stationRepository) {
+    public StationService(StationRepository stationRepository, SectionRepository sectionRepository) {
         this.stationRepository = stationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
@@ -44,6 +47,11 @@ public class StationService {
     @Transactional
     public void delete(final Long id) {
         findById(id);
+
+        if (sectionRepository.existingByStationId(id)) {
+            throw new RequestException("노선의 구간에 추가된 역은 지울 수 없습니다.");
+        }
+
         stationRepository.delete(id);
     }
 

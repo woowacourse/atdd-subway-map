@@ -11,4 +11,6 @@ public interface SectionRepository {
     void delete(final Long id);
 
     void deleteByStationId(Long stationId);
+
+    boolean existingByStationId(Long stationId);
 }
