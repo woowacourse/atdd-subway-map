@@ -6,8 +6,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.exception.BusinessException;
-import wooteco.subway.exception.DatabaseException;
-import wooteco.subway.exception.RequestException;
 
 @ControllerAdvice
 public final class GlobalAdvice {
@@ -18,7 +16,7 @@ public final class GlobalAdvice {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
     }
 
-    @ExceptionHandler({RequestException.class, DatabaseException.class})
+    @ExceptionHandler(BusinessException.class)
     public ResponseEntity<String> handleBusinessException(final BusinessException e) {
         return ResponseEntity.status(e.status()).body(e.getMessage());
     }
