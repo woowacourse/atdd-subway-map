@@ -1,53 +1,42 @@
 package wooteco.subway.controller.dto;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
 
-public class LineRequest {
-
-    @NotBlank
-    private final String name;
-
-    @NotBlank
-    private final String color;
-
-    @NotNull
+public class SectionResponse {
+    private final Long id;
+    private final Long lineId;
     private final Long upStationId;
-
-    @NotNull
     private final Long downStationId;
-
-    @Positive
     private final int distance;
 
+    public SectionResponse(Long lineId, Section section) {
+        this(section.getId(), lineId, section.getUpStation().getId(), section.getDownStation()
+                                                                             .getId(), section.getDistance());
+    }
+
     @JsonCreator
-    public LineRequest(
-            @JsonProperty(value = "name") final String name,
-            @JsonProperty(value = "color") final String color,
+    public SectionResponse(
+            @JsonProperty(value = "id") final Long id,
+            @JsonProperty(value = "lineId") final Long lineId,
             @JsonProperty(value = "upStationId") final Long upStationId,
             @JsonProperty(value = "downStationId") final Long downStationId,
             @JsonProperty(value = "distance") final int distance) {
-        this.name = name;
-        this.color = color;
+        this.id = id;
+        this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
     }
 
-    public String getName() {
-        return name;
+    public Long getId() {
+        return id;
     }
 
-    public String getColor() {
-        return color;
+    public Long getLineId() {
+        return lineId;
     }
 
     public Long getUpStationId() {
@@ -60,9 +49,5 @@ public class LineRequest {
 
     public int getDistance() {
         return distance;
-    }
-
-    public Line toEntity(Section section) {
-        return new Line(null, name, color, new Sections(section));
     }
 }
