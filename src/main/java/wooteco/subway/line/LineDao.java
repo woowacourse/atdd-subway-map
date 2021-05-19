@@ -13,7 +13,11 @@ import wooteco.subway.section.Sections;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 @Repository
 public class LineDao {
@@ -73,20 +77,19 @@ public class LineDao {
         List<Line> lines = jdbcTemplate.query(sql, lineRowMapper());
         List<Section> sections = sectionDao.findAll();
 
+        setSectionsToLine(lines, sections);
+        return lines;
+    }
+
+    private void setSectionsToLine(List<Line> lines, List<Section> sections) {
+        Map<Long, List<Section>> sectionsByLineId = sections.stream()
+                .collect(groupingBy(Section::getLineId));
+
         for (Line line : lines) {
-            List<Section> sectionList = new ArrayList<>();
-            for (Section section : sections) {
-                if (section.includeThisLine(line.getId())) {
-                    sectionList.add(section);
-                }
-            }
+            Long lineId = line.getId();
+            List<Section> sectionList = sectionsByLineId.get(lineId);
             line.setSections(new Sections(sectionList));
         }
-
-//        for (Line line : lines) {
-//            line.setSections(new Sections(sectionDao.findAllByLineId(line.getId())));
-//        }
-        return lines;
     }
 
     public int update(Long id, String name, String color) {
