@@ -2,15 +2,13 @@ package wooteco.subway.line.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.line.Line;
 
-@Component
-@Primary
+@Repository
 public class JdbcLineDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
@@ -47,10 +45,10 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public void update(Line updatedLine) {
+    public void update(Long id, String name, String color) {
         String query = "update LINE set name = ?, color = ? where id = ?";
         jdbcTemplate
-            .update(query, updatedLine.getName(), updatedLine.getColor(), updatedLine.getId());
+            .update(query, name, color, id);
     }
 
     @Override

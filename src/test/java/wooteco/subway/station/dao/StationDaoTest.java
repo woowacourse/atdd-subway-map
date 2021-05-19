@@ -3,7 +3,9 @@ package wooteco.subway.station.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,32 +20,40 @@ import wooteco.subway.station.Station;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class StationDaoTest {
 
+    private static final Station STATION_1 = new Station("잠실역");
+    private static final Station STATION_2 = new Station("압구정로데오역");
+
     @Autowired
     private StationDao stationDao;
 
     private Station station;
+    private Station station2;
 
     @BeforeEach
     void setUp() {
-        station = stationDao.save(new Station("잠실역"));
+        station = stationDao.save(STATION_1);
+        station2 = stationDao.save(STATION_2);
     }
 
     @Test
     void save() {
-        assertThat(station).isEqualTo(new Station("잠실역"));
+        assertThat(station.getName()).isEqualTo(STATION_1.getName());
     }
 
     @Test
     void saveDuplicate() {
-        assertThatThrownBy(() -> stationDao.save(new Station("잠실역")))
+        assertThatThrownBy(() -> stationDao.save(STATION_1))
             .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
     void findAll() {
         List<Station> stations = stationDao.findAll();
+        List<String> stationNames = stations.stream()
+            .map(Station::getName)
+            .collect(Collectors.toList());
 
-        assertThat(stations).containsExactly(new Station("잠실역"));
+        assertThat(stationNames).containsExactly(STATION_1.getName(), STATION_2.getName());
     }
 
     @Test
@@ -52,5 +62,16 @@ class StationDaoTest {
 
         assertThatThrownBy(() -> stationDao.findById(station.getId()))
             .isInstanceOf(EmptyResultDataAccessException.class);
+    }
+
+    @Test
+    void findAllByIds() {
+        List<Station> stations = stationDao
+            .findAllByIds(Arrays.asList(station.getId(), station2.getId()));
+        List<String> stationNames = stations.stream()
+            .map(Station::getName)
+            .collect(Collectors.toList());
+
+        assertThat(stationNames).containsExactly(STATION_1.getName(), STATION_2.getName());
     }
 }

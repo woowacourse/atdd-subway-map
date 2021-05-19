@@ -60,7 +60,7 @@ class LineDaoTest {
 
     @Test
     void update() {
-        lineDao.update(new Line(line.getId(), "8호선", "bg-blue-600"));
+        lineDao.update(line.getId(), "8호선", "bg-blue-600");
         Line updatedLine = lineDao.findById(line.getId());
 
         assertAll(

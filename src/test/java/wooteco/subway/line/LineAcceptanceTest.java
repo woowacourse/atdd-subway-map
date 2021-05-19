@@ -16,67 +16,56 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
-@Sql("/truncate.sql")
+public
 class LineAcceptanceTest extends AcceptanceTest {
 
-    private ExtractableResponse<Response> response;
+    private LineResponse response;
+    private Long lineId;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
+        Long upId = 강남역_response.as(StationResponse.class).getId();
+        Long downId = 역삼역_response.as(StationResponse.class).getId();
 
-        response = RestAssured.given().log().all()
-            .body(new LineRequest("분당선", "bg-yellow-600", null, null, 1))
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        LineRequest lineRequest = new LineRequest("분당선", "bg-yellow-600", upId, downId, 1);
+        response = postLine(lineRequest).as(LineResponse.class);
+        lineId = response.getId();
     }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
-        assertThat(response.body().as(LineResponse.class).getName()).isEqualTo("분당선");
-        assertThat(response.body().as(LineResponse.class).getColor()).isEqualTo("bg-yellow-600");
+        assertThat(response.getName()).isEqualTo("분당선");
+        assertThat(response.getColor()).isEqualTo("bg-yellow-600");
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
-    void getLines() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/lines")
-            .then().log().all()
-            .extract();
-
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class)
+    void showLines() {
+        List<Long> resultLineIds = getLines().jsonPath().getList(".", LineResponse.class)
             .stream()
             .map(LineResponse::getId)
             .collect(Collectors.toList());
+
         assertThat(resultLineIds).hasSize(1);
-        assertThat(resultLineIds).containsExactly(1L);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void showLine() {
-        ExtractableResponse<Response> actualResponse = RestAssured.given().log().all()
-            .when()
-            .get("/lines/{id}", response.header("Location").split("/")[2])
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> actualResponse = getLine(lineId);
+        LineResponse lineResponse = actualResponse.body().as(LineResponse.class);
 
-        // then
         assertThat(actualResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(actualResponse.body().as(LineResponse.class).getName()).isEqualTo("분당선");
-        assertThat(actualResponse.body().as(LineResponse.class).getColor())
+        assertThat(lineResponse.getName()).isEqualTo("분당선");
+        assertThat(lineResponse.getColor())
             .isEqualTo("bg-yellow-600");
+        assertThat(lineResponse.getStations()).hasSize(2);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -86,19 +75,15 @@ class LineAcceptanceTest extends AcceptanceTest {
             .body(new LineRequest("6호선", "bg-blue-600", null, null, 1))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .put("/lines/{id}", response.header("Location").split("/")[2])
+            .put("/lines/{id}", lineId)
             .then().log().all()
             .extract();
-
-        ExtractableResponse<Response> actualResponse = RestAssured.given().log().all()
-            .when()
-            .get("/lines/{id}", response.header("Location").split("/")[2])
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> actualResponse = getLine(lineId);
+        LineResponse lineResponse = actualResponse.body().as(LineResponse.class);
 
         assertThat(putResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(actualResponse.body().as(LineResponse.class).getName()).isEqualTo("6호선");
-        assertThat(actualResponse.body().as(LineResponse.class).getColor())
+        assertThat(lineResponse.getName()).isEqualTo("6호선");
+        assertThat(lineResponse.getColor())
             .isEqualTo("bg-blue-600");
     }
 
@@ -108,7 +93,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> actualResponse = RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .delete("/lines/{id}", response.header("Location").split("/")[2])
+            .delete("/lines/{id}", lineId)
             .then().log().all()
             .extract();
 
