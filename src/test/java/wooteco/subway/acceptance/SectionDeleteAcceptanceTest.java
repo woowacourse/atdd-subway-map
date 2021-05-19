@@ -1,18 +1,19 @@
 package wooteco.subway.acceptance;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
+
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 
 import wooteco.subway.controller.dto.LineResponse;
-import wooteco.subway.controller.dto.SectionResponse;
 import wooteco.subway.controller.dto.StationResponse;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,9 +28,9 @@ public class SectionDeleteAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
         Map<String, String> params = new HashMap<>();
-        params.put("upStationId", "1");
+        params.put("upStationId", "2");
         params.put("downStationId", "3");
-        params.put("distance", "7");
+        params.put("distance", "10");
 
         RestAssuredHelper.jsonPost(params, "/lines/1");
     }
@@ -45,26 +46,12 @@ public class SectionDeleteAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         final LineResponse lineResponse = RestAssuredHelper.jsonGet("/lines/1").body().as(LineResponse.class);
-        assertThat(lineResponse.getStations()).containsExactly(seolleung, yeoksam);
+        assertThat(lineResponse.getStations()).containsExactly(yeoksam, seolleung);
     }
 
     @DisplayName("구간 제거 성공 - 하행 종점역 제거")
     @Test
     void deleteBottomStation() {
-
-        // when
-        ExtractableResponse<Response> response = RestAssuredHelper.jsonDelete("/lines/1/sections?stationId=2");
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-
-        final LineResponse lineResponse = RestAssuredHelper.jsonGet("/lines/1").body().as(LineResponse.class);
-        assertThat(lineResponse.getStations()).containsExactly(gangnam, seolleung);
-    }
-
-    @DisplayName("구간 제거 성공 - 중간 상행역 제거")
-    @Test
-    void deleteUpStation() {
 
         // when
         ExtractableResponse<Response> response = RestAssuredHelper.jsonDelete("/lines/1/sections?stationId=3");
@@ -74,10 +61,19 @@ public class SectionDeleteAcceptanceTest extends AcceptanceTest {
 
         final LineResponse lineResponse = RestAssuredHelper.jsonGet("/lines/1").body().as(LineResponse.class);
         assertThat(lineResponse.getStations()).containsExactly(gangnam, yeoksam);
+    }
 
-        final SectionResponse oldSectionResponse = RestAssuredHelper.jsonGet("/lines/1/sections/1")
-                                                                    .body()
-                                                                    .as(SectionResponse.class);
-        assertThat(oldSectionResponse.getDistance()).isEqualTo(10);
+    @DisplayName("구간 제거 성공 - 중간역 제거")
+    @Test
+    void deleteMiddleStation() {
+
+        // when
+        ExtractableResponse<Response> response = RestAssuredHelper.jsonDelete("/lines/1/sections?stationId=2");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        final LineResponse lineResponse = RestAssuredHelper.jsonGet("/lines/1").body().as(LineResponse.class);
+        assertThat(lineResponse.getStations()).containsExactly(gangnam, seolleung);
     }
 }
