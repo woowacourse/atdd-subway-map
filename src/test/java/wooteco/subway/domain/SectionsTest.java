@@ -6,7 +6,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.assertj.core.api.ThrowableAssert;
+import wooteco.subway.exception.InvalidRequestException;
+
+import static org.assertj.core.api.Assertions.*;
 
 public class SectionsTest {
 
@@ -109,5 +112,69 @@ public class SectionsTest {
         // then
         assertThat(sections.getSortedStations()).containsExactly(gangnam, yeoksam, samsung, seolleung);
         assertThat(sections.getSections()).extracting("distance").containsExactly(10, 5, 5);
+    }
+
+    @DisplayName("구간 제거 성공 - 상행 종점역 제거")
+    @Test
+    void deleteTopStation() {
+
+        // when
+        final Sections sectionsThatSectionIsDeleted = sections.deleteStation(gangnam);
+
+        // then
+        assertThat(sectionsThatSectionIsDeleted.getSortedStations()).containsExactly(yeoksam, seolleung);
+    }
+
+    @DisplayName("구간 제거 성공 - 하행 종점역 제거")
+    @Test
+    void deleteBottomStation() {
+
+        // when
+        final Sections sectionsThatSectionIsDeleted = sections.deleteStation(gangnam);
+
+        // then
+        assertThat(sectionsThatSectionIsDeleted.getSortedStations()).containsExactly(yeoksam, seolleung);
+    }
+
+    @DisplayName("구간 제거 성공 - 중간 제거")
+    @Test
+    void deleteMiddleStation() {
+
+        // when
+        final Sections sectionsThatSectionIsDeleted = sections.deleteStation(yeoksam);
+
+        // then
+        assertThat(sectionsThatSectionIsDeleted.getSortedStations()).containsExactly(gangnam, seolleung);
+    }
+
+    @DisplayName("구간 제거 실패 - 구간이 존재하지 않는 경우 예외 발생")
+    @Test
+    void deleteStationAtEmptySections() {
+
+        // given
+        final Sections sections = new Sections();
+
+        // when
+        final ThrowableAssert.ThrowingCallable callable = () -> sections.deleteStation(yeoksam);
+
+        // then
+        assertThatThrownBy(callable).isInstanceOf(InvalidRequestException.class)
+                                    .hasMessage("구간이 존재하지 않는 노선입니다.");
+    }
+
+    @DisplayName("구간 제거 실패 - 오직 하나의 구간만 존재")
+    @Test
+    void deleteStationAtSectionsContainingOneSection() {
+
+        // given
+        final Sections sections = new Sections();
+        sections.insert(gangnamToYeoksam);
+
+        // when
+        final ThrowableAssert.ThrowingCallable callable = () -> sections.deleteStation(yeoksam);
+
+        // then
+        assertThatThrownBy(callable).isInstanceOf(InvalidRequestException.class)
+                                    .hasMessage("구간이 존재하지 않는 노선입니다.");
     }
 }
