@@ -61,9 +61,10 @@ public class StationDao {
 
     public Optional<Station> findById(Long id) {
         String sql = "select name from STATION where id = ?";
+        String name = jdbcTemplate.queryForObject(sql, String.class, id);
 
         try {
-            return Optional.ofNullable(new Station(id, jdbcTemplate.queryForObject(sql, String.class, id)));
+            return Optional.ofNullable(new Station(id, name));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
