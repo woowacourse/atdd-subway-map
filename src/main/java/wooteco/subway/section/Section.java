@@ -24,8 +24,8 @@ public class Section {
         this(id, line, section.getUpStation(), section.getDownStation(), section.getDistance());
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
-        this(null, null, upStation, downStation, distance);
+    public Section(Line line, Station upStation, Station downStation, int distance) {
+        this(null, line, upStation, downStation, distance);
     }
 
     private void validateStations(Station upStation, Station downStation) {
@@ -71,6 +71,10 @@ public class Section {
 
     public Line getLine() {
         return line;
+    }
+
+    public Long getLineId() {
+        return line.getId();
     }
 
     public Station getUpStation() {
