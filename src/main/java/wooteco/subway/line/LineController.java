@@ -72,7 +72,10 @@ public class LineController {
         Section newSection = new Section(lineId, sectionRequest);
 
         long existStationId = sectionService.findExistStation(newSection);
-        return sectionService.checkAndAddSection(newSection, existStationId, new Line(lineId));
+        if (!sectionService.checkAndAddSection(newSection, existStationId, new Line(lineId))) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{lineId}/sections")

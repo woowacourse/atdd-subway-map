@@ -38,17 +38,19 @@ public class SectionService {
     }
 
 
-    public ResponseEntity<String> checkAndAddSection(Section newSection, long existStationId, Line line) {
+    public boolean checkAndAddSection(Section newSection, long existStationId, Line line) {
         if (existStationId == newSection.getUpStation().getId()) {
             List<Long> downStationIds = sectionDao.findDownStation(line.getId(), newSection.getUpStation().getId());
-            return addDownStation(newSection, downStationIds, line);
+            addDownStation(newSection, downStationIds, line);
+            return true;
         }
 
         if (existStationId == newSection.getDownStation().getId()) {
             List<Long> upStationIds = sectionDao.findUpStation(line.getId(), newSection.getDownStation().getId());
-            return addUpStation(newSection, upStationIds, line);
+            addUpStation(newSection, upStationIds, line);
+            return true;
         }
-        return ResponseEntity.badRequest().build();
+        return false;
     }
 
     public ResponseEntity<String> checkUpDownAndDelete(long lineId, List<Long> upStationIds, List<Long> downStationIds, long stationId) {
@@ -73,10 +75,10 @@ public class SectionService {
         }
     }
 
-    private ResponseEntity<String> addDownStation(Section newSection, List<Long> beforeDownStations, Line line) {
+    private void addDownStation(Section newSection, List<Long> beforeDownStations, Line line) {
         if (beforeDownStations.isEmpty()) {
             sectionDao.save(newSection);
-            return ResponseEntity.ok().build();
+            return;
         }
         Section beforeSection = new Section(line, newSection.getUpStation(), new Station(beforeDownStations.get(0)));
         int distance = newSection.isAppropriateDistance(sectionDao.distance(beforeSection));
@@ -84,20 +86,18 @@ public class SectionService {
         Section newDownSection = new Section(line, newSection.getDownStation(), new Station(beforeDownStations.get(0)),
                 distance);
         addSection(beforeSection, newSection, newDownSection);
-        return ResponseEntity.ok().build();
     }
 
-    private ResponseEntity<String> addUpStation(Section newDownSection, List<Long> beforeUpStations, Line line) {
+    private void addUpStation(Section newDownSection, List<Long> beforeUpStations, Line line) {
         if (beforeUpStations.isEmpty()) {
             sectionDao.save(newDownSection);
-            return ResponseEntity.ok().build();
+            return;
         }
         long beforeUpStationId = beforeUpStations.get(0);
         Section beforeSection = new Section(line, new Station(beforeUpStationId), newDownSection.getDownStation());
         int distance = newDownSection.isAppropriateDistance(sectionDao.distance(beforeSection));
         Section newUpSection = new Section(line, new Station(beforeUpStationId), newDownSection.getUpStation(), distance);
         addSection(beforeSection, newUpSection, newDownSection);
-        return ResponseEntity.ok().build();
     }
 
     private void addSection(Section beforeSection, Section newUpSection, Section newDownSection) {
