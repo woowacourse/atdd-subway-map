@@ -14,13 +14,13 @@ public class GlobalExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(CommonException.class)
-    public ResponseEntity<ExceptionResponse> handleException(final RuntimeException e) {
+    public ResponseEntity<ExceptionResponse> handleException(final CommonException e) {
         logger.info(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ExceptionResponse(e.getMessage()));
     }
 
-    @ExceptionHandler(value = DataAccessException.class)
-    public ResponseEntity<ExceptionResponse> dataBaseError(final RuntimeException e) {
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<ExceptionResponse> dataBaseError(final DataAccessException e) {
         logger.info(e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ExceptionResponse(e.getMessage()));
     }
