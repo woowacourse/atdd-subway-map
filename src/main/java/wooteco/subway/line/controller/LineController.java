@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.line.dto.CreateLineDto;
+import wooteco.subway.line.dto.DeleteSectionRequest;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineServiceDto;
@@ -76,7 +77,7 @@ public class LineController {
     public ResponseEntity<Void> createSection(@Valid @RequestBody final SectionRequest sectionRequest,
         @PathVariable final long id) {
         CreateSectionDto createSectionDto = CreateSectionDto.of(id, sectionRequest);
-        lineService.createSection(createSectionDto);
+        lineService.saveSection(createSectionDto);
 
         return ResponseEntity.ok()
             .build();
@@ -85,7 +86,8 @@ public class LineController {
     @DeleteMapping(value="/{lineId}/sections")
     public ResponseEntity<Void> deleteStationOnSection(@PathVariable final long lineId,
         @RequestParam final long stationId) {
-        lineService.deleteStation(lineId, stationId);
+        DeleteSectionRequest deleteSectionRequest = new DeleteSectionRequest(lineId, stationId);
+        lineService.deleteSection(deleteSectionRequest);
 
         return ResponseEntity.noContent()
             .build();

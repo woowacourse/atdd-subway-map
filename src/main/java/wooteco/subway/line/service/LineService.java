@@ -14,6 +14,7 @@ import wooteco.subway.line.domain.Color;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.Name;
 import wooteco.subway.line.dto.CreateLineDto;
+import wooteco.subway.line.dto.DeleteSectionRequest;
 import wooteco.subway.line.dto.LineServiceDto;
 import wooteco.subway.line.dto.LineWithComposedStationsDto;
 import wooteco.subway.section.dao.SectionDao;
@@ -21,7 +22,7 @@ import wooteco.subway.section.domain.Distance;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
 import wooteco.subway.section.dto.CreateSectionDto;
-import wooteco.subway.section.dto.DeleteStationDto;
+import wooteco.subway.section.dto.DeleteStationOnSectionDto;
 import wooteco.subway.section.dto.SectionServiceDto;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
@@ -43,7 +44,8 @@ public class LineService {
     }
 
     @Transactional
-    public SectionServiceDto saveSectionByLineCreate(@Valid final SectionServiceDto sectionServiceDto) {
+    public SectionServiceDto saveSectionByLineCreate(
+        @Valid final SectionServiceDto sectionServiceDto) {
         Section section = assembleFromSectionServiceDto(sectionServiceDto);
         final Long lineId = section.getLine().getId();
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
@@ -54,8 +56,8 @@ public class LineService {
         return saveSectionAtEnd(section);
     }
 
-    @Transactional
-    public SectionServiceDto saveSection(@Valid final SectionServiceDto sectionServiceDto) {
+    public SectionServiceDto saveSection(@Valid final CreateSectionDto createSectionDto) {
+        SectionServiceDto sectionServiceDto = SectionServiceDto.from(createSectionDto);
         Section section = assembleFromSectionServiceDto(sectionServiceDto);
         final long lineId = sectionServiceDto.getLineId();
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
@@ -69,11 +71,11 @@ public class LineService {
 
     private Section assembleFromSectionServiceDto(SectionServiceDto sectionServiceDto) {
         Station upStation = stationDao.show(sectionServiceDto.getUpStationId())
-            .orElseThrow(()-> new NotFoundStationException());
+            .orElseThrow(() -> new NotFoundStationException());
         Station downStation = stationDao.show(sectionServiceDto.getDownStationId())
-            .orElseThrow(() ->new NotFoundStationException());
+            .orElseThrow(() -> new NotFoundStationException());
         Line line = lineDao.show(sectionServiceDto.getLineId())
-            .orElseThrow(()-> new NotFoundLineException());
+            .orElseThrow(() -> new NotFoundLineException());
         Distance distance = new Distance(sectionServiceDto.getDistance());
         return new Section(line, upStation, downStation, distance);
     }
@@ -107,30 +109,38 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteSection(@Valid final DeleteStationDto deleteDto) {
+    public void deleteSection(DeleteSectionRequest deleteSectionRequest) {
+        DeleteStationOnSectionDto deleteDto= new DeleteStationOnSectionDto(deleteSectionRequest);
         Sections sections = new Sections(sectionDao.findAllByLineId(deleteDto.getLineId()));
         Station targetStation = stationDao.show(deleteDto.getStationId())
             .orElseThrow(() -> new NotFoundStationException());
-        sections.validateDeletableCount();
-        sections.validateExistStation(targetStation);
-        if (sections.isBothEndStation(deleteDto.getStationId())) {
+        checkValidationOnDelete(sections, targetStation);
+        if (sections.isBothEndStation(deleteSectionRequest.getStationId())) {
             deleteStationAtEnd(deleteDto);
             return;
         }
         deleteStationAtMiddle(deleteDto);
     }
 
-    private void deleteStationAtEnd(final DeleteStationDto dto) {
-        if (sectionDao.findByLineIdAndUpStationId(dto.getLineId(), dto.getStationId()).isPresent()) {
+    private void checkValidationOnDelete(Sections sections, Station targetStation) {
+        sections.validateDeletableCount();
+        sections.validateExistStation(targetStation);
+    }
+
+    private void deleteStationAtEnd(final DeleteStationOnSectionDto dto) {
+        if (sectionDao.findByLineIdAndUpStationId(dto.getLineId(), dto.getStationId())
+            .isPresent()) {
             sectionDao.deleteByLineIdAndUpStationId(dto.getLineId(), dto.getStationId());
         }
         sectionDao.deleteByLineIdAndDownStationId(dto.getLineId(), dto.getStationId());
     }
 
-    private void deleteStationAtMiddle(final DeleteStationDto dto) {
-        Section upSection = sectionDao.findByLineIdAndDownStationId(dto.getLineId(), dto.getStationId())
+    private void deleteStationAtMiddle(final DeleteStationOnSectionDto dto) {
+        Section upSection = sectionDao
+            .findByLineIdAndDownStationId(dto.getLineId(), dto.getStationId())
             .orElseThrow(InvalidSectionOnLineException::new);
-        Section downSection = sectionDao.findByLineIdAndUpStationId(dto.getLineId(), dto.getStationId())
+        Section downSection = sectionDao
+            .findByLineIdAndUpStationId(dto.getLineId(), dto.getStationId())
             .orElseThrow(InvalidSectionOnLineException::new);
 
         Section updatedSection = upSection.assembledSectionForDelete(downSection);
@@ -157,6 +167,7 @@ public class LineService {
 
         return new StationResponse(dto.getId(), dto.getName());
     }
+
     @Transactional
     public LineServiceDto createLine(@Valid final CreateLineDto createLineDto) {
         checkExistedName(new Name(createLineDto.getName()));
@@ -212,20 +223,9 @@ public class LineService {
         Color updatedColor = new Color(lineServiceDto.getColor());
         targetLine.update(updateName, updatedColor);
 
-        if (lineDao.update(targetLine) == 0)
+        if (lineDao.update(targetLine) == 0) {
             throw new NotFoundLineException();
-    }
-
-    @Transactional
-    public void createSection(CreateSectionDto createSectionDto) {
-        SectionServiceDto sectionServiceDto = SectionServiceDto.from(createSectionDto);
-        saveSection(sectionServiceDto);
-    }
-
-    @Transactional
-    public void deleteStation(final long lineId, final long stationId) {
-        DeleteStationDto deleteStationDto = new DeleteStationDto(lineId, stationId);
-        deleteSection(deleteStationDto);
+        }
     }
 }
 

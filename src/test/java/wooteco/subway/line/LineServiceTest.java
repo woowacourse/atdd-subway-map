@@ -24,12 +24,13 @@ import wooteco.subway.line.domain.Color;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.Name;
 import wooteco.subway.line.dto.CreateLineDto;
+import wooteco.subway.line.dto.DeleteSectionRequest;
 import wooteco.subway.line.dto.LineServiceDto;
 import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.domain.Distance;
 import wooteco.subway.section.domain.Section;
-import wooteco.subway.section.dto.DeleteStationDto;
+import wooteco.subway.section.dto.CreateSectionDto;
 import wooteco.subway.section.dto.SectionServiceDto;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
@@ -140,7 +141,8 @@ public class LineServiceTest {
         // when
         SectionServiceDto dongDaeMoonAndHaegiDto = new SectionServiceDto(lineId, upStationId,
             downStationId, distance);
-        SectionServiceDto savedDongDaeMoonAndHaegiDto = lineService.saveSection(dongDaeMoonAndHaegiDto);
+        CreateSectionDto createSectionDto = new CreateSectionDto(lineId, upStationId, downStationId, distance);
+        SectionServiceDto savedDongDaeMoonAndHaegiDto = lineService.saveSection(createSectionDto);
 
         // then
         assertThat(savedDongDaeMoonAndHaegiDto.getId()).isEqualTo(sectionId);
@@ -170,7 +172,9 @@ public class LineServiceTest {
         // when
         SectionServiceDto dongDaeMoonAndHaegiDto = new SectionServiceDto(lineId, targetUpStationId,
             targetDownStationId, targetDistance);
-        SectionServiceDto savedDongDaeMoonAndHaegiDto = lineService.saveSection(dongDaeMoonAndHaegiDto);
+        CreateSectionDto createSectionDto = new CreateSectionDto(lineId, targetUpStationId,
+            targetDownStationId, targetDistance);
+        SectionServiceDto savedDongDaeMoonAndHaegiDto = lineService.saveSection(createSectionDto);
         assertThat(savedDongDaeMoonAndHaegiDto).isNotNull();
 
 
@@ -194,11 +198,10 @@ public class LineServiceTest {
         when(mockSectionDao.findAllByLineId(1L)).thenReturn(sections);
 
         // when
-        SectionServiceDto dongDaeMoonAndHaegiDto =
-            new SectionServiceDto(lineId, targetUpStationId, targetDownStationId, targetDistance.value());
+        CreateSectionDto createSectionDto = new CreateSectionDto(lineId, targetUpStationId, targetDownStationId, targetDistance.value());
 
         // then
-        assertThatThrownBy(() -> lineService.saveSection(dongDaeMoonAndHaegiDto))
+        assertThatThrownBy(() -> lineService.saveSection(createSectionDto))
             .isInstanceOf(InvalidDistanceException.class);
     }
 
@@ -206,12 +209,12 @@ public class LineServiceTest {
     @DisplayName("지하철 역이 삭제 시 없는 노선 확인")
     void deleteSection() {
         // given
-        DeleteStationDto deleteStationDto = new DeleteStationDto(lineId, 5L);
+        DeleteSectionRequest deleteSectionRequest = new DeleteSectionRequest(lineId, 5L);
 
         // when
 
         // then
-        assertThatThrownBy(() ->lineService.deleteSection(deleteStationDto))
+        assertThatThrownBy(() ->lineService.deleteSection(deleteSectionRequest))
             .isInstanceOf(NotFoundStationException.class);
     }
 
@@ -220,15 +223,14 @@ public class LineServiceTest {
     void deleteSectionWithTwoStations() {
         // given
         List<Section> sections = Arrays.asList(firstSection);
-        DeleteStationDto preparedDeleteStationDto = new DeleteStationDto(lineId, stationDongMyoId);
-        DeleteStationDto targetDeleteStationDto = new DeleteStationDto(lineId, stationSinSeolId);
+        DeleteSectionRequest deleteSectionRequest = new DeleteSectionRequest(lineId, stationSinSeolId);
         when(mockSectionDao.findAllByLineId(any())).thenReturn(sections);
         when(mockStationDao.show(stationSinSeolId)).thenReturn(Optional.of(sinSeolStation));
 
         // when
 
         // then
-        assertThatThrownBy(() -> lineService.deleteSection(targetDeleteStationDto))
+        assertThatThrownBy(() -> lineService.deleteSection(deleteSectionRequest))
             .isInstanceOf(IllegalStateException.class);
     }
 }
