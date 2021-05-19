@@ -2,6 +2,8 @@ package wooteco.subway.station.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.common.exception.AlreadyExistsException;
+import wooteco.subway.common.exception.NotFoundException;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationRequest;
@@ -36,12 +38,12 @@ public class StationService {
 
     private void validateDuplicate(final Station station) {
         if (stationDao.findByName(station.name()).isPresent()) {
-            throw new IllegalStateException("이미 있는 역임!");
+            throw new AlreadyExistsException("이미 있는 역임!");
         }
     }
 
     public void delete(final Long id) {
-        Station station = stationDao.findById(id).orElseThrow(() -> new IllegalStateException("없는 역임!"));
+        Station station = stationDao.findById(id).orElseThrow(() -> new NotFoundException("없는 역임!"));
         stationDao.delete(station.id());
     }
 }

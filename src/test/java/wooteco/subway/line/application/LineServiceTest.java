@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import wooteco.subway.common.exception.AlreadyExistsException;
+import wooteco.subway.common.exception.NotFoundException;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineDao;
 import wooteco.subway.line.domain.Section;
@@ -84,14 +86,14 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("구건 저장 시 상행역과 하행역이 같으면예와가 발생한다")
+    @DisplayName("구건 저장 시 상행역과 하행역이 같으면 예와가 발생한다")
     void saveException() {
         //given
         when(lineDao.save(any(Line.class))).thenReturn(line);
 
         //then
         assertThatThrownBy(() -> lineService.save(new LineRequest(line.name(), line.color(), station1.id(), station1.id(), distance1)))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -126,12 +128,27 @@ class LineServiceTest {
 
         //then
         assertThatThrownBy(() -> lineService.addSection(line.id(), new SectionRequest(section1.upStationId(), section1.downStationId(), distance1)))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(AlreadyExistsException.class);
     }
 
 
+    @Test
+    @DisplayName("초기 구간 등록시 상행역과 하행역의 아이디가 없으면 예외가 발생한다. ")
+    void registrationNotExistException() {
+        //given
+        Long stationId = null;
+        baseLine();
+
+        //when
+
+        //then
+        assertThatThrownBy(() -> lineService.save(new LineRequest(line.name(), line.color(), stationId, stationId, distance1)))
+                .isInstanceOf(NotFoundException.class);
+    }
+
     private void baseLine() {
         when(sectionDao.save(any(Section.class))).thenReturn(section1);
+        when(lineDao.save(any(Line.class))).thenReturn(line);
         when(sectionDao.findByLineId(line.id())).thenReturn(Arrays.asList(section1, section2));
 
         when(lineDao.findById(line.id())).thenReturn(Optional.of(line));
@@ -140,6 +157,7 @@ class LineServiceTest {
         when(stationDao.findById(station3.id())).thenReturn(Optional.of(station3));
         when(stationDao.findById(station4.id())).thenReturn(Optional.of(station4));
     }
+
     private List<String> stationResponsesToString(List<StationResponse> response) {
         return response.stream()
                 .map(StationResponse::getName)

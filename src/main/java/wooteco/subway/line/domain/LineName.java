@@ -1,5 +1,7 @@
 package wooteco.subway.line.domain;
 
+import wooteco.subway.common.exception.InvalidNameException;
+
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -21,7 +23,7 @@ public class LineName {
 
     public void validateName(final String name) {
         if (!PATTERN.matcher(name).matches()) {
-            throw new IllegalArgumentException("잘못된 노선 이름입니다.");
+            throw new InvalidNameException("잘못된 노선 이름입니다.");
         }
     }
 

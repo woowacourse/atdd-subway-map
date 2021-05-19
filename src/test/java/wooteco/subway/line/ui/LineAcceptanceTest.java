@@ -309,10 +309,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         SectionRequest exceptionSectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
         //when
-        ExtractableResponse<Response> exceptionR = addSectionToHTTP(line.id(), exceptionSectionRequest);
+        ExtractableResponse<Response> exceptionResponse = addSectionToHTTP(line.id(), exceptionSectionRequest);
 
         //then
-        assertThat(exceptionR.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(exceptionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test

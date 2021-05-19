@@ -1,6 +1,7 @@
 package wooteco.subway.line.domain;
 
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.common.exception.AlreadyExistsException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class InMemoryLineDao implements LineDao {
     @Override
     public Line save(final Line line) {
         if (findByName(line.name()).isPresent()) {
-            throw new IllegalArgumentException("이미 등록된 역 입니다.");
+            throw new AlreadyExistsException("이미 등록된 역임!");
         }
         Line persistLine = createNewObject(line);
         lines.add(persistLine);

@@ -1,6 +1,8 @@
 package wooteco.subway.station.domain;
 
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.common.exception.AlreadyExistsException;
+import wooteco.subway.common.exception.NotFoundException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -14,7 +16,7 @@ public class InMemoryStationDao implements StationDao {
     @Override
     public Station save(final Station station) {
         if (findByName(station.name()).isPresent()) {
-            throw new IllegalArgumentException("이미 등록된 역 입니다.");
+            throw new AlreadyExistsException("이미 등록된 역임!!");
         }
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
@@ -55,7 +57,7 @@ public class InMemoryStationDao implements StationDao {
 
     @Override
     public void delete(final Long id) {
-        Station findStation = findById(id).orElseThrow(() -> new IllegalArgumentException("없는 역임!"));
+        Station findStation = findById(id).orElseThrow(() -> new NotFoundException("없는 역임!"));
         stations.remove(findStation);
     }
 }

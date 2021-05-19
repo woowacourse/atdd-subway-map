@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import wooteco.subway.common.exception.InvalidNameException;
 import wooteco.subway.line.domain.LineName;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -23,6 +24,6 @@ class LineNameTest {
     void validateName(String name) {
         assertThatThrownBy(() ->
                 new LineName(name)
-        ).isInstanceOf(IllegalArgumentException.class);
+        ).isInstanceOf(InvalidNameException.class);
     }
 }

@@ -1,5 +1,6 @@
 package wooteco.subway.line.domain;
 
+import wooteco.subway.common.exception.InvalidInputException;
 import wooteco.subway.station.domain.Station;
 
 import java.util.*;
@@ -106,7 +107,7 @@ public class Sections {
 
     private void validateSize() {
         if (sections.size() == MINIMUM_SIZE) {
-            throw new IllegalStateException("1개의 구간만 있기에 삭제 할 수 없음!");
+            throw new InvalidInputException("1개의 구간만 있기에 삭제 할 수 없음!");
         }
     }
 
@@ -156,7 +157,7 @@ public class Sections {
 
     private void validateDistance(final int baseDistance, final int targetDistance) {
         if (baseDistance <= targetDistance) {
-            throw new IllegalStateException("기존 역 사이 길이보다 크거나 같을 수 없습니다");
+            throw new InvalidInputException("기존 역 사이 길이보다 크거나 같을 수 없습니다");
         }
     }
 
@@ -166,7 +167,7 @@ public class Sections {
                 return source;
             }
         }
-        throw new IllegalStateException("구간이 제대로 등록되어있지 않음!");
+        throw new InvalidInputException("구간이 제대로 등록되어있지 않음!");
     }
 
     private Section headSection() {
@@ -175,7 +176,7 @@ public class Sections {
                 return source;
             }
         }
-        throw new IllegalStateException("구간이 제대로 등록되어있지 않음!");
+        throw new InvalidInputException("구간이 제대로 등록되어있지 않음!");
     }
 
     private int tailMatchesCount(final Section section) {

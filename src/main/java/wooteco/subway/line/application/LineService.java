@@ -2,6 +2,9 @@ package wooteco.subway.line.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.common.exception.ExistsColorException;
+import wooteco.subway.common.exception.ExistsNameException;
+import wooteco.subway.common.exception.NotFoundException;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineDao;
 import wooteco.subway.line.domain.Section;
@@ -14,7 +17,6 @@ import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,16 +35,16 @@ public class LineService {
     public LineResponse save(final LineRequest lineRequest) {
         validateDuplication(lineRequest);
         Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-        line.addSection(addSection(lineRequest, line));
+        line.addSection(saveSection(lineRequest, line));
         return new LineResponse(line);
     }
 
-    private Section addSection(final LineRequest lineRequest, final Line line) {
-        if (Objects.nonNull(lineRequest.getUpStationId()) && Objects.nonNull(lineRequest.getDownStationId())) {
-            return sectionDao.save(toSection(line, lineRequest.getUpStationId(),
-                    lineRequest.getDownStationId(), lineRequest.getDistance()));
+    private Section saveSection(final LineRequest lineRequest, final Line line) {
+        if (lineRequest.empty()) {
+            throw new NotFoundException("상행역과 하행역이 없음!!");
         }
-        return null;
+        return sectionDao.save(toSection(line, lineRequest.getUpStationId(),
+                lineRequest.getDownStationId(), lineRequest.getDistance()));
     }
 
     private Section toSection(final Line line, final Long upStationId, final Long downStationId, final int distance) {
@@ -103,19 +105,19 @@ public class LineService {
 
     private void validateDuplication(final LineRequest lineRequest) {
         if (lineDao.existByName(lineRequest.getName())) {
-            throw new IllegalStateException("이미 등록된 이름임!");
+            throw new ExistsNameException("이미 있는 노선 이름임!!");
         }
 
         if (lineDao.existByColor(lineRequest.getColor())) {
-            throw new IllegalStateException("이미 있는 색깔임!");
+            throw new ExistsColorException("이미 있는 컬러임!!");
         }
     }
 
     private Line findLineById(final Long id) {
-        return lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
+        return lineDao.findById(id).orElseThrow(() -> new NotFoundException("찾을 수 없는 노선임!!"));
     }
 
     private Station findStationById(final Long stationId) {
-        return stationDao.findById(stationId).orElseThrow(() -> new IllegalStateException("없는 역임!"));
+        return stationDao.findById(stationId).orElseThrow(() -> new NotFoundException("없는 역임!"));
     }
 }

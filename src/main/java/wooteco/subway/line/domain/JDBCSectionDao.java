@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.common.exception.NotFoundException;
 import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
@@ -53,7 +54,7 @@ public class JDBCSectionDao implements SectionDao {
         int rowCount = jdbcTemplate.update(sql, id);
 
         if (rowCount == 0) {
-            throw new IllegalStateException("존재하지 않는 id임");
+            throw new NotFoundException("존재하지 않는 id임");
         }
     }
 

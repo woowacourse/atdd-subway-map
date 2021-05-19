@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import wooteco.subway.common.exception.InvalidNameException;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -21,6 +22,6 @@ class LineTest {
     @DisplayName("잘 못된 이름의 라인이 들어올 시 예외가 발생한다")
     void createException(String name) {
         assertThatThrownBy(() -> new Line(1L, name, "bg-red-600"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidNameException.class);
     }
 }

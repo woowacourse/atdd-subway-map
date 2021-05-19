@@ -3,6 +3,7 @@ package wooteco.subway.station.domain;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.common.exception.AlreadyExistsException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -32,6 +33,6 @@ class InMemoryStationDaoTest {
         stationDao.save(new Station(1L, name));
         assertThatThrownBy(() ->
                 stationDao.save(new Station(2L, name)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(AlreadyExistsException.class);
     }
 }

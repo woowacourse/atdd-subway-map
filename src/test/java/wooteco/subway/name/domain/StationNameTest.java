@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import wooteco.subway.common.exception.InvalidInputException;
 import wooteco.subway.station.domain.StationName;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -23,6 +24,6 @@ class StationNameTest {
     void validateName(String name) {
         assertThatThrownBy(() ->
                 new StationName(name)
-        ).isInstanceOf(IllegalArgumentException.class);
+        ).isInstanceOf(InvalidInputException.class);
     }
 }

@@ -1,5 +1,6 @@
 package wooteco.subway.line.domain;
 
+import wooteco.subway.common.exception.InvalidInputException;
 import wooteco.subway.station.domain.Station;
 
 import java.util.Objects;
@@ -68,7 +69,7 @@ public class Section {
 
     private void validateStation(final Station upStation, final Station downStation) {
         if (upStation.equals(downStation)) {
-            throw new IllegalStateException("상행역과 하행역은 같을 수 없음! ");
+            throw new InvalidInputException("상행역과 하행역은 같을 수 없음! ");
         }
     }
 
