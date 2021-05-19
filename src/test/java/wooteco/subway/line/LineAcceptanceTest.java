@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.controller.dto.LineRequest;
 import wooteco.subway.line.controller.dto.LineResponse;
+import wooteco.subway.station.StationAcceptanceTest;
+import wooteco.subway.station.controller.dto.StationRequest;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +27,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        LineRequest lineRequest = new LineRequest("2호선", "bg-red-600", 1L, 2L, 10);
+        Long stationsId1 = 지하철역_생성(new StationRequest("강남역"));
+        Long stationsId2 = 지하철역_생성(new StationRequest("양재역"));
+        LineRequest lineRequest = new LineRequest("2호선", "bg-red-600", stationsId1, stationsId2, 10);
 
         //when
         ExtractableResponse<Response> response = saveLine(lineRequest);
@@ -60,7 +64,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLine() {
         // given
-        LineRequest lineRequest = new LineRequest("2호선", "bg-red-600", 1L, 2L, 10);
+        Long stationsId1 = 지하철역_생성(new StationRequest("강남역"));
+        Long stationsId2 = 지하철역_생성(new StationRequest("양재역"));
+        LineRequest lineRequest = new LineRequest("2호선", "bg-red-600", stationsId1, stationsId2, 10);
         ExtractableResponse<Response> createResponse = saveLine(lineRequest);
 
         // when
@@ -157,5 +163,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return Stream.of(createResponse1, createResponse2)
                 .map(this::getExpectedLineId)
                 .collect(Collectors.toList());
+    }
+
+    private Long 지하철역_생성(StationRequest stationRequest) {
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+        return Long.parseLong(createResponse.header("Location").split("/")[2]);
     }
 }
