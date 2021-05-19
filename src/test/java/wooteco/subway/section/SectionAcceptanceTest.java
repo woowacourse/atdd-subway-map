@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.TestUtils;
 import wooteco.subway.line.controller.dto.LineRequest;
@@ -18,13 +19,13 @@ import wooteco.subway.section.controller.dto.SectionRequest;
 import wooteco.subway.station.controller.dto.StationResponse;
 
 @DisplayName("지하철 구간 관련 기능")
+@Sql("classpath:stationInit.sql")
 class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 구간 추가 성공 - 중간 구간")
     @Test
     void addSection_middle() {
         // given
-        TestUtils.createThreeStations();
         final LineRequest lineTwoRequest = TestUtils.LINE_TWO_REQUEST;
         final LineResponse addLineResponse = TestUtils.postLine(lineTwoRequest)
                 .as(LineResponse.class);
@@ -54,7 +55,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_upStation() {
         // given
-        TestUtils.createThreeStations();
         final LineRequest lineTwoRequest = TestUtils.LINE_TWO_REQUEST;
         final LineResponse addLineResponse = TestUtils.postLine(lineTwoRequest)
                 .as(LineResponse.class);
@@ -84,7 +84,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_downStation() {
         // given
-        TestUtils.createThreeStations();
         final LineRequest lineTwoRequest = TestUtils.LINE_TWO_REQUEST;
         final LineResponse addLineResponse = TestUtils.postLine(lineTwoRequest)
                 .as(LineResponse.class);

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.TestUtils;
 import wooteco.subway.line.controller.dto.LineRequest;
@@ -20,13 +21,13 @@ import wooteco.subway.section.controller.dto.SectionRequest;
 import wooteco.subway.station.controller.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
+@Sql("classpath:stationInit.sql")
 class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선 등록 성공")
     @Test
     void createLine() {
         // given
-        TestUtils.createTwoStations();
         final LineRequest lineTwoRequest = TestUtils.LINE_TWO_REQUEST;
 
         // when
@@ -44,7 +45,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine_fail_oneStationOnly() {
         // given
-        TestUtils.createOneStation();
         final LineRequest lineTwoRequest = TestUtils.LINE_TWO_REQUEST;
         TestUtils.postLine(lineTwoRequest);
 
@@ -59,7 +59,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine_fail_duplicateName() {
         // given
-        TestUtils.createTwoStations();
         final LineRequest lineTwoRequest = TestUtils.LINE_TWO_REQUEST;
         TestUtils.postLine(lineTwoRequest);
 
@@ -74,7 +73,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLine() {
         // given
-        TestUtils.createThreeStations();
         final LineRequest lineTwoRequest = TestUtils.LINE_TWO_REQUEST;
         final LineResponse lineTwoResponse = TestUtils.postLine(lineTwoRequest)
                 .as(LineResponse.class);
@@ -104,7 +102,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLines() {
         // given
-        TestUtils.createThreeStations();
         final LineRequest lineTwoRequest = TestUtils.LINE_TWO_REQUEST;
         final ExtractableResponse<Response> lineTwoResponse = TestUtils.postLine(lineTwoRequest);
 
@@ -126,7 +123,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        TestUtils.createTwoStations();
         final LineRequest lineTwoRequest = TestUtils.LINE_TWO_REQUEST;
         final ExtractableResponse<Response> lineTwoResponse = TestUtils.postLine(lineTwoRequest);
 
@@ -156,7 +152,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        TestUtils.createTwoStations();
         final LineRequest lineTwoRequest = TestUtils.LINE_TWO_REQUEST;
         final ExtractableResponse<Response> lineTwoResponse = TestUtils.postLine(lineTwoRequest);
 

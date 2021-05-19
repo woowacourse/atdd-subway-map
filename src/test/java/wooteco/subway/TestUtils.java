@@ -61,20 +61,6 @@ public class TestUtils {
             50
     );
 
-    public static void createOneStation() {
-        postStation(JAMSIL_STATION_REQUEST);
-    }
-
-    public static void createTwoStations() {
-        createOneStation();
-        postStation(GANGNAM_STATION_REQUEST);
-    }
-
-    public static void createThreeStations() {
-        createTwoStations();
-        postStation(YANGJAE_STATION_REQUEST);
-    }
-
     public static ExtractableResponse<Response> postStation(final StationRequest stationRequest) {
         return RestAssured
                 .given().log().all()
