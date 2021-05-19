@@ -10,7 +10,6 @@ import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.dto.SectionResponse;
 import wooteco.subway.section.repository.SectionDao;
 import wooteco.subway.station.Station;
-import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
 
 import java.util.List;

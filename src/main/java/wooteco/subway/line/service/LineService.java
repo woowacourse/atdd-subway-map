@@ -11,6 +11,7 @@ import wooteco.subway.line.repository.LineDao;
 import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.service.StationService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,10 +19,12 @@ import java.util.stream.Collectors;
 @Service
 public class LineService {
     private final SectionService sectionService;
+    private final StationService stationService;
     private final LineDao lineDao;
 
-    public LineService(SectionService sectionService, LineDao lineDao) {
+    public LineService(SectionService sectionService, StationService stationService, LineDao lineDao) {
         this.sectionService = sectionService;
+        this.stationService = stationService;
         this.lineDao = lineDao;
     }
 
@@ -38,7 +41,7 @@ public class LineService {
         if (checkNameDuplicate(lineReq)) {
             throw new DuplicatedNameException("중복된 이름의 노선이 존재합니다.");
         }
-        sectionService.validateExistStations(lineReq.getUpStationId(), lineReq.getDownStationId());
+        stationService.validateExistStations(lineReq.getUpStationId(), lineReq.getDownStationId());
     }
 
     private boolean checkNameDuplicate(LineRequest lineRequest) {
@@ -49,7 +52,7 @@ public class LineService {
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id);
         List<Long> stationIds = sectionService.findAllSectionsId(id);
-        List<StationResponse> stations = sectionService.findStationsByIds(stationIds);
+        List<StationResponse> stations = stationService.findStationsByIds(stationIds);
         return new LineResponse(line, stations);
     }
 
