@@ -8,7 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.line.DuplicateLineException;
 import wooteco.subway.exception.line.NotFoundLineException;
 import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.domain.Color;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.Name;
 import wooteco.subway.line.dto.CreateLineDto;
 import wooteco.subway.line.dto.LineServiceDto;
 
@@ -56,9 +58,12 @@ public class LineService {
 
     @Transactional
     public void update(@Valid final LineServiceDto lineServiceDto) {
-        Line line = lineServiceDto.toEntity();
+        Line line = show(lineServiceDto.getId());
+        Name name = new Name(lineServiceDto.getName());
+        Color color = new Color(lineServiceDto.getColor());
+        line.update(name, color);
 
-        if (lineDao.update(lineServiceDto.getId(), line) == NOT_FOUND) {
+        if (lineDao.update(line) == NOT_FOUND) {
             throw new NotFoundLineException();
         }
     }

@@ -3,7 +3,6 @@ package wooteco.subway.line;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -110,7 +109,7 @@ public class LineServiceTest {
         String updateColor = "녹담색";
 
         Optional<Line> candidate = Optional.ofNullable(new Line(id, updateName, updateColor));
-        when(mockLineDao.update(eq(id), any(Line.class))).thenReturn(1);
+        when(mockLineDao.update(any(Line.class))).thenReturn(1);
         when(mockLineDao.show(id)).thenReturn(candidate);
 
         // when

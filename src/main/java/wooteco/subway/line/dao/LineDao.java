@@ -63,9 +63,9 @@ public class LineDao {
         return stations.size();
     }
 
-    public int update(final long id, final Line line) {
+    public int update(final Line line) {
         String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
-        return jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
+        return jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
     }
 
     public int delete(final long id) {

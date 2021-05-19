@@ -106,10 +106,10 @@ class LineDaoTest {
         long id = saveLine.getId();
         String requestName = "분당선";
         String requestColor = "노란색";
-        Line requestLine = new Line(requestName, requestColor);
+        Line requestLine = new Line(saveLine.getId(), requestName, requestColor);
 
         // when
-        lineDao.update((int) id, requestLine);
+        lineDao.update((requestLine));
         Line responseLine = lineDao.show(id).get();
 
         // then

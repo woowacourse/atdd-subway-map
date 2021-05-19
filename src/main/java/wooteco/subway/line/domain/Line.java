@@ -26,6 +26,11 @@ public class Line {
         this.color = color;
     }
 
+    public void update(final Name name, final Color color) {
+        this.name = name;
+        this.color = color;
+    }
+
     public Long getId() {
         if (id == null) {
             return null;
