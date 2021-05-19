@@ -75,7 +75,7 @@ public class JDBCLineDao implements LineDao {
         return Optional.ofNullable(mapToLine(result));
     }
 
-    private Line mapToLine(List<Map<String, Object>> result) {
+    private Line mapToLine(final List<Map<String, Object>> result) {
         if (result.size() == 0) {
             return null;
         }
@@ -90,7 +90,7 @@ public class JDBCLineDao implements LineDao {
         );
     }
 
-    private List<Section> extractSections(List<Map<String, Object>> result) {
+    private List<Section> extractSections(final List<Map<String, Object>> result) {
         if (result.isEmpty() || Objects.isNull(result.get(0).get("SECTION_ID"))) {
             return Collections.emptyList();
         }

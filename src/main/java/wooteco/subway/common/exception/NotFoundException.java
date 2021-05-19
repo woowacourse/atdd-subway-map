@@ -1,7 +1,7 @@
 package wooteco.subway.common.exception;
 
 public class NotFoundException extends CommonException {
-    public NotFoundException(String message) {
+    public NotFoundException(final String message) {
         super(message);
     }
 }

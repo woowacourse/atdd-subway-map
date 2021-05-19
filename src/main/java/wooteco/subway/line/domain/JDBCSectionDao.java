@@ -66,14 +66,14 @@ public class JDBCSectionDao implements SectionDao {
     }
 
     @Override
-    public void deleteByLineId(Long lineId) {
+    public void deleteByLineId(final Long lineId) {
         String sql = "DELETE FROM SECTION" +
                 " WHERE SECTION.line_id = ?";
         jdbcTemplate.update(sql, lineId);
     }
 
     @Override
-    public void batchInsert(List<Section> sortedSections) {
+    public void batchInsert(final List<Section> sortedSections) {
         String sql = "INSERT INTO SECTION(line_id, up_station_id, down_station_id, distance) VALUES(?, ?, ?, ?)";
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override

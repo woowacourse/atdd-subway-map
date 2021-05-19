@@ -1,7 +1,7 @@
 package wooteco.subway.common.exception;
 
 public class InvalidNameException extends CommonException {
-    public InvalidNameException(String message) {
+    public InvalidNameException(final String message) {
         super(message);
     }
 }

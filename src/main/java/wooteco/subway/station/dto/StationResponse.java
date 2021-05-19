@@ -9,11 +9,11 @@ public class StationResponse {
     public StationResponse() {
     }
 
-    public StationResponse(Station station) {
+    public StationResponse(final Station station) {
         this(station.id(), station.name());
     }
 
-    public StationResponse(Long id, String name) {
+    public StationResponse(final Long id, final String name) {
         this.id = id;
         this.name = name;
     }

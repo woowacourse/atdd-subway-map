@@ -78,7 +78,7 @@ public class Line {
         this.name = this.name.changeName(name);
     }
 
-    public void changeColor(String color) {
+    public void changeColor(final String color) {
         this.color = color;
     }
 }

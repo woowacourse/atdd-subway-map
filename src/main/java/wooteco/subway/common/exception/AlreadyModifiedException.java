@@ -1,7 +1,7 @@
 package wooteco.subway.common.exception;
 
 public class AlreadyModifiedException extends CommonException {
-    public AlreadyModifiedException(String message) {
+    public AlreadyModifiedException(final String message) {
         super(message);
     }
 }

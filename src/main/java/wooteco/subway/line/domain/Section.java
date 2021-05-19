@@ -52,11 +52,11 @@ public class Section {
         return distance;
     }
 
-    public boolean sameUpStation(Station targetStation) {
+    public boolean sameUpStation(final Station targetStation) {
         return this.upStation.equals(targetStation);
     }
 
-    public boolean sameDownStation(Station targetStation) {
+    public boolean sameDownStation(final Station targetStation) {
         return this.downStation.equals(targetStation);
     }
 
@@ -78,7 +78,7 @@ public class Section {
         return this.downStation.id();
     }
 
-    public boolean same(Section section) {
+    public boolean same(final Section section) {
         return this.equals(section);
     }
 

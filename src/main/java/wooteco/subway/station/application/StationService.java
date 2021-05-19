@@ -42,6 +42,7 @@ public class StationService {
         }
     }
 
+    @Transactional
     public void delete(final Long id) {
         Station station = stationDao.findById(id).orElseThrow(() -> new NotFoundException("없는 역임!"));
         stationDao.delete(station.id());
