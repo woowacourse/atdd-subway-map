@@ -33,7 +33,7 @@ public class Line {
     public boolean isSameId(final Long id) {
         return this.id.equals(id);
     }
-    
+
     public void addSection(Section section) {
         sections.add(section);
     }

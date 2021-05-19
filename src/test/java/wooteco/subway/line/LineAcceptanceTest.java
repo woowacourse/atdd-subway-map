@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.controller.dto.LineRequest;
 import wooteco.subway.line.controller.dto.LineResponse;
-import wooteco.subway.station.StationAcceptanceTest;
 import wooteco.subway.station.controller.dto.StationRequest;
 
 import java.util.List;

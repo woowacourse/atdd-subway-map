@@ -3,9 +3,6 @@ package wooteco.subway.line.domain.section;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.line.domain.section.Distance;
-import wooteco.subway.line.domain.section.Section;
-import wooteco.subway.line.domain.section.Sections;
 
 import java.util.ArrayList;
 import java.util.Arrays;

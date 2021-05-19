@@ -2,8 +2,6 @@ package wooteco.subway.line.domain.section;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.line.domain.section.Distance;
-import wooteco.subway.line.domain.section.Section;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
