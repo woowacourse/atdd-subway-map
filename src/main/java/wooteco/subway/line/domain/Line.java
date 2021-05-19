@@ -28,11 +28,11 @@ public class Line {
     }
 
     public Line(final Long id, final LineName name, final String color) {
-        this(id, name, color, StateFactory.initialize(new Sections()));
+        this(id, name, color, StateFactory.create(new Sections()));
     }
 
     public Line(final Long id, final String name, final String color, final List<Section> sections) {
-        this(id, new LineName(name), color, StateFactory.initialize(new Sections(sections)));
+        this(id, new LineName(name), color, StateFactory.create(new Sections(sections)));
     }
 
     public Line(final Long id, final LineName name, final String color, final State state) {

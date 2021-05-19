@@ -6,7 +6,7 @@ public class StateFactory {
     private StateFactory() {
     }
 
-    public static State initialize(Sections sections) {
+    public static State create(Sections sections) {
         return new UnModified(sections);
     }
 }
