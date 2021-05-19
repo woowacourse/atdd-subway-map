@@ -27,7 +27,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest stationRequest = new StationRequest("일원역");
 
         // when
-        ExtractableResponse<Response> response = saveStation(stationRequest);
+        ExtractableResponse<Response> response = 지하철역_저장(stationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -39,7 +39,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         StationRequest stationRequest = new StationRequest("강남역");
-        saveStation(stationRequest);
+        지하철역_저장(stationRequest);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -59,8 +59,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = saveStation(new StationRequest("판교역"));
-        ExtractableResponse<Response> createResponse2 = saveStation(new StationRequest("구의역"));
+        ExtractableResponse<Response> createResponse1 = 지하철역_저장(new StationRequest("판교역"));
+        ExtractableResponse<Response> createResponse2 = 지하철역_저장(new StationRequest("구의역"));
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -80,8 +80,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        saveStation(new StationRequest("강남역"));
-        ExtractableResponse<Response> createResponse2 = saveStation(new StationRequest("역삼역"));
+        지하철역_저장(new StationRequest("강남역"));
+        ExtractableResponse<Response> createResponse2 = 지하철역_저장(new StationRequest("역삼역"));
 
         // when
         String uri = createResponse2.header("Location");
@@ -93,15 +93,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-
-        RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .body("size()", is(1));
     }
 
-    public ExtractableResponse<Response> saveStation(StationRequest stationRequest) {
+    public ExtractableResponse<Response> 지하철역_저장(StationRequest stationRequest) {
         return RestAssured.given().log().all()
                 .body(stationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
