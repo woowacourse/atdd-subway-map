@@ -101,7 +101,7 @@ public class LineService {
 
     private SectionServiceDto saveSectionAtMiddle(final Section section, final Sections sections) {
         Section legacySection = sections.sectionForInterval(section);
-        sectionDao.delete(legacySection);
+        sectionDao.deleteById(legacySection);
         sectionDao.save(legacySection.dividedSectionForSave(section));
         return SectionServiceDto.from(sectionDao.save(section));
     }
@@ -134,8 +134,8 @@ public class LineService {
             .orElseThrow(InvalidSectionOnLineException::new);
 
         Section updatedSection = upSection.assembledSectionForDelete(downSection);
-        sectionDao.delete(upSection);
-        sectionDao.delete(downSection);
+        sectionDao.deleteById(upSection);
+        sectionDao.deleteById(downSection);
         sectionDao.save(updatedSection);
     }
 
@@ -197,7 +197,7 @@ public class LineService {
     @Transactional
     public void delete(LineServiceDto lineServiceDto) {
         Long id = lineServiceDto.getId();
-        if (lineDao.delete(lineServiceDto.getId()) == 0) {
+        if (lineDao.deleteById(lineServiceDto.getId()) == 0) {
             throw new NotFoundLineException();
         }
     }

@@ -55,7 +55,7 @@ public class StationDao {
         return stations.size();
     }
 
-    public int delete(final long id) {
+    public int deleteById(final long id) {
         String statement = "DELETE FROM station WHERE id = ?";
         return jdbcTemplate.update(statement, id);
     }

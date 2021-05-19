@@ -119,7 +119,7 @@ public class SectionDao {
         return jdbcTemplate.update(sql, lineId, downStationId);
     }
 
-    public int delete(final Section section) {
+    public int deleteById(final Section section) {
         String sql = "DELETE FROM section WHERE id = ?";
         return jdbcTemplate.update(sql, section.getId());
     }

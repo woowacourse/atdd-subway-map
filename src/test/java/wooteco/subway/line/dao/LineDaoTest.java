@@ -126,7 +126,7 @@ class LineDaoTest {
         long id = saveLine.getId();
 
         // when
-        int number = lineDao.delete(id);
+        int number = lineDao.deleteById(id);
 
         // then
         assertThat(number).isEqualTo(1);
@@ -139,7 +139,7 @@ class LineDaoTest {
         long id = -1;
 
         // when
-        int number = lineDao.delete(id);
+        int number = lineDao.deleteById(id);
 
         // then
         assertThat(number).isEqualTo(0);

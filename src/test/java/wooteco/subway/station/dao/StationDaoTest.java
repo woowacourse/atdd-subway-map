@@ -58,7 +58,7 @@ class StationDaoTest {
         stationDao.save(station1);
 
         // when
-        int deleteCount = stationDao.delete(1);
+        int deleteCount = stationDao.deleteById(1);
 
         // then
         assertThat(deleteCount).isEqualTo(1);
@@ -70,7 +70,7 @@ class StationDaoTest {
         // given
 
         // when
-        int deleteCount = stationDao.delete(999);
+        int deleteCount = stationDao.deleteById(999);
 
         // then
         assertThat(deleteCount).isEqualTo(0);

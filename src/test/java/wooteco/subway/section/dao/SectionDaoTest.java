@@ -184,7 +184,7 @@ public class SectionDaoTest {
 
         // when
         List<Section> beforeAllByLineId = sectionDao.findAllByLineId(line.getId());
-        int result = sectionDao.delete(section);
+        int result = sectionDao.deleteById(section);
         List<Section> afterAllByLindId = sectionDao.findAllByLineId(line.getId());
 
         // then

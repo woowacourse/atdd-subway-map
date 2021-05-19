@@ -49,7 +49,7 @@ public class StationService {
 
     @Transactional
     public void delete(final StationServiceDto stationServiceDto) {
-        if (stationDao.delete(stationServiceDto.getId()) == NOT_FOUND) {
+        if (stationDao.deleteById(stationServiceDto.getId()) == NOT_FOUND) {
             throw new NotFoundStationException();
         }
     }
