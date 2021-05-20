@@ -2,45 +2,37 @@ package wooteco.subway.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.service.StationService;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/stations")
+@RequestMapping("/stations")
 public class StationController {
-    private final StationDao stationDao;
+    private final StationService stationService;
 
-    public StationController(StationDao stationDao) {
-        this.stationDao = stationDao;
+    public StationController(final StationService stationService) {
+        this.stationService = stationService;
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(
-            @RequestBody StationRequest stationRequest) {
-        Station station = stationRequest.createStation();
-        long id = stationDao.save(station);
-        StationResponse stationResponse = new StationResponse(id, station);
-        return ResponseEntity.created(URI.create("/stations/" + id)).body(stationResponse);
+    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
+        StationResponse stationResponse = stationService.createStation(stationRequest);
+        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }
 
     @GetMapping
-    public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = stationDao.findAll();
-        List<StationResponse> stationResponses = stations.stream()
-                .map(StationResponse::new)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<StationResponse>> findStations() {
+        List<StationResponse> stationResponses = stationService.findStations();
         return ResponseEntity.ok().body(stationResponses);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
-        stationDao.delete(id);
+        stationService.deleteStation(id);
         return ResponseEntity.noContent().build();
     }
 }

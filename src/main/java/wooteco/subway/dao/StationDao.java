@@ -21,7 +21,7 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long save(Station station) {
+    public Long insert(Station station) {
         String query = "INSERT INTO station(name) VALUES(?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -41,7 +41,19 @@ public class StationDao {
         }
     }
 
-    public List<Station> findAll() {
+    public Station select(Long id) {
+        String query = "SELECT * FROM station WHERE id = ?";
+        return jdbcTemplate.queryForObject(query,
+                (resultSet, rowNum) -> {
+                    Station station = new Station(
+                            resultSet.getLong("id"),
+                            resultSet.getString("name")
+                    );
+                    return station;
+                }, id);
+    }
+
+    public List<Station> selectAll() {
         String query = "SELECT * FROM station";
         List<Station> stations = jdbcTemplate.query(query, (resultSet, rowNum) -> {
             Station station = new Station(

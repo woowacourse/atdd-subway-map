@@ -3,11 +3,14 @@ package wooteco.subway.domain.station;
 import java.util.Objects;
 
 public class Station {
-
     private Long id;
     private String name;
 
     public Station() {
+    }
+
+    public Station(String name) {
+        this.name = name;
     }
 
     public Station(Long id, String name) {
@@ -15,8 +18,8 @@ public class Station {
         this.name = name;
     }
 
-    public Station(String name) {
-        this.name = name;
+    public boolean hasSameId(Long stationId) {
+        return this.id.equals(stationId);
     }
 
     public Long getId() {

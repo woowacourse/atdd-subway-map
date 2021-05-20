@@ -2,57 +2,50 @@ package wooteco.subway.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.domain.line.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.service.LineService;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/lines")
+@RequestMapping("/lines")
 public class LineController {
-    private LineDao lineDao;
+    private final LineService lineService;
 
-    public LineController(LineDao lineDao) {
-        this.lineDao = lineDao;
+    public LineController(final LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = lineRequest.createLine();
-        long id = lineDao.save(line);
-        LineResponse lineResponse = new LineResponse(id, line);
-        return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
+        LineResponse lineResponse = lineService.addLine(lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping
-    public ResponseEntity<List<LineResponse>> showLine() {
-        List<Line> lines = lineDao.findAll();
-        List<LineResponse> lineResponses = lines.stream()
-                .map(LineResponse::new)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<LineResponse>> findLines() {
+        List<LineResponse> lineResponses = lineService.findLines();
         return ResponseEntity.ok().body(lineResponses);
     }
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<LineResponse> showLineDetail(@PathVariable Long id) {
-        Line line = lineDao.find(id);
-        return ResponseEntity.ok().body(new LineResponse(line));
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> findLineWithStations(@PathVariable Long id) {
+        LineResponse lineResponse = lineService.findLineWithStations(id);
+        return ResponseEntity.ok().body(lineResponse);
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<LineResponse> modifyLineDetail(@PathVariable Long id,
-                                                         @RequestBody LineRequest lineRequest) {
-        lineDao.modify(id, lineRequest.createLine());
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> modifyLine(@PathVariable Long id, @RequestBody @Valid LineRequest lineRequest) {
+        lineService.modifyLine(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
-        lineDao.delete(id);
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+        lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
 }

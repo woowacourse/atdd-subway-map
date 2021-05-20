@@ -3,20 +3,17 @@ package wooteco.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.domain.line.Line;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.StationRequest;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,16 +21,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class LineAcceptanceTest extends AcceptanceTest {
-    @Autowired
-    private LineDao lineDao;
+    @BeforeEach
+    void setUpStationAndLine() {
+        saveByStationName("강남역");
+        saveByStationName("잠실역");
+        saveByStationName("잠실새내역");
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 3L, 10);
 
-        // when
+            // when
         ExtractableResponse<Response> response = saveLine(lineRequest);
 
         // then
@@ -45,7 +46,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("중복된 노선 이름 추가시 예외 처리")
     @Test
     void nameDuplication() {
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 3L, 10);
         saveLine(lineRequest);
 
         ExtractableResponse<Response> response = saveLine(lineRequest);
@@ -57,11 +58,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 3L, 10);
         ExtractableResponse<Response> firstLineResponse = saveLine(lineRequest);
         assertThat(firstLineResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        LineRequest lineRequest2 = new LineRequest("2호선", "bg-red-600");
+        LineRequest lineRequest2 = new LineRequest("2호선", "bg-red-600", 2L, 3L, 10);
         ExtractableResponse<Response> secondLineResponse = saveLine(lineRequest2);
         assertThat(secondLineResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
@@ -83,7 +84,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLineDetail() {
         // given
-        ExtractableResponse<Response> saveResponse = saveLine(new LineRequest("신분당선", "bg-red-600"));
+        ExtractableResponse<Response> saveResponse = saveLine(new LineRequest("신분당선", "bg-red-600", 1L, 3L, 10));
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
@@ -107,11 +108,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void modifyLineTest() {
         // given
-        ExtractableResponse<Response> saveResponse = saveLine(new LineRequest("신분당선", "bg-red-600"));
+        ExtractableResponse<Response> saveResponse = saveLine(new LineRequest("신분당선", "bg-red-600", 1L, 3L, 10));
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
-        LineRequest modificationRequest = new LineRequest("2호선", "bg-red-600");
+        LineRequest modificationRequest = new LineRequest("2호선", "bg-red-600", 2L, 3L, 20);
         ExtractableResponse<Response> modificationResponse = modifyLine(1L, modificationRequest);
 
         // then
@@ -122,7 +123,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> saveResponse = saveLine(new LineRequest("신분당선", "bg-red-600"));
+        ExtractableResponse<Response> saveResponse = saveLine(new LineRequest("신분당선", "bg-red-600", 1L, 3L, 10));
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
@@ -187,4 +188,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .log().all()
                 .extract();
     }
+
+    private ExtractableResponse<Response> saveByStationName(String stationName) {
+        StationRequest stationRequest = new StationRequest(stationName);
+        return saveStation(stationRequest);
+    }
+
+    private ExtractableResponse<Response> saveStation(StationRequest stationRequest) {
+        return RestAssured.given().log().all()
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
 }

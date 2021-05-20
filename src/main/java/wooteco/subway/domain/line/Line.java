@@ -35,18 +35,14 @@ public class Line {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Line)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return Objects.equals(name, line.name) && Objects.equals(color, line.color);
+        return Objects.equals(name, line.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, color);
+        return Objects.hash(name);
     }
 }
