@@ -4,12 +4,16 @@ import wooteco.subway.station.Station;
 
 import java.util.List;
 
-public interface StationRepository {
+public interface StationDao {
     Station save(Station station);
 
     List<Station> findAll();
 
+    boolean findByName(String name);
+
     void deleteById(Long id);
 
-    boolean findByName(String name);
+    Station findBy(Long id);
+
+    boolean isExistingStation(Long stationId);
 }

@@ -27,18 +27,9 @@ public class Line {
         this.stations = stations;
     }
 
-    public boolean isSameName(String name) {
-        return this.name.equals(name);
-    }
-
-    public boolean isSameId(Long id) {
-        return this.id.equals(id);
-    }
-
-    public void update(Line updatedLine) {
-        this.id = updatedLine.getId();
-        this.name = updatedLine.getName();
-        this.color = updatedLine.getColor();
+    public void update(String updatedName, String updatedColor) {
+        this.name = updatedName;
+        this.color = updatedColor;
     }
 
     public Long getId() {

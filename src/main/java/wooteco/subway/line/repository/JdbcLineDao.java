@@ -12,7 +12,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 @Repository
-public class JdbcLineDao implements LineRepository {
+public class JdbcLineDao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Line> lineRowMapper = (rs, rowNum) -> new Line(
             rs.getLong("id"),
@@ -47,18 +47,6 @@ public class JdbcLineDao implements LineRepository {
     }
 
     @Override
-    public boolean validateDuplicateName(String name) {
-        String query = "SELECT COUNT(*) FROM line WHERE name = (?)";
-        return jdbcTemplate.queryForObject(query, Integer.class, name) > 0;
-    }
-
-    @Override
-    public boolean validateUsableName(String newName, String oldName) {
-        String query = "SELECT COUNT(*) FROM line WHERE name IN (?) AND name NOT IN (?)";
-        return jdbcTemplate.queryForObject(query, Integer.class, newName, oldName) > 0;
-    }
-
-    @Override
     public Line findById(Long id) {
         String query = "SELECT * FROM line WHERE id = ?";
         List<Line> results = jdbcTemplate.query(query, lineRowMapper, id);
@@ -77,5 +65,17 @@ public class JdbcLineDao implements LineRepository {
     public void delete(Long id) {
         String query = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(query, id);
+    }
+
+    @Override
+    public boolean isExistingName(String name) {
+        String query = "SELECT EXISTS (SELECT * FROM line WHERE name = (?))";
+        return jdbcTemplate.queryForObject(query, Boolean.class, name);
+    }
+
+    @Override
+    public boolean existNewNameExceptCurrentName(String newName, String oldName) {
+        String query = "SELECT EXISTS (SELECT * FROM line WHERE name IN (?) AND name NOT IN (?))";
+        return jdbcTemplate.queryForObject(query, Boolean.class, newName, oldName);
     }
 }

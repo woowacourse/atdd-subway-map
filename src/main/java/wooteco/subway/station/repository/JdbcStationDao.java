@@ -1,5 +1,6 @@
 package wooteco.subway.station.repository;
 
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -12,9 +13,12 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class JdbcStationDao implements StationRepository {
-
+public class JdbcStationDao implements StationDao {
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Station> stationRowMapper = (rs, rowNum) -> new Station(
+            rs.getLong("id"),
+            rs.getString("name")
+    );
 
     public JdbcStationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -37,7 +41,7 @@ public class JdbcStationDao implements StationRepository {
     @Override
     public List<Station> findAll() {
         String query = "SELECT * FROM station";
-        return jdbcTemplate.query(query, stationRowMapper());
+        return jdbcTemplate.query(query, stationRowMapper);
     }
 
     @Override
@@ -46,16 +50,22 @@ public class JdbcStationDao implements StationRepository {
         return jdbcTemplate.queryForObject(query, Integer.class, name) > 0;
     }
 
-    private RowMapper<Station> stationRowMapper() {
-        return (rs, rowNum) -> new Station(
-                rs.getLong("id"),
-                rs.getString("name")
-        );
-    }
-
     @Override
     public void deleteById(Long id) {
         String query = "DELETE FROM station WHERE id = (?)";
         jdbcTemplate.update(query, id);
+    }
+
+    @Override
+    public Station findBy(Long id) {
+        String query = "SELECT * FROM station WHERE id = ?";
+        List<Station> stations = jdbcTemplate.query(query, stationRowMapper, id);
+        return DataAccessUtils.singleResult(stations);
+    }
+
+    @Override
+    public boolean isExistingStation(Long stationId) {
+        String query = "SELECT EXISTS (SELECT * FROM station WHERE id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, stationId);
     }
 }

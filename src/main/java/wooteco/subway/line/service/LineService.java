@@ -1,81 +1,85 @@
 package wooteco.subway.line.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.DuplicatedNameException;
+import wooteco.subway.exception.InvalidInsertException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
-import wooteco.subway.line.repository.LineRepository;
+import wooteco.subway.line.repository.LineDao;
+import wooteco.subway.section.dto.SectionRequest;
+import wooteco.subway.section.service.SectionService;
+import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.service.StationService;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class LineService {
+    private final SectionService sectionService;
+    private final StationService stationService;
+    private final LineDao lineDao;
 
-    private static final Logger log = LoggerFactory.getLogger(LineService.class);
-
-    private final LineRepository lineRepository;
-
-    public LineService(LineRepository lineRepository) {
-        this.lineRepository = lineRepository;
+    public LineService(SectionService sectionService, StationService stationService, LineDao lineDao) {
+        this.sectionService = sectionService;
+        this.stationService = stationService;
+        this.lineDao = lineDao;
     }
 
-    public LineResponse save(LineRequest lineRequest) {
-        validateLineName(lineRequest);
-        Line line = lineRequest.toEntity();
-        Line newLine = lineRepository.save(line);
-        log.info("{} 노선 생성 성공", newLine.getName());
+    @Transactional
+    public LineResponse save(LineRequest lineReq) {
+        validateLineName(lineReq);
+        Line newLine = lineDao.save(lineReq.toEntity());
+        SectionRequest sectionReq = new SectionRequest(lineReq.getUpStationId(), lineReq.getDownStationId(), lineReq.getDistance());
+        sectionService.save(newLine, sectionReq);
         return new LineResponse(newLine);
     }
 
-    private void validateLineName(LineRequest lineRequest) {
-        if (checkNameDuplicate(lineRequest)) {
+    private void validateLineName(LineRequest lineReq) {
+        if (checkNameDuplicate(lineReq)) {
             throw new DuplicatedNameException("중복된 이름의 노선이 존재합니다.");
         }
+        stationService.validateExistStations(lineReq.getUpStationId(), lineReq.getDownStationId());
     }
 
     private boolean checkNameDuplicate(LineRequest lineRequest) {
-        return lineRepository.validateDuplicateName(lineRequest.getName());
+        return lineDao.isExistingName(lineRequest.getName());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        Line newLine = lineRepository.findById(id);
-        log.info("{} 노선 조회 성공", newLine.getName());
-        return new LineResponse(newLine);
+        Line line = lineDao.findById(id);
+        List<Long> stationIds = sectionService.findAllSectionsId(id);
+        List<StationResponse> stations = stationService.findStationsByIds(stationIds);
+        return new LineResponse(line, stations);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
-        List<Line> lines = lineRepository.findAll();
-        log.info("지하철 모든 노선 조회 성공");
+        List<Line> lines = lineDao.findAll();
         return lines.stream()
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void update(Long id, LineRequest lineRequest) {
-        Line updatedLine = validatesRequest(id, lineRequest);
-        lineRepository.update(updatedLine);
-        log.info("노선 정보 수정 완료");
+        Line currentLine = lineDao.findById(id);
+        validatesChangeName(lineRequest.getName(), currentLine.getName());
+        currentLine.update(lineRequest.getName(), lineRequest.getColor());
+        lineDao.update(currentLine);
     }
 
-    private Line validatesRequest(Long id, LineRequest lineRequest) {
-        Line currentLine = lineRepository.findById(id);
-
-        validateUsableName(lineRequest.getName(), currentLine.getName());
-        return new Line(id, lineRequest.getName(), lineRequest.getColor());
-    }
-
-    private void validateUsableName(String newName, String oldName) {
-        if (lineRepository.validateUsableName(newName, oldName)) {
-            throw new DuplicatedNameException("변경할 수 없는 이름입니다.");
+    private void validatesChangeName(String newName, String currentName) {
+        if (lineDao.existNewNameExceptCurrentName(newName, currentName)) {
+            throw new InvalidInsertException("변경할 수 없는 이름입니다.");
         }
     }
 
+    @Transactional
     public void delete(Long id) {
-        lineRepository.delete(id);
-        log.info("노선 삭제 성공");
+        lineDao.delete(id);
     }
 }

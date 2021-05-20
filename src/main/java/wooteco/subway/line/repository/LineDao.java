@@ -4,12 +4,10 @@ import wooteco.subway.line.Line;
 
 import java.util.List;
 
-public interface LineRepository {
+public interface LineDao {
     Line save(Line line);
 
     List<Line> findAll();
-
-    boolean validateDuplicateName(String name);
 
     Line findById(Long id);
 
@@ -17,5 +15,7 @@ public interface LineRepository {
 
     void delete(Long id);
 
-    boolean validateUsableName(String oldName, String newName);
+    boolean isExistingName(String name);
+
+    boolean existNewNameExceptCurrentName(String newName, String oldName);
 }

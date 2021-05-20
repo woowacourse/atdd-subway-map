@@ -1,18 +1,16 @@
 package wooteco.subway.station;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
-import wooteco.subway.station.repository.StationRepository;
+import wooteco.subway.station.repository.JdbcStationDao;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,11 +19,11 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-@Transactional
+@Sql("classpath:test.sql")
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @Autowired
-    private StationRepository stationRepository;
+    private JdbcStationDao stationRepository;
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -34,11 +32,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest 신논현역 = new StationRequest("신논현역");
 
         // when
-        ExtractableResponse<Response> response = createPostResponse(신논현역);
+        ExtractableResponse<Response> 신논현역_생성_응답 = post("/stations", 신논현역);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(신논현역_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(신논현역_생성_응답.header("Location")).isNotBlank();
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
@@ -46,13 +44,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         StationRequest 강남역 = new StationRequest("강남역");
-        createPostResponse(강남역);
+        post("/stations", 강남역);
 
         // when
-        ExtractableResponse<Response> response = createPostResponse(강남역);
+        ExtractableResponse<Response> 강남역_생성_응답 = post("/stations", 강남역);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(강남역_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -60,27 +58,27 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void getStations() {
         /// given
         StationRequest 강남역 = new StationRequest("강남역");
-        ExtractableResponse<Response> createResponse1 = createPostResponse(강남역);
+        ExtractableResponse<Response> 강남역_생성_응답 = post("/stations", 강남역);
 
         StationRequest 역삼역 = new StationRequest("역삼역");
-        ExtractableResponse<Response> createResponse2 = createPostResponse(역삼역);
+        ExtractableResponse<Response> 역삼역_생성_응답 = post("/stations", 역삼역);
 
         // when
-        ExtractableResponse<Response> response = createGetResponse();
+        ExtractableResponse<Response> 모든역_조회_응답 = get("/stations");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(모든역_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+        List<Long> 생성시_응답된_역ID_리스트 = Stream.of(강남역_생성_응답, 역삼역_생성_응답)
+                .map(this::getIdFromResponse)
                 .collect(Collectors.toList());
 
-        List<Long> resultLineIds = response.jsonPath()
+        List<Long> 조회시_응답된_역ID_리스트 = 모든역_조회_응답.jsonPath()
                 .getList(".", StationResponse.class).stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
 
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertThat(조회시_응답된_역ID_리스트).containsAll(생성시_응답된_역ID_리스트);
     }
 
     @DisplayName("지하철역을 제거한다.")
@@ -88,42 +86,15 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void deleteStation() {
         // given
         StationRequest 강남역 = new StationRequest("강남역");
-        ExtractableResponse<Response> createResponse = createPostResponse(강남역);
-
-        int originalSize = stationRepository.findAll().size();
 
         // when
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = createDeleteResponse(uri);
+        ExtractableResponse<Response> 강남역_생성_응답 = post("/stations", 강남역);
+        int 모든역의_개수 = stationRepository.findAll().size();
+        String path = 강남역_생성_응답.header("Location");
+        ExtractableResponse<Response> 강남역_삭제_응답 = delete(path);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertThat(stationRepository.findAll()).hasSize(originalSize - 1);
-    }
-
-    private ExtractableResponse<Response> createPostResponse(StationRequest stationRequest) {
-        return RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> createDeleteResponse(String uri) {
-        return RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> createGetResponse() {
-        return RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
+        assertThat(강남역_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(stationRepository.findAll()).hasSize(모든역의_개수 - 1);
     }
 }
