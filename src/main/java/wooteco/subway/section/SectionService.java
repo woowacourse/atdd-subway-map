@@ -17,7 +17,7 @@ public class SectionService {
         List<Section> beforeSections = sectionDao.findBeforeSection(newSection);
 
         validateSections(newSection, beforeSections);
-        
+
         if (beforeSections.size() == 0) {
             checkEndSection(newSection);
             return;
@@ -30,11 +30,7 @@ public class SectionService {
     }
 
     private void validateSections(Section newSection, List<Section> beforeSections) {
-        if (sectionDao.isExistReverseSection(newSection)) {
-            throw new IllegalArgumentException("이미 존재하는 구간입니다.");
-        }
-
-        if (beforeSections.size() > 1) {
+        if (sectionDao.isExistReverseSection(newSection) || beforeSections.size() > 1) {
             throw new IllegalArgumentException("이미 존재하는 구간입니다.");
         }
     }
