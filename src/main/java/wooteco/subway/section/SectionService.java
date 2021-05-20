@@ -17,7 +17,7 @@ public class SectionService {
         List<Section> beforeSections = sectionDao.findBeforeSection(newSection);
 
         validateSections(newSection, beforeSections);
-        
+
         if (beforeSections.size() == 0) {
             checkEndSection(newSection);
             return;
