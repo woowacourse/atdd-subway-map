@@ -157,7 +157,7 @@ public class Sections {
 
     private boolean anyMatches(final Section section) {
         return sections.stream()
-                .filter(it -> !it.same(section))
+                .filter(it -> !it.equals(section))
                 .anyMatch(it -> it.sameDownStation(section.upStation()));
     }
 

@@ -78,10 +78,6 @@ public class Section {
         return this.downStation.id();
     }
 
-    public boolean same(final Section section) {
-        return this.equals(section);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
