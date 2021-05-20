@@ -3,6 +3,9 @@ package wooteco.subway.section;
 import wooteco.subway.line.Line;
 import wooteco.subway.station.Station;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Section {
 
     private final long id;
@@ -40,6 +43,7 @@ public class Section {
     }
 
     public Section(long id, Line line, Station upStation, Station downStation, int distance) {
+        validateDistance(distance);
         this.id = id;
         this.line = line;
         this.upStation = upStation;
@@ -47,11 +51,24 @@ public class Section {
         this.distance = distance;
     }
 
-    public int isAppropriateDistance(int beforeDistance) {
-        if (beforeDistance - distance < 1) {
-            throw new IllegalArgumentException("거리를 확인해주세요. 기존 거리보다 길거나 같을 수 없습니다.");
+    private void validateDistance(int distance) {
+        if (distance < 1) {
+            throw new IllegalArgumentException("구간의 거리는 1보다 작을 수 없습니다.");
         }
-        return beforeDistance - distance;
+    }
+
+    public List<Section> update(Section newSection, Line line) {
+        List<Section> sections = new ArrayList<>();
+        if (upStation.getId().equals(newSection.getUpStation().getId())) {
+            sections.add(newSection);
+            sections.add(new Section(line, newSection.getDownStation(), downStation,
+                    distance- newSection.getDistance()));
+            return sections;
+        }
+        sections.add(new Section(line, upStation, newSection.getUpStation(),
+                distance- newSection.getDistance()));
+        sections.add(newSection);
+        return sections;
     }
 
     public long getId() {

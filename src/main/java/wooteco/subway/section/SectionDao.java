@@ -2,7 +2,10 @@ package wooteco.subway.section;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.line.Line;
+import wooteco.subway.station.Station;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +29,7 @@ public class SectionDao {
     public Map<Long, Long> sectionMap(long id) {
         String sql = "SELECT up_station_id, down_station_id FROM SECTION WHERE line_id = ?";
 
-        return jdbcTemplate.query(sql, sectionRowMapper(), id);
+        return jdbcTemplate.query(sql, sectionMapExtractor(), id);
     }
 
     public void delete(Section section) {
@@ -60,7 +63,7 @@ public class SectionDao {
         return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Integer.class, lineId));
     }
 
-    private ResultSetExtractor<Map<Long, Long>> sectionRowMapper() {
+    private ResultSetExtractor<Map<Long, Long>> sectionMapExtractor() {
         Map<Long, Long> stationMap = new HashMap<>();
         return (rs) -> {
             while (rs.next()) {
@@ -71,5 +74,17 @@ public class SectionDao {
             }
             return stationMap;
         };
+    }
+
+    private final RowMapper<Section> sectionRowMapper = (resultSet, rowNum) -> new Section(
+            resultSet.getLong("id"),
+            new Line(resultSet.getLong("line_id")),
+            new Station(resultSet.getLong("up_station_id")),
+            new Station(resultSet.getLong("down_station_id")),
+            resultSet.getInt("distance"));
+
+    public List<Section> findBeforeSection(Section newSection) {
+        String sql = "SELECT * FROM SECTION WHERE up_station_id = ? OR down_station_id = ?";
+        return jdbcTemplate.query(sql, sectionRowMapper, newSection.getUpStation().getId(), newSection.getDownStation().getId());
     }
 }

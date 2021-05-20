@@ -71,10 +71,8 @@ public class LineController {
     public ResponseEntity<String> addSection(@RequestBody SectionRequest sectionRequest, @PathVariable long lineId) {
         Section newSection = new Section(lineId, sectionRequest);
 
-        long existStationId = sectionService.findExistStation(newSection);
-        if (!sectionService.checkAndAddSection(newSection, existStationId, new Line(lineId))) {
-            return ResponseEntity.badRequest().build();
-        }
+        sectionService.checkAndAddSection(newSection, new Line(lineId));
+
         return ResponseEntity.ok().build();
     }
 

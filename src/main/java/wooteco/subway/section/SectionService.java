@@ -16,19 +16,6 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public long findExistStation(Section section) {
-        long existStation = -1;
-        if (sectionDao.isExistStation(section.getLine().getId(), section.getUpStation().getId())) {
-            existStation = section.getUpStation().getId();
-        }
-
-        if (sectionDao.isExistStation(section.getLine().getId(), section.getDownStation().getId())) {
-            checkDuplicateSection(existStation);
-            existStation = section.getDownStation().getId();
-        }
-        return existStation;
-    }
-
     public List<Long> findDownStationId(long lineId, long upStationId) {
         return sectionDao.findDownStation(lineId, upStationId);
     }
@@ -37,20 +24,20 @@ public class SectionService {
         return sectionDao.findUpStation(lineId, downStationId);
     }
 
-
-    public boolean checkAndAddSection(Section newSection, long existStationId, Line line) {
-        if (existStationId == newSection.getUpStation().getId()) {
-            List<Long> downStationIds = sectionDao.findDownStation(line.getId(), newSection.getUpStation().getId());
-            addDownStation(newSection, downStationIds, line);
-            return true;
+    public void checkAndAddSection(Section newSection, Line line) {
+        List<Section> beforeSections = sectionDao.findBeforeSection(newSection);
+        if( beforeSections.size() > 1) {
+            throw new IllegalArgumentException("이미 존재하는 구간입니다.");
         }
 
-        if (existStationId == newSection.getDownStation().getId()) {
-            List<Long> upStationIds = sectionDao.findUpStation(line.getId(), newSection.getDownStation().getId());
-            addUpStation(newSection, upStationIds, line);
-            return true;
+        if (beforeSections.size() == 0) {
+            throw new IllegalArgumentException("존재하지 않는 역입니다.");
         }
-        return false;
+        Section beforeSection = beforeSections.get(0);
+        List<Section> newSections = beforeSection.update(newSection, line);
+        sectionDao.delete(beforeSection);
+        sectionDao.save(newSections.get(0));
+        sectionDao.save(newSections.get(1));
     }
 
     public ResponseEntity<String> checkUpDownAndDelete(long lineId, List<Long> upStationIds, List<Long> downStationIds, long stationId) {
@@ -75,37 +62,6 @@ public class SectionService {
         }
     }
 
-    private void addDownStation(Section newSection, List<Long> beforeDownStations, Line line) {
-        if (beforeDownStations.isEmpty()) {
-            sectionDao.save(newSection);
-            return;
-        }
-        Section beforeSection = new Section(line, newSection.getUpStation(), new Station(beforeDownStations.get(0)));
-        int distance = newSection.isAppropriateDistance(sectionDao.distance(beforeSection));
-
-        Section newDownSection = new Section(line, newSection.getDownStation(), new Station(beforeDownStations.get(0)),
-                distance);
-        addSection(beforeSection, newSection, newDownSection);
-    }
-
-    private void addUpStation(Section newDownSection, List<Long> beforeUpStations, Line line) {
-        if (beforeUpStations.isEmpty()) {
-            sectionDao.save(newDownSection);
-            return;
-        }
-        long beforeUpStationId = beforeUpStations.get(0);
-        Section beforeSection = new Section(line, new Station(beforeUpStationId), newDownSection.getDownStation());
-        int distance = newDownSection.isAppropriateDistance(sectionDao.distance(beforeSection));
-        Section newUpSection = new Section(line, new Station(beforeUpStationId), newDownSection.getUpStation(), distance);
-        addSection(beforeSection, newUpSection, newDownSection);
-    }
-
-    private void addSection(Section beforeSection, Section newUpSection, Section newDownSection) {
-        sectionDao.delete(beforeSection);
-        sectionDao.save(newUpSection);
-        sectionDao.save(newDownSection);
-    }
-
     private ResponseEntity<String> deleteSection(Section beforeUpSection, Section beforeDownSection, Section section) {
         int firstDistance = sectionDao.distance(beforeUpSection);
         int secondDistance = sectionDao.distance(beforeDownSection);
@@ -115,11 +71,5 @@ public class SectionService {
         sectionDao.delete(beforeDownSection);
         sectionDao.save(newSection);
         return ResponseEntity.ok().build();
-    }
-
-    private void checkDuplicateSection(long existStation) {
-        if (existStation != -1) {
-            throw new IllegalArgumentException("이미 존재하는 구간입니다.");
-        }
     }
 }
