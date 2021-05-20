@@ -90,16 +90,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철_삭제_실패됨(response);
     }
 
-    private StationResponse 지하철역_생성_되어있음(String name) {
+    public static StationResponse 지하철역_생성_되어있음(String name) {
         return 지하철역_생성_요청(name).as(StationResponse.class);
     }
 
-    private ExtractableResponse<Response> 지하철역_생성_요청(String name) {
+    private static ExtractableResponse<Response> 지하철역_생성_요청(String name) {
         StationRequest request = new StationRequest(name);
         return 지하철역_생성_요청(request);
     }
 
-    private ExtractableResponse<Response> 지하철역_생성_요청(StationRequest request) {
+    private static ExtractableResponse<Response> 지하철역_생성_요청(StationRequest request) {
         return post_요청을_보냄(BASE_URL, request);
     }
 

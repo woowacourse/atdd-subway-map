@@ -20,7 +20,7 @@ public class AcceptanceTest {
         RestAssured.port = port;
     }
 
-    public <T> ExtractableResponse<Response> post_요청을_보냄(String url, T body) {
+    public static <T> ExtractableResponse<Response> post_요청을_보냄(String url, T body) {
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
