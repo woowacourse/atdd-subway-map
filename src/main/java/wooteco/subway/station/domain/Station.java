@@ -13,12 +13,12 @@ public class Station {
         this(id, StationName.emptyName());
     }
 
-    public Station(final Long id, final String name) {
-        this(id, new StationName(name));
-    }
-
     public Station(final String name) {
         this(null, new StationName(name));
+    }
+
+    public Station(final Long id, final String name) {
+        this(id, new StationName(name));
     }
 
     public Station(final Long id, final StationName name) {
