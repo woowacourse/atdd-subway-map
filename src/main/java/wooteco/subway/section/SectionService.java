@@ -16,20 +16,33 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public void checkAndAddSection(Section newSection, Line line) {
+    public void addSection(Section newSection) {
         List<Section> beforeSections = sectionDao.findBeforeSection(newSection);
-        if( beforeSections.size() > 1) {
-            throw new IllegalArgumentException("이미 존재하는 구간입니다.");
-        }
+        validateSections(beforeSections);
 
         if (beforeSections.size() == 0) {
-            throw new IllegalArgumentException("존재하지 않는 역입니다.");
+            checkEndSection(newSection);
+            return;
         }
         Section beforeSection = beforeSections.get(0);
-        List<Section> newSections = beforeSection.update(newSection, line);
+        List<Section> newSections = beforeSection.update(newSection);
         sectionDao.delete(beforeSection);
         sectionDao.save(newSections.get(0));
         sectionDao.save(newSections.get(1));
+    }
+
+    private void validateSections(List<Section> beforeSections) {
+        if( beforeSections.size() > 1) {
+            throw new IllegalArgumentException("이미 존재하는 구간입니다.");
+        }
+    }
+
+    private void checkEndSection(Section newSection) {
+        if(sectionDao.isEndStation(newSection)) {
+            sectionDao.save(newSection);
+            return;
+        }
+        throw new IllegalArgumentException("연결할 수 있는 역이 없습니다.");
     }
 
     public void checkSectionCount(long lineId) {

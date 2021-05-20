@@ -57,7 +57,7 @@ public class Section {
         }
     }
 
-    public List<Section> update(Section newSection, Line line) {
+    public List<Section> update(Section newSection) {
         List<Section> sections = new ArrayList<>();
         if (upStation.getId().equals(newSection.getUpStation().getId())) {
             sections.add(newSection);

@@ -92,4 +92,14 @@ public class SectionDao {
         String sql = "SELECT * FROM SECTION WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
         return jdbcTemplate.query(sql, sectionRowMapper, lineId, stationId, stationId);
     }
+
+    public boolean isEndStation(Section newSection) {
+        String sql = "SELECT EXISTS (SELECT * FROM SECTION WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)) AS SUCCESS";
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
+                sql, Boolean.class,
+                newSection.getLine().getId(),
+                newSection.getDownStation().getId(),
+                newSection.getUpStation().getId())
+        );
+    }
 }
