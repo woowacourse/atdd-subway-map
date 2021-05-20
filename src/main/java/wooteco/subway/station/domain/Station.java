@@ -29,7 +29,7 @@ public class Station {
     public Long id() {
         return id;
     }
-    
+
     public String name() {
         return name.name();
     }

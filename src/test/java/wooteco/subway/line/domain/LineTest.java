@@ -7,9 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import wooteco.subway.common.exception.InvalidNameException;
 import wooteco.subway.common.exception.NotFoundException;
-import wooteco.subway.station.domain.Station;
-
-import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.*;
 import static wooteco.subway.line.LineFactory.인천1호선;
@@ -21,12 +18,14 @@ class LineTest {
     private Long id;
     private String name;
     private String color;
+    private Line 테스트_인천1호선;
 
     @BeforeEach
     void init() {
         id = 인천1호선.id();
         name = 인천1호선.name();
         color = 인천1호선.color();
+        테스트_인천1호선 = new Line(id, new LineName(name), color, 인천1호선_구간);
     }
 
     @Test
@@ -62,35 +61,32 @@ class LineTest {
         String name = "인천1호선";
 
         //when
-
         //then
-        assertThat(인천1호선.sameName(name)).isEqualTo(true);
+        assertThat(테스트_인천1호선.sameName(name)).isEqualTo(true);
     }
 
     @DisplayName("같은 아이디인지 확인하다")
     @Test
     void sameId() {
         //given
-        Long id = 1L;
+        Long id = 2L;
 
         //when
-        String name = "인천1호선";
-
         //then
-        assertThat(인천1호선.sameId(id)).isEqualTo(true);
+        assertThat(테스트_인천1호선.sameId(id)).isEqualTo(true);
     }
 
     @DisplayName("이름을 수정한다")
     @Test
     void changeName() {
         //given
-        String newName = "1호선";
+        String newName = "2호선";
 
         //when
-        인천1호선.changeName(newName);
+        테스트_인천1호선.changeName(newName);
 
         //then
-        assertThat(인천1호선.sameName(newName)).isEqualTo(true);
+        assertThat(테스트_인천1호선.sameName(newName)).isEqualTo(true);
     }
 
     @DisplayName("색깔을 수정한다")
@@ -100,10 +96,10 @@ class LineTest {
         String newColor = "bg-red-500";
 
         //when
-        인천1호선.changeColor(newColor);
+        테스트_인천1호선.changeColor(newColor);
 
         //then
-        assertThat(인천1호선.color()).isEqualTo(newColor);
+        assertThat(테스트_인천1호선.color()).isEqualTo(newColor);
     }
 
     @DisplayName("노선에 구간을 추가한다.")
@@ -113,7 +109,6 @@ class LineTest {
         Line line = new Line(id, name, color);
 
         //when
-
         //then
         assertThatCode(() -> line.addSection(인천1호선_흑기백기구간))
                 .doesNotThrowAnyException();
@@ -126,7 +121,6 @@ class LineTest {
         Line line = new Line(id, name, color);
 
         //when
-
         //then
         assertThatCode(() -> line.addSection(null))
                 .isInstanceOf(NotFoundException.class)

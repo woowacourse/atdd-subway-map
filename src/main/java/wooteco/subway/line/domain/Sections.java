@@ -187,7 +187,7 @@ public class Sections {
 
     private void validateContain(final Station upStation, final Station downStation) {
         if (!containsStation(upStation, downStation)) {
-            throw new NotFoundException("∑");
+            throw new NotFoundException("상행, 하행역 둘다 노선에 등록되어 있지 않음!!");
         }
     }
 }

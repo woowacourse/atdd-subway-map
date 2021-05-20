@@ -10,7 +10,7 @@ public class Line {
     private final Long id;
     private LineName name;
     private String color;
-    private Sections sections;
+    private final Sections sections;
 
     public Line(final Long id) {
         this(id, LineName.emptyName(), null);

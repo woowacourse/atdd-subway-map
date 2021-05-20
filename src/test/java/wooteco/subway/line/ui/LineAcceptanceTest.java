@@ -75,7 +75,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-
         // when
         ExtractableResponse<Response> response = 지하철_노선_생청_요청(인천1호선_Request);
 
@@ -125,7 +124,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_목록_정상_요청됨(findResponse);
         지하철_노선_목록_정상_포함됨(findResponse, Arrays.asList(response1, response2));
     }
-
 
     @DisplayName("단일 노선을 조회한다.")
     @Test

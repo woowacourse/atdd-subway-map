@@ -49,7 +49,6 @@ class StationTest {
         String name = "흑기역";
 
         //when
-
         //then
         assertThat(흑기역.sameName(name)).isEqualTo(true);
     }
@@ -61,7 +60,6 @@ class StationTest {
         Long id = 1L;
 
         //when
-
         //then
         assertThat(흑기역.sameId(id)).isEqualTo(true);
     }

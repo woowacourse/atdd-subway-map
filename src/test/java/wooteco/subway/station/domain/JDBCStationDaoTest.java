@@ -31,6 +31,7 @@ class JDBCStationDaoTest {
         //when
         Station savedStation = stationDao.save(station);
 
+        //then
         assertThat(station.name()).isEqualTo(savedStation.name());
     }
 
@@ -61,6 +62,7 @@ class JDBCStationDaoTest {
         stationDao.save(station2);
         List<Station> stations = stationDao.findAll();
 
+        //then
         assertThat(stations).hasSize(2);
     }
 

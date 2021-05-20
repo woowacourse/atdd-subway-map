@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import wooteco.subway.common.exception.AlreadyExistsException;
 import wooteco.subway.common.exception.InvalidInputException;
-import wooteco.subway.common.exception.NotFoundException;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineDao;
 import wooteco.subway.line.domain.Section;
@@ -16,7 +15,6 @@ import wooteco.subway.line.domain.SectionDao;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.SectionRequest;
-import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 
 import java.util.Collections;
@@ -26,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static wooteco.subway.line.LineFactory.구간없는_인천1호선;
 import static wooteco.subway.line.LineFactory.인천1호선;
 import static wooteco.subway.line.SectionFactory.인천1호선_흑기백기구간;
 import static wooteco.subway.station.StationFactory.백기역;
@@ -104,7 +101,7 @@ class LineServiceTest {
 
         //when
         //then
-        assertThatThrownBy(() ->노선_구간_추가_요청(line, sectionRequest))
+        assertThatThrownBy(() -> 노선_구간_추가_요청(line, sectionRequest))
                 .isInstanceOf(AlreadyExistsException.class);
     }
 
