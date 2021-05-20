@@ -19,7 +19,7 @@ public class Section {
     }
 
     public Section(long lineId, long upStationId, long downStationId) {
-        this(-1, new Line(lineId), new Station(upStationId), new Station(downStationId), 0);
+        this(-1, new Line(lineId), new Station(upStationId), new Station(downStationId), -1);
     }
 
     public Section(long lineId, SectionRequest sectionRequest) {
@@ -52,7 +52,7 @@ public class Section {
     }
 
     private void validateDistance(int distance) {
-        if (distance < 1) {
+        if (distance == 0) {
             throw new IllegalArgumentException("구간의 거리는 1보다 작을 수 없습니다.");
         }
     }
@@ -62,17 +62,17 @@ public class Section {
         if (upStation.getId().equals(newSection.getUpStation().getId())) {
             sections.add(newSection);
             sections.add(new Section(line, newSection.getDownStation(), downStation,
-                    distance- newSection.getDistance()));
+                    distance - newSection.getDistance()));
             return sections;
         }
         sections.add(new Section(line, upStation, newSection.getUpStation(),
-                distance- newSection.getDistance()));
+                distance - newSection.getDistance()));
         sections.add(newSection);
         return sections;
     }
 
     public Section deleteStation(Section section) {
-        if(downStation.getId() == section.getUpStation().getId()) {
+        if (downStation.getId() == section.getUpStation().getId()) {
             return new Section(line, upStation, section.getDownStation(), distance + section.getDistance());
         }
         return new Section(line, section.getUpStation(), downStation, distance + section.getDistance());

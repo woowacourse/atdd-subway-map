@@ -15,6 +15,12 @@ import java.util.Objects;
 @Repository
 public class SectionDao {
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Section> sectionRowMapper = (resultSet, rowNum) -> new Section(
+            resultSet.getLong("id"),
+            new Line(resultSet.getLong("line_id")),
+            new Station(resultSet.getLong("up_station_id")),
+            new Station(resultSet.getLong("down_station_id")),
+            resultSet.getInt("distance"));
 
     public SectionDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -76,13 +82,6 @@ public class SectionDao {
         };
     }
 
-    private final RowMapper<Section> sectionRowMapper = (resultSet, rowNum) -> new Section(
-            resultSet.getLong("id"),
-            new Line(resultSet.getLong("line_id")),
-            new Station(resultSet.getLong("up_station_id")),
-            new Station(resultSet.getLong("down_station_id")),
-            resultSet.getInt("distance"));
-
     public List<Section> findBeforeSection(Section newSection) {
         String sql = "SELECT * FROM SECTION WHERE up_station_id = ? OR down_station_id = ?";
         return jdbcTemplate.query(sql, sectionRowMapper, newSection.getUpStation().getId(), newSection.getDownStation().getId());
@@ -101,5 +100,16 @@ public class SectionDao {
                 newSection.getDownStation().getId(),
                 newSection.getUpStation().getId())
         );
+    }
+
+    public boolean isExistReverseSection(Section section) {
+        String sql = "SELECT EXISTS (SELECT * FROM SECTION WHERE line_id = ? AND (up_station_id = ? AND down_station_id = ?)) AS SUCCESS";
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
+                sql, Boolean.class,
+                section.getLine().getId(),
+                section.getDownStation().getId(),
+                section.getUpStation().getId()
+        ));
+
     }
 }

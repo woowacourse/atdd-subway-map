@@ -1,9 +1,6 @@
 package wooteco.subway.section;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import wooteco.subway.line.Line;
-import wooteco.subway.station.Station;
 
 import java.util.List;
 
@@ -18,8 +15,9 @@ public class SectionService {
 
     public void addSection(Section newSection) {
         List<Section> beforeSections = sectionDao.findBeforeSection(newSection);
-        validateSections(beforeSections);
 
+        validateSections(newSection, beforeSections);
+        
         if (beforeSections.size() == 0) {
             checkEndSection(newSection);
             return;
@@ -31,14 +29,18 @@ public class SectionService {
         sectionDao.save(newSections.get(1));
     }
 
-    private void validateSections(List<Section> beforeSections) {
-        if( beforeSections.size() > 1) {
+    private void validateSections(Section newSection, List<Section> beforeSections) {
+        if (sectionDao.isExistReverseSection(newSection)) {
+            throw new IllegalArgumentException("이미 존재하는 구간입니다.");
+        }
+
+        if (beforeSections.size() > 1) {
             throw new IllegalArgumentException("이미 존재하는 구간입니다.");
         }
     }
 
     private void checkEndSection(Section newSection) {
-        if(sectionDao.isEndStation(newSection)) {
+        if (sectionDao.isEndStation(newSection)) {
             sectionDao.save(newSection);
             return;
         }
@@ -58,7 +60,7 @@ public class SectionService {
         }
 
         if (sections.size() == 1) {
-           return;
+            return;
         }
 
         sectionDao.save(sections.get(0).deleteStation(sections.get(1)));
