@@ -79,10 +79,9 @@ public class LineController {
     @DeleteMapping("/{lineId}/sections")
     public ResponseEntity<String> delete(@PathVariable long lineId, @RequestParam long stationId) {
         sectionService.checkSectionCount(lineId);
-        List<Long> upStationIds = sectionService.findUpStationId(lineId, stationId);
-        List<Long> downStationIds = sectionService.findDownStationId(lineId, stationId);
+        sectionService.deleteStation(lineId, stationId);
 
-        return sectionService.checkUpDownAndDelete(lineId, upStationIds, downStationIds, stationId);
+        return ResponseEntity.ok().build();
 
     }
 }

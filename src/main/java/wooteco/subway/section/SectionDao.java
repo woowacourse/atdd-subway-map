@@ -87,4 +87,9 @@ public class SectionDao {
         String sql = "SELECT * FROM SECTION WHERE up_station_id = ? OR down_station_id = ?";
         return jdbcTemplate.query(sql, sectionRowMapper, newSection.getUpStation().getId(), newSection.getDownStation().getId());
     }
+
+    public List<Section> findSections(long lineId, long stationId) {
+        String sql = "SELECT * FROM SECTION WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
+        return jdbcTemplate.query(sql, sectionRowMapper, lineId, stationId, stationId);
+    }
 }

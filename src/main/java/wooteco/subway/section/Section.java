@@ -71,6 +71,13 @@ public class Section {
         return sections;
     }
 
+    public Section deleteStation(Section section) {
+        if(downStation.getId() == section.getUpStation().getId()) {
+            return new Section(line, upStation, section.getDownStation(), distance + section.getDistance());
+        }
+        return new Section(line, section.getUpStation(), downStation, distance + section.getDistance());
+    }
+
     public long getId() {
         return id;
     }
@@ -90,4 +97,5 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
 }
