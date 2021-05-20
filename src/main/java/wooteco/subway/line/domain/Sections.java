@@ -46,6 +46,16 @@ public class Sections {
         return targetSections;
     }
 
+    public int size() {
+        return sections.size();
+    }
+
+    public int totalDistance() {
+        return sections.stream()
+                .mapToInt(Section::distance)
+                .sum();
+    }
+
     private Optional<Section> nextSection(final Section section) {
         return sections.stream()
                 .filter(nextSection -> nextSection.sameUpStation(section.downStation()))
@@ -93,10 +103,6 @@ public class Sections {
             return;
         }
         changeSection(upSection.get(), downSection.get());
-    }
-
-    public int size() {
-        return sections.size();
     }
 
     private void changeSection(final Section upSection, final Section downSection) {
