@@ -6,12 +6,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import wooteco.subway.common.exception.InvalidNameException;
+import wooteco.subway.common.exception.NotFoundException;
 import wooteco.subway.station.domain.Station;
 
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.*;
 import static wooteco.subway.line.LineFactory.인천1호선;
+import static wooteco.subway.line.SectionFactory.인천1호선_구간;
+import static wooteco.subway.line.SectionFactory.인천1호선_흑기백기구간;
 
 @DisplayName("노선 기능테스트")
 class LineTest {
@@ -21,9 +24,9 @@ class LineTest {
 
     @BeforeEach
     void init() {
-        id = 1L;
-        name = "신분당선";
-        color = "bg-red-600";
+        id = 인천1호선.id();
+        name = 인천1호선.name();
+        color = 인천1호선.color();
     }
 
     @Test
@@ -41,11 +44,7 @@ class LineTest {
         assertThatCode(() -> new Line(id, new LineName(name), color))
                 .doesNotThrowAnyException();
 
-        assertThatCode(() -> new Line(id, name, color,
-                Arrays.asList(
-                        new Section(new Station("흑기역"), new Station("백기역"), 5),
-                        new Section(new Station("흑역"), new Station("기역"), 8)))
-        ).doesNotThrowAnyException();
+        assertThatCode(() -> new Line(id, name, color, 인천1호선_구간.sortedSections())).doesNotThrowAnyException();
     }
 
     @ParameterizedTest
@@ -94,7 +93,7 @@ class LineTest {
         assertThat(인천1호선.sameName(newName)).isEqualTo(true);
     }
 
-    @DisplayName("이름을 수정한다")
+    @DisplayName("색깔을 수정한다")
     @Test
     void changeColor() {
         //given
@@ -105,5 +104,32 @@ class LineTest {
 
         //then
         assertThat(인천1호선.color()).isEqualTo(newColor);
+    }
+
+    @DisplayName("노선에 구간을 추가한다.")
+    @Test
+    void addSection() {
+        //given
+        Line line = new Line(id, name, color);
+
+        //when
+
+        //then
+        assertThatCode(() -> line.addSection(인천1호선_흑기백기구간))
+                .doesNotThrowAnyException();
+    }
+
+    @DisplayName("추가하려는 구간이 Null인경우 예외가 발생한다.")
+    @Test
+    void addSectionExeption() {
+        //given
+        Line line = new Line(id, name, color);
+
+        //when
+
+        //then
+        assertThatCode(() -> line.addSection(null))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("타겟을 찾을 수 없음!");
     }
 }
