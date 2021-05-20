@@ -11,7 +11,9 @@ import wooteco.subway.station.domain.Station;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.*;
+import static wooteco.subway.line.LineFactory.인천1호선;
 
+@DisplayName("노선 기능테스트")
 class LineTest {
     private Long id;
     private String name;
@@ -58,13 +60,12 @@ class LineTest {
     @Test
     void sameName() {
         //given
-        String name = "신분당선";
+        String name = "인천1호선";
 
         //when
-        Line line = new Line(name, color);
 
         //then
-        assertThat(line.sameName(name)).isEqualTo(true);
+        assertThat(인천1호선.sameName(name)).isEqualTo(true);
     }
 
     @DisplayName("같은 아이디인지 확인하다")
@@ -74,10 +75,10 @@ class LineTest {
         Long id = 1L;
 
         //when
-        Line line = new Line(this.id, name, color);
+        String name = "인천1호선";
 
         //then
-        assertThat(line.sameId(id)).isEqualTo(true);
+        assertThat(인천1호선.sameId(id)).isEqualTo(true);
     }
 
     @DisplayName("이름을 수정한다")
@@ -87,11 +88,10 @@ class LineTest {
         String newName = "1호선";
 
         //when
-        Line line = new Line(id, name, color);
-        line.changeName(newName);
+        인천1호선.changeName(newName);
 
         //then
-        assertThat(line.sameName(newName)).isEqualTo(true);
+        assertThat(인천1호선.sameName(newName)).isEqualTo(true);
     }
 
     @DisplayName("이름을 수정한다")
@@ -101,10 +101,9 @@ class LineTest {
         String newColor = "bg-red-500";
 
         //when
-        Line line = new Line(id, name, color);
-        line.changeColor(newColor);
+        인천1호선.changeColor(newColor);
 
         //then
-        assertThat(line.color()).isEqualTo(newColor);
+        assertThat(인천1호선.color()).isEqualTo(newColor);
     }
 }
