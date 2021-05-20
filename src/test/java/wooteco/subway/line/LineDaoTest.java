@@ -15,7 +15,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import wooteco.subway.exception.NoSuchLineException;
+import wooteco.subway.exception.NoSuchDataException;
 
 @JdbcTest
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -63,7 +63,7 @@ public class LineDaoTest {
         lineDao.save(new Line("신분당선", "black"));
         lineDao.save(new Line("2호선", "white"));
         List<Line> lines = lineDao.findAll();
-        assertThat(lines.size()).isEqualTo(2);
+        assertThat(lines).hasSize(2);
         assertThat(lines.get(0).getId()).isEqualTo(1L);
         assertThat(lines.get(1).getId()).isEqualTo(2L);
     }
@@ -72,7 +72,7 @@ public class LineDaoTest {
     @Test
     void failFindLineByIdTest() {
         assertThatThrownBy(() -> {
-            lineDao.find(1L);
+            lineDao.findById(1L);
         }).isInstanceOf(EmptyResultDataAccessException.class);
     }
 
@@ -82,7 +82,7 @@ public class LineDaoTest {
         lineDao.save(new Line("신분당선", "black"));
 
         assertDoesNotThrow(() -> {
-            lineDao.find(1L);
+            lineDao.findById(1L);
         });
     }
 
@@ -91,7 +91,7 @@ public class LineDaoTest {
     void failDeleteLineTest() {
         assertThatThrownBy(() -> {
             lineDao.delete(1L);
-        }).isInstanceOf(NoSuchLineException.class);
+        }).isInstanceOf(NoSuchDataException.class);
     }
 
     @DisplayName("line 삭제 성공 테스트")
@@ -109,9 +109,9 @@ public class LineDaoTest {
     void failModifyLineNotExistsTest() {
         assertThatThrownBy(
             () -> {
-                lineDao.modify(1L, new LineRequest());
+                lineDao.update(1L, new LineRequest());
             }
-        ).isInstanceOf(NoSuchLineException.class);
+        ).isInstanceOf(NoSuchDataException.class);
     }
 
     @DisplayName("중복되는 line 수정 실패 테스트")
@@ -121,7 +121,7 @@ public class LineDaoTest {
         lineDao.save(new Line("2호선", "black"));
         assertThatThrownBy(
             () -> {
-                lineDao.modify(2L, new LineRequest("신분당선", "red"));
+                lineDao.update(2L, new LineRequest("신분당선", "red"));
             }
         ).isInstanceOf(DuplicateKeyException.class);
     }
@@ -132,7 +132,7 @@ public class LineDaoTest {
         lineDao.save(new Line("신분당선", "black"));
 
         assertDoesNotThrow(() -> {
-            lineDao.modify(1L, new LineRequest("2호선", "black"));
+            lineDao.update(1L, new LineRequest("2호선", "black"));
         });
     }
 }

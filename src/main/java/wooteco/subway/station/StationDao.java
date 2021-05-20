@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.exception.NoSuchLineException;
+import wooteco.subway.exception.NoSuchDataException;
 
 @Repository
 public class StationDao {
@@ -50,7 +50,19 @@ public class StationDao {
         int affectedRowNumber = jdbcTemplate.update(query, id);
 
         if (affectedRowNumber == 0) {
-            throw new NoSuchLineException("없는 노선입니다.");
+            throw new NoSuchDataException("없는 노선입니다.");
         }
     }
+
+    public Station findById(long id) {
+        String query = "SELECT * FROM station WHERE ID = (?)";
+        return jdbcTemplate.queryForObject(query, (resultSet, rowNum) -> {
+            Station station = new Station(
+                resultSet.getLong("id"),
+                resultSet.getString("name")
+            );
+            return station;
+        }, id);
+    }
+
 }

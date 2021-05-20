@@ -1,7 +1,6 @@
 package wooteco.subway.line;
 
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +8,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.exception.NoSuchLineException;
+import wooteco.subway.exception.NoSuchDataException;
 
 @Repository
 public class LineDao {
 
-    private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -28,7 +25,7 @@ public class LineDao {
         int affectedRowNumber = jdbcTemplate.update(query, id);
 
         if (affectedRowNumber == 0) {
-            throw new NoSuchLineException("없는 노선입니다.");
+            throw new NoSuchDataException("없는 노선입니다.");
         }
     }
 
@@ -45,7 +42,7 @@ public class LineDao {
         return lines;
     }
 
-    public Line find(Long id) {
+    public Line findById(Long id) {
         String query = "SELECT * FROM line WHERE id = ?";
         return jdbcTemplate.queryForObject(query,
             (resultSet, rowNum) -> {
@@ -58,12 +55,12 @@ public class LineDao {
             }, id);
     }
 
-    public void modify(Long id, LineRequest lineRequest) {
+    public void update(Long id, LineRequest lineRequest) {
         String query = "UPDATE line SET name=(?), color=(?) WHERE id = (?)";
         int affectedRowNumber = jdbcTemplate
             .update(query, lineRequest.getName(), lineRequest.getColor(), id);
         if (affectedRowNumber == 0) {
-            throw new NoSuchLineException("존재하지 않아 변경할 수 없습니다.");
+            throw new NoSuchDataException("존재하지 않아 변경할 수 없습니다.");
         }
     }
 
@@ -80,4 +77,5 @@ public class LineDao {
 
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
+
 }

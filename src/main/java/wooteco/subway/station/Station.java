@@ -43,5 +43,9 @@ public class Station {
     public int hashCode() {
         return Objects.hash(name);
     }
+
+    public boolean isSameStationId(Long upStationId) {
+        return this.id.equals(upStationId);
+    }
 }
 
