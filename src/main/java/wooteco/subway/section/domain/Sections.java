@@ -1,11 +1,11 @@
 package wooteco.subway.section.domain;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 import wooteco.subway.exception.DeleteSectionException;
 import wooteco.subway.exception.DuplicatedSectionException;
-import wooteco.subway.exception.InvalidSectionsException;
 import wooteco.subway.exception.NotAddSectionException;
 import wooteco.subway.exception.NotContainStationsException;
 import wooteco.subway.exception.NotFoundTerminalStationException;
@@ -25,48 +25,48 @@ public class Sections {
 
     private List<Section> sortedSections(List<Section> sections) {
         List<Section> sortedSection = new ArrayList<>();
-        Station currentStation = upTerminalSection(sections).getUpStation();
-
+        HashMap<Long, Section> sectionByUpStationId = sectionByUpStationId(sections);
+        Station currentStation = upTerminalStation(sections);
         for (int i = 0; i < sections.size(); i++) {
-            currentStation = addSection(sections, sortedSection, currentStation);
+            Section nextSection = sectionByUpStationId.getOrDefault(currentStation.getId(), null);
+            if (nextSection != null) {
+                sortedSection.add(nextSection);
+                currentStation = nextSection.getDownStation();
+            }
         }
         return sortedSection;
     }
 
-    private Station addSection(List<Section> sections, List<Section> sortedSections,
-        Station currentStation) {
-        for (Section section : sections) {
-            if (section.isEqualsUpStation(currentStation)) {
-                sortedSections.add(section);
-                return section.getDownStation();
-            }
-        }
-        throw new InvalidSectionsException();
+    private HashMap<Long, Section> sectionByUpStationId(List<Section> sections) {
+        return new HashMap<>(
+            sections.stream()
+                .collect(Collectors.toMap(Section::getUpStationId, section -> section))
+        );
     }
 
-    private Section upTerminalSection(List<Section> sections) {
-        List<Long> upStationIds = stationIds(sections, true);
-        List<Long> downStationIds = stationIds(sections, false);
+    private Station upTerminalStation(List<Section> sections) {
+        List<Long> upStationIds = upStationIds(sections);
+        List<Long> downStationIds = downStationIds(sections);
 
         upStationIds.removeAll(downStationIds);
         Long upTerminalStationId = upStationIds.get(0);
-
         return sections.stream()
             .filter(section -> section.getUpStationId().equals(upTerminalStationId))
+            .map(Section::getUpStation)
             .findFirst()
             .orElseThrow(NotFoundTerminalStationException::new);
     }
 
-    private List<Long> stationIds(List<Section> sections, boolean isUpStation) {
-        List<Long> stationIds = new LinkedList<>();
-        sections.forEach(section -> {
-            if (isUpStation) {
-                stationIds.add(section.getUpStationId());
-                return;
-            }
-            stationIds.add(section.getDownStationId());
-        });
-        return stationIds;
+    private List<Long> upStationIds(List<Section> sections) {
+        return sections.stream()
+            .map(Section::getUpStationId)
+            .collect(Collectors.toList());
+    }
+
+    private List<Long> downStationIds(List<Section> sections) {
+        return sections.stream()
+            .map(Section::getDownStationId)
+            .collect(Collectors.toList());
     }
 
     public boolean isTerminalSection(Section section) {
