@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.station.dao.StationDao;
-import wooteco.subway.station.dto.StationRequest;
-import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.dto.StationDto;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,17 +23,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @Autowired
-    private StationDao stationDao;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() throws JsonProcessingException {
         // given
-        StationRequest stationRequest = new StationRequest("강남역");
-        String content = objectMapper.writeValueAsString(stationRequest);
+        StationDto station = new StationDto("잠새역");
+        String content = objectMapper.writeValueAsString(station);
 
         // when
         ExtractableResponse<Response> response = addStation(content);
@@ -59,8 +54,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() throws JsonProcessingException {
         // given
-        StationRequest stationRequest = new StationRequest("강남역");
-        String content = objectMapper.writeValueAsString(stationRequest);
+        StationDto station = new StationDto("강남역");
+        String content = objectMapper.writeValueAsString(station);
 
         addStation(content);
 
@@ -75,13 +70,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() throws JsonProcessingException {
         // given
-        StationRequest stationRequest = new StationRequest("강남역");
-        String content = objectMapper.writeValueAsString(stationRequest);
+        StationDto station = new StationDto("방배역");
+        String content = objectMapper.writeValueAsString(station);
 
         ExtractableResponse<Response> createResponse1 = addStation(content);
 
-        StationRequest stationRequest2 = new StationRequest("역삼역");
-        String content2 = objectMapper.writeValueAsString(stationRequest2);
+        StationDto station2 = new StationDto("역삼역");
+        String content2 = objectMapper.writeValueAsString(station2);
         ExtractableResponse<Response> createResponse2 = addStation(content2);
 
         // when
@@ -96,7 +91,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
+        List<Long> resultLineIds = response.jsonPath().getList(".", StationDto.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
@@ -106,8 +101,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() throws JsonProcessingException {
         // given
-        StationRequest stationRequest = new StationRequest("강남역");
-        String content = objectMapper.writeValueAsString(stationRequest);
+        StationDto station = new StationDto("잠새역");
+        String content = objectMapper.writeValueAsString(station);
 
         ExtractableResponse<Response> createResponse = addStation(content);
 
@@ -133,6 +128,23 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .delete(uri, 0L)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("구간에 등록된 역을 제거 시 예외가 발생한다.")
+    @Test
+    void deleteStationException2() {
+        // given
+        String uri = "/stations/{id}";
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete(uri, 1L)
                 .then().log().all()
                 .extract();
 

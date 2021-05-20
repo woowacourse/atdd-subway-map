@@ -1,31 +1,43 @@
 package wooteco.subway.line.domain;
 
-import wooteco.subway.name.LineName;
-import wooteco.subway.name.Name;
+import wooteco.subway.line.domain.rule.FindSectionStrategy;
+import wooteco.subway.station.domain.Station;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Line {
     private final Long id;
-    private Name name;
-    private String color;
+    private final String name;
+    private final String color;
+    private Sections sections;
 
-    public Line(final String name, final String color) {
-        this(new LineName(name), color);
+    public Line(String name, String color) {
+        this(0L, name, color, new ArrayList<>());
     }
 
-    public Line(final Name name, final String color) {
-        this(0L, name, color);
+    public Line(String name, String color, List<Section> sections) {
+        this(0L, name, color, sections);
     }
 
-    public Line(final Long id, final String name, final String color) {
-        this(id, new LineName(name), color);
+    public Line(Long id, String name, String color) {
+        this(id, name, color, new ArrayList<>());
     }
 
-    public Line(final Long id, final Name name, final String color) {
+    public Line(Long id, String name, String color, Section section) {
+        this(id, name, color, Arrays.asList(section));
+    }
+
+    public Line(Long id, String name, String color, List<Section> sections) {
+        this(id, name, color, new Sections(sections));
+    }
+
+    public Line(Long id, String name, String color, Sections sections) {
         this.id = id;
         this.name = name;
         this.color = color;
+        this.sections = sections;
     }
 
     public Long id() {
@@ -33,41 +45,53 @@ public class Line {
     }
 
     public String name() {
-        return name.name();
+        return name;
     }
 
     public String color() {
         return color;
     }
 
-    public boolean sameName(final String name) {
-        return this.name.sameName(name);
+    public void initSections(List<Section> sections) {
+        this.sections = new Sections(sections);
     }
 
-    public boolean sameId(final Long id) {
-        return this.id.equals(id);
+    public List<Station> stations() {
+        return sections.sortedStations();
     }
 
-    public void changeName(final String name) {
-        this.name = this.name.changeName(name);
+    public List<Long> stationIds() {
+        return sections.stationIds();
     }
 
-    public void changeColor(String color) {
-        this.color = color;
+    public Station registeredStation(Section anotherSection) {
+        return sections.registeredStation(anotherSection);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Line line = (Line) o;
-        return Objects.equals(id, line.id) &&
-                Objects.equals(name, line.name) &&
-                Objects.equals(color, line.color);
+    public Section findSectionWithUpStation(Station duplicatedStation) {
+        return sections.findSectionWithUpStation(duplicatedStation);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, color);
+    public Section findSectionWithDownStation(Station duplicatedStation) {
+        return sections.findSectionWithDownStation(duplicatedStation);
+    }
+
+    public boolean hasOnlyOneSection() {
+        return sections.size() == 1;
+    }
+
+    public List<Section> sectionsWhichHasStation(Station station) {
+        List<Section> sectionsWhichHasStation = new ArrayList<>();
+        if (!findSectionWithDownStation(station).isEmpty()) {
+            sectionsWhichHasStation.add(findSectionWithDownStation(station));
+        }
+        if (!findSectionWithUpStation(station).isEmpty()) {
+            sectionsWhichHasStation.add(findSectionWithUpStation(station));
+        }
+        return sectionsWhichHasStation;
+    }
+
+    public Section findSectionWithStation(Station targetStation, List<FindSectionStrategy> findSectionStrategies) {
+        return sections.findSectionWithStation(targetStation, findSectionStrategies);
     }
 }

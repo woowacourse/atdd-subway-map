@@ -1,35 +1,29 @@
 package wooteco.subway.station.dao;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
-import wooteco.subway.station.dao.DBStationDao;
-import wooteco.subway.station.dao.StationDao;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.station.domain.Station;
 
+import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 @JdbcTest
+@Sql(scripts = {"classpath:schema.sql", "classpath:data.sql"})
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-class DBStationDaoTest {
+class StationDaoImplTest {
 
     private final JdbcTemplate jdbcTemplate;
     private final StationDao stationDao;
 
-    DBStationDaoTest(JdbcTemplate jdbcTemplate) {
+    StationDaoImplTest(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.stationDao = new DBStationDao(jdbcTemplate);
-    }
-
-    @BeforeEach
-    void init() {
-
+        this.stationDao = new StationDaoImpl(jdbcTemplate);
     }
 
     @Test
@@ -41,37 +35,18 @@ class DBStationDaoTest {
         //when
         Station savedStation = stationDao.save(station);
 
-        assertThat(station.getName()).isEqualTo(savedStation.getName());
-    }
-
-    @Test
-    @DisplayName("동일한 이름의 역을 저장시 에러가 발생한다.")
-    void saveException() {
-        //given
-        Station station = new Station("김밥역");
-        Station secondStation = new Station("김밥역");
-
-        //when
-        Station savedStation = stationDao.save(station);
-
-        //then
-        assertThatThrownBy(() -> stationDao.save(secondStation))
-                .isInstanceOf(IllegalStateException.class);
+        assertThat(station.name()).isEqualTo(savedStation.name());
     }
 
     @Test
     @DisplayName("모든 역을 찾는다.")
     void findAll() {
         //given
-        Station station = new Station("김밥역");
-        Station station2 = new Station("안양역");
 
         //when
-        stationDao.save(station);
-        stationDao.save(station2);
         List<Station> stations = stationDao.findAll();
 
-        assertThat(stations).hasSize(2);
+        assertThat(stations).hasSize(5);
     }
 
     @Test
@@ -83,10 +58,10 @@ class DBStationDaoTest {
 
         //when
         Station saveStation = stationDao.save(station);
-        Station findById = stationDao.findById(saveStation.getId()).get();
+        Station findById = stationDao.findById(saveStation.id()).get();
 
         //then
-        assertThat(findById.getName()).isEqualTo(station.getName());
+        assertThat(findById.name()).isEqualTo(station.name());
     }
 
     @Test
@@ -98,24 +73,10 @@ class DBStationDaoTest {
 
         //when
         Station saveStation = stationDao.save(station);
-        Station findByName = stationDao.findByName(station.getName()).get();
+        Station findByName = stationDao.findByName(station.name()).get();
 
         //then
-        assertThat(findByName.getName()).isEqualTo(station.getName());
-    }
-
-    @Test
-    @DisplayName("DB 전체 삭제시 예외가 발생한다")
-    void clearException() {
-        //given
-        Station station = new Station("김밥역");
-
-        //when
-        Station saveStation = stationDao.save(station);
-
-        //then
-        assertThatThrownBy(stationDao::clear)
-                .isInstanceOf(UnsupportedOperationException.class);
+        assertThat(findByName.name()).isEqualTo(station.name());
     }
 
     @Test
@@ -126,10 +87,10 @@ class DBStationDaoTest {
 
         //when
         Station saveStation = stationDao.save(station);
-        stationDao.delete(saveStation.getId());
+        stationDao.delete(saveStation.id());
 
         //then
-        assertThat(stationDao.findById(saveStation.getId())).isEmpty();
+        assertThat(stationDao.findById(saveStation.id())).isEmpty();
     }
 
     @Test
@@ -140,10 +101,10 @@ class DBStationDaoTest {
 
         //when
         Station saveStation = stationDao.save(station);
-        stationDao.delete(saveStation.getId());
+        stationDao.delete(saveStation.id());
 
         //then
-        assertThatThrownBy(() -> stationDao.delete(saveStation.getId()))
+        assertThatThrownBy(() -> stationDao.delete(saveStation.id()))
                 .isInstanceOf(IllegalStateException.class);
     }
 }

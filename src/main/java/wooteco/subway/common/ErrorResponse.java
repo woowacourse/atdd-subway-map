@@ -1,9 +1,9 @@
-package wooteco.subway;
+package wooteco.subway.common;
 
-public class ResponseError {
+public class ErrorResponse {
     final String message;
 
-    public ResponseError(String message) {
+    public ErrorResponse(String message) {
         this.message = message;
     }
 
