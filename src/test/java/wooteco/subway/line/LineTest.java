@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.line.domain.Line;
 
 class LineTest {
 
@@ -45,42 +46,23 @@ class LineTest {
     @DisplayName("아이디, 이름 가져오기")
     void getName() {
         // given
-        Line line1 = new Line();
 
-        String givenName2 = "2호선";
-        String givenColor2 = "초록색";
-        Line line2 = new Line(givenName2, givenColor2);
-
-        long givenId3 = 2;
-        String givenName3 = "3호선";
-        String givenColor3 = "분홍색";
-        Line line3 = new Line(givenId3, givenName3, givenColor3);
+        long givenId = 2;
+        String givenName = "3호선";
+        String givenColor = "분홍색";
+        Line line = new Line(givenId, givenName, givenColor);
 
         // when
-        Long id1 = line1.getId();
-        String name1 = line1.getName();
-        String color1 = line1.getColor();
 
-        Long id2 = line2.getId();
-        String name2 = line2.getName();
-        String color2 = line2.getColor();
-
-        Long id3 = line3.getId();
-        String name3 = line3.getName();
-        String color3 = line3.getColor();
+        Long id = line.getId();
+        String name = line.getName();
+        String color = line.getColor();
 
         // then
-        assertThat(id1).isNull();
-        assertThat(name1).isNull();
-        assertThat(color1).isNull();
 
-        assertThat(id2).isNull();
-        assertThat(name2).isEqualTo(givenName2);
-        assertThat(color2).isEqualTo(givenColor2);
-
-        assertThat(id3).isEqualTo(givenId3);
-        assertThat(name3).isEqualTo(givenName3);
-        assertThat(color3).isEqualTo(givenColor3);
+        assertThat(id).isEqualTo(givenId);
+        assertThat(name).isEqualTo(givenName);
+        assertThat(color).isEqualTo(givenColor);
     }
 
 }

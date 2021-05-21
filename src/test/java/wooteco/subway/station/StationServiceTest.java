@@ -1,9 +1,7 @@
 package wooteco.subway.station;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -14,68 +12,57 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wooteco.subway.station.dao.StationDaoMemory;
-import wooteco.subway.station.dto.NonIdStationDto;
-import wooteco.subway.station.dto.StationDto;
+import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.dto.StationServiceDto;
+import wooteco.subway.station.service.StationService;
 
 @ExtendWith(MockitoExtension.class)
 class StationServiceTest {
 
     @Mock
-    private StationDaoMemory mockDao;
-
+    private StationDao mockStationDao;
     @InjectMocks
     private StationService stationService;
-
 
     @DisplayName("서비스에서 저장 테스트")
     @Test
     void save() {
-        //given
-        NonIdStationDto requestStationDto = new NonIdStationDto("스타벅스 선정릉역");
-        Station savedStation = new Station(2L, "스타벅스 선정릉역");
-        Station station = new Station("스타벅스 선정릉역");
+        // given
+        long id = 1;
+        String name = "스타벅스 선정릉역";
 
-        when(mockDao.save(station)).thenReturn(savedStation);
+        when(mockStationDao.save(any(Station.class))).thenReturn(new Station(id, name));
 
+        // when
+        StationServiceDto stationServiceDto = stationService.save(new StationServiceDto(name));
 
-        //when
-        StationDto savedStationDto = stationService.save(requestStationDto);
-
-        //then
-        assertThat(savedStationDto.getId()).isNotNull();
-        assertThat(savedStationDto.getName()).isEqualTo(savedStation.getName());
+        // then
+        assertThat(stationServiceDto.getId()).isEqualTo(id);
+        assertThat(stationServiceDto.getName()).isEqualTo(name);
     }
 
     @DisplayName("서비스에서 전체 역 호출")
     @Test
     void load() {
-        //given
+        // given
         List<Station> stations = Arrays.asList(
-            new Station(1L, "성서공단역"),
-            new Station(2L, "이곡역"),
-            new Station(3L, "용산역")
+            new Station((long) 1, "성서공단역"),
+            new Station((long) 2, "이곡역"),
+            new Station((long) 3, "용산역")
         );
 
-        when(mockDao.showAll()).thenReturn(stations);
+        when(mockStationDao.showAll()).thenReturn(stations);
 
-        List<StationDto> expectedDtos = Arrays.asList(
-            new StationDto(1L, "성서공단역"),
-            new StationDto(2L, "이곡역"),
-            new StationDto(3L, "용산역")
-        );
+        // when
+        List<StationServiceDto> requestedDtos = stationService.showAllDto();
 
-        //when
-        List<StationDto> requestedDtos = stationService.showStations();
-
-        //then
-        assertThat(requestedDtos.get(0).getId()).isEqualTo(expectedDtos.get(0).getId());
-        assertThat(requestedDtos.get(0).getName()).isEqualTo(expectedDtos.get(0).getName());
-        assertThat(requestedDtos.get(1).getId()).isEqualTo(expectedDtos.get(1).getId());
-        assertThat(requestedDtos.get(1).getName()).isEqualTo(expectedDtos.get(1).getName());
-        assertThat(requestedDtos.get(2).getId()).isEqualTo(expectedDtos.get(2).getId());
-        assertThat(requestedDtos.get(2).getName()).isEqualTo(expectedDtos.get(2).getName());
+        // then
+        assertThat(requestedDtos.get(0).getId()).isEqualTo(stations.get(0).getId());
+        assertThat(requestedDtos.get(0).getName()).isEqualTo(stations.get(0).getName());
+        assertThat(requestedDtos.get(1).getId()).isEqualTo(stations.get(1).getId());
+        assertThat(requestedDtos.get(1).getName()).isEqualTo(stations.get(1).getName());
+        assertThat(requestedDtos.get(2).getId()).isEqualTo(stations.get(2).getId());
+        assertThat(requestedDtos.get(2).getName()).isEqualTo(stations.get(2).getName());
     }
-
-
 }

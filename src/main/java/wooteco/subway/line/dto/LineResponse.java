@@ -1,13 +1,16 @@
 package wooteco.subway.line.dto;
 
-import java.util.Collections;
 import java.util.List;
+import javax.validation.constraints.NotEmpty;
 import wooteco.subway.station.dto.StationResponse;
 
 public class LineResponse {
 
+    @NotEmpty
     private Long id;
+    @NotEmpty
     private String name;
+    @NotEmpty
     private String color;
     private List<StationResponse> stations;
 
@@ -15,7 +18,7 @@ public class LineResponse {
     }
 
     public LineResponse(final Long id, final String name, final String color) {
-        this(id, name, color, Collections.emptyList());
+        this(id, name, color, null);
     }
 
     public LineResponse(final Long id, final String name, final String color,
@@ -25,6 +28,14 @@ public class LineResponse {
         this.name = name;
         this.color = color;
         this.stations = stations;
+    }
+
+    public static LineResponse from(final LineServiceDto lineServiceDto) {
+        return new LineResponse(lineServiceDto.getId(), lineServiceDto.getName(), lineServiceDto.getColor());
+    }
+
+    public static LineResponse from(LineWithComposedStationsDto dto) {
+        return new LineResponse(dto.getId(), dto.getName(), dto.getColor(), dto.getStationsResponses());
     }
 
     public Long getId() {

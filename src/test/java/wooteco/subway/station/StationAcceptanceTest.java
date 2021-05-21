@@ -26,7 +26,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest stationRequest = new StationRequest("구로디지털단지역");
 
         // when
-        ExtractableResponse<Response> response = createStation(stationRequest);
+        ExtractableResponse<Response> response = requestCreationStation(stationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -37,28 +37,37 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        StationRequest givenStationRequest = new StationRequest("잠실역");
-        StationAcceptanceTest.this.createStation(givenStationRequest);
+        StationRequest stationGuroRequest = new StationRequest("구로디지털단지역");
+        requestCreationStation(stationGuroRequest);
 
         // when
-        ExtractableResponse<Response> response = StationAcceptanceTest.this
-            .createStation(givenStationRequest);
+        ExtractableResponse<Response> response = requestCreationStation(stationGuroRequest);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
         /// given
-        StationRequest stationRequest1 = new StationRequest("상봉역");
-        ExtractableResponse<Response> createResponse1 = StationAcceptanceTest.this
-            .createStation(stationRequest1);
+        StationRequest stationSangBongRequest = new StationRequest("상봉역");
+        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+            .body(stationSangBongRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
 
-        StationRequest stationRequest2 = new StationRequest("역삼역");
-        ExtractableResponse<Response> createResponse2 = StationAcceptanceTest.this
-            .createStation(stationRequest2);
+        StationRequest stationYeokSamRequest = new StationRequest("역삼역");
+        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+            .body(stationYeokSamRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -82,9 +91,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        StationRequest stationRequest = new StationRequest("강남역");
-        ExtractableResponse<Response> createResponse = StationAcceptanceTest.this
-            .createStation(stationRequest);
+        StationRequest requestGangNamStation = new StationRequest("강남역");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(requestGangNamStation)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
 
         // when
         long responseId = Long.parseLong(createResponse.header("Location").split("/")[2]);
@@ -95,10 +109,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("존재하지 않는 지하철역을 제거한다.")
+    @DisplayName("존재하지 않는 지하철역 제거요청시 예외처리")
     @Test
     void deleteVoidStation() {
         //given
@@ -111,10 +125,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .extract();
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    private ExtractableResponse<Response> createStation(StationRequest stationRequest) {
+    private ExtractableResponse<Response> requestCreationStation(StationRequest stationRequest) {
         return RestAssured.given().log().all()
             .body(stationRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
