@@ -1,4 +1,4 @@
-package wooteco.subway.station.repository;
+package wooteco.subway.station.dao;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
