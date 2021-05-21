@@ -3,18 +3,12 @@ package wooteco.subway.station;
 import wooteco.subway.exception.station.StationLengthException;
 import wooteco.subway.exception.station.StationSuffixException;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import java.util.Objects;
 
 public class Station {
     private static final String SUFFIX = "역";
 
-    @NotNull
-    @Positive
     private Long id;
-    @NotBlank
     private String name;
 
     public Station() {
