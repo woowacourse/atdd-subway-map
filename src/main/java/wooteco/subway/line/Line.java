@@ -1,6 +1,7 @@
 package wooteco.subway.line;
 
-import wooteco.subway.exception.LineSuffixException;
+import wooteco.subway.exception.line.LineLengthException;
+import wooteco.subway.exception.line.LineSuffixException;
 
 import java.util.Objects;
 
@@ -14,14 +15,14 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, String color) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
+    public Line(String name, String color) {
+        this(null, name, color);
     }
 
-    public Line(String name, String color) {
+    public Line(Long id, String name, String color) {
         validateSuffix(name);
+        validateLength(name);
+        this.id = id;
         this.name = name;
         this.color = color;
     }
@@ -34,6 +35,12 @@ public class Line {
 
     private boolean isNotEndsWithLine(String name) {
         return !name.endsWith(SUFFIX);
+    }
+
+    private void validateLength(String name) {
+        if (name.length() < 2) {
+            throw new LineLengthException();
+        }
     }
 
     public Long getId() {

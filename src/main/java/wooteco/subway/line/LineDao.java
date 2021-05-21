@@ -8,11 +8,13 @@ public interface LineDao {
 
     List<Line> findAll();
 
-    void update(Long id, String name, String color);
-
-    Line findById(Long id);
+    Optional<Line> findById(Long id);
 
     Optional<Line> findByName(String name);
+
+    Optional<Line> findByColor(String color);
+
+    void update(Long id, String name, String color);
 
     void delete(Long id);
 }

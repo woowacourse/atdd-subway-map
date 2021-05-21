@@ -6,8 +6,8 @@ public class SubwayException extends RuntimeException {
     private final HttpStatus httpStatus;
     private final String message;
 
-    public SubwayException(HttpStatus httpStatus, String message) {
-        this.httpStatus = httpStatus;
+    public SubwayException(String message) {
+        this.httpStatus = HttpStatus.BAD_REQUEST;
         this.message = message;
     }
 

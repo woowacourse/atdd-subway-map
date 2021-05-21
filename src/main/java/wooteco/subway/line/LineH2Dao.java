@@ -1,6 +1,8 @@
 package wooteco.subway.line;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -36,16 +38,40 @@ public class LineH2Dao implements LineDao {
     @Override
     public List<Line> findAll() {
         String sql = "SELECT * FROM LINE";
-        return jdbcTemplate.query(
-                sql,
-                (rs, rowNum) -> {
-                    Line line = new Line(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getString("color")
-                    );
-                    return line;
-                });
+        return jdbcTemplate.query(sql, rowMapper());
+    }
+
+    @Override
+    public Optional<Line> findById(Long id) {
+        String sql = "SELECT * FROM LINE WHERE id=?";
+        try {
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(sql, rowMapper(), id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Line> findByName(String name) {
+        String sql = "SELECT * FROM LINE WHERE name=?";
+        try {
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(sql, rowMapper(), name));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Line> findByColor(String color) {
+        String sql = "SELECT * FROM LINE WHERE color=?";
+        try {
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(sql, rowMapper(), color));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -55,39 +81,18 @@ public class LineH2Dao implements LineDao {
     }
 
     @Override
-    public Line findById(Long id) {
-        String sql = "SELECT * FROM LINE WHERE id=?";
-        return jdbcTemplate.queryForObject(
-                sql,
-                (rs, rowNum) -> {
-                    Line line = new Line(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getString("color")
-                    );
-                    return line;
-                }, id);
-    }
-
-    @Override
-    public Optional<Line> findByName(String name) {
-        String sql = "SELECT COUNT(*) FROM LINE WHERE name=?";
-        List<Line> lines = jdbcTemplate.query(
-                sql,
-                (rs, rowNum) -> {
-                    Line line = new Line(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getString("color")
-                    );
-                    return line;
-                }, name);
-        return lines.stream().findAny();
-    }
-
-    @Override
     public void delete(Long id) {
         String sql = "DELETE FROM LINE WHERE id=?";
         jdbcTemplate.update(sql, id);
+    }
+
+    private RowMapper<Line> rowMapper() {
+        return (rs, rowNum) -> {
+            return new Line(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("color")
+            );
+        };
     }
 }
