@@ -11,13 +11,30 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static wooteco.subway.section.SectionTestFixture.*;
 
 class SectionsTest {
+    private Section 강남_역삼;
+    private Section 역삼_선릉;
+    private Section 강남_선릉;
+    private Section 선릉_삼성;
+    private Section 교대_강남;
+    private Section 교대_서초_불가능1;
+    private Section 교대_서초_불가능2;
+    private Section 합정_당산;
+
     private Sections sections;
 
     @BeforeEach
     void setUp() {
+        강남_역삼 = new Section(1L, 2L, 10);
+        역삼_선릉 = new Section(2L, 3L, 6);
+        강남_선릉 = new Section(1L, 3L, 16);
+        선릉_삼성 = new Section(3L, 4L, 8);
+        교대_강남 = new Section(5L, 1L, 10);
+        교대_서초_불가능1 = new Section(5L, 6L, 10);
+        교대_서초_불가능2 = new Section(5L, 6L, 14);
+        합정_당산 = new Section(10L, 11L, 12);
+
         sections = new Sections(Arrays.asList(강남_역삼, 역삼_선릉, 교대_강남));
     }
 
