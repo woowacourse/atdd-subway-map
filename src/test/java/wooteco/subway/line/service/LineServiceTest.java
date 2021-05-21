@@ -1,5 +1,6 @@
 package wooteco.subway.line.service;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -45,6 +46,7 @@ class LineServiceTest {
     @InjectMocks
     private LineService lineService;
 
+    @DisplayName("지하철 노선 저장")
     @Test
     void saveLine() {
         //given
@@ -60,6 +62,7 @@ class LineServiceTest {
         then(lineRepository).should().saveLine(any(Line.class));
     }
 
+    @DisplayName("지하철 노선 전체 조회")
     @Test
     void findAll() {
         //given
@@ -73,6 +76,8 @@ class LineServiceTest {
         then(lineRepository).should().findAll();
     }
 
+    @SuppressWarnings("unchecked")
+    @DisplayName("지하철 노선 1개 조회")
     @Test
     void findById() {
         //given
@@ -89,6 +94,7 @@ class LineServiceTest {
         then(lineRepository).should().findLineSectionById(1L);
     }
 
+    @DisplayName("지하철 노선 삭제")
     @Test
     void delete() {
         //given
@@ -101,6 +107,7 @@ class LineServiceTest {
         then(lineRepository).should().delete(1L);
     }
 
+    @DisplayName("지하철 노선 수정")
     @Test
     void update() {
         //given
@@ -115,6 +122,7 @@ class LineServiceTest {
         then(lineRepository).should().update(any(Line.class));
     }
 
+    @DisplayName("지하철 구간 추가")
     @Test
     void addSection() {
         //given
@@ -127,6 +135,7 @@ class LineServiceTest {
         then(lineRepository).should().addSection(any(Section.class));
     }
 
+    @DisplayName("지하철 구간 삭제")
     @Test
     void deleteSection() {
         //given
