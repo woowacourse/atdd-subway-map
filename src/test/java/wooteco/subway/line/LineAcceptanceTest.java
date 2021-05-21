@@ -21,9 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 노선 관련 기능")
 @Sql("/truncate.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private static final LineRequest 경의중앙선 =
+    private LineRequest 경의중앙선 =
             new LineRequest("경의중앙선", "하늘색", 1L, 2L, 10);
-    private static final LineRequest 신분당선 =
+    private LineRequest 신분당선 =
             new LineRequest("신분당선", "빨간색", 4L, 5L, 10);
 
     private ExtractableResponse<Response> lineResponse1;

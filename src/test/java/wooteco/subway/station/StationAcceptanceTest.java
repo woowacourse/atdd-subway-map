@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 역 관련 기능")
 @Sql("/truncate.sql")
 public class StationAcceptanceTest extends AcceptanceTest {
-    private static final StationRequest 강남역 = new StationRequest("강남역");
-    private static final StationRequest 역삼역 = new StationRequest("역삼역");
+    private StationRequest 강남역 = new StationRequest("강남역");
+    private StationRequest 역삼역 = new StationRequest("역삼역");
 
     private ExtractableResponse<Response> stationResponse1;
     private ExtractableResponse<Response> stationResponse2;

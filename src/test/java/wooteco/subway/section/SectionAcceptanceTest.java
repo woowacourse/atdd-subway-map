@@ -24,29 +24,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 구간 관련 기능")
 @Sql("/truncate.sql")
 public class SectionAcceptanceTest extends AcceptanceTest {
-    private static final StationRequest 강남역 = new StationRequest("강남역");
-    private static final StationRequest 역삼역 = new StationRequest("역삼역");
-    private static final StationRequest 아차산역 = new StationRequest("아차산역");
-    private static final StationRequest 탄현역 = new StationRequest("탄현역");
-    private static final StationRequest 일산역 = new StationRequest("일산역");
-    private static final StationRequest 홍대입구역 = new StationRequest("홍대입구역");
-    private static final StationRequest 판교역 = new StationRequest("판교역");
-    private static final StationRequest 정자역 = new StationRequest("정자역");
-    private static final StationRequest 교대역 = new StationRequest("교대역");
+    private StationRequest 강남역 = new StationRequest("강남역");
+    private StationRequest 역삼역 = new StationRequest("역삼역");
+    private StationRequest 아차산역 = new StationRequest("아차산역");
+    private StationRequest 탄현역 = new StationRequest("탄현역");
+    private StationRequest 일산역 = new StationRequest("일산역");
+    private StationRequest 홍대입구역 = new StationRequest("홍대입구역");
+    private StationRequest 판교역 = new StationRequest("판교역");
+    private StationRequest 정자역 = new StationRequest("정자역");
+    private StationRequest 교대역 = new StationRequest("교대역");
 
-    private static final LineRequest 이호선 =
+    private LineRequest 이호선 =
             new LineRequest("2호선", "초록색", 1L, 2L, 10);
-    private static final LineRequest 경의중앙선 =
+    private LineRequest 경의중앙선 =
             new LineRequest("경의중앙선", "하늘색", 4L, 5L, 8);
-    private static final LineRequest 신분당선 =
+    private LineRequest 신분당선 =
             new LineRequest("신분당선", "빨간색", 7L, 8L, 12);
 
-    private static final SectionRequest 강남_역삼 = new SectionRequest(1L, 2L, 10);
-    private static final SectionRequest 탄현_일산 = new SectionRequest(4L, 5L, 8);
-    private static final SectionRequest 일산_홍대입구 = new SectionRequest(5L, 6L, 10);
-    private static final SectionRequest 판교_정자 = new SectionRequest(7L, 8L, 12);
-    private static final SectionRequest 교대_강남 = new SectionRequest(9L, 1L, 8);
-    private static final SectionRequest 역삼_아차산 = new SectionRequest(2L, 3L, 10);
+    private SectionRequest 강남_역삼 = new SectionRequest(1L, 2L, 10);
+    private SectionRequest 탄현_일산 = new SectionRequest(4L, 5L, 8);
+    private SectionRequest 일산_홍대입구 = new SectionRequest(5L, 6L, 10);
+    private SectionRequest 판교_정자 = new SectionRequest(7L, 8L, 12);
+    private SectionRequest 교대_강남 = new SectionRequest(9L, 1L, 8);
+    private SectionRequest 역삼_아차산 = new SectionRequest(2L, 3L, 10);
 
     @BeforeEach
     void initialize() {
