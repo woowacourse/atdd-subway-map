@@ -10,7 +10,7 @@ import wooteco.subway.exception.badrequest.BadRequest;
 public class SubwayControllerAdvice {
 
     @ExceptionHandler(BadRequest.class)
-    public ResponseEntity<ExceptionMessageDto> subwayException(final BadRequest badRequest) {
+    public ResponseEntity<ExceptionMessageDto> badRequest(final BadRequest badRequest) {
         return ResponseEntity
                 .badRequest()
                 .body(new ExceptionMessageDto(badRequest.getMessage()));
