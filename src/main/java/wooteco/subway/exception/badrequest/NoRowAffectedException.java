@@ -1,8 +1,11 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.badrequest;
 
 import org.springframework.dao.DataAccessException;
 
-public class NoRowAffectedException extends DataAccessException {
+public class NoRowAffectedException extends BadRequest {
+    public NoRowAffectedException() {
+    }
+
     public NoRowAffectedException(String msg) {
         super(msg);
     }

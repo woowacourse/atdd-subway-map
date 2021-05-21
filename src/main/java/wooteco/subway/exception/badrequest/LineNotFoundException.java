@@ -1,6 +1,6 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.badrequest;
 
-public class LineNotFoundException extends SubwayException {
+public class LineNotFoundException extends BadRequest {
     private static final String MESSAGE = "존재하지 않는 지하철 노선 입니다.";
 
     public LineNotFoundException() {

@@ -1,20 +1,18 @@
 package wooteco.subway.advice;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.advice.dto.ExceptionMessageDto;
-import wooteco.subway.exception.SubwayException;
+import wooteco.subway.exception.badrequest.BadRequest;
 
 @ControllerAdvice
 public class SubwayControllerAdvice {
 
-    //TODO 예외 HttpStatus 확장 가능하게 수정
-    @ExceptionHandler(SubwayException.class)
-    public ResponseEntity<ExceptionMessageDto> duplicatedException(final SubwayException subwayException) {
+    @ExceptionHandler(BadRequest.class)
+    public ResponseEntity<ExceptionMessageDto> subwayException(final BadRequest badRequest) {
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ExceptionMessageDto(subwayException.getMessage()));
+                .badRequest()
+                .body(new ExceptionMessageDto(badRequest.getMessage()));
     }
 }

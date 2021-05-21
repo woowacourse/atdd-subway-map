@@ -1,6 +1,6 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.badrequest;
 
-public class DuplicatedNameException extends SubwayException {
+public class DuplicatedNameException extends BadRequest {
 
     public DuplicatedNameException(final String message) {
         super(message);

@@ -6,9 +6,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import wooteco.subway.exception.DuplicatedNameException;
-import wooteco.subway.exception.NoRowAffectedException;
-import wooteco.subway.exception.StationNotFoundException;
+import wooteco.subway.exception.badrequest.DuplicatedNameException;
+import wooteco.subway.exception.badrequest.NoRowAffectedException;
+import wooteco.subway.exception.badrequest.StationNotFoundException;
 import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
