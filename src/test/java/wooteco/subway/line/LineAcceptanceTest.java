@@ -12,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.common.ErrorResponse;
+import wooteco.subway.station.StationDao;
+import wooteco.subway.station.StationResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,10 +25,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LineAcceptanceTest extends AcceptanceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private StationDao stationDao;
 
     @BeforeEach
     void beforeEach() {
+        jdbcTemplate.execute("SET foreign_key_checks=0;");
         jdbcTemplate.execute("truncate table LINE");
+        jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
+        jdbcTemplate.execute("SET foreign_key_checks=1;");
+        jdbcTemplate.execute("truncate table STATION");
+        jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
+        jdbcTemplate.execute("truncate table SECTION");
+        jdbcTemplate.execute("alter table SECTION alter column ID restart with 1");
+        stationDao.save("가양역");
+        stationDao.save("증미역");
     }
 
     @Test
@@ -38,6 +51,10 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+
+        Integer queryResult = jdbcTemplate.queryForObject(
+                "select count(*) from SECTION where line_id = 1 and up_station_id = 1", Integer.class);
+        assertThat(queryResult).isEqualTo(1);
     }
 
     @Test
@@ -107,9 +124,18 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then()
                 .extract();
 
-        assertThat(response.jsonPath().getString("name")).isEqualTo("2호선");
-        assertThat(response.jsonPath().getString("color")).isEqualTo("초록색");
+        LineResponse lineResponse = response.as(LineResponse.class);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse)
+                .usingRecursiveComparison()
+                .ignoringFields("stations")
+                .isEqualTo(new LineResponse(1L, "2호선", "초록색"));
+
+        assertThat(lineResponse.getStations())
+                .containsExactly(
+                        new StationResponse(1L, "가양역"),
+                        new StationResponse(2L, "증미역")
+                );
     }
 
     @Test
@@ -133,7 +159,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     void modifyLine() {
         ExtractableResponse<Response> extract = createLineInsertResponse("초록색", "2호선");
         String uri = extract.header("Location");
-        LineRequest lineRequest = new LineRequest("9호선", "남색", 0L, 0L, 0);
+        LineRequest lineRequest = new LineRequest("9호선", "남색", 2L, 3L, 10);
         ExtractableResponse<Response> response = RestAssured.given()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -151,7 +177,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> extract = createLineInsertResponse("초록색", "2호선");
         String uri = extract.header("Location");
 
-        LineRequest lineRequest = new LineRequest(" ", " ", 0L, 0L, 0);
+        LineRequest lineRequest = new LineRequest(" ", " ", 2L, 3L, 10);
         ExtractableResponse<Response> response = RestAssured.given()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -164,6 +190,26 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(errorResponse.getDetail()).contains("Validation failed for argument [1] in public org.springframework.http.ResponseEntity<java.lang.Void> wooteco.subway.line.LineController.modifyLine(java.lang.Long,wooteco.subway.line.LineRequest) with 2 errors:");
         assertThat(errorResponse.getMessage()).isEqualTo("VALIDATION_FAILED");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 노선을 수정한다.")
+    public void modifyWithNotExistingLine() {
+        LineRequest lineRequest = new LineRequest("존재안함", "아무색", 2L, 3L, 10);
+        ExtractableResponse<Response> response = RestAssured.given()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/100")
+                .then()
+                .extract();
+
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(errorResponse)
+                .usingRecursiveComparison()
+                .ignoringFields("timeStamp")
+                .isEqualTo(new ErrorResponse("LINE_EXCEPTION", "노선을 찾지 못했습니다."));
     }
 
     @Test
@@ -200,7 +246,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> createLineInsertResponse(String color, String name) {
-        LineRequest lineRequest = new LineRequest(name, color, null, null, 0);
+        LineRequest lineRequest = new LineRequest(name, color, 1L, 2L, 10);
 
         return RestAssured.given()
                 .body(lineRequest)

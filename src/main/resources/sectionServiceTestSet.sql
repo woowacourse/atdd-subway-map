@@ -1,0 +1,13 @@
+SET foreign_key_checks=0;
+truncate table SECTION;
+alter table SECTION alter column ID restart with 1;
+truncate table STATION;
+alter table STATION alter column ID restart with 1;
+truncate table LINE;
+alter table LINE alter column ID restart with 1;
+SET foreign_key_checks=1;
+insert into LINE (name, color) values ('9호선', '황토');
+insert into STATION (name) values ('가양역');
+insert into STATION (name) values ('증미역');
+insert into STATION (name) values ('등촌역');
+insert into STATION (name) values ('염창역');

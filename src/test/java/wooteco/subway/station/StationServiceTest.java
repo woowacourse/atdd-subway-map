@@ -6,19 +6,25 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.line.LineDao;
+import wooteco.subway.section.SectionDao;
+import wooteco.subway.station.exception.StationDeleteException;
 import wooteco.subway.station.exception.StationExistenceException;
-import wooteco.subway.station.exception.StationNotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 class StationServiceTest {
-    private final String stationName = "잠실역";
 
     @Autowired
     private StationService stationService;
-
+    @Autowired
+    private StationDao stationDao;
+    @Autowired
+    private SectionDao sectionDao;
+    @Autowired
+    private LineDao lineDao;
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -27,37 +33,50 @@ class StationServiceTest {
     @BeforeEach
     void setUp() {
         jdbcTemplate.execute("truncate table STATION");
+        jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
     }
 
     @Test
     @DisplayName("역 정상 생성 테스트")
     void createStation() {
-        Station savedStation = stationService.createStation(stationRequest);
-        assertThat(savedStation.getName()).isEqualTo(stationName);
+        Station savedStation = stationService.create(stationRequest);
+        assertThat(savedStation.getName()).isEqualTo("잠실역");
     }
 
     @Test
     @DisplayName("역 이름 중복 생성 테스트")
     void createDuplicatedStation() {
-        stationService.createStation(stationRequest);
-        assertThatThrownBy(() -> stationService.createStation(stationRequest))
+        stationService.create(stationRequest);
+        assertThatThrownBy(() -> stationService.create(stationRequest))
                 .isInstanceOf(StationExistenceException.class);
     }
 
     @Test
     @DisplayName("역 삭제 테스트")
     public void deleteStation() {
-        Station savedStation = stationService.createStation(stationRequest);
+        Station savedStation = stationService.create(stationRequest);
         assertThat(stationService.findAll().size()).isEqualTo(1);
 
-        stationService.deleteStation(savedStation.getId());
+        stationService.delete(savedStation.getId());
         assertThat(stationService.findAll().size()).isEqualTo(0);
     }
 
     @Test
     @DisplayName("존재하지 않은 역 삭제 테스트")
     public void deleteNotExistingStation() {
-        assertThatThrownBy(() -> stationService.deleteStation(1L))
-                .isInstanceOf(StationNotFoundException.class);
+        assertThatThrownBy(() -> stationService.delete(1L))
+                .isInstanceOf(StationDeleteException.class);
+    }
+
+    @Test
+    @DisplayName("구간에 등록되어 있는 역 삭제")
+    public void deleteWhenStationRegisteredInSection() {
+        stationDao.save("가양역");
+        stationDao.save("증미역");
+        lineDao.save("9호선", "황토색");
+        sectionDao.save(1L, 1L, 2L, 10);
+
+        assertThatThrownBy(() -> stationService.delete(1L))
+                .isInstanceOf(StationDeleteException.class);
     }
 }

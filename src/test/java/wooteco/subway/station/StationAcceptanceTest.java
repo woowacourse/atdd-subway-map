@@ -27,6 +27,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     void beforeEach() {
         jdbcTemplate.execute("truncate table STATION");
+        jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
     }
 
     @DisplayName("지하철역을 생성한다.")
