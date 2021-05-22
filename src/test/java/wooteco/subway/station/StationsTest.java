@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,6 +47,9 @@ class StationsTest {
         stationManager.sort(sectionManager);
 
         //then
-        assertThat(stationManager.toResponse()).usingRecursiveComparison().isEqualTo(answer);
+        assertThat(stationManager.stream().map(StationResponse::new)
+            .collect(Collectors.toList()))
+            .usingRecursiveComparison()
+            .isEqualTo(answer);
     }
 }

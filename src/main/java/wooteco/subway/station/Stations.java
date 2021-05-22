@@ -1,9 +1,11 @@
 package wooteco.subway.station;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.Sections;
 import wooteco.subway.station.dto.StationResponse;
@@ -37,7 +39,11 @@ public class Stations {
         return numberToStation;
     }
 
-    public List<StationResponse> toResponse() {
-        return stations.stream().map(StationResponse::new).collect(Collectors.toList());
+    public List<Station> getStations() {
+        return new ArrayList<>(stations);
+    }
+
+    public Stream<Station> stream() {
+        return stations.stream();
     }
 }

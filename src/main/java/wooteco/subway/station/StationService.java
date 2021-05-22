@@ -37,6 +37,6 @@ public class StationService {
     public List<StationResponse> findByLineId(Long lineId, Sections sections) {
         Stations stations = new Stations(stationDao.findByLineId(lineId));
         stations.sort(sections);
-        return stations.toResponse();
+        return stations.stream().map(StationResponse::new).collect(Collectors.toList());
     }
 }
