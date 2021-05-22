@@ -8,8 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.UnitTest;
-import wooteco.subway.exception.DuplicateException;
-import wooteco.subway.exception.NotExistItemException;
+import wooteco.subway.exception.SubwayCustomException;
+import wooteco.subway.exception.SubwayException;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
@@ -50,7 +50,8 @@ class LineDaoTest extends UnitTest {
         lineDao.save(LINE_2);
 
         assertThatThrownBy(() -> lineDao.save(LINE_2))
-            .isInstanceOf(DuplicateException.class);
+            .isInstanceOf(SubwayCustomException.class)
+            .hasMessage(SubwayException.DUPLICATE_LINE_EXCEPTION.message());
     }
 
     @Test
@@ -79,7 +80,8 @@ class LineDaoTest extends UnitTest {
     @DisplayName("없는 id를 조회하면 에러가 출력된다.")
     void notExistLineFindException() {
         assertThatThrownBy(() -> lineDao.findById(1L))
-            .isInstanceOf(NotExistItemException.class);
+            .isInstanceOf(SubwayCustomException.class)
+            .hasMessage(SubwayException.NOT_EXIST_LINE_EXCEPTION.message());
     }
 
     @Test
@@ -108,7 +110,8 @@ class LineDaoTest extends UnitTest {
 
         //when, then
         assertThatThrownBy(() -> lineDao.update(updateLine))
-            .isInstanceOf(DuplicateException.class);
+            .isInstanceOf(SubwayCustomException.class)
+            .hasMessage(SubwayException.DUPLICATE_LINE_EXCEPTION.message());
     }
 
 

@@ -1,7 +1,8 @@
 package wooteco.subway;
 
 import java.util.Objects;
-import wooteco.subway.exception.InvalidInputDataException;
+import wooteco.subway.exception.SubwayCustomException;
+import wooteco.subway.exception.SubwayException;
 
 public class StringInput {
 
@@ -14,7 +15,7 @@ public class StringInput {
 
     private void validate(String item) {
         if (Objects.isNull(item) || item.trim().length() == 0) {
-            throw new InvalidInputDataException();
+            throw new SubwayCustomException(SubwayException.INVALID_INPUT_NAME_OR_COLOR_EXCEPTION);
         }
     }
 

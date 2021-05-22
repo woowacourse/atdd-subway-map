@@ -12,8 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.UnitTest;
-import wooteco.subway.exception.DuplicateException;
-import wooteco.subway.exception.NotExistItemException;
+import wooteco.subway.exception.SubwayCustomException;
+import wooteco.subway.exception.SubwayException;
 import wooteco.subway.line.dto.LineOnlyDataResponse;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
@@ -79,7 +79,8 @@ class LineServiceTest extends UnitTest {
 
         //then
         assertThatThrownBy(() -> lineService.create(LINE_2_REQUEST))
-            .isInstanceOf(DuplicateException.class);
+            .isInstanceOf(SubwayCustomException.class)
+            .hasMessage(SubwayException.DUPLICATE_LINE_EXCEPTION.message());
     }
 
     @Test
@@ -96,10 +97,11 @@ class LineServiceTest extends UnitTest {
     }
 
     @Test
-    @DisplayName("id를 이용하여 노선을 찾는다.")
+    @DisplayName("없는 노선을 조회하면 에러가 발생한다.")
     void findByIdWithNotExistItemException() {
         assertThatThrownBy(() -> lineService.findById(1L))
-            .isInstanceOf(NotExistItemException.class);
+            .isInstanceOf(SubwayCustomException.class)
+            .hasMessage(SubwayException.NOT_EXIST_LINE_EXCEPTION.message());
     }
 
     @Test
@@ -140,7 +142,8 @@ class LineServiceTest extends UnitTest {
 
         //then
         assertThatThrownBy(() -> lineService.update(1L, LINE_2_REQUEST))
-            .isInstanceOf(NotExistItemException.class);
+            .isInstanceOf(SubwayCustomException.class)
+            .hasMessage(SubwayException.NOT_EXIST_LINE_EXCEPTION.message());
     }
 
     @Test
@@ -152,7 +155,8 @@ class LineServiceTest extends UnitTest {
 
         //when, then
         assertThatThrownBy(() -> lineService.update(1L, LINE_3_REQUEST))
-            .isInstanceOf(DuplicateException.class);
+            .isInstanceOf(SubwayCustomException.class)
+            .hasMessage(SubwayException.DUPLICATE_LINE_EXCEPTION.message());
     }
 
     @Test

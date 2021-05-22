@@ -17,6 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.exception.SubwayException;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.section.dto.SectionRequest;
@@ -27,10 +28,6 @@ import wooteco.subway.station.dto.StationResponse;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final String NOT_EXIST_ITEM_MESSAGE = "[ERROR] 해당 아이템이 존재하지 않습니다.";
-    private static final String NO_INPUT_MESSAGE = "[ERROR] 입력값이 존재하지 않습니다.";
-    private static final String DUPLICATE_MESSAGE = "[ERROR] 중복된 이름입니다.";
-    private static final String ILLEGAL_USER_INPUT_MESSAGE = "[ERROR] 잘못된 입력입니다.";
     private static final LineRequest LINE_2_REQUEST = new LineRequest("2호선", "bg-green-600", 1L, 4L,
         10);
     private static final LineRequest LINE_3_REQUEST = new LineRequest("3호선", "bg-orange-600", 1L,
@@ -73,7 +70,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createLineAPI(LINE_2_REQUEST);
 
         ExtractableResponse<Response> response = createLineAPI(LINE_2_REQUEST);
-        thenBadRequestException(response, DUPLICATE_MESSAGE);
+        thenBadRequestException(response, SubwayException.DUPLICATE_LINE_EXCEPTION.message());
     }
 
     @Test
@@ -91,7 +88,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, NO_INPUT_MESSAGE);
+        thenBadRequestException(response,
+            SubwayException.INVALID_INPUT_NAME_OR_COLOR_EXCEPTION.message());
     }
 
     @Test
@@ -109,7 +107,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, NO_INPUT_MESSAGE);
+        thenBadRequestException(response, SubwayException.INVALID_INPUT_NAME_OR_COLOR_EXCEPTION
+            .message());
     }
 
     @Test
@@ -127,7 +126,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, NO_INPUT_MESSAGE);
+        thenBadRequestException(response,
+            SubwayException.INVALID_INPUT_NAME_OR_COLOR_EXCEPTION.message());
     }
 
     @Test
@@ -145,7 +145,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, NO_INPUT_MESSAGE);
+        thenBadRequestException(response,
+            SubwayException.INVALID_INPUT_NAME_OR_COLOR_EXCEPTION.message());
     }
 
     @Test
@@ -163,7 +164,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, NO_INPUT_MESSAGE);
+        thenBadRequestException(response,
+            SubwayException.INVALID_INPUT_STATION_ID_EXCEPTION.message());
     }
 
     @Test
@@ -181,7 +183,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, NO_INPUT_MESSAGE);
+        thenBadRequestException(response,
+            SubwayException.INVALID_INPUT_STATION_ID_EXCEPTION.message());
     }
 
     @Test
@@ -199,7 +202,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, NO_INPUT_MESSAGE);
+        thenBadRequestException(response,
+            SubwayException.INVALID_INPUT_STATION_ID_EXCEPTION.message());
     }
 
     @Test
@@ -217,12 +221,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, NO_INPUT_MESSAGE);
+        thenBadRequestException(response,
+            SubwayException.INVALID_INPUT_STATION_ID_EXCEPTION.message());
     }
 
     @ParameterizedTest
     @ValueSource(ints = {0, -1})
-    @DisplayName("downStationId에 0을 입력하여 노선을 생성하면 에러가 출력된다.")
+    @DisplayName("거리를 0이하로 노선을 생성하면 에러가 출력된다.")
     void createLineWithDistanceDataIsLessThanZero(int value) {
         //given
         String name = "2호선";
@@ -236,7 +241,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, NO_INPUT_MESSAGE);
+        thenBadRequestException(response,
+            SubwayException.INVALID_INPUT_DISTANCE_EXCEPTION.message());
     }
 
     @Test
@@ -278,7 +284,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("없는 id를 이용하여 지하철역을 조회하면 에러가 출력된다.")
+    @DisplayName("없는 id를 이용하여 노선을 조회하면 에러가 출력된다.")
     public void getLineWithNotExistItem() {
         /// given
 
@@ -286,7 +292,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getLineAPI();
 
         // then
-        thenBadRequestException(response, NOT_EXIST_ITEM_MESSAGE);
+        thenBadRequestException(response, SubwayException.NOT_EXIST_LINE_EXCEPTION.message());
     }
 
     @Test
@@ -311,7 +317,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = updateLineAPI(LINE_3_REQUEST);
 
         //then
-        thenBadRequestException(response, NOT_EXIST_ITEM_MESSAGE);
+        thenBadRequestException(response, SubwayException.NOT_EXIST_LINE_EXCEPTION.message());
     }
 
     @Test
@@ -325,7 +331,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = updateLineAPI(LINE_3_REQUEST);
 
         //then
-        thenBadRequestException(response, DUPLICATE_MESSAGE);
+        thenBadRequestException(response, SubwayException.DUPLICATE_LINE_EXCEPTION.message());
     }
 
     @Test
@@ -431,7 +437,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createSectionAPI(sectionRequest);
 
         //then
-        thenBadRequestException(response, ILLEGAL_USER_INPUT_MESSAGE);
+        thenBadRequestException(response, SubwayException.DUPLICATE_SECTION_EXCEPTION.message());
     }
 
     @Test
@@ -447,7 +453,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createSectionAPI(sectionRequest);
 
         //then
-        thenBadRequestException(response, ILLEGAL_USER_INPUT_MESSAGE);
+        thenBadRequestException(response, SubwayException.DUPLICATE_SECTION_EXCEPTION.message());
     }
 
     @ParameterizedTest
@@ -462,7 +468,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createSectionAPI(sectionRequest);
 
         //then
-        thenBadRequestException(response, ILLEGAL_USER_INPUT_MESSAGE);
+        thenBadRequestException(response,
+            SubwayException.ILLEGAL_SECTION_DISTANCE_EXCEPTION.message());
     }
 
     @Test
@@ -477,7 +484,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createSectionAPI(sectionRequest);
 
         //then
-        thenBadRequestException(response, ILLEGAL_USER_INPUT_MESSAGE);
+        thenBadRequestException(response, SubwayException.ILLEGAL_SECTION_EXCEPTION.message());
     }
 
     @Test
@@ -560,7 +567,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = deleteSectionAPI(stationId);
 
         //then
-        thenBadRequestException(response, ILLEGAL_USER_INPUT_MESSAGE);
+        thenBadRequestException(response,
+            SubwayException.ILLEGAL_SECTION_DELETE_EXCEPTION.message());
     }
 
     private ExtractableResponse<Response> deleteLineAPI(String uri) {

@@ -10,8 +10,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.exception.DuplicateException;
-import wooteco.subway.exception.NotExistItemException;
+import wooteco.subway.exception.SubwayCustomException;
+import wooteco.subway.exception.SubwayException;
 
 @Repository
 public class LineDao {
@@ -39,7 +39,7 @@ public class LineDao {
                 return prepareStatement;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateException();
+            throw new SubwayCustomException(SubwayException.DUPLICATE_LINE_EXCEPTION);
         }
         return new Line(Objects.requireNonNull(keyHolder.getKey()).longValue(), line.getName(),
             line.getColor());
@@ -57,7 +57,7 @@ public class LineDao {
         try {
             return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotExistItemException();
+            throw new SubwayCustomException(SubwayException.NOT_EXIST_LINE_EXCEPTION);
         }
     }
 
@@ -66,7 +66,7 @@ public class LineDao {
         try {
             return jdbcTemplate.update(sql, newLine.getName(), newLine.getColor(), newLine.getId());
         } catch (DuplicateKeyException e) {
-            throw new DuplicateException();
+            throw new SubwayCustomException(SubwayException.DUPLICATE_LINE_EXCEPTION);
         }
     }
 

@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import wooteco.subway.exception.IllegalUserInputException;
-import wooteco.subway.exception.NotExistItemException;
+import wooteco.subway.exception.SubwayCustomException;
+import wooteco.subway.exception.SubwayException;
 
 public class Sections {
 
@@ -52,7 +52,8 @@ public class Sections {
             .filter(key -> stationIdCount.get(key) == 1)
             .filter(upStationToSection::containsKey)
             .findFirst()
-            .orElseThrow(NotExistItemException::new);
+            .orElseThrow(
+                () -> new SubwayCustomException(SubwayException.NOT_EXIST_STATION_EXCEPTION));
     }
 
     public Section findJoinResultSection(Section addSection) {
@@ -69,13 +70,16 @@ public class Sections {
         Set<Long> stationIds = getStationIds();
         boolean isDuplicateUpStation = isDuplicateStation(section.getUpStationId(), stationIds);
         boolean isDuplicateDownStation = isDuplicateStation(section.getDownStationId(), stationIds);
-        if (isAddSection(isDuplicateUpStation, isDuplicateDownStation)) {
-            throw new IllegalUserInputException();
-        }
+        findValidateType(isDuplicateUpStation, isDuplicateDownStation);
     }
 
-    private boolean isAddSection(boolean isDuplicateUpStation, boolean isDuplicateDownStation) {
-        return isDuplicateDownStation && isDuplicateUpStation;
+    private void findValidateType(boolean isDuplicateUpStation, boolean isDuplicateDownStation) {
+        if (isDuplicateDownStation && isDuplicateUpStation) {
+            throw new SubwayCustomException(SubwayException.DUPLICATE_SECTION_EXCEPTION);
+        }
+        if (!isDuplicateUpStation && !isDuplicateDownStation) {
+            throw new SubwayCustomException(SubwayException.ILLEGAL_SECTION_EXCEPTION);
+        }
     }
 
     private Set<Long> getStationIds() {
@@ -125,12 +129,12 @@ public class Sections {
             return new Section(section.getId(), section.getUpStationId(),
                 addSection.getUpStationId(), section.getDiffDistance(addSection));
         }
-        throw new IllegalUserInputException();
+        throw new SubwayCustomException(SubwayException.ILLEGAL_SECTION_EXCEPTION);
     }
 
     private void validateDistance(Section section, Section addSection) {
         if (section.getDiffDistance(addSection) <= 0) {
-            throw new IllegalUserInputException();
+            throw new SubwayCustomException(SubwayException.ILLEGAL_SECTION_DISTANCE_EXCEPTION);
         }
     }
 
@@ -145,12 +149,13 @@ public class Sections {
         return sections.stream()
             .filter(section -> section.getUpStationId().equals(deleteStationId))
             .findFirst()
-            .orElseThrow(IllegalUserInputException::new);
+            .orElseThrow(() -> new SubwayCustomException(
+                SubwayException.ILLEGAL_SECTION_IN_NOT_EXIST_STATION_EXCEPTION));
     }
 
     private void validateDeleteSize() {
         if (sections.size() <= 1) {
-            throw new IllegalUserInputException();
+            throw new SubwayCustomException(SubwayException.ILLEGAL_SECTION_DELETE_EXCEPTION);
         }
     }
 

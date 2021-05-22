@@ -8,8 +8,8 @@ import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.UnitTest;
-import wooteco.subway.exception.DuplicateException;
-import wooteco.subway.exception.UseForeignKeyException;
+import wooteco.subway.exception.SubwayCustomException;
+import wooteco.subway.exception.SubwayException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineDao;
 import wooteco.subway.line.section.Section;
@@ -44,7 +44,8 @@ class StationDaoTest extends UnitTest {
         stationDao.save(station);
 
         assertThatThrownBy(() -> stationDao.save(station))
-            .isInstanceOf(DuplicateException.class);
+            .isInstanceOf(SubwayCustomException.class)
+            .hasMessage(SubwayException.DUPLICATE_STATION_EXCEPTION.message());
     }
 
     @Test
@@ -84,6 +85,7 @@ class StationDaoTest extends UnitTest {
         ThrowableAssert.ThrowingCallable callable = () -> stationDao.delete(1L);
 
         //then
-        assertThatThrownBy(callable).isInstanceOf(UseForeignKeyException.class);
+        assertThatThrownBy(callable).isInstanceOf(SubwayCustomException.class)
+            .hasMessage(SubwayException.ILLEGAL_STATION_DELETE_EXCEPTION.message());
     }
 }

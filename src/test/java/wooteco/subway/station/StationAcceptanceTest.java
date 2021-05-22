@@ -13,14 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.exception.SubwayException;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
 @DisplayName("지하철역 E2E 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
-
-    private static final String NOT_INPUT_MESSAGE = "[ERROR] 입력값이 존재하지 않습니다.";
 
     @Test
     @DisplayName("지하철역을 생성한다.")
@@ -44,7 +43,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo("[ERROR] 중복된 이름입니다.");
+        assertThat(response.body().asString())
+            .isEqualTo(SubwayException.DUPLICATE_STATION_EXCEPTION.message());
     }
 
     @Test
@@ -54,7 +54,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createStationAPI(null);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo(NOT_INPUT_MESSAGE);
+        assertThat(response.body().asString())
+            .isEqualTo(SubwayException.INVALID_INPUT_NAME_OR_COLOR_EXCEPTION.message());
     }
 
     @Test
@@ -63,7 +64,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createStationAPI("    ");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo(NOT_INPUT_MESSAGE);
+        assertThat(response.body().asString())
+            .isEqualTo(SubwayException.INVALID_INPUT_NAME_OR_COLOR_EXCEPTION.message());
     }
 
     @Test
@@ -112,7 +114,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo("[ERROR] 현재 사용중인 아이템이어서 삭제할 수 없습니다.");
+        assertThat(response.body().asString()).isEqualTo(SubwayException.ILLEGAL_STATION_DELETE_EXCEPTION.message());
     }
 
     private ExtractableResponse<Response> createStationAPI(String name) {

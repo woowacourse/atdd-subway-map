@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.exception.NotExistItemException;
+import wooteco.subway.exception.SubwayCustomException;
+import wooteco.subway.exception.SubwayException;
 import wooteco.subway.line.dto.LineOnlyDataResponse;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
@@ -76,7 +77,7 @@ public class LineService {
 
     private void validate(int updateRow) {
         if (updateRow != 1) {
-            throw new NotExistItemException();
+            throw new SubwayCustomException(SubwayException.NOT_EXIST_LINE_EXCEPTION);
         }
     }
 

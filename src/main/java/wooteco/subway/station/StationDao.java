@@ -10,8 +10,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.exception.DuplicateException;
-import wooteco.subway.exception.UseForeignKeyException;
+import wooteco.subway.exception.SubwayCustomException;
+import wooteco.subway.exception.SubwayException;
 
 @Repository
 public class StationDao {
@@ -37,7 +37,7 @@ public class StationDao {
                 return prepareStatement;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateException();
+            throw new SubwayCustomException(SubwayException.DUPLICATE_STATION_EXCEPTION);
         }
         return new Station(Objects.requireNonNull(keyHolder.getKey()).longValue(),
             station.getName());
@@ -53,7 +53,7 @@ public class StationDao {
             String sql = "delete from STATION where id = ?";
             jdbcTemplate.update(sql, id);
         } catch (DataIntegrityViolationException e) {
-            throw new UseForeignKeyException();
+            throw new SubwayCustomException(SubwayException.ILLEGAL_STATION_DELETE_EXCEPTION);
         }
     }
 
