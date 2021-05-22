@@ -15,8 +15,8 @@ import wooteco.subway.station.dto.StationResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Transactional
 @Service
+@Transactional(readOnly = true)
 public class SectionService {
     private final SectionDao sectionDao;
 
@@ -24,6 +24,7 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
+    @Transactional
     public void save(Long lineId, LineRequest lineRequest) {
         Long upStationId = lineRequest.getUpStationId();
         Long downStationId = lineRequest.getDownStationId();
@@ -39,7 +40,6 @@ public class SectionService {
         }
     }
 
-    @Transactional(readOnly = true)
     public List<StationResponse> findSectionByLineId(Long id) {
         Sections sections = new Sections(sectionDao.findSectionBylineId(id));
         return sections.getOrderedStations().stream()
@@ -51,6 +51,7 @@ public class SectionService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void saveSectionOfExistLine(Long lineId, LineRequest lineRequest) {
         Long upStationId = lineRequest.getUpStationId();
         Long downStationId = lineRequest.getDownStationId();
@@ -83,6 +84,7 @@ public class SectionService {
         return new DownWardStrategy();
     }
 
+    @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findSectionBylineId(lineId));
         sections.validDeletableSection();
@@ -100,6 +102,7 @@ public class SectionService {
         }
     }
 
+    @Transactional
     public void deleteSectionByLineId(Long lineId) {
         sectionDao.deleteByLineId(lineId);
     }

@@ -11,8 +11,8 @@ import wooteco.subway.station.dto.StationResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Transactional
 @Service
+@Transactional(readOnly = true)
 public class LineService {
     private final SectionService sectionService;
     private final LineDao lineDao;
@@ -22,6 +22,7 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
+    @Transactional
     public Long save(LineRequest lineRequest) {
         Line line = lineRequest.toLineEntity();
         validateLine(line);
@@ -30,6 +31,7 @@ public class LineService {
         return lineId;
     }
 
+    @Transactional
     public void update(Long id, LineRequest lineRequest) {
         validLineId(id);
         lineDao.findByName(lineRequest.getName())
@@ -53,7 +55,6 @@ public class LineService {
                 });
     }
 
-    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         return lineDao.findAll()
                 .stream()
@@ -61,12 +62,12 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void delete(Long id) {
         lineDao.delete(id);
         sectionService.deleteSectionByLineId(id);
     }
 
-    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         return lineDao.findById(id)
                 .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
@@ -79,6 +80,7 @@ public class LineService {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), sections);
     }
 
+    @Transactional
     public LineResponse saveSection(Long lineId, LineRequest lineRequest) {
         sectionService.saveSectionOfExistLine(lineId, lineRequest);
         LineResponse lineResponse = findById(lineId);

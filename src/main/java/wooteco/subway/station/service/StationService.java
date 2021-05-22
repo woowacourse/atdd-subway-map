@@ -10,8 +10,8 @@ import wooteco.subway.station.dto.StationResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Transactional
 @Service
+@Transactional
 public class StationService {
 
     private final StationDao stationDao;
@@ -22,6 +22,7 @@ public class StationService {
         this.sectionDao = sectionDao;
     }
 
+    @Transactional
     public Long save(StationRequest stationRequest) {
         if (stationDao.countStationByName(stationRequest.getName()) > 0) {
             throw new IllegalArgumentException("중복된 지하철 역입니다.");
@@ -29,7 +30,6 @@ public class StationService {
         return stationDao.save(stationRequest.toEntity());
     }
 
-    @Transactional(readOnly = true)
     public List<StationResponse> findAll() {
         return stationDao.findAll()
                 .stream()
@@ -37,6 +37,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void delete(Long id) {
         int affectedRowCount = 0;
         if (sectionDao.countSectionByStationId(id) == 0) {
@@ -48,7 +49,6 @@ public class StationService {
         }
     }
 
-    @Transactional(readOnly = true)
     public StationResponse findById(Long id) {
         return stationDao.findById(id)
                 .map(StationResponse::new)
