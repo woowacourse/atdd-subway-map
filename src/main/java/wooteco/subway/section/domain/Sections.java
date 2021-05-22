@@ -115,7 +115,7 @@ public class Sections {
             throw new SectionUpdateException("상행역 또는 하행역이 포함되어야 합니다.");
         }
 
-        Section targetSection = targetSection(upStation, downStation);
+        Section targetSection = targetSection(upSㅇtation, downStation);
 
         if (isBetweenAddCase(section, targetSection)) {
             validateDistance(targetSection, section);
@@ -181,7 +181,7 @@ public class Sections {
     public Optional<Section> findUpdateSectionAfterDelete(Long lineId, Station station) {
         validateDeleteSection();
         if (isEndStation(station)) {
-            endStationDelete(station);
+            deleteEndStation(station);
             return Optional.empty();
         }
 
@@ -221,7 +221,7 @@ public class Sections {
         return topSection.isUpStation(station) || bottomSection.isDownStation(station);
     }
 
-    private void endStationDelete(Station station) {
+    private void deleteEndStation(Station station) {
         Section topSection = sections.get(0);
         Section bottomSection = sections.get(sections.size() - 1);
 
