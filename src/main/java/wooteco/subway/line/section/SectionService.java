@@ -1,23 +1,34 @@
 package wooteco.subway.line.section;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.exception.SubwayCustomException;
+import wooteco.subway.exception.SubwayException;
+import wooteco.subway.line.LineDao;
 import wooteco.subway.line.section.dto.SectionRequest;
+import wooteco.subway.station.StationDao;
 
 @Service
 @Transactional
 public class SectionService {
 
+    private final LineDao lineDao;
     private final SectionDao sectionDao;
+    private final StationDao stationDao;
 
-    public SectionService(SectionDao sectionDao) {
+    public SectionService(SectionDao sectionDao, LineDao lineDao,
+        StationDao stationDao) {
         this.sectionDao = sectionDao;
+        this.lineDao = lineDao;
+        this.stationDao = stationDao;
     }
 
     public void save(Long lineId, SectionRequest sectionRequest, boolean isFirstSave) {
         Section section = getSection(sectionRequest);
+        validateSave(lineId, section);
         if (!isFirstSave) {
             List<Section> lineSections = findByLineId(lineId);
             Sections sections = getSortedSections(lineSections);
@@ -25,6 +36,15 @@ public class SectionService {
             sectionDao.update(lineId, resultSection);
         }
         sectionDao.save(lineId, section);
+    }
+
+    private void validateSave(Long lindId, Section section) {
+        if (!lineDao.isExistLine(lindId)) {
+            throw new SubwayCustomException(SubwayException.NOT_EXIST_LINE_EXCEPTION);
+        }
+        if (!stationDao.isExistStations(section.getUpStationId(), section.getDownStationId())) {
+            throw new SubwayCustomException(SubwayException.NOT_EXIST_STATION_EXCEPTION);
+        }
     }
 
     private Section getSection(SectionRequest sectionRequest) {

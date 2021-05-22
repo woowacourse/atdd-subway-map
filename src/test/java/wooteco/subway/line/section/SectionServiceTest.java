@@ -1,13 +1,17 @@
 package wooteco.subway.line.section;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Arrays;
 import java.util.List;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.UnitTest;
+import wooteco.subway.exception.SubwayCustomException;
+import wooteco.subway.exception.SubwayException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineDao;
 import wooteco.subway.line.section.dto.SectionRequest;
@@ -55,6 +59,34 @@ class SectionServiceTest extends UnitTest {
         //then
         assertThat(sectionService.findByLineId(1L)).hasSize(1)
             .containsOnly(new Section(1L, 1L, 4L, 10));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 노선에 구간을 저장 하면 에러가 발생한다..")
+    void saveWithNotExistLine() {
+        //given
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
+
+        //when
+        ThrowableAssert.ThrowingCallable callable = () -> sectionService.save(2L, sectionRequest, true);
+
+        //then
+        assertThatThrownBy(callable).isInstanceOf(SubwayCustomException.class)
+            .hasMessage(SubwayException.NOT_EXIST_LINE_EXCEPTION.message());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 역을 구간에 포함하면 에러가 발생한다.")
+    void saveWithNotExistStation() {
+        //given
+        SectionRequest sectionRequest = new SectionRequest(6L, 7L, 10);
+
+        //when
+        ThrowableAssert.ThrowingCallable callable = () -> sectionService.save(1L, sectionRequest, true);
+
+        //then
+        assertThatThrownBy(callable).isInstanceOf(SubwayCustomException.class)
+            .hasMessage(SubwayException.NOT_EXIST_STATION_EXCEPTION.message());
     }
 
     @Test

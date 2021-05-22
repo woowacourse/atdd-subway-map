@@ -16,6 +16,8 @@ import wooteco.subway.exception.SubwayException;
 @Repository
 public class StationDao {
 
+    private static final int DESIRED_EXIST_STATION_COUNT_SIZE = 2;
+
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNumber) -> new Station(
         resultSet.getLong("id"),
@@ -63,5 +65,13 @@ public class StationDao {
             + "(select distinct up_station_id, down_station_id from SECTION where line_id = ?) as t "
             + "on id = up_station_id or id = down_station_id";
         return jdbcTemplate.query(sql, stationRowMapper, lineId);
+    }
+
+    public boolean isExistStations(Long upStationId, Long downStationId) {
+        String sql = "select count(*) as cnt from STATION where id = ? or id = ?";
+
+        return Objects.requireNonNull(
+            jdbcTemplate.queryForObject(sql, Integer.class, upStationId, downStationId))
+            == DESIRED_EXIST_STATION_COUNT_SIZE;
     }
 }
