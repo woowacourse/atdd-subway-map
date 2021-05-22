@@ -33,13 +33,12 @@ public class StationService {
     }
 
     public List<Station> findByIds(List<Long> ids) {
-        return ids.stream()
-                .map(id -> stationDao.findById(id).orElseThrow(NotFoundStationException::new))
-                .collect(Collectors.toList());
+        return stationDao.findByIds(ids);
     }
 
     public Station findById(Long id) {
-        return stationDao.findById(id).orElseThrow(NotFoundStationException::new);
+        return stationDao.findById(id)
+                .orElseThrow(NotFoundStationException::new);
     }
 
     public List<StationResponse> findAll() {

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,5 +65,24 @@ public class JdbcStationDao implements StationDao {
         return this.jdbcTemplate.query(query, actorRowMapper, name)
                 .stream()
                 .findAny();
+    }
+
+    @Override
+    public List<Station> findByIds(List<Long> ids) {
+        String query = "SELECT * FROM station";
+        List<Station> stations = this.jdbcTemplate.query(query, actorRowMapper);
+
+        List<Station> findByIds = new ArrayList<>();
+
+        for(Long id : ids) {
+            Station findById = stations.stream()
+                    .filter(station -> station.equalId(id))
+                    .findFirst()
+                    .get();
+
+            findByIds.add(findById);
+        }
+
+        return findByIds;
     }
 }

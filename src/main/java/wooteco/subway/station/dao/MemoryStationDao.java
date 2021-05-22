@@ -55,6 +55,11 @@ public class MemoryStationDao implements StationDao {
                 .findAny();
     }
 
+    @Override
+    public List<Station> findByIds(List<Long> ids) {
+        return new ArrayList<>();
+    }
+
     private boolean validateDuplicateName(Station newStation) {
         return stations.stream()
                 .anyMatch(station -> station.equalName(newStation.getName()));
