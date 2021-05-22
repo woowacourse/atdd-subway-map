@@ -78,6 +78,10 @@ public class Section {
         return this.downStation.id();
     }
 
+    public void changeLine(Line line) {
+        this.line = line;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

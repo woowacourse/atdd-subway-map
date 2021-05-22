@@ -10,8 +10,8 @@ import wooteco.subway.common.exception.NotFoundException;
 
 import static org.assertj.core.api.Assertions.*;
 import static wooteco.subway.line.LineFactory.인천1호선;
-import static wooteco.subway.line.SectionFactory.인천1호선_구간;
-import static wooteco.subway.line.SectionFactory.인천1호선_흑기백기구간;
+import static wooteco.subway.line.LineFactory.인천1호선_구간;
+import static wooteco.subway.line.LineFactory.인천1호선_흑기백기구간;
 
 @DisplayName("노선 기능테스트")
 class LineTest {

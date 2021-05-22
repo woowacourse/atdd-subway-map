@@ -10,9 +10,7 @@ import wooteco.subway.common.exception.NotFoundException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
-import static wooteco.subway.line.LineFactory.인천1호선;
-import static wooteco.subway.line.LineFactory.인천2호선;
-import static wooteco.subway.line.SectionFactory.*;
+import static wooteco.subway.line.LineFactory.*;
 import static wooteco.subway.station.StationFactory.*;
 
 @DisplayName("Section 일급컬렉션 기능 테스트")
@@ -22,8 +20,11 @@ class SectionsTest {
 
     @BeforeEach
     void init() {
-        singleSection = new Sections(인천1호선_구간.sortedSections());
-        doubleSections = new Sections(인천2호선_구간.sortedSections());
+        singleSection = new Sections(인천1호선.sortedSections());
+        doubleSections = new Sections(인천2호선.sortedSections());
+        인천1호선_흑기백기구간.changeLine(인천1호선);
+        인천2호선_흑기백기구간.changeLine(인천2호선);
+        인천2호선_백기낙성대구간.changeLine(인천2호선);
     }
 
     @DisplayName("상행좀점역에 역을 추가한다.")
@@ -65,6 +66,7 @@ class SectionsTest {
         assertThatCode(() -> singleSection.addSection(section))
                 .doesNotThrowAnyException();
         List<Section> sections = singleSection.sortedSections();
+        System.out.println("sections = " + sections);
 
         //then
         assertThat(sections).contains(section, new Section(인천1호선, 낙성대역, 백기역, 인천1호선_흑기백기구간.distance() - distance));
@@ -75,7 +77,7 @@ class SectionsTest {
     void tailBetweenAdSection() {
         //given
         int distance = 3;
-        Section section = new Section(낙성대역, 백기역, distance);
+        Section section = new Section(인천1호선, 낙성대역, 백기역, distance);
 
         //when
         assertThatCode(() -> singleSection.addSection(section))

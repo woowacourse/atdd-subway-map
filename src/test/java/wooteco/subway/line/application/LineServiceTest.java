@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static wooteco.subway.line.LineFactory.인천1호선;
-import static wooteco.subway.line.SectionFactory.인천1호선_흑기백기구간;
+import static wooteco.subway.line.LineFactory.인천1호선_흑기백기구간;
 import static wooteco.subway.station.StationFactory.백기역;
 import static wooteco.subway.station.StationFactory.흑기역;
 
