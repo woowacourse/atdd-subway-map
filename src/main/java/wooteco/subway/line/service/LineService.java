@@ -33,15 +33,17 @@ public class LineService {
 
     @Transactional
     public void update(Long id, LineRequest lineRequest) {
-        lineDao.findById(id)
+        Line line = lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
+
         lineDao.findByName(lineRequest.getName())
-                .filter(line -> !line.sameAs(id))
-                .ifPresent(line -> {
+                .filter(foundLine -> !foundLine.sameAs(id))
+                .ifPresent(foundLine -> {
                     throw new IllegalArgumentException("중복된 노선입니다.");
                 });
+        Line updatedLine = new Line(id, line.getName(), line.getColor());
 
-        lineDao.update(id, lineRequest.toLineEntity());
+        lineDao.update(updatedLine);
     }
 
     private void validateLine(Line line) {
