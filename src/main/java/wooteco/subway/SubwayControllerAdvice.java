@@ -1,6 +1,7 @@
 package wooteco.subway;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,7 +25,7 @@ public class SubwayControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> unExpectedExceptionHandler() {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
     }
 
 }

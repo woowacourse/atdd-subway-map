@@ -8,22 +8,22 @@ import java.util.List;
 
 public class Section {
 
-    private final long id;
+    private final Long id;
     private final Line line;
     private final Station upStation;
     private final Station downStation;
-    private final int distance;
+    private final Integer distance;
 
     public Section(Section section, int distance) {
-        this(-1, section.getLine(), section.getUpStation(), section.getDownStation(), distance);
+        this(null, section.getLine(), section.getUpStation(), section.getDownStation(), distance);
     }
 
     public Section(long lineId, long upStationId, long downStationId) {
-        this(-1, new Line(lineId), new Station(upStationId), new Station(downStationId), -1);
+        this(null, new Line(lineId), new Station(upStationId), new Station(downStationId), null);
     }
 
     public Section(long lineId, SectionRequest sectionRequest) {
-        this(-1,
+        this(null,
                 new Line(lineId),
                 new Station(sectionRequest.getUpStationId()),
                 new Station(sectionRequest.getDownStationId()),
@@ -31,18 +31,18 @@ public class Section {
     }
 
     public Section(Line line, Station upStation, Station downStation) {
-        this(-1, line, upStation, downStation, -1);
+        this(null, line, upStation, downStation, null);
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
-        this(-1, null, upStation, downStation, distance);
+    public Section(Station upStation, Station downStation, Integer distance) {
+        this(null, null, upStation, downStation, distance);
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
-        this(-1, line, upStation, downStation, distance);
+    public Section(Line line, Station upStation, Station downStation, Integer distance) {
+        this(null, line, upStation, downStation, distance);
     }
 
-    public Section(long id, Line line, Station upStation, Station downStation, int distance) {
+    public Section(Long id, Line line, Station upStation, Station downStation, Integer distance) {
         validateDistance(distance);
         this.id = id;
         this.line = line;
@@ -59,7 +59,7 @@ public class Section {
 
     public List<Section> update(Section newSection) {
         List<Section> sections = new ArrayList<>();
-        if (upStation.getId().equals(newSection.getUpStation().getId())) {
+        if (upStation.isSameStation(newSection.getUpStation())) {
             sections.add(newSection);
             sections.add(new Section(line, newSection.getDownStation(), downStation,
                     distance - newSection.getDistance()));
@@ -72,7 +72,7 @@ public class Section {
     }
 
     public Section deleteStation(Section section) {
-        if (downStation.getId() == section.getUpStation().getId()) {
+        if (downStation.isSameStation(section.getUpStation())) {
             return new Section(line, upStation, section.getDownStation(), distance + section.getDistance());
         }
         return new Section(line, section.getUpStation(), downStation, distance + section.getDistance());

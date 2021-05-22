@@ -1,6 +1,7 @@
 package wooteco.subway.section;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -15,18 +16,16 @@ public class SectionService {
 
     public void addSection(Section newSection) {
         List<Section> beforeSections = sectionDao.findBeforeSection(newSection);
-
         validateSections(newSection, beforeSections);
 
-        if (beforeSections.size() == 0) {
+        if (CollectionUtils.isEmpty(beforeSections)) {
             checkEndSection(newSection);
             return;
         }
         Section beforeSection = beforeSections.get(0);
         List<Section> newSections = beforeSection.update(newSection);
         sectionDao.delete(beforeSection);
-        sectionDao.save(newSections.get(0));
-        sectionDao.save(newSections.get(1));
+        newSections.forEach(sectionDao::save);
     }
 
     private void validateSections(Section newSection, List<Section> beforeSections) {
@@ -55,10 +54,8 @@ public class SectionService {
             sectionDao.delete(section);
         }
 
-        if (sections.size() == 1) {
-            return;
+        if (sections.size() == 2) {
+            sectionDao.save(sections.get(0).deleteStation(sections.get(1)));
         }
-
-        sectionDao.save(sections.get(0).deleteStation(sections.get(1)));
     }
 }
