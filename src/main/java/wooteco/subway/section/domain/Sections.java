@@ -169,7 +169,8 @@ public class Sections {
     }
 
     private boolean isBetweenAddCase(Section section, Section targetSection) {
-        return targetSection.isUpStation(section.getUpStation()) || targetSection.isDownStation(section.getDownStation());
+        return targetSection.isUpStation(section.getUpStation())
+                || targetSection.isDownStation(section.getDownStation());
     }
 
     private void validateDistance(Section targetSection, Section section) {
