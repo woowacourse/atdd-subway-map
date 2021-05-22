@@ -33,7 +33,8 @@ public class LineService {
 
     @Transactional
     public void update(Long id, LineRequest lineRequest) {
-        validLineId(id);
+        lineDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
         lineDao.findByName(lineRequest.getName())
                 .filter(line -> !line.sameAs(id))
                 .ifPresent(line -> {
@@ -41,11 +42,6 @@ public class LineService {
                 });
 
         lineDao.update(id, lineRequest.toLineEntity());
-    }
-
-    private void validLineId(Long id) {
-        lineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
     }
 
     private void validateLine(Line line) {
