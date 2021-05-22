@@ -29,11 +29,11 @@ class LineServiceTest extends UnitTest {
     private static final Station YEOKSAM_STATION = new Station(3L, "역삼역");
     private static final Station SILLIM_STATION = new Station(4L, "신림역");
     private static final Map<Long, StationResponse> NUMBER_TO_STATION = new HashMap<>();
+    private static final LineRequest LINE_2_REQUEST = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
+    private static final LineRequest LINE_3_REQUEST = new LineRequest("3호선", "bg-orange-600", 1L, 3L, 13);
 
     private final LineService lineService;
     private final StationDao stationDao;
-    private final LineRequest line2Request = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
-    private final LineRequest line3Request = new LineRequest("3호선", "bg-orange-600", 1L, 3L, 13);
 
     public LineServiceTest(LineService lineService, StationDao stationDao) {
         this.lineService = lineService;
@@ -62,10 +62,10 @@ class LineServiceTest extends UnitTest {
         //given
 
         //when
-        LineResponse lineResponse = lineService.create(line2Request);
+        LineResponse lineResponse = lineService.create(LINE_2_REQUEST);
 
         //then
-        checkedThen(line2Request, lineResponse);
+        checkedThen(LINE_2_REQUEST, lineResponse);
     }
 
     @Test
@@ -73,10 +73,10 @@ class LineServiceTest extends UnitTest {
     void createWithDuplicateName() {
         //given
         //when
-        lineService.create(line2Request);
+        lineService.create(LINE_2_REQUEST);
 
         //then
-        assertThatThrownBy(() -> lineService.create(line2Request))
+        assertThatThrownBy(() -> lineService.create(LINE_2_REQUEST))
             .isInstanceOf(DuplicateException.class);
     }
 
@@ -84,13 +84,13 @@ class LineServiceTest extends UnitTest {
     @DisplayName("id를 이용하여 노선을 찾는다.")
     void findById() {
         //given
-        lineService.create(line2Request);
+        lineService.create(LINE_2_REQUEST);
 
         //when
         LineResponse lineResponse = lineService.findById(1L);
 
         //then
-        checkedThen(line2Request, lineResponse);
+        checkedThen(LINE_2_REQUEST, lineResponse);
     }
 
     @Test
@@ -104,26 +104,26 @@ class LineServiceTest extends UnitTest {
     @DisplayName("노선 전체를 가져온다.")
     void findAll() {
         //given
-        lineService.create(line2Request);
-        lineService.create(line3Request);
+        lineService.create(LINE_2_REQUEST);
+        lineService.create(LINE_3_REQUEST);
 
         //when
         List<LineOnlyDataResponse> lines = lineService.findAll();
 
         //then
         assertThat(lines).hasSize(2);
-        checkedThenOnlyLineData(line2Request, lines.get(0));
-        checkedThenOnlyLineData(line3Request, lines.get(1));
+        checkedThenOnlyLineData(LINE_2_REQUEST, lines.get(0));
+        checkedThenOnlyLineData(LINE_3_REQUEST, lines.get(1));
     }
 
     @Test
     @DisplayName("노선의 정보를 수정한다.")
     void update() {
         //given
-        lineService.create(line2Request);
+        lineService.create(LINE_2_REQUEST);
 
         //when
-        lineService.update(1L, line3Request);
+        lineService.update(1L, LINE_3_REQUEST);
 
         //then
         checkedThen(new LineRequest("3호선", "bg-orange-600", 1L, 2L, 10), lineService.findById(1L));
@@ -137,7 +137,7 @@ class LineServiceTest extends UnitTest {
         //when
 
         //then
-        assertThatThrownBy(() -> lineService.update(1L, line2Request))
+        assertThatThrownBy(() -> lineService.update(1L, LINE_2_REQUEST))
             .isInstanceOf(NotExistItemException.class);
     }
 
@@ -145,11 +145,11 @@ class LineServiceTest extends UnitTest {
     @DisplayName("기존에 있는 이름으로 노선을 수정시 에러가 발생한다.")
     void updateWithDuplicateName() {
         //given
-        lineService.create(line2Request);
-        lineService.create(line3Request);
+        lineService.create(LINE_2_REQUEST);
+        lineService.create(LINE_3_REQUEST);
 
         //when, then
-        assertThatThrownBy(() -> lineService.update(1L, line3Request))
+        assertThatThrownBy(() -> lineService.update(1L, LINE_3_REQUEST))
             .isInstanceOf(DuplicateException.class);
     }
 
@@ -157,7 +157,7 @@ class LineServiceTest extends UnitTest {
     @DisplayName("id를 이용하여 노선을 삭제한다.")
     void delete() {
         //given
-        lineService.create(line2Request);
+        lineService.create(LINE_2_REQUEST);
 
         //when
         lineService.delete(1L);

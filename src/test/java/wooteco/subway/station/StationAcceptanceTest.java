@@ -20,7 +20,7 @@ import wooteco.subway.station.dto.StationResponse;
 @DisplayName("지하철역 E2E 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private final String notInputMessage = "[ERROR] 입력값이 존재하지 않습니다.";
+    private static final String NOT_INPUT_MESSAGE = "[ERROR] 입력값이 존재하지 않습니다.";
 
     @Test
     @DisplayName("지하철역을 생성한다.")
@@ -54,7 +54,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createStationAPI(null);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo(notInputMessage);
+        assertThat(response.body().asString()).isEqualTo(NOT_INPUT_MESSAGE);
     }
 
     @Test
@@ -63,7 +63,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createStationAPI("    ");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo(notInputMessage);
+        assertThat(response.body().asString()).isEqualTo(NOT_INPUT_MESSAGE);
     }
 
     @Test

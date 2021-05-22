@@ -3,7 +3,6 @@ package wooteco.subway.line.section;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,15 +16,16 @@ import wooteco.subway.station.StationDao;
 @DisplayName("구간 DAO 테스트")
 class SectionDaoTest extends UnitTest {
 
+    private static final  Station GANGNAM_STATION = new Station(1L, "강남역");
+    private static final Station JAMSIL_STATION = new Station(2L, "잠실역");
+    private static final Station YEOKSAM_STATION = new Station(3L, "역삼역");
+    private static final Station SILLIM_STATION = new Station(4L, "신림역");
+    private static final Line LINE_2 = new Line(1L, "2호선", "green");
+    private static final Section DEFAULT_SECTION = new Section(1L, 1L, 4L, 10);
+
     private final LineDao lineDao;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
-    private final Station gangnamStation = new Station(1L, "강남역");
-    private final Station jamsilStation = new Station(2L, "잠실역");
-    private final Station yeoksamStation = new Station(3L, "역삼역");
-    private final Station sillimStation = new Station(4L, "신림역");
-    private final Line line2 = new Line(1L, "2호선", "green");
-    private final Section defaultSection = new Section(1L, 1L, 4L, 10);
 
     public SectionDaoTest(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
         this.lineDao = lineDao;
@@ -35,11 +35,11 @@ class SectionDaoTest extends UnitTest {
 
     @BeforeEach
     void setUp() {
-        lineDao.save(line2);
-        stationDao.save(gangnamStation);
-        stationDao.save(jamsilStation);
-        stationDao.save(yeoksamStation);
-        stationDao.save(sillimStation);
+        lineDao.save(LINE_2);
+        stationDao.save(GANGNAM_STATION);
+        stationDao.save(JAMSIL_STATION);
+        stationDao.save(YEOKSAM_STATION);
+        stationDao.save(SILLIM_STATION);
     }
 
     @Test
@@ -48,19 +48,19 @@ class SectionDaoTest extends UnitTest {
         //given
 
         //when
-        sectionDao.save(1L, defaultSection);
+        sectionDao.save(1L, DEFAULT_SECTION);
 
         //then
         assertThat(sectionDao.findById(1L, 1L))
             .usingRecursiveComparison()
-            .isEqualTo(defaultSection);
+            .isEqualTo(DEFAULT_SECTION);
     }
 
     @Test
     @DisplayName("LineId를 이용하여 삭제 한다")
     void deleteByLineId() {
         //given
-        sectionDao.save(1L, defaultSection);
+        sectionDao.save(1L, DEFAULT_SECTION);
         Section section = new Section(2L, 4L, 3L, 1);
         sectionDao.save(1L, section);
 
@@ -75,7 +75,7 @@ class SectionDaoTest extends UnitTest {
     @DisplayName("Line에 속해있는 구간 조회한다")
     void findByLineId() {
         //given
-        sectionDao.save(1L, defaultSection);
+        sectionDao.save(1L, DEFAULT_SECTION);
         Section section = new Section(2L, 4L, 3L, 1);
         sectionDao.save(1L, section);
 
@@ -85,7 +85,7 @@ class SectionDaoTest extends UnitTest {
         //then
         assertThat(sections).hasSize(2)
             .usingRecursiveComparison()
-            .isEqualTo(Arrays.asList(defaultSection, section));
+            .isEqualTo(Arrays.asList(DEFAULT_SECTION, section));
 
     }
 
@@ -93,7 +93,7 @@ class SectionDaoTest extends UnitTest {
     @DisplayName("구간 내용을 수정한다")
     void update() {
         //given
-        sectionDao.save(1L, defaultSection);
+        sectionDao.save(1L, DEFAULT_SECTION);
         Section section = new Section(1L, 1L, 2L, 10);
 
         //when
@@ -109,7 +109,7 @@ class SectionDaoTest extends UnitTest {
     @DisplayName("id를 이용한 구간 조회 한다")
     void findById() {
         //given
-        sectionDao.save(1L, defaultSection);
+        sectionDao.save(1L, DEFAULT_SECTION);
 
         //when
         Section section = sectionDao.findById(1L, 1L);
@@ -122,7 +122,7 @@ class SectionDaoTest extends UnitTest {
     @DisplayName("id를 이용하여 구간을 삭제한다")
     void deleteById() {
         //given
-        sectionDao.save(1L, defaultSection);
+        sectionDao.save(1L, DEFAULT_SECTION);
         Section section = new Section(2L, 4L, 3L, 1);
         sectionDao.save(1L, section);
 
@@ -131,7 +131,6 @@ class SectionDaoTest extends UnitTest {
 
         //then
         assertThat(sectionDao.findByLineId(1L)).hasSize(1)
-            .usingRecursiveComparison()
-            .isEqualTo(Collections.singletonList(defaultSection));
+            .containsOnly(DEFAULT_SECTION);
     }
 }

@@ -19,15 +19,16 @@ import wooteco.subway.station.StationDao;
 @DisplayName("SectionService 관련 기능")
 class SectionServiceTest extends UnitTest {
 
+    private static final Station GANGNAM_STATION = new Station(1L, "강남역");
+    private static final Station JAMSILE_STATION = new Station(2L, "잠실역");
+    private static final Station YEOKSAM_STATION = new Station(3L, "역삼역");
+    private static final Station SILLIM_STATION = new Station(4L, "신림역");
+    private static final Line LINE_2 = new Line(1L, "2호선", "green");
+    private static final SectionRequest DEFAULT_SECTION_REQUEST = new SectionRequest(1L, 4L, 10);
+
     private final LineDao lineDao;
     private final StationDao stationDao;
     private final SectionService sectionService;
-    private final Station gangnamStation = new Station(1L, "강남역");
-    private final Station jamsilStation = new Station(2L, "잠실역");
-    private final Station yeoksamStation = new Station(3L, "역삼역");
-    private final Station sillimStation = new Station(4L, "신림역");
-    private final Line line2 = new Line(1L, "2호선", "green");
-    private final SectionRequest defaultSectionRequest = new SectionRequest(1L, 4L, 10);
 
     public SectionServiceTest(LineDao lineDao, StationDao stationDao,
         SectionService sectionService) {
@@ -38,11 +39,11 @@ class SectionServiceTest extends UnitTest {
 
     @BeforeEach
     void setUp() {
-        lineDao.save(line2);
-        stationDao.save(gangnamStation);
-        stationDao.save(jamsilStation);
-        stationDao.save(yeoksamStation);
-        stationDao.save(sillimStation);
+        lineDao.save(LINE_2);
+        stationDao.save(GANGNAM_STATION);
+        stationDao.save(JAMSILE_STATION);
+        stationDao.save(YEOKSAM_STATION);
+        stationDao.save(SILLIM_STATION);
     }
 
     @Test
@@ -51,19 +52,18 @@ class SectionServiceTest extends UnitTest {
         //given
 
         //when
-        sectionService.save(1L, defaultSectionRequest, true);
+        sectionService.save(1L, DEFAULT_SECTION_REQUEST, true);
 
         //then
         assertThat(sectionService.findByLineId(1L).getSections()).hasSize(1)
-            .usingRecursiveComparison()
-            .isEqualTo(Collections.singletonList(new Section(1L, 1L, 4L, 10)));
+            .containsOnly(new Section(1L, 1L, 4L, 10));
     }
 
     @Test
     @DisplayName("노선에 포함된 구간을 삭제한다")
     void deleteByLineId() {
         //given
-        sectionService.save(1L, defaultSectionRequest, true);
+        sectionService.save(1L, DEFAULT_SECTION_REQUEST, true);
         sectionService.save(1L, new SectionRequest(4L, 3L, 10), false);
 
         //when
@@ -78,7 +78,7 @@ class SectionServiceTest extends UnitTest {
     @DisplayName("노선에 포함된 구간을 가져온다")
     void findByLineId() {
         //given
-        sectionService.save(1L, defaultSectionRequest, true);
+        sectionService.save(1L, DEFAULT_SECTION_REQUEST, true);
         sectionService.save(1L, new SectionRequest(4L, 3L, 10), false);
 
         //when
@@ -97,7 +97,7 @@ class SectionServiceTest extends UnitTest {
     @DisplayName("노선에 포함된 역을 삭제하면 구간은 합쳐진다.")
     void deleteByStationId() {
         //given
-        sectionService.save(1L, defaultSectionRequest, true);
+        sectionService.save(1L, DEFAULT_SECTION_REQUEST, true);
         sectionService.save(1L, new SectionRequest(4L, 3L, 10), false);
 
         //when
@@ -106,9 +106,6 @@ class SectionServiceTest extends UnitTest {
         //then
         Sections sections = sectionService.findByLineId(1L);
         assertThat(sections.getSections()).hasSize(1)
-            .usingRecursiveComparison()
-            .isEqualTo(Collections.singletonList(
-                new Section(1L, 1L, 3L, 20)
-            ));
+            .containsOnly(new Section(1L, 1L, 3L, 20));
     }
 }

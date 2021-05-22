@@ -27,17 +27,18 @@ import wooteco.subway.station.dto.StationResponse;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private static final String NOT_EXIST_ITEM_MESSAGE = "[ERROR] 해당 아이템이 존재하지 않습니다.";
+    private static final String NO_INPUT_MESSAGE = "[ERROR] 입력값이 존재하지 않습니다.";
+    private static final String DUPLICATE_MESSAGE = "[ERROR] 중복된 이름입니다.";
+    private static final String ILLEGAL_USER_INPUT_MESSAGE = "[ERROR] 잘못된 입력입니다.";
+    private static final LineRequest LINE_2_REQUEST = new LineRequest("2호선", "bg-green-600", 1L, 4L, 10);
+    private static final LineRequest LINE_3_REQUEST = new LineRequest("3호선", "bg-orange-600", 1L, 3L, 13);
+    private static final Station GANGNAM_STATION = new Station(1L, "강남역");
+    private static final Station JAMSIL_STATION = new Station(2L, "잠실역");
+    private static final Station YEOKSAM_STATION = new Station(3L, "역삼역");
+    private static final Station SILLIM_STATION = new Station(4L, "신림역");
+
     private final StationDao stationDao;
-    private final String notExistItemMessage = "[ERROR] 해당 아이템이 존재하지 않습니다.";
-    private final String noInputMessage = "[ERROR] 입력값이 존재하지 않습니다.";
-    private final String duplicateMessage = "[ERROR] 중복된 이름입니다.";
-    private final String IllegalUserInputMessage = "[ERROR] 잘못된 입력입니다.";
-    private final LineRequest line2Request = new LineRequest("2호선", "bg-green-600", 1L, 4L, 10);
-    private final LineRequest line3Request = new LineRequest("3호선", "bg-orange-600", 1L, 3L, 13);
-    private final Station gangnamStation = new Station(1L, "강남역");
-    private final Station jamsilStation = new Station(2L, "잠실역");
-    private final Station yeoksamStation = new Station(3L, "역삼역");
-    private final Station sillimStation = new Station(4L, "신림역");
 
     public LineAcceptanceTest(StationDao stationDao) {
         this.stationDao = stationDao;
@@ -45,10 +46,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void beforeSetUp() {
-        stationDao.save(gangnamStation);
-        stationDao.save(jamsilStation);
-        stationDao.save(yeoksamStation);
-        stationDao.save(sillimStation);
+        stationDao.save(GANGNAM_STATION);
+        stationDao.save(JAMSIL_STATION);
+        stationDao.save(YEOKSAM_STATION);
+        stationDao.save(SILLIM_STATION);
     }
 
     @Test
@@ -57,7 +58,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
 
         //when
-        ExtractableResponse<Response> response = createLineAPI(line2Request);
+        ExtractableResponse<Response> response = createLineAPI(LINE_2_REQUEST);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -67,10 +68,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
     void createLineWithDuplicateName() {
-        createLineAPI(line2Request);
+        createLineAPI(LINE_2_REQUEST);
 
-        ExtractableResponse<Response> response = createLineAPI(line2Request);
-        thenBadRequestException(response, duplicateMessage);
+        ExtractableResponse<Response> response = createLineAPI(LINE_2_REQUEST);
+        thenBadRequestException(response, DUPLICATE_MESSAGE);
     }
 
     @Test
@@ -88,7 +89,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, noInputMessage);
+        thenBadRequestException(response, NO_INPUT_MESSAGE);
     }
 
     @Test
@@ -106,7 +107,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, noInputMessage);
+        thenBadRequestException(response, NO_INPUT_MESSAGE);
     }
 
     @Test
@@ -124,7 +125,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, noInputMessage);
+        thenBadRequestException(response, NO_INPUT_MESSAGE);
     }
 
     @Test
@@ -142,7 +143,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, noInputMessage);
+        thenBadRequestException(response, NO_INPUT_MESSAGE);
     }
 
     @Test
@@ -160,7 +161,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, noInputMessage);
+        thenBadRequestException(response, NO_INPUT_MESSAGE);
     }
 
     @Test
@@ -178,7 +179,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, noInputMessage);
+        thenBadRequestException(response, NO_INPUT_MESSAGE);
     }
 
     @Test
@@ -196,7 +197,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, noInputMessage);
+        thenBadRequestException(response, NO_INPUT_MESSAGE);
     }
 
     @Test
@@ -214,7 +215,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, noInputMessage);
+        thenBadRequestException(response, NO_INPUT_MESSAGE);
     }
 
     @ParameterizedTest
@@ -233,15 +234,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest(name, color, upStationId, downStationId, distance));
 
         //then
-        thenBadRequestException(response, noInputMessage);
+        thenBadRequestException(response, NO_INPUT_MESSAGE);
     }
 
     @Test
     @DisplayName("지하철역 목록을 조회한다.")
     void getLines() {
         /// given
-        ExtractableResponse<Response> createResponse1 = createLineAPI(line2Request);
-        ExtractableResponse<Response> createResponse2 = createLineAPI(line3Request);
+        ExtractableResponse<Response> createResponse1 = createLineAPI(LINE_2_REQUEST);
+        ExtractableResponse<Response> createResponse2 = createLineAPI(LINE_3_REQUEST);
 
         // when
         ExtractableResponse<Response> response = getLineAllAPI();
@@ -259,7 +260,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("id를 이용하여 지하철역을 조회한다.")
     public void getLine() {
         /// given
-        createLineAPI(line2Request);
+        createLineAPI(LINE_2_REQUEST);
         List<StationResponse> stations = Arrays
             .asList(new StationResponse(1L, "강남역"), new StationResponse(4L, "신림역"));
 
@@ -283,17 +284,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getLineAPI();
 
         // then
-        thenBadRequestException(response, notExistItemMessage);
+        thenBadRequestException(response, NOT_EXIST_ITEM_MESSAGE);
     }
 
     @Test
     @DisplayName("id를 기준으로 노선을 수정한다.")
     public void putLine() {
         /// given
-        createLineAPI(line2Request);
+        createLineAPI(LINE_2_REQUEST);
 
         // when
-        ExtractableResponse<Response> response = updateLineAPI(line3Request);
+        ExtractableResponse<Response> response = updateLineAPI(LINE_3_REQUEST);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -305,31 +306,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
 
         // when
-        ExtractableResponse<Response> response = updateLineAPI(line3Request);
+        ExtractableResponse<Response> response = updateLineAPI(LINE_3_REQUEST);
 
         //then
-        thenBadRequestException(response, notExistItemMessage);
+        thenBadRequestException(response, NOT_EXIST_ITEM_MESSAGE);
     }
 
     @Test
     @DisplayName("기존에 있는 이름으로 노선을 수정시 에러가 발생한다.")
     public void putLinWhitDuplicateName() {
         /// given
-        createLineAPI(line2Request);
-        createLineAPI(line3Request);
+        createLineAPI(LINE_2_REQUEST);
+        createLineAPI(LINE_3_REQUEST);
 
         // when
-        ExtractableResponse<Response> response = updateLineAPI(line3Request);
+        ExtractableResponse<Response> response = updateLineAPI(LINE_3_REQUEST);
 
         //then
-        thenBadRequestException(response, duplicateMessage);
+        thenBadRequestException(response, DUPLICATE_MESSAGE);
     }
 
     @Test
     @DisplayName("id를 이용해 노선을 삭제한다")
     public void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = createLineAPI(line2Request);
+        ExtractableResponse<Response> createResponse = createLineAPI(LINE_2_REQUEST);
 
         // when
         String uri = createResponse.header("Location");
@@ -343,7 +344,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("Section 을 추가한다.")
     void createSection() {
         //given
-        createLineAPI(line2Request);
+        createLineAPI(LINE_2_REQUEST);
         SectionRequest sectionRequest = new SectionRequest(2L, 1L, 5);
 
         //when
@@ -357,13 +358,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 상행 구간이 추가되면 순서가 변경되어야 한다.")
     void getLineWithAddSectionAtInitLocation() {
         //given
-        createLineAPI(line2Request);
+        createLineAPI(LINE_2_REQUEST);
         SectionRequest sectionRequest = new SectionRequest(2L, 1L, 5);
 
         List<StationResponse> stations = Arrays.asList(
-            new StationResponse(2L, jamsilStation.getName()),
-            new StationResponse(1L, gangnamStation.getName()),
-            new StationResponse(4L, sillimStation.getName())
+            new StationResponse(2L, JAMSIL_STATION.getName()),
+            new StationResponse(1L, GANGNAM_STATION.getName()),
+            new StationResponse(4L, SILLIM_STATION.getName())
         );
 
         //when
@@ -378,13 +379,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 하행 구간이 추가되면 순서가 변경되어야 한다.")
     void getLineWithAddSectionAtLastLocation() {
         //given
-        createLineAPI(line2Request);
+        createLineAPI(LINE_2_REQUEST);
         SectionRequest sectionRequest = new SectionRequest(4L, 2L, 5);
 
         List<StationResponse> stations = Arrays.asList(
-            new StationResponse(gangnamStation),
-            new StationResponse(sillimStation),
-            new StationResponse(jamsilStation)
+            new StationResponse(GANGNAM_STATION),
+            new StationResponse(SILLIM_STATION),
+            new StationResponse(JAMSIL_STATION)
         );
 
         //when
@@ -399,14 +400,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 하행 앞에 구간이 추가되면 순서가 변경되어야 한다.")
     void getLineWithAddSectionAtLastLocation2() {
         //given
-        createLineAPI(line2Request);
+        createLineAPI(LINE_2_REQUEST);
         createSectionAPI(new SectionRequest(1L, 2L, 5));
 
         List<StationResponse> stations = Arrays.asList(
-            new StationResponse(gangnamStation),
-            new StationResponse(jamsilStation),
-            new StationResponse(yeoksamStation),
-            new StationResponse(sillimStation)
+            new StationResponse(GANGNAM_STATION),
+            new StationResponse(JAMSIL_STATION),
+            new StationResponse(YEOKSAM_STATION),
+            new StationResponse(SILLIM_STATION)
         );
 
         //when
@@ -421,21 +422,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("같은 구간을 추가하면 에러가 발생한다.")
     void addSectionWithEqualSection() {
         //given
-        createLineAPI(line2Request);
+        createLineAPI(LINE_2_REQUEST);
         SectionRequest sectionRequest = new SectionRequest(1L, 4L, 10);
 
         //when
         ExtractableResponse<Response> response = createSectionAPI(sectionRequest);
 
         //then
-        thenBadRequestException(response, IllegalUserInputMessage);
+        thenBadRequestException(response, ILLEGAL_USER_INPUT_MESSAGE);
     }
 
     @Test
     @DisplayName("노선에 이미 포함된 역이 들어간 구간을 추가하면 에러가 발생한다.")
     void addSectionWithEqualTwoStation() {
         //given
-        createLineAPI(line2Request);
+        createLineAPI(LINE_2_REQUEST);
         createSectionAPI(new SectionRequest(4L, 3L, 10));
 
         SectionRequest sectionRequest = new SectionRequest(1L, 3L, 10);
@@ -444,7 +445,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createSectionAPI(sectionRequest);
 
         //then
-        thenBadRequestException(response, IllegalUserInputMessage);
+        thenBadRequestException(response, ILLEGAL_USER_INPUT_MESSAGE);
     }
 
     @ParameterizedTest
@@ -452,21 +453,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선의 중간에 구간이 추가될때 기존구간보다 거리가 크거나 같으면 에러가 발생한다.")
     void addSectionWithOverDistance(int value) {
         //given
-        createLineAPI(line2Request);
+        createLineAPI(LINE_2_REQUEST);
         SectionRequest sectionRequest = new SectionRequest(1L, 2L, value);
 
         //when
         ExtractableResponse<Response> response = createSectionAPI(sectionRequest);
 
         //then
-        thenBadRequestException(response, IllegalUserInputMessage);
+        thenBadRequestException(response, ILLEGAL_USER_INPUT_MESSAGE);
     }
 
     @Test
     @DisplayName("노선에 포함되지 않은 역 2개가 포함된 구간을 추가하면 에러가 발생한다.")
     void addSectionWithNotHaveStation() {
         //given
-        createLineAPI(line2Request);
+        createLineAPI(LINE_2_REQUEST);
 
         SectionRequest sectionRequest = new SectionRequest(2L, 3L, 10);
 
@@ -474,20 +475,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createSectionAPI(sectionRequest);
 
         //then
-        thenBadRequestException(response, IllegalUserInputMessage);
+        thenBadRequestException(response, ILLEGAL_USER_INPUT_MESSAGE);
     }
 
     @Test
     @DisplayName("노선에 포함된 상행역을 삭제하면 다음역이 상행역이 되어야 한다.")
     void DeleteStationOnTheLinenWithDeleteUpStation() {
         //given
-        createLineAPI(line2Request);
+        createLineAPI(LINE_2_REQUEST);
         createSectionAPI(new SectionRequest(1L, 3L, 5));
         int stationId = 1;
 
         List<StationResponse> stations = Arrays.asList(
-            new StationResponse(yeoksamStation),
-            new StationResponse(sillimStation)
+            new StationResponse(YEOKSAM_STATION),
+            new StationResponse(SILLIM_STATION)
         );
 
         //when
@@ -504,13 +505,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 포함된 하행역을 삭제하면 이전역이 하행역이 되어야 한다.")
     void DeleteStationOnTheLinenWithDeleteDownStation() {
         //given
-        createLineAPI(line2Request);
+        createLineAPI(LINE_2_REQUEST);
         createSectionAPI(new SectionRequest(1L, 3L, 5));
         int stationId = 4;
 
         List<StationResponse> stations = Arrays.asList(
-            new StationResponse(gangnamStation),
-            new StationResponse(yeoksamStation)
+            new StationResponse(GANGNAM_STATION),
+            new StationResponse(YEOKSAM_STATION)
         );
 
         //when
@@ -527,13 +528,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 포함된 상행,하행이 아닌 역을 삭제하면 앞뒤 역이 연결되어야 한다.")
     void DeleteStationOnTheLinenWithDeleteOtherStation() {
         //given
-        createLineAPI(line2Request);
+        createLineAPI(LINE_2_REQUEST);
         createSectionAPI(new SectionRequest(1L, 3L, 5));
         int stationId = 3;
 
         List<StationResponse> stations = Arrays.asList(
-            new StationResponse(gangnamStation),
-            new StationResponse(sillimStation)
+            new StationResponse(GANGNAM_STATION),
+            new StationResponse(SILLIM_STATION)
         );
 
         //when
@@ -550,14 +551,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 포함된 구간이 1개일때 구간을을 삭제하면 에러가 발생한다.")
     void DeleteSectionWithSectionSizeOne() {
         //given
-        createLineAPI(line2Request);
+        createLineAPI(LINE_2_REQUEST);
         int stationId = 1;
 
         //when
         ExtractableResponse<Response> response = deleteSectionAPI(stationId);
 
         //then
-        thenBadRequestException(response, IllegalUserInputMessage);
+        thenBadRequestException(response, ILLEGAL_USER_INPUT_MESSAGE);
     }
 
     private ExtractableResponse<Response> deleteLineAPI(String uri) {
