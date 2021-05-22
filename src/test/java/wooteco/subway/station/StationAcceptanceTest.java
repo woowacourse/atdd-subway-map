@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -30,8 +30,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createStationAPI("강남역");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
@@ -71,8 +70,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = createStationAPI("강남역");
-        ExtractableResponse<Response> createResponse2 = createStationAPI("역삼역");
+        createStationAPI("강남역");
+        createStationAPI("역삼역");
 
         // when
         ExtractableResponse<Response> response = getStationAllAPI();
@@ -80,7 +79,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<Long> expectedLineIds = getExpectedLineIds(createResponse1, createResponse2);
+        List<Long> expectedLineIds = Arrays.asList(1L, 2L);
         List<Long> resultLineIds = getResultLineIds(response);
 
         assertThat(resultLineIds).containsAll(expectedLineIds);
@@ -94,7 +93,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = deleteStationAPI(uri);
+        ExtractableResponse<Response> response = deleteStationAPI("/stations/1");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -133,13 +132,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .delete(uri)
             .then()
             .extract();
-    }
-
-    private List<Long> getExpectedLineIds(ExtractableResponse<Response> createResponse1,
-        ExtractableResponse<Response> createResponse2) {
-        return Stream.of(createResponse1, createResponse2)
-            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-            .collect(Collectors.toList());
     }
 
     private List<Long> getResultLineIds(ExtractableResponse<Response> response) {
