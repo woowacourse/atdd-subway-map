@@ -3,6 +3,8 @@ package wooteco.subway.station.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.exception.notfoundexception.NotFoundStationException;
+import wooteco.subway.station.controller.dto.StationRequest;
+import wooteco.subway.station.controller.dto.StationResponse;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
 
@@ -18,11 +20,16 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station save(Station station) {
+    public StationResponse save(StationRequest stationRequest) {
+        Station station = new Station(stationRequest.getName());
+
         if (stationDao.findStationByName(station.getName()).isPresent()) {
             throw new DuplicatedNameException();
         }
-        return stationDao.save(station);
+
+        Station newStation = stationDao.save(station);
+
+        return StationResponse.from(newStation);
     }
 
     public List<Station> findByIds(List<Long> ids) {
@@ -35,8 +42,11 @@ public class StationService {
         return stationDao.findById(id).orElseThrow(NotFoundStationException::new);
     }
 
-    public List<Station> findAll() {
-        return stationDao.findAll();
+    public List<StationResponse> findAll() {
+        return stationDao.findAll()
+                .stream()
+                .map(StationResponse::from)
+                .collect(Collectors.toList());
     }
 
     public void delete(Long id) {

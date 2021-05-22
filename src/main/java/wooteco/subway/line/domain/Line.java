@@ -29,10 +29,6 @@ public class Line {
         this.stations = stations;
     }
 
-    public static Line from(LineRequest lineRequest) {
-        return new Line(lineRequest.getName(), lineRequest.getColor());
-    }
-
     public Long getId() {
         return id;
     }

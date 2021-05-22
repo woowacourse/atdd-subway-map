@@ -23,41 +23,28 @@ public class LineController {
 
     private final LineService lineService;
     private final SectionService sectionService;
-    private final StationService stationService;
 
-    public LineController(LineService lineService, SectionService sectionService, StationService stationService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
         this.sectionService = sectionService;
-        this.stationService = stationService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = Line.from(lineRequest);
-        Line newLine = lineService.save(line);
-        Section section = new Section(newLine.getId(), stationService.findById(lineRequest.getUpStationId()), stationService.findById(lineRequest.getDownStationId()), lineRequest.getDistance());
-        sectionService.save(section);
+        LineResponse lineResponse = lineService.save(lineRequest);
 
-        List<Long> stationIds = sectionService.findByLineId(newLine.getId()).getStationsId();
-        List<Station> stations = stationService.findByIds(stationIds);
-        LineResponse lineResponse = LineResponse.from(newLine, stations);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> lineResponses = lineService.findAll().stream()
-                .map(LineResponse::from)
-                .collect(Collectors.toList());
+        List<LineResponse> lineResponses = lineService.findAll();
         return ResponseEntity.ok(lineResponses);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line line = lineService.findById(id);
-        Sections sections = sectionService.findByLineId(line.getId());
-        List<Station> stations = stationService.findByIds(sections.getStationsId());
-        LineResponse lineResponse = LineResponse.from(line, stations);
+        LineResponse lineResponse = lineService.findById(id);
         return ResponseEntity.ok(lineResponse);
     }
 
@@ -69,22 +56,19 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateLine(@RequestBody LineRequest lineRequest, @PathVariable Long id) {
-        Line line = Line.from(lineRequest);
-        lineService.update(line, id);
+        lineService.update(lineRequest, id);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{id}/sections")
     public ResponseEntity<Void> addSection(@RequestBody SectionRequest sectionRequest, @PathVariable Long id) {
-        Section section = new Section(id, stationService.findById(sectionRequest.getUpStationId()), stationService.findById(sectionRequest.getDownStationId()), sectionRequest.getDistance());
-        sectionService.addSection(section, id);
+        sectionService.addSection(sectionRequest, id);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}/sections")
     public ResponseEntity<Void> deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
-        Sections sections = sectionService.findByLineId(id);
-        sectionService.deleteSection(sections, id, stationService.findById(stationId));
+        sectionService.deleteSection(id, stationId);
         return ResponseEntity.ok().build();
     }
 }
