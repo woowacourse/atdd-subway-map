@@ -9,11 +9,9 @@ public class Sections {
     private static final int INITIAL_STATION_SIZE = 2;
 
     private final List<Section> sections;
-    private final List<Station> orderedStations;
 
     public Sections(List<Section> sections) {
         this.sections = sections;
-        orderedStations = orderedStations();
     }
 
     public List<Section> getSections() {
@@ -21,7 +19,7 @@ public class Sections {
     }
 
     public List<Station> getOrderedStations() {
-        return orderedStations;
+        return orderedStations();
     }
 
     private List<Station> orderedStations() {
@@ -51,7 +49,7 @@ public class Sections {
     }
 
     public Station findSameStationsOfSection(Long upStationId, Long downStationId) {
-        List<Station> stations = orderedStations.stream()
+        List<Station> stations = orderedStations().stream()
                 .filter(station -> station.isSame(upStationId) || station.isSame(downStationId))
                 .collect(Collectors.toList());
 
@@ -63,13 +61,14 @@ public class Sections {
     }
 
     public void validDeletableSection() {
-        if (orderedStations.size() == INITIAL_STATION_SIZE) {
+        if (orderedStations().size() == INITIAL_STATION_SIZE) {
             throw new IllegalArgumentException("종점역만 남은 경우 삭제를 수행할 수 없습니다!");
         }
     }
 
     public boolean notEndStation(Long stationId) {
-        return !orderedStations.get(0).isSame(stationId) &&
-                !orderedStations.get(orderedStations.size() - 1).isSame(stationId);
+        List<Station> stations = orderedStations();
+        return !stations.get(0).isSame(stationId) &&
+                !stations.get(stations.size() - 1).isSame(stationId);
     }
 }
