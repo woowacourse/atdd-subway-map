@@ -1,7 +1,7 @@
 package wooteco.subway.line.section;
 
 import java.util.Objects;
-import wooteco.subway.exception.NotInputDataException;
+import wooteco.subway.exception.InvalidInputDataException;
 
 public class Section {
 
@@ -26,13 +26,13 @@ public class Section {
         validateStation(upStationId);
         validateStation(downStationId);
         if (distance <= 0) {
-            throw new NotInputDataException();
+            throw new InvalidInputDataException();
         }
     }
 
     private void validateStation(Long stationId) {
         if (Objects.isNull(stationId) || stationId == 0L) {
-            throw new NotInputDataException();
+            throw new InvalidInputDataException();
         }
     }
 

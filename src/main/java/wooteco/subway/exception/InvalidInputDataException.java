@@ -1,10 +1,10 @@
 package wooteco.subway.exception;
 
-public class NotInputDataException extends RuntimeException {
+public class InvalidInputDataException extends RuntimeException {
 
     private static final String MESSAGE = "[ERROR] 입력값이 존재하지 않습니다.";
 
-    public NotInputDataException() {
+    public InvalidInputDataException() {
         super(MESSAGE);
     }
 }

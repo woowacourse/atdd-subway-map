@@ -1,7 +1,7 @@
 package wooteco.subway;
 
 import java.util.Objects;
-import wooteco.subway.exception.NotInputDataException;
+import wooteco.subway.exception.InvalidInputDataException;
 
 public class StringInput {
 
@@ -14,7 +14,7 @@ public class StringInput {
 
     private void validate(String item) {
         if (Objects.isNull(item) || item.trim().length() == 0) {
-            throw new NotInputDataException();
+            throw new InvalidInputDataException();
         }
     }
 

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import wooteco.subway.UnitTest;
-import wooteco.subway.exception.NotInputDataException;
+import wooteco.subway.exception.InvalidInputDataException;
 
 @DisplayName("Section 관련 기능")
 class SectionTest extends UnitTest {
@@ -43,7 +43,7 @@ class SectionTest extends UnitTest {
             distance);
 
         //then
-        assertThatThrownBy(callable).isInstanceOf(NotInputDataException.class);
+        assertThatThrownBy(callable).isInstanceOf(InvalidInputDataException.class);
     }
 
     @Test
@@ -59,7 +59,7 @@ class SectionTest extends UnitTest {
             distance);
 
         //then
-        assertThatThrownBy(callable).isInstanceOf(NotInputDataException.class);
+        assertThatThrownBy(callable).isInstanceOf(InvalidInputDataException.class);
     }
 
     @ParameterizedTest
@@ -76,6 +76,6 @@ class SectionTest extends UnitTest {
             distance);
 
         //then
-        assertThatThrownBy(callable).isInstanceOf(NotInputDataException.class);
+        assertThatThrownBy(callable).isInstanceOf(InvalidInputDataException.class);
     }
 }
