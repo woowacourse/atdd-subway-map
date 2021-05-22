@@ -54,7 +54,7 @@ class SectionServiceTest extends UnitTest {
         //given
 
         //when
-        sectionService.save(1L, DEFAULT_SECTION_REQUEST, true);
+        sectionService.save(1L, DEFAULT_SECTION_REQUEST);
 
         //then
         assertThat(sectionService.findByLineId(1L)).hasSize(1)
@@ -68,7 +68,7 @@ class SectionServiceTest extends UnitTest {
         SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
 
         //when
-        ThrowableAssert.ThrowingCallable callable = () -> sectionService.save(2L, sectionRequest, true);
+        ThrowableAssert.ThrowingCallable callable = () -> sectionService.save(2L, sectionRequest);
 
         //then
         assertThatThrownBy(callable).isInstanceOf(SubwayCustomException.class)
@@ -82,7 +82,7 @@ class SectionServiceTest extends UnitTest {
         SectionRequest sectionRequest = new SectionRequest(6L, 7L, 10);
 
         //when
-        ThrowableAssert.ThrowingCallable callable = () -> sectionService.save(1L, sectionRequest, true);
+        ThrowableAssert.ThrowingCallable callable = () -> sectionService.save(1L, sectionRequest);
 
         //then
         assertThatThrownBy(callable).isInstanceOf(SubwayCustomException.class)
@@ -93,8 +93,8 @@ class SectionServiceTest extends UnitTest {
     @DisplayName("노선에 포함된 구간을 삭제한다")
     void deleteByLineId() {
         //given
-        sectionService.save(1L, DEFAULT_SECTION_REQUEST, true);
-        sectionService.save(1L, new SectionRequest(4L, 3L, 10), false);
+        sectionService.save(1L, DEFAULT_SECTION_REQUEST);
+        sectionService.save(1L, new SectionRequest(4L, 3L, 10));
 
         //when
         sectionService.deleteByLineId(1L);
@@ -107,12 +107,13 @@ class SectionServiceTest extends UnitTest {
     @DisplayName("노선에 포함된 구간을 가져온다")
     void findByLineId() {
         //given
-        sectionService.save(1L, DEFAULT_SECTION_REQUEST, true);
-        sectionService.save(1L, new SectionRequest(4L, 3L, 10), false);
+        sectionService.save(1L, DEFAULT_SECTION_REQUEST);
+        sectionService.save(1L, new SectionRequest(4L, 3L, 10));
 
         //when
         List<Section> lineSections = sectionService.findByLineId(1L);
-        Sections sections = sectionService.getSortedSections(lineSections);
+        Sections sections = new Sections(lineSections);
+        sections.sort();
 
         //then
         assertThat(sections.getSections()).hasSize(2)
@@ -127,8 +128,8 @@ class SectionServiceTest extends UnitTest {
     @DisplayName("노선에 포함된 역을 삭제하면 구간은 합쳐진다.")
     void deleteByStationId() {
         //given
-        sectionService.save(1L, DEFAULT_SECTION_REQUEST, true);
-        sectionService.save(1L, new SectionRequest(4L, 3L, 10), false);
+        sectionService.save(1L, DEFAULT_SECTION_REQUEST);
+        sectionService.save(1L, new SectionRequest(4L, 3L, 10));
 
         //when
         sectionService.deleteByStationId(1L, 4L);

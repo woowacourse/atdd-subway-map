@@ -1,6 +1,5 @@
 package wooteco.subway.line.section;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
@@ -26,16 +25,29 @@ public class SectionService {
         this.stationDao = stationDao;
     }
 
-    public void save(Long lineId, SectionRequest sectionRequest, boolean isFirstSave) {
+    public void save(Long lineId, SectionRequest sectionRequest) {
         Section section = getSection(sectionRequest);
         validateSave(lineId, section);
-        if (!isFirstSave) {
-            List<Section> lineSections = findByLineId(lineId);
-            Sections sections = getSortedSections(lineSections);
-            Section resultSection = sections.findJoinResultSection(section);
-            sectionDao.update(lineId, resultSection);
-        }
+
+        List<Section> lineSections = findByLineId(lineId);
+        updateSection(lineId, section, lineSections);
+
         sectionDao.save(lineId, section);
+    }
+
+    private void updateSection(Long lineId, Section section, List<Section> lineSections) {
+        if (lineSections.size() == 0) {
+            return;
+        }
+        Sections sections = getSortedSections(lineSections);
+        Section resultSection = sections.findJoinResultSection(section);
+        sectionDao.update(lineId, resultSection);
+    }
+
+    private Sections getSortedSections(List<Section> lineSections) {
+        Sections sections = new Sections(lineSections);
+        sections.sort();
+        return sections;
     }
 
     private void validateSave(Long lindId, Section section) {
@@ -62,7 +74,6 @@ public class SectionService {
 
     public void deleteByStationId(Long lineId, Long stationId) {
         List<Section> lineSections = findByLineId(lineId);
-
         Sections sections = getSortedSections(lineSections);
 
         Section deleteResultSection = sections.findDeleteResultSection(stationId);
@@ -72,11 +83,5 @@ public class SectionService {
             sectionDao.update(lineId, updateResultSection);
         }
         sectionDao.deleteById(lineId, deleteResultSection.getId());
-    }
-
-    public Sections getSortedSections(List<Section> lineSections) {
-        Sections sections = new Sections(lineSections);
-        sections.sort();
-        return sections;
     }
 }

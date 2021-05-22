@@ -10,11 +10,10 @@ import wooteco.subway.line.dto.LineOnlyDataResponse;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.section.Section;
-import wooteco.subway.line.section.SectionService;
+import wooteco.subway.line.section.SectionDao;
 import wooteco.subway.line.section.Sections;
-import wooteco.subway.line.section.dto.SectionRequest;
 import wooteco.subway.station.Station;
-import wooteco.subway.station.StationService;
+import wooteco.subway.station.StationDao;
 import wooteco.subway.station.Stations;
 import wooteco.subway.station.dto.StationResponse;
 
@@ -23,37 +22,50 @@ import wooteco.subway.station.dto.StationResponse;
 public class LineService {
 
     private final LineDao lineDao;
-    private final StationService stationService;
-    private final SectionService sectionService;
+    private final SectionDao sectionDao;
+    private final StationDao stationDao;
 
-    public LineService(LineDao lineDao, StationService stationService,
-        SectionService sectionService) {
+    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
-        this.stationService = stationService;
-        this.sectionService = sectionService;
+        this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
     }
 
     public LineResponse create(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineDao.save(line);
 
-        SectionRequest sectionRequest = new SectionRequest(lineRequest.getUpStationId(),
-            lineRequest.getDownStationId(), lineRequest.getDistance());
-        sectionService.save(newLine.getId(), sectionRequest, true);
+        saveLineInSection(lineRequest, newLine);
 
         List<StationResponse> stationResponses = getSortedStationResponses(newLine);
         return new LineResponse(newLine, stationResponses);
     }
 
-    private List<StationResponse> getSortedStationResponses(Line newLine) {
-        List<Section> lineSections = sectionService.findByLineId(newLine.getId());
-        Sections sections = sectionService.getSortedSections(lineSections);
+    private void saveLineInSection(LineRequest lineRequest, Line newLine) {
+        Section section = new Section(lineRequest.getUpStationId(),
+            lineRequest.getDownStationId(), lineRequest.getDistance());
 
-        List<Station> lineStations = stationService.findByLineId(newLine.getId());
+        if (!stationDao.isExistStations(section.getUpStationId(), section.getDownStationId())) {
+            throw new SubwayCustomException(SubwayException.NOT_EXIST_STATION_EXCEPTION);
+        }
+        sectionDao.save(newLine.getId(), section);
+    }
+
+    private List<StationResponse> getSortedStationResponses(Line newLine) {
+        Sections sections = getSortedSections(newLine);
+
+        List<Station> lineStations = stationDao.findByLineId(newLine.getId());
         Stations stations = new Stations(lineStations);
         stations.sort(sections);
         return stations.stream().map(StationResponse::new).collect(
             Collectors.toList());
+    }
+
+    private Sections getSortedSections(Line newLine) {
+        List<Section> lineSections = sectionDao.findByLineId(newLine.getId());
+        Sections sections = new Sections(lineSections);
+        sections.sort();
+        return sections;
     }
 
     public LineResponse findById(Long id) {
@@ -82,7 +94,7 @@ public class LineService {
     }
 
     public void delete(Long id) {
-        sectionService.deleteByLineId(id);
+        sectionDao.deleteByLineId(id);
         lineDao.delete(id);
     }
 }
