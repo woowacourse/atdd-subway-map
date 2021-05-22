@@ -105,7 +105,7 @@ class JdbcSectionDaoTest {
 
         Sections findByLineIdSections = jdbcSectionDao.findByLineId(savedSection1.getLineId());
 
-        assertThat(findByLineIdSections.getSections().get(0)).isEqualTo(강남_역삼_구간);
-        assertThat(findByLineIdSections.getSections().size()).isEqualTo(1);
+        assertThat(findByLineIdSections.getSections()).hasSize(1)
+                .containsExactly(강남_역삼_구간);
     }
 }

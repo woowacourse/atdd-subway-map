@@ -23,13 +23,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간 추가 - 종점")
     void addSectionEnd() {
         // given
-        Station station1 = createStation(new StationRequest("강남역"));
-        Station station2 = createStation(new StationRequest("역삼역"));
-        Station station3 = createStation(new StationRequest("잠실역"));
+        Station 강남역 = createStation(new StationRequest("강남역"));
+        Station 역삼역 = createStation(new StationRequest("역삼역"));
+        Station 잠실역 = createStation(new StationRequest("잠실역"));
 
-        Long lineId = createLine(new LineRequest("2호선", "red", station1.getId(), station2.getId(), 5));
+        Long lineId = createLine(new LineRequest("2호선", "red", 강남역.getId(), 역삼역.getId(), 5));
 
-        LineRequest addLineRequest = new LineRequest("2호선", "red", station2.getId(), station3.getId(), 5);
+        LineRequest addLineRequest = new LineRequest("2호선", "red", 역삼역.getId(), 잠실역.getId(), 5);
 
         // when
         ExtractableResponse<Response> response = addSection(addLineRequest, lineId);
@@ -42,13 +42,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간 추가 - 역 사이")
     void addSectionBetween() {
         // given
-        Station station1 = createStation(new StationRequest("강남역"));
-        Station station2 = createStation(new StationRequest("역삼역"));
-        Station station3 = createStation(new StationRequest("잠실역"));
+        Station 강남역 = createStation(new StationRequest("강남역"));
+        Station 역삼역 = createStation(new StationRequest("역삼역"));
+        Station 잠실역 = createStation(new StationRequest("잠실역"));
 
-        Long lineId = createLine(new LineRequest("2호선", "red", station1.getId(), station3.getId(), 5));
+        Long lineId = createLine(new LineRequest("2호선", "red", 강남역.getId(), 잠실역.getId(), 5));
 
-        LineRequest addLineRequest = new LineRequest("2호선", "red", station1.getId(), station2.getId(), 2);
+        LineRequest addLineRequest = new LineRequest("2호선", "red", 강남역.getId(), 역삼역.getId(), 2);
 
         // when
         ExtractableResponse<Response> response = addSection(addLineRequest, lineId);
@@ -61,13 +61,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간 추가 - 역 사이에 추가 시 기존 거리보다 크며 추가할 수 없다.")
     void addSectionDistanceException() {
         // given
-        Station station1 = createStation(new StationRequest("강남역"));
-        Station station2 = createStation(new StationRequest("역삼역"));
-        Station station3 = createStation(new StationRequest("잠실역"));
+        Station 강남역 = createStation(new StationRequest("강남역"));
+        Station 역삼역 = createStation(new StationRequest("역삼역"));
+        Station 잠실역 = createStation(new StationRequest("잠실역"));
 
-        Long lineId = createLine(new LineRequest("2호선", "red", station1.getId(), station3.getId(), 5));
+        Long lineId = createLine(new LineRequest("2호선", "red", 강남역.getId(), 잠실역.getId(), 5));
 
-        LineRequest addLineRequest = new LineRequest("2호선", "red", station1.getId(), station2.getId(), 10);
+        LineRequest addLineRequest = new LineRequest("2호선", "red", 강남역.getId(), 역삼역.getId(), 10);
 
         // when
         ExtractableResponse<Response> response = addSection(addLineRequest, lineId);
@@ -80,12 +80,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간 추가 - 상행역, 하행역이 같을 경우 추가할 수 없다.")
     void addSectionSameException() {
         // given
-        Station station1 = createStation(new StationRequest("강남역"));
-        Station station2 = createStation(new StationRequest("역삼역"));
+        Station 강남역 = createStation(new StationRequest("강남역"));
+        Station 역삼역 = createStation(new StationRequest("역삼역"));
 
-        Long lineId = createLine(new LineRequest("2호선", "red", station1.getId(), station2.getId(), 5));
+        Long lineId = createLine(new LineRequest("2호선", "red", 강남역.getId(), 역삼역.getId(), 5));
 
-        LineRequest addLineRequest = new LineRequest("2호선", "red", station1.getId(), station2.getId(), 10);
+        LineRequest addLineRequest = new LineRequest("2호선", "red", 강남역.getId(), 역삼역.getId(), 10);
 
         // when
         ExtractableResponse<Response> response = addSection(addLineRequest, lineId);
@@ -98,14 +98,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간 추가 - 해당 노선에 존재하지 않는 상행역, 하행역일 경우 추가할 수 없다.")
     void addSectionNoneException() {
         // given
-        Station station1 = createStation(new StationRequest("강남역"));
-        Station station2 = createStation(new StationRequest("역삼역"));
-        Station station3 = createStation(new StationRequest("잠실역"));
+        Station 강남역 = createStation(new StationRequest("강남역"));
+        Station 역삼역 = createStation(new StationRequest("역삼역"));
+        Station 잠실역 = createStation(new StationRequest("잠실역"));
         Station station4 = createStation(new StationRequest("교대역"));
 
-        Long lineId = createLine(new LineRequest("2호선", "red", station1.getId(), station2.getId(), 5));
+        Long lineId = createLine(new LineRequest("2호선", "red", 강남역.getId(), 역삼역.getId(), 5));
 
-        LineRequest addLineRequest = new LineRequest("2호선", "red", station3.getId(), station4.getId(), 10);
+        LineRequest addLineRequest = new LineRequest("2호선", "red", 잠실역.getId(), station4.getId(), 10);
 
         // when
         ExtractableResponse<Response> response = addSection(addLineRequest, lineId);
@@ -118,18 +118,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간 삭제 - 종점")
     void deleteSectionEnd() {
         // given
-        Station station1 = createStation(new StationRequest("강남역"));
-        Station station2 = createStation(new StationRequest("역삼역"));
-        Station station3 = createStation(new StationRequest("잠실역"));
+        Station 강남역 = createStation(new StationRequest("강남역"));
+        Station 역삼역 = createStation(new StationRequest("역삼역"));
+        Station 잠실역 = createStation(new StationRequest("잠실역"));
 
-        Long lineId = createLine(new LineRequest("2호선", "red", station1.getId(), station2.getId(), 5));
+        Long lineId = createLine(new LineRequest("2호선", "red", 강남역.getId(), 역삼역.getId(), 5));
 
-        LineRequest addLineRequest = new LineRequest("2호선", "red", station2.getId(), station3.getId(), 10);
+        LineRequest addLineRequest = new LineRequest("2호선", "red", 역삼역.getId(), 잠실역.getId(), 10);
 
         addSection(addLineRequest, lineId);
 
         // when
-        ExtractableResponse<Response> response = deleteSection(lineId, station3.getId());
+        ExtractableResponse<Response> response = deleteSection(lineId, 잠실역.getId());
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -139,18 +139,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간 삭제 - 역 사이")
     void deleteSectionBetween() {
         // given
-        Station station1 = createStation(new StationRequest("강남역"));
-        Station station2 = createStation(new StationRequest("역삼역"));
-        Station station3 = createStation(new StationRequest("잠실역"));
+        Station 강남역 = createStation(new StationRequest("강남역"));
+        Station 역삼역 = createStation(new StationRequest("역삼역"));
+        Station 잠실역 = createStation(new StationRequest("잠실역"));
 
-        Long lineId = createLine(new LineRequest("2호선", "red", station1.getId(), station2.getId(), 5));
+        Long lineId = createLine(new LineRequest("2호선", "red", 강남역.getId(), 역삼역.getId(), 5));
 
-        LineRequest addLineRequest = new LineRequest("2호선", "red", station2.getId(), station3.getId(), 10);
+        LineRequest addLineRequest = new LineRequest("2호선", "red", 역삼역.getId(), 잠실역.getId(), 10);
 
         addSection(addLineRequest, lineId);
 
         // when
-        ExtractableResponse<Response> response = deleteSection(lineId, station2.getId());
+        ExtractableResponse<Response> response = deleteSection(lineId, 역삼역.getId());
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -160,13 +160,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간 삭제 실패 - 구간이 하나일 경우")
     void deleteSectionFailOnlyOneSection() {
         // given
-        Station station1 = createStation(new StationRequest("강남역"));
-        Station station2 = createStation(new StationRequest("역삼역"));
+        Station 강남역 = createStation(new StationRequest("강남역"));
+        Station 역삼역 = createStation(new StationRequest("역삼역"));
 
-        Long lineId = createLine(new LineRequest("2호선", "red", station1.getId(), station2.getId(), 5));
+        Long lineId = createLine(new LineRequest("2호선", "red", 강남역.getId(), 역삼역.getId(), 5));
 
         // when
-        ExtractableResponse<Response> response = deleteSection(lineId, station2.getId());
+        ExtractableResponse<Response> response = deleteSection(lineId, 역삼역.getId());
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
