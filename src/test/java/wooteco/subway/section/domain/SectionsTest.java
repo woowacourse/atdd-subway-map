@@ -15,19 +15,19 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionsTest {
 
-    private Station station1;
-    private Station station2;
-    private Station station3;
-    private Station station4;
-    private Station station5;
+    private Station 강남역;
+    private Station 잠실역;
+    private Station 역삼역;
+    private Station 교대역;
+    private Station 수원역;
 
     @BeforeEach
     void setUp() {
-        station1 = new Station(1L, "station1");
-        station2 = new Station(2L, "station2");
-        station3 = new Station(3L, "station3");
-        station4 = new Station(4L, "station4");
-        station5 = new Station(5L, "station5");
+        강남역 = new Station(1L, "강남역");
+        잠실역 = new Station(2L, "잠실역");
+        역삼역 = new Station(3L, "역삼역");
+        교대역 = new Station(4L, "교대역");
+        수원역 = new Station(5L, "수원역");
     }
 
     @Test
@@ -35,9 +35,9 @@ class SectionsTest {
     void sortSections() {
         List<Section> sectionList = new ArrayList<>();
 
-        Section section1 = new Section(2L, 1L, station1, station2, 5);
-        Section section2 = new Section(3L, 1L, station2, station3, 5);
-        Section section3 = new Section(1L, 1L, station3, station4, 5);
+        Section section1 = new Section(2L, 1L, 강남역, 잠실역, 5);
+        Section section2 = new Section(3L, 1L, 잠실역, 역삼역, 5);
+        Section section3 = new Section(1L, 1L, 역삼역, 교대역, 5);
         sectionList.add(section3);
         sectionList.add(section1);
         sectionList.add(section2);
@@ -52,14 +52,14 @@ class SectionsTest {
     void addSectionDuplicatedSection() {
         List<Section> sectionList = new ArrayList<>();
 
-        sectionList.add(new Section(1L, 1L, station1, station2, 5));
-        sectionList.add(new Section(2L, 1L, station2, station3, 5));
+        sectionList.add(new Section(1L, 1L, 강남역, 잠실역, 5));
+        sectionList.add(new Section(2L, 1L, 잠실역, 역삼역, 5));
 
         Sections sections = new Sections(sectionList);
 
-        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, station1, station2, 1)))
+        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, 강남역, 잠실역, 1)))
                 .isInstanceOf(SectionUpdateException.class);
-        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, station2, station1, 1)))
+        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, 잠실역, 강남역, 1)))
                 .isInstanceOf(SectionUpdateException.class);
     }
 
@@ -68,28 +68,39 @@ class SectionsTest {
     void addSectionNotContainStation() {
         List<Section> sectionList = new ArrayList<>();
 
-        sectionList.add(new Section(1L, 1L, station1, station2, 5));
-        sectionList.add(new Section(2L, 1L, station2, station3, 5));
+        sectionList.add(new Section(1L, 1L, 강남역, 잠실역, 5));
+        sectionList.add(new Section(2L, 1L, 잠실역, 역삼역, 5));
 
         Sections sections = new Sections(sectionList);
-        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, station4, station5, 1)))
+        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, 교대역, 수원역, 1)))
                 .isInstanceOf(SectionUpdateException.class);
     }
 
     @Test
-    @DisplayName("역 사이에 새로운 역을 등록할 때 기존 역 사이 길이보다 클 경우 테스트")
+    @DisplayName("역 사이에 새로운 역을 등록할 때 기존 역 사이 길이보다 클 경우")
     void addSectionLongerThanExistSection() {
         List<Section> sectionList = new ArrayList<>();
 
-        sectionList.add(new Section(1L, 1L, station1, station2, 1));
-        sectionList.add(new Section(2L, 1L, station2, station3, 1));
+        sectionList.add(new Section(1L, 1L, 강남역, 잠실역, 1));
+        sectionList.add(new Section(2L, 1L, 잠실역, 역삼역, 1));
 
         Sections sections = new Sections(sectionList);
-        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, station1, station4, 2)))
+        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, 강남역, 교대역, 2)))
                 .isInstanceOf(SectionUpdateException.class);
-        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, station1, station4, 1)))
+        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, 수원역, 역삼역, 2)))
                 .isInstanceOf(SectionUpdateException.class);
-        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, station5, station3, 2)))
+    }
+
+    @Test
+    @DisplayName("역 사이에 새로운 역을 등록할 때 기존 역 사이 길이와 같을 경우")
+    void addSectionSameDistanceExistSection() {
+        List<Section> sectionList = new ArrayList<>();
+
+        sectionList.add(new Section(1L, 1L, 강남역, 잠실역, 1));
+        sectionList.add(new Section(2L, 1L, 잠실역, 역삼역, 1));
+
+        Sections sections = new Sections(sectionList);
+        assertThatThrownBy(() -> sections.addSection(new Section(1L, 1L, 강남역, 교대역, 1)))
                 .isInstanceOf(SectionUpdateException.class);
     }
 
@@ -98,9 +109,9 @@ class SectionsTest {
     void deleteSection() {
         List<Section> sectionList = new ArrayList<>();
 
-        Section section1 = new Section(1L, 1L, station1, station2, 5);
-        Section section2 = new Section(2L, 1L, station2, station3, 5);
-        Section section3 = new Section(3L, 1L, station3, station4, 5);
+        Section section1 = new Section(1L, 1L, 강남역, 잠실역, 5);
+        Section section2 = new Section(2L, 1L, 잠실역, 역삼역, 5);
+        Section section3 = new Section(3L, 1L, 역삼역, 교대역, 5);
         sectionList.add(section1);
         sectionList.add(section2);
         sectionList.add(section3);
@@ -109,8 +120,9 @@ class SectionsTest {
 
         sections.findUpdateSectionAfterDelete(section3.getLineId(), section3.getDownStation());
 
-        assertThat(sections.getSections()).hasSize(2);
-        assertThat(sections.getSections()).containsExactly(section1, section2);
+        assertThat(sections.getSections())
+                .hasSize(2)
+                .containsExactly(section1, section2);
     }
 
     @Test
@@ -118,12 +130,12 @@ class SectionsTest {
     void deleteSectionFail() {
         List<Section> sectionList = new ArrayList<>();
 
-        Section section1 = new Section(1L, 1L, station1, station2, 5);
+        Section section1 = new Section(1L, 1L, 강남역, 잠실역, 5);
         sectionList.add(section1);
 
         Sections sections = new Sections(sectionList);
 
-        assertThatThrownBy(() -> sections.findUpdateSectionAfterDelete(section1.getLineId(), station1))
+        assertThatThrownBy(() -> sections.findUpdateSectionAfterDelete(section1.getLineId(), 강남역))
                 .isInstanceOf(SectionDeleteException.class);
     }
 }
