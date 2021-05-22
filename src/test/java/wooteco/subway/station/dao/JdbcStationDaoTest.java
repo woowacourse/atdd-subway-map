@@ -35,16 +35,17 @@ class JdbcStationDaoTest {
     @Test
     @DisplayName("역 조회 테스트")
     void findAll() {
-        Station station1 = new Station("강남역");
-        Station station2 = new Station("역삼역");
-        jdbcStationDao.save(station1);
-        jdbcStationDao.save(station2);
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+
+        Station 저장된강남역 = jdbcStationDao.save(강남역);
+        Station 저장된역삼역 = jdbcStationDao.save(역삼역);
 
         List<Station> stations = jdbcStationDao.findAll();
 
         assertThat(stations)
                 .hasSize(2)
-                .containsExactly(new Station(1L, "강남역"), new Station(2L, "역삼역"));
+                .containsExactly(저장된강남역, 저장된역삼역);
     }
 
     @Test
