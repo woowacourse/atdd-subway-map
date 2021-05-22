@@ -1,15 +1,13 @@
 package wooteco.subway.line.section;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.UnitTest;
-import wooteco.subway.exception.NotExistItemException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineDao;
 import wooteco.subway.line.section.dto.SectionRequest;
@@ -55,7 +53,7 @@ class SectionServiceTest extends UnitTest {
         sectionService.save(1L, DEFAULT_SECTION_REQUEST, true);
 
         //then
-        assertThat(sectionService.findByLineId(1L).getSections()).hasSize(1)
+        assertThat(sectionService.findByLineId(1L)).hasSize(1)
             .containsOnly(new Section(1L, 1L, 4L, 10));
     }
 
@@ -70,8 +68,7 @@ class SectionServiceTest extends UnitTest {
         sectionService.deleteByLineId(1L);
 
         //then
-        assertThatThrownBy(() -> sectionService.findByLineId(1L))
-            .isInstanceOf(NotExistItemException.class);
+        assertThat(sectionService.findByLineId(1L)).hasSize(0);
     }
 
     @Test
@@ -82,7 +79,8 @@ class SectionServiceTest extends UnitTest {
         sectionService.save(1L, new SectionRequest(4L, 3L, 10), false);
 
         //when
-        Sections sections = sectionService.findByLineId(1L);
+        List<Section> lineSections = sectionService.findByLineId(1L);
+        Sections sections = sectionService.getSortedSections(lineSections);
 
         //then
         assertThat(sections.getSections()).hasSize(2)
@@ -104,8 +102,8 @@ class SectionServiceTest extends UnitTest {
         sectionService.deleteByStationId(1L, 4L);
 
         //then
-        Sections sections = sectionService.findByLineId(1L);
-        assertThat(sections.getSections()).hasSize(1)
+        List<Section> sections = sectionService.findByLineId(1L);
+        assertThat(sections).hasSize(1)
             .containsOnly(new Section(1L, 1L, 3L, 20));
     }
 }

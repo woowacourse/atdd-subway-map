@@ -1,5 +1,6 @@
 package wooteco.subway.line.section;
 
+import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,8 @@ public class SectionService {
     public void save(Long lineId, SectionRequest sectionRequest, boolean isFirstSave) {
         Section section = getSection(sectionRequest);
         if (!isFirstSave) {
-            Sections sections = findByLineId(lineId);
+            List<Section> lineSections = findByLineId(lineId);
+            Sections sections = getSortedSections(lineSections);
             Section resultSection = sections.findJoinResultSection(section);
             sectionDao.update(lineId, resultSection);
         }
@@ -34,14 +36,14 @@ public class SectionService {
         sectionDao.deleteByLineId(lineId);
     }
 
-    public Sections findByLineId(Long lineId) {
-        Sections sections = new Sections(sectionDao.findByLineId(lineId));
-        sections.sort();
-        return sections;
+    public List<Section> findByLineId(Long lineId) {
+        return sectionDao.findByLineId(lineId);
     }
 
     public void deleteByStationId(Long lineId, Long stationId) {
-        Sections sections = findByLineId(lineId);
+        List<Section> lineSections = findByLineId(lineId);
+
+        Sections sections = getSortedSections(lineSections);
 
         Section deleteResultSection = sections.findDeleteResultSection(stationId);
         Section updateResultSection = sections
@@ -50,5 +52,11 @@ public class SectionService {
             sectionDao.update(lineId, updateResultSection);
         }
         sectionDao.deleteById(lineId, deleteResultSection.getId());
+    }
+
+    public Sections getSortedSections(List<Section> lineSections) {
+        Sections sections = new Sections(lineSections);
+        sections.sort();
+        return sections;
     }
 }

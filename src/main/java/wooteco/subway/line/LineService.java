@@ -8,10 +8,13 @@ import wooteco.subway.exception.NotExistItemException;
 import wooteco.subway.line.dto.LineOnlyDataResponse;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.SectionService;
 import wooteco.subway.line.section.Sections;
 import wooteco.subway.line.section.dto.SectionRequest;
+import wooteco.subway.station.Station;
 import wooteco.subway.station.StationService;
+import wooteco.subway.station.Stations;
 import wooteco.subway.station.dto.StationResponse;
 
 @Service
@@ -37,19 +40,25 @@ public class LineService {
             lineRequest.getDownStationId(), lineRequest.getDistance());
         sectionService.save(newLine.getId(), sectionRequest, true);
 
-        Sections sections = sectionService.findByLineId(newLine.getId());
+        List<StationResponse> stationResponses = getSortedStationResponses(newLine);
+        return new LineResponse(newLine, stationResponses);
+    }
 
-        List<StationResponse> stations = stationService.findByLineId(newLine.getId(), sections);
-        return new LineResponse(newLine, stations);
+    private List<StationResponse> getSortedStationResponses(Line newLine) {
+        List<Section> lineSections = sectionService.findByLineId(newLine.getId());
+        Sections sections = sectionService.getSortedSections(lineSections);
+
+        List<Station> lineStations = stationService.findByLineId(newLine.getId());
+        Stations stations = new Stations(lineStations);
+        stations.sort(sections);
+        return stations.stream().map(StationResponse::new).collect(
+            Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id);
-
-        Sections sections = sectionService.findByLineId(id);
-        List<StationResponse> stations = stationService.findByLineId(id, sections);
-
-        return new LineResponse(line, stations);
+        List<StationResponse> stationResponses = getSortedStationResponses(line);
+        return new LineResponse(line, stationResponses);
     }
 
     public List<LineOnlyDataResponse> findAll() {

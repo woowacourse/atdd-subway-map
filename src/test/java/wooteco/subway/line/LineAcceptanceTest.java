@@ -31,8 +31,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private static final String NO_INPUT_MESSAGE = "[ERROR] 입력값이 존재하지 않습니다.";
     private static final String DUPLICATE_MESSAGE = "[ERROR] 중복된 이름입니다.";
     private static final String ILLEGAL_USER_INPUT_MESSAGE = "[ERROR] 잘못된 입력입니다.";
-    private static final LineRequest LINE_2_REQUEST = new LineRequest("2호선", "bg-green-600", 1L, 4L, 10);
-    private static final LineRequest LINE_3_REQUEST = new LineRequest("3호선", "bg-orange-600", 1L, 3L, 13);
+    private static final LineRequest LINE_2_REQUEST = new LineRequest("2호선", "bg-green-600", 1L, 4L,
+        10);
+    private static final LineRequest LINE_3_REQUEST = new LineRequest("3호선", "bg-orange-600", 1L,
+        3L, 13);
     private static final Station GANGNAM_STATION = new Station(1L, "강남역");
     private static final Station JAMSIL_STATION = new Station(2L, "잠실역");
     private static final Station YEOKSAM_STATION = new Station(3L, "역삼역");

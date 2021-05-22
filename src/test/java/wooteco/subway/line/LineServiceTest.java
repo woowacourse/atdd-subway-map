@@ -29,8 +29,10 @@ class LineServiceTest extends UnitTest {
     private static final Station YEOKSAM_STATION = new Station(3L, "역삼역");
     private static final Station SILLIM_STATION = new Station(4L, "신림역");
     private static final Map<Long, StationResponse> NUMBER_TO_STATION = new HashMap<>();
-    private static final LineRequest LINE_2_REQUEST = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
-    private static final LineRequest LINE_3_REQUEST = new LineRequest("3호선", "bg-orange-600", 1L, 3L, 13);
+    private static final LineRequest LINE_2_REQUEST = new LineRequest("2호선", "bg-green-600", 1L, 2L,
+        10);
+    private static final LineRequest LINE_3_REQUEST = new LineRequest("3호선", "bg-orange-600", 1L,
+        3L, 13);
 
     private final LineService lineService;
     private final StationDao stationDao;
@@ -176,7 +178,8 @@ class LineServiceTest extends UnitTest {
         assertThat(lineResponse.getStations()).usingRecursiveComparison().isEqualTo(stations);
     }
 
-    private void checkedThenOnlyLineData(LineRequest lineRequest, LineOnlyDataResponse lineResponse) {
+    private void checkedThenOnlyLineData(LineRequest lineRequest,
+        LineOnlyDataResponse lineResponse) {
         assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName());
         assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor());
     }

@@ -16,7 +16,7 @@ import wooteco.subway.station.StationDao;
 @DisplayName("구간 DAO 테스트")
 class SectionDaoTest extends UnitTest {
 
-    private static final  Station GANGNAM_STATION = new Station(1L, "강남역");
+    private static final Station GANGNAM_STATION = new Station(1L, "강남역");
     private static final Station JAMSIL_STATION = new Station(2L, "잠실역");
     private static final Station YEOKSAM_STATION = new Station(3L, "역삼역");
     private static final Station SILLIM_STATION = new Station(4L, "신림역");
