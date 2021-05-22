@@ -1,6 +1,5 @@
 package wooteco.subway.line;
 
-import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
@@ -11,7 +10,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotExistItemException;
 
@@ -43,15 +41,8 @@ public class LineDao {
         } catch (DuplicateKeyException e) {
             throw new DuplicateException();
         }
-
-        return createNewObject(line, Objects.requireNonNull(keyHolder.getKey()).longValue());
-    }
-
-    private Line createNewObject(Line line, Long id) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        Objects.requireNonNull(field).setAccessible(true);
-        ReflectionUtils.setField(field, line, id);
-        return line;
+        return new Line(Objects.requireNonNull(keyHolder.getKey()).longValue(), line.getName(),
+            line.getColor());
     }
 
     public List<Line> findAll() {

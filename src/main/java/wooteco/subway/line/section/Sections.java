@@ -55,18 +55,40 @@ public class Sections {
             .orElseThrow(NotExistItemException::new);
     }
 
-    public List<Section> getSections() {
-        return new ArrayList<>(sections);
-    }
-
     public Section findJoinResultSection(Section addSection) {
-        validateStationCount(addSection);
+        validateJoinSection(addSection);
         Section sideSection = findJoinSideSection(addSection);
         if (Objects.nonNull(sideSection)) {
             return sideSection;
         }
 
         return findJoinMiddleSection(addSection);
+    }
+
+    private void validateJoinSection(Section section) {
+        Set<Long> stationIds = getStationIds();
+        boolean isDuplicateUpStation = isDuplicateStation(section.getUpStationId(), stationIds);
+        boolean isDuplicateDownStation = isDuplicateStation(section.getDownStationId(), stationIds);
+        if (isAddSection(isDuplicateUpStation, isDuplicateDownStation)) {
+            throw new IllegalUserInputException();
+        }
+    }
+
+    private boolean isAddSection(boolean isDuplicateUpStation, boolean isDuplicateDownStation) {
+        return isDuplicateDownStation && isDuplicateUpStation;
+    }
+
+    private Set<Long> getStationIds() {
+        Set<Long> stationIds = new HashSet<>();
+        for (Section section : sections) {
+            stationIds.add(section.getDownStationId());
+            stationIds.add(section.getUpStationId());
+        }
+        return stationIds;
+    }
+
+    private boolean isDuplicateStation(Long stationId, Set<Long> stationIds) {
+        return stationIds.contains(stationId);
     }
 
     private Section findJoinSideSection(Section addSection) {
@@ -104,31 +126,6 @@ public class Sections {
                 addSection.getUpStationId(), section.getDiffDistance(addSection));
         }
         throw new IllegalUserInputException();
-    }
-
-    private void validateStationCount(Section section) {
-        Set<Long> stationIds = getStationIds();
-        int stationCount = getStationCount(section.getUpStationId(), stationIds, 0);
-        stationCount = getStationCount(section.getDownStationId(), stationIds, stationCount);
-        if (stationCount != 1) {
-            throw new IllegalUserInputException();
-        }
-    }
-
-    private Set<Long> getStationIds() {
-        Set<Long> stationIds = new HashSet<>();
-        for (Section section : sections) {
-            stationIds.add(section.getDownStationId());
-            stationIds.add(section.getUpStationId());
-        }
-        return stationIds;
-    }
-
-    private int getStationCount(Long stationId, Set<Long> stationIds, int stationCount) {
-        if (stationIds.contains(stationId)) {
-            return stationCount + 1;
-        }
-        return stationCount;
     }
 
     private void validateDistance(Section section, Section addSection) {
@@ -174,5 +171,9 @@ public class Sections {
             section.getUpStationId(),
             deleteSection.getDownStationId(),
             section.getDistance() + deleteSection.getDistance());
+    }
+
+    public List<Section> getSections() {
+        return new ArrayList<>(sections);
     }
 }

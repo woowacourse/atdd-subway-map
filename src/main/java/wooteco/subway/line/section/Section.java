@@ -5,10 +5,10 @@ import wooteco.subway.exception.InvalidInputDataException;
 
 public class Section {
 
+    private final Long id;
     private final Long upStationId;
     private final Long downStationId;
     private final int distance;
-    private Long id;
 
     public Section(Long upStationId, Long downStationId, int distance) {
         this(0L, upStationId, downStationId, distance);

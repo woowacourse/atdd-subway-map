@@ -5,10 +5,9 @@ import wooteco.subway.StringInput;
 
 public class Line {
 
+    private final Long id;
     private final StringInput name;
     private final StringInput color;
-    private Long id;
-
 
     public Line(String name, String color) {
         this(0L, name, color);

@@ -1,6 +1,5 @@
 package wooteco.subway.station;
 
-import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
@@ -11,7 +10,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.UseForeignKeyException;
 
@@ -41,20 +39,13 @@ public class StationDao {
         } catch (DuplicateKeyException e) {
             throw new DuplicateException();
         }
-
-        return createNewObject(station, Objects.requireNonNull(keyHolder.getKey()).longValue());
+        return new Station(Objects.requireNonNull(keyHolder.getKey()).longValue(),
+            station.getName());
     }
 
     public List<Station> findAll() {
         String sql = "select * from STATION";
         return jdbcTemplate.query(sql, stationRowMapper);
-    }
-
-    private Station createNewObject(Station station, Long id) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, id);
-        return station;
     }
 
     public void delete(Long id) {
