@@ -1,6 +1,5 @@
 package wooteco.subway.section.domain;
 
-import wooteco.subway.exception.illegalexception.IllegalSectionStatusException;
 import wooteco.subway.exception.sectionsexception.SectionDeleteException;
 import wooteco.subway.exception.sectionsexception.SectionUpdateException;
 import wooteco.subway.exception.notfoundexception.NotFoundSectionException;
@@ -41,7 +40,7 @@ public class Sections {
             }
         }
 
-        throw new IllegalSectionStatusException();
+        throw new IllegalStateException("잘못된 구간 정보 입니다.");
     }
 
     private List<Section> sorting(List<Section> sections, Section topSection) {
@@ -158,7 +157,7 @@ public class Sections {
                 .filter(existSection ->
                         (existSection.isUpStation(upStation) || existSection.isDownStation(downStation) ||
                                 (existSection.isUpStation(downStation) || existSection.isDownStation(upStation))))
-                .findFirst().orElseThrow(IllegalSectionStatusException::new);
+                .findFirst().orElseThrow(() -> new IllegalStateException("잘못된 구간 정보입니다."));
     }
 
     private Station findFixedId(List<Section> sections, Station upStation, Station downStation) {

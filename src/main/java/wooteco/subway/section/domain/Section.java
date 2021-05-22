@@ -1,6 +1,6 @@
 package wooteco.subway.section.domain;
 
-import wooteco.subway.exception.illegalexception.IllegalSectionArgumentException;
+import wooteco.subway.exception.illegalexception.IllegalSectionException;
 import wooteco.subway.station.domain.Station;
 
 public class Section {
@@ -22,7 +22,7 @@ public class Section {
 
     private void validateSection(Station upStationId, Station downStationId) {
         if (upStationId.equals(downStationId)) {
-            throw new IllegalSectionArgumentException();
+            throw new IllegalSectionException("상행선과 하행선은 같을 수 없습니다.");
         }
     }
 
