@@ -29,10 +29,10 @@ public class SectionService {
         return sectionDao.findByLineId(lineId);
     }
 
-    public void addSection(SectionRequest sectionRequest, Long id) {
-        Section section = new Section(id, stationService.findById(sectionRequest.getUpStationId()), stationService.findById(sectionRequest.getDownStationId()), sectionRequest.getDistance());
+    public void addSection(SectionRequest sectionRequest, Long lineId) {
+        Section section = new Section(lineId, stationService.findById(sectionRequest.getUpStationId()), stationService.findById(sectionRequest.getDownStationId()), sectionRequest.getDistance());
 
-        Sections sections = findByLineId(id);
+        Sections sections = findByLineId(lineId);
         Section updateSection = sections.addSection(section);
         sectionDao.save(section);
         sectionDao.update(updateSection);
