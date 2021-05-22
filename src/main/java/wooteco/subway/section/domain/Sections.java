@@ -81,7 +81,7 @@ public class Sections {
     }
 
     public Section addSection(Section section) {
-        Section targetSection = validateAddSection(section);
+        Section targetSection = findTargetSection(section);
 
         if (isBetweenAddCase(section, targetSection)) {
             return getUpdateSection(section, targetSection);
@@ -97,10 +97,22 @@ public class Sections {
         return new Section(targetSection.getId(), targetSection.getLineId(), targetSection.getUpStation(), section.getUpStation(), updateSectionDistance);
     }
 
-    private Section validateAddSection(Section section) {
+    private Section findTargetSection(Section section) {
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
 
+        checkUpAndDownStation(upStation, downStation);
+
+        Section targetSection = targetSection(upStation, downStation);
+
+        if (isBetweenAddCase(section, targetSection)) {
+            validateDistance(targetSection, section);
+        }
+
+        return targetSection;
+    }
+
+    private void checkUpAndDownStation(Station upStation, Station downStation) {
         if (sections.stream()
                 .anyMatch(existSection ->
                         (existSection.isUpStation(upStation) && existSection.isDownStation(downStation)) ||
@@ -114,14 +126,6 @@ public class Sections {
                                 (existSection.isUpStation(downStation) || existSection.isDownStation(upStation)))) {
             throw new SectionUpdateException("상행역 또는 하행역이 포함되어야 합니다.");
         }
-
-        Section targetSection = targetSection(upStation, downStation);
-
-        if (isBetweenAddCase(section, targetSection)) {
-            validateDistance(targetSection, section);
-        }
-
-        return targetSection;
     }
 
     private Section targetSection(Station upStation, Station downStation) {
