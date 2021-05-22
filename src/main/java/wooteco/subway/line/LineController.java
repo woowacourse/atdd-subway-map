@@ -37,7 +37,7 @@ public class LineController {
             .body(lineResponse);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok(lineService.findAll());
     }
@@ -68,7 +68,7 @@ public class LineController {
     }
 
     @DeleteMapping("/{id}/sections")
-    public ResponseEntity<Void> createSection(@PathVariable Long id,
+    public ResponseEntity<Void> deleteSection(@PathVariable Long id,
         @RequestParam("stationId") Long stationId) {
         sectionService.deleteByStationId(id, stationId);
         return ResponseEntity.noContent().build();
