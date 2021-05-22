@@ -29,7 +29,8 @@ public class SectionService {
     }
 
     private void validateSections(Section newSection, List<Section> beforeSections) {
-        if (sectionDao.isExistReverseSection(newSection) || beforeSections.size() > 1) {
+
+        if (sectionDao.isExistReverseSection(newSection) || sectionDao.isExistSection(newSection)) {
             throw new IllegalArgumentException("이미 존재하는 구간입니다.");
         }
     }

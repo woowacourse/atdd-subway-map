@@ -51,8 +51,8 @@ public class Section {
         this.distance = distance;
     }
 
-    private void validateDistance(int distance) {
-        if (distance == 0) {
+    private void validateDistance(Integer distance) {
+        if (distance != null && distance == 0) {
             throw new IllegalArgumentException("구간의 거리는 1보다 작을 수 없습니다.");
         }
     }
@@ -94,7 +94,7 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 

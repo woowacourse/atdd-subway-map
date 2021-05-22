@@ -69,13 +69,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionException() {
         Map<String, Object> params = new HashMap<>();
-        params.put("downStationId", 2L);
         params.put("upStationId", 1L);
+        params.put("downStationId", 2L);
         params.put("distance", 10);
 
         ExtractableResponse<Response> response = Rest.post(params, "/lines/1/sections");
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_INTERNAL_SERVER_ERROR);
     }
 
     @DisplayName("노선 조회시 구간에 포함된 역 목록을 보여준다")
@@ -122,7 +122,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> lineResponse = Rest.get("/lines/1");
         LineResponse lineResponses = lineResponse.jsonPath().getObject(".", LineResponse.class);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_INTERNAL_SERVER_ERROR);
         assertThat(lineResponses.getStations().size()).isEqualTo(2);
     }
 

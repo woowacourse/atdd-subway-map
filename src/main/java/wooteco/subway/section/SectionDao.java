@@ -112,4 +112,14 @@ public class SectionDao {
         ));
 
     }
+
+    public boolean isExistSection(Section section) {
+        String sql = "SELECT EXISTS (SELECT * FROM SECTION WHERE line_id = ? AND (up_station_id = ? AND down_station_id = ?)) AS SUCCESS";
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
+                sql, Boolean.class,
+                section.getLine().getId(),
+                section.getUpStation().getId(),
+                section.getDownStation().getId()
+        ));
+    }
 }
