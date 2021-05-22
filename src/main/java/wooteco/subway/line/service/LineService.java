@@ -34,9 +34,7 @@ public class LineService {
         Station upStation = stationService.findById(lineRequest.getUpStationId());
         Station downStation = stationService.findById(lineRequest.getDownStationId());
 
-        if (checkDuplicatedLineName(line)) {
-            throw new DuplicatedNameException();
-        }
+        checkDuplicated(line);
 
         Line newLine = lineDao.save(line);
 
@@ -47,6 +45,12 @@ public class LineService {
         List<Station> stations = stationService.findByIds(stationIds);
 
         return LineResponse.from(newLine, stations);
+    }
+
+    private void checkDuplicated(Line line) {
+        if (checkDuplicatedLineName(line)) {
+            throw new DuplicatedNameException();
+        }
     }
 
     private boolean checkDuplicatedLineName(Line line) {
