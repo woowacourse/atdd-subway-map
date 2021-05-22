@@ -12,9 +12,6 @@ public class Section {
     private Station downStation;
     private int distance;
 
-    public Section() {
-    }
-
     public Section(final Station upStation, final Station downStation, final int distance) {
         this(null, null, upStation, downStation, distance);
     }

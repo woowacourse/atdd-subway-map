@@ -6,9 +6,6 @@ public class Station {
     private Long id;
     private StationName name;
 
-    public Station() {
-    }
-
     public Station(final Long id) {
         this(id, StationName.emptyName());
     }
