@@ -20,6 +20,12 @@ public class Section {
         this.distance = distance;
     }
 
+    private void validateSection(Station upStationId, Station downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new IllegalSectionArgumentException();
+        }
+    }
+
     public Section(Long lineId, Station upStation, Station downStation, int distance) {
         this(0L, lineId, upStation, downStation, distance);
     }
@@ -54,12 +60,6 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    private void validateSection(Station upStationId, Station downStationId) {
-        if (upStationId.equals(downStationId)) {
-            throw new IllegalSectionArgumentException();
-        }
     }
 
     @Override

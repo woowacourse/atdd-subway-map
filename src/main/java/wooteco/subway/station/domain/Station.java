@@ -36,7 +36,7 @@ public class Station {
     }
 
     private void validateName(String name) {
-        if(name == null || name.length() == 0) {
+        if (name == null || name.length() == 0) {
             throw new StationException("유효하지 않는 역 이름입니다.");
         }
     }
