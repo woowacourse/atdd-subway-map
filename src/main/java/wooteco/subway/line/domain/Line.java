@@ -1,7 +1,6 @@
 package wooteco.subway.line.domain;
 
 import wooteco.subway.exception.illegalexception.IllegalLineArgumentException;
-import wooteco.subway.line.controller.dto.LineRequest;
 import wooteco.subway.station.domain.Station;
 
 import java.util.ArrayList;
