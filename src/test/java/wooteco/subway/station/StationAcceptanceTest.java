@@ -114,7 +114,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo(SubwayException.ILLEGAL_STATION_DELETE_EXCEPTION.message());
+        assertThat(response.body().asString())
+            .isEqualTo(SubwayException.ILLEGAL_STATION_DELETE_EXCEPTION.message());
     }
 
     private ExtractableResponse<Response> createStationAPI(String name) {

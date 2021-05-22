@@ -20,7 +20,6 @@ import wooteco.subway.AcceptanceTest;
 import wooteco.subway.exception.SubwayException;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
-import wooteco.subway.line.section.dto.SectionRequest;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 import wooteco.subway.station.dto.StationResponse;
