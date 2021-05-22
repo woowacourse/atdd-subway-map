@@ -115,7 +115,7 @@ public class Sections {
             throw new SectionUpdateException("상행역 또는 하행역이 포함되어야 합니다.");
         }
 
-        Section targetSection = targetSection(upSㅇtation, downStation);
+        Section targetSection = targetSection(upStation, downStation);
 
         if (isBetweenAddCase(section, targetSection)) {
             validateDistance(targetSection, section);
@@ -223,7 +223,7 @@ public class Sections {
 
     private void deleteEndStation(Station station) {
         Section topSection = sections.get(0);
-        Section bottomSection = sections.get(sections.size() - 1);
+        Section bottomSection = getLastSection();
 
         if (topSection.isUpStation(station)) {
             sections.remove(topSection);
