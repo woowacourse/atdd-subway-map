@@ -15,8 +15,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/stations")
 public class StationController {
-    private final StationService stationService;
     private final Logger logger = LoggerFactory.getLogger(StationController.class);
+    private final StationService stationService;
 
     public StationController(StationService stationService) {
         this.stationService = stationService;

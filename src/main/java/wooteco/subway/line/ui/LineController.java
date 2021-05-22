@@ -16,8 +16,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-    private final LineService lineService;
     private final Logger logger = LoggerFactory.getLogger(LineController.class);
+    private final LineService lineService;
 
     public LineController(final LineService lineService) {
         this.lineService = lineService;
