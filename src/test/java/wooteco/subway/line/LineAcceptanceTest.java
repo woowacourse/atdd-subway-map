@@ -232,7 +232,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines/" + lineId + "/sections")
+                .pathParam("lineId", lineId)
+                .post("/lines/{lineId}/sections")
                 .then().log().all()
                 .extract();
     }
@@ -240,7 +241,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> 구간_삭제(Long lineId, Long stationId) {
         return RestAssured.given().log().all()
                 .when()
-                .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
+                .pathParam("lineId", lineId)
+                .queryParam("stationId", stationId)
+                .delete("/lines/{lineId}/sections")
                 .then().log().all()
                 .extract();
     }
