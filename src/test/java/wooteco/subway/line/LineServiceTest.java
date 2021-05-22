@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.UnitTest;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotExistItemException;
+import wooteco.subway.line.dto.LineOnlyDataResponse;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.station.Station;
@@ -107,12 +108,12 @@ class LineServiceTest extends UnitTest {
         lineService.create(line3Request);
 
         //when
-        List<LineResponse> lines = lineService.findAll();
+        List<LineOnlyDataResponse> lines = lineService.findAll();
 
         //then
         assertThat(lines).hasSize(2);
-        checkedThen(line2Request, lines.get(0));
-        checkedThen(line3Request, lines.get(1));
+        checkedThenOnlyLineData(line2Request, lines.get(0));
+        checkedThenOnlyLineData(line3Request, lines.get(1));
     }
 
     @Test
@@ -173,5 +174,10 @@ class LineServiceTest extends UnitTest {
             NUMBER_TO_STATION.get(lineRequest.getDownStationId())
         );
         assertThat(lineResponse.getStations()).usingRecursiveComparison().isEqualTo(stations);
+    }
+
+    private void checkedThenOnlyLineData(LineRequest lineRequest, LineOnlyDataResponse lineResponse) {
+        assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName());
+        assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor());
     }
 }

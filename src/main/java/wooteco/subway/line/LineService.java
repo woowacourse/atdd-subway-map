@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.NotExistItemException;
+import wooteco.subway.line.dto.LineOnlyDataResponse;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.section.SectionService;
@@ -51,16 +52,11 @@ public class LineService {
         return new LineResponse(line, stations);
     }
 
-    public List<LineResponse> findAll() {
+    public List<LineOnlyDataResponse> findAll() {
         List<Line> lines = lineDao.findAll();
 
         return lines.stream()
-            .map(line -> {
-                Sections sections = sectionService.findByLineId(line.getId());
-                List<StationResponse> stations = stationService
-                    .findByLineId(line.getId(), sections);
-                return new LineResponse(line, stations);
-            }).collect(Collectors.toList());
+            .map(LineOnlyDataResponse::new).collect(Collectors.toList());
     }
 
     public void update(Long id, LineRequest lineRequest) {
