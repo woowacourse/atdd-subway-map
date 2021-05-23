@@ -1,15 +1,16 @@
 package wooteco.subway.exception.badrequest;
 
-public class BadRequest extends RuntimeException {
+import org.springframework.http.HttpStatus;
+import wooteco.subway.exception.SubwayException;
 
-    public BadRequest() {
-    }
+public class BadRequest extends SubwayException {
+    private static final HttpStatus BAD_REQUEST = HttpStatus.BAD_REQUEST;
 
     public BadRequest(String message) {
-        super(message);
+        super(message, BAD_REQUEST);
     }
 
     public BadRequest(String message, Throwable cause) {
-        super(message, cause);
+        super(message, cause, BAD_REQUEST);
     }
 }

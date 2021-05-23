@@ -1,7 +1,7 @@
 package wooteco.subway.line.domain.repository;
 
 import org.springframework.stereotype.Repository;
-import wooteco.subway.exception.badrequest.LineNotFoundException;
+import wooteco.subway.exception.notfound.LineNotFoundException;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.section.Section;
 import wooteco.subway.line.domain.section.Sections;

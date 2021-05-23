@@ -8,7 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import wooteco.subway.exception.badrequest.DuplicatedNameException;
-import wooteco.subway.exception.badrequest.LineNotFoundException;
+import wooteco.subway.exception.notfound.LineNotFoundException;
 import wooteco.subway.exception.badrequest.NoRowAffectedException;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.section.Distance;

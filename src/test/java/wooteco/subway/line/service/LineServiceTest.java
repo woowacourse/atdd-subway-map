@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.badrequest.DuplicatedNameException;
-import wooteco.subway.exception.badrequest.LineNotFoundException;
+import wooteco.subway.exception.notfound.LineNotFoundException;
 import wooteco.subway.line.controller.dto.LineNameColorResponse;
 import wooteco.subway.line.controller.dto.LineRequest;
 import wooteco.subway.line.controller.dto.LineResponse;

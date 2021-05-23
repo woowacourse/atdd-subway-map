@@ -8,7 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import wooteco.subway.exception.badrequest.DuplicatedNameException;
 import wooteco.subway.exception.badrequest.NoRowAffectedException;
-import wooteco.subway.exception.badrequest.StationNotFoundException;
+import wooteco.subway.exception.notfound.StationNotFoundException;
 import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
