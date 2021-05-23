@@ -17,6 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.station.dto.StationRequest;
 
 @DisplayName("Line api")
 @Sql("classpath:tableInit.sql")
@@ -32,10 +33,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
+    private ExtractableResponse<Response> postStations(StationRequest stationRequest) {
+        return RestAssured.given().log().all()
+            .body(stationRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void create() {
-        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
+        postStations(new StationRequest("쌍문역"));
+        postStations(new StationRequest("수유역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
 
         ExtractableResponse<Response> response = postLineRequest(lineRequest);
 
@@ -43,7 +57,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("중복된 이름으로 노선을 생성할 수 없다.")
+    @DisplayName("지하철 노선 생성시 상행 종점과 하행 종점 거리가 0보다 크지 않으면, 노선을 생성할 수 없다.")
+    @Test
+    void createSectionDistanceException() {
+        postStations(new StationRequest("쌍문역"));
+        postStations(new StationRequest("수유역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 1L, 2L, 0);
+
+        ExtractableResponse<Response> response = postLineRequest(lineRequest);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철 노선 생성시 상행/하행 종점역이 등록되지 않는 역이라면, 노선을 생성할 수 없다.")
+    @Test
+    void createNotExistStationException() {
+        postStations(new StationRequest("쌍문역"));
+        postStations(new StationRequest("수유역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 1L, 3L, 10);
+
+        ExtractableResponse<Response> response = postLineRequest(lineRequest);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철노선 생성시 노선 이름이 중복이라면, 노선을 생성할 수 없다.")
     @Test
     void createLineWithDuplicateName() {
         LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
@@ -58,10 +98,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
+        postStations(new StationRequest("쌍문역"));
+        postStations(new StationRequest("수유역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
         ExtractableResponse<Response> createResponse1 = postLineRequest(lineRequest);
 
-        lineRequest = new LineRequest("3호선", "bg-orange-600");
+        lineRequest = new LineRequest("3호선", "bg-orange-600", 1L, 2L, 10);
         ExtractableResponse<Response> createResponse2 = postLineRequest(lineRequest);
 
         // when
@@ -88,10 +131,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     public void getLine() {
         /// given
-        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
+        postStations(new StationRequest("쌍문역"));
+        postStations(new StationRequest("수유역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
         postLineRequest(lineRequest);
 
-        lineRequest = new LineRequest("3호선", "bg-orange-600");
+        lineRequest = new LineRequest("3호선", "bg-orange-600", 1L, 2L, 10);
         postLineRequest(lineRequest);
 
         // when
@@ -113,7 +159,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     public void putLine() {
         /// given
-        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
+        postStations(new StationRequest("쌍문역"));
+        postStations(new StationRequest("수유역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
+
         postLineRequest(lineRequest);
         lineRequest = new LineRequest("3호선", "bg-orange-600");
 
@@ -134,14 +184,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     public void deleteLine() {
         // given
-        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
-        ExtractableResponse<Response> createResponse = postLineRequest(lineRequest);
+        postStations(new StationRequest("쌍문역"));
+        postStations(new StationRequest("수유역"));
+
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
+        postLineRequest(lineRequest);
 
         // when
-        String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .delete(uri)
+            .delete("/lines/1")
             .then().log().all()
             .extract();
 

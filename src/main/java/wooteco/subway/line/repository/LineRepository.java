@@ -69,9 +69,9 @@ public class LineRepository {
         return jdbcTemplate.update(sql, id);
     }
 
-    public Boolean isExistName(Line line) {
+    public Boolean isExistName(String name) {
         String sql = "SELECT EXISTS(SELECT * FROM LINE WHERE name = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, line.getName());
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
 }
