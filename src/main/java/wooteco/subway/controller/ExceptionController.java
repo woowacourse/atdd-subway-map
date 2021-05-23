@@ -4,10 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import wooteco.subway.exceptions.LineDuplicationException;
-import wooteco.subway.exceptions.LineNotFoundException;
-import wooteco.subway.exceptions.StationDuplicationException;
-import wooteco.subway.exceptions.StationNotFoundException;
+import wooteco.subway.exception.LineDuplicationException;
+import wooteco.subway.exception.LineNotFoundException;
+import wooteco.subway.exception.StationDuplicationException;
+import wooteco.subway.exception.StationNotFoundException;
 
 @ControllerAdvice
 public class ExceptionController {
