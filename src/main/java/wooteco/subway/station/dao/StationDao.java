@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
@@ -33,6 +34,7 @@ public class StationDao {
         return keyHolder.getKey().longValue();
     }
 
+    @Transactional(readOnly = true)
     public List<Station> findAll() {
         String sql = "SELECT * FROM station";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new Station(
@@ -41,25 +43,22 @@ public class StationDao {
         ));
     }
 
-    public void delete(Long id) {
-        String sql = "DELETE FROM station WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+    public int delete(Long id) {
+        String sql = "DELETE FROM station Where id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 
-    public void clear() {
-        String sql = "DELETE FROM station";
-        jdbcTemplate.update(sql);
-    }
-
+    @Transactional(readOnly = true)
     public int countStationByName(String name) {
         String sql = "SELECT count(*) FROM station WHERE name = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, name);
     }
 
-    public Optional<Station> findStationById(Long id) {
+    @Transactional(readOnly = true)
+    public Optional<Station> findById(Long id) {
         try {
             String sql = "SELECT * FROM station WHERE id = ?";
-            return Optional.ofNullable(
+            return Optional.of(
                     jdbcTemplate.queryForObject(sql,
                             (rs, rowNum) -> new Station(
                                     rs.getLong("id"),
