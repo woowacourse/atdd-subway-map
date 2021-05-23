@@ -2,7 +2,6 @@ package wooteco.subway.line.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.section.Distance;
 import wooteco.subway.line.domain.section.Section;
 import wooteco.subway.line.domain.section.Sections;
