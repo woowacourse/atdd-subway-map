@@ -1,13 +1,19 @@
 package wooteco.subway.dto;
 
+import javax.validation.constraints.NotNull;
 import wooteco.subway.domain.line.Line;
 
 public class LineRequest {
 
+    @NotNull
     private String name;
+    @NotNull
     private String color;
+    @NotNull(message = "생성할 구간 정보를 입력해주세요.")
     private Long upStationId;
+    @NotNull(message = "생성할 구간 정보를 입력해주세요.")
     private Long downStationId;
+    @NotNull(message = "생성할 구간 정보를 입력해주세요.")
     private int distance;
 
     public LineRequest() {
