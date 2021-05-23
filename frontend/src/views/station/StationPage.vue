@@ -9,16 +9,16 @@
           <v-form ref="stationForm" v-model="valid" @submit.prevent>
             <div class="d-flex">
               <v-text-field
-                color="grey darken-1"
-                class="mr-4"
-                @keydown.enter="onCreateStation"
-                label="지하철 역 이름을 입력해주세요."
-                v-model="stationName"
-                prepend-inner-icon="mdi-subway"
-                dense
-                outlined
-                :rules="rules.stationName"
-                autofocus
+                  color="grey darken-1"
+                  class="mr-4"
+                  @keydown.enter="onCreateStation"
+                  label="지하철 역 이름을 입력해주세요."
+                  v-model="stationName"
+                  prepend-inner-icon="mdi-subway"
+                  dense
+                  outlined
+                  :rules="rules.stationName"
+                  autofocus
               ></v-text-field>
               <v-btn :disabled="!valid" color="amber" @click.prevent="onCreateStation">추가</v-btn>
             </div>
@@ -49,10 +49,10 @@
 
 <script>
 import validator from '@/utils/validator'
-import { CREATE_STATION, DELETE_STATION, FETCH_STATIONS } from '@/store/shared/actionTypes'
-import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { SHOW_SNACKBAR } from '@/store/shared/mutationTypes'
-import { SNACKBAR_MESSAGES } from '@/utils/constants'
+import {CREATE_STATION, DELETE_STATION, FETCH_STATIONS} from '@/store/shared/actionTypes'
+import {mapActions, mapGetters, mapMutations} from 'vuex'
+import {SHOW_SNACKBAR} from '@/store/shared/mutationTypes'
+import {SNACKBAR_MESSAGES} from '@/utils/constants'
 
 export default {
   name: 'StationPage',
@@ -73,7 +73,7 @@ export default {
         return
       }
       try {
-        await this.createStation({ name: this.stationName })
+        await this.createStation({name: this.stationName})
         await this.fetchStations()
         this.stationName = ''
         this.$refs.stationForm.resetValidation()
@@ -95,7 +95,7 @@ export default {
   },
   data() {
     return {
-      rules: { ...validator },
+      rules: {...validator},
       valid: false,
       stationName: ''
     }

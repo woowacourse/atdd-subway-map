@@ -2,7 +2,6 @@ package wooteco.subway.station.dao;
 
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicatedNameException;
-import wooteco.subway.exception.NotFoundStationException;
 import wooteco.subway.station.domain.Station;
 
 import java.lang.reflect.Field;
@@ -54,6 +53,11 @@ public class MemoryStationDao implements StationDao {
         return stations.stream()
                 .filter(station -> station.equalName(name))
                 .findAny();
+    }
+
+    @Override
+    public List<Station> findByIds(List<Long> ids) {
+        return new ArrayList<>();
     }
 
     private boolean validateDuplicateName(Station newStation) {

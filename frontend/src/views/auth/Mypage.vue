@@ -35,15 +35,15 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import {mapActions, mapGetters, mapMutations} from 'vuex'
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog'
-import { DELETE_MEMBER } from '@/store/shared/actionTypes'
-import { SHOW_SNACKBAR } from '@/store/shared/mutationTypes'
-import { SNACKBAR_MESSAGES } from '@/utils/constants'
+import {DELETE_MEMBER} from '@/store/shared/actionTypes'
+import {SHOW_SNACKBAR} from '@/store/shared/mutationTypes'
+import {SNACKBAR_MESSAGES} from '@/utils/constants'
 
 export default {
   name: 'Mypage',
-  components: { ConfirmDialog },
+  components: {ConfirmDialog},
   computed: {
     ...mapGetters(['member'])
   },

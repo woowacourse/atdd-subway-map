@@ -9,48 +9,48 @@
           <v-card-text class="px-4 pt-4 pb-0">
             <div class="d-flex">
               <v-text-field
-                color="grey darken-1"
-                label="이메일을 입력해주세요."
-                v-model="editingMember.email"
-                prepend-inner-icon="mdi-email"
-                dense
-                outlined
-                :rules="rules.member.email"
+                  color="grey darken-1"
+                  label="이메일을 입력해주세요."
+                  v-model="editingMember.email"
+                  prepend-inner-icon="mdi-email"
+                  dense
+                  outlined
+                  :rules="rules.member.email"
               ></v-text-field>
             </div>
             <div class="d-flex mt-2">
               <v-text-field
-                color="grey darken-1"
-                label="나이를 입력해주세요."
-                v-model="editingMember.age"
-                prepend-inner-icon="mdi-account"
-                dense
-                outlined
-                :rules="rules.member.age"
+                  color="grey darken-1"
+                  label="나이를 입력해주세요."
+                  v-model="editingMember.age"
+                  prepend-inner-icon="mdi-account"
+                  dense
+                  outlined
+                  :rules="rules.member.age"
               ></v-text-field>
             </div>
             <div class="d-flex mt-2">
               <v-text-field
-                color="grey darken-1"
-                label="비밀번호를 입력해주세요."
-                v-model="editingMember.password"
-                prepend-inner-icon="mdi-lock"
-                type="password"
-                dense
-                outlined
-                :rules="rules.member.password"
+                  color="grey darken-1"
+                  label="비밀번호를 입력해주세요."
+                  v-model="editingMember.password"
+                  prepend-inner-icon="mdi-lock"
+                  type="password"
+                  dense
+                  outlined
+                  :rules="rules.member.password"
               ></v-text-field>
             </div>
             <div class="d-flex mt-2">
               <v-text-field
-                color="grey darken-1"
-                label="비밀번호를 한번 더 입력해주세요."
-                type="password"
-                prepend-inner-icon="mdi-lock"
-                dense
-                outlined
-                v-model="editingMember.confirmPassword"
-                :rules="[(editingMember.password && editingMember.password === editingMember.confirmPassword) || '비밀번호가 일치하지 않습니다.']"
+                  color="grey darken-1"
+                  label="비밀번호를 한번 더 입력해주세요."
+                  type="password"
+                  prepend-inner-icon="mdi-lock"
+                  dense
+                  outlined
+                  v-model="editingMember.confirmPassword"
+                  :rules="[(editingMember.password && editingMember.password === editingMember.confirmPassword) || '비밀번호가 일치하지 않습니다.']"
               ></v-text-field>
             </div>
           </v-card-text>
@@ -71,10 +71,10 @@
 
 <script>
 import validator from '@/utils/validator'
-import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { FETCH_MEMBER, UPDATE_MEMBER } from '@/store/shared/actionTypes'
-import { SHOW_SNACKBAR } from '@/store/shared/mutationTypes'
-import { SNACKBAR_MESSAGES } from '@/utils/constants'
+import {mapActions, mapGetters, mapMutations} from 'vuex'
+import {FETCH_MEMBER, UPDATE_MEMBER} from '@/store/shared/actionTypes'
+import {SHOW_SNACKBAR} from '@/store/shared/mutationTypes'
+import {SNACKBAR_MESSAGES} from '@/utils/constants'
 
 export default {
   name: 'MypageEdit',
@@ -85,7 +85,7 @@ export default {
     if (!this.member) {
       await this.loadMember()
     }
-    const { email, age } = this.member
+    const {email, age} = this.member
     this.editingMember = {
       email,
       age,
@@ -108,8 +108,8 @@ export default {
     },
     async onEditMember() {
       try {
-        const { email, age, password } = this.editingMember
-        const updateMemberView = { email, age, password }
+        const {email, age, password} = this.editingMember
+        const updateMemberView = {email, age, password}
         await this.updateMember(updateMemberView)
         this.showSnackbar(SNACKBAR_MESSAGES.MEMBER.EDIT.SUCCESS)
         this.$router.replace('/mypage')
@@ -123,7 +123,7 @@ export default {
     return {
       editingMember: {},
       valid: false,
-      rules: { ...validator }
+      rules: {...validator}
     }
   }
 }

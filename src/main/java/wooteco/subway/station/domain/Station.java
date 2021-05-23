@@ -1,5 +1,7 @@
 package wooteco.subway.station.domain;
 
+import wooteco.subway.exception.StationException;
+
 public class Station {
     private Long id;
     private String name;
@@ -8,12 +10,13 @@ public class Station {
     }
 
     public Station(Long id, String name) {
+        validateName(name);
         this.id = id;
         this.name = name;
     }
 
     public Station(String name) {
-        this.name = name;
+        this(0L, name);
     }
 
     public Long getId() {
@@ -30,6 +33,12 @@ public class Station {
 
     public boolean equalId(Long id) {
         return this.id.equals(id);
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.length() == 0) {
+            throw new StationException("유효하지 않는 역 이름입니다.");
+        }
     }
 
     @Override

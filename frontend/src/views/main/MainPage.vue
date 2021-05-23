@@ -1,9 +1,9 @@
 <template>
   <div class="d-flex justify-center align-center app-container">
     <div class="text-center">
-      <img src="/images/main_logo.png" class="main-logo mx-auto" />
+      <img src="/images/main_logo.png" class="main-logo mx-auto"/>
       <p class="mt-2 text-gray-700">
-        RunningMap Service 페이지입니다. <br />
+        RunningMap Service 페이지입니다. <br/>
         제공되는 템플릿을 활용해 프로젝트를 완성해 보세요!
       </p>
       <ul class="text-blue-700">

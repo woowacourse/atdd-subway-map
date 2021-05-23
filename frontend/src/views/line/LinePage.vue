@@ -7,21 +7,21 @@
         </v-card-title>
         <v-card-text class="relative px-0 pb-0 mb-6 line-list-container d-flex flex-column">
           <div class="relative">
-            <LineCreateButton />
+            <LineCreateButton/>
           </div>
-          <v-divider />
+          <v-divider/>
           <div class="mt-4 overflow-y-auto">
             <v-list-item-group v-model="line" color="grey darken-3">
               <v-list-item v-for="line in lines" :key="line.name">
                 <v-list-item-content>
                   <v-list-item-title @click="setLineDetail(line)">
-                    <v-avatar :color="line.color" size="10" class="relative bottom-1" left />
+                    <v-avatar :color="line.color" size="10" class="relative bottom-1" left/>
                     <span>{{ line.name }}</span>
                   </v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action class="flex-row">
-                  <LineEditButton :line="line" />
-                  <LineDeleteButton :line="line" />
+                  <LineEditButton :line="line"/>
+                  <LineDeleteButton :line="line"/>
                 </v-list-item-action>
               </v-list-item>
             </v-list-item-group>
@@ -33,15 +33,15 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import {mapActions, mapGetters} from 'vuex'
 import LineDeleteButton from '@/views/line/components/LineDeleteButton'
 import LineEditButton from '@/views/line/components/LineEditButton'
 import LineCreateButton from '@/views/line/components/LineCreateButton'
-import { FETCH_LINES } from '@/store/shared/actionTypes'
+import {FETCH_LINES} from '@/store/shared/actionTypes'
 
 export default {
   name: 'LinePage',
-  components: { LineCreateButton, LineEditButton, LineDeleteButton },
+  components: {LineCreateButton, LineEditButton, LineDeleteButton},
   created() {
     this.fetchLines()
   },

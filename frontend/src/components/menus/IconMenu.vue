@@ -4,25 +4,25 @@
       <div v-on="on" class="d-inline-block" @click="showMenu">
         <IconButton>
           <template slot="icon">
-            <slot name="icon" />
+            <slot name="icon"/>
           </template>
         </IconButton>
       </div>
     </template>
     <v-list>
-      <slot name="items" />
+      <slot name="items"/>
     </v-list>
   </v-menu>
 </template>
 
 <script>
 import IconButton from '@/components/buttons/IconButton'
-import { mapGetters, mapMutations } from 'vuex'
-import { SHOW_MENU } from '@/store/shared/mutationTypes'
+import {mapGetters, mapMutations} from 'vuex'
+import {SHOW_MENU} from '@/store/shared/mutationTypes'
 
 export default {
   name: 'IconMenu',
-  components: { IconButton },
+  components: {IconButton},
   computed: {
     ...mapGetters(['menuStatus'])
   },

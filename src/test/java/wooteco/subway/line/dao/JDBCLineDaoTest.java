@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
-import wooteco.subway.exception.NotFoundLineException;
+import wooteco.subway.exception.notfoundexception.NotFoundLineException;
 import wooteco.subway.line.domain.Line;
 
 import java.util.ArrayList;
@@ -45,8 +45,9 @@ class JDBCLineDaoTest {
 
         List<Line> lines = jdbcLineDao.findAll();
 
-        assertThat(lines).hasSize(2);
-        assertThat(lines).containsExactly(savedLine1, savedLine2);
+        assertThat(lines)
+                .hasSize(2)
+                .containsExactly(savedLine1, savedLine2);
     }
 
     @Test
@@ -72,8 +73,9 @@ class JDBCLineDaoTest {
 
         List<Line> lines = jdbcLineDao.findAll();
 
-        assertThat(lines).hasSize(1);
-        assertThat(lines).containsExactly(savedLine1);
+        assertThat(lines)
+                .hasSize(1)
+                .containsExactly(savedLine1);
     }
 
     @Test

@@ -23,13 +23,20 @@ import static org.hamcrest.CoreMatchers.is;
 @Transactional
 public class StationAcceptanceTest extends AcceptanceTest {
 
+    private final StationRequest gangnamStationRequest;
+    private final StationRequest yeoksamStationRequest;
+
+    public StationAcceptanceTest() {
+        this.gangnamStationRequest = new StationRequest("강남역");
+        this.yeoksamStationRequest = new StationRequest("역삼역");
+    }
+
     @Test
     @DisplayName("지하철역을 생성한다.")
     void createStation() {
-        StationRequest stationRequest = new StationRequest("강남역");
 
         // when
-        ExtractableResponse<Response> response = createStation(stationRequest);
+        ExtractableResponse<Response> response = createStation(gangnamStationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -39,24 +46,22 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     void createStationWithDuplicateName() {
-        StationRequest stationRequest = new StationRequest("강남역");
+        //given
+        createStation(gangnamStationRequest);
 
         // when
-        ExtractableResponse<Response> response = createStation(stationRequest);
+        ExtractableResponse<Response> response = createStation(gangnamStationRequest);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @Test
     @DisplayName("지하철역을 조회한다.")
     void getStations() {
         /// given
-        StationRequest stationRequest1 = new StationRequest("강남역");
-        ExtractableResponse<Response> createResponse1 = createStation(stationRequest1);
-
-        StationRequest stationRequest2 = new StationRequest("역삼역");
-        ExtractableResponse<Response> createResponse2 = createStation(stationRequest2);
+        ExtractableResponse<Response> createResponse1 = createStation(gangnamStationRequest);
+        ExtractableResponse<Response> createResponse2 = createStation(yeoksamStationRequest);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -80,11 +85,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     void deleteStation() {
         // given
-        StationRequest stationRequest1 = new StationRequest("강남역");
-        ExtractableResponse<Response> createResponse1 = createStation(stationRequest1);
-
-        StationRequest stationRequest2 = new StationRequest("역삼역");
-        ExtractableResponse<Response> createResponse2 = createStation(stationRequest2);
+        ExtractableResponse<Response> createResponse1 = createStation(gangnamStationRequest);
+        ExtractableResponse<Response> createResponse2 = createStation(yeoksamStationRequest);
 
         // when
         String uri = createResponse2.header("Location");

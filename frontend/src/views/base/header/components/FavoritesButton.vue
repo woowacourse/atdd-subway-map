@@ -12,6 +12,6 @@ import MenuListItem from '@/components/menus/MenuListItem'
 
 export default {
   name: 'FavoritesButton',
-  components: { MenuListItem }
+  components: {MenuListItem}
 }
 </script>

@@ -1,7 +1,6 @@
 package wooteco.subway.line.domain;
 
-import wooteco.subway.exception.IllegalLineArgumentException;
-import wooteco.subway.line.controller.dto.LineRequest;
+import wooteco.subway.exception.illegalexception.IllegalLineArgumentException;
 import wooteco.subway.station.domain.Station;
 
 import java.util.ArrayList;
@@ -29,12 +28,6 @@ public class Line {
         this.stations = stations;
     }
 
-    public static Line from(LineRequest lineRequest) {
-        validatedNameLength(lineRequest.getName());
-        validatedColorLength(lineRequest.getColor());
-        return new Line(lineRequest.getName(), lineRequest.getColor());
-    }
-
     public Long getId() {
         return id;
     }
@@ -60,13 +53,13 @@ public class Line {
     }
 
     private static void validatedNameLength(String name) {
-        if(name == null || name.length() == 0) {
+        if (name == null || name.length() == 0) {
             throw new IllegalLineArgumentException("유효한 이름이 아닙니다.");
         }
     }
 
     private static void validatedColorLength(String color) {
-        if(color == null || color.length() == 0) {
+        if (color == null || color.length() == 0) {
             throw new IllegalLineArgumentException("유효한 색깔이 아닙니다.");
         }
     }

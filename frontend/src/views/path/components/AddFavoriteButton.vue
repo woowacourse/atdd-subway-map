@@ -10,10 +10,10 @@
 </template>
 
 <script>
-import { mapActions, mapMutations } from 'vuex'
-import { SHOW_SNACKBAR } from '@/store/shared/mutationTypes'
-import { SNACKBAR_MESSAGES } from '@/utils/constants'
-import { CREATE_FAVORITE } from '@/store/shared/actionTypes'
+import {mapActions, mapMutations} from 'vuex'
+import {SHOW_SNACKBAR} from '@/store/shared/mutationTypes'
+import {SNACKBAR_MESSAGES} from '@/utils/constants'
+import {CREATE_FAVORITE} from '@/store/shared/actionTypes'
 
 export default {
   name: 'AddFavoriteButton',
@@ -28,8 +28,8 @@ export default {
     ...mapActions([CREATE_FAVORITE]),
     async onAddFavorite() {
       try {
-        const { source, target } = this.path
-        await this.createFavorite({ source, target })
+        const {source, target} = this.path
+        await this.createFavorite({source, target})
         this.showSnackbar(SNACKBAR_MESSAGES.FAVORITE.ADD.SUCCESS)
       } catch (e) {
         this.showSnackbar(SNACKBAR_MESSAGES.FAVORITE.ADD.FAIL)

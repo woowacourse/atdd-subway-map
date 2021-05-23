@@ -7,18 +7,18 @@
     </template>
     <v-card>
       <v-card-title class="headline">
-        <slot name="title" />
+        <slot name="title"/>
       </v-card-title>
       <div class="mx-auto my-3">
         <slot name="image"></slot>
       </div>
       <v-card-text class="text-center">
-        <slot name="text" />
+        <slot name="text"/>
       </v-card-text>
       <v-card-actions v-if="actions" class="px-9 pb-8">
         <v-spacer></v-spacer>
         <v-btn text @click="closeDialog">취소</v-btn>
-        <slot name="action" />
+        <slot name="action"/>
       </v-card-actions>
     </v-card>
   </v-dialog>
