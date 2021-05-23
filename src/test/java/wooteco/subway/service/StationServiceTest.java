@@ -16,6 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.repository.StationDao;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,13 +34,15 @@ public class StationServiceTest {
     void createStation() {
         // given
         Station station = new Station(1L, "잠실역");
+        StationRequest stationRequest = new StationRequest("잠실역");
+        StationResponse stationResponse = StationResponse.of(station);
         given(stationDao.save(any())).willReturn(1L);
 
         // when
-        Station createdStation = stationService.createStation("잠실역");
+        StationResponse savedStationResponse = stationService.createStation(stationRequest);
 
         // then
-        assertThat(createdStation.getId()).isEqualTo(station.getId());
+        assertThat(savedStationResponse.getId()).isEqualTo(stationResponse.getId());
     }
 
     @Test
@@ -47,17 +51,21 @@ public class StationServiceTest {
         // given
         Station station1 = new Station(1L, "잠실역");
         Station station2 = new Station(2L, "역삼역");
+        StationResponse stationResponse1 = StationResponse.of(station1);
+        StationResponse stationResponse2 = StationResponse.of(station2);
+
         given(stationDao.findAll()).willReturn(Arrays.asList(
             station1, station2)
         );
 
         // when
-        List<Station> stations = stationService.findAll();
+        List<StationResponse> stationResponses = stationService.findAll();
 
         // then
-        assertThat(stations)
-            .contains(station1)
-            .contains(station2);
+        assertThat(stationResponses.get(0).getId()).isEqualTo(stationResponse1.getId());
+        assertThat(stationResponses.get(0).getName()).isEqualTo(stationResponse1.getName());
+        assertThat(stationResponses.get(1).getId()).isEqualTo(stationResponse2.getId());
+        assertThat(stationResponses.get(1).getName()).isEqualTo(stationResponse2.getName());
     }
 
     @Test

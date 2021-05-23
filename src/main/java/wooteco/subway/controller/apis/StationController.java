@@ -29,20 +29,16 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(
-        @RequestBody StationRequest stationRequest) {
-        Station newStation = stationService.createStation(stationRequest.getName());
-        StationResponse stationResponse = new StationResponse(newStation.getId(),
-            newStation.getName());
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId()))
+        @RequestBody StationRequest stationRequest
+    ) {
+        StationResponse stationResponse = stationService.createStation(stationRequest);
+        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId()))
             .body(stationResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = stationService.findAll();
-        List<StationResponse> stationResponses = stations.stream()
-            .map(it -> new StationResponse(it.getId(), it.getName()))
-            .collect(Collectors.toList());
+        List<StationResponse> stationResponses = stationService.findAll();
         return ResponseEntity.ok(stationResponses);
     }
 
