@@ -33,14 +33,12 @@ public class StationServiceTest {
         // given
         Station station = new Station(1L, "잠실역");
         given(stationDao.save(any())).willReturn(1L);
-        given(stationDao.findById(1L)).willReturn(Optional.of(station));
 
         // when
-        Station station2 = stationService.createStation("잠실역");
+        Station createdStation = stationService.createStation("잠실역");
 
         // then
-        assertThat(station2).isEqualTo(station);
-        assertThat(station2.getId()).isEqualTo(station.getId());
+        assertThat(createdStation.getId()).isEqualTo(station.getId());
     }
 
     @Test
