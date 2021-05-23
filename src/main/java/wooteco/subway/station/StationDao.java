@@ -23,13 +23,13 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long save(String stationName) {
+    public long save(Station station) {
         String sql = "INSERT INTO STATION (name) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, stationName);
+            ps.setString(1, station.getName());
             return ps;
         }, keyHolder);
 

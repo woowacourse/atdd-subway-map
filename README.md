@@ -67,4 +67,10 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] 노선 삭제
   
 - [x] 스프링 빈 적용
-- [ ] H2 적용
+- [x] H2 적용
+
+#### 3단계
+- [x] 지하철 노선 추가 수정
+- [x] 지하철 구간 추가 
+- [x] 노선 조회시 구간에 포함된 역 목록 응답
+- [ ] 지하철 구간 제거 

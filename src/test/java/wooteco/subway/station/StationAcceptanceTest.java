@@ -1,12 +1,10 @@
 package wooteco.subway.station;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.Rest;
 
@@ -57,7 +55,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         /// given
         Map<String, Object> params1 = new HashMap<>();
         params1.put("name", "강남역");
-        ExtractableResponse<Response> createResponse1 = Rest.post(params1,"/stations");
+        ExtractableResponse<Response> createResponse1 = Rest.post(params1, "/stations");
 
         Map<String, Object> params2 = new HashMap<>();
         params2.put("name", "역삼역");
