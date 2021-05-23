@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 import wooteco.subway.repository.LineDao;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,15 +34,17 @@ class LineServiceTest {
     @DisplayName("새로운 노선을 생성한다.")
     void createLine() {
         // given
-        Line line = new Line("2호선", "green");
+        LineRequest lineRequest = new LineRequest("2호선", "green", 1L, 2L, 5);
+        LineResponse lineResponse = new LineResponse(1L, "2호선", "green", new ArrayList<>());
         given(lineDao.save(any())).willReturn(1L);
 
         // when
-        Line line2 = lineService.createLine(line);
+        LineResponse createdLine = lineService.createLine(lineRequest);
 
         // then
-        assertThat(line2).isEqualTo(line);
-        assertThat(line2.getId()).isEqualTo(line.getId());
+        assertThat(createdLine.getId()).isEqualTo(lineResponse.getId());
+        assertThat(createdLine.getName()).isEqualTo(lineResponse.getName());
+        assertThat(createdLine.getColor()).isEqualTo(lineResponse.getColor());
     }
 
     @Test
@@ -48,31 +53,38 @@ class LineServiceTest {
         // given
         Line line1 = new Line("2호선", "green");
         Line line2 = new Line("3호선", "red");
+        LineResponse lineResponse1 = LineResponse.of(line1);
+        LineResponse lineResponse2 = LineResponse.of(line2);
+
         given(lineDao.findAll()).willReturn(Arrays.asList(
             line1, line2
         ));
 
         // when
-        List<Line> lines = lineService.findAll();
+        List<LineResponse> lineResponses = lineService.findAll();
 
         // then
-        assertThat(lines)
-            .contains(line1)
-            .contains(line2);
+        assertThat(lineResponses)
+            .contains(lineResponse1)
+            .contains(lineResponse2);
     }
 
     @Test
     @DisplayName("아이디로 특정 노선을 조회한다.")
     void findById() {
         // given
-        Line line1 = new Line(1L, "2호선", "green");
-        given(lineDao.findById(any())).willReturn(Optional.of(line1));
+        Line line = new Line(1L, "2호선", "green");
+        LineResponse lineResponse = LineResponse.of(line);
+        given(lineDao.findById(any())).willReturn(Optional.of(line));
 
         // when
-        Line line2 = lineService.findById(1L);
+        LineResponse foundLineResponse = lineService.findById(1L);
 
         // then
-        assertThat(line2).isEqualTo(line1);
+        assertThat(foundLineResponse.getId()).isEqualTo(lineResponse.getId());
+        assertThat(foundLineResponse.getName()).isEqualTo(lineResponse.getName());
+        assertThat(foundLineResponse.getColor()).isEqualTo(lineResponse.getColor());
+
     }
 
     @Test
@@ -80,9 +92,9 @@ class LineServiceTest {
     void editLine() {
         // given
         Line line = new Line(1L, "3호선", "red");
-
+        LineRequest lineRequest = new LineRequest("3호선", "red", 1L, 2L, 5);
         // when
-        lineService.editLine(line);
+        lineService.editLine(1L, lineRequest);
 
         // then
         verify(lineDao, times(1))
