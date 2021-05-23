@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.line.dto.LineOnlyDataResponse;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.section.SectionService;
 
 @RestController
 @RequestMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -21,18 +23,19 @@ public class LineController {
 
     private final LineService lineService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse lineResponse = lineService.create(lineRequest);
-        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
+            .body(lineResponse);
     }
 
-    @GetMapping()
-    public ResponseEntity<List<LineResponse>> showLines() {
+    @GetMapping
+    public ResponseEntity<List<LineOnlyDataResponse>> showLines() {
         return ResponseEntity.ok(lineService.findAll());
     }
 
@@ -42,7 +45,8 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<Void> updateLine(@PathVariable Long id,
+        @RequestBody LineRequest lineRequest) {
         lineService.update(id, lineRequest);
         return ResponseEntity.ok().build();
     }
@@ -52,5 +56,4 @@ public class LineController {
         lineService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
 }

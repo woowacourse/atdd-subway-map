@@ -4,23 +4,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.exception.DuplicateException;
+import wooteco.subway.UnitTest;
+import wooteco.subway.exception.SubwayCustomException;
+import wooteco.subway.exception.SubwayException;
+import wooteco.subway.line.Line;
+import wooteco.subway.line.LineDao;
+import wooteco.subway.line.section.Section;
+import wooteco.subway.line.section.SectionDao;
 
-@SpringBootTest()
-@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@Sql("classpath:tableInit.sql")
-@DisplayName("역 DAO 관련 기능")
-class StationDaoTest {
+@DisplayName("지하철역 DAO 관련 기능")
+class StationDaoTest extends UnitTest {
 
     private final StationDao stationDao;
+    private final LineDao lineDao;
+    private final SectionDao sectionDao;
 
-    public StationDaoTest(StationDao stationDao) {
+    public StationDaoTest(StationDao stationDao, LineDao lineDao,
+        SectionDao sectionDao) {
         this.stationDao = stationDao;
+        this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
     @Test
@@ -38,7 +44,8 @@ class StationDaoTest {
         stationDao.save(station);
 
         assertThatThrownBy(() -> stationDao.save(station))
-            .isInstanceOf(DuplicateException.class);
+            .isInstanceOf(SubwayCustomException.class)
+            .hasMessage(SubwayException.DUPLICATE_STATION_EXCEPTION.message());
     }
 
     @Test
@@ -48,7 +55,8 @@ class StationDaoTest {
         Station station2 = stationDao.save(new Station("잠실새내역"));
 
         List<Station> stationsAll = stationDao.findAll();
-        assertThat(stationsAll).hasSize(2).containsExactly(station1, station2);
+        assertThat(stationsAll).hasSize(2)
+            .containsExactly(station1, station2);
     }
 
     @Test
@@ -62,5 +70,22 @@ class StationDaoTest {
 
         //then
         assertThat(stationDao.findAll()).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("Station 이 구간에 포함되어 있을때 역을 삭제하면 에러가 발생한다.")
+    void deleteWithUseStation() {
+        //given
+        stationDao.save(new Station("잠실역"));
+        stationDao.save(new Station("역삼역"));
+        lineDao.save(new Line("2호선", "green"));
+        sectionDao.save(1L, new Section(1L, 2L, 10));
+
+        //when
+        ThrowableAssert.ThrowingCallable callable = () -> stationDao.delete(1L);
+
+        //then
+        assertThatThrownBy(callable).isInstanceOf(SubwayCustomException.class)
+            .hasMessage(SubwayException.ILLEGAL_STATION_DELETE_EXCEPTION.message());
     }
 }
