@@ -1,76 +1,73 @@
 package wooteco.subway.station.dao;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.station.Station;
+import wooteco.subway.domain.Station;
 
-import java.util.HashMap;
+import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
+@RequiredArgsConstructor
 @Repository
 public class JdbcStationDao implements StationDao {
-
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcStationDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
-    public Station save(Station station) {
-        Map<String, String> map = new HashMap<>();
-        map.put("name", station.getName());
+    public Station create(Station station) {
+        String createSql = "INSERT INTO station (name) VALUES (?)";
 
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
-                .withTableName("STATION").usingGeneratedKeyColumns("id");
-        final long id = jdbcInsert.executeAndReturnKey(map).longValue();
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        this.jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(createSql, new String[]{"id"});
+            ps.setString(1, station.getName());
+            return ps;
+        }, keyHolder);
 
-        return Station.of(id, station.getName());
+        return new Station(keyHolder.getKey().longValue(), station.getName());
     }
 
     @Override
     public List<Station> findAll() {
-        String sql = "SELECT * FROM station";
-        return jdbcTemplate.query(sql, stationRowMapper());
+        String readAllSql = "SELECT * FROM station";
+        return this.jdbcTemplate.query(readAllSql, stationRowMapper());
     }
 
     @Override
-    public boolean existByName(String name) {
-        String sql = "SELECT count(id) FROM station WHERE name = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, int.class, name);
-
-        return count >= 1;
-    }
-
-    @Override
-    public void remove(Long id) {
-        String sql = "DELETE FROM station WHERE id = ?";
-        jdbcTemplate.update(sql, id);
-    }
-
-    @Override
-    public void removeAll() {
-        String sql = "DELETE FROM station";
-        jdbcTemplate.update(sql);
+    public Station findById(Long id) {
+        String readByIdSql = "SELECT * FROM station WHERE id = ?";
+        return this.jdbcTemplate.queryForObject(readByIdSql, stationRowMapper(), id);
     }
 
     @Override
     public boolean existById(Long id) {
-        String sql = "SELECT count(id) FROM station WHERE id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, int.class, id);
+        String countByIdSql = "SELECT count(id) FROM station WHERE id = ?";
+        int count = this.jdbcTemplate.queryForObject(countByIdSql, int.class, id);
+        return count > 0;
+    }
 
-        return count >= 1;
+    @Override
+    public boolean existByName(String name) {
+        String countByNameSql = "SELECT count(id) FROM station WHERE name = ?";
+        int count = this.jdbcTemplate.queryForObject(countByNameSql, int.class, name);
+        return count > 0;
+    }
+
+    @Override
+    public void removeById(Long id) {
+        String deleteByIdSql = "DELETE FROM station WHERE id = ?";
+        this.jdbcTemplate.update(deleteByIdSql, id);
     }
 
     private RowMapper<Station> stationRowMapper() {
         return (rs, rowNum) -> {
-            Long foundId = rs.getLong("id");
-            final String name = rs.getString("name");
-            return Station.of(foundId, name);
+            Long id = rs.getLong("id");
+            String name = rs.getString("name");
+            return new Station(id, name);
         };
     }
+
 }

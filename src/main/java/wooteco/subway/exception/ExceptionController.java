@@ -1,25 +1,26 @@
 package wooteco.subway.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-import wooteco.subway.exception.line.LineNameDuplicatedException;
-import wooteco.subway.exception.line.LineNotFoundException;
-import wooteco.subway.exception.station.StationNameDuplicatedException;
-import wooteco.subway.exception.station.StationNotFoundException;
 
-@RestControllerAdvice
+@ControllerAdvice
 public class ExceptionController {
 
-    @ExceptionHandler({StationNotFoundException.class, LineNotFoundException.class})
-    public ResponseEntity<Void> lineNotFound() {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Void> handle(NotFoundException e) {
         return ResponseEntity.notFound().build();
     }
 
-    @ExceptionHandler({LineNameDuplicatedException.class, StationNameDuplicatedException.class})
-    public ResponseEntity<String> lineNameDuplicated(Exception e) {
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<String> handle(InvalidRequestException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+
+    @ExceptionHandler(InternalLogicConflictException.class)
+    public ResponseEntity<Void> handle(InternalLogicConflictException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+
 }
-
-

@@ -1,20 +1,19 @@
 package wooteco.subway.station.dao;
 
-import wooteco.subway.station.Station;
+import wooteco.subway.domain.Station;
 
 import java.util.List;
 
 public interface StationDao {
-
-    Station save(Station station);
+    Station create(Station station);
 
     List<Station> findAll();
 
-    boolean existByName(String name);
-
-    void remove(Long id);
-
-    void removeAll();
+    Station findById(Long id);
 
     boolean existById(Long id);
+
+    boolean existByName(String name);
+
+    void removeById(Long id);
 }

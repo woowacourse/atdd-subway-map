@@ -1,11 +1,11 @@
 package wooteco.subway.exception.line;
 
-public class LineNotFoundException extends RuntimeException {
+import wooteco.subway.exception.NotFoundException;
 
-    private static final String MESSAGE = "등록되어 있는 노선이 없습니다.";
+public class LineNotFoundException extends NotFoundException {
+    private static final String MESSAGE = "해당하는 라인이 존재히지 않습니다.";
 
     public LineNotFoundException() {
         super(MESSAGE);
     }
-
 }
