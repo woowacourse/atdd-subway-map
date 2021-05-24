@@ -14,7 +14,7 @@ public class SubwayControllerAdvice {
     public ResponseEntity<ExceptionResponse> subwayException(final SubwayException e) {
         return ResponseEntity
                 .status(e.httpStatus())
-                .body(new ExceptionResponse(e.getMessage(), e.httpStatus().value()));
+                .body(e.body());
     }
 
     @ExceptionHandler(Exception.class)
