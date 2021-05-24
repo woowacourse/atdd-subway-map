@@ -11,34 +11,46 @@ import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
+@Sql("classpath:stations.sql")
 class LineAcceptanceTest extends AcceptanceTest {
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() throws Exception {
         // given
-        LineRequest lineRequest = new LineRequest("2호선", "red", 1L, 3L, 7);
-        LineResponse lineResponse = new LineResponse(1L, "2호선", "red", new ArrayList<>());
+        LineRequest lineRequest = new LineRequest("3호선", "red", 1L, 3L, 7);
+        LineResponse lineResponse = new LineResponse(2L, "3호선", "red",
+            Arrays.asList(
+                new StationResponse(1L, "강남역"),
+                new StationResponse(3L, "삼성역")
+            )
+        );
 
         // when
-        postLineApi(lineRequest)
-            .statusCode(HttpStatus.valueOf(201).value())  // then
-            .body(is(OBJECT_MAPPER.writeValueAsString(lineResponse)));
+        ExtractableResponse<Response> response = postLineApi(lineRequest)
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.body().asString())
+            .isEqualTo(OBJECT_MAPPER.writeValueAsString(lineResponse));
     }
 
     @DisplayName("전체 노선을 조회한다.")
@@ -66,12 +78,13 @@ class LineAcceptanceTest extends AcceptanceTest {
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
             .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList("", LineResponse.class).stream()
-            .map(lineResponse -> lineResponse.getId())
+            .map(LineResponse::getId)
             .collect(Collectors.toList());
         Assertions.assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    private ValidatableResponse postLineApi(LineRequest lineRequest) throws JsonProcessingException {
+    private ValidatableResponse postLineApi(LineRequest lineRequest)
+        throws JsonProcessingException {
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON_VALUE)

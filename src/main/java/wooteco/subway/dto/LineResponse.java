@@ -1,7 +1,7 @@
 package wooteco.subway.dto;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import wooteco.subway.domain.line.Line;
 
 public class LineResponse {
@@ -38,7 +38,19 @@ public class LineResponse {
         return color;
     }
 
+    public List<StationResponse> getStations() {
+        return stations;
+    }
+
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>());
+        return new LineResponse(
+            line.getId(),
+            line.getName(),
+            line.getColor(),
+            line.getStations()
+                .stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList())
+        );
     }
 }

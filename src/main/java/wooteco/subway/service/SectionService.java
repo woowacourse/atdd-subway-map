@@ -28,9 +28,25 @@ public class SectionService {
             .findById(sectionRequest.getDownStationId())
             .orElseThrow(StationNotFoundException::new);
 
-        Section section = new Section(upStation, downStation, sectionRequest.getDistance());
+        Section section = saveSection(lineId, upStation, downStation, sectionRequest.getDistance());
+        return SectionResponse.of(section);
+    }
+
+    public SectionResponse createSection(Long lineId, Long upStationId, Long downStationId,
+        int distance) {
+        Station upStation = stationDao.findById(upStationId)
+            .orElseThrow(StationNotFoundException::new);
+        Station downStation = stationDao.findById(downStationId)
+            .orElseThrow(StationNotFoundException::new);
+
+        Section section = saveSection(lineId, upStation, downStation, distance);
+        return SectionResponse.of(section);
+    }
+
+    private Section saveSection(Long lineId, Station upStation, Station downStation, int distance) {
+        Section section = new Section(upStation, downStation, distance);
         long sectionId = sectionDao.save(lineId, section);
         section.setId(sectionId);
-        return SectionResponse.of(section);
+        return section;
     }
 }
