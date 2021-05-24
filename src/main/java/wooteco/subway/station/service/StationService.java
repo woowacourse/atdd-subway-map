@@ -6,7 +6,7 @@ import wooteco.subway.station.controller.dto.StationRequest;
 import wooteco.subway.station.controller.dto.StationResponse;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.Stations;
-import wooteco.subway.station.repository.StationRepository;
+import wooteco.subway.station.domain.StationRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;

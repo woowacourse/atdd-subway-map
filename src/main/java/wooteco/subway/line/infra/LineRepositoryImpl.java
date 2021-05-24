@@ -1,8 +1,9 @@
-package wooteco.subway.line.domain.repository;
+package wooteco.subway.line.infra;
 
 import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.notfound.LineNotFoundException;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.repository.LineRepository;
 import wooteco.subway.line.domain.section.Section;
 import wooteco.subway.line.domain.section.Sections;
 import wooteco.subway.line.infra.line.LineDao;

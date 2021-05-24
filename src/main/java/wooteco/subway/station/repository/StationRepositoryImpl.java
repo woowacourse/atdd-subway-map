@@ -3,6 +3,7 @@ package wooteco.subway.station.repository;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.notfound.StationNotFoundException;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.domain.StationRepository;
 import wooteco.subway.station.infra.StationDao;
 
 import java.util.List;
