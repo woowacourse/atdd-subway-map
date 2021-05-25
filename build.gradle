@@ -16,12 +16,19 @@ dependencies {
 	// spring
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 	// handlebars
 	implementation 'pl.allegro.tech.boot:handlebars-spring-boot-starter:0.3.0'
 
 	// log
 	implementation 'net.rakugakibox.spring.boot:logback-access-spring-boot-starter:2.7.1'
+
+	// modelmapper
+	implementation 'org.modelmapper.extensions:modelmapper-spring:2.4.0'
+
+	// mokito
+	testImplementation 'org.mockito:mockito-core:3.9.0'
 
 	testImplementation 'io.rest-assured:rest-assured:3.3.0'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
