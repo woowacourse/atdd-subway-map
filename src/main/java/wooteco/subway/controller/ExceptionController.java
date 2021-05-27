@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import wooteco.subway.exception.SameStationSectionException;
 import wooteco.subway.exception.LineDuplicationException;
 import wooteco.subway.exception.LineNotFoundException;
 import wooteco.subway.exception.StationDuplicationException;
@@ -18,6 +19,11 @@ public class ExceptionController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> titleNotValidException(MethodArgumentNotValidException error) {
+        return ResponseEntity.badRequest().body(error.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+    }
+
     @ExceptionHandler({LineDuplicationException.class, StationDuplicationException.class})
     public ResponseEntity<String> nameDuplicationException(RuntimeException exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());
@@ -28,8 +34,8 @@ public class ExceptionController {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> titleNotValidException(MethodArgumentNotValidException error) {
-        return ResponseEntity.badRequest().body(error.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+    @ExceptionHandler(SameStationSectionException.class)
+    public ResponseEntity<String> handleSameStationSectionException(SameStationSectionException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
