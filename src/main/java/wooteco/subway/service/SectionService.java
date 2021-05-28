@@ -1,11 +1,13 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.SectionResponse;
+import wooteco.subway.exception.LineNotFoundException;
 import wooteco.subway.exception.SameStationSectionException;
 import wooteco.subway.exception.StationNotFoundException;
 import wooteco.subway.repository.LineDao;
@@ -41,17 +43,26 @@ public class SectionService {
         int distance) {
         validateSameStationForSection(upStationId, downStationId);
 
-        Station upStation = stationDao.findById(upStationId)
-            .orElseThrow(StationNotFoundException::new);
-        Station downStation = stationDao.findById(downStationId)
-            .orElseThrow(StationNotFoundException::new);
+        Station upStation = findStation(upStationId);
+        Station downStation = findStation(downStationId);
 
         Section section = new Section(upStation, downStation, distance);
         Sections sections = sectionDao.findByLineId(lineId);
 
         sections.addSection(section);
 
+        Line line = lineDao.findById(lineId)
+            .orElseThrow(LineNotFoundException::new);
+        line.setSections(sections);
+
+        sectionDao.deleteByLineId(lineId);
+        sectionDao.saveSections(lineId, sections.getSections());
         return SectionResponse.of(section);
+    }
+
+    private Station findStation(Long stationId) {
+        return stationDao.findById(stationId)
+            .orElseThrow(StationNotFoundException::new);
     }
 
     private Section addSection(Long lineId, Station upStation, Station downStation, int distance) {

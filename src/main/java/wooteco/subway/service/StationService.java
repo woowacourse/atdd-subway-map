@@ -3,12 +3,12 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.StationDuplicationException;
 import wooteco.subway.exception.StationNotFoundException;
 import wooteco.subway.repository.StationDao;
-import wooteco.subway.domain.station.Station;
 
 @Service
 public class StationService {
@@ -28,7 +28,7 @@ public class StationService {
         return StationResponse.of(station);
     }
 
-    private StationResponse findById(long id) {
+    public StationResponse findById(long id) {
         Station station = stationDao.findById(id)
             .orElseThrow(StationNotFoundException::new);
         return StationResponse.of(station);

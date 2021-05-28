@@ -37,11 +37,15 @@ public class Line {
         return color;
     }
 
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
 
-    public List<Station> getStations() {
-        return sections.getStations();
+    public void setSections(Sections sections) {
+        this.sections = sections;
     }
 }

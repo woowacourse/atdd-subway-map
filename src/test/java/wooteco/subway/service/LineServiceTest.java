@@ -17,9 +17,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.section.Sections;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionResponse;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.repository.LineDao;
+import wooteco.subway.repository.SectionDao;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("노선 서비스 레이어 테스트")
@@ -27,6 +31,10 @@ class LineServiceTest {
 
     @Mock
     private LineDao lineDao;
+    @Mock
+    private SectionDao sectionDao;
+    @Mock
+    private SectionService sectionService;
     @InjectMocks
     private LineService lineService;
 
@@ -37,6 +45,13 @@ class LineServiceTest {
         LineRequest lineRequest = new LineRequest("2호선", "green", 1L, 2L, 5);
         LineResponse lineResponse = new LineResponse(1L, "2호선", "green", new ArrayList<>());
         given(lineDao.save(any())).willReturn(1L);
+        given(sectionService.createSection(1L, 1L, 2L, 5))
+            .willReturn(new SectionResponse(
+                1L,
+                new StationResponse(1L, "강남역"),
+                new StationResponse(1L, "역삼역"),
+                5
+            ));
 
         // when
         LineResponse createdLine = lineService.createLine(lineRequest);
@@ -53,20 +68,23 @@ class LineServiceTest {
         // given
         Line line1 = new Line("2호선", "green");
         Line line2 = new Line("3호선", "red");
+        Sections sections = new Sections(new ArrayList<>());
+        line1.setSections(sections);
+        line2.setSections(sections);
         LineResponse lineResponse1 = LineResponse.of(line1);
         LineResponse lineResponse2 = LineResponse.of(line2);
 
-        given(lineDao.findAll()).willReturn(Arrays.asList(
-            line1, line2
-        ));
+        given(lineDao.findAll()).willReturn(Arrays.asList(line1, line2));
+        given(sectionDao.findByLineId(any())).willReturn(sections);
 
         // when
         List<LineResponse> lineResponses = lineService.findAll();
 
         // then
-        assertThat(lineResponses)
-            .contains(lineResponse1)
-            .contains(lineResponse2);
+        assertThat(lineResponses.get(0).getName()).isEqualTo(lineResponse1.getName());
+        assertThat(lineResponses.get(0).getColor()).isEqualTo(lineResponse1.getColor());
+        assertThat(lineResponses.get(1).getName()).isEqualTo(lineResponse2.getName());
+        assertThat(lineResponses.get(1).getColor()).isEqualTo(lineResponse2.getColor());
     }
 
     @Test
@@ -74,8 +92,12 @@ class LineServiceTest {
     void findById() {
         // given
         Line line = new Line(1L, "2호선", "green");
+        Sections sections = new Sections(new ArrayList<>());
+        line.setSections(sections);
         LineResponse lineResponse = LineResponse.of(line);
+
         given(lineDao.findById(any())).willReturn(Optional.of(line));
+        given(sectionDao.findByLineId(line.getId())).willReturn(sections);
 
         // when
         LineResponse foundLineResponse = lineService.findById(1L);
@@ -97,6 +119,8 @@ class LineServiceTest {
         lineService.editLine(1L, lineRequest);
 
         // then
+        verify(lineDao, times(1))
+            .findAll();
         verify(lineDao, times(1))
             .updateLine(line);
     }

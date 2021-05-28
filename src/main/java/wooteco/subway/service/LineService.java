@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.section.Sections;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionResponse;
@@ -51,7 +52,9 @@ public class LineService {
 
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
-
+        for (Line line : lines) {
+            line.setSections(sectionDao.findByLineId(line.getId()));
+        }
         return lines.stream()
             .map(LineResponse::of)
             .collect(Collectors.toList());
@@ -60,6 +63,8 @@ public class LineService {
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id)
             .orElseThrow(LineNotFoundException::new);
+        Sections sections = sectionDao.findByLineId(line.getId());
+        line.setSections(sections);
         return LineResponse.of(line);
     }
 

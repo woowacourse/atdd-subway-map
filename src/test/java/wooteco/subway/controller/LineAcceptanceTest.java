@@ -9,7 +9,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -103,7 +102,10 @@ class LineAcceptanceTest extends AcceptanceTest {
             .extract();
 
         long id = Long.parseLong(lineResponse.header("Location").split("/")[2]);
-        LineResponse getResponse = new LineResponse(id, "5호선", "red", new ArrayList<>());
+        LineResponse getResponse = new LineResponse(id, "5호선", "red", Arrays.asList(
+            new StationResponse(1L, "강남역"),
+            new StationResponse(3L, "삼성역")
+        ));
 
         // when
         RestAssured.given().log().all()
