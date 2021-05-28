@@ -7,17 +7,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.service.SectionService;
-import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.service.StationService;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -31,17 +29,16 @@ public class SectionServiceTest {
 
     @InjectMocks
     private SectionService sectionService;
-
     @Mock
-    private StationDao stationDao;
+    private StationService stationService;
     @Mock
     private SectionDao sectionDao;
 
     @BeforeEach
     void setUp() {
-        given(stationDao.findById(1L)).willReturn(Optional.of(잠실역));
-        given(stationDao.findById(2L)).willReturn(Optional.of(강남역));
-        given(stationDao.findById(3L)).willReturn(Optional.of(강변역));
+        given(stationService.findById(1L)).willReturn(잠실역);
+        given(stationService.findById(2L)).willReturn(강남역);
+        given(stationService.findById(3L)).willReturn(강변역);
     }
 
     @Test

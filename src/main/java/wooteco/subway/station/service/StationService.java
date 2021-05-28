@@ -21,6 +21,11 @@ public class StationService {
         return stationDao.findAll();
     }
 
+    public Station findById(Long id) {
+        return stationDao.findById(id)
+                .orElseThrow(() -> new StationException(StationError.NO_STATION_BY_ID));
+    }
+
     public Station createStation(StationRequest stationRequest) {
         String stationName = stationRequest.getName();
         if (isStationExist(stationName)) {
