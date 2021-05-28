@@ -10,7 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.line.Line;
-import wooteco.subway.exception.LineNotFoundException;
+import wooteco.subway.exception.notFoundException.LineNotFoundException;
 
 @Repository
 public class LineDao {

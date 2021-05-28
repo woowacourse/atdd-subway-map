@@ -6,10 +6,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.exception.NotRemovableSectionException;
-import wooteco.subway.exception.OverDistanceException;
-import wooteco.subway.exception.SectionExistException;
-import wooteco.subway.exception.StationForSectionNotExistException;
+import wooteco.subway.exception.notRemovableException.NotRemovableSectionException;
+import wooteco.subway.exception.notAddableSectionException.OverDistanceException;
+import wooteco.subway.exception.notAddableSectionException.SectionExistException;
+import wooteco.subway.exception.notAddableSectionException.StationForSectionNotExistException;
 
 public class Sections {
 

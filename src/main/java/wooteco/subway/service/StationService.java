@@ -3,13 +3,12 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.NotRemovableStationException;
-import wooteco.subway.exception.StationDuplicationException;
-import wooteco.subway.exception.StationNotFoundException;
+import wooteco.subway.exception.notRemovableException.NotRemovableStationException;
+import wooteco.subway.exception.duplicateException.StationDuplicationException;
+import wooteco.subway.exception.notFoundException.StationNotFoundException;
 import wooteco.subway.repository.SectionDao;
 import wooteco.subway.repository.StationDao;
 

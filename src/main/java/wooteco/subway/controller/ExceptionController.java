@@ -5,36 +5,34 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import wooteco.subway.exception.NotAddableSectionException;
-import wooteco.subway.exception.NotRemovableException;
-import wooteco.subway.exception.NotRemovableSectionException;
-import wooteco.subway.exception.SameStationSectionException;
-import wooteco.subway.exception.LineDuplicationException;
-import wooteco.subway.exception.LineNotFoundException;
-import wooteco.subway.exception.StationDuplicationException;
-import wooteco.subway.exception.StationNotFoundException;
+import wooteco.subway.exception.duplicateException.LineDuplicationException;
+import wooteco.subway.exception.duplicateException.StationDuplicationException;
+import wooteco.subway.exception.notAddableSectionException.NotAddableSectionException;
+import wooteco.subway.exception.notFoundException.NotFoundException;
+import wooteco.subway.exception.notRemovableException.NotRemovableException;
 
 @ControllerAdvice
 public class ExceptionController {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Void> exception(Exception exception) {
+    public ResponseEntity<Void> handleException(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> titleNotValidException(MethodArgumentNotValidException error) {
-        return ResponseEntity.badRequest().body(error.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+    public ResponseEntity<String> handleMethodNotValidException(MethodArgumentNotValidException e) {
+        return ResponseEntity.badRequest()
+            .body(e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
     }
 
     @ExceptionHandler({LineDuplicationException.class, StationDuplicationException.class})
-    public ResponseEntity<String> nameDuplicationException(RuntimeException exception) {
-        return ResponseEntity.badRequest().body(exception.getMessage());
+    public ResponseEntity<String> handleNameDuplicationException(RuntimeException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler({LineNotFoundException.class, StationNotFoundException.class})
-    public ResponseEntity<String> notFoundException(RuntimeException exception) {
-        return ResponseEntity.badRequest().body(exception.getMessage());
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleNotFoundException(NotFoundException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     @ExceptionHandler(NotAddableSectionException.class)

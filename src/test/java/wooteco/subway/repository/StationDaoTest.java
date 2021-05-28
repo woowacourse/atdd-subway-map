@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.exception.StationNotFoundException;
+import wooteco.subway.exception.notFoundException.StationNotFoundException;
 
 @JdbcTest
 @DisplayName("역 레포지토리 레이어 테스트")

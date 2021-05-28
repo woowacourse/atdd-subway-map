@@ -1,4 +1,4 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.notAddableSectionException;
 
 public class NotAddableSectionException extends RuntimeException {
 

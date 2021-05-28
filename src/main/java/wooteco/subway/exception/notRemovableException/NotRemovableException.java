@@ -1,4 +1,4 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.notRemovableException;
 
 public class NotRemovableException extends RuntimeException {
 

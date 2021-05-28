@@ -2,7 +2,7 @@ package wooteco.subway.domain.section;
 
 import java.util.Objects;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.exception.SameStationSectionException;
+import wooteco.subway.exception.notAddableSectionException.SameStationSectionException;
 
 public class Section {
 

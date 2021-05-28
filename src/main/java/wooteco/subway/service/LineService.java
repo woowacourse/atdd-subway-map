@@ -10,8 +10,8 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionResponse;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.LineDuplicationException;
-import wooteco.subway.exception.LineNotFoundException;
+import wooteco.subway.exception.duplicateException.LineDuplicationException;
+import wooteco.subway.exception.notFoundException.LineNotFoundException;
 import wooteco.subway.repository.LineDao;
 import wooteco.subway.repository.SectionDao;
 
