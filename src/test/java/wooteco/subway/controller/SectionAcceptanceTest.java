@@ -155,4 +155,39 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("구간 삭제 성공")
+    @Test
+    public void deleteSection()throws Exception{
+        // given
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 5);
+        RestAssured.given().body(OBJECT_MAPPER.writeValueAsString(sectionRequest))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post("/lines/1/sections")
+            .then().log().all();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete("/lines/1/sections?stationId=2")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("구간 삭제 실패")
+    @Test
+    public void deleteSectionFail() {
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete("/lines/1/sections?stationId=1")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

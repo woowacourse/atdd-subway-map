@@ -81,4 +81,14 @@ public class SectionService {
             throw new SameStationSectionException();
         }
     }
+
+    public void deleteSection(Long lineId, Long stationId) {
+        Sections sections = sectionDao.findByLineId(lineId);
+        Station station = stationDao.findById(stationId)
+            .orElseThrow(StationNotFoundException::new);
+        sections.removeSection(station);
+
+        sectionDao.deleteByLineId(lineId);
+        sectionDao.saveSections(lineId, sections.getSections());
+    }
 }

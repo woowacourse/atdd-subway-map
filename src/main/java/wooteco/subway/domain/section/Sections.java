@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.exception.NotAddableSectionException;
+import wooteco.subway.exception.NotRemovableSectionException;
 import wooteco.subway.exception.OverDistanceException;
 import wooteco.subway.exception.SectionExistException;
 import wooteco.subway.exception.StationForSectionNotExistException;
@@ -126,6 +126,49 @@ public class Sections {
         if (!stations.contains(section.getUpStation()) &&
             !stations.contains(section.getDownStation())) {
             throw new StationForSectionNotExistException();
+        }
+    }
+
+    public void removeSection(Station station) {
+        validateRemovable();
+        List<Section> sectionsHaveStation = getSectionsHaveStation(station);
+
+        if (sectionsHaveStation.size() == 1) {
+            sections.remove(sectionsHaveStation.get(0));
+            return;
+        }
+
+        Section newSection = newSectionForRemoveStation(station, sectionsHaveStation);
+        for (Section section : sectionsHaveStation) {
+            sections.remove(section);
+        }
+        sections.add(newSection);
+    }
+
+    private List<Section> getSectionsHaveStation(Station station) {
+        return sections.stream()
+            .filter(section -> section.contains(station))
+            .collect(Collectors.toList());
+    }
+
+    private Section newSectionForRemoveStation(Station station, List<Section> sectionsHaveStation) {
+        Section affectedUpSection = sectionsHaveStation.stream()
+            .filter(section -> section.getUpStation().equals(station))
+            .findAny().orElseThrow(NotRemovableSectionException::new);
+        Section affectedDownSection = sectionsHaveStation.stream()
+            .filter(section -> section.getDownStation().equals(station))
+            .findAny().orElseThrow(NotRemovableSectionException::new);
+
+        return new Section(
+            affectedUpSection.getUpStation(),
+            affectedDownSection.getDownStation(),
+            affectedUpSection.getDistance() + affectedDownSection.getDistance()
+        );
+    }
+
+    private void validateRemovable() {
+        if (sections.size() < 2) {
+            throw new NotRemovableSectionException();
         }
     }
 }

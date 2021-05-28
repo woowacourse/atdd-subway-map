@@ -59,6 +59,10 @@ public class Section {
         this.id = sectionId;
     }
 
+    public boolean contains(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
