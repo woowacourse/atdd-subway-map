@@ -38,7 +38,7 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return sections.getStations();
+        return sections.getSortedStations();
     }
 
     public void setId(Long id) {

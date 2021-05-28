@@ -1,5 +1,6 @@
 package wooteco.subway.domain.section;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -12,7 +13,7 @@ import wooteco.subway.exception.StationForSectionNotExistException;
 
 public class Sections {
 
-    private List<Section> sections;
+    private final List<Section> sections;
 
     public Sections(List<Section> sections) {
         this.sections = sections;
@@ -26,6 +27,42 @@ public class Sections {
         return sections.stream()
             .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
             .collect(Collectors.toList());
+    }
+
+    public List<Station> getSortedStations() {
+        if (sections.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Station> stations = new ArrayList<>();
+        Section firstSection = findFirstSection();
+        stations.add(firstSection.getUpStation());
+
+        Section nextSection = firstSection;
+        while (nextSection != null) {
+            stations.add(nextSection.getDownStation());
+            nextSection = findNextSection(nextSection.getDownStation());
+        }
+
+        return new ArrayList<>(stations);
+    }
+
+    private Section findNextSection(Station nextStation) {
+        return sections.stream()
+            .filter(section -> section.getUpStation().equals(nextStation))
+            .findAny()
+            .orElse(null);
+    }
+
+    private Section findFirstSection() {
+        List<Station> downStations = sections.stream()
+            .map(Section::getDownStation)
+            .collect(Collectors.toList());
+
+        return sections.stream()
+            .filter(sct -> !downStations.contains(sct.getUpStation()))
+            .findFirst()
+            .orElseThrow(RuntimeException::new);
     }
 
     public void addSection(Section section) {
@@ -108,7 +145,7 @@ public class Sections {
     }
 
     private void addNewSection(Section section) {
-        this.sections.add(new Section(
+        sections.add(new Section(
             section.getUpStation(),
             section.getDownStation(),
             section.getDistance()

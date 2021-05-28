@@ -21,6 +21,7 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -104,6 +105,39 @@ class LineAcceptanceTest extends AcceptanceTest {
         long id = Long.parseLong(lineResponse.header("Location").split("/")[2]);
         LineResponse getResponse = new LineResponse(id, "5호선", "red", Arrays.asList(
             new StationResponse(1L, "강남역"),
+            new StationResponse(3L, "삼성역")
+        ));
+
+        // when
+        RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .when().get("/lines/" + id)
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value())  // then
+            .body(is(OBJECT_MAPPER.writeValueAsString(getResponse)));
+    }
+
+    @DisplayName("아이디로 노선을 조회한다. - 구간 삽입 후 조회")
+    @Test
+    void showLine_2() throws JsonProcessingException {
+        // given
+        LineRequest lineRequest = new LineRequest("5호선", "red", 1L, 3L, 7);
+        ExtractableResponse<Response> lineResponse = postLineApi(lineRequest)
+            .extract();
+
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 5);
+        RestAssured.given()
+            .body(OBJECT_MAPPER.writeValueAsString(sectionRequest))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post("/lines/2/sections")
+            .then();
+
+
+        long id = Long.parseLong(lineResponse.header("Location").split("/")[2]);
+        LineResponse getResponse = new LineResponse(id, "5호선", "red", Arrays.asList(
+            new StationResponse(1L, "강남역"),
+            new StationResponse(2L, "역삼역"),
             new StationResponse(3L, "삼성역")
         ));
 

@@ -70,7 +70,7 @@ public class LineController {
         @PathVariable Long id,
         @RequestBody SectionRequest sectionRequest
     ) {
-        SectionResponse sectionResponse = sectionService.createSection(id, sectionRequest);
+        SectionResponse sectionResponse = sectionService.createSectionByDto(id, sectionRequest);
         return ResponseEntity.created(
             URI.create("/lines/" + id + "/sections/" + sectionResponse.getId())
         )
