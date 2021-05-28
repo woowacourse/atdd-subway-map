@@ -50,4 +50,8 @@ public class LineResponse {
     public List<StationResponse> getStations() {
         return stations;
     }
+
+    public void setStations(List<StationResponse> stations) {
+        this.stations = stations;
+    }
 }

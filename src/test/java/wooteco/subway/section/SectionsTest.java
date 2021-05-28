@@ -77,7 +77,6 @@ class SectionsTest {
         Station stationB = new Station(5L, "new2");
         Section section = new Section(stationA, stationB, 3);
 
-
         assertThatThrownBy(() -> sections.add(section)).isInstanceOf(SectionException.class)
                                                        .hasMessage(SectionError.NONE_STATION_IN_PATH.getMessage());
     }

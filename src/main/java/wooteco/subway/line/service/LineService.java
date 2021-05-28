@@ -1,21 +1,13 @@
 package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.domain.LineEntity;
 import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.domain.LineEntity;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.exception.LineError;
 import wooteco.subway.line.exception.LineException;
-import wooteco.subway.section.domain.Section;
-import wooteco.subway.section.dao.SectionDao;
-import wooteco.subway.section.dto.SectionRequest;
-import wooteco.subway.section.domain.Sections;
-import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dao.StationDao;
-import wooteco.subway.station.exception.StationError;
-import wooteco.subway.station.exception.StationException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,43 +16,27 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineDao lineDao;
     private final StationDao stationDao;
-    private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
+    public LineService(LineDao lineDao, StationDao stationDao) {
         this.lineDao = lineDao;
         this.stationDao = stationDao;
-        this.sectionDao = sectionDao;
     }
 
     public List<LineResponse> findAll() {
         return lineDao.findAll()
-                      .stream()
-                      .map(LineResponse::new)
-                      .collect(Collectors.toList());
+                .stream()
+                .map(LineResponse::new)
+                .collect(Collectors.toList());
     }
-
 
     public LineResponse findById(Long id) {
-        return new LineResponse(lineById(id));
-    }
-
-    private Line lineById(Long id) {
         LineEntity lineEntity = lineDao.findById(id)
-                                       .orElseThrow(() -> new LineException(LineError.NOT_EXIST_LINE_ID));
-        return new Line(lineEntity, sectionsByLineId(id));
-    }
-
-    private Sections sectionsByLineId(Long id) {
-        return new Sections(sectionDao.findSections(id));
-    }
-
-    private Station stationById(Long id) {
-        return stationDao.findById(id)
-                         .orElseThrow(() -> new StationException(StationError.NO_STATION_BY_ID));
+                .orElseThrow(() -> new LineException(LineError.NOT_EXIST_LINE_ID));
+        return new LineResponse(lineEntity);
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
-        if (isExistingLineByName(lineRequest.getName())) {
+        if (isExistingLineName(lineRequest.getName())) {
             throw new LineException(LineError.ALREADY_EXIST_LINE_NAME);
         }
 
@@ -68,24 +44,12 @@ public class LineService {
             throw new LineException(LineError.NOT_EXIST_STATION_ON_LINE_REQUEST);
         }
         Long createdLineId = lineDao.save(lineRequest.getName(), lineRequest.getColor());
-        SectionRequest sectionRequest = new SectionRequest(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
-        saveSection(createdLineId, sectionRequest);
         return findById(createdLineId);
     }
 
-    private boolean notExistingStation(Long stationId) {
-        return !stationDao.findById(stationId)
-                          .isPresent();
-    }
-
-    private boolean notExistingLine(Long id) {
-        return !lineDao.findById(id)
-                       .isPresent();
-    }
-
-    private boolean isExistingLineByName(String name) {
+    private boolean isExistingLineName(String name) {
         return lineDao.findByName(name)
-                      .isPresent();
+                .isPresent();
     }
 
     public void modifyLine(Long id, LineRequest lineRequest) {
@@ -102,41 +66,20 @@ public class LineService {
         lineDao.delete(id);
     }
 
-    public void addSection(Long lineId, SectionRequest sectionRequest) {
-        if (notExistingLine(lineId)) {
+    public void checkLineExist(Long id) {
+        if (!lineDao.findById(id)
+                .isPresent()) {
             throw new LineException(LineError.NOT_EXIST_LINE_ID);
         }
-        Sections sections = sectionsByLineId(lineId);
-
-        sections.add(sectionOf(sectionRequest));
-
-        updateSections(lineId, sections);
     }
 
-    private Section sectionOf(SectionRequest sectionRequest) {
-        Station upStation = stationById(sectionRequest.getUpStationId());
-        Station downStation = stationById(sectionRequest.getDownStationId());
-        return new Section(upStation, downStation, sectionRequest.getDistance());
+    private boolean notExistingStation(Long stationId) {
+        return !stationDao.findById(stationId)
+                .isPresent();
     }
 
-    public void deleteSection(Long lineId, Long stationId) {
-        if (notExistingLine(lineId)) {
-            throw new LineException(LineError.NOT_EXIST_LINE_ID);
-        }
-        Sections sections = sectionsByLineId(lineId);
-        sections.delete(stationById(stationId));
-
-        updateSections(lineId, sections);
-    }
-
-    private void updateSections(Long lineId, Sections sections) {
-        sectionDao.deleteSectionsOf(lineId);
-        for (Section section : sections.getSections()) {
-            saveSection(lineId, SectionRequest.of(section));
-        }
-    }
-
-    private void saveSection(Long lineId, SectionRequest sr) {
-        sectionDao.save(lineId, sr.getUpStationId(), sr.getDownStationId(), sr.getDistance());
+    private boolean notExistingLine(Long id) {
+        return !lineDao.findById(id)
+                .isPresent();
     }
 }

@@ -15,8 +15,10 @@ import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.dto.SectionRequest;
-import wooteco.subway.station.domain.Station;
+import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.dto.StationResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +41,9 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     private LineService lineService;
+
+    @Autowired
+    private SectionService sectionService;
 
     private Station 잠실역;
     private Station 강남역;
@@ -84,22 +89,22 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given()
-                                                            .when()
-                                                            .get("/lines")
-                                                            .then()
-                                                            .extract();
+                .when()
+                .get("/lines")
+                .then()
+                .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                                           .map(it -> Long.parseLong(it.header("Location")
-                                                                       .split("/")[2]))
-                                           .collect(Collectors.toList());
+                .map(it -> Long.parseLong(it.header("Location")
+                        .split("/")[2]))
+                .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath()
-                                           .getList("", LineResponse.class)
-                                           .stream()
-                                           .map(LineResponse::getId)
-                                           .collect(Collectors.toList());
+                .getList("", LineResponse.class)
+                .stream()
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -110,21 +115,22 @@ class LineAcceptanceTest extends AcceptanceTest {
         String uri = extract.header("Location");
 
         ExtractableResponse<Response> response = RestAssured.given()
-                                                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                                            .when()
-                                                            .get(uri)
-                                                            .then()
-                                                            .extract();
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(uri)
+                .then()
+                .extract();
         LineResponse lineResponse = response.body()
-                                            .as(LineResponse.class);
+                .as(LineResponse.class);
 
         Long id = Long.valueOf(uri.split("/")[2]);
 
-        assertThat(lineResponse).usingRecursiveComparison()
-                                .isEqualTo(lineService.findById(id));
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
         assertThat(lineResponse.getColor()).isEqualTo(color);
         assertThat(lineResponse.getName()).isEqualTo(name);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<StationResponse> expectedPath = StationResponse.listOf(sectionService.sectionsByLineId(id).path());
+        assertThat(lineResponse.getStations()).containsAll(expectedPath);
     }
 
     @Test
@@ -134,12 +140,12 @@ class LineAcceptanceTest extends AcceptanceTest {
         String uri = extract.header("Location");
 
         ExtractableResponse<Response> response = RestAssured.given()
-                                                            .body(lineRequest2)
-                                                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                                            .when()
-                                                            .put(uri)
-                                                            .then()
-                                                            .extract();
+                .body(lineRequest2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put(uri)
+                .then()
+                .extract();
 
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -152,11 +158,11 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         String uri = extract.header("Location");
         ExtractableResponse<Response> response = RestAssured.given()
-                                                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                                            .when()
-                                                            .delete(uri)
-                                                            .then()
-                                                            .extract();
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete(uri)
+                .then()
+                .extract();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
@@ -168,12 +174,12 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         SectionRequest sectionRequest = new SectionRequest(2L, 3L, 5);
         ExtractableResponse<Response> response = RestAssured.given()
-                                                            .body(sectionRequest)
-                                                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                                            .when()
-                                                            .post(uri + "/sections")
-                                                            .then()
-                                                            .extract();
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(uri + "/sections")
+                .then()
+                .extract();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
@@ -185,30 +191,30 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         SectionRequest sectionRequest = new SectionRequest(2L, 3L, 5);
         RestAssured.given()
-                   .body(sectionRequest)
-                   .contentType(MediaType.APPLICATION_JSON_VALUE)
-                   .when()
-                   .post(uri + "/sections")
-                   .then()
-                   .extract();
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(uri + "/sections")
+                .then()
+                .extract();
 
         ExtractableResponse<Response> response = RestAssured.given()
-                                                            .param("stationId", 2L)
-                                                            .when()
-                                                            .delete(uri + "/sections")
-                                                            .then()
-                                                            .extract();
+                .param("stationId", 2L)
+                .when()
+                .delete(uri + "/sections")
+                .then()
+                .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private ExtractableResponse<Response> createLineResponseBy(LineRequest lineRequest) {
         return RestAssured.given()
-                          .body(lineRequest)
-                          .contentType(MediaType.APPLICATION_JSON_VALUE)
-                          .when()
-                          .post("/lines")
-                          .then()
-                          .extract();
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .extract();
     }
 }

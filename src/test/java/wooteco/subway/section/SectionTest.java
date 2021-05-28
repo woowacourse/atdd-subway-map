@@ -15,9 +15,8 @@ class SectionTest {
     void sectionSameStation() {
         Station station = new Station(5L, "new");
 
-        assertThatThrownBy(() -> new Section(station, station, 3)).isInstanceOf(SectionException.class)
-                                                                  .hasMessage(SectionError.SAME_STATION_INPUT.getMessage());
+        assertThatThrownBy(() -> new Section(station, station, 3))
+                .isInstanceOf(SectionException.class)
+                .hasMessage(SectionError.SAME_STATION_INPUT.getMessage());
     }
-
-
 }

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.dto.LineRequest;
@@ -12,45 +13,38 @@ import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.exception.LineError;
 import wooteco.subway.line.exception.LineException;
 import wooteco.subway.line.service.LineService;
-import wooteco.subway.section.dto.SectionRequest;
-import wooteco.subway.section.exception.SectionError;
-import wooteco.subway.section.exception.SectionException;
-import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dao.StationDao;
-import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.domain.Station;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
 
 @Transactional
-@Sql({"/init-line.sql", "/init-station.sql"})
 @SpringBootTest
 class LineServiceTest {
-    private static final LineRequest LINE_REQUEST = new LineRequest("2호선", "초록색", 1L, 2L, 3);
+    private static final Station 잠실역 = new Station(1L, "잠실역");
+    private static final Station 강남역 = new Station(2L, "강남역");
+    private static final Station 강변역 = new Station(3L, "강변역");
 
-    @Autowired
+    private static final String STATION_NAME = "2호선";
+    private static final String LINE_COLOR = "초록색";
+
+    private static final LineRequest LINE_REQUEST = new LineRequest(STATION_NAME, LINE_COLOR, 잠실역.getId(), 강남역.getId(), 3);
+
+    @MockBean(name = "stationDao")
     private StationDao stationDao;
 
     @Autowired
     private LineService lineService;
 
-    private Station 잠실역;
-    private Station 강남역;
-    private Station 강변역;
-    private List<StationResponse> stationResponses;
-
     @BeforeEach
     void setUp() {
-        잠실역 = stationDao.save("잠실역");
-        강남역 = stationDao.save("강남역");
-        강변역 = stationDao.save("강변역");
-        stationResponses = Stream.of(잠실역, 강남역)
-                                 .map(StationResponse::new)
-                                 .collect(Collectors.toList());
+        given(stationDao.findById(1L)).willReturn(Optional.of(잠실역));
+        given(stationDao.findById(2L)).willReturn(Optional.of(강남역));
+        given(stationDao.findById(3L)).willReturn(Optional.of(강변역));
     }
 
     @Test
@@ -58,9 +52,8 @@ class LineServiceTest {
     void createLine() {
         LineResponse lineResponse = lineService.createLine(LINE_REQUEST);
 
-        LineResponse expected = new LineResponse(1L, "2호선", "초록색", stationResponses);
-        assertThat(lineResponse).usingRecursiveComparison()
-                                .isEqualTo(expected);
+        assertThat(lineResponse.getName()).isEqualTo(STATION_NAME);
+        assertThat(lineResponse.getColor()).isEqualTo(LINE_COLOR);
     }
 
     @Test
@@ -75,21 +68,20 @@ class LineServiceTest {
     @Test
     @DisplayName("존재하지 않는 역을 경로로 가지는 노선 생성 실패")
     void createLineWithNotExistStation() {
-        LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 10L, 3);
+        Long notExistLineId = 9999L;
+        LineRequest lineRequest = new LineRequest("2호선", "초록색", 잠실역.getId(), notExistLineId, 3);
         assertThatThrownBy(() -> lineService.createLine(lineRequest)).isInstanceOf(LineException.class)
-                                                                     .hasMessage(LineError.NOT_EXIST_STATION_ON_LINE_REQUEST.getMessage());
+                .hasMessage(LineError.NOT_EXIST_STATION_ON_LINE_REQUEST.getMessage());
     }
 
     @Test
     @DisplayName("id로 노선 정보 조회")
     void findByName() {
-        lineService.createLine(LINE_REQUEST);
-        LineResponse lineResponse = lineService.findById(1L);
+        LineResponse lineResponse = lineService.createLine(LINE_REQUEST);
 
-        LineResponse expected = new LineResponse(1L, "2호선", "초록색", stationResponses);
-        assertThat(lineResponse).usingRecursiveComparison()
-                                .isEqualTo(expected);
-
+        LineResponse foundResponse = lineService.findById(lineResponse.getId());
+        assertThat(foundResponse.getName()).isEqualTo(STATION_NAME);
+        assertThat(foundResponse.getColor()).isEqualTo(LINE_COLOR);
     }
 
     @Test
@@ -101,94 +93,26 @@ class LineServiceTest {
         LineResponse lineResponse = lineService.createLine(LINE_REQUEST);
         Long lineId = lineResponse.getId();
 
-        LineRequest modifyRequest = new LineRequest(newName, newColor, 1L, 2L, 3);
+        LineRequest modifyRequest = new LineRequest(newName, newColor);
 
         lineService.modifyLine(lineId, modifyRequest);
 
-        LineResponse expected = new LineResponse(lineId, newName, newColor, stationResponses);
-
-        assertThat(lineService.findById(lineId)).usingRecursiveComparison()
-                                                .isEqualTo(expected);
+        LineResponse modifiedLine = lineService.findById(lineId);
+        assertThat(modifiedLine.getName()).isEqualTo(newName);
+        assertThat(modifiedLine.getColor()).isEqualTo(newColor);
     }
 
     @Test
-    @DisplayName("존재하지 않는 업데이트 요청 에러 발생")
+    @DisplayName("존재하지 않는 노선 업데이트 요청 에러 발생")
     void updateLineNotExist() {
         String newName = "3호선";
         String newColor = "파란색";
 
-        Long notExistLindId = 3L;
+        Long notExistLindId = 9999L;
 
-        LineRequest modifyRequest = new LineRequest(newName, newColor, 1L, 2L, 3);
+        LineRequest modifyRequest = new LineRequest(newName, newColor);
 
         assertThatThrownBy(() -> lineService.modifyLine(notExistLindId, modifyRequest)).isInstanceOf(LineException.class)
-                                                                                       .hasMessage(LineError.NOT_EXIST_LINE_ID.getMessage());
-    }
-
-    @Test
-    @DisplayName("구간 추가")
-    void addSection() {
-        LineResponse lineResponse = lineService.createLine(LINE_REQUEST);
-        Long lineId = lineResponse.getId();
-
-        lineService.addSection(lineId, new SectionRequest(2L, 3L, 5));
-
-        LineResponse afterAddSectionLineResponse = lineService.findById(lineId);
-
-        List<StationResponse> stationResponses = Stream.of(잠실역, 강남역, 강변역)
-                                                       .map(StationResponse::new)
-                                                       .collect(Collectors.toList());
-
-        assertThat(afterAddSectionLineResponse.getStations()).containsExactlyElementsOf(stationResponses);
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 노선에 구간 추가시 에러 발생")
-    void addSectionToNotExistLine() {
-        assertThatThrownBy(() ->
-                lineService.addSection(3L, new SectionRequest(2L, 3L, 5)))
-                .isInstanceOf(LineException.class)
-                .hasMessage(LineError.NOT_EXIST_LINE_ID.getMessage());
-    }
-
-    @Test
-    @DisplayName("구간 삭제")
-    void deleteSection() {
-        LineResponse lineResponse = lineService.createLine(LINE_REQUEST);
-        Long lineId = lineResponse.getId();
-
-        lineService.addSection(lineId, new SectionRequest(2L, 3L, 5));
-
-        lineService.deleteSection(lineId, 잠실역.getId());
-
-        LineResponse afterAddSectionLineResponse = lineService.findById(lineId);
-
-        List<StationResponse> stationResponses = Stream.of(강남역, 강변역)
-                                                       .map(StationResponse::new)
-                                                       .collect(Collectors.toList());
-
-        assertThat(afterAddSectionLineResponse.getStations()).containsExactlyElementsOf(stationResponses);
-    }
-
-    @Test
-    @DisplayName("최소 크기 구간에서 구간 삭제시 에러 발생")
-    void deleteSectionAtMinSize() {
-        LineResponse lineResponse = lineService.createLine(LINE_REQUEST);
-        Long lineId = lineResponse.getId();
-
-        assertThatThrownBy(() ->
-                lineService.deleteSection(lineId, 잠실역.getId()))
-                .isInstanceOf(SectionException.class)
-                .hasMessage(SectionError.CANNOT_DELETE_SECTION_SIZE_LESS_THAN_TWO.getMessage());
-    }
-
-
-    @Test
-    @DisplayName("존재하지 않는 노선에 구간 삭제시 에러 발생")
-    void deleteSectionToNotExistLine() {
-        assertThatThrownBy(() ->
-                lineService.deleteSection(3L, 잠실역.getId()))
-                .isInstanceOf(LineException.class)
                 .hasMessage(LineError.NOT_EXIST_LINE_ID.getMessage());
     }
 }
