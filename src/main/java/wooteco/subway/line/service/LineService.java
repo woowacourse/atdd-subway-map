@@ -1,6 +1,7 @@
 package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.LineEntity;
 import wooteco.subway.line.dto.LineRequest;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class LineService {
     private final LineDao lineDao;
     private final StationService stationService;
@@ -44,6 +46,7 @@ public class LineService {
         return new LineResponse(lineEntity, stationResponses);
     }
 
+    @Transactional
     public Long createLine(LineRequest lineRequest) {
         checkDuplicatedName(lineRequest.getName());
         checkPassingStationsExist(lineRequest);
@@ -66,21 +69,25 @@ public class LineService {
         }
     }
 
+    @Transactional
     public void modifyLine(Long lineId, LineRequest lineRequest) {
         checkLineExist(lineId);
         lineDao.update(lineId, lineRequest.getName(), lineRequest.getColor());
     }
 
+    @Transactional
     public void deleteLine(Long lineId) {
         checkLineExist(lineId);
         lineDao.delete(lineId);
     }
 
+    @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         checkLineExist(lineId);
         sectionService.addSection(lineId, sectionRequest);
     }
 
+    @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         checkLineExist(lineId);
         sectionService.deleteSection(lineId, stationId);
