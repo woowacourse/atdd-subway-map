@@ -6,6 +6,7 @@ import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.SectionResponse;
+import wooteco.subway.exception.SameStationSectionException;
 import wooteco.subway.exception.StationNotFoundException;
 import wooteco.subway.repository.LineDao;
 import wooteco.subway.repository.SectionDao;
@@ -32,22 +33,28 @@ public class SectionService {
             .findById(sectionRequest.getDownStationId())
             .orElseThrow(StationNotFoundException::new);
 
-        Section section = saveSection(lineId, upStation, downStation, sectionRequest.getDistance());
+        Section section = addSection(lineId, upStation, downStation, sectionRequest.getDistance());
         return SectionResponse.of(section);
     }
 
     public SectionResponse createSection(Long lineId, Long upStationId, Long downStationId,
         int distance) {
+        validateSameStationForSection(upStationId, downStationId);
+
         Station upStation = stationDao.findById(upStationId)
             .orElseThrow(StationNotFoundException::new);
         Station downStation = stationDao.findById(downStationId)
             .orElseThrow(StationNotFoundException::new);
 
-        Section section = saveSection(lineId, upStation, downStation, distance);
+        Section section = new Section(upStation, downStation, distance);
+        Sections sections = sectionDao.findByLineId(lineId);
+
+        sections.addSection(section);
+
         return SectionResponse.of(section);
     }
 
-    private Section saveSection(Long lineId, Station upStation, Station downStation, int distance) {
+    private Section addSection(Long lineId, Station upStation, Station downStation, int distance) {
         Section section = new Section(upStation, downStation, distance);
         Sections sections = sectionDao.findByLineId(lineId);
 
@@ -56,5 +63,11 @@ public class SectionService {
         long sectionId = sectionDao.save(lineId, section);
         section.setId(sectionId);
         return section;
+    }
+
+    private void validateSameStationForSection(Long upStationId, Long downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new SameStationSectionException();
+        }
     }
 }

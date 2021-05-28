@@ -1,5 +1,6 @@
 package wooteco.subway.domain.section;
 
+import java.util.Objects;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.SameStationSectionException;
 
@@ -56,5 +57,23 @@ public class Section {
 
     public void setId(long sectionId) {
         this.id = sectionId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(upStation, section.upStation)
+            && Objects.equals(downStation, section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(upStation, downStation);
     }
 }

@@ -20,11 +20,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    @DisplayName("구간 생성 - 성공")
+    @DisplayName("구간 생성 - 성공(up-middle)")
     @Test
-    public void createSection() throws Exception {
+    public void createSection_1() throws Exception {
         //given
-        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 10);
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 5);
 
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -38,5 +38,121 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+    }
+
+    @DisplayName("구간 생성 - 성공(middle-down)")
+    @Test
+    public void createSection_2() throws Exception {
+        //given
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 5);
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(OBJECT_MAPPER.writeValueAsString(sectionRequest))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/1/sections")
+            .then().log().all()
+            .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+    }
+
+    @DisplayName("구간 생성 - 성공(last)")
+    @Test
+    public void createSection_3() throws Exception {
+        //given
+        SectionRequest sectionRequest = new SectionRequest(3L, 4L, 5);
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(OBJECT_MAPPER.writeValueAsString(sectionRequest))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/1/sections")
+            .then().log().all()
+            .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+    }
+
+    @DisplayName("구간 생성 - 실패(이미 등록된 구간)")
+    @Test
+    public void createSectionFail_1() throws Exception {
+        //given
+        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 10);
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(OBJECT_MAPPER.writeValueAsString(sectionRequest))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/1/sections")
+            .then().log().all()
+            .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("구간 생성 - 실패(지하철 역이 등록되지 않은 구간)")
+    @Test
+    public void createSectionFail_2() throws Exception {
+        //given
+        SectionRequest sectionRequest = new SectionRequest(3L, 7L, 10);
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(OBJECT_MAPPER.writeValueAsString(sectionRequest))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/1/sections")
+            .then().log().all()
+            .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("구간 생성 - 실패(동일한 역 간의 구간)")
+    @Test
+    public void createSectionFail_3() throws Exception {
+        //given
+        SectionRequest sectionRequest = new SectionRequest(4L, 4L, 10);
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(OBJECT_MAPPER.writeValueAsString(sectionRequest))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/1/sections")
+            .then().log().all()
+            .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("구간 생성 - 실패(기존 거리를 초과한 구간)")
+    @Test
+    public void createSectionFail_4() throws Exception {
+        //given
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 15);
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(OBJECT_MAPPER.writeValueAsString(sectionRequest))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/1/sections")
+            .then().log().all()
+            .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
