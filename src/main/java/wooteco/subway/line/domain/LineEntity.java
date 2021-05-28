@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.line.domain;
 
 public class LineEntity {
     private Long id;

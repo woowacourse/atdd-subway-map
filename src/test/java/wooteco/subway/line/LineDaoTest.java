@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.domain.LineEntity;
 import wooteco.subway.line.exception.LineError;
 import wooteco.subway.line.exception.LineException;
 

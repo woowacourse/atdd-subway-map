@@ -1,9 +1,10 @@
-package wooteco.subway.section;
+package wooteco.subway.section.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.station.Station;
+import wooteco.subway.section.domain.Section;
+import wooteco.subway.station.domain.Station;
 
 import java.util.List;
 

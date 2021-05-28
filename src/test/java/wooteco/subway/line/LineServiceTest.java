@@ -11,11 +11,12 @@ import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.exception.LineError;
 import wooteco.subway.line.exception.LineException;
-import wooteco.subway.section.SectionRequest;
+import wooteco.subway.line.service.LineService;
+import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.exception.SectionError;
 import wooteco.subway.section.exception.SectionException;
-import wooteco.subway.station.Station;
-import wooteco.subway.station.StationDao;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
 import java.util.List;

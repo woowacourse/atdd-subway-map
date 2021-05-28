@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.line.dao;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.line.domain.LineEntity;
 
 import java.sql.PreparedStatement;
 import java.util.List;

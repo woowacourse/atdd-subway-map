@@ -1,8 +1,8 @@
-package wooteco.subway.section;
+package wooteco.subway.section.domain;
 
 import wooteco.subway.section.exception.SectionError;
 import wooteco.subway.section.exception.SectionException;
-import wooteco.subway.station.Station;
+import wooteco.subway.station.domain.Station;
 
 import java.util.*;
 

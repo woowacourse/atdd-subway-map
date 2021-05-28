@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.exception.StationError;
 import wooteco.subway.station.exception.StationException;
+import wooteco.subway.station.service.StationService;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;

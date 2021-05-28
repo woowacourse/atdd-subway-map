@@ -1,6 +1,7 @@
-package wooteco.subway.section;
+package wooteco.subway.section.dto;
 
-import wooteco.subway.station.Station;
+import wooteco.subway.section.domain.Section;
+import wooteco.subway.station.domain.Station;
 
 public class SectionRequest {
     private Long upStationId;

@@ -1,6 +1,6 @@
 package wooteco.subway.station.dto;
 
-import wooteco.subway.station.Station;
+import wooteco.subway.station.domain.Station;
 
 import java.util.Objects;
 
