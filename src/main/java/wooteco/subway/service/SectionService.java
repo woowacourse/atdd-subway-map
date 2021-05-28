@@ -27,16 +27,13 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public SectionResponse createSection(Long lineId, SectionRequest sectionRequest) {
-        Station upStation = stationDao
-            .findById(sectionRequest.getUpStationId())
-            .orElseThrow(StationNotFoundException::new);
-        Station downStation = stationDao
-            .findById(sectionRequest.getDownStationId())
-            .orElseThrow(StationNotFoundException::new);
-
-        Section section = addSection(lineId, upStation, downStation, sectionRequest.getDistance());
-        return SectionResponse.of(section);
+    public SectionResponse createSectionByDto(Long lineId, SectionRequest sectionRequest) {
+        return createSection(
+            lineId,
+            sectionRequest.getUpStationId(),
+            sectionRequest.getDownStationId(),
+            sectionRequest.getDistance()
+        );
     }
 
     public SectionResponse createSection(Long lineId, Long upStationId, Long downStationId,
@@ -63,17 +60,6 @@ public class SectionService {
     private Station findStation(Long stationId) {
         return stationDao.findById(stationId)
             .orElseThrow(StationNotFoundException::new);
-    }
-
-    private Section addSection(Long lineId, Station upStation, Station downStation, int distance) {
-        Section section = new Section(upStation, downStation, distance);
-        Sections sections = sectionDao.findByLineId(lineId);
-
-        sections.addSection(section);
-
-        long sectionId = sectionDao.save(lineId, section);
-        section.setId(sectionId);
-        return section;
     }
 
     private void validateSameStationForSection(Long upStationId, Long downStationId) {
