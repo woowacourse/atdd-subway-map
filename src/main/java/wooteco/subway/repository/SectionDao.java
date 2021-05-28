@@ -67,4 +67,9 @@ public class SectionDao {
             save(lineId, section);
         }
     }
+
+    public int findByStation(Long id) {
+        String query = "SELECT count(*) FROM SECTION WHERE up_station_id = ? OR down_station_id = ?";
+        return jdbcTemplate.queryForObject(query, Integer.class, id, id);
+    }
 }

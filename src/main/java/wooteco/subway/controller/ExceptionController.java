@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.exception.NotAddableSectionException;
+import wooteco.subway.exception.NotRemovableException;
 import wooteco.subway.exception.NotRemovableSectionException;
 import wooteco.subway.exception.SameStationSectionException;
 import wooteco.subway.exception.LineDuplicationException;
@@ -41,8 +42,8 @@ public class ExceptionController {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler(NotRemovableSectionException.class)
-    public ResponseEntity<String> handleNotRemovableSectionException(NotRemovableSectionException e) {
+    @ExceptionHandler(NotRemovableException.class)
+    public ResponseEntity<String> handleNotRemovableException(NotRemovableException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
