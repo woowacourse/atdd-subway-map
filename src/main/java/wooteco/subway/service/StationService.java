@@ -15,6 +15,7 @@ import wooteco.subway.repository.StationDao;
 @Service
 public class StationService {
 
+    private static final int SIZE_OF_SECTION = 0;
     private final StationDao stationDao;
     private final SectionDao sectionDao;
 
@@ -46,7 +47,7 @@ public class StationService {
     }
 
     public void deleteById(Long id) {
-        if (sectionDao.findByStation(id) > 0) {
+        if (sectionDao.findByStation(id) > SIZE_OF_SECTION) {
             throw new NotRemovableStationException();
         }
         stationDao.deleteById(id);

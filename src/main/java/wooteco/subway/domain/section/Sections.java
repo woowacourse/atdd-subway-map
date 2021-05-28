@@ -6,13 +6,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.exception.notRemovableException.NotRemovableSectionException;
 import wooteco.subway.exception.notAddableSectionException.OverDistanceException;
 import wooteco.subway.exception.notAddableSectionException.SectionExistException;
 import wooteco.subway.exception.notAddableSectionException.StationForSectionNotExistException;
+import wooteco.subway.exception.notRemovableException.NotRemovableSectionException;
 
 public class Sections {
 
+    private static final int MIN_SECTION_SIZE = 2;
+    private static final int REMOVE_ONCE_SIZE = 1;
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -170,7 +172,7 @@ public class Sections {
         validateRemovable();
         List<Section> sectionsHaveStation = getSectionsHaveStation(station);
 
-        if (sectionsHaveStation.size() == 1) {
+        if (sectionsHaveStation.size() == REMOVE_ONCE_SIZE) {
             sections.remove(sectionsHaveStation.get(0));
             return;
         }
@@ -204,7 +206,7 @@ public class Sections {
     }
 
     private void validateRemovable() {
-        if (sections.size() < 2) {
+        if (sections.size() < MIN_SECTION_SIZE) {
             throw new NotRemovableSectionException();
         }
     }
