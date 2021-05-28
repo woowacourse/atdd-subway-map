@@ -13,8 +13,8 @@ import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.exception.LineError;
 import wooteco.subway.line.exception.LineException;
 import wooteco.subway.line.service.LineService;
-import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.service.StationService;
 
 import java.util.Optional;
 
@@ -38,22 +38,26 @@ class LineServiceTest {
     private LineService lineService;
 
     @Mock
-    private StationDao stationDao;
+    private StationService stationService;
 
     @Mock
     private LineDao lineDao;
 
     @BeforeEach
     void setUp() {
-        given(stationDao.findById(1L)).willReturn(Optional.of(잠실역));
-        given(stationDao.findById(2L)).willReturn(Optional.of(강남역));
-        given(stationDao.findById(3L)).willReturn(Optional.of(강변역));
+        given(stationService.findById(1L)).willReturn(잠실역);
+        given(stationService.findById(2L)).willReturn(강남역);
+        given(stationService.findById(3L)).willReturn(강변역);
     }
 
     @Test
     @DisplayName("노선 정상 생성")
     void createLine() {
-        given(lineDao.findById(anyLong())).willReturn(Optional.of(new LineEntity(1L, LINE_NAME, LINE_COLOR)));
+        Long lineId = 1L;
+
+        given(lineDao.findById(anyLong())).willReturn(Optional.of(new LineEntity(lineId, LINE_NAME, LINE_COLOR)));
+        given(stationService.isPresent(LINE_REQUEST.getDownStationId())).willReturn(true);
+        given(stationService.isPresent(LINE_REQUEST.getUpStationId())).willReturn(true);
 
         lineService.createLine(LINE_REQUEST);
 
@@ -74,7 +78,7 @@ class LineServiceTest {
     @DisplayName("존재하지 않는 역을 경로로 가지는 노선 생성 실패")
     void createLineWithNotExistStation() {
         Long notExistStationId = 9999L;
-        given(stationDao.findById(notExistStationId)).willReturn(Optional.empty());
+        given(stationService.isPresent(notExistStationId)).willReturn(false);
 
         LineRequest lineRequest = new LineRequest("2호선", "초록색", 잠실역.getId(), notExistStationId, 3);
         assertThatThrownBy(() -> lineService.createLine(lineRequest)).isInstanceOf(LineException.class)

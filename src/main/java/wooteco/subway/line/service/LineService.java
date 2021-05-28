@@ -7,7 +7,7 @@ import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.exception.LineError;
 import wooteco.subway.line.exception.LineException;
-import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.service.StationService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 @Service
 public class LineService {
     private final LineDao lineDao;
-    private final StationDao stationDao;
+    private final StationService stationService;
 
-    public LineService(LineDao lineDao, StationDao stationDao) {
+    public LineService(LineDao lineDao, StationService stationService) {
         this.lineDao = lineDao;
-        this.stationDao = stationDao;
+        this.stationService = stationService;
     }
 
     public List<LineResponse> findAll() {
@@ -40,7 +40,7 @@ public class LineService {
             throw new LineException(LineError.ALREADY_EXIST_LINE_NAME);
         }
 
-        if (notExistingStation(lineRequest.getDownStationId()) || notExistingStation(lineRequest.getUpStationId())) {
+        if (!stationService.isPresent(lineRequest.getDownStationId()) || !stationService.isPresent(lineRequest.getUpStationId())) {
             throw new LineException(LineError.NOT_EXIST_STATION_ON_LINE_REQUEST);
         }
         Long createdLineId = lineDao.save(lineRequest.getName(), lineRequest.getColor());
@@ -71,11 +71,6 @@ public class LineService {
                 .isPresent()) {
             throw new LineException(LineError.NOT_EXIST_LINE_ID);
         }
-    }
-
-    private boolean notExistingStation(Long stationId) {
-        return !stationDao.findById(stationId)
-                .isPresent();
     }
 
     private boolean notExistingLine(Long id) {
