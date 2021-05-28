@@ -1,11 +1,14 @@
 package wooteco.subway.service;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.section.Sections;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionResponse;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.LineDuplicationException;
 import wooteco.subway.exception.LineNotFoundException;
 import wooteco.subway.repository.LineDao;
@@ -15,56 +18,59 @@ import wooteco.subway.repository.SectionDao;
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionService sectionService;
     private final SectionDao sectionDao;
-    private final StationService stationService;
 
-    public LineService(LineDao lineDao, SectionDao sectionDao,
-        StationService stationService) {
+    public LineService(LineDao lineDao, SectionService sectionService,
+        SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.sectionService = sectionService;
         this.sectionDao = sectionDao;
-        this.stationService = stationService;
     }
 
-    public Line createLine(LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-
+    public LineResponse createLine(LineRequest lineRequest) {
+        Line line = lineRequest.toLine();
         validateDuplication(line.getName());
-        long lineId = lineDao.save(line);
-        line.setId(lineId);
+        long id = lineDao.save(line);
+        line.setId(id);
 
-        Section section = createSection(lineRequest);
-        long sectionId = sectionDao.save(section, lineId);
-        section.setId(sectionId);
+        SectionResponse sectionResponse = sectionService.createSection(
+            id,
+            lineRequest.getUpStationId(),
+            lineRequest.getDownStationId(),
+            lineRequest.getDistance()
+        );
 
-        line.addSection(section);
+        List<StationResponse> stationResponses = Arrays.asList(
+            sectionResponse.getUpStationResponse(),
+            sectionResponse.getDownStationResponse()
+        );
 
-        return line;
+        return new LineResponse(line, stationResponses);
     }
 
-    public List<Line> findAll() {
+    public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
-        lines.forEach(line -> {
-            line.setSections(sectionDao.findByLine(line.getId()));
-        });
-        return lines;
+
+        return lines.stream()
+            .map(LineResponse::of)
+            .collect(Collectors.toList());
     }
 
-    public Line findById(Long id) {
+    public LineResponse findById(Long id) {
         Line line = lineDao.findById(id)
             .orElseThrow(LineNotFoundException::new);
-        Sections sections = sectionDao.findByLine(id);
-        line.setSections(sections);
-        return line;
+        return LineResponse.of(line);
     }
 
-    public void editLine(Line line) {
+    public void editLine(Long id, LineRequest lineRequest) {
+        Line line = lineRequest.toLine(id);
         validateDuplication(line.getName());
         lineDao.updateLine(line);
     }
 
     public void deleteLine(Long id) {
         lineDao.deleteById(id);
-        sectionDao.deleteByLineId(id);
     }
 
     private void validateDuplication(String name) {
@@ -74,13 +80,5 @@ public class LineService {
         if (isDuplicated) {
             throw new LineDuplicationException();
         }
-    }
-
-    private Section createSection(LineRequest lineRequest) {
-        return new Section(
-            stationService.findById(lineRequest.getUpStationId()),
-            stationService.findById(lineRequest.getDownStationId()),
-            lineRequest.getDistance()
-        );
     }
 }

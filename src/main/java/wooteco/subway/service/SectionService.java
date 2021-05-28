@@ -1,66 +1,73 @@
 package wooteco.subway.service;
 
-import java.util.List;
 import org.springframework.stereotype.Service;
-import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.exception.LineNotFoundException;
-import wooteco.subway.exception.NotRemovableSectionException;
+import wooteco.subway.dto.SectionResponse;
+import wooteco.subway.exception.SameStationSectionException;
+import wooteco.subway.exception.StationNotFoundException;
 import wooteco.subway.repository.LineDao;
 import wooteco.subway.repository.SectionDao;
+import wooteco.subway.repository.StationDao;
 
 @Service
 public class SectionService {
 
     private final LineDao lineDao;
+    private final StationDao stationDao;
     private final SectionDao sectionDao;
-    private final StationService stationService;
 
-    public SectionService(LineDao lineDao, SectionDao sectionDao,
-        StationService stationService) {
+    public SectionService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.stationDao = stationDao;
         this.sectionDao = sectionDao;
-        this.stationService = stationService;
     }
 
-    public Section createSection(SectionRequest sectionRequest, Long lineId) {
-        Section section = new Section(
-            stationService.findById(sectionRequest.getUpStationId()),
-            stationService.findById(sectionRequest.getDownStationId()),
-            sectionRequest.getDistance()
-        );
+    public SectionResponse createSection(Long lineId, SectionRequest sectionRequest) {
+        Station upStation = stationDao
+            .findById(sectionRequest.getUpStationId())
+            .orElseThrow(StationNotFoundException::new);
+        Station downStation = stationDao
+            .findById(sectionRequest.getDownStationId())
+            .orElseThrow(StationNotFoundException::new);
 
-        Line line = lineDao.findById(lineId)
-            .orElseThrow(LineNotFoundException::new);
-        Sections sections = sectionDao.findByLine(lineId);
-        line.setSections(sections);
-        line.addSection(section);
-        Long sectionId = sectionDao.save(section, lineId);
+        Section section = addSection(lineId, upStation, downStation, sectionRequest.getDistance());
+        return SectionResponse.of(section);
+    }
 
-        List<Section> affectedSections = line.findAffectedSectionByAddSection(section);
-        for (Section affectedSection : affectedSections) {
-            sectionDao.update(affectedSection, lineId);
-        }
+    public SectionResponse createSection(Long lineId, Long upStationId, Long downStationId,
+        int distance) {
+        validateSameStationForSection(upStationId, downStationId);
 
+        Station upStation = stationDao.findById(upStationId)
+            .orElseThrow(StationNotFoundException::new);
+        Station downStation = stationDao.findById(downStationId)
+            .orElseThrow(StationNotFoundException::new);
+
+        Section section = new Section(upStation, downStation, distance);
+        Sections sections = sectionDao.findByLineId(lineId);
+
+        sections.addSection(section);
+
+        return SectionResponse.of(section);
+    }
+
+    private Section addSection(Long lineId, Station upStation, Station downStation, int distance) {
+        Section section = new Section(upStation, downStation, distance);
+        Sections sections = sectionDao.findByLineId(lineId);
+
+        sections.addSection(section);
+
+        long sectionId = sectionDao.save(lineId, section);
         section.setId(sectionId);
         return section;
     }
 
-    public void deleteSection(Long lindId, Long stationId) {
-        Line line = lineDao.findById(lindId)
-            .orElseThrow(LineNotFoundException::new);
-        Station station = stationService.findById(stationId);
-
-        if (sectionDao.findByStation(lindId, stationId).size() < 2) {
-            throw new NotRemovableSectionException();
+    private void validateSameStationForSection(Long upStationId, Long downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new SameStationSectionException();
         }
-
-        Section affectedSection = line.findAffectedSectionByDeleteStation(station);
-        line.removeSectionsBy(station);
-        sectionDao.deleteByStation(lindId, stationId);
-        sectionDao.save(affectedSection, lindId);
     }
 }

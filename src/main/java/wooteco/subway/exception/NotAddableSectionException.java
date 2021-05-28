@@ -2,9 +2,10 @@ package wooteco.subway.exception;
 
 public class NotAddableSectionException extends RuntimeException {
 
-    private static final String message = "생성할 수 없는 구간입니다.";
-
     public NotAddableSectionException() {
+    }
+
+    public NotAddableSectionException(String message) {
         super(message);
     }
 }

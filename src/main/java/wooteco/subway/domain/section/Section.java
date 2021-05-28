@@ -1,8 +1,8 @@
 package wooteco.subway.domain.section;
 
-import java.util.stream.Stream;
+import java.util.Objects;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.exception.StationNotFoundException;
+import wooteco.subway.exception.SameStationSectionException;
 
 public class Section {
 
@@ -19,9 +19,16 @@ public class Section {
     }
 
     public Section(Station upStation, Station downStation, int distance) {
+        validateEquality(upStation, downStation);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void validateEquality(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new SameStationSectionException();
+        }
     }
 
     public Long getId() {
@@ -32,34 +39,41 @@ public class Section {
         return upStation;
     }
 
+    public long getUpStationId() {
+        return upStation.getId();
+    }
+
     public Station getDownStation() {
         return downStation;
+    }
+
+    public long getDownStationId() {
+        return downStation.getId();
     }
 
     public int getDistance() {
         return distance;
     }
 
-    public Long getUpStationId() {
-        return upStation.getId();
+    public void setId(long sectionId) {
+        this.id = sectionId;
     }
 
-    public Long getDownStationId() {
-        return downStation.getId();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(upStation, section.upStation)
+            && Objects.equals(downStation, section.downStation);
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Station getStationById(Long id) {
-        return Stream.of(upStation, downStation)
-            .filter(station -> id.equals(station.getId()))
-            .findFirst()
-            .orElseThrow(StationNotFoundException::new);
-    }
-
-    public boolean contains(Station station) {
-        return upStation.equals(station) || downStation.equals(station);
+    @Override
+    public int hashCode() {
+        return Objects.hash(upStation, downStation);
     }
 }

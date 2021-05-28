@@ -1,115 +1,90 @@
 package wooteco.subway.domain.section;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.NotAddableSectionException;
-import wooteco.subway.exception.NotRemovableSectionException;
+import wooteco.subway.exception.OverDistanceException;
+import wooteco.subway.exception.SectionExistException;
+import wooteco.subway.exception.StationForSectionNotExistException;
 
 public class Sections {
 
     private List<Section> sections;
 
-    public Sections() {
-        sections = new ArrayList<>();
-    }
-
     public Sections(List<Section> sections) {
         this.sections = sections;
     }
 
+    public List<Section> getSections() {
+        return sections;
+    }
+
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-        List<Long> stationIds = getSortedId();
-        for (long stationId : stationIds) {
-            Station station = sections.stream()
-                .map(section -> section.getStationById(stationId))
-                .findAny().get();
-            stations.add(station);
-        }
-        return stations;
-    }
-
-    private List<Long> getSortedId() {
-        if (sections.size() == 1) {
-            return Arrays.asList(
-                sections.get(0).getUpStationId(),
-                sections.get(0).getDownStationId()
-            );
-        }
-
-        Map<Long, Long> sectionInfo = getSectionInfo();
-        List<Long> stationIds = new LinkedList<>();
-
-        Long firstValue = sectionInfo.keySet().stream()
-            .filter(info -> !sectionInfo.containsValue(info))
-            .findAny().get();
-        Long lastValue = sectionInfo.values().stream()
-            .filter(info -> !sectionInfo.containsKey(info))
-            .findAny().get();
-
-        stationIds.add(firstValue);
-        while (!stationIds.contains(lastValue)) {
-            stationIds.add(
-                sectionInfo.get(stationIds.get(stationIds.size() - 1)
-                )
-            );
-        }
-        return new ArrayList<>(stationIds);
-    }
-
-    private Map<Long, Long> getSectionInfo() {
-        Map<Long, Long> stationInfo = new HashMap<>();
-        sections.forEach(section -> {
-            stationInfo.put(section.getUpStationId(), section.getDownStationId());
-        });
-        return new HashMap<>(stationInfo);
+        return sections.stream()
+            .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+            .collect(Collectors.toList());
     }
 
     public void addSection(Section section) {
-        if (this.sections.isEmpty()) {
-            this.sections.add(section);
+        if (sections.isEmpty()) {
+            sections.add(section);
             return;
         }
 
+        checkExistSection(section);
         checkExistStation(section);
-        checkAlreadyExistSection(section);
 
-        List<Station> stations = getStations();
-        if (stations.get(0).equals(section.getDownStation()) ||
-            stations.get(stations.size() - 1).equals(section.getUpStation())
-        ) {
-            addNewSection(section);
+        if (isFirstOrLastSection(section)) {
+            sections.add(section);
             return;
         }
+
         addUpOrDown(section);
     }
 
+    public boolean isFirstOrLastSection(Section section) {
+        List<Station> downStations = sections.stream()
+            .map(Section::getDownStation)
+            .collect(Collectors.toList());
+
+        List<Station> upStations = sections.stream()
+            .map(Section::getUpStation)
+            .collect(Collectors.toList());
+
+        boolean isFirst = upStations.contains(section.getDownStation())
+            && !downStations.contains(section.getUpStation());
+
+        boolean isLast = !upStations.contains(section.getDownStation())
+            && downStations.contains(section.getUpStation());
+
+        return isFirst || isLast;
+    }
 
     private void addUpOrDown(Section section) {
-        this.sections.stream()
+        Optional<Section> upSection = sections.stream()
             .filter(sct -> sct.getUpStation().equals(section.getUpStation()))
-            .findFirst()
-            .ifPresent(savedSection -> addUpAndMiddleSection(section, savedSection));
+            .findFirst();
+        if (upSection.isPresent()) {
+            addUpAndMiddleSection(section, upSection.get());
+            return;
+        }
 
-        this.sections.stream()
+        sections.stream()
             .filter(sct -> sct.getDownStation().equals(section.getDownStation()))
             .findFirst()
-            .ifPresent(savedSection -> addDownAndMiddleSection(section, savedSection));
+            .ifPresent(downSection -> addDownAndMiddleSection(section, downSection));
     }
 
     private void addUpAndMiddleSection(Section section, Section savedSection) {
         checkDistance(section, savedSection);
         addNewSection(section);
 
-        this.sections.add(new Section(
-            savedSection.getUpStation(),
-            savedSection.getUpStation(),
+        sections.add(new Section(
+            section.getDownStation(),
+            savedSection.getDownStation(),
             savedSection.getDistance() - section.getDistance()
         ));
     }
@@ -118,11 +93,18 @@ public class Sections {
         checkDistance(section, savedSection);
         addNewSection(section);
 
-        this.sections.add(new Section(
-            section.getDownStation(),
-            savedSection.getDownStation(),
+        sections.add(new Section(
+            savedSection.getUpStation(),
+            section.getUpStation(),
             savedSection.getDistance() - section.getDistance()
         ));
+    }
+
+    private void checkDistance(Section section, Section savedSection) {
+        if (section.getDistance() >= savedSection.getDistance()) {
+            throw new OverDistanceException();
+        }
+        sections.remove(savedSection);
     }
 
     private void addNewSection(Section section) {
@@ -133,18 +115,9 @@ public class Sections {
         ));
     }
 
-    private void checkDistance(Section section, Section savedSection) {
-        if (section.getDistance() >= savedSection.getDistance()) {
-            throw new NotAddableSectionException();
-        }
-        this.sections.remove(savedSection);
-    }
-
-    private void checkAlreadyExistSection(Section section) {
-        List<Station> stations = getStations();
-        if (stations.contains(section.getUpStation()) &&
-            stations.contains(section.getDownStation())) {
-            throw new NotAddableSectionException();
+    private void checkExistSection(Section section) {
+        if (sections.contains(section)) {
+            throw new SectionExistException();
         }
     }
 
@@ -152,47 +125,7 @@ public class Sections {
         List<Station> stations = getStations();
         if (!stations.contains(section.getUpStation()) &&
             !stations.contains(section.getDownStation())) {
-            throw new NotAddableSectionException();
+            throw new StationForSectionNotExistException();
         }
-    }
-
-    public void removeSectionsBy(Station station) {
-        validateRemovable();
-        sections.removeIf(section -> section.contains(station));
-    }
-
-    private void validateRemovable() {
-        if (sections.size() < 2) {
-            throw new NotRemovableSectionException();
-        }
-    }
-
-    public Section findAffectedSectionByDeleteStation(Station station) {
-        List<Section> sectionsHasStation = sections.stream()
-            .filter(section -> section.contains(station))
-            .collect(Collectors.toList());
-        Section upSection = sectionsHasStation.stream()
-            .filter(section -> section.getDownStation().equals(station))
-            .findAny()
-            .get();
-        Section downSection = sectionsHasStation.stream()
-            .filter(section -> section.getUpStation().equals(station))
-            .findAny()
-            .get();
-        return new Section(
-            upSection.getUpStation(),
-            downSection.getDownStation(),
-            upSection.getDistance() + downSection.getDistance()
-        );
-    }
-
-    public List<Section> findAffectedSectionByAddSection(Section section) {
-        List<Section> affectedSections = sections.stream()
-            .filter(it -> it.contains(section.getUpStation()))
-            .collect(Collectors.toList());
-        affectedSections.addAll(sections.stream()
-            .filter(it -> it.contains(section.getDownStation()))
-            .collect(Collectors.toList()));
-        return new ArrayList<>(affectedSections);
     }
 }
