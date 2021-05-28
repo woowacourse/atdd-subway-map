@@ -153,10 +153,10 @@ public class Sections {
 
     private Section newSectionForRemoveStation(Station station, List<Section> sectionsHaveStation) {
         Section affectedUpSection = sectionsHaveStation.stream()
-            .filter(section -> section.getUpStation().equals(station))
+            .filter(section -> section.getDownStation().equals(station))
             .findAny().orElseThrow(NotRemovableSectionException::new);
         Section affectedDownSection = sectionsHaveStation.stream()
-            .filter(section -> section.getDownStation().equals(station))
+            .filter(section -> section.getUpStation().equals(station))
             .findAny().orElseThrow(NotRemovableSectionException::new);
 
         return new Section(
