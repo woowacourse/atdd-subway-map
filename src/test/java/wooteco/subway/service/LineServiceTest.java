@@ -113,8 +113,8 @@ class LineServiceTest {
     @DisplayName("노선 정보를 수정한다.")
     void editLine() {
         // given
-        Line line = new Line(1L, "3호선", "red");
         LineRequest lineRequest = new LineRequest("3호선", "red", 1L, 2L, 5);
+
         // when
         lineService.editLine(1L, lineRequest);
 
@@ -122,7 +122,7 @@ class LineServiceTest {
         verify(lineDao, times(1))
             .findAll();
         verify(lineDao, times(1))
-            .updateLine(line);
+            .updateLine(any());
     }
 
     @Test
