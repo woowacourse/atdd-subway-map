@@ -28,6 +28,10 @@ public class LineResponse {
         this(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(), Collections.emptyList());
     }
 
+    public LineResponse(LineEntity lineEntity, List<StationResponse> stations) {
+        this(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(), stations);
+    }
+
     public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
         this.id = id;
         this.name = name;

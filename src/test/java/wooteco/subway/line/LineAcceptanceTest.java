@@ -40,9 +40,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     private StationDao stationDao;
 
     @Autowired
-    private LineService lineService;
-
-    @Autowired
     private SectionService sectionService;
 
     private Station 잠실역;

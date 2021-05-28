@@ -7,6 +7,10 @@ import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.exception.LineError;
 import wooteco.subway.line.exception.LineException;
+import wooteco.subway.section.domain.Sections;
+import wooteco.subway.section.dto.SectionRequest;
+import wooteco.subway.section.service.SectionService;
+import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
 
 import java.util.List;
@@ -16,10 +20,12 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineDao lineDao;
     private final StationService stationService;
+    private final SectionService sectionService;
 
-    public LineService(LineDao lineDao, StationService stationService) {
+    public LineService(LineDao lineDao, StationService stationService, SectionService sectionService) {
         this.lineDao = lineDao;
         this.stationService = stationService;
+        this.sectionService = sectionService;
     }
 
     public List<LineResponse> findAll() {
@@ -32,49 +38,57 @@ public class LineService {
     public LineResponse findById(Long id) {
         LineEntity lineEntity = lineDao.findById(id)
                 .orElseThrow(() -> new LineException(LineError.NOT_EXIST_LINE_ID));
-        return new LineResponse(lineEntity);
+
+        Sections sections = sectionService.sectionsByLineId(id);
+        List<StationResponse> stationResponses = StationResponse.listOf(sections.path());
+        return new LineResponse(lineEntity, stationResponses);
     }
 
-    public LineResponse createLine(LineRequest lineRequest) {
-        if (isExistingLineName(lineRequest.getName())) {
+    public Long createLine(LineRequest lineRequest) {
+        checkDuplicatedName(lineRequest.getName());
+        checkPassingStationsExist(lineRequest);
+
+        Long createdLineId = lineDao.save(lineRequest.getName(), lineRequest.getColor());
+        sectionService.initSection(createdLineId, SectionRequest.from(lineRequest));
+
+        return createdLineId;
+    }
+
+    private void checkDuplicatedName(String name) {
+        if (lineDao.findByName(name).isPresent()) {
             throw new LineException(LineError.ALREADY_EXIST_LINE_NAME);
         }
+    }
 
+    private void checkPassingStationsExist(LineRequest lineRequest) {
         if (!stationService.isPresent(lineRequest.getDownStationId()) || !stationService.isPresent(lineRequest.getUpStationId())) {
             throw new LineException(LineError.NOT_EXIST_STATION_ON_LINE_REQUEST);
         }
-        Long createdLineId = lineDao.save(lineRequest.getName(), lineRequest.getColor());
-        return findById(createdLineId);
     }
 
-    private boolean isExistingLineName(String name) {
-        return lineDao.findByName(name)
-                .isPresent();
+    public void modifyLine(Long lineId, LineRequest lineRequest) {
+        checkLineExist(lineId);
+        lineDao.update(lineId, lineRequest.getName(), lineRequest.getColor());
     }
 
-    public void modifyLine(Long id, LineRequest lineRequest) {
-        if (notExistingLine(id)) {
+    public void deleteLine(Long lineId) {
+        checkLineExist(lineId);
+        lineDao.delete(lineId);
+    }
+
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        checkLineExist(lineId);
+        sectionService.addSection(lineId, sectionRequest);
+    }
+
+    public void deleteSection(Long lineId, Long stationId) {
+        checkLineExist(lineId);
+        sectionService.deleteSection(lineId, stationId);
+    }
+
+    private void checkLineExist(Long lineId) {
+        if (!lineDao.findById(lineId).isPresent()) {
             throw new LineException(LineError.NOT_EXIST_LINE_ID);
         }
-        lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
-    }
-
-    public void deleteLine(Long id) {
-        if (notExistingLine(id)) {
-            throw new LineException(LineError.NOT_EXIST_LINE_ID);
-        }
-        lineDao.delete(id);
-    }
-
-    public void checkLineExist(Long id) {
-        if (!lineDao.findById(id)
-                .isPresent()) {
-            throw new LineException(LineError.NOT_EXIST_LINE_ID);
-        }
-    }
-
-    private boolean notExistingLine(Long id) {
-        return !lineDao.findById(id)
-                .isPresent();
     }
 }
