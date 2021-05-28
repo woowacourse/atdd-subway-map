@@ -5,13 +5,15 @@ import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.exception.LineError;
 import wooteco.subway.line.exception.LineException;
-import wooteco.subway.section.*;
+import wooteco.subway.section.Section;
+import wooteco.subway.section.SectionDao;
+import wooteco.subway.section.SectionRequest;
+import wooteco.subway.section.Sections;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 import wooteco.subway.station.exception.StationError;
 import wooteco.subway.station.exception.StationException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,29 +48,7 @@ public class LineService {
     }
 
     private Sections sectionsByLineId(Long id) {
-        if (notExistingLine(id)) {
-            throw new LineException(LineError.NOT_EXIST_LINE_ID);
-        }
-        List<SectionEntity> sectionEntities = sectionDao.findByLineId(id);
-
-        List<Section> sections = new ArrayList<>();
-        for (SectionEntity sectionEntity : sectionEntities) {
-            sections.add(sectionOf(sectionEntity));
-        }
-        return new Sections(sections);
-
-    }
-
-    private Section sectionOf(SectionEntity sectionEntity) {
-        Station upStation = stationById(sectionEntity.getUpStationId());
-        Station downStation = stationById(sectionEntity.getDownStationId());
-        return new Section(upStation, downStation, sectionEntity.getDistance());
-    }
-
-    private Section sectionOf(SectionRequest sectionRequest) {
-        Station upStation = stationById(sectionRequest.getUpStationId());
-        Station downStation = stationById(sectionRequest.getDownStationId());
-        return new Section(upStation, downStation, sectionRequest.getDistance());
+        return new Sections(sectionDao.findSections(id));
     }
 
     private Station stationById(Long id) {
@@ -80,6 +60,7 @@ public class LineService {
         if (isExistingLineByName(lineRequest.getName())) {
             throw new LineException(LineError.ALREADY_EXIST_LINE_NAME);
         }
+
         if (notExistingStation(lineRequest.getDownStationId()) || notExistingStation(lineRequest.getUpStationId())) {
             throw new LineException(LineError.NOT_EXIST_STATION_ON_LINE_REQUEST);
         }
@@ -119,6 +100,9 @@ public class LineService {
     }
 
     public void addSection(Long lineId, SectionRequest sectionRequest) {
+        if (notExistingLine(lineId)) {
+            throw new LineException(LineError.NOT_EXIST_LINE_ID);
+        }
         Sections sections = sectionsByLineId(lineId);
 
         sections.add(sectionOf(sectionRequest));
@@ -126,7 +110,16 @@ public class LineService {
         updateSections(lineId, sections);
     }
 
+    private Section sectionOf(SectionRequest sectionRequest) {
+        Station upStation = stationById(sectionRequest.getUpStationId());
+        Station downStation = stationById(sectionRequest.getDownStationId());
+        return new Section(upStation, downStation, sectionRequest.getDistance());
+    }
+
     public void deleteSection(Long lineId, Long stationId) {
+        if (notExistingLine(lineId)) {
+            throw new LineException(LineError.NOT_EXIST_LINE_ID);
+        }
         Sections sections = sectionsByLineId(lineId);
         sections.delete(stationById(stationId));
 
