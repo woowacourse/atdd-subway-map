@@ -54,7 +54,7 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> editLine(@PathVariable Long id,
-        @RequestBody LineRequest lineRequest) {
+        @RequestBody @Valid LineRequest lineRequest) {
         lineService.editLine(id, lineRequest);
         return ResponseEntity.ok().build();
     }
@@ -68,7 +68,7 @@ public class LineController {
     @PostMapping("/{id}/sections")
     public ResponseEntity<SectionResponse> createSection(
         @PathVariable Long id,
-        @RequestBody SectionRequest sectionRequest
+        @RequestBody @Valid SectionRequest sectionRequest
     ) {
         SectionResponse sectionResponse = sectionService.createSectionByDto(id, sectionRequest);
         return ResponseEntity.created(

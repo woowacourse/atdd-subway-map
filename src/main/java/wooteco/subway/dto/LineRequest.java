@@ -1,19 +1,23 @@
 package wooteco.subway.dto;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.dto.validator.Name;
+import wooteco.subway.dto.validator.SectionInfo;
 
 public class LineRequest {
 
-    @NotNull
+    @Name
     private String name;
-    @NotNull
+    @NotBlank
     private String color;
-    @NotNull(message = "생성할 구간 정보를 입력해주세요.")
+    @SectionInfo
     private Long upStationId;
-    @NotNull(message = "생성할 구간 정보를 입력해주세요.")
+    @SectionInfo
     private Long downStationId;
-    @NotNull(message = "생성할 구간 정보를 입력해주세요.")
+    @SectionInfo
     private int distance;
 
     public LineRequest() {
