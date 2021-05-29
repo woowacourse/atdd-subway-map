@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -18,6 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.notRemovableException.NotRemovableStationException;
+import wooteco.subway.repository.SectionDao;
 import wooteco.subway.repository.StationDao;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,6 +29,8 @@ public class StationServiceTest {
 
     @Mock
     private StationDao stationDao;
+    @Mock
+    private SectionDao sectionDao;
     @InjectMocks
     private StationService stationService;
 
@@ -71,11 +76,26 @@ public class StationServiceTest {
     @Test
     @DisplayName("생성된 역을 삭제한다.")
     void delete() {
+        // given
+        given(sectionDao.findByStation(1L)).willReturn(0);
+
         // when
         stationService.deleteById(1L);
 
         // then
         verify(stationDao, times(1))
             .deleteById(1L);
+    }
+
+    @Test
+    @DisplayName("생성된 역을 삭제한다. - 등록된 구간이 있어 실패")
+    void deleteFail() {
+        // given
+        given(sectionDao.findByStation(1L)).willReturn(2);
+
+        // when
+        assertThatThrownBy(() ->
+            stationService.deleteById(1L)
+        ).isInstanceOf(NotRemovableStationException.class);
     }
 }
