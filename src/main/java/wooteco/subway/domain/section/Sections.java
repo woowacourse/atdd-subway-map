@@ -95,11 +95,11 @@ public class Sections {
 
         boolean isFirst = upStations.contains(section.getDownStation())
             && !downStations.contains(section.getUpStation());
-
-        boolean isLast = !upStations.contains(section.getDownStation())
+        if (isFirst) {
+            return true;
+        }
+        return !upStations.contains(section.getDownStation())
             && downStations.contains(section.getUpStation());
-
-        return isFirst || isLast;
     }
 
     private void addUpOrDown(Section section) {
