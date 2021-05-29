@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.domain.Section;
+import wooteco.subway.section.domain.Sections;
 import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.domain.Station;
@@ -16,7 +17,9 @@ import wooteco.subway.station.service.StationService;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -44,8 +47,15 @@ public class SectionServiceTest {
     @Test
     @DisplayName("노선에 해당하는 구간 탐색")
     void findSections() {
-        sectionService.sectionsByLineId(1L);
-        verify(sectionDao).findSections(1L);
+        Long lineId = 1L;
+        List<Section> sections = Collections.singletonList(new Section(잠실역, 강남역, 3));
+
+        given(sectionDao.findSections(lineId)).willReturn(sections);
+
+        Sections actual = sectionService.sectionsByLineId(1L);
+        Sections expected = new Sections(sections);
+
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test

@@ -15,6 +15,7 @@ import wooteco.subway.station.service.StationService;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -33,9 +34,13 @@ class StationServiceTest {
     @Test
     @DisplayName("역 정상 생성 테스트")
     void createStation() {
-        stationService.createStation(stationRequest);
+        Station station = new Station(1L, stationName);
 
-        verify(stationDao).save(stationName);
+        given(stationDao.save(stationName)).willReturn(station);
+
+        Station actual = stationService.createStation(stationRequest);
+
+        assertThat(actual).isEqualTo(station);
     }
 
     @Test

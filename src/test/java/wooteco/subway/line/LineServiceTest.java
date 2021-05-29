@@ -10,6 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.LineEntity;
 import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.exception.LineError;
 import wooteco.subway.line.exception.LineException;
 import wooteco.subway.line.service.LineService;
@@ -18,11 +19,13 @@ import wooteco.subway.section.domain.Sections;
 import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
 
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -63,13 +66,15 @@ class LineServiceTest {
     @DisplayName("id로 노선 정보 조회")
     void findByName() {
         Long lineId = 1L;
+        LineEntity line = new LineEntity(lineId, LINE_NAME, LINE_COLOR);
+        Sections sections = new Sections(Collections.singletonList(new Section(잠실역, 강남역, 3)));
 
-        given(lineDao.findById(lineId)).willReturn(Optional.of(new LineEntity(1L, LINE_NAME, LINE_COLOR)));
-        given(sectionService.sectionsByLineId(lineId)).willReturn(new Sections(Collections.singletonList(new Section(잠실역, 강남역, 3))));
+        given(lineDao.findById(lineId)).willReturn(Optional.of(line));
+        given(sectionService.sectionsByLineId(lineId)).willReturn(sections);
 
-        lineService.findById(lineId);
-
-        verify(lineDao).findById(lineId);
+        LineResponse actual = lineService.findById(lineId);
+        LineResponse expected = new LineResponse(line, StationResponse.listOf(sections.path()));
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test
@@ -84,10 +89,10 @@ class LineServiceTest {
         willDoNothing().given(sectionService)
                 .initSection(lineId, sectionRequest);
 
-        lineService.createLine(LINE_REQUEST);
+        Long createdId = lineService.createLine(LINE_REQUEST);
 
-        verify(lineDao).save(LINE_NAME, LINE_COLOR);
         verify(sectionService).initSection(lineId, sectionRequest);
+        assertThat(createdId).isEqualTo(lineId);
     }
 
     @Test
