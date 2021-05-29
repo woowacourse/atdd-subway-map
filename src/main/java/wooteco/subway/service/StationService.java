@@ -47,7 +47,7 @@ public class StationService {
     }
 
     public void deleteById(Long id) {
-        if (sectionDao.findByStation(id) > SIZE_OF_SECTION) {
+        if (sectionDao.findByStation(id)) {
             throw new NotRemovableStationException();
         }
         stationDao.deleteById(id);

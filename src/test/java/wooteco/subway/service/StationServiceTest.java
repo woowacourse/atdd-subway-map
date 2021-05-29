@@ -77,7 +77,7 @@ public class StationServiceTest {
     @DisplayName("생성된 역을 삭제한다.")
     void delete() {
         // given
-        given(sectionDao.findByStation(1L)).willReturn(0);
+        given(sectionDao.findByStation(1L)).willReturn(false);
 
         // when
         stationService.deleteById(1L);
@@ -91,7 +91,7 @@ public class StationServiceTest {
     @DisplayName("생성된 역을 삭제한다. - 등록된 구간이 있어 실패")
     void deleteFail() {
         // given
-        given(sectionDao.findByStation(1L)).willReturn(2);
+        given(sectionDao.findByStation(1L)).willReturn(true);
 
         // when
         assertThatThrownBy(() ->
