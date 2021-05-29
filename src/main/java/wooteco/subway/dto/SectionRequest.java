@@ -1,14 +1,15 @@
 package wooteco.subway.dto;
 
-import wooteco.subway.dto.validator.SectionInfo;
+import wooteco.subway.dto.validator.DistanceForSection;
+import wooteco.subway.dto.validator.StationForSection;
 
 public class SectionRequest {
 
-    @SectionInfo
+    @StationForSection
     private Long upStationId;
-    @SectionInfo
+    @StationForSection
     private Long downStationId;
-    @SectionInfo
+    @DistanceForSection
     private int distance;
 
     public SectionRequest() {

@@ -7,12 +7,12 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-@Constraint(validatedBy = NameValidator.class)
+@Constraint(validatedBy = DistanceForSectionValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface Name {
+public @interface DistanceForSection {
 
-    String message() default "적절한 형식의 이름을 입력해 주세요.";
+    String message() default "0 이상의 거리를 입력해 주세요.";
 
     Class<?>[] groups() default {};
 
