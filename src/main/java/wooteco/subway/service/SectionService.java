@@ -36,10 +36,12 @@ public class SectionService {
         );
     }
 
-    public SectionResponse createSection(Long lineId, Long upStationId, Long downStationId,
-        int distance) {
-        validateSameStationForSection(upStationId, downStationId);
-
+    public SectionResponse createSection(
+        Long lineId,
+        Long upStationId,
+        Long downStationId,
+        int distance
+    ) {
         Station upStation = findStation(upStationId);
         Station downStation = findStation(downStationId);
 
@@ -60,12 +62,6 @@ public class SectionService {
     private Station findStation(Long stationId) {
         return stationDao.findById(stationId)
             .orElseThrow(StationNotFoundException::new);
-    }
-
-    private void validateSameStationForSection(Long upStationId, Long downStationId) {
-        if (upStationId.equals(downStationId)) {
-            throw new SameStationSectionException();
-        }
     }
 
     public void deleteSection(Long lineId, Long stationId) {
