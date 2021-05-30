@@ -1,14 +1,14 @@
 package wooteco.subway.station.exception;
 
 public class StationException extends RuntimeException {
-    private ErrorCode errorCode;
+    private StationError stationError;
 
-    public StationException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
+    public StationException(StationError stationError) {
+        super(stationError.getMessage());
+        this.stationError = stationError;
     }
 
     public int statusCode() {
-        return errorCode.getStatusCode();
+        return stationError.getStatusCode();
     }
 }

@@ -1,13 +1,16 @@
-package wooteco.subway.station;
+package wooteco.subway.station.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -33,8 +36,8 @@ public class StationDao {
             ps.setString(1, name);
             return ps;
         }, keyHolder);
-        return new Station(keyHolder.getKey()
-                                    .longValue(), name);
+        return new Station(Objects.requireNonNull(keyHolder.getKey())
+                                  .longValue(), name);
     }
 
     public List<Station> findAll() {
@@ -44,14 +47,24 @@ public class StationDao {
 
     public Optional<Station> findByName(String name) {
         String sql = "select id, name from STATION where name = ?";
-        List<Station> result = jdbcTemplate.query(sql, stationRowMapper(), name);
-        return result.stream()
-                     .findAny();
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, stationRowMapper(), name));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Station> findById(Long id) {
+        String sql = "select id, name from STATION where id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, stationRowMapper(), id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public void delete(Long id) {
         String sql = "delete from STATION where id = ?";
         jdbcTemplate.update(sql, id);
     }
-
 }

@@ -6,6 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.domain.Station;
 
 import java.util.Optional;
 
@@ -13,6 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Transactional
+@Sql("/init-station.sql")
 @SpringBootTest
 class StationDaoTest {
 
@@ -25,8 +31,6 @@ class StationDaoTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.execute("delete from STATION");
-        jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
         jdbcTemplate.update("insert into STATION (name) values (?)", stationName1);
     }
 

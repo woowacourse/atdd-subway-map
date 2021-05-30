@@ -6,12 +6,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.domain.LineEntity;
+import wooteco.subway.line.exception.LineError;
+import wooteco.subway.line.exception.LineException;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Transactional
+@Sql("/init-line.sql")
 @SpringBootTest
 class LineDaoTest {
     private static final String lineName1 = "2호선";
@@ -26,30 +35,28 @@ class LineDaoTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.execute("delete from LINE");
-        jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
         jdbcTemplate.update("insert into LINE(name, color) values (?, ?)", lineName1, color1);
     }
 
     @Test
     @DisplayName("이름으로 노선 검색")
     void findByName() {
-        Optional<Line> findStation = lineDao.findByName(lineName1);
-        assertTrue(findStation.isPresent());
+        Optional<LineEntity> lineEntity = lineDao.findByName(lineName1);
+        assertTrue(lineEntity.isPresent());
     }
 
     @Test
     @DisplayName("존재하지 않는 노선 이름 검색")
     void findNoneExistLineByName() {
-        Optional<Line> findStation = lineDao.findByName(lineName2);
-        assertFalse(findStation.isPresent());
+        Optional<LineEntity> findLine = lineDao.findByName(lineName2);
+        assertFalse(findLine.isPresent());
     }
 
     @Test
     @DisplayName("존재하지 않는 노선 Id 검색")
     void findNoneExistLineById() {
-        Optional<Line> findStation = lineDao.findById(10L);
-        assertFalse(findStation.isPresent());
+        Optional<LineEntity> findLine = lineDao.findById(10L);
+        assertFalse(findLine.isPresent());
     }
 
     @Test
@@ -68,23 +75,28 @@ class LineDaoTest {
     @Test
     @DisplayName("노선 정보 수정")
     void update() {
-        Line savedLine = lineDao.save(lineName2, color2);
-        lineDao.update(savedLine.getId(), "3호선", "주황색");
+        String updateName = "3호선";
+        String updateColor = "주황색";
 
-        Line findLine = lineDao.findById(savedLine.getId())
-                               .get();
-        assertEquals(findLine.getName(), "3호선");
-        assertEquals(findLine.getColor(), "주황색");
+        Long savedLineId = lineDao.save(lineName2, color2);
+        lineDao.update(savedLineId, updateName, updateColor);
+
+        LineEntity updatedLineEntity = lineDao.findById(savedLineId)
+                                              .orElseThrow(() -> new LineException(LineError.NOT_EXIST_LINE_ID));
+
+        assertThat(updatedLineEntity.getName()).isEqualTo(updateName);
+        assertThat(updatedLineEntity.getColor()).isEqualTo(updateColor);
     }
 
     @Test
     @DisplayName("노선 정보 삭제")
     void delete() {
-        Line savedLine = lineDao.save(lineName2, color2);
-        assertTrue(lineDao.findByName(savedLine.getName())
+        Long savedLineId = lineDao.save(lineName2, color2);
+
+        assertTrue(lineDao.findById(savedLineId)
                           .isPresent());
-        lineDao.delete(savedLine.getId());
-        assertFalse(lineDao.findByName(savedLine.getName())
+        lineDao.delete(savedLineId);
+        assertFalse(lineDao.findById(savedLineId)
                            .isPresent());
     }
 }

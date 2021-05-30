@@ -1,14 +1,14 @@
 package wooteco.subway.line.exception;
 
 public class LineException extends RuntimeException {
-    private ErrorCode errorCode;
+    private LineError lineError;
 
-    public LineException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
+    public LineException(LineError lineError) {
+        super(lineError.getMessage());
+        this.lineError = lineError;
     }
 
     public int statusCode() {
-        return errorCode.getStatusCode();
+        return lineError.getStatusCode();
     }
 }

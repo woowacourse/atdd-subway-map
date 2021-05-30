@@ -1,13 +1,17 @@
-package wooteco.subway.line;
+package wooteco.subway.line.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.line.domain.LineEntity;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -18,15 +22,15 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private RowMapper<Line> lineRowMapper() {
-        return (resultSet, rowNum) -> new Line(
+    private RowMapper<LineEntity> lineRowMapper() {
+        return (resultSet, rowNum) -> new LineEntity(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("color")
         );
     }
 
-    public Line save(String name, String color) {
+    public Long save(String name, String color) {
         String sql = "insert into Line (name, color) values (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
@@ -35,25 +39,29 @@ public class LineDao {
             ps.setString(2, color);
             return ps;
         }, keyHolder);
-        return new Line(keyHolder.getKey()
-                                 .longValue(), name, color);
+        return Objects.requireNonNull(keyHolder.getKey())
+                      .longValue();
     }
 
-    public Optional<Line> findById(Long id) {
+    public Optional<LineEntity> findById(Long id) throws IncorrectResultSizeDataAccessException {
         String sql = "select id, name, color from LINE where id = ?";
-        List<Line> result = jdbcTemplate.query(sql, lineRowMapper(), id);
-        return result.stream()
-                     .findAny();
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineRowMapper(), id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
-    public Optional<Line> findByName(String name) {
+    public Optional<LineEntity> findByName(String name) throws IncorrectResultSizeDataAccessException {
         String sql = "select id, name, color from LINE where name = ?";
-        List<Line> result = jdbcTemplate.query(sql, lineRowMapper(), name);
-        return result.stream()
-                     .findAny();
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineRowMapper(), name));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
-    public List<Line> findAll() {
+    public List<LineEntity> findAll() {
         String sql = "select id, name, color from LINE";
         return jdbcTemplate.query(sql, lineRowMapper());
     }

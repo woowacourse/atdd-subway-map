@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.line.ui;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

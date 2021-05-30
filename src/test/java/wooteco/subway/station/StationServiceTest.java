@@ -1,44 +1,55 @@
 package wooteco.subway.station;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.dto.StationRequest;
+import wooteco.subway.station.exception.StationError;
 import wooteco.subway.station.exception.StationException;
+import wooteco.subway.station.service.StationService;
 
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
-@SpringBootTest
+@ExtendWith(SpringExtension.class)
 class StationServiceTest {
     private static final String stationName = "잠실역";
+    private static final StationRequest stationRequest = new StationRequest(stationName);
 
-    @Autowired
+    @InjectMocks
     private StationService stationService;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate.execute("delete from STATION");
-        jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
-    }
+    @Mock
+    private StationDao stationDao;
 
     @Test
     @DisplayName("역 정상 생성 테스트")
     void createStation() {
-        Station savedStation = stationService.createStation(stationName);
-        assertEquals(stationName, savedStation.getName());
+        Station station = new Station(1L, stationName);
+
+        given(stationDao.save(stationName)).willReturn(station);
+
+        Station actual = stationService.createStation(stationRequest);
+
+        assertThat(actual).isEqualTo(station);
     }
 
     @Test
     @DisplayName("역 이름 중복 생성 테스트")
     void createDuplicatedStation() {
-        stationService.createStation(stationName);
-        assertThatThrownBy(() -> stationService.createStation(stationName))
-                .isInstanceOf(StationException.class);
+        given(stationDao.findByName(stationName)).willReturn(Optional.of(new Station(stationName)));
+
+        assertThatThrownBy(() -> stationService.createStation(stationRequest))
+                .isInstanceOf(StationException.class)
+                .hasMessage(StationError.ALREADY_EXIST_STATION_NAME.getMessage());
     }
 }
