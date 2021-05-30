@@ -1,9 +1,15 @@
 package wooteco.subway.dto;
 
+import wooteco.subway.dto.validator.DistanceForSection;
+import wooteco.subway.dto.validator.StationForSection;
+
 public class SectionRequest {
 
+    @StationForSection
     private Long upStationId;
+    @StationForSection
     private Long downStationId;
+    @DistanceForSection
     private int distance;
 
     public SectionRequest() {

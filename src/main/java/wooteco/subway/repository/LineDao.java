@@ -3,8 +3,6 @@ package wooteco.subway.repository;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
-import javax.swing.text.html.Option;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,7 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.line.Line;
-import wooteco.subway.exceptions.LineNotFoundException;
+import wooteco.subway.exception.notFoundException.LineNotFoundException;
 
 @Repository
 public class LineDao {
@@ -51,7 +49,7 @@ public class LineDao {
     }
 
     public Optional<Line> findById(Long id) {
-        String query = "SELECT * FROM LINE WHERE id = ?";
+        String query = "SELECT id, name, color FROM LINE WHERE id = ?";
         return jdbcTemplate.query(query, ROW_MAPPER, id)
             .stream()
             .findAny();

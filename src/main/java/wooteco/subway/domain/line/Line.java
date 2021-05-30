@@ -1,10 +1,15 @@
 package wooteco.subway.domain.line;
 
+import java.util.List;
+import wooteco.subway.domain.section.Sections;
+import wooteco.subway.domain.station.Station;
+
 public class Line {
 
     private long id;
     private String name;
     private String color;
+    private Sections sections;
 
     public Line() {
     }
@@ -32,7 +37,15 @@ public class Line {
         return color;
     }
 
+    public List<Station> getStations() {
+        return sections.getSortedStations();
+    }
+
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setSections(Sections sections) {
+        this.sections = sections;
     }
 }
