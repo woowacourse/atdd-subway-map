@@ -1,11 +1,11 @@
-package wooteco.subway.station;
+package wooteco.subway.dao;
 
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.domain.Station;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class StationDao {
     private static Long seq = 0L;

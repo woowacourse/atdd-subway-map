@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.domain;
 
 public class Station {
     private Long id;
