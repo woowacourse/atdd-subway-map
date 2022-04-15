@@ -462,11 +462,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_구간_제거">구간 제거</a></li>
 </ul>
 </li>
-<li><a href="#Path">경로</a>
-<ul class="sectlevel2">
-<li><a href="#_경로_조회">경로 조회</a></li>
-</ul>
-</li>
 </ul>
 </div>
 </div>
@@ -833,57 +828,11 @@ Vary: Access-Control-Request-Headers</code></pre>
 </div>
 </div>
 </div>
-<div class="sect1">
-<h2 id="Path"><a class="link" href="#Path">경로</a></h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_경로_조회"><a class="link" href="#_경로_조회">경로 조회</a></h3>
-<div class="sect3">
-<h4 id="_경로_조회_http_request"><a class="link" href="#_경로_조회_http_request">HTTP request</a></h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /paths?source=1&amp;target=5&amp;age=15 HTTP/1.1
-Accept: application/json
-Host: localhost:8080</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_경로_조회_http_response"><a class="link" href="#_경로_조회_http_response">HTTP response</a></h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Vary: Origin
-Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers
-Content-Type: application/json
-Content-Length: 239
-
-{
-  "stations" : [ {
-    "id" : 1,
-    "name" : "지하철역이름"
-  }, {
-    "id" : 2,
-    "name" : "새로운지하철역이름"
-  }, {
-    "id" : 3,
-    "name" : "또다른지하철역이름"
-  } ],
-  "distance" : 9,
-  "fare" : 1250
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2022-04-15 15:54:27 +0900
+Last updated 2022-04-15 16:21:55 +0900
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github.min.css">
