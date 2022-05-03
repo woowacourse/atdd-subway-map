@@ -50,4 +50,18 @@ class JdbcLineDaoTest {
 
         assertThat(lineDao.findAll().size()).isEqualTo(2);
     }
+
+    @DisplayName("이름으로 노선을 찾는다.")
+    @Test
+    void findByName() {
+        Line line = new Line("2호선", "bg-green-600");
+        LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
+
+        LineEntity lineEntity = lineDao.findByName(savedLineEntity.getName()).get();
+
+        assertAll(
+                () -> assertThat(lineEntity.getId()).isEqualTo(savedLineEntity.getId()),
+                () -> assertThat(lineEntity.getColor()).isEqualTo("bg-green-600")
+        );
+    }
 }

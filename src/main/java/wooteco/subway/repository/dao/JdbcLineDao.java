@@ -48,7 +48,12 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public Optional<LineEntity> findByName(final String name) {
-        return Optional.empty();
+        final String sql = "select id, name, color from LINE where name = :name";
+        final Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        final SqlParameterSource source = new MapSqlParameterSource(params);
+        final LineEntity lineEntity = jdbcTemplate.queryForObject(sql, source, rowMapper);
+        return Optional.ofNullable(lineEntity);
     }
 
     @Override
