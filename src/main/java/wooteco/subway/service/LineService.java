@@ -13,6 +13,9 @@ public class LineService {
     }
 
     public Line save(final Line line) {
+        if (lineDao.existByName(line.getName())) {
+            throw new IllegalStateException("이미 존재하는 노선 이름입니다.");
+        }
         return lineDao.save(line);
     }
 
