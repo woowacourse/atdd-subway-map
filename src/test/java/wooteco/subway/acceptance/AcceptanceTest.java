@@ -6,6 +6,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 
 import io.restassured.RestAssured;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.StationDao;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -18,5 +19,6 @@ public class AcceptanceTest {
     public void setUp() {
         RestAssured.port = port;
         StationDao.deleteAll();
+        LineDao.deleteAll();
     }
 }
