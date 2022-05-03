@@ -39,9 +39,9 @@ public class LineService {
 		return LineDto.from(lineDao.findById(id));
 	}
 
-	public LineDto update(Long id, String name, String color) {
-		lineDao.update(id, name, color);
-		return findOne(id);
+	public LineDto update(Line line) {
+		lineDao.update(line);
+		return findOne(line.getId());
 	}
 
 	public void remove(Long id) {

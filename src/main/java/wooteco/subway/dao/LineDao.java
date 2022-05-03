@@ -28,9 +28,9 @@ public class LineDao {
 			.orElseThrow(() -> new NoSuchElementException("해당 id에 맞는 지하철 노선이 없습니다."));
 	}
 
-	public void update(Long id, String name, String color) {
-		lines.remove(findById(id));
-		lines.add(new Line(id, name, color));
+	public void update(Line line) {
+		lines.remove(findById(line.getId()));
+		lines.add(line);
 	}
 
 	public void remove(Long id) {

@@ -54,7 +54,7 @@ class LineDaoTest {
 	@Test
 	void update() {
 		Long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
-		lineDao.update(lineId, "분당선", "bg-blue-600");
+		lineDao.update(new Line(lineId, "분당선", "bg-blue-600"));
 		Line updatedLine = lineDao.findById(lineId);
 
 		assertThat(updatedLine.getId()).isEqualTo(lineId);
@@ -65,7 +65,7 @@ class LineDaoTest {
 	@DisplayName("없는 지하철 노선을 수정하면 예외가 발생한다.")
 	@Test
 	void noSuchLineExceptionDuringUpdate() {
-		assertThatThrownBy(() -> lineDao.update(1L, "분당선", "bg-blue-600"))
+		assertThatThrownBy(() -> lineDao.update(new Line(1L, "분당선", "bg-blue-600")))
 			.isInstanceOf(NoSuchElementException.class)
 			.hasMessage("해당 id에 맞는 지하철 노선이 없습니다.");
 	}

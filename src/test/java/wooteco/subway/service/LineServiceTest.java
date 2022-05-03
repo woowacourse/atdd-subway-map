@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.service.dto.LineDto;
 
 class LineServiceTest {
@@ -57,7 +58,7 @@ class LineServiceTest {
 	@Test
 	void update() {
 		LineDto line = lineService.create("신분당선", "bg-red-600");
-		LineDto updatedLine = lineService.update(line.getId(), "분당선", "bg-blue-600");
+		LineDto updatedLine = lineService.update(new Line(line.getId(), "분당선", "bg-blue-600"));
 		assertThat(updatedLine.getId()).isEqualTo(line.getId());
 		assertThat(updatedLine.getName()).isEqualTo("분당선");
 		assertThat(updatedLine.getColor()).isEqualTo("bg-blue-600");
