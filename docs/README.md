@@ -8,7 +8,7 @@
     - `응답` json으로 id, name을 반환한다.
     - Location 헤더는 `/stations/{id}` 이다.
     - `예외` 지하철 역 생성 시 이름이 중복된다면 에러를 응답한다.
-  - [ ] 지하철역 목록 조회 `GET /stations`
+  - [x] 지하철역 목록 조회 `GET /stations`
     - 결과 상태 코드는 `200 OK` 이다.
     - `응답` json으로 id, name을 가진 리스트를 반환한다.
   - [ ] 지하철역 삭제 `DELETE /stations/{id}`
