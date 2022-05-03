@@ -46,4 +46,10 @@ public class LineDao {
         lines.remove(id);
         return 1;
     }
+
+    public boolean existByName(final String name) {
+        return lines.values()
+                .stream()
+                .anyMatch(line -> line.getName().equals(name));
+    }
 }
