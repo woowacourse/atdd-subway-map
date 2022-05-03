@@ -44,11 +44,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.header("Location")).isNotBlank(),
+                () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("분당선"),
+                () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo("노랑이")
+        );
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성하면 에러를 응답한다.")
     @Test
     void createStationWithDuplicateName() {
         // given
@@ -201,7 +205,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // when
-        String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .delete("/lines/" + createResponse.header("Location").split("/")[2])
@@ -210,5 +213,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("기존에 존재하지 않는 지하철 노선 ID로 지하철 노선을 조회하면 에러를 응답한다.")
+    @Test
+    void getLineWithNonExistId() {
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + 100)
+                .then()
+                .log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

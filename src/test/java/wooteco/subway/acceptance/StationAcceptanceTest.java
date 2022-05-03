@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -22,7 +23,7 @@ import wooteco.subway.dto.StationResponse;
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
-    void setup(){
+    void setup() {
         StationDao.deleteAll();
     }
 
@@ -43,11 +44,15 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.header("Location")).isNotBlank(),
+                () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("강남역")
+        );
+
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성하면 에러를 응답한다.")
     @Test
     void createStationWithDuplicateName() {
         // given

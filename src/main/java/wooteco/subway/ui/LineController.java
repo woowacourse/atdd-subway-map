@@ -27,8 +27,9 @@ public class LineController {
         }
         final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         final Line newLine = LineDao.save(line);
+        final LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
 
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).build();
+        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
