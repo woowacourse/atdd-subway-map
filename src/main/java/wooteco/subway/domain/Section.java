@@ -24,7 +24,7 @@ public class Section {
     public Station getDownStation() {
         return downStation;
     }
-    
+
     public Long getDistance() {
         return distance;
     }
