@@ -21,10 +21,21 @@ public class StationDao {
         return stations;
     }
 
+    public static void delete(Long id) {
+        stations.remove(findById(id));
+    }
+
     private static Station createNewObject(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
+    }
+
+    private static Station findById(Long id) {
+        return stations.stream()
+                .filter(s -> s.isSameId(id))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철역입니다."));
     }
 }
