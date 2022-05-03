@@ -22,8 +22,9 @@
 - [X] 지하철 노선 목록 기능
 - [X] 지하철 노선 조회 기능
 - [X] 지하철 노선 삭제 기능
+- [X] 지하철 노선 수정 기능
 
-
+현
 ## 🚀 Getting Started
 ### Usage
 #### application 구동

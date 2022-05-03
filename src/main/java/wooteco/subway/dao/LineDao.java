@@ -40,4 +40,13 @@ public class LineDao {
     public static Line findById(Long id) {
         return lines.get(id);
     }
+
+    public static boolean updateById(Long savedId, Line line) {
+        if (lines.containsKey(savedId)) {
+            lines.replace(savedId, line);
+            return true;
+        }
+
+        return false;
+    }
 }

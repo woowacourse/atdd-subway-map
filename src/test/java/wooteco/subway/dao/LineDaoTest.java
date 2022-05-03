@@ -75,4 +75,19 @@ class LineDaoTest {
             .hasSize(0)
             .doesNotContain(savedId);
     }
+
+    @Test
+    void update() {
+        // given
+        Line originLine = new Line("1호선", "bg-red-600");
+        Long savedId = LineDao.save(originLine);
+
+        // when
+        Line newLine = new Line("2호선", "bg-green-600");
+        LineDao.updateById(savedId, newLine);
+        Line line = LineDao.findById(savedId);
+
+        // then
+        assertThat(line).isEqualTo(newLine);
+    }
 }
