@@ -38,4 +38,15 @@ public class LineDao {
             .filter(line -> line.getId().equals(id))
             .findFirst();
     }
+
+    public void update(Long id, String name, String color) {
+        int idx = 0;
+        for (Line line : lines) {
+            if (line.getId().equals(id)) {
+                lines.set(idx, new Line(id, name, color));
+                return;
+            }
+            idx++;
+        }
+    }
 }

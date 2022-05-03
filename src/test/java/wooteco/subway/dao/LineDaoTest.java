@@ -63,4 +63,20 @@ public class LineDaoTest {
         //then
         assertThat(equals(actual, line)).isTrue();
     }
+
+    @Test
+    @DisplayName("Line 의 이름과 색깔을 변경한다.")
+    void update() {
+        //given
+        Line line = new Line("가산디지털", "blue");
+        Line savedLine = lineDao.save(line);
+
+        //when
+        Line updatedLine = new Line("중곡", "khaki");
+        lineDao.update(savedLine.getId(), updatedLine.getName(), updatedLine.getColor());
+
+        //then
+        Line actual = lineDao.findById(savedLine.getId()).get();
+        assertThat(equals(actual, updatedLine)).isTrue();
+    }
 }
