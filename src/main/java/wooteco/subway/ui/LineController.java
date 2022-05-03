@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.dao.InmemoryLineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -22,7 +21,11 @@ import wooteco.subway.service.LineService;
 @RequestMapping("/lines")
 public class LineController {
 
-    private final LineService lineService = new LineService(InmemoryLineDao.getInstance());
+    private final LineService lineService;
+
+    public LineController(final LineService lineService) {
+        this.lineService = lineService;
+    }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
