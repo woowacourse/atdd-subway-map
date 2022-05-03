@@ -12,14 +12,14 @@ public class StationDao {
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
+    public static List<Station> findAll() {
+        return stations;
+    }
+
     public static Station save(Station station) {
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
-    }
-
-    public static List<Station> findAll() {
-        return stations;
     }
 
     private static Station createNewObject(Station station) {

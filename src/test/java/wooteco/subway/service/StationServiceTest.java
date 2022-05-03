@@ -18,7 +18,7 @@ class StationServiceTest {
     }
 
     @Test
-    @DisplayName("지하철 역을 저장할 수 있다.")
+    @DisplayName("중복된 지하철 역을 저장할 수 없다.")
     void NonSaveDuplicateStation() {
         StationService.createStation("역삼역");
 
