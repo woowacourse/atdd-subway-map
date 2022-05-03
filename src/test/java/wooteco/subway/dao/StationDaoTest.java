@@ -18,9 +18,8 @@ class StationDaoTest {
 	@Test
 	void save() {
 		Station station = new Station("강남역");
-		Station savedStation = stationDao.save(station);
-		assertThat(savedStation).isSameAs(station);
-		assertThat(savedStation.getId()).isNotNull();
+		Long stationId = stationDao.save(station);
+		assertThat(stationId).isGreaterThan(0);
 	}
 
 	@DisplayName("지하철 역 목록을 조회한다.")
@@ -39,8 +38,8 @@ class StationDaoTest {
 	@DisplayName("지하철 역을 삭제한다.")
 	@Test
 	void remove() {
-		Station station = stationDao.save(new Station("강남역"));
-		stationDao.remove(station.getId());
+		Long stationId = stationDao.save(new Station("강남역"));
+		stationDao.remove(stationId);
 		List<Station> stations = stationDao.findAll();
 
 		assertThat(stations).isEmpty();
