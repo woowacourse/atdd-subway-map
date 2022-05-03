@@ -21,10 +21,18 @@ public class StationDao {
 	}
 
 	public void remove(Long id) {
-		stations.remove(stations.stream()
+		stations.remove(findById(id));
+	}
+
+	public Station findById(Long id) {
+		return stations.stream()
 			.filter(station -> station.getId().equals(id))
 			.findAny()
-			.orElseThrow(() -> new NoSuchElementException("해당 id에 맞는 지하철 역이 없습니다."))
-		);
+			.orElseThrow(() -> new NoSuchElementException("해당 id에 맞는 지하철 역이 없습니다."));
+	}
+
+	public Boolean existsByName(String name) {
+		return stations.stream()
+			.anyMatch(station -> name.equals(station.getName()));
 	}
 }
