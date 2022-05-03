@@ -3,8 +3,11 @@ package wooteco.subway.domain;
 public class Line {
 
     private Long id;
-    private final String name;
-    private final String color;
+    private String name;
+    private String color;
+
+    public Line() {
+    }
 
     public Line(String name, String color) {
         this.name = name;
