@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.NotFoundException;
@@ -17,6 +18,7 @@ import wooteco.subway.exception.NotFoundException;
 @SuppressWarnings("NonAsciiCharacters")
 @SpringBootTest
 @Transactional
+@Sql("classpath:dao_test_db.sql")
 class LineDaoTest {
 
     @Autowired
