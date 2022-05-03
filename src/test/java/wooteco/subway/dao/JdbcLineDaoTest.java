@@ -41,4 +41,13 @@ class JdbcLineDaoTest {
 
         assertThat(findLine).isEqualTo(line);
     }
+
+    @Test
+    @DisplayName("Line 전체 조회할 수 있다.")
+    void findAll() {
+        lineDao.save(new Line("신분당선", "bg-red-600"));
+        lineDao.save(new Line("분당선", "bg-green-600"));
+
+        assertThat(lineDao.findAll()).hasSize(2);
+    }
 }
