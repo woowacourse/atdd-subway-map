@@ -1,6 +1,7 @@
 package wooteco.subway.ui;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineControllerTest extends AcceptanceTest {
 
@@ -59,5 +61,25 @@ class LineControllerTest extends AcceptanceTest {
         List<LineResponse> actual = response.jsonPath().getList(".", LineResponse.class);
 
         assertThat(actual.size()).isEqualTo(2);
+    }
+
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void getLine() {
+        Line line = Assembler.getLineDao().save(new Line("신분당선", "red"));
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + line.getId())
+                .then().log().all()
+                .extract();
+
+        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(lineResponse.getName()).isEqualTo(line.getName()),
+                () -> assertThat(lineResponse.getColor()).isEqualTo(line.getColor())
+        );
     }
 }
