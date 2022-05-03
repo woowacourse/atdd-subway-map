@@ -3,18 +3,24 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import wooteco.subway.dao.MemoryStationDao;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.StationDto;
 
+@Service
+@Transactional(readOnly = true)
 public class StationService {
 
-	private final MemoryStationDao stationDao;
+	private final StationDao stationDao;
 
-	public StationService(MemoryStationDao stationDao) {
+	public StationService(StationDao stationDao) {
 		this.stationDao = stationDao;
 	}
 
+	@Transactional
 	public StationDto create(String name) {
 		validateNameNotDuplicated(name);
 		Long stationId = stationDao.save(new Station(name));
@@ -35,6 +41,7 @@ public class StationService {
 			.collect(Collectors.toUnmodifiableList());
 	}
 
+	@Transactional
 	public void remove(Long id) {
 		stationDao.remove(id);
 	}

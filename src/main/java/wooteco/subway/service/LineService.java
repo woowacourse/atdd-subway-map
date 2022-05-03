@@ -3,18 +3,24 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import wooteco.subway.dao.MemoryLineDao;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.service.dto.LineDto;
 
+@Service
+@Transactional(readOnly = true)
 public class LineService {
 
-	private final MemoryLineDao lineDao;
+	private final LineDao lineDao;
 
-	public LineService(MemoryLineDao lineDao) {
+	public LineService(LineDao lineDao) {
 		this.lineDao = lineDao;
 	}
 
+	@Transactional
 	public LineDto create(String name, String color) {
 		validateNameNotDuplicated(name);
 		Long lineId = lineDao.save(new Line(name, color));
@@ -39,11 +45,13 @@ public class LineService {
 		return LineDto.from(lineDao.findById(id));
 	}
 
+	@Transactional
 	public LineDto update(Line line) {
 		lineDao.update(line);
 		return findOne(line.getId());
 	}
 
+	@Transactional
 	public void remove(Long id) {
 		lineDao.remove(id);
 	}

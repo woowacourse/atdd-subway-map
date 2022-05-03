@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.controller.dto.LineRequest;
 import wooteco.subway.controller.dto.LineResponse;
-import wooteco.subway.dao.MemoryLineDao;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.dto.LineDto;
 
@@ -26,7 +25,11 @@ import wooteco.subway.service.dto.LineDto;
 @RequestMapping("/lines")
 public class LineController {
 
-	private final LineService lineService = new LineService(new MemoryLineDao());
+	private final LineService lineService;
+
+	public LineController(LineService lineService) {
+		this.lineService = lineService;
+	}
 
 	@PostMapping
 	public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
@@ -61,8 +64,8 @@ public class LineController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@ExceptionHandler
-	public ResponseEntity<Void> handle(IllegalArgumentException exception) {
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<Void> handle() {
 		return ResponseEntity.badRequest().build();
 	}
 }

@@ -18,7 +18,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import wooteco.subway.controller.dto.LineResponse;
 
-@DisplayName("지하철 노선 관련 기능")
+@DisplayName("지하철 노선 관련 인수 테스트")
 public class LineAcceptanceTest extends AcceptanceTest {
 
 	@DisplayName("지하철 노선을 생성한다.")
