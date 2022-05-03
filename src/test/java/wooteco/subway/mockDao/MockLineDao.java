@@ -9,7 +9,7 @@ import wooteco.subway.repository.entity.LineEntity;
 public class MockLineDao implements LineDao {
 
     private static Long seq = 0L;
-    private static List<LineEntity> store = new ArrayList<>();
+    private static final List<LineEntity> store = new ArrayList<>();
 
     public static void removeAll() {
         store.clear();
