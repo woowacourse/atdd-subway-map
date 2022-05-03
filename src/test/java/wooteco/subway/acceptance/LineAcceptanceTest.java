@@ -97,4 +97,56 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
+
+    @DisplayName("id로 노선을 조회한다.")
+    @Test
+    void findById() {
+        /// given
+        String lineName = "7호선";
+        String lineColor = "bg-green-600";
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", lineName);
+        params.put("color", lineColor);
+
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        LineResponse lineResponse = response.body().as(LineResponse.class);
+        assertAll(() -> {
+            assertThat(lineResponse.getId()).isEqualTo(id);
+            assertThat(lineResponse.getName()).isEqualTo(lineName);
+            assertThat(lineResponse.getColor()).isEqualTo(lineColor);
+        });
+    }
+
+    @Test
+    @DisplayName("존재하지 않은 id로 조회하면 BAD_REQUEST를 반환한다.")
+    void findById_invalidId() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + 1)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

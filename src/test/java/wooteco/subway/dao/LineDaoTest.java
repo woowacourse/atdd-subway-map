@@ -65,4 +65,12 @@ class LineDaoTest {
         // then
         assertThat(actual).isEqualTo(persistLine);
     }
+
+    @Test
+    @DisplayName("존재하지 않은 id로 노선을 조회하면 예외가 발생한다.")
+    void findById_invalidId() {
+        assertThatThrownBy(() -> LineDao.findById(1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 ID에 맞는 노선을 찾지 못했습니다.");
+    }
 }

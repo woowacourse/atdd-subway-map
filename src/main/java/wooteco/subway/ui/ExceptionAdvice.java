@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.dto.ErrorResponse;
 
-@ControllerAdvice(assignableTypes = {StationController.class})
+@ControllerAdvice(assignableTypes = {StationController.class, LineController.class})
 public class ExceptionAdvice {
 
     @ExceptionHandler(value = {IllegalArgumentException.class})
