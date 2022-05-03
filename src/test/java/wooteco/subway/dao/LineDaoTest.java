@@ -7,6 +7,8 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
@@ -37,13 +39,15 @@ class LineDaoTest {
         assertThat(persistLine.getColor()).isEqualTo("초록색");
     }
 
-    @DisplayName("중복된 이름의 노선을 저장할 경우 예외가 발생한다.")
-    @Test
-    void saveDuplicateNameLine() {
+    @DisplayName("중복된 이름이나 색상의 노선을 저장할 경우 예외가 발생한다.")
+    @ParameterizedTest
+    @CsvSource(value = {"2호선,검은색", "성수지선,초록색"})
+    void saveDuplicateNameLine(String name, String color) {
         Line line = new Line("2호선", "초록색");
         lineDao.save(line);
+        Line duplicateLine = new Line(name, color);
 
-        assertThatThrownBy(() -> lineDao.save(line))
+        assertThatThrownBy(() -> lineDao.save(duplicateLine))
                 .isInstanceOf(DuplicateKeyException.class);
     }
 

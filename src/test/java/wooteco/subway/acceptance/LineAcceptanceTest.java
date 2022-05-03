@@ -57,7 +57,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    /*@DisplayName("기존에 존재하는 노선 색상으로 노선을 생성한다.")
+    @DisplayName("기존에 존재하는 노선 색상으로 노선을 생성한다.")
     @Test
     void createLineWithDuplicateColor() {
         Map<String, String> params = new HashMap<>();
@@ -71,7 +71,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = requestPost(params);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }*/
+    }
 
     @DisplayName("전체 지하철 노선을 조회한다.")
     @Test
