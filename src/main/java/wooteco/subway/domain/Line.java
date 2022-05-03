@@ -1,16 +1,17 @@
-package wooteco.subway.dto;
+package wooteco.subway.domain;
 
-import wooteco.subway.dto.StationResponse;
-
-import java.util.List;
-
-public class LineResponse {
+public class Line {
     private Long id;
-    private String name;
-    private String color;
+    private final String name;
+    private final String color;
 
-    public LineResponse(Long id, String name, String color) {
+    public Line(Long id, String name, String color) {
         this.id = id;
+        this.name = name;
+        this.color = color;
+    }
+
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
@@ -26,5 +27,4 @@ public class LineResponse {
     public String getColor() {
         return color;
     }
-
 }
