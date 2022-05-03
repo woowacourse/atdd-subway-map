@@ -59,4 +59,8 @@ public class LineDao {
             lines.set(index, new Line(id, lineRequest.getName(), lineRequest.getColor()));
         }
     }
+
+    public void deleteById(Long id) {
+        lines.removeIf(line -> id.equals(line.getId()));
+    }
 }

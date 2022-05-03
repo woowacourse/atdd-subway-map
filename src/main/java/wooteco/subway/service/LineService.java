@@ -29,8 +29,8 @@ public class LineService {
     }
 
     public LineDto findById(Long id) {
-        Optional<Line>  findLine =lineDao.findById(id);
-        if(findLine.isEmpty()) {
+        Optional<Line> findLine = lineDao.findById(id);
+        if (findLine.isEmpty()) {
             throw new IllegalArgumentException("해당 ID의 노선은 존재하지 않습니다.");
         }
         Line line = findLine.get();
@@ -43,5 +43,9 @@ public class LineService {
 
     public void update(Long id, LineRequest lineRequest) {
         lineDao.update(id, lineRequest);
+    }
+
+    public void deleteById(Long id) {
+        lineDao.deleteById(id);
     }
 }

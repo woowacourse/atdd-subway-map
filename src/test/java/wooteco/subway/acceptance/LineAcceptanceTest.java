@@ -179,4 +179,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+    @DisplayName("id 를 이용하여 노선을 삭제한다.")
+    @Test
+    void deleteLineById() {
+        //given
+        String id = createResponse1.header("Location").split("/")[2];
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
 }

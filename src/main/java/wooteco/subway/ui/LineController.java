@@ -58,15 +58,21 @@ public class LineController {
         }
     }
 
-    @DeleteMapping("/lines")
-    public ResponseEntity<Void> deleteLines() {
-        lineService.deleteAll();
-        return ResponseEntity.noContent().build();
-    }
-
     @PutMapping("/lines/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.update(id, lineRequest);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/lines/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        lineService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/lines")
+    public ResponseEntity<Void> deleteLines() {
+        lineService.deleteAll();
+        return ResponseEntity.noContent().build();
     }
 }
