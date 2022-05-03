@@ -16,6 +16,13 @@ public class StationDao {
         return persistStation;
     }
 
+    public Station findByName(String name) {
+        return stations.stream()
+            .filter(station -> name.equals(station.getName()))
+            .findFirst()
+            .orElseThrow(IllegalArgumentException::new);
+    }
+
     public List<Station> findAll() {
         return List.copyOf(stations);
     }

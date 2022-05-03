@@ -54,4 +54,18 @@ public class StationDaoTest {
             () -> assertThat(actual.get(1).getName()).isEqualTo(station2.getName())
         );
     }
+
+    @Test
+    @DisplayName("이름으로 station을 조회한다.")
+    void findByName() {
+        //given
+        String name = "lala";
+        stationDao.save(new Station(name));
+
+        //when
+        Station actual = stationDao.findByName(name);
+
+        //then
+        assertThat(actual.getName()).isEqualTo(name);
+    }
 }
