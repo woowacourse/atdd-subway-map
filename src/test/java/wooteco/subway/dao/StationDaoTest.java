@@ -37,6 +37,18 @@ class StationDaoTest {
                 .isInstanceOf(DuplicateKeyException.class);
     }
 
+    @DisplayName("전체 역의 개수가 맞는지 확인한다.")
+    @Test
+    void find_All_Station() {
+        Station gangNam = new Station("강남역");
+        Station jamSil = new Station("잠실역");
+
+        StationDao.save(gangNam);
+        StationDao.save(jamSil);
+
+        assertThat(StationDao.findAll().size()).isEqualTo(2);
+    }
+
     @DisplayName("특정 id를 가지는 역을 삭제한다.")
     @Test
     void delete_Station() {
