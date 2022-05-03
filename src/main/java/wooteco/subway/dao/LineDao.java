@@ -50,4 +50,13 @@ public class LineDao {
 
         return updateLine.getId();
     }
+
+    public static void deleteById(Long id) {
+        final Line findLine = lines.stream()
+                .filter(line -> line.getId().equals(id))
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
+
+        lines.remove(findLine);
+    }
 }

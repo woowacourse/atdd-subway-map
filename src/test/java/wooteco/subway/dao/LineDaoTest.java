@@ -1,11 +1,14 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Line;
 
@@ -81,5 +84,32 @@ class LineDaoTest {
         final Line findLine = LineDao.findById(savedId);
         assertThat(findLine).extracting("name", "color")
                 .contains("다른분당선", "bg-red-600");
+    }
+
+    @Nested
+    @DisplayName("노선 id를 가지고")
+    class DeleteById {
+        @Test
+        @DisplayName("삭제할 수 있다.")
+        void valid() {
+            // given
+            final Line line = new Line("신분당선", "bg-red-600");
+            final Long savedId = LineDao.save(line);
+
+            // when & then
+            assertDoesNotThrow(() -> LineDao.deleteById(savedId));
+        }
+
+        @Test
+        @DisplayName("id가 없는 경우 예외가 발생한다.")
+        void invalidOfNumber() {
+            // given
+            final Line line = new Line("신분당선", "bg-red-600");
+            final Long savedId = LineDao.save(line);
+
+            // when & then
+            assertThatThrownBy(() -> LineDao.deleteById(savedId + 1L))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
     }
 }
