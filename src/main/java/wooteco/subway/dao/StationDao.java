@@ -12,13 +12,12 @@ public class StationDao {
     private static List<Station> stations = new ArrayList<>();
 
     public static Station save(Station station) {
+        if (stations.contains(station)) {
+            throw new IllegalArgumentException("이미 존재하는 지하철역 이름입니다.");
+        }
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
-    }
-
-    public static List<Station> findAll() {
-        return stations;
     }
 
     private static Station createNewObject(Station station) {
@@ -26,5 +25,9 @@ public class StationDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
+    }
+
+    public static List<Station> findAll() {
+        return stations;
     }
 }
