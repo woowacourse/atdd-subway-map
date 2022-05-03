@@ -9,6 +9,6 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Void> duplicatedNameFound() {
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.badRequest().build();
     }
 }
