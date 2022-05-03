@@ -27,4 +27,8 @@ public class LineDao {
     private Line createNewObject(Line line) {
         return new Line(++seq, line.getName(), line.getColor());
     }
+
+    public List<Line> findAll() {
+        return List.copyOf(lines);
+    }
 }
