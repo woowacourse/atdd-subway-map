@@ -13,8 +13,17 @@ public class StationDao {
 
     public static Station save(Station station) {
         Station persistStation = createNewObject(station);
+        validateDuplicate(station.getName());
         stations.add(persistStation);
         return persistStation;
+    }
+
+    private static void validateDuplicate(String stationName) {
+        boolean isDuplicate = stations.stream()
+                .anyMatch(station -> station.isSameName(stationName));
+        if (isDuplicate) {
+            throw new IllegalArgumentException("이름이 중복된 역은 만들 수 없습니다.");
+        }
     }
 
     public static List<Station> findAll() {
@@ -26,5 +35,9 @@ public class StationDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
+    }
+
+    public static void clear() {
+        stations.clear();
     }
 }
