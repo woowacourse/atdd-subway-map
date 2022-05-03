@@ -37,6 +37,14 @@ public class StationDao {
         return station;
     }
 
+    public static void delete(Long id) {
+        Station foundStation = stations.stream()
+                .filter(station -> station.isSameId(id))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("해당 역은 존재하지 않습니다."));
+        stations.remove(foundStation);
+    }
+
     public static void clear() {
         stations.clear();
     }
