@@ -6,7 +6,7 @@ import wooteco.subway.domain.Station;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.NoSuchElementException;
 
 public class StationDao {
     private static Long seq = 0L;
@@ -29,8 +29,19 @@ public class StationDao {
         return station;
     }
 
-    public static boolean findByName(String name) {
+    public static boolean existStationByName(String name) {
         return stations.stream()
-                .anyMatch( it -> it.getName().equals(name));
+                .anyMatch(it -> it.getName().equals(name));
+    }
+
+    public static Station findByName(String name) {
+        return stations.stream()
+                .filter(it -> it.getName().equals(name))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 지하철 역이 존재하지 않습니다."));
+    }
+
+    public static void deleteByName(String name) {
+        stations.remove(findByName(name));
     }
 }
