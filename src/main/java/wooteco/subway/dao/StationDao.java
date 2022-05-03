@@ -1,51 +1,61 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
+@Repository
 public class StationDao {
 
-    private static Long seq = 0L;
-    private static final List<Station> stations = new ArrayList<>();
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public static List<Station> findAll() {
-        return stations;
+    public StationDao(NamedParameterJdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public static Station save(Station station) {
-        validateUniqueName(station);
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+    public List<Station> findAll() {
+        final String sql = "SELECT * FROM station";
+
+        List<Station> stations = jdbcTemplate.query(sql, new EmptySqlParameterSource(), stationRowMapper);
+        return Collections.unmodifiableList(stations);
     }
 
-    public static void deleteById(Long id) {
-        boolean removed = stations.removeIf(it -> it.getId().equals(id));
-        if (!removed) {
+    public Station save(Station station) {
+        final String sql = "INSERT INTO station(name) VALUES (:name)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        SqlParameterSource paramSource = new BeanPropertySqlParameterSource(station);
+        try {
+            jdbcTemplate.update(sql, paramSource, keyHolder);
+        } catch (DataAccessException e) {
+            throw new IllegalArgumentException("해당 이름의 지하철역을 생성할 수 없습니다.");
+        }
+        return new Station(keyHolder.getKey().longValue(), station.getName());
+    }
+
+    public void deleteById(Long id) {
+        final String sql = "DELETE FROM station WHERE id = :id";
+
+        MapSqlParameterSource paramSource = new MapSqlParameterSource();
+        paramSource.addValue("id", id);
+
+        int effectedRowCount = jdbcTemplate.update(sql, paramSource);
+        if (effectedRowCount == 0) {
             throw new IllegalArgumentException("해당되는 역은 존재하지 않습니다.");
         }
     }
 
-    public static void clear() {
-        seq = 0L;
-        stations.clear();
-    }
-
-    private static void validateUniqueName(Station station) {
-        boolean hasDuplicate = stations.stream()
-                .anyMatch(it -> it.getName().equals(station.getName()));
-        if (hasDuplicate) {
-            throw new IllegalArgumentException("중복되는 이름의 지하철역이 존재합니다.");
-        }
-    }
-
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
-    }
+    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
+            new Station(resultSet.getLong("id"),
+                    resultSet.getString("name"));
 }
