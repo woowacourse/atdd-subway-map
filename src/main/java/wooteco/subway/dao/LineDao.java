@@ -2,8 +2,6 @@ package wooteco.subway.dao;
 
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequest;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -25,5 +23,9 @@ public class LineDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
         return line;
+    }
+
+    public static List<Line> findAll() {
+        return lines;
     }
 }
