@@ -41,4 +41,11 @@ public class LineDao {
         lines.clear();
         seq = 0L;
     }
+
+    public static Line findById(Long id) {
+        return lines.stream()
+                .filter(it -> it.isSameId(id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID에 맞는 노선을 찾지 못했습니다."));
+    }
 }

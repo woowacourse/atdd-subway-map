@@ -20,6 +20,10 @@ public class Line {
         return name.equals(line.name);
     }
 
+    public boolean isSameId(final Long id) {
+        return this.id.equals(id);
+    }
+
     public Long getId() {
         return id;
     }

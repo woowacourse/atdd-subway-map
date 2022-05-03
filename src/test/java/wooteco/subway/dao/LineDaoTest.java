@@ -51,4 +51,18 @@ class LineDaoTest {
         assertThat(lines.size()).isEqualTo(2);
         assertThat(lines).contains(line7, new Line(line5Name, line5Color));
     }
+
+    @Test
+    @DisplayName("id를 통해 해당하는 노선을 조회한다.")
+    void findById() {
+        // given
+        final Line line7 = new Line("7호선", "bg-red-600");
+        Line persistLine = LineDao.save(line7);
+
+        // when
+        Line actual = LineDao.findById(persistLine.getId());
+
+        // then
+        assertThat(actual).isEqualTo(persistLine);
+    }
 }
