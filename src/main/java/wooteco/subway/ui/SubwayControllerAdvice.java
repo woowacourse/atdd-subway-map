@@ -15,7 +15,12 @@ public class SubwayControllerAdvice {
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<Void> handleNoHandlerFoundExceptoin() {
+    public ResponseEntity<Void> handleNoHandlerFoundException() {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Void> handleException() {
+        return ResponseEntity.internalServerError().build();
     }
 }
