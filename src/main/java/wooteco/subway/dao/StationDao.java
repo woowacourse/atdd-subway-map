@@ -14,16 +14,9 @@ public class StationDao {
     private static List<Station> stations = new ArrayList<>();
 
     public Station save(Station station) {
-        validateDuplicationName(station);
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
-    }
-
-    private void validateDuplicationName(Station station) {
-        if (stations.contains(station)) {
-            throw new DuplicateStationNameException();
-        }
     }
 
     private Station findById(Long id) {
