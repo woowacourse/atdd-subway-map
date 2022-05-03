@@ -13,6 +13,9 @@ public class StationDao {
 
     public static Station save(Station station) {
         Station persistStation = createNewObject(station);
+        if (hasDuplicateStation(persistStation)) {
+            throw new IllegalArgumentException("같은 이름의 역이 존재합니다.");
+        }
         stations.add(persistStation);
         return persistStation;
     }
@@ -26,5 +29,14 @@ public class StationDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
+    }
+
+    private static boolean hasDuplicateStation(Station persistStation) {
+        return stations.stream()
+                .anyMatch(persistStation::isSameName);
+    }
+
+    public static void deleteAll() {
+        stations.clear();
     }
 }
