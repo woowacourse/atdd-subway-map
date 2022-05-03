@@ -24,7 +24,7 @@ class LineDaoTest {
 
     @BeforeEach
     void setUp() {
-        lineDao.deleteAllLines();
+        lineDao.deleteAll();
     }
 
     @DisplayName("라인을 저장한다.")
@@ -38,7 +38,7 @@ class LineDaoTest {
     @Test
     void findAllLines() {
         lineDao.save(new Line("신분당선", "bg-red-600"));
-        assertThat(lineDao.findAllLines()).hasSize(1);
+        assertThat(lineDao.findAll()).hasSize(1);
     }
 
     @DisplayName("특정 라인을 조회한다.")
@@ -57,7 +57,7 @@ class LineDaoTest {
     @Test
     void updateLine() {
         Line savedLine = lineDao.save(new Line("신분당선", "bg-red-600"));
-        lineDao.updateLine(savedLine.getId(), new Line("경의중앙선", "bg-mint-600"));
+        lineDao.update(savedLine.getId(), new Line("경의중앙선", "bg-mint-600"));
         Optional<Line> wrappedLine = lineDao.findById(savedLine.getId());
         assert (wrappedLine).isPresent();
         assertAll(

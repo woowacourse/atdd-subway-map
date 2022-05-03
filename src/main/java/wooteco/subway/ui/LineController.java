@@ -34,12 +34,12 @@ public class LineController {
             throw new IllegalArgumentException("이미 같은 이름의 노선이 존재합니다.");
         }
         Line savedLine = lineDao.save(line);
-        return ResponseEntity.created(URI.create("/lines/" + savedLine.getId())).body(LineResponse.of(line));
+        return ResponseEntity.created(URI.create("/lines/" + savedLine.getId())).body(LineResponse.of(savedLine));
     }
 
     @GetMapping("/lines")
     public List<LineResponse> getAllLines() {
-        List<Line> allLines = lineDao.findAllLines();
+        List<Line> allLines = lineDao.findAll();
         return allLines.stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
@@ -48,21 +48,27 @@ public class LineController {
     @GetMapping("/lines/{lineId}")
     public LineResponse getLineById(@PathVariable Long lineId) {
         Optional<Line> wrappedLine = lineDao.findById(lineId);
-        if (wrappedLine.isEmpty()) {
-            throw new IllegalArgumentException("해당 노선이 존재하지 않습니다.");
-        }
+        checkLineExist(wrappedLine);
         return LineResponse.of(wrappedLine.get());
     }
 
     @PutMapping("/lines/{lineId}")
     public void updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
+        checkLineExist(lineDao.findById(lineId));
         Line newLine = new Line(lineRequest.getName(), lineRequest.getColor());
-        lineDao.updateLine(lineId, newLine);
+        lineDao.update(lineId, newLine);
     }
 
     @DeleteMapping("/lines/{lineId}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long lineId) {
+        checkLineExist(lineDao.findById(lineId));
         lineDao.deleteById(lineId);
         return ResponseEntity.noContent().build();
+    }
+
+    private void checkLineExist(Optional<Line> wrappedLine) {
+        if (wrappedLine.isEmpty()) {
+            throw new IllegalArgumentException("해당 노선이 존재하지 않습니다.");
+        }
     }
 }
