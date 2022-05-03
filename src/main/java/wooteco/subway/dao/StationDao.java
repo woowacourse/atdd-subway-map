@@ -1,11 +1,13 @@
 package wooteco.subway.dao;
 
 import org.springframework.util.ReflectionUtils;
+
 import wooteco.subway.domain.Station;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public class StationDao {
@@ -27,5 +29,13 @@ public class StationDao {
 
 	public List<Station> findAll() {
 		return stations;
+	}
+
+	public void remove(Long id) {
+		stations.remove(stations.stream()
+			.filter(station -> station.getId().equals(id))
+			.findAny()
+			.orElseThrow(() -> new NoSuchElementException("해당 id에 맞는 지하철 역이 없습니다."))
+		);
 	}
 }
