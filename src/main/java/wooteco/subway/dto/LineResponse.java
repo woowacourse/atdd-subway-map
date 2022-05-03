@@ -1,10 +1,9 @@
 package wooteco.subway.dto;
 
-import wooteco.subway.dto.StationResponse;
-
 import java.util.List;
 
 public class LineResponse {
+
     private Long id;
     private String name;
     private String color;
