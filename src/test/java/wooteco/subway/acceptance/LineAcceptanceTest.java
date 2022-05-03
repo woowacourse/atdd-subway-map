@@ -10,6 +10,8 @@ import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -158,6 +160,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         assertThat(readResponse.jsonPath().getList(".").size()).isEqualTo(0);
+    }
+
+    @DisplayName("지하철 노선 이름이나 색으로 null 또는 공백이 올 수 없다.")
+    @ParameterizedTest
+    @CsvSource(value = {",", "'',''", "' ',' '"})
+    void notAllowNullOrBlankNameAndColor(String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        ExtractableResponse<Response> response = requestPost(params);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> requestPost(Map<String, String> params) {
