@@ -149,4 +149,39 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @Test
+    @DisplayName("지하철 노선 정보를 수정한다.")
+    void updateLine() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "7호선");
+        params.put("color", "bg-red-600");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        long id = Long.parseLong(response.header("Location").split("/")[2]);
+
+        // when
+        Map<String, String> updateParams = new HashMap<>();
+        updateParams.put("name", "5호선");
+        updateParams.put("color", "bg-green-600");
+
+        ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+                .body(updateParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }
