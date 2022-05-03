@@ -196,4 +196,37 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(actualName).isEqualTo("1호선");
         assertThat(actualColor).isEqualTo("군청색");
     }
+
+    @DisplayName("특정 id의 노선을 삭제한다.")
+    @Test
+    void deleteLine() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "초록색");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        Long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> readResponse = RestAssured
+                .given().log().all()
+                .when()
+                .get("/lines")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(readResponse.jsonPath().getList(".").size()).isEqualTo(0);
+    }
 }
