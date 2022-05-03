@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.NoSuchStationException;
 
 public class StationDao {
     private static Long seq = 0L;
@@ -51,7 +52,7 @@ public class StationDao {
         boolean hasSameId = stations.stream()
                 .anyMatch(station -> station.getId() == id);
         if (!hasSameId) {
-            throw new IllegalArgumentException("존재하지 않는 ID는 삭제할 수 없습니다");
+            throw new NoSuchStationException();
         }
     }
 }

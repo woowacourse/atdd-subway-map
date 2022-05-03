@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.NoSuchStationException;
 
 class StationDaoTest {
 
@@ -87,7 +88,6 @@ class StationDaoTest {
     @Test
     void throwsExceptionWhenTargetIdDoesNotExist() {
         assertThatThrownBy(() -> StationDao.deleteById(1))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("존재하지 않는 ID");
+                .isInstanceOf(NoSuchStationException.class);
     }
 }
