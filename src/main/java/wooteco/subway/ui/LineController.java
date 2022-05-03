@@ -21,6 +21,7 @@ public class LineController {
         String name = lineRequest.getName();
         String color = lineRequest.getColor();
 
+        LineDao.validate(name);
         Line newLine = LineDao.save(new Line(name, color));
         LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);

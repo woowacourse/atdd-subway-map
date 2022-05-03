@@ -38,6 +38,19 @@ public class LineDao {
         line.setColor(color);
     }
 
+    public static void validate(String name) {
+        boolean validate = lines.stream()
+                .anyMatch(l -> l.isSameName(name));
+
+        if (validate) {
+            throw new IllegalArgumentException("지하철 이름이 중복될 수 없습니다.");
+        }
+    }
+
+    public static void clear() {
+        lines.clear();
+    }
+
     private static Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
