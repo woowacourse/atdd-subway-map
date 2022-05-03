@@ -2,7 +2,9 @@ package wooteco.subway.dao;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.util.ReflectionUtils;
 
@@ -10,16 +12,16 @@ import wooteco.subway.domain.Station;
 
 public class StationDao {
     private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
+    private static Map<Long, Station> stations = new LinkedHashMap<>();
 
     public static Station save(Station station) {
         Station persistStation = createNewObject(station);
-        stations.add(persistStation);
+        stations.put(persistStation.getId(), persistStation);
         return persistStation;
     }
 
     public static List<Station> findAll() {
-        return stations;
+        return new ArrayList<>(stations.values());
     }
 
     private static Station createNewObject(Station station) {
@@ -29,6 +31,7 @@ public class StationDao {
         return station;
     }
 
-    public void delete(Long id) {
+    public static void delete(Long id) {
+        stations.remove(id);
     }
 }
