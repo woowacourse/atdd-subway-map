@@ -13,12 +13,16 @@ public class StationDao {
     private static List<Station> stations = new ArrayList<>();
 
     public static Station save(Station station) {
-        if(stations.contains(station)){
-            throw new NameDuplicatedException("[ERROR] 중복된 이름이 존재합니다.");
-        }
+        validateDuplicateName(station);
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
+    }
+
+    private static void validateDuplicateName(Station station) {
+        if(stations.contains(station)){
+            throw new NameDuplicatedException("[ERROR] 중복된 이름이 존재합니다.");
+        }
     }
 
     public static List<Station> findAll() {

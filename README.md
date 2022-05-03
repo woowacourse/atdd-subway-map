@@ -42,7 +42,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 ## 기능 구현 목록
 
 - 지하철 역
-- [ ] 지하철역 생성 시 이미 등록된 이름으로 요청한다면 에러를 응답
+- [x] 지하철역 생성 시 이미 등록된 이름으로 요청한다면 에러를 응답
 
 - 지하철 노선
 - [ ] 동일한 노선 생성 불가
