@@ -8,7 +8,7 @@ import wooteco.subway.dto.ErrorResponse;
 import wooteco.subway.exception.NoSuchStationException;
 
 @RestControllerAdvice
-public class StationControllerAdvice {
+public class ControllerAdvice {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> illegalArgumentException(IllegalArgumentException exception) {
