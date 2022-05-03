@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
@@ -34,5 +35,20 @@ class StationDaoTest {
         assertThat(stations)
             .hasSize(2)
             .contains(station1, station2);
+    }
+
+    @Test
+    void validateDuplication() {
+        // given
+        Station station1 = new Station("범고래");
+        Station station2 = new Station("범고래");
+
+        // when
+        StationDao.save(station1);
+
+        // then
+        assertThatThrownBy(() -> StationDao.save(station2))
+            .hasMessage("중복된 이름이 존재합니다.")
+            .isInstanceOf(IllegalArgumentException.class);
     }
 }
