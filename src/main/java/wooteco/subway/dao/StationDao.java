@@ -40,4 +40,10 @@ public class StationDao {
         ReflectionUtils.setField(field, station, ++seq);
         return station;
     }
+
+    public static void deleteById(Long id) {
+        if (!stations.removeIf(it -> it.getId().equals(id))) {
+            throw new IllegalArgumentException("존재하지 않는 역입니다.");
+        }
+    }
 }
