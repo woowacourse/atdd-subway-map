@@ -24,4 +24,8 @@ public class LineDao {
         ReflectionUtils.setField(field, line, ++seq);
         return line;
     }
+
+    public List<Line> findAll() {
+        return List.copyOf(lines);
+    }
 }
