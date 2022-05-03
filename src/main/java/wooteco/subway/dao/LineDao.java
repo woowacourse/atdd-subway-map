@@ -50,4 +50,12 @@ public class LineDao {
         lines.remove(foundLine.get());
         lines.add(new Line(id, newLine.getName(), newLine.getColor()));
     }
+
+    public static void deleteById(Long id) {
+        Optional<Line> foundLine = findById(id);
+        if (foundLine.isEmpty()) {
+            throw new IllegalArgumentException("삭제할 노선이 존재하지 않습니다.");
+        }
+        lines.remove(foundLine.get());
+    }
 }

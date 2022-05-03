@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.Optional;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,5 +53,14 @@ class LineDaoTest {
                 () -> assertThat(wrappedLine.get().getName()).isEqualTo("경의중앙선"),
                 () -> assertThat(wrappedLine.get().getColor()).isEqualTo("bg-mint-600")
         );
+    }
+
+    @DisplayName("특정 라인을 삭제한다.")
+    @Test
+    void deleteLine() {
+        Line savedLine = LineDao.saveLine(new Line("신분당선", "bg-red-600"));
+        LineDao.deleteById(savedLine.getId());
+        Optional<Line> wrappedLine = LineDao.findById(savedLine.getId());
+        assertThat(wrappedLine).isEmpty();
     }
 }
