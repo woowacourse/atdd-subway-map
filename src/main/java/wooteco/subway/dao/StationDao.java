@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
+import wooteco.subway.utils.exception.NameDuplicatedException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -12,6 +13,9 @@ public class StationDao {
     private static List<Station> stations = new ArrayList<>();
 
     public static Station save(Station station) {
+        if(stations.contains(station)){
+            throw new NameDuplicatedException("[ERROR] 중복된 이름이 존재합니다.");
+        }
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
