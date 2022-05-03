@@ -31,4 +31,16 @@ public class LineDao {
     public static List<Line> findAll() {
         return lines;
     }
+
+    public static Line findById(final Long id) {
+         return lines.stream()
+                .filter(it -> it.getId() == id)
+                .findFirst()
+                .orElseThrow(()-> new IllegalArgumentException("해당 노선이 존재하지 않습니다."));
+    }
+
+    public static void deleteAll(){
+        seq = 0L;
+        lines = new ArrayList<>();
+    }
 }
