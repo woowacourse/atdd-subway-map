@@ -7,9 +7,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -62,5 +67,48 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("전체 노선을 조회하면 200 ok와 노선 정보를 반환한다.")
+    @Test
+    void getLines(){
+        Map<String, String> newBundangLine = new HashMap<>();
+        newBundangLine.put("name", "신분당선");
+        newBundangLine.put("color", "bg-red-600");
+
+        ExtractableResponse<Response> newBundangPostResponse = RestAssured.given().log().all()
+                .body(newBundangLine)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        Map<String, String> bundangLine = new HashMap<>();
+        bundangLine.put("name", "분당선");
+        bundangLine.put("color", "bg-green-600");
+
+        ExtractableResponse<Response> bundangPostResponse = RestAssured.given().log().all()
+                .body(bundangLine)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<Long> expectedLineIds = Arrays.asList(newBundangPostResponse, bundangPostResponse).stream()
+                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                .collect(Collectors.toList());
+        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
+        assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 }
