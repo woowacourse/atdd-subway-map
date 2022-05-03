@@ -91,4 +91,39 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(resultLineIds).containsAll(expectedLineIds)
         );
     }
+
+    @DisplayName("개별 노선을 ID 값으로 조회한다.")
+    @Test
+    void getLineById() {
+        /// given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "신분당선");
+        params1.put("color", "bg-red-600");
+
+        RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/1")
+                .then().log().all()
+                .extract();
+
+        // then
+        String id = response.jsonPath().getString("id");
+        String name = response.jsonPath().getString("name");
+        String color = response.jsonPath().getString("color");
+
+        assertAll(
+                () -> assertThat(id).isEqualTo("1"),
+                () -> assertThat(name).isEqualTo("신분당선"),
+                () -> assertThat(color).isEqualTo("bg-red-600")
+        );
+    }
 }
