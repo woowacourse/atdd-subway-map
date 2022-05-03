@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -30,5 +31,15 @@ class StationServiceTest {
         stationService.delete(stations.get(2).getId());
 
         assertThat(StationDao.findAll()).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("중복된 이름 입력 시 예외 발생 테스트")
+    void validateDuplicationNameTest() {
+        stationService.save("station1");
+
+        assertThatThrownBy(() -> stationService.save("station1"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("이미 존재하는 역 이름입니다.");
     }
 }
