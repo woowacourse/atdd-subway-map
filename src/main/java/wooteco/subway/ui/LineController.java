@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dao.LineDao;
@@ -44,5 +45,11 @@ public class LineController {
             throw new IllegalArgumentException("해당 노선이 존재하지 않습니다.");
         }
         return LineResponse.of(wrappedLine.get());
+    }
+
+    @PutMapping("/lines/{lineId}")
+    public void updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
+        Line newLine = new Line(lineRequest.getName(), lineRequest.getColor());
+        LineDao.updateLine(lineId, newLine);
     }
 }
