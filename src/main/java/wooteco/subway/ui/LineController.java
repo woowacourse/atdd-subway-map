@@ -13,6 +13,7 @@ import wooteco.subway.dto.StationResponse;
 
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -23,10 +24,10 @@ public class LineController {
         Line Line = new Line(LineRequest.getName(), LineRequest.getColor());
         Line newLine = LineDao.save(Line);
 
-        List<StationResponse> stations = createStationResponses(newLine);
+        //List<StationResponse> stationResponses = createStationResponses(newLine);
 
-        LineResponse LineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), stations);
-        return ResponseEntity.created(URI.create("/Lines/" + newLine.getId())).body(LineResponse);
+        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
     private List<StationResponse> createStationResponses(Line line) {
@@ -39,13 +40,27 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = LineDao.findAll();
         List<LineResponse> lineResponses = lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), createStationResponses(it)))
+                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
 
+    @GetMapping("/lines/{id}")
+    public ResponseEntity<LineResponse> searchLine(@PathVariable Long id) {
+
+        Line line = LineDao.findById(id).get();
+        //List<StationResponse> stationResponses = createStationResponses(line);
+        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
+        return ResponseEntity.ok().body(lineResponse);
+    }
+
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+        return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<Void> lineNotFound() {
         return ResponseEntity.noContent().build();
     }
 }
