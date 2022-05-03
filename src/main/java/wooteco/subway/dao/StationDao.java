@@ -13,12 +13,24 @@ public class StationDao {
 
     public static Station save(Station station) {
         Station persistStation = createNewObject(station);
+        if (checkDuplicateStation(persistStation)) {
+            throw new IllegalStateException("중복된 지하철역을 저장할 수 없습니다.");
+        }
         stations.add(persistStation);
         return persistStation;
     }
 
+    private static boolean checkDuplicateStation(Station station) {
+        return stations.stream()
+                .anyMatch(s -> s.checkName(station));
+    }
+
     public static List<Station> findAll() {
         return stations;
+    }
+
+    public static void deleteAll() {
+        stations.clear();
     }
 
     private static Station createNewObject(Station station) {
