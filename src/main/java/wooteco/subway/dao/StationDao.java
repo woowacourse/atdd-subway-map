@@ -30,7 +30,7 @@ public class StationDao {
         return new Station(++seq, station.getName());
     }
 
-    public static void deleteById(Long id) {
-        stations.removeIf(it -> it.getId().equals(id));
+    public static boolean deleteById(Long id) {
+        return stations.removeIf(it -> it.getId().equals(id));
     }
 }
