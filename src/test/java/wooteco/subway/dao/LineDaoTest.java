@@ -28,11 +28,11 @@ class LineDaoTest {
     private LineDao dao;
 
     @Test
-    void findAll_메서드는_모든_데이터를_조회한다() {
+    void findAll_메서드는_모든_데이터를_조회() {
         List<Line> actual = dao.findAll();
 
         List<Line> expected = List.of(
-                new Line(1L, "분당선", "노란색"),
+                new Line(1L, "이미 존재하는 노선 이름", "노란색"),
                 new Line(2L, "신분당선", "빨간색"),
                 new Line(3L, "2호선", "초록색")
         );
@@ -40,20 +40,20 @@ class LineDaoTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @DisplayName("findById 메서드는 단건의 데이터를 조회한다.")
+    @DisplayName("findById 메서드는 특정 id의 데이터를 조회한다.")
     @Nested
     class FindByIdTest {
 
         @Test
-        void 존재하는_노선의_id가_입력된_경우_성공() {
+        void 존재하는_데이터의_id가_입력된_경우_성공() {
             Line actual = dao.findById(1L);
-            Line excepted = new Line(1L, "분당선", "노란색");
+            Line excepted = new Line(1L, "이미 존재하는 노선 이름", "노란색");
 
             assertThat(actual).isEqualTo(excepted);
         }
 
         @Test
-        void 존재하지_않는_역의_id가_입력된_경우_예외발생() {
+        void 존재하지_않는_데이터의_id가_입력된_경우_예외발생() {
             assertThatThrownBy(() -> dao.findById(99999L))
                     .isInstanceOf(NotFoundException.class);
         }
@@ -65,16 +65,16 @@ class LineDaoTest {
 
         @Test
         void 중복되지_않는_이름인_경우_성공() {
-            Line actual = dao.save(new Line("8호선", "분홍색"));
+            Line actual = dao.save(new Line("새로운 노선", "분홍색"));
 
-            Line expected = new Line(4L, "8호선", "분홍색");
+            Line expected = new Line(4L, "새로운 노선", "분홍색");
 
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
         void 중복되는_이름인_경우_예외발생() {
-            assertThatThrownBy(() -> dao.save(new Line("분당선", "노란색")))
+            assertThatThrownBy(() -> dao.save(new Line("이미 존재하는 노선 이름", "노란색")))
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }
@@ -84,34 +84,44 @@ class LineDaoTest {
     class UpdateTest {
 
         @Test
-        void 유효한_입력값인_경우_성공() {
-            dao.update(new Line(1L,"8호선", "노란색"));
+        void 중복되지_않는_이름으로_수정_가능() {
+            dao.update(new Line(1L,"새로운 노선 이름", "노란색"));
 
             String actual = jdbcTemplate.queryForObject("SELECT name FROM line WHERE id = 1", String.class);
-            String expected = "8호선";
+            String expected = "새로운 노선 이름";
+
+            assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        void 색상은_자유롭게_수정_가능() {
+            dao.update(new Line(1L,"이미 존재하는 노선 이름", "새로운 색상"));
+
+            String actual = jdbcTemplate.queryForObject("SELECT color FROM line WHERE id = 1", String.class);
+            String expected = "새로운 색상";
 
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
         void 중복되는_이름으로_수정하려는_경우_예외발생() {
-            assertThatThrownBy(() -> dao.update(new Line(1L,"2호선", "노란색")))
+            assertThatThrownBy(() -> dao.update(new Line(2L,"이미 존재하는 노선 이름", "노란색")))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
         void 존재하지_않는_노선을_수정하려는_경우_예외발생() {
-            assertThatThrownBy(() -> dao.update(new Line(999999999L,"10호선", "노란색")))
+            assertThatThrownBy(() -> dao.update(new Line(999999999L,"새로운 노선 이름", "노란색")))
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }
 
-    @DisplayName("deleteById 메서드는 데이터를 삭제한다")
+    @DisplayName("deleteById 메서드는 특정 데이터를 삭제한다")
     @Nested
     class DeleteByIdTest {
 
         @Test
-        void 존재하는_역의_id가_입력된_경우_성공() {
+        void 존재하는_데이터의_id가_입력된_경우_삭제성공() {
             dao.deleteById(1L);
 
             boolean exists = jdbcTemplate.queryForObject(
@@ -121,7 +131,7 @@ class LineDaoTest {
         }
 
         @Test
-        void 존재하지_않는_역의_id가_입력된_경우_예외발생() {
+        void 존재하지_않는_데이터의_id가_입력된_경우_예외발생() {
             assertThatThrownBy(() -> dao.deleteById(99999L))
                     .isInstanceOf(IllegalArgumentException.class);
         }

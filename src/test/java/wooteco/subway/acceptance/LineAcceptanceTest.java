@@ -17,7 +17,7 @@ import org.springframework.http.MediaType;
 import wooteco.subway.dto.response.LineResponse;
 
 @SuppressWarnings("NonAsciiCharacters")
-@DisplayName("/lines에 대한 인수테스트")
+@DisplayName("인수테스트 - /lines")
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("POST /lines - 지하철 노선 생성 테스트")
@@ -71,24 +71,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("GET /lines - 지하철 노선 목록 조회 테스트")
     @Test
     void 성공시_200_OK() {
-        postLine(new HashMap<>() {{
-            put("name", "신분당선");
-            put("color", "bg-red-600");
-        }});
-        postLine(new HashMap<>() {{
-            put("name", "분당선");
-            put("color", "bg-green-600");
-        }});
+        postLine("신분당선", "bg-red-600");
+        postLine("분당선", "bg-green-600");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .get("/lines")
                 .then().log().all()
                 .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<LineResponse> responseBody = response.jsonPath().getList(".", LineResponse.class);
-        assertThat(responseBody).hasSize(2);
+
+        assertAll(() -> {
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(responseBody).hasSize(2);
+        });
     }
 
     @DisplayName("GET /lines/:id - 지하철 노선 조회 테스트")
@@ -97,10 +93,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 성공시_200_OK() {
-            postLine(new HashMap<>() {{
-                put("name", "신분당선");
-                put("color", "bg-red-600");
-            }});
+            postLine("신분당선", "bg-red-600");
 
             ExtractableResponse<Response> response = RestAssured.given().log().all()
                     .when()
@@ -108,10 +101,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
                     .then().log().all()
                     .extract();
 
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             LineResponse actual = response.jsonPath().getObject(".", LineResponse.class);
             LineResponse expected = new LineResponse(1L, "신분당선", "bg-red-600");
-            assertThat(actual).isEqualTo(expected);
+            assertAll(() -> {
+                assertThat(actual).isEqualTo(expected);
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            });
         }
 
         @Test
@@ -126,20 +121,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }
     }
 
-
     @DisplayName("PUT /lines/:id - 지하철 노선 수정 테스트")
     @Nested
     class UpdateLineTest extends AcceptanceTest {
 
         @Test
         void 성공시_200_OK() {
-            postLine(new HashMap<>() {{
-                put("name", "신분당선");
-                put("color", "bg-red-600");
-            }});
+            postLine("신분당선", "bg-red-600");
             Map<String, String> params = new HashMap<>() {{
                 put("name", "NEW 분당선");
-                put("color", "bg-red-600");
+                put("color", "bg-red-800");
             }};
 
             ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -173,21 +164,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 이미_존재하는_지하철_노선_이름으로_수정시_400_BAD_REQUEST() {
-            postLine(new HashMap<>() {{
-                put("name", "신분당선");
-                put("color", "bg-red-600");
-            }});
-            Map<String, String> params = new HashMap<>() {{
+            Map<String, String> existingLineInfo = new HashMap<>() {{
                 put("name", "NEW_분당선");
                 put("color", "bg-red-600");
             }};
-            postLine(params);
+            postLine(existingLineInfo);
+            postLine("신분당선", "bg-red-600");
 
             ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .body(params)
+                    .body(existingLineInfo)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .when()
-                    .put("/lines/1")
+                    .put("/lines/2")
                     .then().log().all()
                     .extract();
 
@@ -201,10 +189,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 성공시_200_OK() {
-            postLine(new HashMap<>() {{
-                put("name", "신분당선");
-                put("color", "bg-red-600");
-            }});
+            postLine("신분당선", "bg-red-600");
 
             ExtractableResponse<Response> response = RestAssured.given().log().all()
                     .when()
@@ -227,13 +212,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }
     }
 
+    private void postLine(String name, String color) {
+        postLine(new HashMap<>() {{
+            put("name", name);
+            put("color", color);
+        }});
+    }
+
     private void postLine(Map<String, String> params) {
-        RestAssured.given().log().all()
+        RestAssured.given()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+                .post("/lines");
     }
 }
