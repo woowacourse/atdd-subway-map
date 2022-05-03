@@ -32,6 +32,12 @@ public class LineDao {
         lines.remove(findById(id));
     }
 
+    public static void update(Long id, String name, String color) {
+        Line line = findById(id);
+        line.setName(name);
+        line.setColor(color);
+    }
+
     private static Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);

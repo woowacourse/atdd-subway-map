@@ -46,4 +46,10 @@ public class LineController {
         LineDao.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping(value = "/lines/{id}")
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        LineDao.update(id, lineRequest.getName(), lineRequest.getColor());
+        return ResponseEntity.ok().build();
+    }
 }

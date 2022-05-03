@@ -131,7 +131,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
-    void deleteStation() {
+    void deleteLine() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
@@ -154,5 +154,49 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        Map<String, String> postParams = new HashMap<>();
+        postParams.put("name", "신분당선");
+        postParams.put("color", "red");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(postParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        String uri = createResponse.header("Location");
+        Map<String, String> putParams = new HashMap<>();
+        putParams.put("name", "2호선");
+        putParams.put("color", "green");
+        ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+                .body(putParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put(uri)
+                .then().log().all()
+                .extract();
+
+        // then
+        ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(uri)
+                .then().log().all()
+                .extract();
+
+        String name = findResponse.jsonPath().getString("name");
+        String color = findResponse.jsonPath().getString("color");
+
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(name).isEqualTo("2호선");
+        assertThat(color).isEqualTo("green");
     }
 }
