@@ -37,4 +37,10 @@ public class StationDao {
         stations.remove(stationId);
         return 1;
     }
+
+    public boolean existByName(final String name) {
+        return stations.values()
+                .stream()
+                .anyMatch(station -> station.getName().equals(name));
+    }
 }

@@ -42,4 +42,13 @@ class StationDaoTest {
 
         assertThat(stationDao.delete(stationId)).isEqualTo(1);
     }
+
+    @Test
+    @DisplayName("Station 이름이 존재하는지 확인할 수 있다.")
+    void existByName() {
+        String name = "오리";
+        stationDao.save(new Station(name));
+
+        assertThat(stationDao.existByName(name)).isTrue();
+    }
 }
