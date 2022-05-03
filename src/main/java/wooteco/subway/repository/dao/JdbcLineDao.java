@@ -34,22 +34,16 @@ public class JdbcLineDao implements LineDao {
     public LineEntity save(final LineEntity lineEntity) {
         final String sql = "insert into LINE(name, color) values(:name, :color)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
-//        Map<String, Object> params = new HashMap<>();
-//        params.put("name", lineEntity.getName());
-//        params.put("color", lineEntity.getColor());
-
-        SqlParameterSource source = new BeanPropertySqlParameterSource(lineEntity);
-
+        final SqlParameterSource source = new BeanPropertySqlParameterSource(lineEntity);
         jdbcTemplate.update(sql, source, keyHolder);
-
-        long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-
+        final long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return new LineEntity(id, lineEntity.getName(), lineEntity.getColor());
     }
 
     @Override
     public List<LineEntity> findAll() {
-        return null;
+        final String sql = "select id, name, color from LINE";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
