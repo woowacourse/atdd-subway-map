@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao2.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineBasicResponse;
 import wooteco.subway.dto.LineRequest;
@@ -22,10 +22,16 @@ import wooteco.subway.dto.LineRequest;
 @RequestMapping("/lines")
 public class LineController {
 
+    private final LineDao lineDao;
+
+    public LineController(LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
+
     @PostMapping
     public ResponseEntity<LineBasicResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = LineDao.save(line);
+        Line newLine = lineDao.save(line);
         LineBasicResponse lineResponse = new LineBasicResponse(newLine.getId(), newLine.getName(), newLine.getColor());
         URI location = URI.create("/stations/" + newLine.getId());
         return ResponseEntity.created(location).body(lineResponse);
@@ -33,7 +39,7 @@ public class LineController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineBasicResponse>> showLines() {
-        List<Line> lines = LineDao.findAll();
+        List<Line> lines = lineDao.findAll();
         List<LineBasicResponse> linesResponse = lines.stream()
                 .map(it -> new LineBasicResponse(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toUnmodifiableList());
@@ -42,7 +48,7 @@ public class LineController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineBasicResponse> showLine(@PathVariable Long id) {
-        Line line = LineDao.findById(id);
+        Line line = lineDao.findById(id);
         LineBasicResponse linesResponse = new LineBasicResponse(line.getId(), line.getName(), line.getColor());
         return ResponseEntity.ok().body(linesResponse);
     }
@@ -50,13 +56,13 @@ public class LineController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
-        LineDao.update(line);
+        lineDao.update(line);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        LineDao.deleteById(id);
+        lineDao.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

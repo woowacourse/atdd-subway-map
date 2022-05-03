@@ -9,23 +9,16 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.dto.LineBasicResponse;
 
-@DisplayName("지하철역 관련 기능")
 @SuppressWarnings("NonAsciiCharacters")
+@DisplayName("/lines에 대한 인수테스트")
 public class LineAcceptanceTest extends AcceptanceTest {
-
-    @AfterEach
-    public void tearDown() {
-        LineDao.clear();
-    }
 
     @DisplayName("POST /lines - 지하철 노선 생성 테스트")
     @Nested

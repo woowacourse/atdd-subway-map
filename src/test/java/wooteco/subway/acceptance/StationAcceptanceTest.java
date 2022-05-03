@@ -10,23 +10,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.StationResponse;
 
-@DisplayName("지하철역 관련 기능")
 @SuppressWarnings("NonAsciiCharacters")
+@DisplayName("/stations에 대한 인수테스트")
 public class StationAcceptanceTest extends AcceptanceTest {
-
-    @AfterEach
-    public void tearDown() {
-        StationDao.clear();
-    }
 
     @DisplayName("POST /stations - 지하철역 생성 테스트")
     @Nested
