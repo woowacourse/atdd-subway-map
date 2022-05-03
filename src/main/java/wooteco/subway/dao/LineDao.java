@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 
@@ -32,5 +33,11 @@ public class LineDao {
 
     public static void deleteAllLines() {
         lines.clear();
+    }
+
+    public static Optional<Line> findById(Long id) {
+        return lines.stream()
+                .filter(line -> line.getId().equals(id))
+                .findFirst();
     }
 }
