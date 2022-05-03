@@ -11,6 +11,7 @@ import wooteco.subway.dto.LineRequest;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Component
@@ -52,7 +53,7 @@ public class LineDao {
         return jdbcTemplate.query(sql, lineRowMapper);
     }
 
-    public boolean isContains(Line line) {
+    private boolean isContains(Line line) {
         final String sql = "select count(*) from Line where name = ? or color = ?";
         final int count = jdbcTemplate.queryForObject(sql, Integer.class, line.getName(), line.getColor());
         return count > 0;
@@ -60,12 +61,21 @@ public class LineDao {
 
     public Line findById(Long id) {
         final String sql = "select id, name, color from Line where id = ?";
+        if (!isExist(id)) {
+            throw new NoSuchElementException("해당하는 노선이 존재하지 않습니다.");
+        }
         return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
 
-    public void update(Long id, LineRequest lineRequest) {
+    private boolean isExist(Long id) {
+        final String sql = "select count(*) from Line where id = ?";
+        final int count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count > 0;
+    }
+
+    public void update(Long id, Line line) {
         final String sql = "update Line set name = ?, color = ? where id = ?";
-        jdbcTemplate.update(sql, lineRequest.getName(), lineRequest.getColor(), id);
+        jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
     public void deleteById(Long id) {

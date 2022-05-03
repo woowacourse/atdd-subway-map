@@ -17,12 +17,12 @@ import java.util.Objects;
 @Component
 public class StationDao {
 
+    private final JdbcTemplate jdbcTemplate;
+
     private static final RowMapper<Station> STATION_ROW_MAPPER = ((rs, rowNum) ->
             new Station(rs.getLong("id"),
                     rs.getString("name"))
     );
-
-    private final JdbcTemplate jdbcTemplate;
 
     public StationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -54,11 +54,6 @@ public class StationDao {
     public List<Station> findAll() {
         final String sql = "select id, name from Station";
         return jdbcTemplate.query(sql, STATION_ROW_MAPPER);
-    }
-
-    public Station findById(Long id) {
-        final String sql = "select id, name from Station where id = ?";
-        return jdbcTemplate.queryForObject(sql, STATION_ROW_MAPPER, id);
     }
 
     public void deleteById(Long id) {
