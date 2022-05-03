@@ -68,11 +68,20 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public void deleteById(final Long id) {
-
+        final String sql = "delete from LINE where id = :id";
+        final Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        final SqlParameterSource source = new MapSqlParameterSource(params);
+        jdbcTemplate.update(sql, source);
     }
 
     @Override
     public void update(final LineEntity newLineEntity) {
-
+        final String sql = "update LINE set "
+                + "name = :name, "
+                + "color = :color "
+                + "where id = :id";
+        final SqlParameterSource source = new BeanPropertySqlParameterSource(newLineEntity);
+        jdbcTemplate.update(sql, source);
     }
 }

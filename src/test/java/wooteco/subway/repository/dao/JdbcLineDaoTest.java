@@ -3,8 +3,6 @@ package wooteco.subway.repository.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Optional;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,6 +60,33 @@ class JdbcLineDaoTest {
         assertAll(
                 () -> assertThat(lineEntity.getId()).isEqualTo(savedLineEntity.getId()),
                 () -> assertThat(lineEntity.getColor()).isEqualTo("bg-green-600")
+        );
+    }
+
+    @DisplayName("id로 노선을 삭제한다.")
+    @Test
+    void deleteById() {
+        Line line = new Line("2호선", "bg-green-600");
+        LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
+
+        lineDao.deleteById(savedLineEntity.getId());
+
+        assertThat(lineDao.findAll().size()).isEqualTo(0);
+    }
+
+    @DisplayName("노선을 수정한다.")
+    @Test
+    void update() {
+        Line line = new Line("2호선", "bg-green-600");
+        LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
+        LineEntity newLineEntity = new LineEntity(savedLineEntity.getId(), "신분당선", "bg-red-600");
+
+        lineDao.update(newLineEntity);
+        LineEntity updatedLineEntity = lineDao.findById(savedLineEntity.getId()).get();
+
+        assertAll(
+                () -> assertThat(updatedLineEntity.getName()).isEqualTo(newLineEntity.getName()),
+                () -> assertThat(updatedLineEntity.getColor()).isEqualTo(newLineEntity.getColor())
         );
     }
 }
