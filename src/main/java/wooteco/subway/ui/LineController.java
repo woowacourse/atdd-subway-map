@@ -50,7 +50,10 @@ public class LineController {
 
     @PutMapping(value = "/lines/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        LineDao.update(id, lineRequest.getName(), lineRequest.getColor());
+        String name = lineRequest.getName();
+        LineDao.validate(id, name);
+
+        LineDao.update(id, name, lineRequest.getColor());
         return ResponseEntity.ok().build();
     }
 }

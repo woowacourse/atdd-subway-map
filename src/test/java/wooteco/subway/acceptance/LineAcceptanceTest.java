@@ -235,4 +235,42 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(name).isEqualTo("2호선");
         assertThat(color).isEqualTo("green");
     }
+
+    @DisplayName("기존에 존재하는 지하철 노선명으로 지하철 노선명을 수정한다.")
+    @Test
+    void updateLineWithDuplicateName() {
+        /// given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "신분당선");
+        params1.put("color", "red");
+        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "2호선");
+        params2.put("color", "green");
+        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put(createResponse2.header("Location"))
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

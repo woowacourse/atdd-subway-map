@@ -47,6 +47,15 @@ public class LineDao {
         }
     }
 
+    public static void validate(Long id, String name) {
+        boolean validate = lines.stream()
+                .anyMatch(l -> (!l.isSameId(id) && l.isSameName(name)));
+
+        if (validate) {
+            throw new IllegalArgumentException("지하철 이름이 중복될 수 없습니다.");
+        }
+    }
+
     public static void clear() {
         lines.clear();
     }
