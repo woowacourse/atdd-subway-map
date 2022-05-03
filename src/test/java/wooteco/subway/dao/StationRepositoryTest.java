@@ -41,7 +41,18 @@ class StationRepositoryTest {
 
         List<Station> stations = stationRepository.findAll();
 
-        assertThat(stations.size()).isEqualTo(2);
-        assertThat(stations).containsExactly(station1, station2);
+        assertAll(
+                () -> assertThat(stations).hasSize(2),
+                () -> assertThat(stations).containsExactly(station1, station2)
+        );
+    }
+
+    @DisplayName("역을 삭제한다")
+    @Test
+    void deleteById() {
+        Station saveStation = stationRepository.save(new Station("신림역"));
+        stationRepository.deleteById(saveStation.getId());
+
+        assertThat(stationRepository.findAll()).isEmpty();
     }
 }

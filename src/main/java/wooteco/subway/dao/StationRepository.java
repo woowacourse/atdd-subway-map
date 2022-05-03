@@ -45,7 +45,7 @@ public class StationRepository {
         }
     }
 
-    public Station save(Station station) {
+    public Station save(final Station station) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", station.getName());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
@@ -75,5 +75,10 @@ public class StationRepository {
             return new Station(id, name);
         };
         return namedParameterJdbcTemplate.query(sql, stationRowMapper);
+    }
+
+    public void deleteById(final Long id) {
+        String sql = "DELETE FROM station WHERE id = :id";
+        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource("id", id));
     }
 }
