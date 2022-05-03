@@ -50,4 +50,12 @@ class JdbcLineDaoTest {
 
         assertThat(lineDao.findAll()).hasSize(2);
     }
+
+    @Test
+    @DisplayName("Line 이름이 존재하는지 확인할 수 있다.")
+    void existByName() {
+        lineDao.save(new Line("신분당선", "bg-red-600"));
+
+        assertThat(lineDao.existByName("신분당선")).isTrue();
+    }
 }
