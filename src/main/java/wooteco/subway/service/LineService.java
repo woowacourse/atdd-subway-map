@@ -21,25 +21,26 @@ public class LineService {
     }
 
     public static void deleteById(Long id) {
-        if (LineDao.findById(id).isEmpty()) {
-            throw new LineNotFoundException();
-        }
+        Optional<Line> line = LineDao.findById(id);
+        validateNull(line);
         LineDao.deleteById(id);
     }
 
     public static Line findLineById(Long id) {
         Optional<Line> line = LineDao.findById(id);
-        if (line.isEmpty()) {
-            throw new LineNotFoundException();
-        }
+        validateNull(line);
         return line.get();
     }
 
     public static void update(Long id, Line updatingLine) {
         Optional<Line> line = LineDao.findById(id);
+        validateNull(line);
+        LineDao.update(id, updatingLine);
+    }
+
+    private static void validateNull(Optional<Line> line) {
         if (line.isEmpty()) {
             throw new LineNotFoundException();
         }
-        LineDao.update(id, updatingLine);
     }
 }
