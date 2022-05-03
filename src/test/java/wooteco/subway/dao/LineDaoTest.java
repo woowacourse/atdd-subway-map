@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class LineDaoTest {
 
     private LineDao lineDao = Assembler.getLineDao();
+    private Line line = new Line("신분당선", "red");
 
     @AfterEach
     void afterEach() {
@@ -24,16 +25,15 @@ public class LineDaoTest {
     @Test
     @DisplayName("노선을 등록한다.")
     void save() {
-        Line expected = new Line("신분당선", "red");
-        Line actual = lineDao.save(expected);
+        Line actual = lineDao.save(line);
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(line);
     }
 
     @Test
     @DisplayName("모든 노선 목록을 조회한다.")
     void findAll() {
-        lineDao.save(new Line("신분당선", "red"));
+        lineDao.save(line);
         lineDao.save(new Line("1호선", "blue"));
 
         List<Line> lines = lineDao.findAll();
@@ -44,7 +44,7 @@ public class LineDaoTest {
     @Test
     @DisplayName("id에 맞는 노선을 조회한다.")
     void findById() {
-        Line expected = lineDao.save(new Line("신분당선", "red"));
+        Line expected = lineDao.save(line);
 
         Line actual = lineDao.findById(expected.getId());
 
@@ -57,5 +57,17 @@ public class LineDaoTest {
         assertThatThrownBy(() -> lineDao.findById(1L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageMatching("id에 맞는 지하철 노선이 없습니다.");
+    }
+
+    @Test
+    @DisplayName("노선의 이름과 색깔을 수정한다.")
+    void update() {
+        Line saveLine = lineDao.save(line);
+        Line expected = new Line(saveLine.getId(), "다른 분당선", "green");
+        Line actual = lineDao.findById(saveLine.getId());
+
+        lineDao.update(expected);
+
+        assertThat(actual).isEqualTo(expected);
     }
 }

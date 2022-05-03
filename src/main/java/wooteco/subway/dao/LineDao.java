@@ -40,4 +40,10 @@ public class LineDao {
     public void clear() {
         lines.clear();
     }
+
+    public void update(Line line) {
+        Line findLine = findById(line.getId());
+        findLine.setName(line.getName());
+        findLine.setColor(line.getColor());
+    }
 }
