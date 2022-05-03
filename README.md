@@ -52,4 +52,3 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] get - /lines/{id} - id, name, color
 - [x] put - /lines/{id} - name, color
 - [x] delete - /lines/{id}
-
