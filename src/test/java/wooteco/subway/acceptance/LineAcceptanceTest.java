@@ -11,24 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.dto.LineResponse;
 
 public class LineAcceptanceTest extends AcceptanceTest {
-
-    @Autowired
-    private LineDao lineDao;
-
-    @BeforeEach
-    void setup() {
-        lineDao.deleteAll();
-    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test

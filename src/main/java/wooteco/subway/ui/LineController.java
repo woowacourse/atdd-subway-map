@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.dao.LineDao;
+import wooteco.subway.application.LineService;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -20,19 +20,16 @@ import wooteco.subway.dto.LineResponse;
 @RestController
 public class LineController {
 
-    private final LineDao lineDao;
+    private final LineService lineService;
 
-    public LineController(LineDao lineDao) {
-        this.lineDao = lineDao;
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> create(@RequestBody LineRequest lineRequest) {
-        if (lineDao.existsByName(lineRequest.getName())) {
-            return ResponseEntity.badRequest().build();
-        }
-        final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        final Line newLine = lineDao.save(line);
+        final Line newLine = lineService.save(lineRequest.getName(), lineRequest.getColor());
+
         final LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
 
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
@@ -40,7 +37,7 @@ public class LineController {
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineDao.findAll();
+        List<Line> lines = lineService.showLines();
         List<LineResponse> lineResponses = lines.stream()
                 .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
@@ -49,29 +46,20 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        if (lineDao.notExistsById(id)) {
-            return ResponseEntity.badRequest().build();
-        }
-        Line line = lineDao.findById(id);
+        final Line line = lineService.showLine(id);
 
         return ResponseEntity.ok(new LineResponse(line.getId(), line.getName(), line.getColor()));
     }
 
     @PutMapping("/lines/{id}")
     public ResponseEntity<LineResponse> modifyLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        if (lineDao.notExistsById(id)) {
-            return ResponseEntity.badRequest().build();
-        }
-        lineDao.updateLineById(id, lineRequest.getName(), lineRequest.getColor());
+        lineService.updateLine(id, lineRequest.getName(), lineRequest.getColor());
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        if (lineDao.notExistsById(id)) {
-            return ResponseEntity.badRequest().build();
-        }
-        lineDao.deleteById(id);
+        lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
 }
