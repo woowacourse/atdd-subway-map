@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static wooteco.subway.dao.StationDao.save;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,7 @@ class StationDaoTest {
     void save_inValidName() {
         // given
         final Station station = new Station("선릉");
-        save(station);
+        StationDao.save(station);
 
         // when
         final Station newStation = new Station("선릉");

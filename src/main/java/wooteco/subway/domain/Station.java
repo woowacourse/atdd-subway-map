@@ -13,6 +13,9 @@ public class Station {
     }
 
     public Station(String name) {
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("역의 이름이 공백이 되어서는 안됩니다.");
+        }
         this.name = name;
     }
 
