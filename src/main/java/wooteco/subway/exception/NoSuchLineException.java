@@ -2,10 +2,10 @@ package wooteco.subway.exception;
 
 import java.util.NoSuchElementException;
 
-public class NoSuchStationException extends NoSuchElementException {
+public class NoSuchLineException extends NoSuchElementException {
 
-    public NoSuchStationException() {
-        super("존재하지 않는 역입니다");
+    public NoSuchLineException() {
+        super("존재하지 않는 노선입니다");
     }
 
     @Override

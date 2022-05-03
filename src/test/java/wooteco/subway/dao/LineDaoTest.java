@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.NoSuchLineException;
 
 public class LineDaoTest {
 
@@ -75,7 +76,7 @@ public class LineDaoTest {
     @Test
     void throwExceptionWhenTargetLineDoesNotExist() {
         assertThatThrownBy(() -> LineDao.findById(1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(NoSuchLineException.class);
     }
 
     @DisplayName("모든 노선을 제거한다")
@@ -90,5 +91,24 @@ public class LineDaoTest {
         // then
         List<Line> lines = LineDao.findAll();
         assertThat(lines).isEmpty();
+    }
+
+    @DisplayName("노선 정보를 수정한다")
+    @Test
+    void update() {
+        Line savedLine = LineDao.save(new Line(1L, "line", "color"));
+
+        LineDao.update(savedLine.getId(), "changedName", "changedColor");
+
+        Line findLine = LineDao.findById(savedLine.getId());
+        assertThat(findLine.getName()).isEqualTo("changedName");
+        assertThat(findLine.getColor()).isEqualTo("changedColor");
+    }
+
+    @DisplayName("없는 노선 정보를 변경하려 할 때, 예외를 던진다")
+    @Test
+    void throwExceptionWhenTryToUpdateNoLine() {
+        assertThatThrownBy(() -> LineDao.update(1L, "changedName", "changedColor"))
+                .isInstanceOf(NoSuchLineException.class);
     }
 }

@@ -28,6 +28,11 @@ public class Line {
         return color;
     }
 
+    public void update(final String name, final String color) {
+        this.name = name;
+        this.color = color;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

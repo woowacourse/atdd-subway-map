@@ -3,8 +3,10 @@ package wooteco.subway.dao;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.NoSuchLineException;
 
 public class LineDao {
     private static Long seq = 0L;
@@ -18,6 +20,11 @@ public class LineDao {
         return persistStation;
     }
 
+    public static void update(final Long id, final String name, final String color) {
+        Line line = findById(id);
+        line.update(name, color);
+    }
+
     public static List<Line> findAll() {
         return lines;
     }
@@ -26,7 +33,7 @@ public class LineDao {
         return lines.stream()
                 .filter(line -> line.getId() == id)
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(NoSuchLineException::new);
     }
 
     public static void deleteAll() {
