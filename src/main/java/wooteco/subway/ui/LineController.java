@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dao.LineDao;
@@ -43,6 +44,13 @@ public class LineController {
         LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
 
         return ResponseEntity.ok().body(lineResponse);
+    }
+
+    @PutMapping( "/lines/{id}")
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest){
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        LineDao.updateById(id, line);
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler

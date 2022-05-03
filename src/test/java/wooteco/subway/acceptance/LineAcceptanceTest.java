@@ -104,4 +104,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, Object> values = response.jsonPath().get();
         assertThat(values.get("id")).isEqualTo(expected);
     }
+
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+        String value = createResponse1.header("Location").split("/")[2];
+        int expected = Integer.parseInt(value);
+
+        Map<String, String> newParams = new HashMap<>();
+        newParams.put("name", "분당선");
+        newParams.put("color", "bg-green-600");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(newParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + expected)
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }

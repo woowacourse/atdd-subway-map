@@ -44,5 +44,5 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 지하철 노선을 등록한다.
 - [x] 전체 지하철 노선 목록을 조회한다. 
 - [x] 단일 지하철 노선을 조죄한다.
-- [ ] 지하철 노선을 수정한다.
+- [x] 지하철 노선을 수정한다.
 - [ ] 지하철 노선을 삭제한다.

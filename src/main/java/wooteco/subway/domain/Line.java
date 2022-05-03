@@ -15,6 +15,11 @@ public class Line {
         return this.id == id;
     }
 
+    public void updateLine(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
     public Long getId() {
         return id;
     }

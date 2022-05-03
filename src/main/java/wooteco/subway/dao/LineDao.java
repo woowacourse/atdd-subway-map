@@ -19,12 +19,6 @@ public class LineDao {
         return persistLine;
     }
 
-    private static void validateDuplication(Line line) {
-        if (lines.contains(line)) {
-            throw new IllegalArgumentException(LINE_VALIDATION);
-        }
-    }
-
     public static List<Line> findAll() {
         return lines;
     }
@@ -41,5 +35,18 @@ public class LineDao {
                 .filter(line -> line.isSameId(id))
                 .findAny()
                 .orElseThrow();
+    }
+
+    public static void updateById(Long id, Line line) {
+        validateDuplication(line);
+
+        Line originLine = findById(id);
+        originLine.updateLine(line.getName(), line.getColor());
+    }
+
+    private static void validateDuplication(Line line) {
+        if (lines.contains(line)) {
+            throw new IllegalArgumentException(LINE_VALIDATION);
+        }
     }
 }
