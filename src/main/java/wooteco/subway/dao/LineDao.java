@@ -38,4 +38,20 @@ public class LineDao {
     public static List<Line> findAll() {
         return Collections.unmodifiableList(lines);
     }
+
+    public static boolean notExistsById(Long id) {
+        System.out.println(lines.get(0).getId() + "exist!!!!");
+        System.out.println(id);
+        return lines.stream()
+                .map(Line::getId)
+                .filter(it -> it.equals(id))
+                .count() == 0;
+    }
+
+    public static Line findById(Long id) {
+        return lines.stream()
+                .filter(line -> line.getId().equals(id))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
 }
