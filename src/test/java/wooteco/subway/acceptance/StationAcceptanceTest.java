@@ -76,9 +76,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("모든 지하철역을 조회한다.")
     @Test
-    void getStations() {
+    void showStations() {
         /// given
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "강남역");

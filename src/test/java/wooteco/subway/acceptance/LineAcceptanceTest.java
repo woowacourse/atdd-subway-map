@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -77,9 +79,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("노선을 조회한다.")
+    @DisplayName("모든 노선을 조회한다.")
     @Test
-    void getLines() {
+    void showLines() {
         /// given
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "2호선");
@@ -119,5 +121,38 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    @DisplayName("id로 노선을 조회한다.")
+    @Test
+    void showLine() {
+        /// given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "bg-green-600");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+        LineResponseDto responseBody = response.jsonPath().getObject(".", LineResponseDto.class);
+
+        // then
+        assertAll(
+                () -> assertThat(responseBody.getName()).isEqualTo("2호선"),
+                () -> assertThat(responseBody.getColor()).isEqualTo("bg-green-600")
+        );
     }
 }
