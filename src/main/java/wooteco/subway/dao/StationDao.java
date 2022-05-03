@@ -29,14 +29,14 @@ public class StationDao {
         return station;
     }
 
-    public static void clear() {
-        stations = new ArrayList<>();
-    }
-
     public static void delete(Long id) {
         boolean isRemoving = stations.removeIf(station -> station.getId().equals(id));
         if (!isRemoving) {
             throw new IllegalArgumentException("존재하지 않는 지하철역입니다.");
         }
+    }
+
+    public static void clear() {
+        stations.clear();
     }
 }
