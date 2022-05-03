@@ -44,7 +44,7 @@ public class StationController {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> error(Exception e) {
+    public ResponseEntity<ErrorResponse> handleError(Exception e) {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }
 }
