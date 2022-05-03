@@ -21,6 +21,15 @@ public class StationDao {
         return stations;
     }
 
+    public static void deleteById(Long id) {
+        Station station = stations.stream()
+                .filter(it -> it.getId().equals(id))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("삭제하려는 지하철 역이 존재하지 않습니다."));
+
+        stations.remove(station);
+    }
+
     private static Station createNewObject(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
