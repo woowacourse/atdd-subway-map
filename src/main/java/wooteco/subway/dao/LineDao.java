@@ -53,4 +53,8 @@ public class LineDao {
     public static void deleteById(Long id) {
         lines.removeIf(line -> id.equals(line.getId()));
     }
+
+    public static void deleteAll() {
+        lines = new ArrayList<>();
+    }
 }
