@@ -34,9 +34,7 @@ public class LineDao {
     }
 
     public Optional<Line> findById(Long id) {
-        return lines.stream()
-            .filter(line -> line.getId().equals(id))
-            .findFirst();
+        return lines.stream().filter(line -> line.getId().equals(id)).findFirst();
     }
 
     public void update(Long id, String name, String color) {
@@ -47,6 +45,12 @@ public class LineDao {
                 return;
             }
             idx++;
+        }
+    }
+
+    public void deleteById(Long id) {
+        if (!lines.removeIf(line -> line.getId().equals(id))) {
+            throw new IllegalArgumentException("존재하지 않는 노선 입니다.");
         }
     }
 }

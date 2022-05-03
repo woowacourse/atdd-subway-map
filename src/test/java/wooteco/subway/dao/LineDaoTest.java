@@ -79,4 +79,18 @@ public class LineDaoTest {
         Line actual = lineDao.findById(savedLine.getId()).get();
         assertThat(equals(actual, updatedLine)).isTrue();
     }
+
+    @Test
+    @DisplayName("Line 을 삭제한다.")
+    void deleteById() {
+        //given
+        Line line = new Line("가산디지털", "blue");
+        Line savedLine = lineDao.save(line);
+
+        //when
+        lineDao.deleteById(savedLine.getId());
+
+        //then
+        assertThat(lineDao.findById(savedLine.getId())).isEmpty();
+    }
 }
