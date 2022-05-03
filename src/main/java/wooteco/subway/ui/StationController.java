@@ -17,7 +17,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.ExceptionResponse;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.DuplicatedStationNameException;
+import wooteco.subway.exception.DuplicatedStationException;
 import wooteco.subway.service.StationService;
 
 @RestController
@@ -46,8 +46,8 @@ public class StationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(DuplicatedStationNameException.class)
-    public ResponseEntity<ExceptionResponse> handleException(DuplicatedStationNameException exception) {
+    @ExceptionHandler(DuplicatedStationException.class)
+    public ResponseEntity<ExceptionResponse> handleException(DuplicatedStationException exception) {
         return ResponseEntity.badRequest().body(new ExceptionResponse(exception.getMessage()));
     }
 

@@ -13,12 +13,14 @@ class StationDaoTest {
     @ParameterizedTest
     @CsvSource({"서울역, true", "선릉역, false"})
     void exists(String name, boolean expected) {
-        Station seoul = new Station("서울역");
-        StationDao.save(seoul);
+        Station station = StationDao.save(new Station("서울역"));
+
         Station newStation = new Station(name);
 
         boolean actual = StationDao.exists(newStation);
 
         assertThat(actual).isEqualTo(expected);
+
+        StationDao.deleteById(station.getId());
     }
 }

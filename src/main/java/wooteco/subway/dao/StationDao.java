@@ -40,6 +40,7 @@ public class StationDao {
     }
 
     public static boolean exists(Station station) {
-        return stations.contains(station);
+        return stations.stream()
+            .anyMatch(station::hasSameName);
     }
 }
