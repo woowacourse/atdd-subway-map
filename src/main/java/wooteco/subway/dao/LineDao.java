@@ -11,9 +11,16 @@ public class LineDao {
     private static final Map<Long, Line> lines = new HashMap<>();
 
     public static Long save(Line line) {
+        validateDuplicateName(line);
         Line newLine = new Line(++seq, line.getName(), line.getColor());
         lines.put(seq, newLine);
         return seq;
+    }
+
+    private static void validateDuplicateName(Line line) {
+        if (lines.containsValue(line)) {
+            throw new IllegalArgumentException("중복된 이름이 존재합니다.");
+        }
     }
 
     public static List<Line> findAll() {
