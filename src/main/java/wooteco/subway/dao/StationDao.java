@@ -2,7 +2,6 @@ package wooteco.subway.dao;
 
 import java.util.Collections;
 import java.util.List;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
@@ -16,6 +15,9 @@ import wooteco.subway.domain.Station;
 
 @Repository
 public class StationDao {
+
+    private static final String STATION_NOT_FOUND_EXCEPTION_MESSAGE = "해당되는 역은 존재하지 않습니다.";
+    private static final String NAME_NOT_ALLOWED_EXCEPTION_MESSAGE = "해당 이름의 지하철역을 생성할 수 없습니다.";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -32,27 +34,23 @@ public class StationDao {
 
     public Station save(Station station) {
         final String sql = "INSERT INTO station(name) VALUES (:name)";
-
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource paramSource = new BeanPropertySqlParameterSource(station);
-        try {
-            jdbcTemplate.update(sql, paramSource, keyHolder);
-        } catch (DataAccessException e) {
-            throw new IllegalArgumentException("해당 이름의 지하철역을 생성할 수 없습니다.");
-        }
-        return new Station(keyHolder.getKey().longValue(), station.getName());
+
+        new StatementExecutor<>(() -> jdbcTemplate.update(sql, paramSource, keyHolder))
+                .executeOrThrow(() -> new IllegalArgumentException(NAME_NOT_ALLOWED_EXCEPTION_MESSAGE));
+        Number generatedId = keyHolder.getKey();
+        return new Station(generatedId.longValue(), station.getName());
     }
 
     public void deleteById(Long id) {
         final String sql = "DELETE FROM station WHERE id = :id";
-
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("id", id);
 
-        int effectedRowCount = jdbcTemplate.update(sql, paramSource);
-        if (effectedRowCount == 0) {
-            throw new IllegalArgumentException("해당되는 역은 존재하지 않습니다.");
-        }
+        new StatementExecutor<>(() -> jdbcTemplate.update(sql, paramSource))
+                .update()
+                .throwOnNonEffected(() -> new IllegalArgumentException(STATION_NOT_FOUND_EXCEPTION_MESSAGE));
     }
 
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->

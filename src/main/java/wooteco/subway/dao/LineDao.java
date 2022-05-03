@@ -2,7 +2,6 @@ package wooteco.subway.dao;
 
 import java.util.Collections;
 import java.util.List;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
@@ -17,6 +16,9 @@ import wooteco.subway.exception.NotFoundException;
 
 @Repository
 public class LineDao {
+
+    private static final String LINE_NOT_FOUND_EXCEPTION_MESSAGE = "해당되는 노선은 존재하지 않습니다.";
+    private static final String DUPLICATE_NAME_EXCEPTION_MESSAGE = "중복되는 이름의 지하철 노선이 존재합니다.";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -33,55 +35,41 @@ public class LineDao {
 
     public Line findById(Long id) {
         final String sql = "SELECT * FROM line WHERE id = :id";
-
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("id", id);
 
-        try {
-            return jdbcTemplate.queryForObject(sql, paramSource, lineRowMapper);
-        } catch (DataAccessException e) {
-            throw new NotFoundException("해당되는 노선은 존재하지 않습니다.");
-        }
+        return new StatementExecutor<>(() -> jdbcTemplate.queryForObject(sql, paramSource, lineRowMapper))
+                .executeOrThrow(() -> new NotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE));
     }
 
     public Line save(Line line) {
         final String sql = "INSERT INTO line(name, color) VALUES(:name, :color)";
-
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource paramSource = new BeanPropertySqlParameterSource(line);
-        try {
-            jdbcTemplate.update(sql, paramSource, keyHolder);
-        } catch (DataAccessException e) {
-            throw new IllegalArgumentException("중복되는 이름의 지하철 노선이 존재합니다.");
-        }
-        return new Line(keyHolder.getKey().longValue(), line.getName(), line.getColor());
+
+        new StatementExecutor<>(() -> jdbcTemplate.update(sql, paramSource, keyHolder))
+                .executeOrThrow(() -> new IllegalArgumentException(DUPLICATE_NAME_EXCEPTION_MESSAGE));
+        Number generatedId = keyHolder.getKey();
+        return new Line(generatedId.longValue(), line.getName(), line.getColor());
     }
 
     public void update(Line line) {
-        final String sql = "UPDATE line SET name = :name, color = :color "
-                + "WHERE id = :id";
-
+        final String sql = "UPDATE line SET name = :name, color = :color WHERE id = :id";
         SqlParameterSource paramSource = new BeanPropertySqlParameterSource(line);
-        try {
-            validateUpdateResult(jdbcTemplate.update(sql, paramSource));
-        } catch (DataAccessException e) {
-            throw new IllegalArgumentException("중복되는 이름의 지하철 노선이 존재합니다.");
-        }
+
+        new StatementExecutor<>(() -> jdbcTemplate.update(sql, paramSource))
+                .updateOrThrow(() -> new IllegalArgumentException(DUPLICATE_NAME_EXCEPTION_MESSAGE))
+                .throwOnNonEffected(() -> new IllegalArgumentException(LINE_NOT_FOUND_EXCEPTION_MESSAGE));
     }
 
     public void deleteById(Long id) {
         final String sql = "DELETE FROM line WHERE id = :id";
-
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("id", id);
 
-        validateUpdateResult(jdbcTemplate.update(sql, paramSource));
-    }
-
-    private void validateUpdateResult(int effectedRowCount) {
-        if (effectedRowCount == 0) {
-            throw new IllegalArgumentException("해당되는 노선은 존재하지 않습니다.");
-        }
+        new StatementExecutor<>(() -> jdbcTemplate.update(sql, paramSource))
+                .update()
+                .throwOnNonEffected(() -> new IllegalArgumentException(LINE_NOT_FOUND_EXCEPTION_MESSAGE));
     }
 
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
