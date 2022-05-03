@@ -42,6 +42,12 @@ public class LineDao {
                 .findFirst();
     }
 
+    public static Optional<Line> findByName(String name) {
+        return lines.stream()
+                .filter(line -> line.getName().equals(name))
+                .findFirst();
+    }
+
     public static void updateLine(Long id, Line newLine) {
         Optional<Line> foundLine = findById(id);
         if (foundLine.isEmpty()) {

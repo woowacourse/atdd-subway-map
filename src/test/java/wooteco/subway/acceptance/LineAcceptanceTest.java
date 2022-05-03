@@ -35,10 +35,39 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(response.header("Location")).isEqualTo("/lines/1"),
-                () -> assertThat(response.body().jsonPath().getLong("id")).isEqualTo(1L),
+                () -> assertThat(response.header("Location")).isNotBlank(),
+                () -> assertThat(response.body().jsonPath().getLong("id")).isNotZero(),
                 () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("신분당선"),
                 () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo("rgb-red-600")
         );
+    }
+
+    @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
+    @Test
+    void createLineWithDuplicateName() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "경의중앙선");
+        params.put("color", "rgb-mint-600");
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
