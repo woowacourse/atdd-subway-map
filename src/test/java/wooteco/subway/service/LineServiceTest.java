@@ -56,4 +56,17 @@ class LineServiceTest {
 
         assertThat(lines.get(0).getName()).isEqualTo("분당선");
     }
+
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void Delete() {
+        Line line = new Line("신분당선","red");
+
+        lineService.save(line);
+        lineService.delete(1L);
+
+        List<Line> lines = lineService.findAll();
+
+        assertThat(lines).hasSize(0);
+    }
 }

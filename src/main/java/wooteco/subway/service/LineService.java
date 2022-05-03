@@ -27,4 +27,8 @@ public class LineService {
     public void update(Long id, Line line) {
         LineDao.update(id, line);
     }
+
+    public void delete(Long id) {
+        LineDao.delete(id);
+    }
 }

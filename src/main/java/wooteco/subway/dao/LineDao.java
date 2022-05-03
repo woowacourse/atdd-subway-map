@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
 
 public class LineDao {
     private static final String NO_ID_LINE_ERROR_MESSAGE = "해당 아이디의 노선이 없습니다.";
@@ -40,5 +39,13 @@ public class LineDao {
     public static void clear() {
         lines.clear();
         seq = 0L;
+    }
+
+    public static void delete(Long id) {
+        Line result = lines.stream()
+                .filter(line -> Objects.equals(line.getId(), id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(NO_ID_LINE_ERROR_MESSAGE));
+        lines.remove(result);
     }
 }
