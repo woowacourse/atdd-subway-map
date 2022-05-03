@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 
@@ -31,5 +32,12 @@ public class LineDao {
 
     public static List<Line> findAll() {
         return lines;
+    }
+
+    public static Line findById(Long id) {
+        return lines.stream()
+                .filter(line -> line.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 id입니다."));
     }
 }
