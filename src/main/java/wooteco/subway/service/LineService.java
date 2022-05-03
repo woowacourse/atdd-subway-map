@@ -41,4 +41,7 @@ public class LineService {
         lineDao.deleteAll();
     }
 
+    public void update(Long id, LineRequest lineRequest) {
+        lineDao.update(id, lineRequest);
+    }
 }

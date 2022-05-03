@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
 
 public class LineDao {
     private static Long seq = 0L;
@@ -44,4 +45,18 @@ public class LineDao {
         lines = new ArrayList<>();
     }
 
+    public void update(Long id, LineRequest lineRequest) {
+        int size = lines.size();
+
+        for (int i = 0; i < size; i++) {
+            Line line = lines.get(i);
+            updateByIndex(id, lineRequest, i, line.getId());
+        }
+    }
+
+    private void updateByIndex(Long id, LineRequest lineRequest, int index, Long lineId) {
+        if (id.equals(lineId)) {
+            lines.set(index, new Line(id, lineRequest.getName(), lineRequest.getColor()));
+        }
+    }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
@@ -61,5 +62,11 @@ public class LineController {
     public ResponseEntity<Void> deleteLines() {
         lineService.deleteAll();
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/lines/{id}")
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        lineService.update(id, lineRequest);
+        return ResponseEntity.ok().build();
     }
 }
