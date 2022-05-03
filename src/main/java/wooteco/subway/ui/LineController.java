@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,5 +34,11 @@ public class LineController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(lineRespones);
+    }
+
+    @GetMapping("/lines/{lineId}")
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long lineId) {
+        Line line = lineService.findById(lineId);
+        return ResponseEntity.ok().body(LineResponse.from(line));
     }
 }
