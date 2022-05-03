@@ -5,8 +5,8 @@ import java.util.Objects;
 public class Line {
 
     private Long id;
-    private final String name;
-    private final String color;
+    private String name;
+    private String color;
 
     public Line(String name, String color) {
         if (name.isBlank()) {
@@ -14,6 +14,11 @@ public class Line {
         }
         this.name = name;
         this.color = color;
+    }
+
+    public void update(final Line line) {
+        this.name = line.name;
+        this.color = line.color;
     }
 
     public boolean isSameName(final Line line) {

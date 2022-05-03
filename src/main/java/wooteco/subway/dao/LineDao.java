@@ -48,4 +48,10 @@ public class LineDao {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID에 맞는 노선을 찾지 못했습니다."));
     }
+
+    public static Line updateById(final Long id, final Line line) {
+        final Line persistLine = findById(id);
+        persistLine.update(line);
+        return persistLine;
+    }
 }
