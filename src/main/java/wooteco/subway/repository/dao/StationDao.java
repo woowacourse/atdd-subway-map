@@ -1,12 +1,8 @@
 package wooteco.subway.repository.dao;
 
-import java.util.Optional;
-import org.springframework.util.ReflectionUtils;
-import wooteco.subway.domain.Station;
-
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import wooteco.subway.repository.entity.StationEntity;
 
 public class StationDao {
@@ -30,13 +26,13 @@ public class StationDao {
 
     public Optional<StationEntity> findByName(final String name) {
         return store.stream()
-                .filter(station -> station.getName().equals(name))
+                .filter(stationEntity -> stationEntity.getName().equals(name))
                 .findAny();
     }
 
     public Optional<StationEntity> findById(final Long id) {
         return store.stream()
-                .filter(station -> station.getId().equals(id))
+                .filter(stationEntity -> stationEntity.getId().equals(id))
                 .findAny();
     }
 

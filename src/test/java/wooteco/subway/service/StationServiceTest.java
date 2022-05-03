@@ -36,7 +36,7 @@ class StationServiceTest {
 
         assertThatThrownBy(() -> service.register("선릉역"))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이미 존재하는 역이름입니다.");
+                .hasMessage("[ERROR] 이미 존재하는 역 이름입니다.");
     }
 
     @DisplayName("등록된 모든 역 리스트를 조회한다.")
