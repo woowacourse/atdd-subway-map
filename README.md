@@ -22,3 +22,20 @@
 - StationController 수정 사항
     - Service 로직 적용
     - Dto 정적 팩토리 메소드 수정
+
+### 2. 지하철 노선 관리 API 구현하기 + e2e 테스트
+- 등록(POST) 200 ok
+  `/lines`
+  [ERROR] 같은 이름의 노선이 생성될 경우 예외 발생
+
+- 전체 목록(GET) 200 ok
+  `/lines`
+
+- 단일 조회(GET) 200 ok
+  `/lines/{lineId}`
+
+- 수정(PUT) 200 ok
+  `/lines/{lineId}`
+
+- 삭제(DELETE) 204 no content
+  `/lines/{lineId}`
