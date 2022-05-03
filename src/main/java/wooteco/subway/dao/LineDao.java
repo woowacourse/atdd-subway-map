@@ -26,10 +26,19 @@ public class LineDao {
                 .anyMatch(it -> it.isSameName(line));
     }
 
+    public static List<Line> findAll() {
+        return lines;
+    }
+
     private static Line createNewObject(final Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
         return line;
+    }
+
+    public static void deleteAll() {
+        lines.clear();
+        seq = 0L;
     }
 }
