@@ -33,7 +33,7 @@ public class StationController {
     public ResponseEntity<List<StationResponseDto>> showStations() {
         final List<Station> stations = stationService.searchAll();
         final List<StationResponseDto> stationResponseDtos = stations.stream()
-                .map(it -> new StationResponseDto(it.getId(), it.getName()))
+                .map(station -> new StationResponseDto(station.getId(), station.getName()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(stationResponseDtos);
     }
