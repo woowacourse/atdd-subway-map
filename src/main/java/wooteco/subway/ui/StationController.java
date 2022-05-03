@@ -3,11 +3,9 @@ package wooteco.subway.ui;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,10 +40,5 @@ public class StationController {
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         StationDao.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler({DuplicateKeyException.class})
-    private ResponseEntity<Void> handleException(DuplicateKeyException exception) {
-        return ResponseEntity.badRequest().build();
     }
 }
