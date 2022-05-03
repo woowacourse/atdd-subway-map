@@ -40,4 +40,10 @@ public class LineController {
         Line line = LineDao.findById(id);
         return ResponseEntity.ok().body(new LineResponse(line.getId(), line.getName(), line.getColor()));
     }
+
+    @DeleteMapping(value = "/lines/{id}")
+    public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
+        LineDao.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }

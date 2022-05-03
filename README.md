@@ -58,5 +58,5 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] 목록
     - [x] 조회
     - [ ] 수정
-    - [ ] 삭제
+    - [x] 삭제
     

@@ -28,6 +28,10 @@ public class LineDao {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
     }
 
+    public static void delete(Long id) {
+        lines.remove(findById(id));
+    }
+
     private static Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
