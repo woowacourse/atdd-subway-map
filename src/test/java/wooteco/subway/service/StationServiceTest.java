@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -15,17 +14,11 @@ import wooteco.subway.domain.Station;
 
 public class StationServiceTest {
 
-    private StationService stationService;
-    private final StationDao stationDao = StationDao.getInstance();
-
-    @BeforeEach
-    void setUp() {
-        stationService = new StationService(stationDao);
-    }
+    private final StationService stationService = StationService.getInstance();
 
     @AfterEach
     void tearDown() {
-        stationDao.deleteAll();
+        StationDao.getInstance().deleteAll();
     }
 
     @Test

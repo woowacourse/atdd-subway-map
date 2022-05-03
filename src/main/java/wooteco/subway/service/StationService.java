@@ -8,10 +8,15 @@ import wooteco.subway.domain.Station;
 
 public class StationService {
 
+    private static final StationService INSTANCE = new StationService(StationDao.getInstance());
     private final StationDao stationDao;
 
-    public StationService(StationDao stationDao) {
+    private StationService(StationDao stationDao) {
         this.stationDao = stationDao;
+    }
+
+    public static StationService getInstance() {
+        return INSTANCE;
     }
 
     public Station save(Station station) {
