@@ -12,33 +12,25 @@ import wooteco.subway.repository.entity.StationEntity;
 public class StationDao {
 
     private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
+    private static List<StationEntity> store = new ArrayList<>();
 
-    public StationEntity save(final Station station) {
-        final Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return new StationEntity(persistStation);
+    public StationEntity save(final StationEntity stationEntity) {
+        final StationEntity saved = new StationEntity(++seq, stationEntity.getName());
+        store.add(saved);
+        return saved;
     }
 
-    public List<Station> findAll() {
-        return new ArrayList<>(stations);
-    }
-
-    private Station createNewObject(final Station station) {
-        final Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+    public List<StationEntity> findAll() {
+        return new ArrayList<>(store);
     }
 
     public void removeAll() {
-        stations.clear();
+        store.clear();
     }
 
     public Optional<StationEntity> findByName(final String name) {
-        return stations.stream()
+        return store.stream()
                 .filter(station -> station.getName().equals(name))
-                .map(StationEntity::new)
                 .findAny();
     }
 }

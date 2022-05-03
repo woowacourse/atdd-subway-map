@@ -4,10 +4,13 @@ import java.util.List;
 
 public class LineResponseDto {
 
-    private final Long id;
-    private final String name;
-    private final String color;
-    private final List<StationResponseDto> stations;
+    private Long id;
+    private String name;
+    private String color;
+    private List<StationResponseDto> stations;
+
+    public LineResponseDto() {
+    }
 
     public LineResponseDto(Long id, String name, String color, List<StationResponseDto> stations) {
         this.id = id;

@@ -3,6 +3,8 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,5 +37,20 @@ class StationServiceTest {
         assertThatThrownBy(() -> service.register("선릉역"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이미 존재하는 역이름입니다.");
+    }
+
+    @DisplayName("등록된 모든 역 리스트를 조회한다.")
+    @Test
+    void searchAll() {
+        service.register("선릉역");
+        service.register("강남역");
+        service.register("잠실역");
+
+        List<Station> stations = service.searchAll();
+        List<String> names = stations.stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+
+        assertThat(names).isEqualTo(List.of("선릉역", "강남역", "잠실역"));
     }
 }
