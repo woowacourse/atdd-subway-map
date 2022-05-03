@@ -37,3 +37,16 @@
 ## 📝 License
 
 This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master/LICENSE) licensed.
+
+# 기능 요구 사항
+## station controller 추가
+- 이미 등록된 이름 요청시 에러 응답
+
+## line controller 추가
+- 노선 등록
+- 노선 조회
+- 노선 목록
+- 노선 수정
+- 노선 삭제
+
+## line controller test 추가
