@@ -39,4 +39,15 @@ public class LineDao {
     public static void deleteAll() {
         lines.clear();
     }
+
+    public static Long updateById(Line updateLine) {
+        final Line findLine = lines.stream()
+                .filter(line -> line.getId().equals(updateLine.getId()))
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
+        lines.remove(findLine);
+        lines.add(updateLine);
+
+        return updateLine.getId();
+    }
 }

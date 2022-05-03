@@ -65,4 +65,21 @@ class LineDaoTest {
         assertThat(findLine).extracting("name", "color")
                 .contains("신분당선", "bg-red-600");
     }
+
+    @Test
+    @DisplayName("기존 노선의 이름과 색상을 변경할 수 있다.")
+    void updateById() {
+        // given
+        final Line line = new Line("신분당선", "bg-red-600");
+        final Long savedId = LineDao.save(line);
+
+        // when
+        final Line updateLine = new Line(savedId, "다른분당선", "bg-red-600");
+        LineDao.updateById(updateLine);
+
+        // then
+        final Line findLine = LineDao.findById(savedId);
+        assertThat(findLine).extracting("name", "color")
+                .contains("다른분당선", "bg-red-600");
+    }
 }

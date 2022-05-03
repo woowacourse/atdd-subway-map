@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,15 @@ import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineCreateResponse;
 
 class LineAcceptanceTest extends AcceptanceTest {
+
+    @AfterEach
+    void rollback() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/lines")
+                .then().log().all()
+                .extract();
+    }
 
     @Test
     @DisplayName("노선을 등록한다.")
@@ -113,5 +123,40 @@ class LineAcceptanceTest extends AcceptanceTest {
         final Long findId = response.response().jsonPath().getLong("id");
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(Long.valueOf(savedId)).isEqualTo(findId);
+    }
+
+    @Test
+    @DisplayName("기존 노선의 이름과 색상을 변경할 수 있다.")
+    void updateById() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+
+        ExtractableResponse<Response> param = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        final String savedId = param.header("Location").split("/")[2];
+
+        // when
+        Map<String, String> updateParams = new HashMap<>();
+        updateParams.put("name", "다른분당선");
+        updateParams.put("color", "bg-red-600");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(updateParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + savedId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
