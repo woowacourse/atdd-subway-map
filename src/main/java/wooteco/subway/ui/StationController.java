@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,8 +22,8 @@ public class StationController {
 
     private final StationDao stationDao;
 
-    public StationController(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.stationDao = new StationDao(namedParameterJdbcTemplate);
+    public StationController(StationDao stationDao) {
+        this.stationDao = stationDao;
     }
 
     @PostMapping("/stations")
@@ -50,6 +49,10 @@ public class StationController {
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+        Optional<Station> wrappedStation = stationDao.findById(id);
+        if (wrappedStation.isEmpty()) {
+            throw new IllegalArgumentException("해당 지하철역이 존재하지 않습니다.");
+        }
         stationDao.deleteById(id);
         return ResponseEntity.noContent().build();
     }
