@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dao.LineDao;
@@ -23,8 +24,7 @@ public class LineController {
         if (LineDao.existsByName(lineRequest.getName())) {
             return ResponseEntity.badRequest().build();
         }
-        final Line line = new Line(lineRequest.getName(), lineRequest.getColor(), lineRequest.getUpStationId(),
-                lineRequest.getDownStationId(), lineRequest.getDistance());
+        final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         final Line newLine = LineDao.save(line);
 
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).build();
@@ -39,7 +39,7 @@ public class LineController {
         return ResponseEntity.ok(lineResponses);
     }
 
-    @GetMapping(value = "/lines/{id}")
+    @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         if (LineDao.notExistsById(id)) {
             return ResponseEntity.badRequest().build();
@@ -47,5 +47,14 @@ public class LineController {
         Line line = LineDao.findById(id);
 
         return ResponseEntity.ok(new LineResponse(line.getId(), line.getName(), line.getColor()));
+    }
+
+    @PutMapping("/lines/{id}")
+    public ResponseEntity<LineResponse> modifyLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        if (LineDao.notExistsById(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+        LineDao.updateLineById(id, lineRequest.getName(), lineRequest.getColor());
+        return ResponseEntity.ok().build();
     }
 }

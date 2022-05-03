@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -21,7 +22,7 @@ import wooteco.subway.dto.LineResponse;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
-    void setup(){
+    void setup() {
         LineDao.deleteAll();
     }
 
@@ -146,8 +147,42 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         //then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("분당선"),
+                () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo("노랑이")
+        );
+    }
+
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void modifyLine() {
+        //given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "분당선");
+        params1.put("color", "노랑이");
+
+        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        //when
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "신분당선");
+        params2.put("color", "빨강이");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + createResponse1.header("Location").split("/")[2])
+                .then().log().all()
+                .extract();
+
+        //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getString("name")).isEqualTo("분당선");
-        assertThat(response.body().jsonPath().getString("color")).isEqualTo("노랑이");
     }
 }

@@ -54,4 +54,10 @@ public class LineDao {
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
+
+    public static void updateLineById(Long id, String name, String color) {
+        final Line line = findById(id);
+        lines.remove(line);
+        lines.add(new Line(id, name, color));
+    }
 }
