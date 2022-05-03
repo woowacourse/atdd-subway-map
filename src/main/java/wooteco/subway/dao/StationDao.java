@@ -34,8 +34,4 @@ public class StationDao {
         return stations.stream()
                 .anyMatch(persistStation::isSameName);
     }
-
-    public static void deleteAll() {
-        stations.clear();
-    }
 }

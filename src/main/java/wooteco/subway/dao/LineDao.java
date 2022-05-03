@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Line;
 
 public class LineDao {
     private static Long seq = 0L;
@@ -34,9 +33,5 @@ public class LineDao {
     private static boolean hasDuplicateLine(Line persistLine) {
         return lines.stream()
                 .anyMatch(persistLine::isSameName);
-    }
-
-    public static void deleteAll() {
-        lines.clear();
     }
 }

@@ -16,13 +16,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+
     @BeforeEach
     void init() {
-        StationDao.deleteAll();
+        List<Station> stations = StationDao.findAll();
+        stations.clear();
     }
 
     @DisplayName("지하철역을 생성한다.")

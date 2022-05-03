@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("지하철노선 관련 기능")
@@ -23,7 +24,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void init() {
-        LineDao.deleteAll();
+        List<Line> lines = LineDao.findAll();
+        lines.clear();
     }
 
     @DisplayName("지하철노선을 생성한다.")
