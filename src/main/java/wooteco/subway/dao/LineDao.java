@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
@@ -32,5 +33,9 @@ public class LineDao {
 
     public static void deleteAll() {
         lines = new ArrayList<>();
+    }
+
+    public static List<Line> findAll() {
+        return Collections.unmodifiableList(lines);
     }
 }
