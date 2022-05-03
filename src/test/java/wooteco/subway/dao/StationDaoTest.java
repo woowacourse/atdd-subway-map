@@ -67,6 +67,33 @@ public class StationDaoTest {
     }
 
     @Test
+    @DisplayName("이름으로 station 을 삭제한다.")
+    void deleteByName() {
+        //given
+        String name = "lala";
+        stationDao.save(new Station(name));
+
+        //when
+        stationDao.deleteByName(name);
+
+        //then
+        assertThat(stationDao.findByName(name)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("역 이름이 존재하지 않을 경우 삭제하면 예외를 던진다.")
+    void deleteByNameNotExists() {
+        //given
+        String name = "lala";
+        stationDao.save(new Station(name));
+
+        //then
+        assertThatThrownBy(() -> stationDao.deleteByName("sojukang"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("해당 역 이름이 존재하지 않습니다.");
+    }
+
+    @Test
     @DisplayName("모든 station 을 삭제한다.")
     void deleteAll() {
         //given
