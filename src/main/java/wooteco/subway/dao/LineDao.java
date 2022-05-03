@@ -16,10 +16,6 @@ public class LineDao {
         return persistLine;
     }
 
-    public static void deleteAll() {
-
-    }
-
     private static Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
@@ -32,5 +28,9 @@ public class LineDao {
                 .map(Line::getName)
                 .filter(it -> it.equals(name))
                 .count() != 0;
+    }
+
+    public static void deleteAll() {
+        lines = new ArrayList<>();
     }
 }
