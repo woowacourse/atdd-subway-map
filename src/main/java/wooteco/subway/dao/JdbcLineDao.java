@@ -55,7 +55,7 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public boolean existByName(final String name) {
-        final String sql = "select exists(select * from LINE where name = ?)";
+        final String sql = "select exists (select * from LINE where name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 

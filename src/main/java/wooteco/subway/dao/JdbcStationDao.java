@@ -20,8 +20,8 @@ public class JdbcStationDao implements StationDao {
     }
 
     private final RowMapper<Station> stationRowMapper = (rs, rowNum) -> new Station(
-                    rs.getLong("id"),
-                    rs.getString("name")
+            rs.getLong("id"),
+            rs.getString("name")
     );
 
     @Override
@@ -47,7 +47,8 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public boolean existByName(final String name) {
-        return false;
+        final String sql = "select exists (select * from STATION where name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
     @Override
