@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public class Station {
 
-    private static final Pattern pattern = Pattern.compile("[ㄱ-ㅎ|가-힣|0-9]");
+    private static final Pattern pattern = Pattern.compile("^[ㄱ-ㅎ|가-힣|0-9]+");
     private static final int MAX_RANGE = 10;
     private static final int MIN_RANGE = 2;
 

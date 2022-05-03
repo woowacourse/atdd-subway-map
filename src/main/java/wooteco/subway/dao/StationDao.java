@@ -22,6 +22,10 @@ public class StationDao {
         return stations;
     }
 
+    public static void deleteAll() {
+        stations.clear();
+    }
+
     private static void validateDuplicate(Station station) {
         if (stations.contains(station)) {
             throw new IllegalArgumentException("이미 존재하는 역입니다.");

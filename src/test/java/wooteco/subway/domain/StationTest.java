@@ -18,7 +18,7 @@ public class StationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"망one", "wkatlf", "hoho역", "sudal1"})
+    @ValueSource(strings = {"망one", "wkatlf", "hoho역", "sudal1", "강남역"})
     @DisplayName("지하철 역이름은 한글과 숫자가 아닌 경우 예외를 발생한다.")
     void invalidName(String name) {
         assertThatIllegalArgumentException()
