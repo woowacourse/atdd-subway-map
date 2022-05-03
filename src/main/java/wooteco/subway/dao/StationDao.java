@@ -1,13 +1,13 @@
 package wooteco.subway.dao;
 
-import org.springframework.util.ReflectionUtils;
-import wooteco.subway.domain.Station;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.util.ReflectionUtils;
+import wooteco.subway.domain.Station;
 
 public class StationDao {
+
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
@@ -19,6 +19,10 @@ public class StationDao {
 
     public static List<Station> findAll() {
         return stations;
+    }
+
+    public static void delete(Long stationId) {
+        stations.removeIf(station -> station.isSameId(stationId));
     }
 
     private static Station createNewObject(Station station) {
