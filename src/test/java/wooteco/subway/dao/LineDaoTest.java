@@ -65,10 +65,10 @@ class LineDaoTest {
     @Test
     void update_Line_By_Id() {
         Line line = new Line("2호선", "초록색");
-        Line persistLine = LineDao.save(line);
+        Long id = LineDao.save(line).getId();
 
         Line updateLine = new Line("8호선", "분홍색");
-        LineDao.updateById(persistLine.getId(), updateLine);
+        LineDao.updateById(id, updateLine);
 
         Line actual = LineDao.findAll().get(0);
         assertThat(actual.getName()).isEqualTo("8호선");
