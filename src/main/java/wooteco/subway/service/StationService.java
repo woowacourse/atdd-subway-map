@@ -30,12 +30,6 @@ public class StationService {
         }
     }
 
-    public Station searchById(final Long id) {
-        StationEntity stationEntity = stationDao.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 지하철역이 존재하지 않습니다"));
-        return new Station(stationEntity.getId(), stationEntity.getName());
-    }
-
     public List<Station> searchAll() {
         return stationDao.findAll()
                 .stream()

@@ -1,6 +1,8 @@
 package wooteco.subway.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import wooteco.subway.domain.Line;
@@ -28,6 +30,12 @@ public class LineService {
         if (lineEntity.isPresent()) {
             throw new IllegalArgumentException("[ERROR] 이미 존재하는 노선 이름입니다.");
         }
+    }
+
+    public Line searchById(final Long id) {
+        LineEntity lineEntity = lineDao.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 노선이 존재하지 않습니다"));
+        return new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor());
     }
 
     public List<Line> searchAll() {

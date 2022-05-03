@@ -62,4 +62,17 @@ class LineServiceTest {
                 () -> assertThat(colors).isEqualTo(List.of("bg-green-600", "bg-red-600", "bg-yellow-600"))
         );
     }
+
+    @DisplayName("id 로 노선을 조회한다.")
+    @Test
+    void searchById() {
+        Line savedLine = service.register("2호선", "bg-green-600");
+
+        Line searchedLine = service.searchById(savedLine.getId());
+
+        assertAll(
+                () -> assertThat(searchedLine.getName()).isEqualTo(savedLine.getName()),
+                () -> assertThat(searchedLine.getColor()).isEqualTo(savedLine.getColor())
+        );
+    }
 }

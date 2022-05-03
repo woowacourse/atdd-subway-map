@@ -57,12 +57,11 @@ class StationServiceTest {
     @DisplayName("id 로 지하철역을 삭제한다.")
     @Test
     void removeById() {
+        service.register("강남역");
         Station station = service.register("신림역");
 
         service.remove(station.getId());
 
-        assertThatThrownBy(() -> service.searchById(station.getId()))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("[ERROR] 지하철역이 존재하지 않습니다");
+        assertThat(service.searchAll().size()).isEqualTo(1);
     }
 }
