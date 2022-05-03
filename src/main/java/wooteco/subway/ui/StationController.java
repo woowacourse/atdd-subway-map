@@ -29,14 +29,9 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        try {
-            Station newStation = stationService.save(stationRequest);
-            StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
-            return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        Station newStation = stationService.save(stationRequest);
+        StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
+        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)

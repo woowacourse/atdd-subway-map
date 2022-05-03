@@ -28,14 +28,9 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity<LineDto> createLine(@RequestBody LineRequest lineRequest) {
-        try {
-            Line newLine = lineService.save(lineRequest);
-            LineDto lineResponse = new LineDto(newLine.getId(), newLine.getName(), newLine.getColor());
-            return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        Line newLine = lineService.save(lineRequest);
+        LineDto lineResponse = new LineDto(newLine.getId(), newLine.getName(), newLine.getColor());
+        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
     @GetMapping(value = "/lines"
@@ -51,24 +46,14 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineDto> findLine(@PathVariable Long id) {
-        try {
-            LineDto lineDto = lineService.findById(id);
-            return ResponseEntity.ok().body(lineDto);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        LineDto lineDto = lineService.findById(id);
+        return ResponseEntity.ok().body(lineDto);
     }
 
     @PutMapping("/lines/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        try {
-            lineService.update(id, lineRequest);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        lineService.update(id, lineRequest);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
