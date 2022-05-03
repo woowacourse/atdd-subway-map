@@ -20,36 +20,53 @@ class StationDaoTest {
     @Test
     void saveStation() {
         // given
-        String name= "강남역";
-        Station 강남역 = new Station(1L, name);
+        Station station = new Station(1L, "강남역");
 
         // when
-        StationDao.save(강남역);
+        StationDao.save(station);
 
         // then
         List<Station> stations = StationDao.findAll();
-        assertThat(stations.get(0)).isEqualTo(강남역);
+        assertThat(stations.get(0)).isEqualTo(station);
     }
 
     @DisplayName("같은 지하철 역 이름이 있는 경우 예외를 발생시킨다")
     @Test
     void saveStationThrowException() {
-        String name= "강남역";
-        Station 강남역1 = new Station(1L, name);
-        Station 강남역2 = new Station(2L, name);
-        StationDao.save(강남역1);
+        String name = "강남역";
+        Station station1 = new Station(1L, name);
+        Station station2 = new Station(2L, name);
+        StationDao.save(station1);
 
-        assertThatThrownBy(() -> StationDao.save(강남역2))
+        assertThatThrownBy(() -> StationDao.save(station2))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("같은 이름");
+    }
+
+    @DisplayName("역 목록을 조회한다")
+    @Test
+    void findAll() {
+        // given
+        Station station1 = new Station(1L, "name1");
+        Station station2 = new Station(2L, "name2");
+        Station station3 = new Station(3L, "name3");
+        StationDao.save(station1);
+        StationDao.save(station2);
+        StationDao.save(station3);
+
+        // when
+        List<Station> stations = StationDao.findAll();
+
+        // then
+        assertThat(stations).hasSize(3);
     }
 
     @DisplayName("저장된 모든 역을 삭제한다")
     @Test
     void deleteAll() {
         // given
-        Station 강남역 = new Station(1L, "강남역");
-        StationDao.save(강남역);
+        Station station = new Station(1L, "강남역");
+        StationDao.save(station);
 
         // when
         StationDao.deleteAll();
