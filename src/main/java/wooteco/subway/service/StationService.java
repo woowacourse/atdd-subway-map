@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import wooteco.subway.repository.dao.StationDao;
@@ -24,10 +25,15 @@ public class StationService {
 
     private void validateDuplicateName(final String name) {
         final Optional<StationEntity> stationEntity = stationDao.findByName(name);
-
         if(stationEntity.isPresent()) {
             throw new IllegalArgumentException("[ERROR] 이미 존재하는 역이름입니다.");
         }
+    }
+
+    public Station searchById(final Long id) {
+        StationEntity stationEntity = stationDao.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 지하철역이 존재하지 않습니다"));
+        return new Station(stationEntity.getId(), stationEntity.getName());
     }
 
     public List<Station> searchAll() {
@@ -35,5 +41,9 @@ public class StationService {
                 .stream()
                 .map(stationEntity -> new Station(stationEntity.getId(), stationEntity.getName()))
                 .collect(Collectors.toList());
+    }
+
+    public void remove(final Long id) {
+        stationDao.deleteById(id);
     }
 }

@@ -33,4 +33,14 @@ public class StationDao {
                 .filter(station -> station.getName().equals(name))
                 .findAny();
     }
+
+    public Optional<StationEntity> findById(final Long id) {
+        return store.stream()
+                .filter(station -> station.getId().equals(id))
+                .findAny();
+    }
+
+    public void deleteById(final Long id) {
+        findById(id).ifPresent(stationEntity -> store.remove(stationEntity));
+    }
 }

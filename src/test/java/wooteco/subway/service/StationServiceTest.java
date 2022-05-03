@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,5 +52,17 @@ class StationServiceTest {
                 .collect(Collectors.toList());
 
         assertThat(names).isEqualTo(List.of("선릉역", "강남역", "잠실역"));
+    }
+
+    @DisplayName("id 로 지하철역을 삭제한다.")
+    @Test
+    void removeById() {
+        Station station = service.register("신림역");
+
+        service.remove(station.getId());
+
+        assertThatThrownBy(() -> service.searchById(station.getId()))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("[ERROR] 지하철역이 존재하지 않습니다");
     }
 }
