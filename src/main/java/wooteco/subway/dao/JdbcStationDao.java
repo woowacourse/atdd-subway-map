@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,11 @@ public class JdbcStationDao implements StationDao {
     public JdbcStationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
+    private final RowMapper<Station> stationRowMapper = (rs, rowNum) -> new Station(
+                    rs.getLong("id"),
+                    rs.getString("name")
+    );
 
     @Override
     public Station save(final Station station) {
@@ -34,7 +40,8 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public List<Station> findAll() {
-        return null;
+        final String sql = "select * from STATION";
+        return jdbcTemplate.query(sql, stationRowMapper);
     }
 
     @Override

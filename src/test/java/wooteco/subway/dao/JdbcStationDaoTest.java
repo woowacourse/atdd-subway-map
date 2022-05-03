@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,5 +30,14 @@ class JdbcStationDaoTest {
         Station savedStation = stationDao.save(station);
 
         assertThat(savedStation.getId()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("모든 Station을 조회할 수 있다.")
+    void findAll() {
+        stationDao.save(new Station("오리"));
+        stationDao.save(new Station("배카라"));
+
+        assertThat(stationDao.findAll()).hasSize(2);
     }
 }

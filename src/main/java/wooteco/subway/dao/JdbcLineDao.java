@@ -19,7 +19,7 @@ public class JdbcLineDao implements LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static RowMapper<Line> lineRowMapper = (rs, rowNum) -> new Line(
+    private final RowMapper<Line> lineRowMapper = (rs, rowNum) -> new Line(
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("color")
