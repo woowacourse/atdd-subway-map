@@ -195,4 +195,41 @@ class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.jsonPath().getString("color")).isEqualTo("rgb-brown-600")
         );
     }
+
+    @DisplayName("노선을 제거한다.")
+    @Test
+    void deleteLine() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "7호선");
+        params.put("color", "rgb-darkgreen-600");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
+                .when()
+                .get(uri)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(findResponse.body().jsonPath().getString("message")).isEqualTo("해당 노선이 존재하지 않습니다.")
+        );
+    }
 }
