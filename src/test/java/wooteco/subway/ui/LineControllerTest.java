@@ -82,4 +82,25 @@ class LineControllerTest extends AcceptanceTest {
                 () -> assertThat(lineResponse.getColor()).isEqualTo(line.getColor())
         );
     }
+
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        Line line = Assembler.getLineDao().save(new Line("신분당선", "red"));
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(new Line("다른분당선", "blue"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + line.getId())
+                .then().log().all()
+                .extract();
+
+        Line updatedLine = Assembler.getLineDao().findById(line.getId());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(updatedLine.getName()).isEqualTo("다른분당선"),
+                () -> assertThat(updatedLine.getColor()).isEqualTo("blue")
+        );
+    }
 }

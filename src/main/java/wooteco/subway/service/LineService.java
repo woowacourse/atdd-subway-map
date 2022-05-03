@@ -32,4 +32,8 @@ public class LineService {
         Line line = lineDao.findById(lineId);
         return new LineResponse(line.getId(), line.getName(), line.getColor(), null);
     }
+
+    public void update(Long lineId, String name, String color) {
+        lineDao.update(new Line(lineId, name, color));
+    }
 }
