@@ -18,7 +18,7 @@ public class StationDao {
     }
 
     public static List<Station> findAll() {
-        return stations;
+        return new ArrayList<>(stations);
     }
 
     public static void delete(Long stationId) {

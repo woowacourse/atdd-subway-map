@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
 class StationServiceTest {
@@ -19,15 +20,15 @@ class StationServiceTest {
         stationService.save("station3");
 
         List<Station> stations = stationService.findAll();
-        
+
         assertThat(stations).hasSize(3)
                 .extracting("name")
                 .containsExactly("station1", "station2", "station3");
 
         stationService.delete(stations.get(0).getId());
-        stationService.delete(stations.get(0).getId());
-        stationService.delete(stations.get(0).getId());
+        stationService.delete(stations.get(1).getId());
+        stationService.delete(stations.get(2).getId());
 
-        assertThat(stations).hasSize(0);
+        assertThat(StationDao.findAll()).hasSize(0);
     }
 }
