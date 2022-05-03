@@ -48,7 +48,7 @@ public class LineDaoTest {
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
-    void finaById() {
+    void findById() {
         Line line = new Line("2호선", "green");
         Line savedLine = LineDao.save(line);
 
@@ -66,6 +66,25 @@ public class LineDaoTest {
         Line updatedLine = LineDao.update(savedLine.getId(), "3호선", "orange");
 
         assertThat(updatedLine.getName()).isEqualTo("3호선");
+    }
+
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void deleteById() {
+        Line line = new Line("2호선", "green");
+        Line savedLine = LineDao.save(line);
+
+        LineDao.deleteById(savedLine.getId());
+
+        assertThat(LineDao.findAll().size()).isZero();
+    }
+
+    @DisplayName("존재하지 않는 노선을 삭제할 경우 예외가 발생한다.")
+    @Test
+    void deleteNotExistingStation() {
+        assertThatThrownBy(() -> LineDao.deleteById(1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재하지 않는 노선입니다.");
     }
 
     @AfterEach
