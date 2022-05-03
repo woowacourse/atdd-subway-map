@@ -48,6 +48,11 @@ public class LineDao {
         }
     }
 
+    public static void clear() {
+        seq = 0L;
+        lines.clear();
+    }
+
     private static void validateUniqueName(Line newLine) {
         boolean hasDuplicate = lines.stream()
                 .filter(it -> !it.hasIdOf(newLine.getId()))
