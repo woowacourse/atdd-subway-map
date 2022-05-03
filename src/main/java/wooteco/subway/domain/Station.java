@@ -1,11 +1,10 @@
 package wooteco.subway.domain;
 
 public class Station {
-    private Long id;
-    private String name;
+    private static final long TEMPORARY_ID = 0L;
 
-    public Station() {
-    }
+    private final Long id;
+    private final String name;
 
     public Station(Long id, String name) {
         this.id = id;
@@ -13,6 +12,7 @@ public class Station {
     }
 
     public Station(String name) {
+        this.id = TEMPORARY_ID;
         this.name = name;
     }
 
