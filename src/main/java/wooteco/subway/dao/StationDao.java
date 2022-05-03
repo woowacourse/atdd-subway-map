@@ -18,6 +18,13 @@ public class StationDao {
         return persistStation;
     }
 
+    private static Station createNewObject(Station station) {
+        Field field = ReflectionUtils.findField(Station.class, "id");
+        field.setAccessible(true);
+        ReflectionUtils.setField(field, station, ++seq);
+        return station;
+    }
+
     private static void validateDuplicate(String stationName) {
         boolean isDuplicate = stations.stream()
                 .anyMatch(station -> station.isSameName(stationName));
@@ -28,13 +35,6 @@ public class StationDao {
 
     public static List<Station> findAll() {
         return stations;
-    }
-
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
     }
 
     public static void delete(Long id) {
