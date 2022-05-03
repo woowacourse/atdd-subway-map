@@ -9,11 +9,24 @@ import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
 
 public class StationDao {
-    private Long seq = 0L;
-    private final Map<Long, Station> stations;
 
-    public StationDao() {
-        stations = new HashMap<>();
+    private static StationDao INSTANCE;
+
+    private Long seq = 0L;
+    private final Map<Long, Station> stations = new HashMap<>();
+
+    private StationDao() {
+    }
+
+    public static synchronized StationDao getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new StationDao();
+        }
+        return INSTANCE;
+    }
+
+    public void clear() {
+        stations.clear();
     }
 
     public Station save(Station station) {

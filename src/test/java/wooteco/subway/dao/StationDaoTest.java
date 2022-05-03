@@ -2,18 +2,18 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Station;
 
 class StationDaoTest {
 
-    private StationDao stationDao;
+    private final StationDao stationDao = StationDao.getInstance();
 
-    @BeforeEach
-    void setUp() {
-        stationDao = new StationDao();
+    @AfterEach
+    void afterEach() {
+        stationDao.clear();
     }
 
     @Test

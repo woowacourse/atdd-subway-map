@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,13 +11,12 @@ import wooteco.subway.domain.Station;
 
 class StationServiceTest {
 
-    private StationDao stationDao;
-    private StationService stationService;
+    private final StationDao stationDao = StationDao.getInstance();
+    private final StationService stationService = new StationService(stationDao);
 
-    @BeforeEach
-    void setUp() {
-        stationDao = new StationDao();
-        stationService = new StationService(stationDao);
+    @AfterEach
+    void afterEach() {
+        stationDao.clear();
     }
 
     @Test

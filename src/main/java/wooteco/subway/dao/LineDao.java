@@ -9,10 +9,11 @@ import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 
 public class LineDao {
-    private static final Map<Long, Line> lines = new HashMap<>();
+
     private static LineDao INSTANCE;
 
     private Long seq = 0L;
+    private final Map<Long, Line> lines = new HashMap<>();
 
     private LineDao() {
     }
