@@ -54,6 +54,12 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponse);
     }
 
+    @PutMapping("/lines/{id}")
+    public ResponseEntity<Void> editLine(@PathVariable Long id, @RequestBody LineRequest LineRequest) {
+        LineDao.edit(id, LineRequest.getName(), LineRequest.getColor());
+        return ResponseEntity.ok().build();
+    }
+
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         return ResponseEntity.noContent().build();

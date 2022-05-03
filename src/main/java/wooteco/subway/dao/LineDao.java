@@ -35,4 +35,10 @@ public class LineDao {
                 .filter(line-> id.equals(line.getId()))
                 .findFirst();
     }
+
+    public static void edit(Long id, String name, String color) {
+        Line line = findById(id).get();
+        lines.remove(line);
+        lines.add(new Line(id, name, color));
+    }
 }
