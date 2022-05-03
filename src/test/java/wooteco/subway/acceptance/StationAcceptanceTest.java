@@ -108,13 +108,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        final List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+        final List<Long> expectedStationIds = Arrays.asList(createResponse1, createResponse2).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        final List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(it -> it.getId())
+        final List<Long> resultStationIds = response.jsonPath().getList(".", StationResponse.class).stream()
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertThat(resultStationIds).containsAll(expectedStationIds);
     }
 
     @DisplayName("지하철역을 제거한다.")
@@ -157,6 +157,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }
