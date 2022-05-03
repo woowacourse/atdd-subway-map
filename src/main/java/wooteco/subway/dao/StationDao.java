@@ -20,6 +20,12 @@ public class StationDao {
         return persistStation;
     }
 
+    public static boolean existByName(String name) {
+        return stations.values()
+            .stream()
+            .anyMatch(station -> station.getName().equals(name));
+    }
+
     public static List<Station> findAll() {
         return new ArrayList<>(stations.values());
     }

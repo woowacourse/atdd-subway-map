@@ -20,6 +20,9 @@ public class StationService {
     }
 
     public StationResponse save(StationRequest stationRequest) {
+        if (StationDao.existByName(stationRequest.getName())) {
+            throw new IllegalArgumentException("중복된 지하철 역 이름입니다.");
+        }
         Station station = new Station(stationRequest.getName());
         Station newStation = StationDao.save(station);
         return new StationResponse(newStation.getId(), newStation.getName());
