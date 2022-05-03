@@ -6,6 +6,9 @@ public class LineDto {
     private String name;
     private String color;
 
+    private LineDto() {
+    }
+
     public LineDto(Long id, String name, String color) {
         this.id = id;
         this.name = name;

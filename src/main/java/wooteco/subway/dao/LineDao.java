@@ -30,4 +30,11 @@ public class LineDao {
                 .findAny();
     }
 
+    public List<Line> findAll() {
+        return lines;
+    }
+
+    public void deleteAll() {
+        lines = new ArrayList<>();
+    }
 }
