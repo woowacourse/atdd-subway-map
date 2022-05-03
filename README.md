@@ -37,3 +37,25 @@
 ## 📝 License
 
 This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master/LICENSE) licensed.
+
+## 기능 요구 사항
+
+### 지하철 역 관리 API 기능 완성하기
+
+- [x] StationDao를 활용하여 지하철 역 정보를 관리
+- [x] 지하철 역 등록
+    - [x] [예외] 지하철역 생성 시 이미 등록된 이름으로 요청한다면 에러를 응답
+
+### 지하철 노선 관리 API 구현하기
+
+- [x] 지하철 노선 등록
+    - [x] [예외] 지하철역과 마찬가지로 같은 이름의 노선은 생성 불가
+- [ ] 지하철 노선 목록
+- [ ] 지하철 노선 조회
+- [ ] 지하철 노선 수정
+- [ ] 지하철 노선 삭제
+
+### End to End 테스트 작성하기
+
+-[ ] 노선 기능에 대한 E2E 테스트를 작성
+-[ ] StationAcceptanceTest 클래스를 참고
