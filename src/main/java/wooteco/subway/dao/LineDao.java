@@ -37,6 +37,13 @@ public class LineDao {
         return lines;
     }
 
+    public static Line findById(Long id) {
+        return lines.stream()
+                .filter(persistLine -> persistLine.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("해당 id를 가지는 노선이 존재하지 않습니다."));
+    }
+
     public static void updateById(Long id, Line line) {
         Line targetLine = lines.stream()
                 .filter(persistLine -> persistLine.getId().equals(id))

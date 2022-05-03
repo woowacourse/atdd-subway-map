@@ -49,6 +49,18 @@ class LineDaoTest {
         assertThat(LineDao.findAll().size()).isEqualTo(2);
     }
 
+    @DisplayName("특정 id를 가지는 노선을 조회한다.")
+    @Test
+    void find_By_Id() {
+        Line line = new Line("2호선", "초록색");
+        Long id = LineDao.save(line).getId();
+
+        Line actual = LineDao.findById(id);
+        assertThat(actual.getId()).isEqualTo(id);
+        assertThat(actual.getName()).isEqualTo("2호선");
+        assertThat(actual.getColor()).isEqualTo("초록색");
+    }
+
     @DisplayName("특정 id를 가지는 라인의 이름과 색을 변경한다.")
     @Test
     void update_Line_By_Id() {
