@@ -29,7 +29,7 @@ public class LineController {
     }
 
     @GetMapping("/lines")
-    public ResponseEntity<List<LineResponse>> findAllLines() {
+    public ResponseEntity<List<LineResponse>> showLines() {
         List<LineResponse> lineRespones = lineService.findAll()
                 .stream()
                 .map(LineResponse::from)
@@ -39,7 +39,7 @@ public class LineController {
     }
 
     @GetMapping("/lines/{lineId}")
-    public ResponseEntity<LineResponse> findLine(@PathVariable Long lineId) {
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long lineId) {
         Line line = lineService.findById(lineId);
         return ResponseEntity.ok().body(LineResponse.from(line));
     }
