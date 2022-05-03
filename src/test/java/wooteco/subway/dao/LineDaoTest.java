@@ -50,4 +50,19 @@ class LineDaoTest {
                         tuple("신분당선", "bg-red-600"),
                         tuple("분당선", "bg-green-600"));
     }
+
+    @Test
+    @DisplayName("단건 노선을 조회한다.")
+    void findById() {
+        // given
+        final Line line = new Line("신분당선", "bg-red-600");
+        final Long savedId = LineDao.save(line);
+
+        // when
+        final Line findLine = LineDao.findById(savedId);
+
+        // then
+        assertThat(findLine).extracting("name", "color")
+                .contains("신분당선", "bg-red-600");
+    }
 }
