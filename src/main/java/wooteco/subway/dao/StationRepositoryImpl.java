@@ -33,40 +33,12 @@ public class StationRepositoryImpl implements StationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public static Station saveLegacy(Station station) {
-        validateDuplicateName(station);
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
-    }
-
-    private static void validateDuplicateName(Station station) {
-        if (stations.contains(station)) {
-            throw new NameDuplicatedException("[ERROR] 중복된 이름이 존재합니다.");
-        }
-    }
-
     @Override
     public Station save(final Station station) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", station.getName());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Station(id, station.getName());
-    }
-
-    public static List<Station> findAllLegacy() {
-        return stations;
-    }
-
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
-    }
-
-    public static void deleteAll() {
-        stations = new ArrayList<>();
     }
 
     @Override
