@@ -1,11 +1,10 @@
 package wooteco.subway.dao;
 
-import org.springframework.util.ReflectionUtils;
-import wooteco.subway.domain.Station;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.util.ReflectionUtils;
+import wooteco.subway.domain.Station;
 
 public class StationDao {
     private static Long seq = 0L;
@@ -13,7 +12,7 @@ public class StationDao {
 
     public static Station save(Station station) {
         Station persistStation = createNewObject(station);
-        validateDuplicate(station.getName());
+        validateDuplicateName(station.getName());
         stations.add(persistStation);
         return persistStation;
     }
@@ -25,7 +24,7 @@ public class StationDao {
         return station;
     }
 
-    private static void validateDuplicate(String stationName) {
+    private static void validateDuplicateName(String stationName) {
         boolean isDuplicate = stations.stream()
                 .anyMatch(station -> station.isSameName(stationName));
         if (isDuplicate) {

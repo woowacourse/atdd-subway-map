@@ -12,7 +12,7 @@ public class LineDao {
 
     public static Line save(Line line) {
         Line persistLine = createNewObject(line);
-        validateDuplicate(line.getName());
+        validateDuplicateName(line.getName());
         lines.add(persistLine);
         return persistLine;
     }
@@ -24,7 +24,7 @@ public class LineDao {
         return line;
     }
 
-    private static void validateDuplicate(String name) {
+    private static void validateDuplicateName(String name) {
         boolean isDuplicate = lines.stream()
                 .anyMatch(line -> line.isSameName(name));
         if (isDuplicate) {
@@ -43,8 +43,20 @@ public class LineDao {
         return lines;
     }
 
-    public static void update(Long lineId, String name, String color) {
-        lines.remove(findById(lineId));
-        save(new Line(lineId, name, color));
+    public static void update(Long id, String name, String color) {
+        delete(id);
+        save(new Line(id, name, color));
+    }
+
+    public static void delete(Long id) {
+        Line foundLine = lines.stream()
+                .filter(line -> line.isSameId(id))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("해당 노선은 존재하지 않습니다."));
+        lines.remove(foundLine);
+    }
+
+    public static void clear() {
+        lines.clear();
     }
 }
