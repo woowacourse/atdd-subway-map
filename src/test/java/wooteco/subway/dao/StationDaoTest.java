@@ -53,7 +53,7 @@ public class StationDaoTest {
     }
 
     @Test
-    @DisplayName("이름으로 station을 조회한다.")
+    @DisplayName("이름으로 station 을 조회한다.")
     void findByName() {
         //given
         String name = "lala";
@@ -67,30 +67,30 @@ public class StationDaoTest {
     }
 
     @Test
-    @DisplayName("이름으로 station 을 삭제한다.")
+    @DisplayName("id 로 station 을 삭제한다.")
     void deleteByName() {
         //given
         String name = "lala";
-        stationDao.save(new Station(name));
+        Station savedStation = stationDao.save(new Station(name));
 
         //when
-        stationDao.deleteByName(name);
+        stationDao.deleteById(savedStation.getId());
 
         //then
         assertThat(stationDao.findByName(name)).isEmpty();
     }
 
     @Test
-    @DisplayName("역 이름이 존재하지 않을 경우 삭제하면 예외를 던진다.")
+    @DisplayName("역 id 가 존재하지 않을 경우 삭제하면 예외를 던진다.")
     void deleteByNameNotExists() {
         //given
         String name = "lala";
-        stationDao.save(new Station(name));
+        Station savedStation = stationDao.save(new Station(name));
 
         //then
-        assertThatThrownBy(() -> stationDao.deleteByName("sojukang"))
+        assertThatThrownBy(() -> stationDao.deleteById(savedStation.getId() + 1))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("해당 역 이름이 존재하지 않습니다.");
+            .hasMessageContaining("존재하지 않는 역 입니다.");
     }
 
     @Test

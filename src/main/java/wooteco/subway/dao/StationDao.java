@@ -39,9 +39,9 @@ public class StationDao {
         return List.copyOf(stations);
     }
 
-    public void deleteByName(String name) {
-        if (!stations.removeIf(station -> station.getName().equals(name))) {
-            throw new IllegalArgumentException("해당 역 이름이 존재하지 않습니다.");
+    public void deleteById(Long id) {
+        if (!stations.removeIf(station -> station.getId().equals(id))) {
+            throw new IllegalArgumentException("존재하지 않는 역 입니다.");
         }
     }
 
