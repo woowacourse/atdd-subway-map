@@ -3,6 +3,7 @@ package wooteco.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,17 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    @AfterEach
+    void tearDown() {
+        List<Long> lineIds = LineDao.findAll().stream()
+                .map(Line::getId)
+                .collect(Collectors.toList());
+
+        for (Long lineId : lineIds) {
+            LineDao.deleteById(lineId);
+        }
+    }
 
     @DisplayName("노선을 생성한다.")
     @Test
@@ -133,18 +145,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 정보를 수정한다.")
     @Test
     void updateLineById() {
-        /// given
+        // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
 
-        RestAssured.given().log().all()
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
                 .extract();
+
+        Long createdId = createResponse.jsonPath().getLong("id");
 
         // when
         String name = "다른분당선";
@@ -154,16 +168,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         newParams.put("name", name);
         newParams.put("color", color);
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .body(newParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put("/lines/1")
+                .put("/lines/" + createdId)
                 .then().log().all()
                 .extract();
 
         // then
-        Line line = LineDao.findById(1L);
+        Line line = LineDao.findById(createdId);
         String responseName = line.getName();
         String responseColor = line.getColor();
 
@@ -171,5 +185,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(responseName).isEqualTo(name),
                 () -> assertThat(responseColor).isEqualTo(color)
         );
+    }
+
+    @DisplayName("노선을 제거한다.")
+    @Test
+    void deleteLine() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }

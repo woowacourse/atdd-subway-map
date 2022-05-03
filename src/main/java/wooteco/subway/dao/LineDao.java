@@ -36,6 +36,10 @@ public class LineDao {
         lines.add(newLine);
     }
 
+    public static void deleteById(Long id) {
+        lines.remove(findById(id));
+    }
+
     private static Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
