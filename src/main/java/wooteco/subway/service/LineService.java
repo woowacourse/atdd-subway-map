@@ -44,4 +44,12 @@ public class LineService {
                 .map(lineEntity -> new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor()))
                 .collect(Collectors.toList());
     }
+
+    public void modify(final Long id, final String name, final String color) {
+        if (lineDao.findById(id).isEmpty()) {
+            throw new NoSuchElementException("[ERROR] 노선이 존재하지 않습니다");
+        }
+        Line newLine = new Line(id, name, color);
+        lineDao.update(new LineEntity(newLine));
+    }
 }

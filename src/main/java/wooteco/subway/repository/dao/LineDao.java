@@ -39,4 +39,11 @@ public class LineDao {
     public void deleteById(final Long id) {
         findById(id).ifPresent(lineEntity -> store.remove(lineEntity));
     }
+
+    public void update(final LineEntity newLineEntity) {
+        findById(newLineEntity.getId()).ifPresent(oldLineEntity -> {
+            store.remove(oldLineEntity);
+            store.add(new LineEntity(oldLineEntity.getId(), newLineEntity.getName(), newLineEntity.getColor()));
+        });
+    }
 }
