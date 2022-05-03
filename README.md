@@ -55,7 +55,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - 지하철 노선
     - [x] 등록
         - [ ] 이미 등록된 이름이라면 에러가 발생한다.
-    - [ ] 목록
+    - [x] 목록
     - [ ] 조회
     - [ ] 수정
     - [ ] 삭제
