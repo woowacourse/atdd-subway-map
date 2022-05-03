@@ -25,4 +25,12 @@ public class LineDao {
         }
         return line;
     }
+
+    public static List<Line> findAllLines() {
+        return new ArrayList<>(lines);
+    }
+
+    public static void deleteAllLines() {
+        lines.clear();
+    }
 }
