@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
 
@@ -33,5 +34,12 @@ public class StationDao {
     private static boolean hasDuplicateStation(Station persistStation) {
         return stations.stream()
                 .anyMatch(persistStation::isSameName);
+    }
+
+    public static void deleteById(Long id) {
+        boolean result = stations.removeIf(station -> station.getId() == id);
+        if (!result) {
+            throw new NoSuchElementException("해당하는 역이 존재하지 않습니다.");
+        }
     }
 }
