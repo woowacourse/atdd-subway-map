@@ -47,4 +47,12 @@ public class LineDao {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
     }
+
+    public static Line update(Long id, String name, String color) {
+        Line line = findById(id);
+        Line newLine = new Line(line.getId(), name, color);
+        lines.remove(line);
+        lines.add(newLine);
+        return newLine;
+    }
 }

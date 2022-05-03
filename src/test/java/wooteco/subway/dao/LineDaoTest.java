@@ -57,6 +57,17 @@ public class LineDaoTest {
         assertThat(foundLine.getName()).isEqualTo(savedLine.getName());
     }
 
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        Line line = new Line("2호선", "green");
+        Line savedLine = LineDao.save(line);
+
+        Line updatedLine = LineDao.update(savedLine.getId(), "3호선", "orange");
+
+        assertThat(updatedLine.getName()).isEqualTo("3호선");
+    }
+
     @AfterEach
     void reset() {
         List<Line> lines = LineDao.findAll();
