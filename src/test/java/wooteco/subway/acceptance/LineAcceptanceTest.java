@@ -115,28 +115,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params1.put("name", "신분당선");
         params1.put("color", "bg-red-600");
 
-        RestAssured.given().log().all()
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
                 .extract();
+        Long createId = createResponse.jsonPath().getLong("id");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get("/lines/1")
+                .get("/lines/" + createId)
                 .then().log().all()
                 .extract();
 
         // then
-        String id = response.jsonPath().getString("id");
+        Long id = response.jsonPath().getLong("id");
         String name = response.jsonPath().getString("name");
         String color = response.jsonPath().getString("color");
 
         assertAll(
-                () -> assertThat(id).isEqualTo("1"),
+                () -> assertThat(id).isEqualTo(createId),
                 () -> assertThat(name).isEqualTo("신분당선"),
                 () -> assertThat(color).isEqualTo("bg-red-600")
         );

@@ -45,7 +45,7 @@ public class LineController {
     @PutMapping(value = "/lines/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line line = lineRequest.toEntity();
-        LineDao.updateById(id, line);
+        LineDao.update(id, line);
 
         return ResponseEntity.ok().build();
     }
