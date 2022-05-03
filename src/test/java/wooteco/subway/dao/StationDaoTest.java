@@ -12,7 +12,7 @@ import wooteco.subway.domain.Station;
 class StationDaoTest {
 
     @AfterEach
-    void setUp() {
+    void rollback() {
         StationDao.findAll().clear();
     }
 
