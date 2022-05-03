@@ -41,4 +41,9 @@ public class LineDao {
         lines.put(line.getId(), line);
         return 1;
     }
+
+    public int delete(final Long id) {
+        lines.remove(id);
+        return 1;
+    }
 }

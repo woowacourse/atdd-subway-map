@@ -51,4 +51,13 @@ class LineDaoTest {
 
         assertThat(result).isEqualTo(1);
     }
+
+    @Test
+    @DisplayName("Line을 삭할 수 있다.")
+    void delete() {
+        Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
+        int result = lineDao.delete(line.getId());
+
+        assertThat(result).isEqualTo(1);
+    }
 }
