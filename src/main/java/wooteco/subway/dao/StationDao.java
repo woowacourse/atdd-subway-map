@@ -41,6 +41,6 @@ public class StationDao {
     public boolean existByName(final String name) {
         return stations.values()
                 .stream()
-                .anyMatch(station -> station.getName().equals(name));
+                .anyMatch(station -> station.isSameName(name));
     }
 }
