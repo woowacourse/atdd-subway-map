@@ -43,10 +43,13 @@ public class StationController {
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+        Station station = StationDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 지하철역이 존재하지 않습니다."));
+        StationDao.delete(station);
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler({RuntimeException.class})
+    @ExceptionHandler({IllegalArgumentException.class})
     public ResponseEntity<Map<String, String>> handle(RuntimeException exception) {
         return ResponseEntity.badRequest().body(Map.of(
                 "message", exception.getMessage()

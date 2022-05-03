@@ -28,6 +28,21 @@ public class StationDao {
                 .findFirst();
     }
 
+    public static Optional<Station> findById(Long id) {
+        return stations.stream()
+                .filter(station -> station.getId().equals(id))
+                .findFirst();
+    }
+
+    public static void deleteAll() {
+        stations = new ArrayList<>();
+        seq = 0L;
+    }
+
+    public static void delete(Station station) {
+        stations.remove(station);
+    }
+
     private static Station createNewObject(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
