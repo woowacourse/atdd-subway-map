@@ -5,12 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
 
 public class LineDao {
+    private static final String LINE_VALIDATION = "이미 등록된 노선입니다.";
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
-    private static final String LINE_VALIDATION = "이미 등록된 노선입니다.";
 
     public static Line save(Line line) {
         validateDuplication(line);
@@ -24,6 +23,10 @@ public class LineDao {
         if (lines.contains(line)) {
             throw new IllegalArgumentException(LINE_VALIDATION);
         }
+    }
+
+    public static List<Line> findAll() {
+        return lines;
     }
 
     private static Line createNewObject(Line line) {
