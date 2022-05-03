@@ -25,6 +25,19 @@ public class StationDao {
         stations.remove(findById(id));
     }
 
+    public static void validate(String name) {
+        boolean validate = stations.stream()
+                .anyMatch(s -> s.isSameName(name));
+
+        if (validate) {
+            throw new IllegalArgumentException("지하철 이름이 중복될 수 없습니다.");
+        }
+    }
+
+    public static void clear() {
+        stations.clear();
+    }
+
     private static Station createNewObject(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
@@ -38,4 +51,5 @@ public class StationDao {
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철역입니다."));
     }
+
 }
