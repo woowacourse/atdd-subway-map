@@ -1,44 +1,57 @@
 package wooteco.subway.dao;
 
-import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
-import wooteco.subway.domain.Station;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
+import wooteco.subway.domain.Station;
 
 @Repository
 public class StationDao {
 
-    private Long seq = 0L;
-    private List<Station> stations = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
+            resultSet.getLong("id"),
+            resultSet.getString("name")
+    );
+
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public Station save(Station station) {
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+        final SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("station").usingGeneratedKeyColumns("id");
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("name", station.getName());
+
+        final Number number = simpleJdbcInsert.executeAndReturnKey(parameters);
+        return new Station(number.longValue(), station.getName());
     }
 
     public List<Station> findAll() {
-        return stations;
+        final String sql = "SELECT * FROM station";
+
+        return jdbcTemplate.query(sql, stationRowMapper);
     }
 
     public boolean existsByName(String name) {
-        return stations.stream()
-                .map(Station::getName)
-                .filter(it -> it.equals(name))
-                .count() != 0;
-    }
-
-    private Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+        final String sql = "select count(*) from station where name = ?";
+        final Integer numOfStation = jdbcTemplate.queryForObject(sql, Integer.class, name);
+        return !numOfStation.equals(0);
     }
 
     public void deleteAll() {
-        stations = new ArrayList<>();
+        final String sql = "DELETE FROM station";
+        jdbcTemplate.update(sql);
+    }
+
+    public void deleteById(Long id) {
+        final String sql = "DELETE FROM station where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }
