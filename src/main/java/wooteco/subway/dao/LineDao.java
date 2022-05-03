@@ -44,6 +44,11 @@ public class LineDao {
         originLine.updateLine(line.getName(), line.getColor());
     }
 
+    public static void deleteById(Long id) {
+        Line line = findById(id);
+        lines.remove(line);
+    }
+
     private static void validateDuplication(Line line) {
         if (lines.contains(line)) {
             throw new IllegalArgumentException(LINE_VALIDATION);
