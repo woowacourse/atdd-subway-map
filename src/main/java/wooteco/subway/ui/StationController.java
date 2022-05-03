@@ -36,7 +36,7 @@ public class StationController {
         return ResponseEntity.created(location).body(stationResponse);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<List<StationResponse>> showStations() {
         List<Station> stations = stationDao.findAll();
         List<StationResponse> stationResponses = stations.stream()

@@ -3,7 +3,6 @@ package wooteco.subway.ui;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +36,7 @@ public class LineController {
         return ResponseEntity.created(location).body(lineResponse);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<List<LineBasicResponse>> showLines() {
         List<Line> lines = lineDao.findAll();
         List<LineBasicResponse> linesResponse = lines.stream()
@@ -46,7 +45,7 @@ public class LineController {
         return ResponseEntity.ok().body(linesResponse);
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}")
     public ResponseEntity<LineBasicResponse> showLine(@PathVariable Long id) {
         Line line = lineDao.findById(id);
         LineBasicResponse linesResponse = new LineBasicResponse(line.getId(), line.getName(), line.getColor());
