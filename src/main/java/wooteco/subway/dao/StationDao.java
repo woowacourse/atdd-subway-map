@@ -40,4 +40,8 @@ public class StationDao {
     public static void delete(Long id) {
         stations.remove(id);
     }
+
+    public static void deleteAll() {
+        stations.clear();
+    }
 }
