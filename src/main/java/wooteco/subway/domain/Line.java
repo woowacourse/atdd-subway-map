@@ -28,6 +28,10 @@ public class Line {
         return id == lineId;
     }
 
+    public boolean isSameColor(String color) {
+        return this.color.equals(color);
+    }
+
     public Long getId() {
         return id;
     }

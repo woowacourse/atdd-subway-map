@@ -21,8 +21,27 @@ public class LineDao {
         return new ArrayList<>(lines);
     }
 
+    public static Line findById(Long lineId) {
+        return lines.stream()
+                .filter(line -> line.isSameId(lineId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이디를 가진 노선이 존재하지 않습니다."));
+    }
+
     public static void delete(Long lineId) {
         lines.removeIf(line -> line.isSameId(lineId));
+    }
+
+    public static void update(Long lineId, String lineName, String color) {
+        Line byId = findById(lineId);
+
+        Field field = ReflectionUtils.findField(Line.class, "name");
+        field.setAccessible(true);
+        ReflectionUtils.setField(field, byId, lineName);
+
+        field = ReflectionUtils.findField(Line.class, "color");
+        field.setAccessible(true);
+        ReflectionUtils.setField(field, byId, color);
     }
 
     private static Line createNewObject(Line line) {

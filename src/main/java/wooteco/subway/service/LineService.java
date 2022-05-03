@@ -13,6 +13,9 @@ public class LineService {
             if (line.isSameName(lineName)) {
                 throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
             }
+            if (line.isSameColor(color)) {
+                throw new IllegalArgumentException("이미 존재하는 노선 색깔입니다.");
+            }
         }
 
         LineDao.save(new Line(lineName, color));
@@ -22,7 +25,15 @@ public class LineService {
         return LineDao.findAll();
     }
 
+    public Line findById(Long lineId) {
+        return LineDao.findById(lineId);
+    }
+
     public void delete(Long lineId) {
         LineDao.delete(lineId);
+    }
+
+    public void update(Long lineId, String lineName, String color) {
+        LineDao.update(lineId, lineName, color);
     }
 }
