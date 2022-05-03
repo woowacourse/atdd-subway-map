@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,5 +40,26 @@ class LineServiceTest {
         assertThatThrownBy(() -> service.register("2호선", "bg-green-600"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이미 존재하는 노선 이름입니다.");
+    }
+
+    @DisplayName("등록된 모든 노선 리스트를 조회한다.")
+    @Test
+    void searchAll() {
+        service.register("2호선", "bg-green-600");
+        service.register("신분당선", "bg-red-600");
+        service.register("분당선", "bg-yellow-600");
+
+        List<Line> lines = service.searchAll();
+        List<String> names = lines.stream()
+                .map(Line::getName)
+                .collect(Collectors.toList());
+        List<String> colors = lines.stream()
+                .map(Line::getColor)
+                .collect(Collectors.toList());
+
+        assertAll(
+                () -> assertThat(names).isEqualTo(List.of("2호선", "신분당선", "분당선")),
+                () -> assertThat(colors).isEqualTo(List.of("bg-green-600", "bg-red-600", "bg-yellow-600"))
+        );
     }
 }
