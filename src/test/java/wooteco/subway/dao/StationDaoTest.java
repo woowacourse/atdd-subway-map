@@ -51,4 +51,19 @@ class StationDaoTest {
             .hasMessage("중복된 이름이 존재합니다.")
             .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void delete() {
+        // given
+        Station station = StationDao.save(new Station("범고래"));
+
+        // when
+        StationDao.delete(station);
+        List<Station> stations = StationDao.findAll();
+
+        // then
+        assertThat(stations)
+            .hasSize(0)
+            .doesNotContain(station);
+    }
 }
