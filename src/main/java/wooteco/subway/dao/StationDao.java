@@ -21,15 +21,11 @@ public class StationDao {
     public Station save(Station station) {
         String sql = "INSERT INTO STATION (name) VALUES (?)";
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        try { // TODO: Service Layer 에서 처리해야함
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-                ps.setString(1, station.getName());
-                return ps;
-            }, keyHolder);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("중복된 이름을 입력할 수 없습니다.");
-        }
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, station.getName());
+            return ps;
+        }, keyHolder);
 
         long stationId = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return new Station(stationId, station.getName());
