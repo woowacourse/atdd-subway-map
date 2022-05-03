@@ -1,7 +1,9 @@
 package wooteco.subway.dao;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
@@ -29,5 +31,9 @@ public class LineDao {
 
     public Line findById(final Long id) {
         return lines.get(id);
+    }
+
+    public List<Line> findAll() {
+        return new ArrayList<>(lines.values());
     }
 }
