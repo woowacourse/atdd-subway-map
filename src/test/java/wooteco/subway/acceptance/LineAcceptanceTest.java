@@ -157,4 +157,43 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long actual = response.jsonPath().getObject(".", LineResponse.class).getId();
         assertThat(actual).isEqualTo(id);
     }
+
+    @DisplayName("특정 id를 가지는 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "초록색");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        Long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "1호선");
+        params2.put("color", "군청색");
+        RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + id)
+                .then().log().all();
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when()
+                .get("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        String actualName = response.jsonPath().getObject(".", LineResponse.class).getName();
+        String actualColor = response.jsonPath().getObject(".", LineResponse.class).getColor();
+        assertThat(actualName).isEqualTo("1호선");
+        assertThat(actualColor).isEqualTo("군청색");
+    }
 }
