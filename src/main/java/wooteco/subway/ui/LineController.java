@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.InternalServerException;
 
 @RestController
 public class LineController {
@@ -47,5 +49,14 @@ public class LineController {
         final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         LineDao.updateById(id, line);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/lines/{id}")
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+        Integer affectedRows = LineDao.deleteById(id);
+        if (affectedRows == 0) {
+            throw new InternalServerException("알 수 없는 이유로 노선을 삭제하지 못했습니다.");
+        }
+        return ResponseEntity.noContent().build();
     }
 }
