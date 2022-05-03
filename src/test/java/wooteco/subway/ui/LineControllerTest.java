@@ -10,8 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.acceptance.AcceptanceTest;
 import wooteco.subway.assembler.Assembler;
+import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineResponse;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,5 +43,21 @@ class LineControllerTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isEqualTo("/lines/1");
+    }
+
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    @Test
+    void getLines() {
+        Assembler.getLineDao().save(new Line("신분당선", "red"));
+        Assembler.getLineDao().save(new Line("1호선", "blue"));
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines")
+                .then().log().all()
+                .extract();
+        List<LineResponse> actual = response.jsonPath().getList(".", LineResponse.class);
+
+        assertThat(actual.size()).isEqualTo(2);
     }
 }
