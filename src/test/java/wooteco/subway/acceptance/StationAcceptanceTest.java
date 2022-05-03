@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.acceptance.AcceptanceTest;
@@ -62,6 +64,29 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .post("/stations")
                 .then().log().all()
                 .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then()
+                .log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철 역 이름에 빈 문자열을 사용할 수 없다")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "  ", "     "})
+    void createStationWithEmptyName(String stationName) {
+
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", stationName);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()

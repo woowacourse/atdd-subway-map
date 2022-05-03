@@ -6,15 +6,15 @@
 
 #### 정상 케이스
 
-- [지하철역 등록 요청 & 응답](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#_%EC%A7%80%ED%95%98%EC%B2%A0%EC%97%AD_%EB%93%B1%EB%A1%9D)
+- [X] [지하철역 등록 요청 & 응답](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#_%EC%A7%80%ED%95%98%EC%B2%A0%EC%97%AD_%EB%93%B1%EB%A1%9D)
 
 #### 예외 케이스
 
-- 공백으로만 된 문자열을 허용하지 않는다 (null, white space)
+- [X] 공백으로만 된 문자열을 허용하지 않는다 (null, white space)
 
   - Bad Request: 400
 
-- 지하철역 생성 시 이미 등록된 이름으로 요청한다면 에러를 응답
+- [X] 지하철역 생성 시 이미 등록된 이름으로 요청한다면 에러를 응답
   - Bad Request: 400
     - Conflict: 409 (리뷰어에게 문의)
 

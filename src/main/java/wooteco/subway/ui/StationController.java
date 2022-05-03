@@ -1,13 +1,15 @@
 package wooteco.subway.ui;
 
-import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.application.StationService;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.DuplicateNameException;
+import wooteco.subway.exception.EmptyNameException;
 
 import java.net.URI;
 import java.util.List;
@@ -16,18 +18,20 @@ import java.util.stream.Collectors;
 @RestController
 public class StationController {
 
+    private final StationService stationService = new StationService();
+
+    @ExceptionHandler({DuplicateNameException.class, EmptyNameException.class})
+    private ResponseEntity<?> handleException() {
+        return ResponseEntity.badRequest().build();
+    }
+
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
 
-        if (StationDao.existByName(stationRequest.getName())) {
-            return ResponseEntity.badRequest().build();
-        }
+        Station station = stationService.saveByName(stationRequest.getName());
 
-        Station station = new Station(stationRequest.getName());
-        Station newStation = StationDao.save(station);
-
-        StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
+        StationResponse stationResponse = new StationResponse(station.getId(), station.getName());
+        return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(stationResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
