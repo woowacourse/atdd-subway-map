@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,5 +57,14 @@ public class LineController {
         }
         LineDao.updateLineById(id, lineRequest.getName(), lineRequest.getColor());
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/lines/{id}")
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+        if (LineDao.notExistsById(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+        LineDao.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

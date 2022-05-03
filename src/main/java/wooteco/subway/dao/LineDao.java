@@ -40,8 +40,6 @@ public class LineDao {
     }
 
     public static boolean notExistsById(Long id) {
-        System.out.println(lines.get(0).getId() + "exist!!!!");
-        System.out.println(id);
         return lines.stream()
                 .map(Line::getId)
                 .filter(it -> it.equals(id))
@@ -56,8 +54,15 @@ public class LineDao {
     }
 
     public static void updateLineById(Long id, String name, String color) {
+        System.out.println(lines + "!!!");
         final Line line = findById(id);
         lines.remove(line);
         lines.add(new Line(id, name, color));
+        System.out.println(lines);
+    }
+
+    public static void deleteById(Long id) {
+        final Line line = findById(id);
+        lines.remove(line);
     }
 }
