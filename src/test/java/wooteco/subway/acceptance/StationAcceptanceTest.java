@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.StationRepository;
+import wooteco.subway.dao.StationRepositoryImpl;
 import wooteco.subway.dto.StationResponse;
 
 import java.util.Arrays;
@@ -140,6 +141,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @AfterEach
     void tearDown() {
-        StationRepository.deleteAll();
+        StationRepositoryImpl.deleteAll();
     }
 }

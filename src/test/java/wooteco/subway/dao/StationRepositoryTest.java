@@ -26,7 +26,7 @@ class StationRepositoryTest {
         Station saveStation = stationRepository.save(station);
 
         assertAll(
-                () -> assertThat(saveStation.getId()).isEqualTo(1L),
+                () -> assertThat(saveStation.getId()).isNotNull(),
                 () -> assertThat(saveStation).isEqualTo(station)
         );
     }
@@ -54,5 +54,26 @@ class StationRepositoryTest {
         stationRepository.deleteById(saveStation.getId());
 
         assertThat(stationRepository.findAll()).isEmpty();
+    }
+
+    @DisplayName("이름으로 역이 존재하는지 조회한다.")
+    @Test
+    void findByName() {
+        stationRepository.save(new Station("신림역"));
+        assertThat(stationRepository.findByName("신림역")).isNotNull();
+    }
+
+
+    @DisplayName("이름으로 역 조회시 없다면 null 반환한다.")
+    @Test
+    void findByNameNoName() {
+        assertThat(stationRepository.findByName("신림역")).isNull();
+    }
+
+    @DisplayName("id로 역을 조회한다.")
+    @Test
+    void findById() {
+        Station saveStation = stationRepository.save(new Station("신림역"));
+        assertThat(stationRepository.findById(saveStation.getId())).isNotNull();
     }
 }
