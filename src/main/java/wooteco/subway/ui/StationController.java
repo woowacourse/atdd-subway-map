@@ -3,33 +3,35 @@ package wooteco.subway.ui;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.dao.StationDao;
+import wooteco.subway.repository.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.request.StationRequestDto;
+import wooteco.subway.dto.response.StationResponseDto;
 
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import wooteco.subway.service.StationService;
 
 @RestController
 public class StationController {
 
+    private final StationService stationService = new StationService(new StationDao());
+
     @PostMapping("/stations")
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
-        Station newStation = StationDao.save(station);
-        StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
+    public ResponseEntity<StationResponseDto> createStation(@RequestBody final StationRequestDto stationRequestDto) {
+        final Station newStation = stationService.register(stationRequestDto.getName());
+        final StationResponseDto stationResponseDto = new StationResponseDto(newStation.getId(), newStation.getName());
+        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponseDto);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<StationResponse>> showStations() {
+    public ResponseEntity<List<StationResponseDto>> showStations() {
         List<Station> stations = StationDao.findAll();
-        List<StationResponse> stationResponses = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
+        List<StationResponseDto> stationResponsDtos = stations.stream()
+                .map(it -> new StationResponseDto(it.getId(), it.getName()))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationResponses);
+        return ResponseEntity.ok().body(stationResponsDtos);
     }
 
     @DeleteMapping("/stations/{id}")
