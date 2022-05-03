@@ -13,7 +13,7 @@ class StationDaoTest {
 
     @AfterEach
     void cleanUp() {
-        StationDao.deleteAll();
+        StationDao.findAll().clear();
     }
 
     @DisplayName("지하철 역 저장 테스트")
@@ -35,5 +35,15 @@ class StationDaoTest {
 
         assertThatThrownBy(() -> StationDao.save(station))
                 .isInstanceOf(DuplicateKeyException.class);
+    }
+
+    @DisplayName("특정 id를 가지는 역을 삭제한다.")
+    @Test
+    void delete_Station() {
+        Station station = new Station("강남역");
+        Station persistStation = StationDao.save(station);
+        StationDao.deleteById(persistStation.getId());
+
+        assertThat(StationDao.findAll()).isEmpty();
     }
 }

@@ -36,7 +36,7 @@ public class StationDao {
         return station;
     }
 
-    public static void deleteAll() {
-        stations.clear();
+    public static void deleteById(Long id) {
+        stations.removeIf(station -> station.getId().equals(id));
     }
 }
