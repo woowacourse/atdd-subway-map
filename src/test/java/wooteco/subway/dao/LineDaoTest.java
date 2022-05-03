@@ -58,7 +58,7 @@ class LineDaoTest {
         assertThat(lineDao.findAll().isEmpty()).isFalse();
     }
 
-    @DisplayName("존재하는 노선 id가 있으면 Optional이 비지 않았는지 테스트")
+    @DisplayName("존재하는 노선 id가 있으면 결과값이 존재하는지 테스트")
     @Test
     void findById_exist() {
         Line line = lineDao.save(new Line("testName", "black"));
@@ -66,18 +66,12 @@ class LineDaoTest {
         assertThat(result).isNotNull();
     }
 
-    @DisplayName("존재하는 노선 id가 없으면 Optional이 비었는지 테스트")
+    @DisplayName("존재하는 노선 id가 없으면 예외가 발생하는지 테스트")
     @Test
     void findById_not_exist() {
         Line line = lineDao.save(new Line("testName", "black"));
         assertThatThrownBy(() -> lineDao.findById(-1L))
                 .isInstanceOf(EmptyResultDataAccessException.class);
-    }
-
-    @DisplayName("id가 없는 노선의 이름을 바꿀때 예외가 발생하는지 테스트")
-    @Test
-    void changeLineName_no_id() {
-        lineDao.changeLineName(-1L, "testName2");
     }
 
     @DisplayName("바뀐 이름이 중복될 때 예외가 발생하는지 테스트")

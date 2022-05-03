@@ -63,7 +63,7 @@ class StationDaoTest {
         assertThat(stationDao.findAll().isEmpty()).isFalse();
     }
 
-    @DisplayName("존재하는 역 id가 있으면 Optional이 비지 않았는지 테스트")
+    @DisplayName("존재하는 역 id가 있으면 결과값이 있는지 테스트")
     @Test
     void findById_exist() {
         Station station = stationDao.save(new Station("testName"));
@@ -71,7 +71,7 @@ class StationDaoTest {
         assertThat(result).isNotNull();
     }
 
-    @DisplayName("존재하는 역 id가 없으면 Optional이 비었는지 테스트")
+    @DisplayName("존재하는 역 id가 없으면 예외가 발생하는지 테스트")
     @Test
     void findById_not_exist() {
         Station station = stationDao.save(new Station("testName"));
