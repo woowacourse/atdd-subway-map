@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -131,7 +132,19 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        ExtractableResponse<Response> foundResponse = RestAssured.given().log().all()
+                .when()
+                .get("/stations")
+                .then().log().all()
+                .extract();
+
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        List<String> resultLineNames = foundResponse.jsonPath().getList(".", StationResponse.class).stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(resultLineNames).doesNotContain("강남역")
+        );
     }
 }
