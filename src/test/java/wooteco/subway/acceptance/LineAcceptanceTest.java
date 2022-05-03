@@ -113,4 +113,41 @@ class LineAcceptanceTest extends AcceptanceTest {
             .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
+
+    @DisplayName("존재하는 노선을 제거한다. 상태코드는 200 이어야 한다.")
+    @Test
+    void deleteStation() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "1호선");
+        params.put("color", "bg-blue-600");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        // when
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete(uri)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("존재하지 않는 노선을 제거한다. 상태코드는 204 이어야 한다.")
+    @Test
+    void deleteNonStation() {
+        RestAssured.given().log().all()
+            .when()
+            .delete("lines/1")
+            .then().log().all()
+            .statusCode(HttpStatus.NO_CONTENT.value());
+    }
 }

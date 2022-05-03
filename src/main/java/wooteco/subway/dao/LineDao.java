@@ -7,6 +7,7 @@ import java.util.Map;
 import wooteco.subway.domain.Line;
 
 public class LineDao {
+
     private static Long seq = 0L;
     private static final Map<Long, Line> lines = new HashMap<>();
 
@@ -24,11 +25,16 @@ public class LineDao {
     }
 
     public static List<Line> findAll() {
-         return new ArrayList<>(lines.values());
+        return new ArrayList<>(lines.values());
     }
 
-    public static void deleteById(Long lineId) {
-        lines.remove(lineId);
+    public static boolean deleteById(Long lineId) {
+        if (lines.containsKey(lineId)) {
+            lines.remove(lineId);
+            return true;
+        }
+
+        return false;
     }
 
     public static Line findById(Long id) {
