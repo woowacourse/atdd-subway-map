@@ -3,7 +3,6 @@ package wooteco.subway.dao;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.NoSuchLineException;
@@ -39,6 +38,20 @@ public class LineDao {
 
     public static void deleteAll() {
         lines.clear();
+    }
+
+    public static void deleteById(final Long id) {
+        checkExistId(id);
+
+        lines.removeIf(line -> line.getId().equals(id));
+    }
+
+    private static void checkExistId(final long id) {
+        boolean hasSameId = lines.stream()
+                .anyMatch(line -> line.getId() == id);
+        if (!hasSameId) {
+            throw new NoSuchLineException();
+        }
     }
 
     private static void checkDuplicateName(final Line line) {

@@ -112,4 +112,24 @@ public class LineDaoTest {
         assertThatThrownBy(() -> LineDao.update(1L, "changedName", "changedColor"))
                 .isInstanceOf(NoSuchLineException.class);
     }
+
+    @DisplayName("노선을 제거한다")
+    @Test
+    void deleteById() {
+        // given
+        Long savedId = LineDao.save(new Line(1L, "line", "color"));
+
+        // when
+        LineDao.deleteById(savedId);
+
+        // then
+        assertThat(LineDao.findAll()).isEmpty();
+    }
+
+    @DisplayName("존재하지 않는 노선을 제거하면 예외가 발생한다")
+    @Test
+    void throwExceptionWhenDeleteById() {
+        assertThatThrownBy(() -> LineDao.deleteById(1L))
+                .isInstanceOf(NoSuchLineException.class);
+    }
 }
