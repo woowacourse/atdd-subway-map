@@ -24,4 +24,8 @@ public class StationService {
             throw new IllegalArgumentException("지하철역 이름이 중복됩니다.");
         }
     }
+
+    public static void delete(Long id) {
+        StationDao.delete(id);
+    }
 }
