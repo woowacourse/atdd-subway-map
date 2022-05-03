@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineDto;
 import wooteco.subway.dto.LineRequest;
 
 public class LineService {
@@ -27,7 +28,17 @@ public class LineService {
         return lineDao.findAll();
     }
 
+    public LineDto findById(Long id) {
+        Optional<Line>  findLine =lineDao.findById(id);
+        if(findLine.isEmpty()) {
+            throw new IllegalArgumentException("해당 ID의 노선은 존재하지 않습니다.");
+        }
+        Line line = findLine.get();
+        return new LineDto(line.getId(), line.getName(), line.getColor());
+    }
+
     public void deleteAll() {
         lineDao.deleteAll();
     }
+
 }

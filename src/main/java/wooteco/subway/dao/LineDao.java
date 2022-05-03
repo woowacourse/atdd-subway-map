@@ -30,6 +30,12 @@ public class LineDao {
                 .findAny();
     }
 
+    public Optional<Line> findById(Long id) {
+        return lines.stream()
+                .filter(line -> line.getId().equals(id))
+                .findAny();
+    }
+
     public List<Line> findAll() {
         return lines;
     }
@@ -37,4 +43,5 @@ public class LineDao {
     public void deleteAll() {
         lines = new ArrayList<>();
     }
+
 }

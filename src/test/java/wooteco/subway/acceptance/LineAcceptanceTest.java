@@ -79,7 +79,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("노선 목록을 조회한다.")
     @Test
     void getLines() {
         /// given
@@ -100,5 +100,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(LineDto::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    @DisplayName("id 를 이용하여 노선을 조회한다.")
+    @Test
+    void findLine() {
+        //given
+        String id = createResponse1.header("Location").split("/")[2];
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + id)
+                .then().log().all()
+                .extract();
+        //then
+        Integer findId = response.jsonPath().get("id");
+        assertThat(findId).isEqualTo(Integer.parseInt(id));
     }
 }

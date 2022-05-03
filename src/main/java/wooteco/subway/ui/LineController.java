@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import wooteco.subway.dao.LineDao;
@@ -43,6 +44,17 @@ public class LineController {
                 .map(it -> new LineDto(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
+    }
+
+    @GetMapping("/lines/{id}")
+    public ResponseEntity<LineDto> findLine(@PathVariable Long id) {
+        try {
+            LineDto lineDto = lineService.findById(id);
+            return ResponseEntity.ok().body(lineDto);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("/lines")
