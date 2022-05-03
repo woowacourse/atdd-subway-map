@@ -20,6 +20,13 @@ public class LineDao {
         return persistLine;
     }
 
+    public static Line findById(Long id) {
+        return lines.stream()
+                .filter(line -> line.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("해당하는 노선이 존재하지 않습니다."));
+    }
+
     public static List<Line> findAll() {
         return lines;
     }

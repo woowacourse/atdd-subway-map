@@ -79,7 +79,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철노선을 조회한다.")
+    @DisplayName("지하철노선 목록을 조회한다.")
     @Test
     void getLines() {
         /// given
@@ -121,6 +121,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    @DisplayName("지하철 단일 노선을 조회한다.")
+    @Test
+    void getLineById() {
+        /// given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        long resultLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + resultLineId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        long expectedLineId = response.jsonPath().getLong("id");
+        assertThat(resultLineId).isEqualTo(expectedLineId);
     }
 
     @DisplayName("지하철노선을 제거한다.")
