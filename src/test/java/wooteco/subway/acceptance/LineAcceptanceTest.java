@@ -150,4 +150,53 @@ class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .statusCode(HttpStatus.NO_CONTENT.value());
     }
+
+    @DisplayName("")
+    @Test
+    void updateLine() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "1호선");
+        params1.put("color", "bg-red-600");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(params1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "2호선");
+        params2.put("color", "bg-green-600");
+
+        // when
+        String uri = createResponse.header("Location");
+
+        // then
+        RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(params2)
+            .when()
+            .put(uri)
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("")
+    @Test
+    void updateNonLine() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "1호선");
+        params.put("color", "bg-red-600");
+
+        RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(params)
+            .when()
+            .put("/lines/1")
+            .then().log().all()
+            .statusCode(HttpStatus.NO_CONTENT.value());
+    }
 }
