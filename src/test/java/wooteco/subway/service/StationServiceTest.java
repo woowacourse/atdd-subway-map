@@ -11,6 +11,8 @@ import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -40,6 +42,15 @@ class StationServiceTest {
         assertThatThrownBy(
                 () -> stationService.save(new StationRequest("신림역"))
         ).isInstanceOf(NameDuplicatedException.class);
+    }
+
+    @DisplayName("모든 역을 조회한다.")
+    @Test
+    void findAll() {
+        stationService.save(new StationRequest("신림역"));
+        stationService.save(new StationRequest("신대방역"));
+        List<StationResponse> stationResponses = stationService.showStations();
+        assertThat(stationResponses).hasSize(2);
     }
 
 }

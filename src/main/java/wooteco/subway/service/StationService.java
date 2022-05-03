@@ -7,7 +7,9 @@ import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class StationService {
@@ -32,4 +34,9 @@ public class StationService {
         }
     }
 
+    public List<StationResponse> showStations() {
+        return stationRepository.findAll().stream()
+                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .collect(Collectors.toList());
+    }
 }
