@@ -12,10 +12,20 @@ public class LineDao {
     private static Long seq = 0L;
 
     public static Line save(Line line) {
+        validateDuplicateName(line);
         Line persistLine = createNewObject(line);
         lines.add(persistLine);
 
         return persistLine;
+    }
+
+    private static void validateDuplicateName(Line line) {
+        lines.stream()
+                .filter(it -> it.isSameLine(line))
+                .findAny()
+                .ifPresent(it -> {
+                    throw new IllegalArgumentException(String.format("%s은 이미 존재하는 지하철 노선입니다.", it.getName()));
+                });
     }
 
     public static List<Line> findAll() {
