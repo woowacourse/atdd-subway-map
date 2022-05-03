@@ -13,7 +13,7 @@ class LineDaoTest {
 
     @AfterEach
     void cleanUp() {
-        LineDao.lines.clear(); // 수정 필요
+        LineDao.findAll().clear(); // 수정 필요
     }
 
     @DisplayName("노선 저장 기능을 테스트한다.")
@@ -36,5 +36,16 @@ class LineDaoTest {
 
         assertThatThrownBy(() -> LineDao.save(line))
                 .isInstanceOf(DuplicateKeyException.class);
+    }
+
+    @DisplayName("전체 노선의 개수가 맞는지 확인한다.")
+    @Test
+    void find_All_Line() {
+        Line lineTwo = new Line("2호선", "초록색");
+        Line lineEight = new Line("8호선", "분홍색");
+        LineDao.save(lineTwo);
+        LineDao.save(lineEight);
+
+        assertThat(LineDao.findAll().size()).isEqualTo(2);
     }
 }

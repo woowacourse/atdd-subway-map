@@ -9,7 +9,7 @@ import wooteco.subway.domain.Line;
 
 public class LineDao {
     private static Long seq = 0L;
-    public static List<Line> lines = new ArrayList<>();
+    private static List<Line> lines = new ArrayList<>();
 
     public static Line save(Line line) {
         validateNotDuplicated(line);
@@ -30,5 +30,9 @@ public class LineDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
         return line;
+    }
+
+    public static List<Line> findAll() {
+        return lines;
     }
 }
