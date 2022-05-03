@@ -1,26 +1,48 @@
 package wooteco.subway.dao;
 
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
+import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StationDao {
+@Repository
+public class StationRepository {
+
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
-    public static Station save(Station station) {
+    private final SimpleJdbcInsert simpleJdbcInsert;
+
+    public StationRepository(DataSource dataSource) {
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("station")
+                .usingGeneratedKeyColumns("id");
+    }
+
+    public static Station saveLegacy(Station station) {
         validateDuplicateName(station);
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
     }
 
+    public Station save(Station station) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", station.getName());
+        Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        return new Station(id, station.getName());
+    }
+
     private static void validateDuplicateName(Station station) {
-        if(stations.contains(station)){
+        if (stations.contains(station)) {
             throw new NameDuplicatedException("[ERROR] 중복된 이름이 존재합니다.");
         }
     }
