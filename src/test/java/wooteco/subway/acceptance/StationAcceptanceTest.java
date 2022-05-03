@@ -135,6 +135,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // when
         String uri = createResponse.header("Location");
+        Long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .delete(uri)
@@ -142,6 +143,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        ExtractableResponse<Response> stationsResponse = RestAssured.given().log().all()
+                .when()
+                .get("/stations")
+                .then().log().all()
+                .extract();
+
+        List<Long> resultLineIds = stationsResponse.jsonPath().getList(".", StationResponse.class).stream()
+                .map(it -> it.getId())
+                .collect(Collectors.toList());
+
+        assertThat(resultLineIds.contains(id)).isFalse();
     }
 }
