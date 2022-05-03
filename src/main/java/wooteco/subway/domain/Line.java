@@ -10,4 +10,8 @@ public class Line {
         this.name = name;
         this.color = color;
     }
+
+    public Long getId() {
+        return id;
+    }
 }

@@ -2,8 +2,7 @@ package wooteco.subway.dao;
 
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.DuplicateStationNameException;
-import wooteco.subway.exception.NotFoundStationException;
+import wooteco.subway.exception.NotFoundException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -23,7 +22,7 @@ public class StationDao {
         return stations.stream()
                 .filter(s -> s.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundStationException("id에 맞는 지하철역이 없습니다."));
+                .orElseThrow(() -> new NotFoundException("id에 맞는 지하철역이 없습니다."));
     }
 
     public List<Station> findAll() {

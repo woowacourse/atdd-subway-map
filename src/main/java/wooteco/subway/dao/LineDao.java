@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.NotFoundException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -27,5 +28,16 @@ public class LineDao {
 
     public List<Line> findAll() {
         return List.copyOf(lines);
+    }
+
+    public Line findById(Long id) {
+        return lines.stream()
+                .filter(l -> l.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("id에 맞는 지하철 노선이 없습니다."));
+    }
+
+    public void clear() {
+        lines.clear();
     }
 }
