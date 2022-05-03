@@ -39,7 +39,7 @@ public class LineDao {
 
     public static Optional<Line> findById(Long id) {
         return lines.stream()
-                .filter(line-> id.equals(line.getId()))
+                .filter(line -> id.equals(line.getId()))
                 .findFirst();
     }
 
@@ -47,5 +47,10 @@ public class LineDao {
         Line line = findById(id).get();
         lines.remove(line);
         lines.add(new Line(id, name, color));
+    }
+
+    public static void clearAll() {
+        lines.clear();
+        seq = 0L;
     }
 }

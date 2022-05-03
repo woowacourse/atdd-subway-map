@@ -37,5 +37,6 @@ public class StationDao {
 
     public static void clearAll() {
         stations.clear();
+        seq = 0L;
     }
 }
