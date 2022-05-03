@@ -20,4 +20,19 @@ class StationDaoTest {
         // then
         assertThat(station).isEqualTo(result);
     }
+
+    @Test
+    void findAll() {
+        // given
+        Station station1 = StationDao.save(new Station("범고래"));
+        Station station2 = StationDao.save(new Station("애쉬"));
+
+        // when
+        List<Station> stations = StationDao.findAll();
+
+        // then
+        assertThat(stations)
+            .hasSize(2)
+            .contains(station1, station2);
+    }
 }
