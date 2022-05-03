@@ -4,21 +4,30 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 
+@Repository
 public class LineDao {
 
     private static Long seq = 0L;
     private static final List<Line> lines = new ArrayList<>();
 
-    public static Line saveLine(Line line) {
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    public LineDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
+
+    public Line save(Line line) {
         Line savedLine = createNewObject(line);
         lines.add(savedLine);
         return savedLine;
     }
 
-    private static Line createNewObject(Line line) {
+    private Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         if (field != null) {
             field.setAccessible(true);
@@ -27,27 +36,27 @@ public class LineDao {
         return line;
     }
 
-    public static List<Line> findAllLines() {
+    public List<Line> findAllLines() {
         return new ArrayList<>(lines);
     }
 
-    public static void deleteAllLines() {
+    public void deleteAllLines() {
         lines.clear();
     }
 
-    public static Optional<Line> findById(Long id) {
+    public Optional<Line> findById(Long id) {
         return lines.stream()
                 .filter(line -> line.getId().equals(id))
                 .findFirst();
     }
 
-    public static Optional<Line> findByName(String name) {
+    public Optional<Line> findByName(String name) {
         return lines.stream()
                 .filter(line -> line.getName().equals(name))
                 .findFirst();
     }
 
-    public static void updateLine(Long id, Line newLine) {
+    public void updateLine(Long id, Line newLine) {
         Optional<Line> foundLine = findById(id);
         if (foundLine.isEmpty()) {
             throw new IllegalArgumentException("업데이트 할 노선이 존재하지 않습니다.");
@@ -56,7 +65,7 @@ public class LineDao {
         lines.add(new Line(id, newLine.getName(), newLine.getColor()));
     }
 
-    public static void deleteById(Long id) {
+    public void deleteById(Long id) {
         Optional<Line> foundLine = findById(id);
         if (foundLine.isEmpty()) {
             throw new IllegalArgumentException("삭제할 노선이 존재하지 않습니다.");

@@ -20,20 +20,26 @@ import wooteco.subway.dto.LineResponse;
 @RestController
 public class LineController {
 
+    private final LineDao lineDao;
+
+    public LineController(LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
+
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Optional<Line> wrappedStation = LineDao.findByName(lineRequest.getName());
+        Optional<Line> wrappedStation = lineDao.findByName(lineRequest.getName());
         if (wrappedStation.isPresent()) {
             throw new IllegalArgumentException("이미 같은 이름의 노선이 존재합니다.");
         }
-        Line savedLine = LineDao.saveLine(line);
+        Line savedLine = lineDao.save(line);
         return ResponseEntity.created(URI.create("/lines/" + savedLine.getId())).body(LineResponse.of(line));
     }
 
     @GetMapping("/lines")
     public List<LineResponse> getAllLines() {
-        List<Line> allLines = LineDao.findAllLines();
+        List<Line> allLines = lineDao.findAllLines();
         return allLines.stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
@@ -41,7 +47,7 @@ public class LineController {
 
     @GetMapping("/lines/{lineId}")
     public LineResponse getLineById(@PathVariable Long lineId) {
-        Optional<Line> wrappedLine = LineDao.findById(lineId);
+        Optional<Line> wrappedLine = lineDao.findById(lineId);
         if (wrappedLine.isEmpty()) {
             throw new IllegalArgumentException("해당 노선이 존재하지 않습니다.");
         }
@@ -51,12 +57,12 @@ public class LineController {
     @PutMapping("/lines/{lineId}")
     public void updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
         Line newLine = new Line(lineRequest.getName(), lineRequest.getColor());
-        LineDao.updateLine(lineId, newLine);
+        lineDao.updateLine(lineId, newLine);
     }
 
     @DeleteMapping("/lines/{lineId}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long lineId) {
-        LineDao.deleteById(lineId);
+        lineDao.deleteById(lineId);
         return ResponseEntity.noContent().build();
     }
 }

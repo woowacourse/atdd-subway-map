@@ -18,10 +18,13 @@ public class AcceptanceTest {
     @Autowired
     private StationDao stationDao;
 
+    @Autowired
+    private LineDao lineDao;
+
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
-        LineDao.deleteAllLines();
+        lineDao.deleteAllLines();
         stationDao.deleteAll();
     }
 }
