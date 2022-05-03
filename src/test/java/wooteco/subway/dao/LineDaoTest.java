@@ -24,4 +24,13 @@ class LineDaoTest {
 
         assertThat(savedLine.getId()).isNotNull();
     }
+
+    @Test
+    @DisplayName("Line을 id로 조회할 수 있다.")
+    void findById() {
+        Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
+        Line findLine = lineDao.findById(line.getId());
+
+        assertThat(findLine).isEqualTo(line);
+    }
 }

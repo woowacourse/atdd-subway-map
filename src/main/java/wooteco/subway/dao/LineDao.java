@@ -26,4 +26,8 @@ public class LineDao {
         ReflectionUtils.setField(field, line, ++seq);
         return line;
     }
+
+    public Line findById(final Long id) {
+        return lines.get(id);
+    }
 }
