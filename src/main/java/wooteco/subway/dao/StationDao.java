@@ -11,7 +11,13 @@ public class StationDao {
     private static Long seq = 0L;
     private static final List<Station> stations = new ArrayList<>();
 
-    public static Optional<Station> findByName(String name){
+    public static Optional<Station> findById(Long id) {
+        return stations.stream()
+                .filter(station -> station.getId().equals(id))
+                .findFirst();
+    }
+
+    public static Optional<Station> findByName(String name) {
         return stations.stream()
                 .filter(station -> station.getName().equals(name))
                 .findAny();
@@ -34,5 +40,17 @@ public class StationDao {
             ReflectionUtils.setField(field, station, ++seq);
         }
         return station;
+    }
+
+    public static void deleteAll() {
+        stations.clear();
+    }
+
+    public static void deleteById(Long id) {
+        Optional<Station> wrappedStation = findById(id);
+        if (wrappedStation.isEmpty()) {
+            throw new IllegalArgumentException("해당 지하철역이 존재하지 않습니다.");
+        }
+        stations.remove(wrappedStation.get());
     }
 }
