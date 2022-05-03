@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.stream.Collectors;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
 
@@ -12,9 +13,21 @@ public class StationDao {
     private static List<Station> stations = new ArrayList<>();
 
     public static Station save(Station station) {
+        validateStationName(station);
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
+    }
+
+    private static void validateStationName(Station persistStation) {
+        List<String> stationNames = stations.stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        String stationName = persistStation.getName();
+
+        if (stationNames.contains(stationName)) {
+            throw new IllegalArgumentException("같은 이름의 역은 등록할 수 없습니다.");
+        }
     }
 
     public static List<Station> findAll() {

@@ -36,4 +36,9 @@ public class StationController {
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         return ResponseEntity.noContent().build();
     }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }
