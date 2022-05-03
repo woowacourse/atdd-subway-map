@@ -17,7 +17,7 @@ public class StationDao {
     }
 
     public List<Station> findAll() {
-        return stations;
+        return List.copyOf(stations);
     }
 
     private Station createNewObject(Station station) {
