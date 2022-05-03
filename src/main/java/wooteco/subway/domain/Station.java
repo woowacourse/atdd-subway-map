@@ -1,11 +1,9 @@
 package wooteco.subway.domain;
 
 public class Station {
-    private Long id;
-    private String name;
 
-    public Station() {
-    }
+    private final Long id;
+    private final String name;
 
     public Station(Long id, String name) {
         this.id = id;
@@ -13,7 +11,7 @@ public class Station {
     }
 
     public Station(String name) {
-        this.name = name;
+        this(null, name);
     }
 
     public Long getId() {

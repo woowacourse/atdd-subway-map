@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
@@ -17,9 +18,10 @@ import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 @RestController
+@RequestMapping("/stations")
 public class StationController {
 
-    @PostMapping("/stations")
+    @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
         Station newStation = StationDao.save(station);
@@ -28,7 +30,7 @@ public class StationController {
         return ResponseEntity.created(location).body(stationResponse);
     }
 
-    @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
         List<Station> stations = StationDao.findAll();
         List<StationResponse> stationResponses = stations.stream()
@@ -37,7 +39,7 @@ public class StationController {
         return ResponseEntity.ok().body(stationResponses);
     }
 
-    @DeleteMapping("/stations/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         StationDao.deleteById(id);
         return ResponseEntity.noContent().build();
