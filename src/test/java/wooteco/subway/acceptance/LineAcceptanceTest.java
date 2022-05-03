@@ -7,7 +7,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,12 +22,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     LineDao lineDao;
-
-    @AfterEach
-    void cleanUp() {
-        lineDao.findAll()
-                .forEach(line -> lineDao.deleteById(line.getId()));
-    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test

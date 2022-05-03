@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,12 +25,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     StationDao stationDao;
-
-    @AfterEach
-    void cleanUp() {
-        stationDao.findAll()
-                .forEach(station -> stationDao.deleteById(station.getId()));
-    }
 
     @DisplayName("지하철역을 생성한다.")
     @Test
