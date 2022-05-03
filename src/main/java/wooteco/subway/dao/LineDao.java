@@ -43,4 +43,10 @@ public class LineDao {
         ReflectionUtils.setField(field, line, ++seq);
         return line;
     }
+
+    public static void update(Line line, String name, String color){
+        lines.remove(line);
+        Line updateLine = new Line(line.getId(), name, color);
+        lines.add(updateLine);
+    }
 }

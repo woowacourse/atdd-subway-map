@@ -40,4 +40,11 @@ public class LineController {
         return ResponseEntity.ok(lineResponse);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        Line findLine = LineDao.findById(id);
+        LineDao.update(findLine, lineRequest.getName(), lineRequest.getColor());
+        return ResponseEntity.ok().build();
+    }
+
 }

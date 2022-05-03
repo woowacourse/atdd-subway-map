@@ -140,4 +140,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(id).isEqualTo(responseId);
     }
 
+    @DisplayName("노선을 수정하면 200 OK를 반환한다.")
+    @Test
+    void updateLine() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        long id = Long.parseLong(createResponse.header(HttpHeaders.LOCATION).split("/")[2]);
+
+        Map<String, String> updateParam = new HashMap<>();
+        params.put("name", "다른분당선");
+        params.put("color", "bg-red-600");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(updateParam)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }
