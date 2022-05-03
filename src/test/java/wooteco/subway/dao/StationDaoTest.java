@@ -3,17 +3,26 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.jupiter.api.AfterEach;
+import javax.sql.DataSource;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
 import wooteco.subway.domain.Station;
 
+@JdbcTest
 class StationDaoTest {
 
-    @AfterEach
-    void cleanUp() {
-        StationDao.findAll().clear();
+    @Autowired
+    private DataSource dataSource;
+
+    private StationDao stationDao;
+
+    @BeforeEach
+    void setUp() {
+        stationDao = new StationDao(dataSource);
     }
 
     @DisplayName("지하철 역 저장 테스트")
@@ -21,7 +30,7 @@ class StationDaoTest {
     void saveStation() {
         Station station = new Station("강남역");
 
-        Station persistStation = StationDao.save(station);
+        Station persistStation = stationDao.save(station);
 
         assertThat(persistStation.getId()).isNotNull();
         assertThat(persistStation.getName()).isEqualTo("강남역");
@@ -31,9 +40,9 @@ class StationDaoTest {
     @Test
     void saveDuplicateStation() {
         Station station = new Station("강남역");
-        StationDao.save(station);
+        stationDao.save(station);
 
-        assertThatThrownBy(() -> StationDao.save(station))
+        assertThatThrownBy(() -> stationDao.save(station))
                 .isInstanceOf(DuplicateKeyException.class);
     }
 
@@ -43,19 +52,19 @@ class StationDaoTest {
         Station gangNam = new Station("강남역");
         Station jamSil = new Station("잠실역");
 
-        StationDao.save(gangNam);
-        StationDao.save(jamSil);
+        stationDao.save(gangNam);
+        stationDao.save(jamSil);
 
-        assertThat(StationDao.findAll().size()).isEqualTo(2);
+        assertThat(stationDao.findAll().size()).isEqualTo(2);
     }
 
     @DisplayName("특정 id를 가지는 역을 삭제한다.")
     @Test
     void deleteStation() {
         Station station = new Station("강남역");
-        Station persistStation = StationDao.save(station);
-        StationDao.deleteById(persistStation.getId());
+        Station persistStation = stationDao.save(station);
+        stationDao.deleteById(persistStation.getId());
 
-        assertThat(StationDao.findAll()).isEmpty();
+        assertThat(stationDao.findAll()).isEmpty();
     }
 }
