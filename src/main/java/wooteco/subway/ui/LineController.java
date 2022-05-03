@@ -2,14 +2,18 @@ package wooteco.subway.ui;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineAndStationsResponse;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
@@ -17,12 +21,22 @@ import wooteco.subway.dto.LineResponse;
 public class LineController {
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createStation(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineAndStationsResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = LineDao.save(line);
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(),
+        LineAndStationsResponse lineAndStationsResponse = new LineAndStationsResponse(newLine.getId(),
+                newLine.getName(), newLine.getColor(),
                 new ArrayList<>());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId()))
-                .body(lineResponse);
+                .body(lineAndStationsResponse);
+    }
+
+    @GetMapping("/lines")
+    public ResponseEntity<List<LineResponse>> findAllLine() {
+        List<Line> lines = LineDao.findAll();
+        List<LineResponse> lineResponses = lines.stream()
+                .map(LineResponse::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(lineResponses);
     }
 }

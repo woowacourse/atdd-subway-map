@@ -39,11 +39,11 @@ public class Line {
         if (o == null || getClass() != o.getClass())
             return false;
         Line line = (Line)o;
-        return id.equals(line.id) && name.equals(line.name) && color.equals(line.color);
+        return name.equals(line.name) && color.equals(line.color);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color);
+        return Objects.hash(name, color);
     }
 }
