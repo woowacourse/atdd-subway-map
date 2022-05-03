@@ -27,4 +27,12 @@ public class StationDao {
         ReflectionUtils.setField(field, station, ++seq);
         return station;
     }
+
+    public static boolean existByName(String name) {
+        return stations.stream().anyMatch(station -> station.isSameName(name));
+    }
+
+    public static void deleteAll() {
+        stations.clear();
+    }
 }
