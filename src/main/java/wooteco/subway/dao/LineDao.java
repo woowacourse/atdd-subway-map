@@ -26,4 +26,11 @@ public class LineDao {
         ReflectionUtils.setField(field, line, ++seq);
         return line;
     }
+
+    public static boolean existsByName(String name) {
+        return lines.stream()
+                .map(Line::getName)
+                .filter(it -> it.equals(name))
+                .count() != 0;
+    }
 }
