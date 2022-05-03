@@ -33,4 +33,9 @@ public class Line {
     public String getColor() {
         return color;
     }
+
+    public void update(Line line) {
+        this.name = line.name;
+        this.color = line.color;
+    }
 }

@@ -23,4 +23,8 @@ public class LineService {
     public List<Line> findAll() {
         return LineDao.findAll();
     }
+
+    public void update(Long id, Line line) {
+        LineDao.update(id, line);
+    }
 }

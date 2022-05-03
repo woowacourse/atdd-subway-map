@@ -3,6 +3,8 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,5 +41,19 @@ class LineServiceTest {
 
         assertThat(lineService.findAll())
                 .containsOnly(line,line2);
+    }
+
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void update() {
+        Line line = new Line("신분당선","red");
+        Line line2 = new Line("분당선","green");
+
+        lineService.save(line);
+        lineService.update(1L,line2);
+
+        List<Line> lines = lineService.findAll();
+
+        assertThat(lines.get(0).getName()).isEqualTo("분당선");
     }
 }

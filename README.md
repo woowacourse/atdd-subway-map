@@ -50,9 +50,9 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 
 - [x] 지하철 노선 등록
     - [x] [예외] 지하철역과 마찬가지로 같은 이름의 노선은 생성 불가
-- [ ] 지하철 노선 목록
-- [ ] 지하철 노선 조회
-- [ ] 지하철 노선 수정
+- [x] 지하철 노선 목록
+- [x] 지하철 노선 조회
+- [x] 지하철 노선 수정
 - [ ] 지하철 노선 삭제
 
 ### End to End 테스트 작성하기
