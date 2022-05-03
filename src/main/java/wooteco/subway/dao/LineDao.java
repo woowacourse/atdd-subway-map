@@ -40,4 +40,13 @@ public class LineDao {
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 id입니다."));
     }
+
+    public static Line update(Long id, Line updateLine) {
+        lines.remove(findById(id));
+
+        Line line = new Line(id, updateLine.getName(), updateLine.getColor());
+        lines.add(line);
+
+        return line;
+    }
 }

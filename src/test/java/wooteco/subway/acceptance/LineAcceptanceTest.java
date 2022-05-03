@@ -129,7 +129,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        long id = createResponse.body().jsonPath().getLong("id");
+        Long id = createResponse.body().jsonPath().getLong("id");
         String name = createResponse.body().jsonPath().getString("name");
         String color = createResponse.body().jsonPath().getString("color");
 
@@ -143,5 +143,37 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(id).isEqualTo(response.body().jsonPath().getLong("id"));
         assertThat(name).isEqualTo(response.body().jsonPath().getString("name"));
         assertThat(color).isEqualTo(response.body().jsonPath().getString("color"));
+    }
+
+    @DisplayName("노선을 수정한다")
+    @Test
+    void updateLine() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "bg-green-600");
+
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        Long id = createResponse.body().jsonPath().getLong("id");
+
+        Map<String, String> updatedParams = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "bg-blue-600");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(updatedParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
