@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.StationDao;
@@ -23,14 +24,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
+    @Autowired
+    private StationDao stationDao;
+
     @AfterEach
     void tearDown() {
-        List<Long> stationIds = StationDao.findAll().stream()
+        List<Long> stationIds = stationDao.findAll().stream()
                 .map(Station::getId)
                 .collect(Collectors.toList());
 
         for (Long stationId : stationIds) {
-            StationDao.deleteById(stationId);
+            stationDao.deleteById(stationId);
         }
     }
 
@@ -86,7 +90,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        /// given
+        // given
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "강남역");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
