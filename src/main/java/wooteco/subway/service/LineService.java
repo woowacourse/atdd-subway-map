@@ -34,4 +34,12 @@ public class LineService {
         }
         return line.get();
     }
+
+    public static void update(Long id, Line updatingLine) {
+        Optional<Line> line = LineDao.findById(id);
+        if (line.isEmpty()) {
+            throw new LineNotFoundException();
+        }
+        LineDao.update(id, updatingLine);
+    }
 }

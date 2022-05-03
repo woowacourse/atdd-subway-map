@@ -82,4 +82,15 @@ class LineServiceTest {
 
         LineService.deleteById(line.getId());
     }
+
+    @DisplayName("존재하지 않는 노선을 수정하려하면 예외를 발생시킨다.")
+    @Test
+    void updateLineById_exception() {
+        Line line = LineService.save(new Line("신분당선", "red"));
+
+        assertThatThrownBy(() -> LineService.update(2L, new Line("6호선", "brown")))
+                .isInstanceOf(LineNotFoundException.class);
+
+        LineService.deleteById(line.getId());
+    }
 }

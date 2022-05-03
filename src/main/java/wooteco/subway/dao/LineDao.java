@@ -13,7 +13,7 @@ public class LineDao {
     private static List<Line> lines = new ArrayList<>();
 
     public static Line save(Line line) {
-        Line persistLine = createNewObject(line);
+        Line persistLine = createNewObject(line, ++seq);
         lines.add(persistLine);
         return persistLine;
     }
@@ -33,15 +33,21 @@ public class LineDao {
     }
 
 
-    private static Line createNewObject(Line line) {
+    private static Line createNewObject(Line line, Long id) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
+        ReflectionUtils.setField(field, line, id);
         return line;
     }
 
     public static boolean exists(Line line) {
         return lines.stream()
-            .anyMatch(it -> it.getName().equals(line.getName()) || it.getColor().equals(line.getColor()));
+                .anyMatch(it -> it.getName().equals(line.getName()) || it.getColor().equals(line.getColor()));
+    }
+
+    public static void update(Long id, Line updatingLine) {
+        deleteById(id);
+        Line persistLine = createNewObject(updatingLine, id);
+        lines.add(persistLine);
     }
 }
