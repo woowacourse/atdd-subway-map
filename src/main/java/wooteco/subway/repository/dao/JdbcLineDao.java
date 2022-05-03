@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -51,8 +52,12 @@ public class JdbcLineDao implements LineDao {
         final Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         final SqlParameterSource source = new MapSqlParameterSource(params);
-        final LineEntity lineEntity = jdbcTemplate.queryForObject(sql, source, rowMapper);
-        return Optional.ofNullable(lineEntity);
+        try {
+            final LineEntity lineEntity = jdbcTemplate.queryForObject(sql, source, rowMapper);
+            return Optional.of(lineEntity);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -61,8 +66,12 @@ public class JdbcLineDao implements LineDao {
         final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
         final SqlParameterSource source = new MapSqlParameterSource(params);
-        final LineEntity lineEntity = jdbcTemplate.queryForObject(sql, source, rowMapper);
-        return Optional.ofNullable(lineEntity);
+        try {
+            final LineEntity lineEntity = jdbcTemplate.queryForObject(sql, source, rowMapper);
+            return Optional.of(lineEntity);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     @Override

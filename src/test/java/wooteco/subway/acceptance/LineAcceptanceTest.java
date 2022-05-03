@@ -11,21 +11,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.response.LineResponseDto;
-import wooteco.subway.mockDao.MockLineDao;
 
 @DisplayName("노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
-
-    @BeforeEach
-    void initStore() {
-        MockLineDao.removeAll();
-    }
 
     @DisplayName("노선을 생성한다.")
     @Test
