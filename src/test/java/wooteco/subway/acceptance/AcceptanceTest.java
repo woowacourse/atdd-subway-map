@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.StationDao;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -22,5 +23,6 @@ public class AcceptanceTest {
     @AfterEach
     public void rollback() {
         StationDao.deleteAll();
+        LineDao.deleteAll();
     }
 }
