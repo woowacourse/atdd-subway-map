@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 
 public class LineDaoTest {
 
@@ -62,6 +63,21 @@ public class LineDaoTest {
 
         //then
         assertThat(equals(actual, line)).isTrue();
+    }
+
+    @Test
+    @DisplayName("이름으로 station 을 조회한다.")
+    void findByName() {
+        //given
+        String name = "중곡";
+        String color = "khaki";
+        Line savedLine = lineDao.save(new Line(name, color));
+
+        //when
+        Line actual = lineDao.findByName(name).get();
+
+        //then
+        assertThat(equals(actual, savedLine)).isTrue();
     }
 
     @Test

@@ -29,12 +29,18 @@ public class LineDao {
         return new Line(++seq, line.getName(), line.getColor());
     }
 
-    public List<Line> findAll() {
-        return List.copyOf(lines);
-    }
-
     public Optional<Line> findById(Long id) {
         return lines.stream().filter(line -> line.getId().equals(id)).findFirst();
+    }
+
+    public Optional<Line> findByName(String name) {
+        return lines.stream()
+            .filter(line -> name.equals(line.getName()))
+            .findFirst();
+    }
+
+    public List<Line> findAll() {
+        return List.copyOf(lines);
     }
 
     public void update(Long id, String name, String color) {
@@ -52,5 +58,9 @@ public class LineDao {
         if (!lines.removeIf(line -> line.getId().equals(id))) {
             throw new IllegalArgumentException("존재하지 않는 노선 입니다.");
         }
+    }
+
+    public void deleteAll() {
+        lines.clear();
     }
 }
