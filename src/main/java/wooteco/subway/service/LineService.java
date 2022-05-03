@@ -4,6 +4,7 @@ import java.util.List;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.DuplicatedLineException;
+import wooteco.subway.exception.LineNotFoundException;
 
 public class LineService {
 
@@ -16,5 +17,12 @@ public class LineService {
 
     public static List<Line> findAll() {
         return LineDao.findAll();
+    }
+
+    public static void deleteById(Long id) {
+        if (LineDao.findById(id).isEmpty()) {
+            throw new LineNotFoundException();
+        }
+        LineDao.deleteById(id);
     }
 }

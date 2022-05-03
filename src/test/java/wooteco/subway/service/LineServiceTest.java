@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.DuplicatedLineException;
+import wooteco.subway.exception.LineNotFoundException;
 
 class LineServiceTest {
 
@@ -20,7 +21,7 @@ class LineServiceTest {
         Line line = LineService.save(new Line("신분당선", "red"));
 
         assertThatThrownBy(() -> LineService.save(new Line(name, color)))
-            .isInstanceOf(DuplicatedLineException.class);
+                .isInstanceOf(DuplicatedLineException.class);
 
         LineDao.deleteById(line.getId());
     }
@@ -34,5 +35,25 @@ class LineServiceTest {
         assertThat(line.getColor()).isEqualTo("red");
 
         LineDao.deleteById(line.getId());
+    }
+
+    @DisplayName("노선을 삭제할 수 있다.")
+    @Test
+    void deleteLine_success() {
+        Line line = LineService.save(new Line("신분당선", "red"));
+        LineService.deleteById(line.getId());
+
+        assertThat(LineService.findAll()).isEmpty();
+    }
+
+    @DisplayName("존재하지 않는 노선을 삭제하려하면 예외를 발생시킨다.")
+    @Test
+    void deleteLine_exception() {
+        Line line = LineService.save(new Line("신분당선", "red"));
+
+        assertThatThrownBy(() -> LineService.deleteById(2L))
+                .isInstanceOf(LineNotFoundException.class);
+
+        LineService.deleteById(line.getId());
     }
 }
