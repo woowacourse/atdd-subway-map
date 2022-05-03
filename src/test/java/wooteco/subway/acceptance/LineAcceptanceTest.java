@@ -43,7 +43,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("지하철 전체 노선을 조회한다.")
     @Test
     void getLines() {
         /// given
@@ -87,4 +87,45 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void getLine() {
+        /// given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "신분당선");
+        params1.put("color", "red");
+        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "2호선");
+        params2.put("color", "green");
+        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        Long expectedId = Long.parseLong(createResponse1.header("Location").split("/")[2]);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + expectedId)
+                .then().log().all()
+                .extract();
+
+        Long resultId = response.jsonPath().getLong("id");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(resultId).isEqualTo(expectedId);
+    }
 }

@@ -16,6 +16,10 @@ public class Line {
         this.color = color;
     }
 
+    public boolean isSameId(Long id) {
+        return this.id == id;
+    }
+
     public Long getId() {
         return id;
     }
