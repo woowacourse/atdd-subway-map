@@ -34,6 +34,14 @@ public class StationDao {
         return station;
     }
 
+    public void deleteById(Long id) {
+        Optional<Station> station = stations.stream()
+                .filter(s -> s.matchId(id))
+                .findFirst();
+
+        station.ifPresent(value -> stations.remove(value));
+    }
+
     public void deleteAll() {
         stations = new ArrayList<>();
     }
