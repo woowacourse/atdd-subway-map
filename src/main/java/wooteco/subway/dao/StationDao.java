@@ -26,6 +26,15 @@ public class StationDao {
         stations.clear();
     }
 
+    public static void deleteById(Long id) {
+        Station value = stations.stream()
+            .filter(station -> station.getId().equals(id))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id 입니다."));
+
+        stations.removeIf(it -> it.equals(value));
+    }
+
     private static void validateDuplicate(Station station) {
         if (stations.contains(station)) {
             throw new IllegalArgumentException("이미 존재하는 역입니다.");

@@ -131,7 +131,19 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
 
+        ExtractableResponse<Response> listResponse = RestAssured.given().log().all()
+            .when()
+            .get("/stations")
+            .then().log().all()
+            .extract();
+
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        List<String> resultLineNames = listResponse.jsonPath().getList(".", StationResponse.class).stream()
+            .map(it -> it.getName())
+            .collect(Collectors.toList());
+
+        assertThat(resultLineNames.contains("강남역")).isFalse();
     }
 }
