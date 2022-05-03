@@ -7,20 +7,20 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Station;
 
-class StationDaoTest {
+class InmemoryStationDaoTest {
 
-    private final StationDao stationDao = StationDao.getInstance();
+    private final InmemoryStationDao inmemoryStationDao = InmemoryStationDao.getInstance();
 
     @AfterEach
     void afterEach() {
-        stationDao.clear();
+        inmemoryStationDao.clear();
     }
 
     @Test
     @DisplayName("Station을 저장할 수 있다.")
     void save() {
         Station station = new Station("오리");
-        Station savedStation = stationDao.save(station);
+        Station savedStation = inmemoryStationDao.save(station);
 
         assertThat(savedStation.getId()).isNotNull();
     }
@@ -28,27 +28,27 @@ class StationDaoTest {
     @Test
     @DisplayName("모든 Station을 조회할 수 있다.")
     void findAll() {
-        stationDao.save(new Station("오리"));
-        stationDao.save(new Station("배카라"));
+        inmemoryStationDao.save(new Station("오리"));
+        inmemoryStationDao.save(new Station("배카라"));
 
-        assertThat(stationDao.findAll()).hasSize(2);
+        assertThat(inmemoryStationDao.findAll()).hasSize(2);
     }
 
     @Test
     @DisplayName("Station을 삭제할 수 있다.")
     void delete() {
-        Station station = stationDao.save(new Station("오리"));
+        Station station = inmemoryStationDao.save(new Station("오리"));
         Long stationId = station.getId();
 
-        assertThat(stationDao.delete(stationId)).isEqualTo(1);
+        assertThat(inmemoryStationDao.delete(stationId)).isEqualTo(1);
     }
 
     @Test
     @DisplayName("Station 이름이 존재하는지 확인할 수 있다.")
     void existByName() {
         String name = "오리";
-        stationDao.save(new Station(name));
+        inmemoryStationDao.save(new Station(name));
 
-        assertThat(stationDao.existByName(name)).isTrue();
+        assertThat(inmemoryStationDao.existByName(name)).isTrue();
     }
 }
