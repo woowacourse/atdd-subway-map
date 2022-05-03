@@ -1,50 +1,51 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
 
 @Repository
 public class StationDao {
-    private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
 
-    public Station save(Station station) {
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
+
+    private final RowMapper<Station> eventRowMapper = (resultSet, rowNum)
+            -> new Station(resultSet.getLong("id"), resultSet.getString("name"));
+
+    public StationDao(NamedParameterJdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public Long save(Station station) {
+        String insertSql = "insert into STATION (name) values (:name)";
+        SqlParameterSource source = new BeanPropertySqlParameterSource(station);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(insertSql, source, keyHolder);
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     public List<Station> findAll() {
-        return stations;
+        String selectSql = "select * from STATION";
+        return jdbcTemplate.query(selectSql, eventRowMapper);
     }
 
-    public Optional<Station> findByName(String name) {
-        return stations.stream()
-                .filter(station -> station.getName().equals(name))
-                .findAny();
-    }
-
-    private Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+    public Station findByName(String name) {
+        String selectSql = "select * from STATION where name = :name";
+        SqlParameterSource source = new MapSqlParameterSource("name", name);
+        return jdbcTemplate.queryForObject(selectSql, source, eventRowMapper);
     }
 
     public void deleteById(Long id) {
-        Optional<Station> station = stations.stream()
-                .filter(s -> s.matchId(id))
-                .findFirst();
-
-        station.ifPresent(value -> stations.remove(value));
-    }
-
-    public void deleteAll() {
-        stations = new ArrayList<>();
+        String sql = "delete from STATION where id = :id";
+        SqlParameterSource source = new MapSqlParameterSource("id", id);
+        jdbcTemplate.update(sql, source);
     }
 }

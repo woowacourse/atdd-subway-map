@@ -8,51 +8,46 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private ExtractableResponse<Response> createResponse1;
-    private ExtractableResponse<Response> createResponse2;
+    private Long savedId1;
+    private Long savedId2;
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void init() {
-        // dao 초기화
-        RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete("/stations")
-                .then().log().all()
-                .extract();
+        jdbcTemplate.update("delete from STATION", new EmptySqlParameterSource());
 
-        // default data 생성
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
-        createResponse1 = RestAssured.given().log().all()
-                .body(params1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        String insertSql = "insert into STATION (name) values (:name)";
+        SqlParameterSource source = new MapSqlParameterSource("name", "강남역");
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(insertSql, source, keyHolder);
+        savedId1 = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
-        createResponse2 = RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        insertSql = "insert into STATION (name) values (:name)";
+        source = new MapSqlParameterSource("name", "역삼역");
+        keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(insertSql, source, keyHolder);
+        savedId2 = Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     @DisplayName("지하철역을 생성한다.")
@@ -82,8 +77,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
-
-        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -111,13 +104,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertThat(resultLineIds).containsAll(List.of(savedId1, savedId2));
     }
 
     @DisplayName("지하철역을 제거한다.")

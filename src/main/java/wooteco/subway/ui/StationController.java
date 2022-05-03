@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
@@ -20,7 +19,6 @@ import wooteco.subway.service.StationService;
 @RestController
 public class StationController {
 
-    private final StationDao stationDao = new StationDao();
     private final StationService stationService;
 
     public StationController(StationService stationService) {
@@ -46,12 +44,6 @@ public class StationController {
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/stations")
-    public ResponseEntity<Void> deleteStations() {
-        stationService.deleteAll();
         return ResponseEntity.noContent().build();
     }
 }
