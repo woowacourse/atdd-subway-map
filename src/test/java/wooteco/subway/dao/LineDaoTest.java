@@ -48,4 +48,18 @@ class LineDaoTest {
 
         assertThat(LineDao.findAll().size()).isEqualTo(2);
     }
+
+    @DisplayName("특정 id를 가지는 라인의 이름과 색을 변경한다.")
+    @Test
+    void update_Line_By_Id() {
+        Line line = new Line("2호선", "초록색");
+        Line persistLine = LineDao.save(line);
+
+        Line updateLine = new Line("8호선", "분홍색");
+        LineDao.updateById(persistLine.getId(), updateLine);
+
+        Line actual = LineDao.findAll().get(0);
+        assertThat(actual.getName()).isEqualTo("8호선");
+        assertThat(actual.getColor()).isEqualTo("분홍색");
+    }
 }
