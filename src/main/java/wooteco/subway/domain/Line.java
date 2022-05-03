@@ -1,10 +1,6 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Line {
-    private final List<Station> stations = new ArrayList<>();
     private Long id;
     private String name;
     private String color;
@@ -23,6 +19,10 @@ public class Line {
         this.color = color;
     }
 
+    public boolean isSameLine(Line other) {
+        return this.name.equals(other.name);
+    }
+
     public Long getId() {
         return id;
     }
@@ -33,10 +33,6 @@ public class Line {
 
     public String getColor() {
         return color;
-    }
-
-    public List<Station> getStations() {
-        return stations;
     }
 
     @Override
