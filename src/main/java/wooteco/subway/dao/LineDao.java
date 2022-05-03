@@ -45,8 +45,7 @@ public class LineDao {
     }
 
     public static void deleteById(Long id) {
-        Line line = findById(id);
-        lines.remove(line);
+        lines.removeIf(line -> line.isSameId(id));
     }
 
     private static void validateDuplication(Line line) {

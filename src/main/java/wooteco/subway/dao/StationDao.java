@@ -30,6 +30,10 @@ public class StationDao {
         return stations;
     }
 
+    public static void deleteById(Long id) {
+        stations.removeIf(station -> station.isSameId(id));
+    }
+
     private static Station createNewObject(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
