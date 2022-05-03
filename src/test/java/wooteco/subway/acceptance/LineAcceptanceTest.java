@@ -9,7 +9,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.StationResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -72,7 +71,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("전체 노선을 조회하면 200 ok와 노선 정보를 반환한다.")
     @Test
-    void getLines(){
+    void getLines() {
         Map<String, String> newBundangLine = new HashMap<>();
         newBundangLine.put("name", "신분당선");
         newBundangLine.put("color", "bg-red-600");
@@ -169,7 +168,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("노선을 제거하면 204 No Content를 반환한다.")
+    @Test
+    void deleteStation() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }

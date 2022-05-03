@@ -49,4 +49,8 @@ public class LineDao {
         Line updateLine = new Line(line.getId(), name, color);
         lines.add(updateLine);
     }
+
+    public static void deleteById(Long id) {
+        lines.removeIf(line -> id.equals(line.getId()));
+    }
 }
