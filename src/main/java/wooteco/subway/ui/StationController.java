@@ -11,6 +11,7 @@ import wooteco.subway.dto.StationResponse;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import wooteco.subway.service.StationService;
 
 @RestController
 public class StationController {
@@ -18,7 +19,7 @@ public class StationController {
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
-        Station newStation = StationDao.save(station);
+        Station newStation = StationService.save(station);
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
     }

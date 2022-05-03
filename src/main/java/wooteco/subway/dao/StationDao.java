@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.Collections;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
 
@@ -18,7 +19,7 @@ public class StationDao {
     }
 
     public static List<Station> findAll() {
-        return stations;
+        return Collections.unmodifiableList(stations);
     }
 
     private static Station createNewObject(Station station) {
@@ -26,5 +27,9 @@ public class StationDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
+    }
+
+    public static void clear() {
+        stations = new ArrayList<>();
     }
 }
