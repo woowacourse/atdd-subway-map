@@ -31,4 +31,8 @@ public class LineDao {
             throw new IllegalArgumentException("이름이 중복된 노선은 만들 수 없습니다.");
         }
     }
+
+    public static List<Line> findAll() {
+        return lines;
+    }
 }
