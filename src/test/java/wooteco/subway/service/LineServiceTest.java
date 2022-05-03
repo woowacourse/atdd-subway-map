@@ -7,13 +7,13 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.MemoryLineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.service.dto.LineDto;
 
 class LineServiceTest {
 
-	private final LineService lineService = new LineService(new LineDao());
+	private final LineService lineService = new LineService(new MemoryLineDao());
 
 	@DisplayName("지하철 노선을 저장한다.")
 	@Test

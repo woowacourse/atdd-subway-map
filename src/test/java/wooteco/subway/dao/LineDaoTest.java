@@ -12,7 +12,7 @@ import wooteco.subway.domain.Line;
 
 class LineDaoTest {
 
-	private final LineDao lineDao = new LineDao();
+	private final LineDao lineDao = new MemoryLineDao();
 
 	@DisplayName("지하철 노선을 저장한다.")
 	@Test

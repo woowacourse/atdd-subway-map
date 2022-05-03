@@ -7,12 +7,12 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.MemoryStationDao;
 import wooteco.subway.service.dto.StationDto;
 
 public class StationServiceTest {
 
-	private final StationService stationService = new StationService(new StationDao());
+	private final StationService stationService = new StationService(new MemoryStationDao());
 
 	@DisplayName("이름으로 지하철 역을 저장한다.")
 	@Test

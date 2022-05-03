@@ -4,7 +4,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.MemoryStationDao;
 import wooteco.subway.controller.dto.StationRequest;
 import wooteco.subway.controller.dto.StationResponse;
 import wooteco.subway.service.dto.StationDto;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/stations")
 public class StationController {
 
-	private final StationService stationService = new StationService(new StationDao());
+	private final StationService stationService = new StationService(new MemoryStationDao());
 
 	@PostMapping
 	public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {

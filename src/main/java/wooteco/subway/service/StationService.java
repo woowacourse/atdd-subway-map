@@ -3,15 +3,15 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.MemoryStationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.StationDto;
 
 public class StationService {
 
-	private final StationDao stationDao;
+	private final MemoryStationDao stationDao;
 
-	public StationService(StationDao stationDao) {
+	public StationService(MemoryStationDao stationDao) {
 		this.stationDao = stationDao;
 	}
 

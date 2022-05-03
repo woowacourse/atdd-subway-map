@@ -5,14 +5,30 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import javax.sql.DataSource;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import wooteco.subway.domain.Station;
 
+@JdbcTest
 class StationDaoTest {
 
-	private final StationDao stationDao = new StationDao();
+	@Autowired
+	private NamedParameterJdbcTemplate jdbcTemplate;
+	@Autowired
+	private DataSource dataSource;
+	private StationDao stationDao;
+
+	@BeforeEach
+	void init() {
+		stationDao = new JdbcStationDao(dataSource, jdbcTemplate);
+	}
 
 	@DisplayName("지하철 역을 저장한다.")
 	@Test

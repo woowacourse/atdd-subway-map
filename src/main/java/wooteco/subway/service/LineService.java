@@ -3,15 +3,15 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.MemoryLineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.service.dto.LineDto;
 
 public class LineService {
 
-	private final LineDao lineDao;
+	private final MemoryLineDao lineDao;
 
-	public LineService(LineDao lineDao) {
+	public LineService(MemoryLineDao lineDao) {
 		this.lineDao = lineDao;
 	}
 
