@@ -1,15 +1,16 @@
 package wooteco.subway.ui;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
@@ -25,5 +26,13 @@ public class LineController {
         }
         Line savedLine = LineDao.saveLine(line);
         return ResponseEntity.created(URI.create("/lines/" + savedLine.getId())).body(LineResponse.of(line));
+    }
+
+    @GetMapping("/lines")
+    public List<LineResponse> getAllLines() {
+        List<Line> allLines = LineDao.findAllLines();
+        return allLines.stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
     }
 }
