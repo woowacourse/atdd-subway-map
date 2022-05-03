@@ -120,7 +120,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 제거한다.")
     @Test
-    void deleteStation() {
+    void removeStation() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
