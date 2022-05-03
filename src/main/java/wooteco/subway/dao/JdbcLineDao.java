@@ -36,6 +36,7 @@ public class JdbcLineDao implements LineDao {
             ps.setString(2, line.getColor());
             return ps;
         }, keyHolder);
+
         long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return new Line(id, line.getName(), line.getColor());
     }

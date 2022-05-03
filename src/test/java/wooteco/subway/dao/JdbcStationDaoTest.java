@@ -40,4 +40,13 @@ class JdbcStationDaoTest {
 
         assertThat(stationDao.findAll()).hasSize(2);
     }
+
+    @Test
+    @DisplayName("Station을 삭제할 수 있다.")
+    void delete() {
+        Station station = stationDao.save(new Station("오리"));
+        Long stationId = station.getId();
+
+        assertThat(stationDao.delete(stationId)).isEqualTo(1);
+    }
 }

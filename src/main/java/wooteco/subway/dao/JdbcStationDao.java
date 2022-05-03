@@ -34,6 +34,7 @@ public class JdbcStationDao implements StationDao {
             ps.setString(1, station.getName());
             return ps;
         }, keyHolder);
+
         long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return new Station(id, station.getName());
     }
@@ -51,6 +52,7 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public int delete(final Long stationId) {
-        return 0;
+        final String sql = "delete from STATION where id = ?";
+        return jdbcTemplate.update(sql, stationId);
     }
 }
