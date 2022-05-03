@@ -39,7 +39,7 @@ public class Line {
             return false;
         }
         Line line = (Line) o;
-        return name.equals(line.name) && color.equals(line.color);
+        return Objects.equals(name, line.name) && Objects.equals(color, line.color);
     }
 
     @Override
