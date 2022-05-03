@@ -19,17 +19,23 @@ import wooteco.subway.dto.LineResponse;
 @RestController
 public class LineController {
 
+    private final LineDao lineDao;
+
+    public LineController(LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
+
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = LineDao.save(line);
+        Line newLine = lineDao.save(line);
         LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = LineDao.findAll();
+        List<Line> lines = lineDao.findAll();
         List<LineResponse> lineResponses = lines.stream()
                 .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
                 .collect(Collectors.toList());
@@ -39,7 +45,7 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line line = LineDao.findById(id);
+        Line line = lineDao.findById(id);
         LineResponse lineResponse = new LineResponse(id, line.getName(), line.getColor());
         return ResponseEntity.ok().body(lineResponse);
     }
@@ -47,13 +53,13 @@ public class LineController {
     @PutMapping("/lines/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        LineDao.updateById(id, line);
+        lineDao.updateById(id, line);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        LineDao.deleteById(id);
+        lineDao.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }
