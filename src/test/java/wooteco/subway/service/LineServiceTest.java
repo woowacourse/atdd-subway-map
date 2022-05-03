@@ -2,7 +2,7 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,16 +10,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
-import wooteco.subway.repository.dao.LineDao;
+import wooteco.subway.mockDao.MockLineDao;
 
 class LineServiceTest {
 
-    private final LineService service = new LineService(new LineDao());
+    private final LineService service = new LineService(new MockLineDao());
 
     @BeforeEach
     void initStore() {
-        LineDao.removeAll();
+        MockLineDao.removeAll();
     }
 
     @DisplayName("노선 이름과 색깔을 입력받아서 해당 이름과 색깔을 가진 노선을 등록한다.")

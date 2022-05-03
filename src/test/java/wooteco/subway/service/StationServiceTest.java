@@ -4,21 +4,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Station;
-import wooteco.subway.repository.dao.StationDao;
+import wooteco.subway.mockDao.MockStationDao;
 
 class StationServiceTest {
 
-    private final StationService service = new StationService(new StationDao());
+    private final StationService service = new StationService(new MockStationDao());
 
     @BeforeEach
     void initStore() {
-        StationDao.removeAll();
+        MockStationDao.removeAll();
     }
 
     @DisplayName("역 이름을 입력받아서 해당 이름을 가진 역을 등록한다.")

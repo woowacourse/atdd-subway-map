@@ -14,13 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.StationRequestDto;
 import wooteco.subway.dto.response.StationResponseDto;
+import wooteco.subway.repository.dao.JdbcStationDao;
 import wooteco.subway.repository.dao.StationDao;
 import wooteco.subway.service.StationService;
 
 @RestController
 public class StationController {
 
-    private final StationService stationService = new StationService(new StationDao());
+    private final StationService stationService = new StationService(new JdbcStationDao());
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponseDto> createStation(@RequestBody final StationRequestDto stationRequestDto) {

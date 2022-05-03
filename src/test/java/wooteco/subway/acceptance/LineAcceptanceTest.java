@@ -17,14 +17,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.response.LineResponseDto;
-import wooteco.subway.repository.dao.LineDao;
+import wooteco.subway.mockDao.MockLineDao;
 
 @DisplayName("노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void initStore() {
-        LineDao.removeAll();
+        MockLineDao.removeAll();
     }
 
     @DisplayName("노선을 생성한다.")

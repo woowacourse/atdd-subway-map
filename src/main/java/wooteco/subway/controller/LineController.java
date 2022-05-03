@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.request.LineRequestDto;
 import wooteco.subway.dto.response.LineResponseDto;
-import wooteco.subway.repository.dao.LineDao;
+import wooteco.subway.repository.dao.JdbcLineDao;
 import wooteco.subway.service.LineService;
 
 @RestController
 public class LineController {
 
-    private final LineService lineService = new LineService(new LineDao());
+    private final LineService lineService = new LineService(new JdbcLineDao());
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponseDto> createLine(@RequestBody final LineRequestDto lineRequestDto) {

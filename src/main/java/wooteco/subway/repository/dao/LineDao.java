@@ -1,49 +1,20 @@
 package wooteco.subway.repository.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import wooteco.subway.repository.entity.LineEntity;
 
-public class LineDao {
+public interface LineDao {
 
-    private static Long seq = 0L;
-    private static List<LineEntity> store = new ArrayList<>();
+    LineEntity save(final LineEntity lineEntity);
 
-    public static void removeAll() {
-        store.clear();
-    }
+    List<LineEntity> findAll();
 
-    public LineEntity save(final LineEntity lineEntity) {
-        final LineEntity saved = new LineEntity(++seq, lineEntity.getName(), lineEntity.getColor());
-        store.add(saved);
-        return saved;
-    }
+    Optional<LineEntity> findByName(final String name);
 
-    public List<LineEntity> findAll() {
-        return new ArrayList<>(store);
-    }
+    Optional<LineEntity> findById(final Long id);
 
-    public Optional<LineEntity> findByName(final String name) {
-        return store.stream()
-                .filter(lineEntity -> lineEntity.getName().equals(name))
-                .findAny();
-    }
+    void deleteById(final Long id);
 
-    public Optional<LineEntity> findById(final Long id) {
-        return store.stream()
-                .filter(lineEntity -> lineEntity.getId().equals(id))
-                .findAny();
-    }
-
-    public void deleteById(final Long id) {
-        findById(id).ifPresent(lineEntity -> store.remove(lineEntity));
-    }
-
-    public void update(final LineEntity newLineEntity) {
-        findById(newLineEntity.getId()).ifPresent(oldLineEntity -> {
-            store.remove(oldLineEntity);
-            store.add(new LineEntity(oldLineEntity.getId(), newLineEntity.getName(), newLineEntity.getColor()));
-        });
-    }
+    void update(final LineEntity newLineEntity);
 }
