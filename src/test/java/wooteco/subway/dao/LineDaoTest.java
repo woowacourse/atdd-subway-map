@@ -63,13 +63,14 @@ public class LineDaoTest {
     void findById() {
         // given
         LineDao.save(new Line(1L, "line1", "color1"));
-        Line savedLine = LineDao.save(new Line(2L, "line2", "color2"));
+        Line line = new Line(2L, "line2", "color2");
+        Long savedId = LineDao.save(line);
 
         // when
-        Line line = LineDao.findById(savedLine.getId());
+        Line findLine = LineDao.findById(savedId);
 
         // then
-        assertThat(line).isEqualTo(savedLine);
+        assertThat(findLine).isEqualTo(line);
     }
 
     @DisplayName("존재하지 않는 id로 노선을 조회하면 예외가 발생한다")
@@ -96,11 +97,11 @@ public class LineDaoTest {
     @DisplayName("노선 정보를 수정한다")
     @Test
     void update() {
-        Line savedLine = LineDao.save(new Line(1L, "line", "color"));
+        Long savedId = LineDao.save(new Line(1L, "line", "color"));
 
-        LineDao.update(savedLine.getId(), "changedName", "changedColor");
+        Long updateId = LineDao.update(savedId, "changedName", "changedColor");
 
-        Line findLine = LineDao.findById(savedLine.getId());
+        Line findLine = LineDao.findById(updateId);
         assertThat(findLine.getName()).isEqualTo("changedName");
         assertThat(findLine.getColor()).isEqualTo("changedColor");
     }

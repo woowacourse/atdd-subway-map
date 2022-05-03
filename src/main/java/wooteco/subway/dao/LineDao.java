@@ -12,17 +12,18 @@ public class LineDao {
     private static Long seq = 0L;
     private static final List<Line> lines = new ArrayList<>();
 
-    public static Line save(final Line line) {
+    public static Long save(final Line line) {
         checkDuplicateName(line);
 
         Line persistStation = createNewObject(line);
         lines.add(persistStation);
-        return persistStation;
+        return persistStation.getId();
     }
 
-    public static void update(final Long id, final String name, final String color) {
+    public static Long update(final Long id, final String name, final String color) {
         Line line = findById(id);
         line.update(name, color);
+        return id;
     }
 
     public static List<Line> findAll() {

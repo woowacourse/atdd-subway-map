@@ -75,10 +75,10 @@ class StationDaoTest {
     @Test
     void deleteById() {
         // given
-        Station savedStation = StationDao.save(new Station(1L, "station"));
+        Long savedId = StationDao.save(new Station(1L, "station"));
 
         // when
-        StationDao.deleteById(savedStation.getId());
+        StationDao.deleteById(savedId);
 
         // then
         assertThat(StationDao.findAll()).isEmpty();

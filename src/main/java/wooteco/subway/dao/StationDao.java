@@ -11,12 +11,12 @@ public class StationDao {
     private static Long seq = 0L;
     private static final List<Station> stations = new ArrayList<>();
 
-    public static Station save(Station station) {
+    public static Long save(Station station) {
         checkDuplicateName(station);
 
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
-        return persistStation;
+        return persistStation.getId();
     }
 
     private static void checkDuplicateName(final Station station) {
