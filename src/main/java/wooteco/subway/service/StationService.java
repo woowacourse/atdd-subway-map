@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationRepository;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
 import java.util.Objects;
@@ -17,11 +18,12 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
-    public Station save(StationRequest stationRequest) {
+    public StationResponse save(StationRequest stationRequest) {
         Station findStation = stationRepository.findByName(stationRequest.getName());
         validateDuplicateName(findStation);
 
-        return stationRepository.save(new Station(stationRequest.getName()));
+        Station saveStation = stationRepository.save(new Station(stationRequest.getName()));
+        return new StationResponse(saveStation.getId(), saveStation.getName());
     }
 
     private void validateDuplicateName(Station station) {
