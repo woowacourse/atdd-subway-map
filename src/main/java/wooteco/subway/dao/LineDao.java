@@ -21,9 +21,9 @@ public class LineDao {
         return newLine.getId();
     }
 
-    public static Line findById(Long savedId) {
+    public static Line findById(Long id) {
         return lines.stream()
-                .filter(line -> line.getId().equals(savedId))
+                .filter(line -> line.getId().equals(id))
                 .findAny()
                 .orElseThrow(IllegalArgumentException::new);
     }

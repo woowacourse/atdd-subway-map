@@ -32,7 +32,7 @@ public class LineController {
     public ResponseEntity<List<LineCreateResponse>> showLines() {
         List<Line> lines = LineDao.findAll();
         final List<LineCreateResponse> lineResponses = lines.stream()
-                .map(it -> new LineCreateResponse(it.getId(), it.getName(), it.getColor()))
+                .map(line -> new LineCreateResponse(line.getId(), line.getName(), line.getColor()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(lineResponses);
