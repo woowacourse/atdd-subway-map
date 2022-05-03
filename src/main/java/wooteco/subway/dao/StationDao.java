@@ -7,7 +7,7 @@ import wooteco.subway.domain.Station;
 public class StationDao {
 
     private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
+    private static final List<Station> stations = new ArrayList<>();
 
     public static Station save(Station station) {
         validateDuplicateName(station);
