@@ -19,10 +19,6 @@ public class Line {
         this.color = color;
     }
 
-    public boolean checkId(Long id) {
-        return Objects.equals(this.id, id);
-    }
-
     public Long getId() {
         return id;
     }
