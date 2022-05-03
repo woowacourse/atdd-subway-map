@@ -1,5 +1,7 @@
 package wooteco.subway.ui;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,6 +19,16 @@ public class SubwayControllerAdvice {
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<Void> handleNoHandlerFoundException() {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<Void> handleNotFoundException() {
+        return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<Void> handleDataAcessException() {
+        return ResponseEntity.internalServerError().build();
     }
 
     @ExceptionHandler(RuntimeException.class)
