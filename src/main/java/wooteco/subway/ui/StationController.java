@@ -11,14 +11,17 @@ import wooteco.subway.dto.StationResponse;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import wooteco.subway.service.StationService;
 
 @RestController
 public class StationController {
 
+    private static final StationService STATION_SERVICE = new StationService();
+
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
-        Station newStation = StationDao.save(station);
+        Station newStation = STATION_SERVICE.save(station);
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
     }
@@ -35,5 +38,10 @@ public class StationController {
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> error() {
+        return ResponseEntity.badRequest().build();
     }
 }
