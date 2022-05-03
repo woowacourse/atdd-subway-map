@@ -36,4 +36,9 @@ public class LineDao {
 	public void remove(Long id) {
 		lines.remove(findById(id));
 	}
+
+	public boolean existsByName(String name) {
+		return lines.stream()
+			.anyMatch(line -> name.equals(line.getName()));
+	}
 }
