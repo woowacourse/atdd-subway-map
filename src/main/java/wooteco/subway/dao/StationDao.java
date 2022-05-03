@@ -1,5 +1,7 @@
 package wooteco.subway.dao;
 
+import java.sql.Statement;
+import java.util.Optional;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
 
@@ -9,7 +11,13 @@ import java.util.List;
 
 public class StationDao {
     private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
+    private static final List<Station> stations = new ArrayList<>();
+
+    public static Optional<Station> findByName(String name){
+        return stations.stream()
+                .filter(station -> station.getName().equals(name))
+                .findAny();
+    }
 
     public static Station save(Station station) {
         Station persistStation = createNewObject(station);
@@ -23,8 +31,10 @@ public class StationDao {
 
     private static Station createNewObject(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
+        if (field != null) {
+            field.setAccessible(true);
+            ReflectionUtils.setField(field, station, ++seq);
+        }
         return station;
     }
 }

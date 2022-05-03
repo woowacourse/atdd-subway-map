@@ -1,5 +1,6 @@
 package wooteco.subway.ui;
 
+import java.util.Optional;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,10 @@ public class StationController {
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
+        Optional<Station> wrappedStation = StationDao.findByName(stationRequest.getName());
+        if (wrappedStation.isPresent()) {
+            throw new IllegalArgumentException("이미 같은 이름의 지하철역이 존재합니다.");
+        }
         Station newStation = StationDao.save(station);
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
