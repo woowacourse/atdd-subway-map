@@ -1,29 +1,31 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import wooteco.subway.dao.InmemoryStationDao;
+import org.springframework.stereotype.Service;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
+@Service
 public class StationService {
 
-    private final InmemoryStationDao inmemoryStationDao;
+    private final StationDao stationDao;
 
-    public StationService(final InmemoryStationDao inmemoryStationDao) {
-        this.inmemoryStationDao = inmemoryStationDao;
+    public StationService(final StationDao stationDao) {
+        this.stationDao = stationDao;
     }
 
     public Station save(final Station station) {
-        if (inmemoryStationDao.existByName(station.getName())) {
+        if (stationDao.existByName(station.getName())) {
             throw new IllegalStateException("이미 존재하는 역 이름입니다.");
         }
-        return inmemoryStationDao.save(station);
+        return stationDao.save(station);
     }
 
     public List<Station> findAll() {
-        return inmemoryStationDao.findAll();
+        return stationDao.findAll();
     }
 
     public void delete(final Long stationId) {
-        inmemoryStationDao.delete(stationId);
+        stationDao.delete(stationId);
     }
 }
