@@ -20,13 +20,19 @@ import wooteco.subway.dto.LineResponse;
 @RestController
 public class LineController {
 
+    private final LineDao lineDao;
+
+    public LineController(LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
+
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> create(@RequestBody LineRequest lineRequest) {
-        if (LineDao.existsByName(lineRequest.getName())) {
+        if (lineDao.existsByName(lineRequest.getName())) {
             return ResponseEntity.badRequest().build();
         }
         final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        final Line newLine = LineDao.save(line);
+        final Line newLine = lineDao.save(line);
         final LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
 
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
@@ -34,7 +40,7 @@ public class LineController {
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = LineDao.findAll();
+        List<Line> lines = lineDao.findAll();
         List<LineResponse> lineResponses = lines.stream()
                 .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
@@ -43,29 +49,29 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        if (LineDao.notExistsById(id)) {
+        if (lineDao.notExistsById(id)) {
             return ResponseEntity.badRequest().build();
         }
-        Line line = LineDao.findById(id);
+        Line line = lineDao.findById(id);
 
         return ResponseEntity.ok(new LineResponse(line.getId(), line.getName(), line.getColor()));
     }
 
     @PutMapping("/lines/{id}")
     public ResponseEntity<LineResponse> modifyLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        if (LineDao.notExistsById(id)) {
+        if (lineDao.notExistsById(id)) {
             return ResponseEntity.badRequest().build();
         }
-        LineDao.updateLineById(id, lineRequest.getName(), lineRequest.getColor());
+        lineDao.updateLineById(id, lineRequest.getName(), lineRequest.getColor());
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        if (LineDao.notExistsById(id)) {
+        if (lineDao.notExistsById(id)) {
             return ResponseEntity.badRequest().build();
         }
-        LineDao.deleteById(id);
+        lineDao.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }
