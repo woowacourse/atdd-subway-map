@@ -82,7 +82,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         requestPost(params2);
 
         ExtractableResponse<Response> response = requestGet();
-        ;
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.body().jsonPath().getList(".", LineResponse.class).size()).isEqualTo(2);
@@ -141,7 +140,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", "초록색");
         ExtractableResponse<Response> createResponse = requestPost(params);
 
-        Long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
+        long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
