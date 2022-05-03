@@ -21,10 +21,21 @@ public class StationDao {
         return stations;
     }
 
+    public static boolean existsByName(String name) {
+        return stations.stream()
+                .map(Station::getName)
+                .filter(it -> it.equals(name))
+                .count() != 0;
+    }
+
     private static Station createNewObject(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
+    }
+
+    public static void deleteAll() {
+        stations = new ArrayList<>();
     }
 }
