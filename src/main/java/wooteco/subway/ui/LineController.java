@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineDto;
 import wooteco.subway.dto.LineRequest;
@@ -21,8 +20,11 @@ import wooteco.subway.service.LineService;
 @Controller
 public class LineController {
 
-    private final LineDao lineDao = new LineDao();
-    private final LineService lineService = new LineService(lineDao);
+    private final LineService lineService;
+
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
+    }
 
     @PostMapping("/lines")
     public ResponseEntity<LineDto> createLine(@RequestBody LineRequest lineRequest) {
