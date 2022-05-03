@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 import wooteco.subway.repository.dao.LineDao;
 
 class LineServiceTest {
@@ -88,5 +89,16 @@ class LineServiceTest {
                 () -> assertThat(searchedLine.getName()).isEqualTo("신분당선"),
                 () -> assertThat(searchedLine.getColor()).isEqualTo("bg-red-600")
         );
+    }
+
+    @DisplayName("id 로 노선을 삭제한다.")
+    @Test
+    void removeById() {
+        service.register("2호선", "bg-green-600");
+        Line line = service.register("신분당선", "bg-red-600");
+
+        service.remove(line.getId());
+
+        assertThat(service.searchAll().size()).isEqualTo(1);
     }
 }

@@ -52,4 +52,8 @@ public class LineService {
         Line newLine = new Line(id, name, color);
         lineDao.update(new LineEntity(newLine));
     }
+
+    public void remove(final Long id) {
+        lineDao.deleteById(id);
+    }
 }
