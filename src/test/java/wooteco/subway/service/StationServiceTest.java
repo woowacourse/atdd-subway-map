@@ -38,7 +38,7 @@ class StationServiceTest {
     @DisplayName("동일한 이름의 역이 있으면 에러를 발생한다.")
     @Test
     void saveDuplicateName() {
-        stationService.save(new StationRequest("신림역"));
+        stationRepository.save(new Station("신림역"));
         assertThatThrownBy(
                 () -> stationService.save(new StationRequest("신림역"))
         ).isInstanceOf(NameDuplicatedException.class);
@@ -46,11 +46,19 @@ class StationServiceTest {
 
     @DisplayName("모든 역을 조회한다.")
     @Test
-    void findAll() {
-        stationService.save(new StationRequest("신림역"));
-        stationService.save(new StationRequest("신대방역"));
+    void showStations() {
+        stationRepository.save(new Station("신림역"));
+        stationRepository.save(new Station("신대방역"));
         List<StationResponse> stationResponses = stationService.showStations();
         assertThat(stationResponses).hasSize(2);
+    }
+
+    @DisplayName("역을 삭제한다.")
+    @Test
+    void deleteStation() {
+        Station station = stationRepository.save(new Station("신림역"));
+        stationService.deleteStation(station.getId());
+        assertThat(stationRepository.findById(station.getId())).isNull();
     }
 
 }

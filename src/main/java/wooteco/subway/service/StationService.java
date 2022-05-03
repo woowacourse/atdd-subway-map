@@ -20,7 +20,7 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
-    public StationResponse save(StationRequest stationRequest) {
+    public StationResponse save(final StationRequest stationRequest) {
         Station findStation = stationRepository.findByName(stationRequest.getName());
         validateDuplicateName(findStation);
 
@@ -28,7 +28,7 @@ public class StationService {
         return new StationResponse(saveStation.getId(), saveStation.getName());
     }
 
-    private void validateDuplicateName(Station station) {
+    private void validateDuplicateName(final Station station) {
         if (Objects.nonNull(station)) {
             throw new NameDuplicatedException("[ERROR] 이미 존재하는 이름입니다.");
         }
@@ -38,5 +38,9 @@ public class StationService {
         return stationRepository.findAll().stream()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());
+    }
+
+    public void deleteStation(final Long id) {
+        stationRepository.deleteById(id);
     }
 }
