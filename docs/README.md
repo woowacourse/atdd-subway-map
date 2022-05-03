@@ -19,14 +19,14 @@
 ### 2단계 - 프레임워크 적용
 
 1. 스프링 JDBC 활용하여 H2 DB에 저장하기
-    - [ ] Dao 객체가 아닌 DB에서 데이터 관리하기
+    - [X] Dao 객체가 아닌 DB에서 데이터 관리하기
         - [X] StationDao
-        - [ ] LineDao
-    - [ ] DB에 접근하기 위한 spring jdbc 라이브러리를 활용하기 (JdbcTemplate 등)
+        - [X] LineDao
+    - [X] DB에 접근하기 위한 spring jdbc 라이브러리를 활용하기 (JdbcTemplate 등)
 
 2. H2 DB를 통해 저장된 값 확인하기
     - [X] h2 console 활용하여, 실제로 DB에 저장이 잘 되었는지 확인할 수 있도록 설정하기
 
 3. 스프링 빈 활용하기
-    - [ ] DAO를 스프링 빈으로 변경하기
+    - [X] DAO를 스프링 빈으로 변경하기
     - [ ] Service Layer 추가

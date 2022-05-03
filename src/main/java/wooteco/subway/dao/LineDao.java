@@ -1,60 +1,73 @@
 package wooteco.subway.dao;
 
-import org.springframework.util.ReflectionUtils;
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
+@Repository
 public class LineDao {
-    private final static List<Line> lines = new ArrayList<>();
-    private static Long seq = 0L;
 
-    public static Line save(Line line) {
-        validateDuplicateName(line);
-        Line persistLine = createNewObject(line);
-        lines.add(persistLine);
+    private final JdbcTemplate jdbcTemplate;
 
-        return persistLine;
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static void validateDuplicateName(Line line) {
-        lines.stream()
-                .filter(it -> it.isSameLine(line))
-                .findAny()
-                .ifPresent(it -> {
-                    throw new IllegalArgumentException(String.format("%s은 이미 존재하는 지하철 노선입니다.", it.getName()));
-                });
+    public Line save(Line line) {
+        String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
+
+        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        try { // TODO: Service Layer 에서 처리해야함
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+                ps.setString(1, line.getName());
+                ps.setString(2, line.getColor());
+                return ps;
+            }, keyHolder);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("중복된 이름을 입력할 수 없습니다.");
+        }
+
+        long lineId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return new Line(lineId, line.getName(), line.getColor());
     }
 
-    public static List<Line> findAll() {
-        return lines;
+    public Line findById(Long id) {
+        String sql = "SELECT id, name, color FROM LINE WHERE id = ?";
+
+        List<Line> lines = jdbcTemplate.query(sql, (resultSet, rowNum) -> new Line(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("color")
+        ), id);
+
+        // TODO: 서비스 레이어 추가시 Optional로 변경
+        return Optional.ofNullable(DataAccessUtils.singleResult(lines)).get();
     }
 
-    public static Line findById(Long id) {
-        return lines.stream()
-                .filter(it -> it.getId().equals(id))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선 ID입니다."));
+    public List<Line> findAll() {
+        String sql = "SELECT id, name, color FROM LINE";
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Line(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("color")
+        ));
     }
 
-    public static void update(Long id, Line line) {
-        Line oldLine = findById(id);
-        Line newLine = new Line(id, line.getName(), line.getColor());
-        lines.remove(oldLine);
-        lines.add(newLine);
+    public void update(Long id, Line line) {
+        String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
+        jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
-    public static void deleteById(Long id) {
-        lines.remove(findById(id));
-    }
-
-    private static Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-
-        return line;
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM LINE WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }
