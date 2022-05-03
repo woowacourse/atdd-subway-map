@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.util.ReflectionUtils;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
 
 public class LineDao {
     private static Long seq = 0L;
@@ -42,5 +43,14 @@ public class LineDao {
     public static void deleteAll(){
         seq = 0L;
         lines = new ArrayList<>();
+    }
+
+    public static void deleteById(Long id) {
+        lines.remove(findById(id));
+    }
+
+    public static void update(Long id, LineRequest lineRequest) {
+        Line targetLine = LineDao.findById(id);
+        targetLine.update(lineRequest);
     }
 }

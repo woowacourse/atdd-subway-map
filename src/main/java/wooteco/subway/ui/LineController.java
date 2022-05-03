@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,10 +49,12 @@ public class LineController {
 
     @PutMapping("/lines/{id}")
     public void update(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        Line targetLine = LineDao.findById(id);
-        targetLine.update(lineRequest);
+        LineDao.update(id, lineRequest);
     }
 
-
-
+    @DeleteMapping("/lines/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        LineDao.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }
