@@ -46,4 +46,8 @@ public class LineDao {
         findLine.setName(line.getName());
         findLine.setColor(line.getColor());
     }
+
+    public void delete(Long id) {
+        lines.remove(findById(id));
+    }
 }

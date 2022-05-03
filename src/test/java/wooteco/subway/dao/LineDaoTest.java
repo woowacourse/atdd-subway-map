@@ -70,4 +70,16 @@ public class LineDaoTest {
 
         assertThat(actual).isEqualTo(expected);
     }
+
+    @Test
+    @DisplayName("노선을 삭제한다.")
+    void delete() {
+        Line saveLine = lineDao.save(line);
+
+        lineDao.delete(saveLine.getId());
+
+        assertThatThrownBy(() -> lineDao.findById(saveLine.getId()))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageMatching("id에 맞는 지하철 노선이 없습니다.");
+    }
 }
