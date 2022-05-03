@@ -44,6 +44,18 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponse);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        LineDao.update(id, lineRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+        LineDao.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> exception(Exception exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());

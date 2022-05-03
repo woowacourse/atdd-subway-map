@@ -2,7 +2,7 @@ package wooteco.subway.dao;
 
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
+import wooteco.subway.dto.LineRequest;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -35,5 +35,14 @@ public class LineDao {
                 .filter(line -> line.checkId(id))
                 .findAny()
                 .orElseThrow();
+    }
+
+    public static void update(Long id, LineRequest lineRequest) {
+        deleteById(id);
+        createNewObject(new Line(id, lineRequest.getName(), lineRequest.getColor()));
+    }
+
+    public static void deleteById(Long id) {
+        lines.removeIf(line -> line.checkId(id));
     }
 }

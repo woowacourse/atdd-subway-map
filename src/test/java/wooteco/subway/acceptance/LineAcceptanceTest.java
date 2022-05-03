@@ -117,4 +117,72 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+    @DisplayName("특정 노선을 업데이트한다")
+    @Test
+    public void updateLine() {
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "신분당선");
+        params1.put("color", "bg-red-600");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        String uri = createResponse.header("Location");
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "인간분당선");
+        params2.put("color", "bg-red-600");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put(uri)
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("노선을 삭제한다.")
+    @Test
+    void deleteLine() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "무지개색");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        String uri = createResponse.header("Location");
+        Long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+
+        // then
+        ExtractableResponse<Response> linesResponse = RestAssured.given().log().all()
+                .when()
+                .get("/lines")
+                .then().log().all()
+                .extract();
+
+        List<Long> resultLineIds = linesResponse.jsonPath().getList(".", LineResponse.class).stream()
+                .map(it -> it.getId())
+                .collect(Collectors.toList());
+
+        assertThat(resultLineIds.contains(id)).isFalse();
+    }
 }
