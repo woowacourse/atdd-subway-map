@@ -14,6 +14,16 @@ class StationDaoTest {
     void save() {
         Station station = new Station("오리");
         Station savedStation = StationDao.save(station);
+
         assertThat(savedStation.getId()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("모든 Station을 조회할 수 있다.")
+    void findAll() {
+        StationDao.save(new Station("오리"));
+        StationDao.save(new Station("배카라"));
+
+        assertThat(StationDao.findAll()).hasSize(2);
     }
 }
