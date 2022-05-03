@@ -1,81 +1,67 @@
 package wooteco.subway.dao;
 
 import java.lang.reflect.Field;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 
+@Repository
 public class LineDao {
     public static final String DUPLICATE_LINE_NAME = "[ERROR] 중복된 노선 이름이 있습니다.";
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
 
-    private LineDao() {}
+    private final JdbcTemplate jdbcTemplate;
 
-    public static Line save(Line line) {
-        validateDuplicatedInSave(line);
-        Line persistLine = createNewObject(line);
-        lines.add(persistLine);
-        return persistLine;
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static void validateDuplicatedInSave(Line line) {
-        if (isDuplicatedName(line)) {
-            throw new IllegalArgumentException(DUPLICATE_LINE_NAME);
-        }
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("color"));
+
+    public Line save(Line line) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sql = "insert into line (name, color) values (?, ?)";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, line.getName());
+            ps.setString(2, line.getColor());
+            return ps;
+        }, keyHolder);
+        long insertedId = keyHolder.getKey().longValue();
+
+        return new Line(insertedId, line.getName(), line.getColor());
     }
 
-    private static boolean isDuplicatedName(Line line) {
-        return lines.stream().map(Line::getName)
-                .anyMatch(name -> line.getName().equals(name));
+    public List<Line> findAll() {
+        String sql = "select id, name, color from line";
+        return jdbcTemplate.query(sql, lineRowMapper);
     }
 
-    private static boolean isDuplicatedNameWithDifferentId(Long id, String newName) {
-        return lines.stream().anyMatch(eachLine -> id != eachLine.getId() && newName.equals(eachLine.getName()));
+    public void deleteById(Long id) {
+        String sql = "delete from line where id = (?)";
+        this.jdbcTemplate.update(sql,id);
     }
 
-    private static void validateDuplicatedInPut(Long id, String newName) {
-        if (isDuplicatedNameWithDifferentId(id, newName)) {
-            throw new IllegalArgumentException();
-        }
+    public Line findById(Long id) {
+        String sql = "select id, name, color from line where id = (?)";
+        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
 
-    public static List<Line> findAll() {
-        return lines;
-    }
-
-    public static void deleteById(Long id) {
-        lines.removeIf(it -> it.getId().equals(id));
-    }
-
-    public static Optional<Line> findById(Long id) {
-        return lines.stream()
-                .filter(it -> it.getId() == id)
-                .findFirst();
-    }
-
-    public static void changeLineName(Long id, String newName) {
-        Optional<Line> findLine = findById(id);
-        validateIdExist(findLine);
-        Line line = findLine.get();
-        validateDuplicatedInPut(id, newName);
-        line.setName(newName);
-    }
-
-    private static void validateIdExist(Optional<Line> resultById) {
-        if (resultById.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 등록되지 않은 ID입니다.");
-        }
-    }
-
-
-
-    private static Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+    public void changeLineName(Long id, String newName) {
+        String sql = "update line set name = (?) where id = (?)";
+        jdbcTemplate.update(sql, newName, id);
     }
 }
