@@ -2,12 +2,15 @@ package wooteco.subway.domain;
 
 import java.util.Objects;
 
+import wooteco.subway.dto.LineRequest;
+
 public class Line {
     private Long id;
     private String name;
-    private String  color;
+    private String color;
 
-    public Line() {}
+    public Line() {
+    }
 
     public Line(Long id, String name, String color) {
         this.id = id;
@@ -45,5 +48,18 @@ public class Line {
     @Override
     public int hashCode() {
         return Objects.hash(name, color);
+    }
+
+    public void update(LineRequest lineRequest) {
+        String name = lineRequest.getName();
+        String color = lineRequest.getColor();
+        if (name != null) {
+            this.name = name;
+        }
+
+        if (color != null) {
+            this.color = color;
+        }
+
     }
 }
