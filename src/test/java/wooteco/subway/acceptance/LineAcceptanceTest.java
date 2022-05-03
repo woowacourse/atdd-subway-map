@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -83,5 +84,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void getLine() {
+        /// given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        int expectedLineId = Integer.parseInt(createResponse.header("Location").split("/")[2]);
+
+        // when & then
+        RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + expectedLineId)
+                .then().log().all()
+                .body("id", equalTo(expectedLineId));
     }
 }

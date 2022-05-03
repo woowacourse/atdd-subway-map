@@ -17,14 +17,21 @@ public class LineDao {
         return persistLine;
     }
 
-    public static List<Line> findAll() {
-        return Collections.unmodifiableList(lines);
-    }
-
     private static Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
         return line;
+    }
+
+    public static Line find(Long id) {
+        return lines.stream()
+                .filter(line -> line.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+    }
+
+    public static List<Line> findAll() {
+        return Collections.unmodifiableList(lines);
     }
 }
