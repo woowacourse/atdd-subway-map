@@ -18,7 +18,7 @@ class LineDaoTest {
 
     @DisplayName("노선 저장 기능을 테스트한다.")
     @Test
-    void save_Line() {
+    void saveLine() {
         Line line = new Line("2호선", "초록색");
 
         Line persistLine = LineDao.save(line);
@@ -30,7 +30,7 @@ class LineDaoTest {
 
     @DisplayName("중복된 이름의 노선을 저장할 경우 예외가 발생한다.")
     @Test
-    void save_Duplicated_Name_Line() {
+    void saveDuplicateNameLine() {
         Line line = new Line("2호선", "초록색");
         LineDao.save(line);
 
@@ -51,7 +51,7 @@ class LineDaoTest {
 
     @DisplayName("특정 id를 가지는 노선을 조회한다.")
     @Test
-    void find_By_Id() {
+    void findById() {
         Line line = new Line("2호선", "초록색");
         Long id = LineDao.save(line).getId();
 
@@ -63,7 +63,7 @@ class LineDaoTest {
 
     @DisplayName("특정 id를 가지는 라인의 이름과 색을 변경한다.")
     @Test
-    void update_Line_By_Id() {
+    void updateLineById() {
         Line line = new Line("2호선", "초록색");
         Long id = LineDao.save(line).getId();
 
@@ -77,7 +77,7 @@ class LineDaoTest {
 
     @DisplayName("특정 id를 가지는 노선을 삭제한다.")
     @Test
-    void delete_By_Id() {
+    void deleteById() {
         Line line = new Line("2호선", "초록색");
         Long id = LineDao.save(line).getId();
 

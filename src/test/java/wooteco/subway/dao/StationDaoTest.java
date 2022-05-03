@@ -18,7 +18,7 @@ class StationDaoTest {
 
     @DisplayName("지하철 역 저장 테스트")
     @Test
-    void save_Station() {
+    void saveStation() {
         Station station = new Station("강남역");
 
         Station persistStation = StationDao.save(station);
@@ -29,7 +29,7 @@ class StationDaoTest {
 
     @DisplayName("중복된 이름의 지하철 역을 저장할 경우 예외가 발생한다.")
     @Test
-    void save_Duplicated_Station() {
+    void saveDuplicateStation() {
         Station station = new Station("강남역");
         StationDao.save(station);
 
@@ -39,7 +39,7 @@ class StationDaoTest {
 
     @DisplayName("전체 역의 개수가 맞는지 확인한다.")
     @Test
-    void find_All_Station() {
+    void findAllStation() {
         Station gangNam = new Station("강남역");
         Station jamSil = new Station("잠실역");
 
@@ -51,7 +51,7 @@ class StationDaoTest {
 
     @DisplayName("특정 id를 가지는 역을 삭제한다.")
     @Test
-    void delete_Station() {
+    void deleteStation() {
         Station station = new Station("강남역");
         Station persistStation = StationDao.save(station);
         StationDao.deleteById(persistStation.getId());
