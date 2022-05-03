@@ -79,9 +79,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getString("message")).isNotBlank();
     }
 
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철노선 목록을 조회한다.")
     @Test
-    void getStations() {
+    void getLines() {
         /// given
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "2호선");
@@ -121,5 +121,51 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    @DisplayName("단건의 지하철 노선을 조회한다.")
+    @Test
+    void getLine() {
+        /// given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "2호선");
+        params1.put("color", "초록색");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+        long createdId = createResponse.body().jsonPath().getLong("id");
+        String uri = createResponse.header("Location");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get(uri)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getLong("id")).isEqualTo(createdId);
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo("2호선");
+        assertThat(response.body().jsonPath().getString("color")).isEqualTo("초록색");
+    }
+
+    @DisplayName("존재하지 않는 노선을 조회한다.")
+    @Test
+    void getNonExistLine() {
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/1")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
     }
 }
