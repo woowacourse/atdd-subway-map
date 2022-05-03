@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,13 @@ public class StationServiceTest {
         stationService = new StationService(new StationDao());
     }
 
+    @AfterEach
+    void tearDown() {
+        StationDao stationDao = new StationDao();
+        stationDao.deleteAll();
+        stationService = new StationService(stationDao);
+    }
+
     @Test
     @DisplayName("station 을 저장한다.")
     void save() {
@@ -32,6 +40,19 @@ public class StationServiceTest {
 
         //then
         assertThat(actual.getName()).isEqualTo(station.getName());
+    }
+
+    @Test
+    @DisplayName("중복된 역을 저장할 수 없다.")
+    void saveDuplicateName() {
+        //given
+        Station station = new Station("lala");
+        Station actual = stationService.save(station);
+
+        //then
+        assertThatThrownBy(() -> stationService.save(station))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("이미 등록된 역입니다.");
     }
 
     @Test

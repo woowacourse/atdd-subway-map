@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,11 @@ public class StationDaoTest {
         stationDao = new StationDao();
     }
 
+    @AfterEach
+    void tearDown() {
+        stationDao.deleteAll();
+    }
+
     @Test
     @DisplayName("Station 을 저장한다.")
     void save() {
@@ -30,10 +36,7 @@ public class StationDaoTest {
         Station actual = stationDao.save(station);
 
         //then
-        assertAll(
-            () -> assertThat(actual.getId()).isEqualTo(1L),
-            () -> assertThat(actual.getName()).isEqualTo(station.getName())
-        );
+        assertThat(actual.getName()).isEqualTo(station.getName());
     }
 
     @Test
@@ -63,9 +66,25 @@ public class StationDaoTest {
         stationDao.save(new Station(name));
 
         //when
-        Station actual = stationDao.findByName(name);
+        Station actual = stationDao.findByName(name).get();
 
         //then
         assertThat(actual.getName()).isEqualTo(name);
+    }
+
+    @Test
+    @DisplayName("모든 station 을 삭제한다.")
+    void deleteAll() {
+        //given
+        Station station1 = new Station("lala");
+        Station station2 = new Station("sojukang");
+        stationDao.save(station1);
+        stationDao.save(station2);
+
+        //when
+        stationDao.deleteAll();
+
+        //then
+        assertThat(stationDao.findAll()).hasSize(0);
     }
 }

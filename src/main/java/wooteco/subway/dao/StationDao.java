@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import wooteco.subway.domain.Station;
 
@@ -16,18 +17,21 @@ public class StationDao {
         return persistStation;
     }
 
-    public Station findByName(String name) {
+    private Station createNewObject(Station station) {
+        return new Station(++seq, station.getName());
+    }
+
+    public Optional<Station> findByName(String name) {
         return stations.stream()
             .filter(station -> name.equals(station.getName()))
-            .findFirst()
-            .orElseThrow(IllegalArgumentException::new);
+            .findFirst();
     }
 
     public List<Station> findAll() {
         return List.copyOf(stations);
     }
 
-    private Station createNewObject(Station station) {
-        return new Station(++seq, station.getName());
+    public void deleteAll() {
+        stations.clear();
     }
 }
