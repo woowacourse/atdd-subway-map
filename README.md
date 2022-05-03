@@ -46,7 +46,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] 같은 역의 이름으로 중복될 수 없다.
     - [x] 역 이름은 10글자를 넘길 수 없다.
     - [x] 역 이름은 2글자 이상이어야 한다.
-    - [ ] 역 이름은 한글이어야 한다.
+    - [x] 역 이름은 한글이어야 한다.
 - [ ] 지하철 역을 조회한다.
 - [ ] 지하철 역을 삭제한다.
     - [ ] 삭제할 역이 있어야 한다.
