@@ -1,6 +1,5 @@
-package wooteco.subway.ui;
+package wooteco.subway.controller;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.repository.dao.StationDao;
@@ -9,8 +8,6 @@ import wooteco.subway.dto.request.StationRequestDto;
 import wooteco.subway.dto.response.StationResponseDto;
 
 import java.net.URI;
-import java.util.List;
-import java.util.stream.Collectors;
 import wooteco.subway.service.StationService;
 
 @RestController
