@@ -39,7 +39,7 @@ public class LineDao {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선 ID입니다."));
     }
 
-    public static void updateById(Long id, Line line) {
+    public static void update(Long id, Line line) {
         Line oldLine = findById(id);
         Line newLine = new Line(id, line.getName(), line.getColor());
         lines.remove(oldLine);
