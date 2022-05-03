@@ -18,4 +18,9 @@ public class RestExceptionHandler {
     public ResponseEntity<Void> handleDataNotFound() {
         return ResponseEntity.notFound().build();
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleUnexpectedException() {
+        return ResponseEntity.internalServerError().body("서버에서 예상하지 못한 문제가 발생했습니다.");
+    }
 }
