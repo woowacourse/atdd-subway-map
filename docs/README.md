@@ -20,6 +20,8 @@
 
 1. 스프링 JDBC 활용하여 H2 DB에 저장하기
     - [ ] Dao 객체가 아닌 DB에서 데이터 관리하기
+        - [X] StationDao
+        - [ ] LineDao
     - [ ] DB에 접근하기 위한 spring jdbc 라이브러리를 활용하기 (JdbcTemplate 등)
 
 2. H2 DB를 통해 저장된 값 확인하기
