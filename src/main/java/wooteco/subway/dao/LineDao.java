@@ -36,4 +36,9 @@ public class LineDao {
     public List<Line> findAll() {
         return new ArrayList<>(lines.values());
     }
+
+    public int update(final Line line) {
+        lines.put(line.getId(), line);
+        return 1;
+    }
 }
