@@ -15,10 +15,16 @@ import java.util.stream.Collectors;
 @RestController
 public class LineController {
 
+    private final LineDao lineDao;
+
+    public LineController(LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
+
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = lineRequest.toEntity();
-        Line newLine = LineDao.save(line);
+        Line newLine = lineDao.save(line);
         LineResponse lineResponse = LineResponse.from(newLine);
 
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
@@ -26,7 +32,7 @@ public class LineController {
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = LineDao.findAll();
+        List<Line> lines = lineDao.findAll();
         List<LineResponse> lineResponses = lines.stream()
                 .map(LineResponse::from)
                 .collect(Collectors.toList());
@@ -36,7 +42,7 @@ public class LineController {
 
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line line = LineDao.findById(id);
+        Line line = lineDao.findById(id);
         LineResponse lineResponse = LineResponse.from(line);
 
         return ResponseEntity.ok().body(lineResponse);
@@ -45,14 +51,14 @@ public class LineController {
     @PutMapping(value = "/lines/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line line = lineRequest.toEntity();
-        LineDao.update(id, line);
+        lineDao.update(id, line);
 
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        LineDao.deleteById(id);
+        lineDao.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }

@@ -25,7 +25,7 @@ public class StationController {
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         Station station = stationRequest.toEntity();
         Station newStation = stationDao.save(station);
-        StationResponse stationResponse = StationResponse.from(station);
+        StationResponse stationResponse = StationResponse.from(newStation);
 
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
     }
