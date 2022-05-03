@@ -19,10 +19,6 @@ public class Line {
         this.color = color;
     }
 
-    public boolean isDuplicated(Line line) {
-        return this.name.equals(line.name) || this.color.equals(line.color);
-    }
-
     public Long getId() {
         return id;
     }
