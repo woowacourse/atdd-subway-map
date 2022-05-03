@@ -44,7 +44,7 @@
 
 This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master/LICENSE) licensed.
 
-## 기능 요구사항
+## 1단계 기능 요구사항
 
 - 지하철 역
     - [x] 등록
@@ -63,4 +63,8 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
         - [x] 이미 등록된 이름이라면 에러가 발생한다.
     - [x] 삭제
         - [x] 등록되지 않은 노선이라면 에러가 발생한다.
-    
+
+## 2단계 기능 요구사항
+
+- [ ] 스프링 JDBC를 활용하여 H2 데이터베이스에 데이터를 관리한다.
+- [ ] 스프링 빈을 활용하여 객체를 관리한다.
