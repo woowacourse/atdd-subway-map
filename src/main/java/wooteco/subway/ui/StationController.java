@@ -25,14 +25,14 @@ public class StationController {
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponseDto);
     }
 
-    @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<StationResponseDto>> showStations() {
-        List<Station> stations = StationDao.findAll();
-        List<StationResponseDto> stationResponsDtos = stations.stream()
-                .map(it -> new StationResponseDto(it.getId(), it.getName()))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationResponsDtos);
-    }
+//    @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<List<StationResponseDto>> showStations() {
+//        List<Station> stations = StationDao.findAll();
+//        List<StationResponseDto> stationResponsDtos = stations.stream()
+//                .map(it -> new StationResponseDto(it.getId(), it.getName()))
+//                .collect(Collectors.toList());
+//        return ResponseEntity.ok().body(stationResponsDtos);
+//    }
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
