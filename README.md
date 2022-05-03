@@ -53,9 +53,8 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 지하철 노선 목록
 - [x] 지하철 노선 조회
 - [x] 지하철 노선 수정
-- [ ] 지하철 노선 삭제
+- [x] 지하철 노선 삭제
 
 ### End to End 테스트 작성하기
 
--[ ] 노선 기능에 대한 E2E 테스트를 작성
--[ ] StationAcceptanceTest 클래스를 참고
+-[x] 노선 기능에 대한 E2E 테스트를 작성

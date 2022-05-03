@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.List;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
@@ -17,5 +18,13 @@ public class StationService {
         return StationDao.findAll()
                 .stream()
                 .anyMatch(inStation -> inStation.isSameName(station));
+    }
+
+    public List<Station> findAll() {
+        return StationDao.findAll();
+    }
+
+    public void delete(Long id) {
+        StationDao.delete(id);
     }
 }
