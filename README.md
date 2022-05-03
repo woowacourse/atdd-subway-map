@@ -1,4 +1,4 @@
-<p align="center">
+  <p align="center">
     <img width="200px;" src="https://raw.githubusercontent.com/woowacourse/atdd-subway-admin-frontend/master/images/main_logo.png"/>
 </p>
 <p align="center">
@@ -11,28 +11,35 @@
 <br>
 
 # 지하철 노선도 미션
+
 스프링 과정 실습을 위한 지하철 노선도 애플리케이션
 
-<br>
+## 기능 목록 구현
+
+1. 지하철역 관리 기능
+    - [ ]  입력받은 이름으로 지하철 역 생성
+        - [ ]  이미 있는 역의 이름이 입력으로 들어올 경우 예외 발생
+    - [ ]  전체 지하철역 조회
+    - [ ]  입력받은 이름의 지하철역 삭제
+
+2. 지하철 노선 관리 기능
+    - [ ]  입력받은 이름과 노선 컬러로 노선 생성
+        - [ ]  이미 존재하는 노선과 이름 또는 노선 컬러가 겹칠 경우 예외 발생
+    - [ ]  지하철 전체 노선 조회
+    - [ ]  입력받은 지하철 노선의 정보 조회
+    - [ ]  지하철 노선 수정
+        - [ ]  수정하려는 이름 혹은 컬러가 다른 노선과 겹칠 경우 예외 발생
+    - [ ]  지하철 노선 삭제
 
 ## 🚀 Getting Started
+
 ### Usage
+
 #### application 구동
+
 ```
 ./gradlew bootRun
 ```
-<br>
-
-## ✏️ Code Review Process
-[텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
-
-<br>
-
-## 🐞 Bug Report
-
-버그를 발견한다면, [Issues](https://github.com/woowacourse/atdd-subway-map/issues) 에 등록해주세요 :)
-
-<br>
 
 ## 📝 License
 
