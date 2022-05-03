@@ -36,7 +36,7 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponses);
     }
 
-    @GetMapping(value = "/lines/{id}")
+    @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = LineDao.findById(id);
         return ResponseEntity.ok().body(new LineResponse(line.getId(), line.getName(), line.getColor()));
