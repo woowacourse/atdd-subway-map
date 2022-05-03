@@ -27,4 +27,9 @@ public class LineService {
         Line line = LineDao.find(id);
         return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
+
+    public static void updateLine(Long id, LineRequest lineRequest) {
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        LineDao.update(id, line);
+    }
 }
