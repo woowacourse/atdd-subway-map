@@ -152,4 +152,33 @@ class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(responseBody.getColor()).isEqualTo("bg-green-600")
         );
     }
+
+    @DisplayName("노선을 수정한다.")
+    @Test
+    void modifyLine() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "bg-green-600");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+        long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
+
+        Map<String, String> modifyParams = new HashMap<>();
+        modifyParams.put("name", "신분당선");
+        modifyParams.put("color", "bg-red-600");
+        ExtractableResponse<Response> modifyResponse = RestAssured.given().log().all()
+                .body(modifyParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+        assertThat(modifyResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }

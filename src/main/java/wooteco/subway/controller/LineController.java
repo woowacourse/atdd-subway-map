@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
@@ -40,9 +41,16 @@ public class LineController {
     }
 
     @GetMapping("/lines/{id}")
-    public ResponseEntity<LineResponseDto> showLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponseDto> showLine(@PathVariable final Long id) {
         final Line line = lineService.searchById(id);
         return ResponseEntity.ok()
                 .body(new LineResponseDto(line.getId(), line.getName(), line.getColor(), new ArrayList<>()));
+    }
+
+    @PutMapping("/lines/{id}")
+    public ResponseEntity<Void> modifyLine(@PathVariable final Long id,
+                                           @RequestBody final LineRequestDto lineRequestDto) {
+        lineService.modify(id, lineRequestDto.getName(), lineRequestDto.getColor());
+        return ResponseEntity.ok().build();
     }
 }
