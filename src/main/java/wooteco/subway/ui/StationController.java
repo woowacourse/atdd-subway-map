@@ -30,7 +30,7 @@ public class StationController {
     public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationRequest stationRequest) {
         Station station = stationRequest.toEntity();
         Station newStation = stationDao.save(station);
-        StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
+        StationResponse stationResponse = new StationResponse(station);
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
     }
 
@@ -39,7 +39,7 @@ public class StationController {
         List<Station> stations = stationDao.findAll();
 
         List<StationResponse> stationResponses = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .map(StationResponse::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(stationResponses);
     }
