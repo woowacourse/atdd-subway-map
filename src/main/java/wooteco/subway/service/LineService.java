@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Line;
 import wooteco.subway.repository.dao.LineDao;
 import wooteco.subway.repository.entity.LineEntity;
 
+@Service
 public class LineService {
 
     private final LineDao lineDao;

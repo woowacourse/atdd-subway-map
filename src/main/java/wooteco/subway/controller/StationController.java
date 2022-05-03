@@ -21,7 +21,11 @@ import wooteco.subway.service.StationService;
 @RestController
 public class StationController {
 
-    private final StationService stationService = new StationService(new JdbcStationDao());
+    private final StationService stationService;
+
+    public StationController(final StationService stationService) {
+        this.stationService = stationService;
+    }
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponseDto> createStation(@RequestBody final StationRequestDto stationRequestDto) {
