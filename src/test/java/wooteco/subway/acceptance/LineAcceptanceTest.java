@@ -1,5 +1,6 @@
 package wooteco.subway.acceptance;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -117,5 +118,37 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    @DisplayName("특정 노선을 조회한다.")
+    @Test
+    void findLine() {
+        /// given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "1호선");
+        params1.put("color", "rgb-blue-600");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+        long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getLong("id")).isEqualTo(id),
+                () -> assertThat(response.jsonPath().getString("name")).isEqualTo("1호선"),
+                () -> assertThat(response.jsonPath().getString("color")).isEqualTo("rgb-blue-600")
+        );
     }
 }
