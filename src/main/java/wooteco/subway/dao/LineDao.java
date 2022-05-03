@@ -42,4 +42,9 @@ public class LineDao {
     public static List<Line> findAll() {
         return lines;
     }
+
+    public static void update(Long lineId, String name, String color) {
+        lines.remove(findById(lineId));
+        save(new Line(lineId, name, color));
+    }
 }
