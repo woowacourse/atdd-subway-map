@@ -29,6 +29,13 @@ public class LineDao {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선 ID입니다."));
     }
 
+    public static void updateById(Long id, Line line) {
+        Line oldLine = findById(id);
+        Line newLine = new Line(id, line.getName(), line.getColor());
+        lines.remove(oldLine);
+        lines.add(newLine);
+    }
+
     private static Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
