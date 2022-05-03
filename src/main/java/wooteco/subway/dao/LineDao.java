@@ -14,6 +14,7 @@ public class LineDao {
     public static Line save(Line line) {
         Line persistLine = createNewObject(line);
         lines.add(persistLine);
+
         return persistLine;
     }
 
@@ -32,6 +33,7 @@ public class LineDao {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
+
         return line;
     }
 }
