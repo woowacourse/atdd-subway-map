@@ -1,70 +1,89 @@
 package wooteco.subway.dao;
 
-import org.springframework.util.ReflectionUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
 
+@Repository
 public class LineDao {
-    private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
 
-    public static Line save(Line line) {
-        Line persistLine = createNewObject(line);
-        lines.add(persistLine);
-        return persistLine;
+    private final JdbcTemplate jdbcTemplate;
+
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public static List<Line> findAll() {
-        return lines;
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
+            new Line(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("color")
+            );
+
+    public Line save(String name, String color) {
+        final String sql = "INSERT INTO LINE(name,color) VALUES (?,?)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, name);
+            ps.setString(2, color);
+            return ps;
+        }, keyHolder);
+
+        return new Line(keyHolder.getKey().longValue(), name, color);
     }
 
-    public static Line findById(Long id) {
-        return lines.stream()
-                .filter(line -> line.isSameId(id))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+    public List<Line> findAll() {
+        final String sql = "SELECT * FROM LINE";
+        return jdbcTemplate.query(sql, lineRowMapper);
     }
 
-    public static void delete(Long id) {
-        lines.remove(findById(id));
-    }
-
-    public static void update(Long id, String name, String color) {
-        Line line = findById(id);
-        line.setName(name);
-        line.setColor(color);
-    }
-
-    public static void validate(String name) {
-        boolean validate = lines.stream()
-                .anyMatch(l -> l.isSameName(name));
-
-        if (validate) {
-            throw new IllegalArgumentException("지하철 이름이 중복될 수 없습니다.");
+    public Line findById(Long id) {
+        final String sql = "SELECT * FROM LINE WHERE id = ?";
+        Line line = jdbcTemplate.queryForObject(sql, lineRowMapper, id);
+        if (line == null) {
+            new IllegalArgumentException("존재하지 않는 노선입니다.");
         }
-    }
-
-    public static void validate(Long id, String name) {
-        boolean validate = lines.stream()
-                .anyMatch(l -> (!l.isSameId(id) && l.isSameName(name)));
-
-        if (validate) {
-            throw new IllegalArgumentException("지하철 이름이 중복될 수 없습니다.");
-        }
-    }
-
-    public static void clear() {
-        lines.clear();
-    }
-
-    private static Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
         return line;
+    }
+
+    public void delete(Long id) {
+        final String sql = "DELETE FROM LINE WHERE id = ?";
+        int count = jdbcTemplate.update(sql, id);
+        if (count == 0) {
+            new IllegalArgumentException("존재하지 않는 노선입니다.");
+        }
+    }
+
+    public void update(Long id, String name, String color) {
+        final String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
+        int count = jdbcTemplate.update(sql, name, color, id);
+        if (count == 0) {
+            new IllegalArgumentException("존재하지 않는 노선입니다.");
+        }
+    }
+
+    public void validate(String name) {
+        final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE name = ?)";
+        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, name);
+        if (result) {
+            throw new IllegalArgumentException("지하철 노선 이름이 중복될 수 없습니다.");
+        }
+    }
+
+    public void validate(Long id, String name) {
+        final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE id != ? AND name = ?)";
+        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, id, name);
+        if (result) {
+            throw new IllegalArgumentException("지하철 노선 이름이 중복될 수 없습니다.");
+        }
     }
 
 }

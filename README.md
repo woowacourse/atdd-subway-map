@@ -66,5 +66,5 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 
 ## 2단계 기능 요구사항
 
-- [ ] 스프링 JDBC를 활용하여 H2 데이터베이스에 데이터를 관리한다.
-- [ ] 스프링 빈을 활용하여 객체를 관리한다.
+- [x] 스프링 JDBC를 활용하여 H2 데이터베이스에 데이터를 관리한다.
+- [x] 스프링 빈을 활용하여 객체를 관리한다.
