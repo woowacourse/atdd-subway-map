@@ -6,6 +6,8 @@ import java.util.regex.Pattern;
 public class Station {
 
     private static final Pattern pattern = Pattern.compile("[ㄱ-ㅎ|가-힣|0-9]");
+    private static final int MAX_RANGE = 10;
+    private static final int MIN_RANGE = 2;
 
     private Long id;
     private String name;
@@ -25,11 +27,11 @@ public class Station {
     }
 
     private void validateNameRange(String name) {
-        if (name.length() >= 10) {
+        if (name.length() >= MAX_RANGE) {
             throw new IllegalArgumentException("지하철 역 이름은 10글자를 초과할 수 없습니다.");
         }
 
-        if (name.length() < 2) {
+        if (name.length() < MIN_RANGE) {
             throw new IllegalArgumentException("지하철 역 이름은 2글자 이상이어야 합니다.");
         }
     }
