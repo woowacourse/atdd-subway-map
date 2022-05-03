@@ -34,4 +34,16 @@ public class LineDao {
     public static List<Line> findAll() {
         return Collections.unmodifiableList(lines);
     }
+
+    public static void update(Line line) {
+        remove(line);
+        lines.add(line);
+    }
+
+    private static void remove(Line line) {
+        boolean isRemoving = lines.removeIf(other -> other.getId().equals(line.getId()));
+        if (!isRemoving) {
+            throw new IllegalArgumentException("존재하지 않는 노선입니다.");
+        }
+    }
 }

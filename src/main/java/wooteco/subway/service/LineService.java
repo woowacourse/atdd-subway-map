@@ -8,4 +8,8 @@ public class LineService {
     public static Line save(Line line) {
         return LineDao.save(line);
     }
+
+    public static void update(Line line) {
+        LineDao.update(line);
+    }
 }

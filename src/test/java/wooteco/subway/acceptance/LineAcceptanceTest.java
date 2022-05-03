@@ -110,4 +110,42 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .body("id", equalTo(expectedLineId));
     }
+
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+        int expectedLineId = Integer.parseInt(createResponse.header("Location").split("/")[2]);
+
+        // when
+        Map<String, String> updatedParams = new HashMap<>();
+        updatedParams.put("name", "다른분당선");
+        updatedParams.put("color", "bg-green-600");
+        ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+                .body(updatedParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + expectedLineId)
+                .then().log().all()
+                .extract();
+
+        // then
+        RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + expectedLineId)
+                .then().log().all()
+                .body("id", equalTo(expectedLineId))
+                .body("name", equalTo("다른분당선"))
+                .body("color", equalTo("bg-green-600"));
+    }
 }
