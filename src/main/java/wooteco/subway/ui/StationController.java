@@ -46,7 +46,7 @@ public class StationController {
         try {
             StationDao.delete(id);
         } catch (final IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
     }
