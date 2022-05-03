@@ -199,7 +199,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteStation() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        params.put("name", "신분당선");
+        params.put("color", "빨강이");
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

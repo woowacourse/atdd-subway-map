@@ -1,70 +1,72 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 
 @Repository
 public class LineDao {
-    private Long seq = 0L;
-    private List<Line> lines = new ArrayList<>();
 
-    public Line save(Line line) {
-        Line persistLine = createNewObject(line);
-        lines.add(persistLine);
-        return persistLine;
+    private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
+            new Line(resultSet.getLong("id"), resultSet.getString("name"), resultSet.getString("color"));
+
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+    public Line save(Line line) {
+        final SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("line").usingGeneratedKeyColumns("id");
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("name", line.getName());
+        parameters.put("color", line.getColor());
+
+        final Number number = simpleJdbcInsert.executeAndReturnKey(parameters);
+        return new Line(number.longValue(), line.getName(), line.getColor());
     }
 
     public boolean existsByName(String name) {
-        return lines.stream()
-                .map(Line::getName)
-                .filter(it -> it.equals(name))
-                .count() != 0;
+        final String sql = "SELECT COUNT(*) FROM line WHERE name = ?";
+        final Integer numOfLine = jdbcTemplate.queryForObject(sql, Integer.class, name);
+        return !numOfLine.equals(0);
     }
 
     public void deleteAll() {
-        lines = new ArrayList<>();
+        final String sql = "DELETE FROM line";
+        jdbcTemplate.update(sql);
     }
 
     public List<Line> findAll() {
-        return Collections.unmodifiableList(lines);
+        final String sql = "SELECT * FROM line";
+
+        return jdbcTemplate.query(sql, lineRowMapper);
     }
 
     public boolean notExistsById(Long id) {
-        return lines.stream()
-                .map(Line::getId)
-                .filter(it -> it.equals(id))
-                .count() == 0;
+        final String sql = "SELECT COUNT(*) FROM line WHERE id = ?";
+        final Integer numOfLine = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return numOfLine.equals(0);
     }
 
     public Line findById(Long id) {
-        return lines.stream()
-                .filter(line -> line.getId().equals(id))
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+        final String sql = "SELECT * FROM line WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
 
     public void updateLineById(Long id, String name, String color) {
-        System.out.println(lines + "!!!");
-        final Line line = findById(id);
-        lines.remove(line);
-        lines.add(new Line(id, name, color));
-        System.out.println(lines);
+        final String sql = "UPDATE line SET name=?, color=? WHERE id=?";
+        jdbcTemplate.update(sql, name, color, id);
     }
 
     public void deleteById(Long id) {
-        final Line line = findById(id);
-        lines.remove(line);
+        final String sql = "DELETE FROM line WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }
