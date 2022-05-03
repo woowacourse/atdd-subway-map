@@ -116,6 +116,37 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
+    @DisplayName("노선 아이디에 해당하는 노선을 반환한다.")
+    @Test
+    void findLine() {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "red");
+
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        Long resultLineId = createResponse.jsonPath()
+                .getObject(".", LineResponse.class)
+                .getId();
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/" + resultLineId)
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
     @DisplayName("지하철노선을 제거한다.")
     @Test
     void deleteLine_success() {

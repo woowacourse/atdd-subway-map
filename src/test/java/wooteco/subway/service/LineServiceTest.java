@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,6 +53,31 @@ class LineServiceTest {
         Line line = LineService.save(new Line("신분당선", "red"));
 
         assertThatThrownBy(() -> LineService.deleteById(2L))
+                .isInstanceOf(LineNotFoundException.class);
+
+        LineService.deleteById(line.getId());
+    }
+
+    @DisplayName("존재하지 않는 노선을 반환하려하면 예외를 발생시킨다.")
+    @Test
+    void findLineById_success() {
+        Line line = LineService.save(new Line("신분당선", "red"));
+
+        Line actual = LineService.findLineById(line.getId());
+
+        assertAll(
+                () -> assertThat(actual.getName()).isEqualTo("신분당선"),
+                () -> assertThat(actual.getColor()).isEqualTo("red")
+        );
+        LineService.deleteById(line.getId());
+    }
+
+    @DisplayName("존재하지 않는 노선을 반환하려하면 예외를 발생시킨다.")
+    @Test
+    void findLineById_exception() {
+        Line line = LineService.save(new Line("신분당선", "red"));
+
+        assertThatThrownBy(() -> LineService.findLineById(2L))
                 .isInstanceOf(LineNotFoundException.class);
 
         LineService.deleteById(line.getId());

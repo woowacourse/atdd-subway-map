@@ -35,6 +35,13 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponses);
     }
 
+    @GetMapping("/lines/{id}")
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
+        Line line = LineService.findLineById(id);
+        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), null);
+        return ResponseEntity.ok().body(lineResponse);
+    }
+
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         LineService.deleteById(id);
