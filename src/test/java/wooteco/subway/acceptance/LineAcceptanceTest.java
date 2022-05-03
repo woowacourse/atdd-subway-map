@@ -168,4 +168,56 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(response.body().jsonPath().getString("message")).isNotBlank();
     }
+
+    @DisplayName("노선 정보를 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "초록색");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+        String uri = createResponse.header("Location");
+
+        // when
+        Map<String, String> updateParam = new HashMap<>();
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(updateParam)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put(uri)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("존재하지 않는 노선을 수정한다.")
+    @Test
+    void updateNonExistLine() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "초록색");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/1")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
+    }
 }
