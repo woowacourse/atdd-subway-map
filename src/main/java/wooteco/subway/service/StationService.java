@@ -13,6 +13,9 @@ public class StationService {
     }
 
     public Station save(final Station station) {
+        if (stationDao.existByName(station.getName())) {
+            throw new IllegalStateException("이미 존재하는 역 이름입니다.");
+        }
         return stationDao.save(station);
     }
 
