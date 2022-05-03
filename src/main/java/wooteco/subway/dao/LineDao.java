@@ -60,4 +60,8 @@ public class LineDao {
         ReflectionUtils.setField(name, targetLine, line.getName());
         ReflectionUtils.setField(color, targetLine, line.getColor());
     }
+
+    public static void deleteById(Long id) {
+        lines.removeIf(line -> line.getId().equals(id));
+    }
 }

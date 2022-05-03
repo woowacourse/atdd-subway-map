@@ -13,7 +13,7 @@ class LineDaoTest {
 
     @AfterEach
     void cleanUp() {
-        LineDao.findAll().clear(); // 수정 필요
+        LineDao.findAll().clear();
     }
 
     @DisplayName("노선 저장 기능을 테스트한다.")
@@ -73,5 +73,16 @@ class LineDaoTest {
         Line actual = LineDao.findAll().get(0);
         assertThat(actual.getName()).isEqualTo("8호선");
         assertThat(actual.getColor()).isEqualTo("분홍색");
+    }
+
+    @DisplayName("특정 id를 가지는 노선을 삭제한다.")
+    @Test
+    void delete_By_Id() {
+        Line line = new Line("2호선", "초록색");
+        Long id = LineDao.save(line).getId();
+
+        LineDao.deleteById(id);
+
+        assertThat(LineDao.findAll().size()).isEqualTo(0);
     }
 }
