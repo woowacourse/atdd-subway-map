@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dto.LineRequest;
 
+import java.util.NoSuchElementException;
+
 class LineServiceTest {
 
     @Test
@@ -24,5 +26,22 @@ class LineServiceTest {
 
         Assertions.assertThatThrownBy(() -> LineService.createLine(lineRequest))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("노선 조회")
+    void findLine() {
+        var lineRequest = new LineRequest("7호선", "녹색", 0L, 0L, 0);
+        var lineResponse = LineService.createLine(lineRequest);
+        var findLineResponse = LineService.findLineInfos(lineResponse.getId());
+
+        Assertions.assertThat(findLineResponse.getName()).isEqualTo("7호선");
+    }
+
+    @Test
+    @DisplayName("노선 조회 실패")
+    void findLineFail() {
+        Assertions.assertThatThrownBy(() -> LineService.findLineInfos(1000000L))
+                .isInstanceOf(NoSuchElementException.class);
     }
 }

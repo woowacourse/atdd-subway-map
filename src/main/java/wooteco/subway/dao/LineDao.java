@@ -6,6 +6,7 @@ import wooteco.subway.domain.Line;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class LineDao {
 
@@ -28,5 +29,12 @@ public class LineDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
         return line;
+    }
+
+    public static Line findById(Long id) {
+        return lines.stream()
+                .filter(it -> it.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당 노선을 찾을 수 없습니다."));
     }
 }
