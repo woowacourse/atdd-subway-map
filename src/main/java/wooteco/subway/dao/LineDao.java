@@ -12,6 +12,9 @@ public class LineDao {
     private final static List<Line> lines = new ArrayList<>();
 
     public static Long save(Line line) {
+        if (lines.contains(line)) {
+            throw new IllegalArgumentException("중복된 지하철 노선이 존재합니다.");
+        }
         final Line newLine = createNewObject(line);
         lines.add(newLine);
 
