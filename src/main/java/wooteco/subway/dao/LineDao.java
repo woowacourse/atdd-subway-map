@@ -53,8 +53,8 @@ public class LineDao {
     }
 
     public boolean isContains(Line line) {
-        final String sql = "select count(*) from Line where name = ?";
-        final int count = jdbcTemplate.queryForObject(sql, Integer.class, line.getName());
+        final String sql = "select count(*) from Line where name = ? or color = ?";
+        final int count = jdbcTemplate.queryForObject(sql, Integer.class, line.getName(), line.getColor());
         return count > 0;
     }
 
