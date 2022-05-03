@@ -61,10 +61,4 @@ public class LineController {
         lineService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-
-    @DeleteMapping("/lines")
-    public ResponseEntity<Void> deleteLines() {
-        lineService.deleteAll();
-        return ResponseEntity.noContent().build();
-    }
 }

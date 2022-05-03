@@ -8,53 +8,49 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import wooteco.subway.dto.LineDto;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private ExtractableResponse<Response> createResponse1;
-    private ExtractableResponse<Response> createResponse2;
+    private Long savedId1;
+    private Long savedId2;
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void init() {
-        // dao 초기화
-        RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete("/lines")
-                .then().log().all()
-                .extract();
+        jdbcTemplate.update("delete from LINE", new EmptySqlParameterSource());
 
-        // default data 생성
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "신분당선");
-        params1.put("color", "bg-red-600");
-        createResponse1 = RestAssured.given().log().all()
-                .body(params1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        String insertSql = "insert into LINE (name, color) values (:name, :color)";
+        MapSqlParameterSource source = new MapSqlParameterSource();
+        source.addValue("name", "신분당선");
+        source.addValue("color", "bg-red-600");
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(insertSql, source, keyHolder);
+        savedId1 = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "분당선");
-        params2.put("color", "bg-green-600");
-        createResponse2 = RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        insertSql = "insert into LINE (name, color) values (:name, :color)";
+        source = new MapSqlParameterSource();
+        source.addValue("name", "분당선");
+        source.addValue("color", "bg-green-600");
+        keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(insertSql, source, keyHolder);
+        savedId2 = Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -114,9 +110,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
+        List<Long> expectedLineIds = List.of(savedId1, savedId2);
         List<Long> resultLineIds = response.jsonPath().getList(".", LineDto.class).stream()
                 .map(LineDto::getId)
                 .collect(Collectors.toList());
@@ -127,7 +121,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLine() {
         //given
-        String id = createResponse1.header("Location").split("/")[2];
+        String id = String.valueOf(savedId1);
+
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -160,7 +155,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         //given
-        String id = createResponse1.header("Location").split("/")[2];
+        String id = String.valueOf(savedId1);
 
         //when
         Map<String, String> parameter = new HashMap<>();
@@ -184,7 +179,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineWithDuplicatedName() {
         //given
-        String id = createResponse1.header("Location").split("/")[2];
+        String id = String.valueOf(savedId1);
 
         //when
         Map<String, String> parameter = new HashMap<>();
@@ -208,7 +203,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLineById() {
         //given
-        String id = createResponse1.header("Location").split("/")[2];
+        String id = String.valueOf(savedId1);
 
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()

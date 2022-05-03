@@ -1,7 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
@@ -18,12 +18,14 @@ public class LineService {
     }
 
     public Line save(LineRequest lineRequest) {
-        Optional<Line> findLine = lineDao.findByName(lineRequest.getName());
-        if (findLine.isPresent()) {
-            throw new IllegalArgumentException("중복된 ID가 존재합니다");
+        try {
+            lineDao.findByName(lineRequest.getName());
+        } catch (EmptyResultDataAccessException e) {
+            Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+            Long id = lineDao.save(line);
+            return new Line(id, line.getName(), line.getColor());
         }
-        Line Line = new Line(lineRequest.getName(), lineRequest.getColor());
-        return lineDao.save(Line);
+        throw new IllegalArgumentException("중복된 이름이 존재합니다.");
     }
 
     public List<Line> findAll() {
@@ -31,24 +33,22 @@ public class LineService {
     }
 
     public LineDto findById(Long id) {
-        Optional<Line> findLine = lineDao.findById(id);
-        if (findLine.isEmpty()) {
+        try {
+            Line line = lineDao.findById(id);
+            return new LineDto(line.getId(), line.getName(), line.getColor());
+        } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("해당 ID의 노선은 존재하지 않습니다.");
         }
-        Line line = findLine.get();
-        return new LineDto(line.getId(), line.getName(), line.getColor());
-    }
-
-    public void deleteAll() {
-        lineDao.deleteAll();
     }
 
     public void update(Long id, LineRequest lineRequest) {
-        Optional<Line> findLine = lineDao.findByName(lineRequest.getName());
-        if (findLine.isPresent()) {
-            throw new IllegalArgumentException("중복된 ID가 존재합니다");
+        try {
+            lineDao.findByName(lineRequest.getName());
+        } catch (EmptyResultDataAccessException e) {
+            lineDao.update(id, lineRequest);
+            return;
         }
-        lineDao.update(id, lineRequest);
+        throw new IllegalArgumentException("중복된 이름이 존재합니다.");
     }
 
     public void deleteById(Long id) {
