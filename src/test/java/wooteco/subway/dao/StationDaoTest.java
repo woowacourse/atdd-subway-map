@@ -34,11 +34,9 @@ class StationDaoTest {
     @Test
     void saveStationThrowException() {
         String name = "강남역";
-        Station station1 = new Station(1L, name);
-        Station station2 = new Station(2L, name);
-        StationDao.save(station1);
+        StationDao.save(new Station(1L, name));
 
-        assertThatThrownBy(() -> StationDao.save(station2))
+        assertThatThrownBy(() -> StationDao.save(new Station(2L, name)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("같은 이름");
     }
@@ -47,12 +45,9 @@ class StationDaoTest {
     @Test
     void findAll() {
         // given
-        Station station1 = new Station(1L, "name1");
-        Station station2 = new Station(2L, "name2");
-        Station station3 = new Station(3L, "name3");
-        StationDao.save(station1);
-        StationDao.save(station2);
-        StationDao.save(station3);
+        StationDao.save(new Station(1L, "name1"));
+        StationDao.save(new Station(2L, "name2"));
+        StationDao.save(new Station(3L, "name3"));
 
         // when
         List<Station> stations = StationDao.findAll();
@@ -73,5 +68,26 @@ class StationDaoTest {
 
         // then
         assertThat(StationDao.findAll()).isEmpty();
+    }
+
+    @DisplayName("id로 역 하나를 삭제한다")
+    @Test
+    void deleteById() {
+        // given
+        Station savedStation = StationDao.save(new Station(1L, "station"));
+
+        // when
+        StationDao.deleteById(savedStation.getId());
+
+        // then
+        assertThat(StationDao.findAll()).isEmpty();
+    }
+
+    @DisplayName("삭제하려는 지하철 역이 없는 경우 예외를 발생시킨다")
+    @Test
+    void throwsExceptionWhenTargetIdDoesNotExist() {
+        assertThatThrownBy(() -> StationDao.deleteById(1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("존재하지 않는 ID");
     }
 }

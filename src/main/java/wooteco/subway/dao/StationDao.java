@@ -12,6 +12,7 @@ public class StationDao {
 
     public static Station save(Station station) {
         checkDuplicateName(station);
+
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
@@ -38,5 +39,19 @@ public class StationDao {
 
     public static void deleteAll() {
         stations.clear();
+    }
+
+    public static void deleteById(final long id) {
+        checkExistId(id);
+
+        stations.removeIf(station -> station.getId() == id);
+    }
+
+    private static void checkExistId(final long id) {
+        boolean hasSameId = stations.stream()
+                .anyMatch(station -> station.getId() == id);
+        if (!hasSameId) {
+            throw new IllegalArgumentException("존재하지 않는 ID는 삭제할 수 없습니다");
+        }
     }
 }
