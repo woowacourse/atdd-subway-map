@@ -49,4 +49,13 @@ public class LineDao {
 
         return line;
     }
+
+    public static void delete(Long id) {
+        lines.remove(findById(id));
+    }
+
+    public void deleteAll() {
+        seq = 0L;
+        lines = new ArrayList<>();
+    }
 }
