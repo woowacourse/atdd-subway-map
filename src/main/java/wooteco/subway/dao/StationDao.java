@@ -23,7 +23,7 @@ public class StationDao {
 
     private static boolean isDuplicateName(final Station station) {
         return stations.stream()
-                .anyMatch(it -> it.getName().equals(station.getName()));
+                .anyMatch(it -> it.isSameName(station));
     }
 
     public static List<Station> findAll() {

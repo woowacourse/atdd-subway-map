@@ -13,4 +13,8 @@ public class Line {
         this.name = name;
         this.color = color;
     }
+
+    public boolean isSameName(final Line line) {
+        return name.equals(line.name);
+    }
 }
