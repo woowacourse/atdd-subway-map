@@ -19,6 +19,9 @@ public class StationController {
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
         Station newStation = StationDao.save(station);
+
+        //todo - 이미 존재하는 이름이면 에러 발생
+
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
     }
