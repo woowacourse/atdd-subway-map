@@ -8,7 +8,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.acceptance.AcceptanceTest;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.StationResponse;
 

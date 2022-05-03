@@ -1,48 +1,69 @@
 package wooteco.subway.dao;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 
 import java.lang.reflect.Field;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+@Component
 public class LineDao {
 
-    private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("color")
+    );
 
-    public static Line save(Line line) {
-        Line persistLine = createNewObject(line);
-        lines.add(persistLine);
-        return persistLine;
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+    public Line save(Line line) {
+        final String sql = "insert into Line(name, color) values (?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, line.getName());
+            ps.setString(2, line.getColor());
+            return ps;
+        }, keyHolder);
+
+        return new Line(
+                Objects.requireNonNull(keyHolder.getKey()).longValue(),
+                line.getName(),
+                line.getColor()
+        );
     }
 
-    public static List<Line> findAll() {
-        return lines;
+    public List<Line> findAll() {
+        final String sql = "select id, name, color from Line";
+        return jdbcTemplate.query(sql, lineRowMapper);
     }
 
-    public static Line findById(Long id) {
-        return lines.stream()
-                .filter(line -> line.checkId(id))
-                .findAny()
-                .orElseThrow();
+    public Line findById(Long id) {
+        final String sql = "select id, name, color from Line where id = ?";
+        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
 
-    public static void update(Long id, LineRequest lineRequest) {
-        deleteById(id);
-        createNewObject(new Line(id, lineRequest.getName(), lineRequest.getColor()));
+    public void update(Long id, LineRequest lineRequest) {
+        final String sql = "update Line set name = ?, color = ? where id = ?";
+        jdbcTemplate.update(sql, lineRequest.getName(), lineRequest.getColor(), id);
     }
 
-    public static void deleteById(Long id) {
-        lines.removeIf(line -> line.checkId(id));
+    public void deleteById(Long id) {
+        final String sql = "delete from Line where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }
