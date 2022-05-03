@@ -2,7 +2,6 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -58,7 +57,7 @@ class StationDaoTest {
         Station station = StationDao.save(new Station("범고래"));
 
         // when
-        StationDao.delete(station);
+        StationDao.deleteById(station.getId());
         List<Station> stations = StationDao.findAll();
 
         // then
