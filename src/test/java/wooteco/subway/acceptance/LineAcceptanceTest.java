@@ -13,11 +13,18 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.dto.LineResponse;
 
 class LineAcceptanceTest extends AcceptanceTest {
+
+    @Autowired
+    public LineAcceptanceTest(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        super(namedParameterJdbcTemplate);
+    }
 
     @DisplayName("라인을 등록한다.")
     @Test

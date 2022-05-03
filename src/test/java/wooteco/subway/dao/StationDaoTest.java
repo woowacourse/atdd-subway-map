@@ -7,20 +7,31 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.domain.Station;
 
+@JdbcTest
 class StationDaoTest {
+
+    private final StationDao stationDao;
+
+    @Autowired
+    StationDaoTest(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.stationDao = new StationDao(namedParameterJdbcTemplate);
+    }
 
     @BeforeEach
     void clearAll() {
-        StationDao.deleteAll();
+        stationDao.deleteAll();
     }
 
     @DisplayName("지하철역을 저장한다.")
     @Test
     void saveStation() {
         Station station = new Station("강남역");
-        Station savedStation = StationDao.save(station);
+        Station savedStation = stationDao.save(station);
 
         assertAll(
                 () -> assertThat(savedStation.getId()).isNotZero(),
@@ -32,8 +43,8 @@ class StationDaoTest {
     @Test
     void findByName() {
         Station station = new Station("강남역");
-        StationDao.save(station);
-        Optional<Station> wrappedStation = StationDao.findByName("강남역");
+        stationDao.save(station);
+        Optional<Station> wrappedStation = stationDao.findByName("강남역");
         assert (wrappedStation).isPresent();
 
         assertAll(
@@ -46,10 +57,10 @@ class StationDaoTest {
     @Test
     void deleteById() {
         Station station = new Station("강남역");
-        Station savedStation = StationDao.save(station);
-        StationDao.deleteById(savedStation.getId());
+        Station savedStation = stationDao.save(station);
+        stationDao.deleteById(savedStation.getId());
 
-        Optional<Station> wrappedStation = StationDao.findByName("강남역");
+        Optional<Station> wrappedStation = stationDao.findByName("강남역");
         assertThat(wrappedStation).isEmpty();
     }
 
@@ -57,9 +68,9 @@ class StationDaoTest {
     @Test
     void findById() {
         Station station = new Station("강남역");
-        Station savedStation = StationDao.save(station);
-        Optional<Station> wrappedStation = StationDao.findById(savedStation.getId());
-        assert(wrappedStation).isPresent();
+        Station savedStation = stationDao.save(station);
+        Optional<Station> wrappedStation = stationDao.findById(savedStation.getId());
+        assert (wrappedStation).isPresent();
 
         assertAll(
                 () -> assertThat(wrappedStation.get().getId()).isEqualTo(savedStation.getId()),

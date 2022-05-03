@@ -13,12 +13,20 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+
+    @Autowired
+    public StationAcceptanceTest(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        super(namedParameterJdbcTemplate);
+    }
+
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
