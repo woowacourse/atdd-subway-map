@@ -9,7 +9,7 @@ import java.util.List;
 
 public class StationDao {
     private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
+    private static final List<Station> stations = new ArrayList<>();
 
     public static Station save(Station station) {
         checkDuplication(station.getName());
@@ -33,5 +33,9 @@ public class StationDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
+    }
+
+    public static void clearAll() {
+        stations.clear();
     }
 }
