@@ -60,7 +60,8 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public int update(final Line line) {
-        return 0;
+        final String sql = "update LINE set name = ?, color = ? where id = ?";
+        return jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
     }
 
     @Override
