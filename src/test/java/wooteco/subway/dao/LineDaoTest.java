@@ -86,4 +86,11 @@ class LineDaoTest {
 			.isInstanceOf(NoSuchElementException.class)
 			.hasMessage("해당 id에 맞는 지하철 노선이 없습니다.");
 	}
+
+	@DisplayName("해당 이름의 노선이 존재하는지 확인한다.")
+	@Test
+	void existsByName() {
+		lineDao.save(new Line("신분당선", "bg-red-600"));
+		assertThat(lineDao.existsByName("신분당선")).isTrue();
+	}
 }
