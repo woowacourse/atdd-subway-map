@@ -13,12 +13,11 @@ import wooteco.subway.repository.dao.StationDao;
 
 class StationServiceTest {
 
-    private final StationDao stationDao = new StationDao();
-    private final StationService service = new StationService(stationDao);
+    private final StationService service = new StationService(new StationDao());
 
     @BeforeEach
-    void setUp() {
-        stationDao.removeAll();
+    void initStore() {
+        StationDao.removeAll();
     }
 
     @DisplayName("역 이름을 입력받아서 해당 이름을 가진 역을 등록한다.")

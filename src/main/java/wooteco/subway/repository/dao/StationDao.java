@@ -24,7 +24,7 @@ public class StationDao {
         return new ArrayList<>(store);
     }
 
-    public void removeAll() {
+    public static void removeAll() {
         store.clear();
     }
 
