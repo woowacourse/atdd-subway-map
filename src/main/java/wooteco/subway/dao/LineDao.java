@@ -15,5 +15,5 @@ public interface LineDao {
 
 	void remove(Long id);
 
-	boolean existsByName(String name);
+	Boolean existsByName(String name);
 }

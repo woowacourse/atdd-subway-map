@@ -43,7 +43,7 @@ public class MemoryLineDao implements LineDao {
 	}
 
 	@Override
-	public boolean existsByName(String name) {
+	public Boolean existsByName(String name) {
 		return lines.stream()
 			.anyMatch(line -> name.equals(line.getName()));
 	}
