@@ -5,14 +5,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 
-import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,6 +28,9 @@ public class LineDao {
     }
 
     public Line save(Line line) {
+        if (isContains(line)) {
+            throw new IllegalStateException("노선 이름은 중복될 수 없습니다.");
+        }
         final String sql = "insert into Line(name, color) values (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -50,6 +50,12 @@ public class LineDao {
     public List<Line> findAll() {
         final String sql = "select id, name, color from Line";
         return jdbcTemplate.query(sql, lineRowMapper);
+    }
+
+    public boolean isContains(Line line) {
+        final String sql = "select count(*) from Line where name = ?";
+        final int count = jdbcTemplate.queryForObject(sql, Integer.class, line.getName());
+        return count > 0;
     }
 
     public Line findById(Long id) {

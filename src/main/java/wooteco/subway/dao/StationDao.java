@@ -1,54 +1,68 @@
 package wooteco.subway.dao;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
 
 import java.lang.reflect.Field;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+@Component
 public class StationDao {
-    private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
 
-    public static Station save(Station station) {
-        Station persistStation = createNewObject(station);
-        if (checkDuplicateStation(persistStation)) {
+    private static final RowMapper<Station> STATION_ROW_MAPPER = ((rs, rowNum) ->
+            new Station(rs.getLong("id"),
+                    rs.getString("name"))
+    );
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public Station save(Station station) {
+        if (isContains(station)) {
             throw new IllegalStateException("중복된 지하철역을 저장할 수 없습니다.");
         }
-        stations.add(persistStation);
-        return persistStation;
+        final String sql = "insert into Station (name) values (?)";
+        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1, station.getName());
+            return statement;
+        }, keyHolder);
+        return new Station(
+                Objects.requireNonNull(keyHolder.getKey()).longValue(),
+                station.getName()
+        );
     }
 
-    private static boolean checkDuplicateStation(Station station) {
-        return stations.stream()
-                .anyMatch(s -> s.checkName(station));
+    private boolean isContains(Station station) {
+        final String sql = "select count(*) from Station where name = ?";
+        final int count = jdbcTemplate.queryForObject(sql, Integer.class, station.getName());
+        return count > 0;
     }
 
-    public static List<Station> findAll() {
-        return stations;
+    public List<Station> findAll() {
+        final String sql = "select id, name from Station";
+        return jdbcTemplate.query(sql, STATION_ROW_MAPPER);
     }
 
-    public static Station findById(Long id) {
-        return stations.stream()
-                .filter(s -> s.checkId(id))
-                .findAny()
-                .orElseThrow();
+    public Station findById(Long id) {
+        final String sql = "select id, name from Station where id = ?";
+        return jdbcTemplate.queryForObject(sql, STATION_ROW_MAPPER, id);
     }
 
-    public static void deleteById(Long id) {
-        Station station = findById(id);
-        stations.remove(station);
-    }
-
-    public static void deleteAll() {
-        stations.clear();
-    }
-
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+    public void deleteById(Long id) {
+        final String sql = "delete from Station where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

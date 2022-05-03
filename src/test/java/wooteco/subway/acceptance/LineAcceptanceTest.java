@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dto.LineResponse;
 
 import java.util.Arrays;
@@ -21,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선을 등록한다.")
+    @Transactional
     @Test
     void createLine() {
         // given
@@ -43,7 +45,38 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
+    @DisplayName("기존에 존재하는 노선 이름을 생성한다.")
+    @Transactional
+    @Test
+    void createLineWithDuplicateName() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "빨간색");
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("노선들을 조회한다.")
+    @Transactional
     @Test
     void getLines() {
         /// given
@@ -90,6 +123,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("특정 노선을 조회한다.")
+    @Transactional
     @Test
     void getLine() {
         /// given
@@ -118,6 +152,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("특정 노선을 업데이트한다")
+    @Transactional
     @Test
     public void updateLine() {
         Map<String, String> params1 = new HashMap<>();
@@ -148,6 +183,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("노선을 삭제한다.")
+    @Transactional
     @Test
     void deleteLine() {
         // given
