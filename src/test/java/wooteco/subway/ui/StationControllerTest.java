@@ -1,7 +1,6 @@
 package wooteco.subway.ui;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -45,7 +44,7 @@ class StationControllerTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post("/lines")
                 .then().log().all()
                 .extract();
 
@@ -64,7 +63,7 @@ class StationControllerTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post("/lines")
                 .then().log().all()
                 .extract();
 
@@ -73,7 +72,7 @@ class StationControllerTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post("/lines")
                 .then()
                 .log().all()
                 .extract();
@@ -92,7 +91,7 @@ class StationControllerTest {
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post("/lines")
                 .then().log().all()
                 .extract();
 
@@ -102,14 +101,14 @@ class StationControllerTest {
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post("/lines")
                 .then().log().all()
                 .extract();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get("/stations")
+                .get("/lines")
                 .then().log().all()
                 .extract();
 
@@ -134,7 +133,7 @@ class StationControllerTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post("/lines")
                 .then().log().all()
                 .extract();
 

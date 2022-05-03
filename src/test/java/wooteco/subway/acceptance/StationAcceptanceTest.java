@@ -7,7 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.acceptance.AcceptanceTest;
 import wooteco.subway.dto.StationResponse;
 
 import java.util.Arrays;
@@ -32,7 +31,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post("/lines")
                 .then().log().all()
                 .extract();
 
@@ -51,7 +50,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post("/lines")
                 .then().log().all()
                 .extract();
 
@@ -60,7 +59,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post("/lines")
                 .then()
                 .log().all()
                 .extract();
@@ -79,7 +78,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post("/lines")
                 .then().log().all()
                 .extract();
 
@@ -89,14 +88,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post("/lines")
                 .then().log().all()
                 .extract();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get("/stations")
+                .get("/lines")
                 .then().log().all()
                 .extract();
 
@@ -121,7 +120,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post("/lines")
                 .then().log().all()
                 .extract();
 
