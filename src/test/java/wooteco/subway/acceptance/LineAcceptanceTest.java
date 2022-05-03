@@ -3,12 +3,15 @@ package wooteco.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.StationResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,6 +22,14 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    @AfterEach
+    void finish() {
+        List<Line> lines = LineDao.findAll();
+        for (Line line : lines) {
+            StationDao.deleteStation(line.getId());
+        }
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -140,6 +151,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put("/lines/" + resultLineId)
+                .then().log().all()
+                .extract();
+
+        assertThat(newResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("지하철 노선 삭제")
+    @Test
+    void deleteLine() {
+        Map<String, String> param = new HashMap<>();
+        param.put("name", "신분당선");
+        param.put("color", "bg-red-600");
+
+        ExtractableResponse<Response> response = RestAssured.given().log()
+                .all()
+                .body(param)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        long resultLineId = response.jsonPath().getLong("id");
+
+        ExtractableResponse<Response> newResponse = RestAssured.given().log()
+                .all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/" + resultLineId)
                 .then().log().all()
                 .extract();
 

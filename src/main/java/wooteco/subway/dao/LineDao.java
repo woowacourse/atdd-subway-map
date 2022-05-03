@@ -7,6 +7,7 @@ import wooteco.subway.exception.ClientException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class LineDao {
@@ -44,5 +45,11 @@ public class LineDao {
                 .findAny()
                 .orElseThrow(() -> new ClientException("존재하지 않는 노선입니다."));
         lines.set(targetIndex, line);
+    }
+
+    public static void delete(Long id) {
+        lines = lines.stream()
+                .filter(line -> line.getId() != id)
+                .collect(Collectors.toList());
     }
 }
