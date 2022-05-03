@@ -152,6 +152,39 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineId).isEqualTo(expectedLineId);
     }
 
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "신분당선");
+        params1.put("color", "bg-red-600");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "다른분당선");
+        params2.put("color", "bg-red-600");
+
+        long resultLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + resultLineId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
     @DisplayName("지하철노선을 제거한다.")
     @Test
     void deleteStation() {

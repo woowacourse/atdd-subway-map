@@ -43,6 +43,13 @@ public class LineDao {
                 .anyMatch(persistLine::isSameName);
     }
 
+    public static Line updateById(Long id, String name, String color) {
+        Line line = findById(id);
+        line.setName(name);
+        line.setColor(color);
+        return line;
+    }
+
     public static void deleteById(Long id) {
         boolean result = lines.removeIf(line -> line.getId() == id);
         if (!result) {

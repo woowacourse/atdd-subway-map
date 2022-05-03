@@ -48,4 +48,12 @@ public class Line {
     public List<Station> getStations() {
         return stations;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
 }
