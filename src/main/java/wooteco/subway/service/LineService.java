@@ -16,10 +16,15 @@ public class LineService {
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
-    public static List<LineResponse> findAll() {
+    public static List<LineResponse> findLines() {
         List<Line> lines = LineDao.findAll();
         return lines.stream()
                 .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
                 .collect(Collectors.toList());
+    }
+
+    public static LineResponse findLine(Long id) {
+        Line line = LineDao.find(id);
+        return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 }
