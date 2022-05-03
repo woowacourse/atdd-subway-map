@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 
@@ -39,5 +40,14 @@ public class LineDao {
         return lines.stream()
                 .filter(line -> line.getId().equals(id))
                 .findFirst();
+    }
+
+    public static void updateLine(Long id, Line newLine) {
+        Optional<Line> foundLine = findById(id);
+        if (foundLine.isEmpty()) {
+            throw new IllegalArgumentException("업데이트 할 노선이 존재하지 않습니다.");
+        }
+        lines.remove(foundLine.get());
+        lines.add(new Line(id, newLine.getName(), newLine.getColor()));
     }
 }

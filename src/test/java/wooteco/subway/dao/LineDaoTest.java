@@ -36,10 +36,23 @@ class LineDaoTest {
     void findById() {
         Line savedLine = LineDao.saveLine(new Line("신분당선", "bg-red-600"));
         Optional<Line> wrappedLine = LineDao.findById(savedLine.getId());
-        assert(wrappedLine).isPresent();
+        assert (wrappedLine).isPresent();
         assertAll(
                 () -> assertThat(wrappedLine.get().getName()).isEqualTo("신분당선"),
                 () -> assertThat(wrappedLine.get().getColor()).isEqualTo("bg-red-600")
+        );
+    }
+
+    @DisplayName("특정 라인을 수정한다.")
+    @Test
+    void updateLine() {
+        Line savedLine = LineDao.saveLine(new Line("신분당선", "bg-red-600"));
+        LineDao.updateLine(savedLine.getId(), new Line("경의중앙선", "bg-mint-600"));
+        Optional<Line> wrappedLine = LineDao.findById(savedLine.getId());
+        assert (wrappedLine).isPresent();
+        assertAll(
+                () -> assertThat(wrappedLine.get().getName()).isEqualTo("경의중앙선"),
+                () -> assertThat(wrappedLine.get().getColor()).isEqualTo("bg-mint-600")
         );
     }
 }
