@@ -21,7 +21,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @AfterEach
     void rollback() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .when()
                 .delete("/lines")
                 .then().log().all()
