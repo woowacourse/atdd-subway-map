@@ -30,7 +30,10 @@ public class StationDaoTest {
         Station actual = stationDao.save(station);
 
         //then
-        assertThat(actual.getName()).isEqualTo(station.getName());
+        assertAll(
+            () -> assertThat(actual.getId()).isEqualTo(1L),
+            () -> assertThat(actual.getName()).isEqualTo(station.getName())
+        );
     }
 
     @Test
