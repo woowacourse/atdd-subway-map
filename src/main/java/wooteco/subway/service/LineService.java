@@ -15,12 +15,12 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line save(LineRequest LineRequest) {
-        Optional<Line> findLine = lineDao.findByName(LineRequest.getName());
+    public Line save(LineRequest lineRequest) {
+        Optional<Line> findLine = lineDao.findByName(lineRequest.getName());
         if (findLine.isPresent()) {
             throw new IllegalArgumentException("중복된 ID가 존재합니다");
         }
-        Line Line = new Line(LineRequest.getName(), LineRequest.getColor());
+        Line Line = new Line(lineRequest.getName(), lineRequest.getColor());
         return lineDao.save(Line);
     }
 
@@ -42,6 +42,10 @@ public class LineService {
     }
 
     public void update(Long id, LineRequest lineRequest) {
+        Optional<Line> findLine = lineDao.findByName(lineRequest.getName());
+        if (findLine.isPresent()) {
+            throw new IllegalArgumentException("중복된 ID가 존재합니다");
+        }
         lineDao.update(id, lineRequest);
     }
 

@@ -180,6 +180,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("노선을 중복된 이름으로 수정한다.")
+    @Test
+    void updateLineWithDuplicatedName() {
+        //given
+        String id = createResponse1.header("Location").split("/")[2];
+
+        //when
+        Map<String, String> parameter = new HashMap<>();
+        String name = "분당선";
+        parameter.put("name", name);
+        parameter.put("color", "bg-red-600");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(parameter)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("id 를 이용하여 노선을 삭제한다.")
     @Test
     void deleteLineById() {

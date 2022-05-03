@@ -60,8 +60,13 @@ public class LineController {
 
     @PutMapping("/lines/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.update(id, lineRequest);
-        return ResponseEntity.ok().build();
+        try {
+            lineService.update(id, lineRequest);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("/lines/{id}")
