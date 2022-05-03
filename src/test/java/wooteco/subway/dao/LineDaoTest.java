@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
 
 class LineDaoTest {
 
@@ -26,8 +25,7 @@ class LineDaoTest {
     @Test
     void save() {
         // given
-        List<Station> stations = List.of(new Station("교대역"), new Station("강남역"));
-        Line line = new Line("1호선", "빨강", stations);
+        Line line = new Line("1호선", "bg-red-600");
 
         // when
         Long savedId = LineDao.save(line);
@@ -40,9 +38,8 @@ class LineDaoTest {
     @Test
     void findAll() {
         // given
-        List<Station> stations = List.of(new Station("교대역"), new Station("강남역"));
-        Line line1 = new Line("1호선", "빨강", stations);
-        Line line2 = new Line("2호선", "초록", stations);
+        Line line1 = new Line("1호선", "bg-red-600");
+        Line line2 = new Line("2호선", "bg-green-600");
 
         // when
         LineDao.save(line1);
@@ -62,8 +59,7 @@ class LineDaoTest {
     @Test
     void delete() {
         // given
-        List<Station> stations = List.of(new Station("교대역"), new Station("강남역"));
-        Line line = new Line("1호선", "빨강", stations);
+        Line line = new Line("1호선", "bg-red-600");
         Long savedId = LineDao.save(line);
 
         // when

@@ -11,7 +11,7 @@ public class LineDao {
     private static final Map<Long, Line> lines = new HashMap<>();
 
     public static Long save(Line line) {
-        Line newLine = new Line(++seq, line.getName(), line.getColor(), line.getStations());
+        Line newLine = new Line(++seq, line.getName(), line.getColor());
         lines.put(seq, newLine);
         return seq;
     }
