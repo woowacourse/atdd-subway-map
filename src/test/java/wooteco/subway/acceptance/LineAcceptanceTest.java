@@ -122,7 +122,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("id로 노선을 조회한다.")
+    @DisplayName("id 로 노선을 조회한다.")
     @Test
     void showLine() {
         /// given
@@ -156,6 +156,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 수정한다.")
     @Test
     void modifyLine() {
+        // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "bg-green-600");
@@ -168,6 +169,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
         long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
 
+        // when
         Map<String, String> modifyParams = new HashMap<>();
         modifyParams.put("name", "신분당선");
         modifyParams.put("color", "bg-red-600");
@@ -179,6 +181,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        // then
         assertThat(modifyResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 

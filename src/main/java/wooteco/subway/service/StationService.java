@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Station;
@@ -20,13 +19,12 @@ public class StationService {
     public Station register(final String name) {
         validateDuplicateName(name);
         final Station station = new Station(name);
-        final StationEntity savedEntity = stationDao.save(new StationEntity(station));
-        return new Station(savedEntity.getId(), savedEntity.getName());
+        final StationEntity savedStationEntity = stationDao.save(new StationEntity(station));
+        return new Station(savedStationEntity.getId(), savedStationEntity.getName());
     }
 
     private void validateDuplicateName(final String name) {
-        final Optional<StationEntity> stationEntity = stationDao.findByName(name);
-        if (stationEntity.isPresent()) {
+        if (stationDao.findByName(name).isPresent()) {
             throw new IllegalArgumentException("[ERROR] 이미 존재하는 역 이름입니다.");
         }
     }

@@ -15,6 +15,6 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> unexpectedError() {
-        return ResponseEntity.badRequest().body("예기치 못한 에러가 발생했습니다.");
+        return ResponseEntity.badRequest().body("[ERROR] 예기치 못한 에러가 발생했습니다.");
     }
 }

@@ -11,6 +11,10 @@ public class MockStationDao implements StationDao {
     private static Long seq = 0L;
     private static List<StationEntity> store = new ArrayList<>();
 
+    public static void removeAll() {
+        store.clear();
+    }
+
     public StationEntity save(final StationEntity stationEntity) {
         final StationEntity saved = new StationEntity(++seq, stationEntity.getName());
         store.add(saved);
@@ -19,10 +23,6 @@ public class MockStationDao implements StationDao {
 
     public List<StationEntity> findAll() {
         return new ArrayList<>(store);
-    }
-
-    public static void removeAll() {
-        store.clear();
     }
 
     public Optional<StationEntity> findByName(final String name) {

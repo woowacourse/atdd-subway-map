@@ -3,7 +3,6 @@ package wooteco.subway.controller;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,8 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.StationRequestDto;
 import wooteco.subway.dto.response.StationResponseDto;
-import wooteco.subway.repository.dao.JdbcStationDao;
-import wooteco.subway.repository.dao.StationDao;
 import wooteco.subway.service.StationService;
 
 @RestController

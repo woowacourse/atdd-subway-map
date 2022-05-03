@@ -1,7 +1,7 @@
 package wooteco.subway.repository.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -63,7 +63,7 @@ class JdbcLineDaoTest {
         );
     }
 
-    @DisplayName("id로 노선을 삭제한다.")
+    @DisplayName("id 로 노선을 삭제한다.")
     @Test
     void deleteById() {
         Line line = new Line("2호선", "bg-green-600");

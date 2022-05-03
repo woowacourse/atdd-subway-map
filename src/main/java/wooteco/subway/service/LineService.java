@@ -2,7 +2,6 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Line;
@@ -21,13 +20,12 @@ public class LineService {
     public Line register(final String name, final String color) {
         validateDuplicateName(name);
         final LineEntity lineEntity = new LineEntity(new Line(name, color));
-        final LineEntity savedEntity = lineDao.save(lineEntity);
-        return new Line(savedEntity.getId(), savedEntity.getName(), savedEntity.getColor());
+        final LineEntity savedLineEntity = lineDao.save(lineEntity);
+        return new Line(savedLineEntity.getId(), savedLineEntity.getName(), savedLineEntity.getColor());
     }
 
     private void validateDuplicateName(final String name) {
-        final Optional<LineEntity> lineEntity = lineDao.findByName(name);
-        if (lineEntity.isPresent()) {
+        if (lineDao.findByName(name).isPresent()) {
             throw new IllegalArgumentException("[ERROR] 이미 존재하는 노선 이름입니다.");
         }
     }
@@ -49,7 +47,7 @@ public class LineService {
         if (lineDao.findById(id).isEmpty()) {
             throw new NoSuchElementException("[ERROR] 노선이 존재하지 않습니다");
         }
-        Line newLine = new Line(id, name, color);
+        final Line newLine = new Line(id, name, color);
         lineDao.update(new LineEntity(newLine));
     }
 

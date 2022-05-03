@@ -1,9 +1,17 @@
 package wooteco.subway.repository.dao;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.repository.entity.StationEntity;
 
@@ -11,6 +19,10 @@ import wooteco.subway.repository.entity.StationEntity;
 public class JdbcStationDao implements StationDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final RowMapper<StationEntity> rowMapper = (resultSet, rowNum) -> new StationEntity(
+            resultSet.getLong("id"),
+            resultSet.getString("name")
+    );
 
     public JdbcStationDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -18,7 +30,12 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public StationEntity save(final StationEntity stationEntity) {
-        return null;
+        final String sql = "insert into STATION(name) values(:name)";
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
+        final SqlParameterSource source = new BeanPropertySqlParameterSource(stationEntity);
+        jdbcTemplate.update(sql, source, keyHolder);
+        final long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return new StationEntity(id, stationEntity.getName());
     }
 
     @Override
@@ -33,7 +50,12 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public Optional<StationEntity> findById(final Long id) {
-        return Optional.empty();
+        final String sql = "select id, name from STATION where id = :id";
+        final Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        final SqlParameterSource source = new MapSqlParameterSource(params);
+        final StationEntity stationEntity = jdbcTemplate.queryForObject(sql, source, rowMapper);
+        return Optional.ofNullable(stationEntity);
     }
 
     @Override
