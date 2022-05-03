@@ -49,4 +49,18 @@ public class LineDaoTest {
             () -> assertThat(equals(actual.get(1), line2)).isTrue()
         );
     }
+
+    @Test
+    @DisplayName("단일 Line 을 id 로 조회한다.")
+    void findById() {
+        //given
+        Line line = new Line("가산디지털", "khaki");
+        Line savedLine = lineDao.save(line);
+
+        //when
+        Line actual = lineDao.findById(savedLine.getId()).get();
+
+        //then
+        assertThat(equals(actual, line)).isTrue();
+    }
 }

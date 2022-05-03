@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import wooteco.subway.domain.Line;
 
@@ -30,5 +31,11 @@ public class LineDao {
 
     public List<Line> findAll() {
         return List.copyOf(lines);
+    }
+
+    public Optional<Line> findById(Long id) {
+        return lines.stream()
+            .filter(line -> line.getId().equals(id))
+            .findFirst();
     }
 }
