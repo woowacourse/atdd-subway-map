@@ -9,15 +9,6 @@ import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 public class StationService {
-    private final StationDao stationDao;
-
-    public StationService(StationDao stationDao) {
-        this.stationDao = stationDao;
-    }
-
-    public StationService() {
-        this(new StationDao());
-    }
 
     public StationResponse save(StationRequest stationRequest) {
         if (StationDao.existByName(stationRequest.getName())) {
@@ -36,6 +27,6 @@ public class StationService {
     }
 
     public void delete(Long id) {
-        stationDao.delete(id);
+        StationDao.delete(id);
     }
 }
