@@ -14,9 +14,16 @@ public class LineDao {
     private static final List<Line> lines = new ArrayList<>();
 
     public static Line save(Line line) {
+        checkDuplication(line.getName());
         Line persistLine = createNewObject(line);
         lines.add(persistLine);
         return persistLine;
+    }
+
+    private static void checkDuplication(String name) {
+        if (lines.stream().anyMatch(line -> name.equals(line.getName()))) {
+            throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
+        }
     }
 
     public static List<Line> findAll() {
