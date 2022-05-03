@@ -4,10 +4,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Station;
 
 class StationDaoTest {
+
+    @BeforeEach
+    void setUp() {
+        List<Station> stations = StationDao.findAll();
+        List<Long> stationIds = stations.stream()
+            .map(Station::getId)
+            .collect(Collectors.toList());
+
+        for (Long stationId : stationIds) {
+            StationDao.deleteById(stationId);
+        }
+    }
 
     @Test
     void save() {
