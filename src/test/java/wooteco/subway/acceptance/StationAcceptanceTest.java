@@ -3,10 +3,12 @@ package wooteco.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.assembler.Assembler;
 import wooteco.subway.dto.StationResponse;
 
 import java.util.Arrays;
@@ -19,6 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+
+    @AfterEach
+    void afterEach() {
+        Assembler.getStationDao().clear();
+    }
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -39,8 +46,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-
-        deleteStation(response.header("Location"));
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
@@ -69,8 +74,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
-        deleteStation(createResponse.header("Location"));
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -113,9 +116,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
-
-        deleteStation(createResponse1.header("Location"));
-        deleteStation(createResponse2.header("Location"));
     }
 
     @DisplayName("지하철역을 제거한다.")
@@ -142,13 +142,5 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private void deleteStation(String uri) {
-        RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
     }
 }

@@ -48,4 +48,8 @@ public class StationDao {
         Station station = findById(id);
         stations.remove(station);
     }
+
+    public void clear() {
+        stations.clear();
+    }
 }
