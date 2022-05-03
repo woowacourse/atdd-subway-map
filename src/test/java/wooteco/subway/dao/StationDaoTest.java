@@ -14,12 +14,7 @@ import wooteco.subway.domain.Station;
 
 public class StationDaoTest {
 
-    private StationDao stationDao;
-
-    @BeforeEach
-    void setUp() {
-        stationDao = new StationDao();
-    }
+    private final StationDao stationDao = StationDao.getInstance();
 
     @AfterEach
     void tearDown() {

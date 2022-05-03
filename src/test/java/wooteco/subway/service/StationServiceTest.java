@@ -16,17 +16,16 @@ import wooteco.subway.domain.Station;
 public class StationServiceTest {
 
     private StationService stationService;
+    private final StationDao stationDao = StationDao.getInstance();
 
     @BeforeEach
     void setUp() {
-        stationService = new StationService(new StationDao());
+        stationService = new StationService(stationDao);
     }
 
     @AfterEach
     void tearDown() {
-        StationDao stationDao = new StationDao();
         stationDao.deleteAll();
-        stationService = new StationService(stationDao);
     }
 
     @Test
