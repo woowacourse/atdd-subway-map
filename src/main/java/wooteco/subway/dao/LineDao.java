@@ -36,12 +36,12 @@ public class LineDao {
     }
 
     public static void update(Line line) {
-        remove(line);
+        delete(line.getId());
         lines.add(line);
     }
 
-    private static void remove(Line line) {
-        boolean isRemoving = lines.removeIf(other -> other.getId().equals(line.getId()));
+    public static void delete(Long id) {
+        boolean isRemoving = lines.removeIf(line -> line.getId().equals(id));
         if (!isRemoving) {
             throw new IllegalArgumentException("존재하지 않는 노선입니다.");
         }
