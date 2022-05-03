@@ -31,7 +31,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines")
+                .post("/stations")
                 .then().log().all()
                 .extract();
 
@@ -50,7 +50,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines")
+                .post("/stations")
                 .then().log().all()
                 .extract();
 
@@ -59,7 +59,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines")
+                .post("/stations")
                 .then()
                 .log().all()
                 .extract();
@@ -78,7 +78,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines")
+                .post("/stations")
                 .then().log().all()
                 .extract();
 
@@ -88,14 +88,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines")
+                .post("/stations")
                 .then().log().all()
                 .extract();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get("/lines")
+                .get("/stations")
                 .then().log().all()
                 .extract();
 
@@ -120,7 +120,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines")
+                .post("/stations")
                 .then().log().all()
                 .extract();
 
