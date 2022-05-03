@@ -1,14 +1,14 @@
-package wooteco.subway.dto;
+package wooteco.subway.dto.response;
 
 import java.util.Objects;
 
-public class LineBasicResponse {
+public class LineResponse {
 
     private final Long id;
     private final String name;
     private final String color;
 
-    public LineBasicResponse(Long id, String name, String color) {
+    public LineResponse(Long id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -34,13 +34,23 @@ public class LineBasicResponse {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        LineBasicResponse that = (LineBasicResponse) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name)
+        LineResponse that = (LineResponse) o;
+        return Objects.equals(id, that.id)
+                && Objects.equals(name, that.name)
                 && Objects.equals(color, that.color);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, name, color);
+    }
+
+    @Override
+    public String toString() {
+        return "LineResponse{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                '}';
     }
 }

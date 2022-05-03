@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dto.LineBasicResponse;
+import wooteco.subway.dto.response.LineResponse;
 
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayName("/lines에 대한 인수테스트")
@@ -39,8 +39,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                     .then().log().all()
                     .extract();
 
-            LineBasicResponse actual = response.jsonPath().getObject(".", LineBasicResponse.class);
-            LineBasicResponse expected = new LineBasicResponse(1L, "신분당선", "bg-red-600");
+            LineResponse actual = response.jsonPath().getObject(".", LineResponse.class);
+            LineResponse expected = new LineResponse(1L, "신분당선", "bg-red-600");
             assertAll(() -> {
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
                 assertThat(response.header("Location")).isNotBlank();
@@ -87,7 +87,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<LineBasicResponse> responseBody = response.jsonPath().getList(".", LineBasicResponse.class);
+        List<LineResponse> responseBody = response.jsonPath().getList(".", LineResponse.class);
         assertThat(responseBody).hasSize(2);
     }
 
@@ -109,8 +109,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                     .extract();
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            LineBasicResponse actual = response.jsonPath().getObject(".", LineBasicResponse.class);
-            LineBasicResponse expected = new LineBasicResponse(1L, "신분당선", "bg-red-600");
+            LineResponse actual = response.jsonPath().getObject(".", LineResponse.class);
+            LineResponse expected = new LineResponse(1L, "신분당선", "bg-red-600");
             assertThat(actual).isEqualTo(expected);
         }
 

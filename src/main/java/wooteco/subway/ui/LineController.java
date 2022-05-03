@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineBasicResponse;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.dto.request.LineRequest;
 
 @RestController
 @RequestMapping("/lines")
@@ -29,27 +29,27 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineBasicResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineDao.save(line);
-        LineBasicResponse lineResponse = new LineBasicResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
         URI location = URI.create("/stations/" + newLine.getId());
         return ResponseEntity.created(location).body(lineResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<LineBasicResponse>> showLines() {
+    public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineDao.findAll();
-        List<LineBasicResponse> linesResponse = lines.stream()
-                .map(it -> new LineBasicResponse(it.getId(), it.getName(), it.getColor()))
+        List<LineResponse> linesResponse = lines.stream()
+                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toUnmodifiableList());
         return ResponseEntity.ok().body(linesResponse);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineBasicResponse> showLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineDao.findById(id);
-        LineBasicResponse linesResponse = new LineBasicResponse(line.getId(), line.getName(), line.getColor());
+        LineResponse linesResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
         return ResponseEntity.ok().body(linesResponse);
     }
 

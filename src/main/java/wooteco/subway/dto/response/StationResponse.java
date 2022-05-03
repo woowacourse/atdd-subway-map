@@ -1,11 +1,9 @@
-package wooteco.subway.dto;
+package wooteco.subway.dto.response;
 
 public class StationResponse {
-    private Long id;
-    private String name;
 
-    public StationResponse() {
-    }
+    private final Long id;
+    private final String name;
 
     public StationResponse(Long id, String name) {
         this.id = id;
@@ -18,5 +16,10 @@ public class StationResponse {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return "StationResponse{" + "id=" + id + ", name='" + name + '\'' + '}';
     }
 }
