@@ -1,22 +1,31 @@
 package wooteco.subway.ui;
 
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
-
-import java.net.URI;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
+        if (StationDao.findByName(stationRequest.getName()).isPresent()) {
+            throw new IllegalArgumentException("중복되는 지하철역이 존재합니다.");
+        }
         Station station = new Station(stationRequest.getName());
         Station newStation = StationDao.save(station);
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
@@ -35,5 +44,12 @@ public class StationController {
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler({RuntimeException.class})
+    public ResponseEntity<Map<String, String>> handle(RuntimeException exception) {
+        return ResponseEntity.badRequest().body(Map.of(
+                "message", exception.getMessage()
+        ));
     }
 }

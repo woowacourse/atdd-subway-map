@@ -2,7 +2,7 @@
 ## 지하철 노선도 미션
 ### 요구사항 정리
 - [ ] 지하철 역 관리 API 기능 완성하기
-  - [ ] 지하철역 등록 `POST /stations`
+  - [x] 지하철역 등록 `POST /stations`
     - `요청` json으로 name을 전송한다. 
     - 결과 상태 코드는 `201 Created` 이다.
     - `응답` json으로 id, name을 반환한다.
