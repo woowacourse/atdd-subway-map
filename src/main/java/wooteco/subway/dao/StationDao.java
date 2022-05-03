@@ -23,15 +23,15 @@ public class StationDao {
         return persistStation;
     }
 
-    public static List<Station> findAll() {
-        return stations;
-    }
-
     private static Station createNewObject(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
+    }
+
+    public static List<Station> findAll() {
+        return stations;
     }
 
     public void deleteAll() {
