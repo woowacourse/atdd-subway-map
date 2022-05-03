@@ -32,6 +32,13 @@ public class LineDao {
         }
     }
 
+    public static Line findById(Long id) {
+        return lines.stream()
+                .filter(line -> line.isSameId(id))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("해당 노선은 존재하지 않습니다."));
+    }
+
     public static List<Line> findAll() {
         return lines;
     }
