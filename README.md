@@ -43,6 +43,6 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 기존에 존재하는 지하철역 이름으로 지하철역을 생성할 시에 에러 처리를 한다
 - [x] 지하철 노선을 등록한다.
 - [x] 전체 지하철 노선 목록을 조회한다. 
-- [ ] 단일 지하철 노선을 조죄한다.
+- [x] 단일 지하철 노선을 조죄한다.
 - [ ] 지하철 노선을 수정한다.
 - [ ] 지하철 노선을 삭제한다.

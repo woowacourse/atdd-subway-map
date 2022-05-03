@@ -35,4 +35,11 @@ public class LineDao {
         ReflectionUtils.setField(field, line, ++seq);
         return line;
     }
+
+    public static Line findById(Long id) {
+        return lines.stream()
+                .filter(line -> line.isSameId(id))
+                .findAny()
+                .orElseThrow();
+    }
 }
