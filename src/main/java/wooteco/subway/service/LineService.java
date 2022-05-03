@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.List;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
@@ -17,5 +18,9 @@ public class LineService {
         return LineDao.findAll()
                 .stream()
                 .anyMatch(inLine -> inLine.isSameName(line));
+    }
+
+    public List<Line> findAll() {
+        return LineDao.findAll();
     }
 }
