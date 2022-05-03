@@ -87,4 +87,19 @@ class LineDaoTest {
         // then
         assertThat(updatedLine).isEqualTo(line);
     }
+
+    @Test
+    @DisplayName("id를 통해 해당하는 노선을 삭제한다.")
+    void deleteById() {
+        // given
+        final Line persistLine = LineDao.save(new Line("7호선", "bg-red-600"));
+
+        // when
+        Long id = persistLine.getId();
+        Integer affectedRows = LineDao.deleteById(id);
+
+        // then
+        assertThat(affectedRows).isOne();
+        assertThat(LineDao.findAll()).hasSize(0);
+    }
 }

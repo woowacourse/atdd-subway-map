@@ -54,4 +54,13 @@ public class LineDao {
         persistLine.update(line);
         return persistLine;
     }
+
+    public static Integer deleteById(Long id) {
+        Line line = findById(id);
+        boolean isDeleted = lines.remove(line);
+        if (isDeleted) {
+            return 1;
+        }
+        return 0;
+    }
 }
