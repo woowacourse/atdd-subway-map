@@ -7,20 +7,20 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Line;
 
-class LineDaoTest {
+class InmemoryLineDaoTest {
 
-    private final LineDao lineDao = LineDao.getInstance();
+    private final InmemoryLineDao inmemoryLineDao = InmemoryLineDao.getInstance();
 
     @AfterEach
     void afterEach() {
-        lineDao.clear();
+        inmemoryLineDao.clear();
     }
 
     @Test
     @DisplayName("Line을 등록할 수 있다.")
     void save() {
         Line line = new Line("신분당선", "bg-red-600");
-        Line savedLine = lineDao.save(line);
+        Line savedLine = inmemoryLineDao.save(line);
 
         assertThat(savedLine.getId()).isNotNull();
     }
@@ -28,8 +28,8 @@ class LineDaoTest {
     @Test
     @DisplayName("Line을 id로 조회할 수 있다.")
     void findById() {
-        Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
-        Line findLine = lineDao.findById(line.getId());
+        Line line = inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));
+        Line findLine = inmemoryLineDao.findById(line.getId());
 
         assertThat(findLine).isEqualTo(line);
     }
@@ -37,17 +37,17 @@ class LineDaoTest {
     @Test
     @DisplayName("Line 전체 조회할 수 있다.")
     void findAll() {
-        lineDao.save(new Line("신분당선", "bg-red-600"));
-        lineDao.save(new Line("분당선", "bg-green-600"));
+        inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));
+        inmemoryLineDao.save(new Line("분당선", "bg-green-600"));
 
-        assertThat(lineDao.findAll()).hasSize(2);
+        assertThat(inmemoryLineDao.findAll()).hasSize(2);
     }
 
     @Test
     @DisplayName("Line을 수정할 수 있다.")
     void update() {
-        Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
-        int result = lineDao.update(new Line(line.getId(), "분당선", line.getColor()));
+        Line line = inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));
+        int result = inmemoryLineDao.update(new Line(line.getId(), "분당선", line.getColor()));
 
         assertThat(result).isEqualTo(1);
     }
@@ -55,8 +55,8 @@ class LineDaoTest {
     @Test
     @DisplayName("Line을 삭제할 수 있다.")
     void delete() {
-        Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
-        int result = lineDao.delete(line.getId());
+        Line line = inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));
+        int result = inmemoryLineDao.delete(line.getId());
 
         assertThat(result).isEqualTo(1);
     }
@@ -64,8 +64,8 @@ class LineDaoTest {
     @Test
     @DisplayName("Line 이름이 존재하는지 확인할 수 있다.")
     void existByName() {
-        lineDao.save(new Line("신분당선", "bg-red-600"));
+        inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));
 
-        assertThat(lineDao.existByName("신분당선")).isTrue();
+        assertThat(inmemoryLineDao.existByName("신분당선")).isTrue();
     }
 }

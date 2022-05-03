@@ -12,14 +12,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.InmemoryLineDao;
 import wooteco.subway.dto.LineResponse;
 
 class LineAcceptanceTest extends AcceptanceTest {
 
     @AfterEach
     void afterEach() {
-        LineDao.getInstance().clear();
+        InmemoryLineDao.getInstance().clear();
     }
 
     @Test
