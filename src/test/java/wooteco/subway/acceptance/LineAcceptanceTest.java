@@ -15,16 +15,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.FakeLineDao;
 import wooteco.subway.dto.LineResponse;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private LineDao lineDao = new LineDao();
+    private FakeLineDao fakeLineDao = new FakeLineDao();
 
     @AfterEach
     void tearDown() {
-        lineDao.deleteAll();
+        fakeLineDao.deleteAll();
     }
 
     @DisplayName("노선을 생성한다")
