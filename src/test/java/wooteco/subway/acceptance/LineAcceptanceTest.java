@@ -164,4 +164,97 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    @DisplayName("노선을 수정한다.")
+    @Test
+    void updateLine() {
+        /// given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "13호선");
+        params.put("color", "WHITE");
+
+        ExtractableResponse<Response> createdResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+        String uri = createdResponse.header("Location");
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "10호선");
+        params2.put("color", "ORANGE");
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .put(uri)
+                .then().log().all()
+                .extract();
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("존재하지 않는 ID의 노선을 수정한다.")
+    @Test
+    void updateLine_noExistLine_Exception() {
+        /// given
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "10호선");
+        params2.put("color", "ORANGE");
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .put("/lines/10000")
+                .then().log().all()
+                .extract();
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("중복된 이름으로 노선을 수정한다.")
+    @Test
+    void updateLine_duplicateName_Exception() {
+        /// given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "15호선");
+        params.put("color", "BLUE");
+
+        ExtractableResponse<Response> createdResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "16호선");
+        params2.put("color", "BLACK");
+
+        ExtractableResponse<Response> createdResponse2 = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        String uri = createdResponse2.header("Location");
+
+        Map<String, String> params3 = new HashMap<>();
+        params3.put("name", "15호선");
+        params3.put("color", "ORANGE");
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params3)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .put(uri)
+                .then().log().all()
+                .extract();
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

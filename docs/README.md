@@ -26,7 +26,7 @@
   - [x] 노선 조회 `GET /lines/{id}`
     - 결과 상태 코드는 `200 OK` 이다.
     - `응답` json으로 id, name, color를 반환한다.
-  - [ ] 노선 수정 `PUT /lines/{id}`
+  - [x] 노선 수정 `PUT /lines/{id}`
     - `요청` json으로 name, color를 전송한다.
     - 결과 상태 코드는 `200 OK` 이다.
   - [x] 노선 삭제 `DELETE /lines/{id}`

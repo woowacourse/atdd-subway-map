@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -143,7 +144,7 @@ public class LineControllerTest {
 
     @DisplayName("삭제 요청 시 ID에 해당하는 지하철 노선이 없다면 에러를 응답한다.")
     @Test
-    void deleteLine_noExistStation_exception() throws Exception {
+    void deleteLine_noExistLine_exception() throws Exception {
         // given
         given(LineDao.findById(1L))
                 .willReturn(Optional.empty());
@@ -152,6 +153,54 @@ public class LineControllerTest {
         // then
         perform.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("message").value("해당 ID의 지하철 노선이 존재하지 않습니다."));
+    }
+
+    @DisplayName("노선을 수정한다.")
+    @Test
+    void updateLine() throws Exception {
+        // given
+        LineRequest updateRequest = new LineRequest("9호선", "GREEN");
+        given(LineDao.findById(1L))
+                .willReturn(Optional.of(new Line(1L, "11호선", "GRAY")));
+        given(LineDao.findByName("9호선")).willReturn(Optional.empty());
+        // when
+        ResultActions perform = mockMvc.perform(put("/lines/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateRequest)));
+        // then
+        perform.andExpect(status().isOk());
+    }
+
+    @DisplayName("존재하지 않는 ID의 노선을 수정한다.")
+    @Test
+    void updateLine_noExistLine_Exception() throws Exception {
+        // given
+        LineRequest updateRequest = new LineRequest("9호선", "GREEN");
+        given(LineDao.findById(1L))
+                .willReturn(Optional.empty());
+        // when
+        ResultActions perform = mockMvc.perform(put("/lines/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateRequest)));
+        // then
+        perform.andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("중복된 이름으로 노선을 수정한다.")
+    @Test
+    void updateLine_duplicateName_Exception() throws Exception {
+        // given
+        LineRequest updateRequest = new LineRequest("9호선", "GREEN");
+        given(LineDao.findById(1L))
+                .willReturn(Optional.of(new Line(1L, "11호선", "GRAY")));
+        given(LineDao.findByName("9호선"))
+                .willReturn(Optional.of(new Line(2L, "9호선", "BLUE")));
+        // when
+        ResultActions perform = mockMvc.perform(put("/lines/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateRequest)));
+        // then
+        perform.andExpect(status().isBadRequest());
     }
 
     @AfterAll

@@ -71,7 +71,7 @@ public class LineDaoTest {
         assertThat(lineEmpty).isEmpty();
     }
 
-    @DisplayName("지하철역을 제거한다.")
+    @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
         Line test = new Line("test1", "YELLOW");
@@ -83,6 +83,22 @@ public class LineDaoTest {
 
         List<Line> result = LineDao.findAll();
         assertThat(result.size()).isEqualTo(1);
+    }
+
+    @DisplayName("노선을 수정한다.")
+    @Test
+    void updateLine() {
+        Line line = new Line("test1", "YELLOW");
+        Line savedLine = LineDao.save(line);
+        Line newLine = new Line(savedLine.getId(), "test2", "BROWN");
+
+        LineDao.update(savedLine, newLine);
+
+        Line result = LineDao.findById(1L).get();
+        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.getName()).isEqualTo("test2");
+        assertThat(result.getColor()).isEqualTo("BROWN");
+
     }
 
     @AfterAll

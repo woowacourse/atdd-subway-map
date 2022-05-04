@@ -50,4 +50,9 @@ public class LineDao {
     public static void delete(Line line) {
         lines.remove(line);
     }
+
+    public static void update(Line findLine, Line newLine) {
+        lines.remove(findLine);
+        lines.add(newLine);
+    }
 }

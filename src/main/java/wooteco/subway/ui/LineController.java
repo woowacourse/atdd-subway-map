@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dao.LineDao;
@@ -50,10 +51,23 @@ public class LineController {
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        Line station = LineDao.findById(id)
+        Line line = LineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 지하철 노선이 존재하지 않습니다."));
-        LineDao.delete(station);
+        LineDao.delete(line);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/lines/{id}")
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        Line findLine = LineDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 지하철 노선이 존재하지 않습니다."));
+        if (LineDao.findByName(lineRequest.getName()).isPresent() &&
+                !lineRequest.getName().equals(findLine.getName())) {
+            throw new IllegalArgumentException("중복되는 지하철 노선이 존재합니다.");
+        }
+        LineDao.update(findLine, new Line(id, lineRequest.getName(), lineRequest.getColor()));
+
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler({IllegalArgumentException.class})
