@@ -20,14 +20,16 @@ public class LineService {
     }
 
     public Line update(Long id, String name, String color) {
-        if (isDuplicateName(id, name)) {
+        Line line = findById(id);
+
+        if (isDuplicateName(line, name)) {
             throw new DuplicateException();
         }
+
         return LineDao.update(new Line(id, name, color));
     }
 
-    private boolean isDuplicateName(Long id, String name) {
-        Line line = findById(id);
+    private boolean isDuplicateName(Line line, String name) {
         return !line.isSameName(name) && LineDao.existByName(name);
     }
 }

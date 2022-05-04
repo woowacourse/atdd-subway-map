@@ -87,6 +87,7 @@ public class LineServiceTest {
             .isInstanceOf(BlankArgumentException.class);
     }
 
+    @DisplayName("지하철 노선의 정보를 수정한다.")
     @Test
     void updateLine() {
         Line line = lineService.save("신분당선", "bg-red-600");
@@ -98,13 +99,10 @@ public class LineServiceTest {
         assertThat(expectedLine.getColor()).isEqualTo("bg-blue-600");
     }
 
-    @DisplayName("존재하지 않는 지하철 역을 제거한다.")
+    @DisplayName("존재하지 않는 지하철 노선을 수정한다.")
     @Test
-    void deleteNotExistStation() {
-        Line createdLine = lineService.save("신분당선", "bg-red-600");
-        lineService.save("1호선", "bg-red-600");
-
-        assertThatThrownBy(() -> lineService.update(createdLine.getId(), "1호선", "bg-red-600"))
-                .isInstanceOf(DuplicateException.class);
+    void updateNotExistLine() {
+        assertThatThrownBy(() -> lineService.update(50L, "1호선", "bg-red-600"))
+                .isInstanceOf(NotExistException.class);
     }
 }

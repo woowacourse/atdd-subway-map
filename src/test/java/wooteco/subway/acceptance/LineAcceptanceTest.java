@@ -240,4 +240,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .statusCode(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("존재하지 않는 노선 수정 시도")
+    @Test
+    void updateNotExistLine() {
+        // when
+        RestAssured.given().log().all()
+            .body(Map.of("name", "1호선", "color", "bg-red-600"))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/50")
+            .then().log().all()
+            .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
 }
