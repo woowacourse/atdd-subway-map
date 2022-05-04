@@ -1,4 +1,4 @@
-package wooteco.subway.ui;
+package wooteco.subway.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.line.LineRequest;
+import wooteco.subway.dto.line.LineResponse;
 import wooteco.subway.service.LineService;
 
 import java.net.URI;
@@ -24,7 +24,7 @@ public class LineController {
     }
 
     @GetMapping("/lines/{id}")
-    public ResponseEntity<LineResponse> showline(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         LineResponse lineInfos = LineService.findLineInfos(id);
         return new ResponseEntity<>(
                 lineInfos,
@@ -33,11 +33,19 @@ public class LineController {
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<LineResponse>> showStations() {
+    public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = LineDao.findAll();
         List<LineResponse> lineResponses = lines.stream()
-                .map(it -> new LineResponse(it))
+                .map(LineResponse::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
+    }
+
+    @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        LineService.updateById(id, lineRequest.getName(), lineRequest.getColor());
+        return new ResponseEntity<>(
+                HttpStatus.OK
+        );
     }
 }

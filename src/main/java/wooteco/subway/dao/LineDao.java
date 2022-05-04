@@ -14,14 +14,9 @@ public class LineDao {
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
 
-    public static boolean existStationByName(String name) {
-        return lines.stream()
-                .anyMatch(it -> it.getName().equals(name));
-    }
-
     public static Line save(Line line) {
         Line persistLine = createNewObject(line);
-        lines.add(persistLine);
+        lines.add(line);
         return persistLine;
     }
 
@@ -41,5 +36,21 @@ public class LineDao {
 
     public static List<Line> findAll() {
         return Collections.unmodifiableList(lines);
+    }
+
+    public static boolean existLineByName(String name) {
+        return lines.stream()
+                .anyMatch(it -> it.getName().equals(name));
+    }
+
+    public static boolean existLineByColor(String color) {
+        return lines.stream()
+                .anyMatch(it -> it.getColor().equals(color));
+    }
+
+    public static void updateById(Long id, String name, String color) {
+        Line line = findById(id);
+        line.setName(name);
+        line.setColor(color);
     }
 }

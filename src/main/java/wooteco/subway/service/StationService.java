@@ -2,7 +2,7 @@ package wooteco.subway.service;
 
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.station.StationResponse;
 
 public class StationService {
 

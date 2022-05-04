@@ -1,6 +1,4 @@
-package wooteco.subway.dto;
-
-import java.io.Serializable;
+package wooteco.subway.dto.station;
 
 public class StationRequest {
     private String name;

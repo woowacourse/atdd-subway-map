@@ -2,8 +2,8 @@ package wooteco.subway.service;
 
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.line.LineRequest;
+import wooteco.subway.dto.line.LineResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,9 +11,7 @@ import java.util.stream.Collectors;
 public class LineService {
 
     public static LineResponse createLine(LineRequest lineRequest) {
-        if (LineDao.existStationByName(lineRequest.getName())) {
-            throw new IllegalArgumentException("[ERROR] 중복된 이름이 존재합니다.");
-        }
+        validateDuplicate(lineRequest.getName(), lineRequest.getColor());
         Line line = LineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
         return new LineResponse(line);
     }
@@ -29,5 +27,27 @@ public class LineService {
         return allLines.stream()
                 .map(it -> new LineResponse(it))
                 .collect(Collectors.toList());
+    }
+
+    public static void updateById(Long id, String name, String color) {
+        validateDuplicate(name, color);
+        LineDao.updateById(id, name, color);
+    }
+
+    private static void validateDuplicate(String name, String color) {
+        validateDuplicateName(name);
+        validateDuplicateColor(color);
+    }
+
+    private static void validateDuplicateName(String name) {
+        if (name == null || LineDao.existLineByName(name)) {
+            throw new IllegalArgumentException("[ERROR] 중복된 이름이 존재합니다.");
+        }
+    }
+
+    private static void validateDuplicateColor(String color) {
+        if (color == null || LineDao.existLineByColor(color)) {
+            throw new IllegalArgumentException("[ERROR] 중복된 이름이 존재합니다.");
+        }
     }
 }
