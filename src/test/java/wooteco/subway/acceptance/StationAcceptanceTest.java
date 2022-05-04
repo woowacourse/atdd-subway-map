@@ -18,7 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.StationDao;
 
-@DisplayName("지하철역 관련 기능")
+@DisplayName("지하철 역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
@@ -26,7 +26,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationDao.deleteAll();
     }
 
-    @DisplayName("지하철역을 생성한다.")
+    @DisplayName("지하철 역을 생성한다.")
     @Test
     void createStation() {
         // when
@@ -47,7 +47,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철 역 이름으로 지하철 역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
         // given
@@ -71,7 +71,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철 역을 조회한다.")
     @Test
     void getStations() {
         /// given
@@ -94,7 +94,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(actualLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철역을 제거한다.")
+    @DisplayName("지하철 역을 제거한다.")
     @Test
     void deleteStation() {
         // given
@@ -112,7 +112,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("존재하지 않는 지하철역을 제거한다.")
+    @DisplayName("존재하지 않는 지하철 역을 제거한다.")
     @Test
     void deleteNotExistStation() {
         // when
