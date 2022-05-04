@@ -44,8 +44,8 @@ class LineServiceTest {
 	@Test
 	void listLines() {
 		lineService.create("신분당선", "bg-red-600");
-		lineService.create("2호선", "bg-red-600");
-		lineService.create("분당선", "bg-red-600");
+		lineService.create("2호선", "bg-red-601");
+		lineService.create("분당선", "bg-red-602");
 		List<LineDto> lines = lineService.listLines();
 		assertThat(lines).hasSize(3);
 	}

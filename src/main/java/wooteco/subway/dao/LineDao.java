@@ -14,6 +14,8 @@ public interface LineDao {
 
 	Boolean existsByName(String name);
 
+	Boolean existsByColor(String color);
+
 	void update(Long id, String name, String color);
 
 	void remove(Long id);

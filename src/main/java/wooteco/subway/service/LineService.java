@@ -20,6 +20,7 @@ public class LineService {
 
 	public LineDto create(String name, String color) {
 		validateNameNotDuplicated(name);
+		validateColorNotDuplicated(color);
 		Long lineId = lineDao.save(new Line(name, color));
 		Line line = lineDao.findById(lineId);
 		return LineDto.from(line);
@@ -28,6 +29,12 @@ public class LineService {
 	private void validateNameNotDuplicated(String name) {
 		if (lineDao.existsByName(name)) {
 			throw new IllegalArgumentException("해당 이름의 지하철 노선이 이미 존재합니다");
+		}
+	}
+
+	private void validateColorNotDuplicated(String color) {
+		if (lineDao.existsByColor(color)) {
+			throw new IllegalArgumentException("해당 색상의 지하철 노선이 이미 존재합니다");
 		}
 	}
 

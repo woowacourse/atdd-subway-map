@@ -38,6 +38,12 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
+    public Boolean existsByColor(String color) {
+        return lines.stream()
+                .anyMatch(line -> color.equals(line.getColor()));
+    }
+
+    @Override
     public void update(Long id, String name, String color) {
         lines.remove(findById(id));
         lines.add(new Line(id, name, color));

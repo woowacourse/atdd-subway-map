@@ -10,11 +10,8 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -50,28 +47,66 @@ class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLineWithDuplicateName() {
 		// given
-		Map<String, String> params = new HashMap<>();
-		params.put("name", "신분당선");
-		params.put("color", "bg-red-600");
+		String name = "신분당선";
 		RestAssured.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/lines")
-			.then().log().all()
-			.extract();
+				.body(Map.of(
+						"name", name,
+						"color", "bg-red-600"
+				))
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.when()
+				.post("/lines")
+				.then().log().all()
+				.extract();
 
 		// when
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/lines")
-			.then().log().all()
-			.extract();
+				.body(Map.of(
+						"name", name,
+						"color", "bg-red-600"
+				))
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.when()
+				.post("/lines")
+				.then().log().all()
+				.extract();
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.body().asString()).isEqualTo("해당 이름의 지하철 노선이 이미 존재합니다");
+	}
+
+	@DisplayName("기존에 존재하는 지하철노선 색상으로 지하철노선을 생성한다.")
+	@Test
+	void createLineWithDuplicateColor() {
+		// given
+		String color = "bg-red-600";
+		RestAssured.given().log().all()
+				.body(Map.of(
+						"name", "신분당선",
+						"color", color
+				))
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.when()
+				.post("/lines")
+				.then().log().all()
+				.extract();
+
+		// when
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+				.body(Map.of(
+						"name", "분당선",
+						"color", color
+				))
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.when()
+				.post("/lines")
+				.then().log().all()
+				.extract();
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.body().asString()).isEqualTo("해당 색상의 지하철 노선이 이미 존재합니다");
 	}
 
 	@DisplayName("지하철 노선 목록을 조회한다.")
@@ -91,7 +126,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
 		Map<String, String> params2 = new HashMap<>();
 		params2.put("name", "분당선");
-		params2.put("color", "bg-red-600");
+		params2.put("color", "bg-red-601");
 		ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
 			.body(params2)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)

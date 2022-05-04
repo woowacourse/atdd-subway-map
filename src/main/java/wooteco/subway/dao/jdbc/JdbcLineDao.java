@@ -71,6 +71,15 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
+    public Boolean existsByColor(String color) {
+        String query = "SELECT COUNT(*) FROM Line WHERE color=?";
+        int count = jdbcTemplate.queryForObject(query,
+                (resultSet, rowNum) -> resultSet.getInt(1),
+                color);
+        return count != 0;
+    }
+
+    @Override
     public void update(Long id, String name, String color) {
         String query = "UPDATE Line SET name=?, color=? WHERE id=?";
         jdbcTemplate.update(query, name, color, id);

@@ -52,7 +52,7 @@ public class StationController {
 	}
 
 	@ExceptionHandler
-	public ResponseEntity<Void> handle(IllegalArgumentException exception) {
-		return ResponseEntity.badRequest().build();
+	public ResponseEntity<String> handle(IllegalArgumentException exception) {
+		return ResponseEntity.badRequest().body(exception.getMessage());
 	}
 }
