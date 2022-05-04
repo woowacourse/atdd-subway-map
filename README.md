@@ -42,6 +42,13 @@
 - [x] 지하철 노선을 수정한다.
 - [x] 지하철 노선을 삭제한다.
 
+### 프레임워크 적용
+
+- [ ] 스프링 JDBC를 활용하여 H2 DB에 저장한다.
+- [ ] H2 DB를 통해 저장된 값을 확인한다.
+- [ ] 스프링 빈을 활용한다.
+
+
 ## ✏️ Code Review Process
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
