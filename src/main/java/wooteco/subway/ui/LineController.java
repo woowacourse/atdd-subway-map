@@ -30,12 +30,7 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines(){
-        List<Line> lines = LineDao.findAll();
-        List<LineResponse> lineResponses = lines.stream()
-                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(lineResponses);
+        return ResponseEntity.ok(lineService.showLines());
     }
 
     @GetMapping("/{id}")
