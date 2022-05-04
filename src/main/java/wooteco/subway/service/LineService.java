@@ -41,4 +41,9 @@ public class LineService {
                 .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
                 .collect(Collectors.toList());
     }
+
+    public LineResponse showLine(final Long id) {
+        Line findLine = lineRepository.findById(id);
+        return new LineResponse(findLine.getId(), findLine.getName(), findLine.getColor());
+    }
 }

@@ -58,4 +58,17 @@ public class LineServiceTest {
         assertThat(lineResponses).hasSize(2);
     }
 
+    @DisplayName("노선을 조회한다.")
+    @Test
+    void showLine() {
+        Line line = lineRepository.save(new Line("분당선", "bg-red-600"));
+
+        LineResponse lineResponse = lineService.showLine(line.getId());
+
+        assertAll(
+                () -> assertThat(lineResponse.getName()).isEqualTo("분당선"),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("bg-red-600")
+        );
+    }
+
 }
