@@ -43,7 +43,7 @@ public class LineDao {
 
     public static boolean updateById(Long savedId, Line line) {
         if (lines.containsKey(savedId)) {
-            lines.replace(savedId, line);
+            lines.replace(savedId, new Line(savedId, line.getName(), line.getColor()));
             return true;
         }
 
