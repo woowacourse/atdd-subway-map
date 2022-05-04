@@ -10,8 +10,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import wooteco.subway.dao.FakeLineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.DuplicatedLineException;
-import wooteco.subway.exception.LineNotFoundException;
+import wooteco.subway.exception.line.DuplicatedLineException;
+import wooteco.subway.exception.line.LineNotFoundException;
 
 class LineServiceTest {
 

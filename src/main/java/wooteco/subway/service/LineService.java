@@ -5,8 +5,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.DuplicatedLineException;
-import wooteco.subway.exception.LineNotFoundException;
+import wooteco.subway.exception.line.DuplicatedLineException;
+import wooteco.subway.exception.line.LineNotFoundException;
 
 @Service
 public class LineService {

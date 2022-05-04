@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.DuplicatedStationException;
+import wooteco.subway.exception.station.DuplicatedStationException;
 
 class StationServiceTest {
 

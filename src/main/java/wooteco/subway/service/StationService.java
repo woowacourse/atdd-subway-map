@@ -4,8 +4,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.DuplicatedStationException;
-import wooteco.subway.exception.StationNotFoundException;
+import wooteco.subway.exception.station.DuplicatedStationException;
+import wooteco.subway.exception.station.StationNotFoundException;
 
 @Service
 public class StationService {

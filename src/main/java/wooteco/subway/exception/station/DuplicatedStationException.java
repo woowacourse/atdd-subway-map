@@ -1,4 +1,6 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.station;
+
+import wooteco.subway.exception.CustomException;
 
 public class DuplicatedStationException extends CustomException {
 
