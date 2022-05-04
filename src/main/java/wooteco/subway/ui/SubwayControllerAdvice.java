@@ -2,12 +2,14 @@ package wooteco.subway.ui;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import wooteco.subway.dto.SubwayErrorResponse;
+import wooteco.subway.exception.NotFoundException;
 
 @RestControllerAdvice
 public class SubwayControllerAdvice {
@@ -25,6 +27,11 @@ public class SubwayControllerAdvice {
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<Void> handleNoHandlerFoundException() {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<SubwayErrorResponse> handleNotFoundException(NotFoundException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(SubwayErrorResponse.from(exception));
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
