@@ -1,14 +1,15 @@
 package wooteco.subway.service;
 
-import static org.assertj.core.api.Assertions.*;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import wooteco.subway.dto.line.LineRequest;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
 
 class LineServiceTest {
@@ -90,5 +91,27 @@ class LineServiceTest {
 
         assertThatThrownBy(() -> LineService.updateById(lineResponse.getId(), "50호선", "테스트색27"))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("노선 삭제")
+    void deleteLine() {
+        var lineRequest = new LineRequest("500호선", "테스트색200");
+        var lineResponse = LineService.createLine(lineRequest);
+        var id = lineResponse.getId();
+
+        LineService.deleteById(id);
+
+        boolean actual = LineService.findAll().stream()
+                .noneMatch(it -> Objects.equals(it.getId(), id));
+
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    @DisplayName("없는 노선 삭제요청 시 예외 발생")
+    void invalidLine() {
+        assertThatThrownBy(() -> LineService.deleteById(1994L))
+                .isInstanceOf(NoSuchElementException.class);
     }
 }

@@ -208,5 +208,51 @@ public class LineAcceptance extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("노선삭제")
+    @Test
+    void deleteLine() {
+        /// given
+        Map<String, String> originParams = new HashMap<>();
+        originParams.put("name", "1994호선");
+        originParams.put("color", "아이보리색");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(originParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+        String id = createResponse.header("Location").split("/")[2];
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("없는 노선 삭제시 예외 발생")
+    @Test
+    void invalidLine() {
+        /// given
+        var invalidId = 2002L;
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/" + invalidId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
 

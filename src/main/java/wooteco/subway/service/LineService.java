@@ -1,12 +1,12 @@
 package wooteco.subway.service;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class LineService {
 
@@ -49,5 +49,12 @@ public class LineService {
         if (color == null || LineDao.existLineByColor(color)) {
             throw new IllegalArgumentException("[ERROR] 중복된 이름이 존재합니다.");
         }
+    }
+
+    public static void deleteById(Long id) {
+        if (LineDao.findById(id) == null) {
+            throw new NoSuchElementException("[ERROR] 존재하지 않는 노선 입니다.");
+        }
+        LineDao.deleteById(id);
     }
 }

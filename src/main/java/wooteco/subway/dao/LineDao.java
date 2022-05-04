@@ -1,13 +1,12 @@
 package wooteco.subway.dao;
 
-import org.springframework.util.ReflectionUtils;
-import wooteco.subway.domain.Line;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import org.springframework.util.ReflectionUtils;
+import wooteco.subway.domain.Line;
 
 public class LineDao {
 
@@ -52,5 +51,15 @@ public class LineDao {
         Line line = findById(id);
         line.setName(name);
         line.setColor(color);
+    }
+
+    public static void deleteById(Long id) {
+        lines.removeIf(line -> line.getId() == id);
+//        Line targetLine = lines.stream()
+//                .filter(it -> it.getId().equals(id))
+//                .findFirst()
+//                .orElseThrow();
+//
+//        lines.remove(targetLine);
     }
 }
