@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineResponse;
 
@@ -27,7 +26,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void finish() {
         List<Line> lines = LineDao.findAll();
         for (Line line : lines) {
-            StationDao.deleteStation(line.getId());
+            LineDao.delete(line.getId());
         }
     }
 
