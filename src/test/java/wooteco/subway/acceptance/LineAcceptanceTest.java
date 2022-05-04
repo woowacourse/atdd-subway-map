@@ -10,24 +10,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("지하철노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-
-    @BeforeEach
-    void init() {
-        List<Line> lines = LineDao.findAll();
-        lines.clear();
-    }
-
     @DisplayName("지하철노선을 생성한다.")
     @Test
     void createLine() {
@@ -191,6 +181,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
