@@ -21,10 +21,10 @@ import wooteco.subway.dto.LineResponse;
 
 class LineAcceptanceTest extends AcceptanceTest {
 
-    @AfterEach
-    void tearDown() {
-        LineDao.deleteAll();
-    }
+    // @AfterEach
+    // void tearDown() {
+    //     LineDao.deleteAll();
+    // }
 
     @Test
     void createLine() {
