@@ -3,10 +3,13 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Service;
+
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.StationDto;
 
+@Service
 public class StationService {
 
 	private final StationDao stationDao;
