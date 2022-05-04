@@ -33,4 +33,15 @@ public class StationServiceTest {
         assertThatThrownBy(() -> stationService.save(stationRequest)).isInstanceOf(IllegalArgumentException.class)
             .hasMessage("중복된 지하철 역 이름입니다.");
     }
+
+    @DisplayName("모든 지하철역을 조회한다.")
+    @Test
+    void getStations() {
+        StationRequest stationRequest1 = new StationRequest("강남역");
+        StationRequest stationRequest2 = new StationRequest("선릉역");
+        stationService.save(stationRequest1);
+        stationService.save(stationRequest2);
+
+        assertThat(stationService.findAll()).hasSize(2);
+    }
 }
