@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.LineDaoImpl;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -15,7 +16,7 @@ public class LineService {
     
     private final LineDao lineDao;
     
-    public LineService(LineDao lineDao){
+    public LineService(LineDaoImpl lineDao){
         this.lineDao = lineDao;
     }
     public LineResponse save(LineRequest lineRequest) {

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.StationDaoImpl;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
@@ -15,7 +16,7 @@ public class StationService {
 
     private final StationDao stationDao;
 
-    public StationService(StationDao stationDao) {
+    public StationService(StationDaoImpl stationDao) {
         this.stationDao = stationDao;
     }
 
