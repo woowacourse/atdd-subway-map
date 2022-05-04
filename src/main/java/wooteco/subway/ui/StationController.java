@@ -16,22 +16,23 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.InternalServerException;
+import wooteco.subway.service.StationService;
 
 @RestController
 public class StationController {
 
     private final StationDao stationDao;
+    private final StationService stationService;
 
-    public StationController(final StationDao stationDao) {
+    public StationController(final StationDao stationDao, final StationService stationService) {
         this.stationDao = stationDao;
+        this.stationService = stationService;
     }
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
-        Station newStation = stationDao.save(station);
-        StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
+        StationResponse response = stationService.create(stationRequest);
+        return ResponseEntity.created(URI.create("/stations/" + response.getId())).body(response);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
