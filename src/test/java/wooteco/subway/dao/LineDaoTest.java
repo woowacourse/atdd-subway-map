@@ -66,4 +66,11 @@ class LineDaoTest {
             .withMessage("조회하려는 id가 없습니다.");
     }
 
+    @Test
+    @DisplayName("id로 노선을 삭제한다.")
+    void deleteById() {
+        Line savedLine = LineDao.save(new Line("1호선", "blue"));
+        LineDao.deleteById(savedLine.getId());
+        assertThat(LineDao.findAll()).hasSize(0);
+    }
 }

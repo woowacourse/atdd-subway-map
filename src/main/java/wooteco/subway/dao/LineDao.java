@@ -29,6 +29,10 @@ public class LineDao {
         return List.copyOf(lines);
     }
 
+    public static void deleteById(Long id) {
+        lines.removeIf(value -> value.getId().equals(id));
+    }
+
     public static void deleteAll() {
         lines.clear();
     }

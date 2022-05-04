@@ -69,5 +69,4 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [ ] 노선 이름은 한글이어야 한다.
     - [ ] 수정할 노선이 있어야 한다.
     - [ ] 이름과 색깔이 있어야 한다.
-- [ ] 지하철 노선 삭제   
-    - [ ] 삭제할 노선이 있어야 한다.
+- [x] 지하철 노선 삭제

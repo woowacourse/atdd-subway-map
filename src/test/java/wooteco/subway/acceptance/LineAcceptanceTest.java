@@ -39,7 +39,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("노선 id로 조회한다.")
+    @DisplayName("노선을 id로 조회한다.")
     void showLine() {
         Line line = LineDao.save(new Line("1호선", "blue"));
 
@@ -86,4 +86,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(400);
     }
 
+    @Test
+    @DisplayName("노선을 id로 삭제한다.")
+    void deleteById() {
+        Line line = LineDao.save(new Line("1호선", "blue"));
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete("/lines/{id}", line.getId())
+            .then()
+            .log().all().extract();
+
+        assertThat(response.statusCode()).isEqualTo(204);
+    }
 }
