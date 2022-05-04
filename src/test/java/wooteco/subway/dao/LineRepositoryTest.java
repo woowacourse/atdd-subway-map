@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.dto.LineUpdateDto;
 import wooteco.subway.domain.Line;
 
 import java.util.List;
@@ -54,5 +55,19 @@ public class LineRepositoryTest {
         Line findLine = lineRepository.findById(saveLine.getId());
 
         assertThat(findLine).isEqualTo(saveLine);
+    }
+
+    @DisplayName("노선을 수정한다.")
+    @Test
+    void update() {
+        Line saveLine = lineRepository.save(new Line("분당선", "bg-red-600"));
+        LineUpdateDto lineUpdateDto = new LineUpdateDto(saveLine.getId(), "신분당선", "bg-yellow-600");
+        lineRepository.update(lineUpdateDto);
+        Line findUpdateLine = lineRepository.findById(saveLine.getId());
+
+        assertAll(
+                () -> assertThat(findUpdateLine.getName()).isEqualTo("신분당선"),
+                () -> assertThat(findUpdateLine.getColor()).isEqualTo("bg-yellow-600")
+        );
     }
 }

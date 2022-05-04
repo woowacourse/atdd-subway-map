@@ -1,13 +1,14 @@
 package wooteco.subway.dao;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.dao.dto.LineUpdateDto;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -25,7 +26,7 @@ public class LineRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Line save(Line line) {
+    public Line save(final Line line) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", line.getName())
                 .addValue("color", line.getColor());
@@ -39,10 +40,10 @@ public class LineRepository {
         return namedParameterJdbcTemplate.query(sql, rowMapper());
     }
 
-    public Line findById(Long id) {
+    public Line findById(final Long id) {
         String sql = "SELECT * FROM line WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        return namedParameterJdbcTemplate.queryForObject(sql ,parameters, rowMapper());
+        return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
     }
 
     private RowMapper<Line> rowMapper() {
@@ -52,5 +53,12 @@ public class LineRepository {
             String color = resultSet.getString("color");
             return new Line(id, name, color);
         };
+    }
+
+
+    public void update(final LineUpdateDto lineUpdateDto) {
+        String sql = "UPDATE line SET name = :name, color = :color WHERE id = :id";
+        SqlParameterSource nameParameters = new BeanPropertySqlParameterSource(lineUpdateDto);
+        namedParameterJdbcTemplate.update(sql, nameParameters);
     }
 }
