@@ -10,7 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.DuplicateNameException;
+import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.BlankArgumentException;
 import wooteco.subway.exception.NotExistStationException;
 
@@ -38,7 +38,7 @@ class StationServiceTest {
         stationService.saveByName(stationName);
 
         assertThatThrownBy(() -> stationService.saveByName(stationName))
-            .isInstanceOf(DuplicateNameException.class);
+            .isInstanceOf(DuplicateException.class);
     }
 
     @DisplayName("지하철 역 이름에 빈 문자열을 저장할 수 없다")

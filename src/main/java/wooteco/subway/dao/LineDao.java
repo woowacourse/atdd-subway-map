@@ -20,6 +20,11 @@ public class LineDao {
                 .findAny();
     }
 
+    public static boolean existByName(String name) {
+        return lines.stream()
+                .anyMatch(it -> it.getName().equals(name));
+    }
+
     public static Line save(Line line) {
         Line persistLine = createNewObject(line);
         lines.add(persistLine);
@@ -31,5 +36,9 @@ public class LineDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
         return line;
+    }
+
+    public static void deleteAll() {
+        lines.clear();
     }
 }
