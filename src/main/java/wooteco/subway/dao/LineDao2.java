@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.NotFoundException;
 
 @Repository
 public class LineDao2 {
@@ -61,7 +63,12 @@ public class LineDao2 {
     }
 
     public Line findById(Long id) {
-        return null;
+        try {
+            final String sql = "SELECT * FROM line WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        } catch (EmptyResultDataAccessException exception) {
+            throw new NotFoundException("해당 ID에 맞는 노선을 찾지 못했습니다.");
+        }
     }
 
     public Line updateById(Long id, Line line) {
