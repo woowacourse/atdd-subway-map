@@ -12,7 +12,9 @@ import wooteco.subway.dto.StationResponse;
 
 @Service
 public class StationService {
-
+    private static final String ERROR_MESSAGE_DUPLICATE_NAME = "중복된 지하철 역 이름입니다.";
+    private static final String ERROR_MESSAGE_NOT_EXISTS_ID = "존재하지 않는 지하철 역입니다.";
+    
     private final StationDao stationDao;
 
     public StationService(StationDao stationDao) {
@@ -21,7 +23,7 @@ public class StationService {
 
     public StationResponse save(StationRequest stationRequest) {
         if (stationDao.existByName(stationRequest.getName())) {
-            throw new IllegalArgumentException("중복된 지하철 역 이름입니다.");
+            throw new IllegalArgumentException(ERROR_MESSAGE_DUPLICATE_NAME);
         }
         Station station = new Station(stationRequest.getName());
         Station newStation = stationDao.save(station);
@@ -37,7 +39,7 @@ public class StationService {
 
     public void delete(Long id) {
         if (!stationDao.existById(id)) {
-            throw new IllegalArgumentException("존재하지 않는 지하철 역입니다.");
+            throw new IllegalArgumentException(ERROR_MESSAGE_NOT_EXISTS_ID);
         }
         stationDao.delete(id);
     }

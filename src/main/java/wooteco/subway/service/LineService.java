@@ -12,6 +12,8 @@ import wooteco.subway.dto.LineResponse;
 
 @Service
 public class LineService {
+    private static final String ERROR_MESSAGE_DUPLICATE_NAME = "중복된 지하철 노선 이름입니다.";
+    private static final String ERROR_MESSAGE_NOT_EXISTS_ID = "존재하지 않는 지하철 노선 id입니다.";
     
     private final LineDao lineDao;
     
@@ -27,7 +29,7 @@ public class LineService {
 
     private void validateNameDuplication(String name) {
         if (lineDao.existByName(name)) {
-            throw new IllegalArgumentException("중복된 지하철 노선 이름입니다.");
+            throw new IllegalArgumentException(ERROR_MESSAGE_DUPLICATE_NAME);
         }
     }
 
@@ -50,14 +52,15 @@ public class LineService {
         Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
         lineDao.update(line);
     }
-
-    private void validateNotExists(Long id){
-        if (!lineDao.existById(id)) {
-            throw new IllegalArgumentException("존재하지 않는 지하철 노선 id입니다.");
-        }
-    }
+    
     public void delete(Long id) {
         validateNotExists(id);
         lineDao.delete(id);
+    }
+
+    private void validateNotExists(Long id){
+        if (!lineDao.existById(id)) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_NOT_EXISTS_ID);
+        }
     }
 }
