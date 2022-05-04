@@ -62,7 +62,7 @@ public class JdbcStationDao implements StationDao {
     @Override
     public Integer deleteById(final Long id) {
         final String sql = "DELETE FROM station WHERE id = ?";
-        final Integer affectedRows = jdbcTemplate.update(sql, id);
+        final int affectedRows = jdbcTemplate.update(sql, id);
         if (affectedRows == 0) {
             throw new InternalServerException("알 수 없는 이유로 역을 삭제하지 못했습니다.");
         }

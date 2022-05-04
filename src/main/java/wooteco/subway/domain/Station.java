@@ -5,10 +5,7 @@ public class Station {
     private static final int MAX_NAME_LENGTH = 15;
 
     private Long id;
-    private String name;
-
-    public Station() {
-    }
+    private final String name;
 
     public Station(final Long id, final String name) {
         this.id = id;

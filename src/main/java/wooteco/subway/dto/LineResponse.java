@@ -1,11 +1,12 @@
 package wooteco.subway.dto;
 
 public class LineResponse {
+
     private Long id;
     private String name;
     private String color;
 
-    public LineResponse() {
+    private LineResponse() {
     }
 
     public LineResponse(final Long id, final String name, final String color) {

@@ -20,7 +20,6 @@ import wooteco.subway.exception.NotFoundException;
 public class JdbcLineDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
-
     private final RowMapper<Line> rowMapper = (resultSet, rowNumber) -> {
         Line line = new Line(
                 resultSet.getString("name"),
@@ -43,7 +42,7 @@ public class JdbcLineDao implements LineDao {
     @Override
     public Line save(final Line line) {
         try {
-            final String sql = "INSERT INTO line SET name = ? , color = ?";
+            final String sql = "INSERT INTO line SET name = ?, color = ?";
 
             final KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(con -> {
@@ -77,14 +76,14 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public Line updateById(final Long id, final Line line) {
-        final String sql = "UPDATE line set name = ?, color = ? where id = ?";
+        final String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
         return setId(line, id);
     }
 
     @Override
     public Integer deleteById(final Long id) {
-        final String sql = "DELETE FROM line where id = ?";
+        final String sql = "DELETE FROM line WHERE id = ?";
         final int affectedRows = jdbcTemplate.update(sql, id);
         if (affectedRows == 0) {
             throw new InternalServerException("알 수 없는 이유로 노선을 삭제하지 못했습니다.");

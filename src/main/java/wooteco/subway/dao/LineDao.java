@@ -4,6 +4,7 @@ import java.util.List;
 import wooteco.subway.domain.Line;
 
 public interface LineDao {
+
     Line save(Line line);
 
     List<Line> findAll();
