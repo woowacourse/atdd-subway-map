@@ -13,6 +13,7 @@ import wooteco.subway.dto.StationResponse;
 public class StationService {
 
     private static final int DELETE_FAIL = 0;
+
     private final StationDao stationDao;
 
     public StationService(StationDao stationDao) {
