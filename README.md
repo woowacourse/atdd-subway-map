@@ -49,7 +49,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 지하철 노선을 삭제한다.
 
 ### 2단계
-- [ ] 스프링 JDBC 활용하여 H2 DB에 저장하기
-- [ ] Dao 객체가 아닌 DB에서 데이터를 관리하기
-- [ ] DB에 접근하기 위한 JdbcTemplate 이용하기 
-- [ ] 스프링 빈 활용하기
+- [x] 스프링 JDBC 활용하여 H2 DB에 저장하기
+- [x] Dao 객체가 아닌 DB에서 데이터를 관리하기
+- [x] DB에 접근하기 위한 JdbcTemplate 이용하기 
+- [x] 스프링 빈 활용하기
