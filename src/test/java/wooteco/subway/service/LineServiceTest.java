@@ -1,6 +1,9 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,7 +39,7 @@ public class LineServiceTest {
     }
 
     @Test
-    @DisplayName("중복된 역을 저장할 수 없다.")
+    @DisplayName("중복된 Line 을 저장할 수 없다.")
     void saveDuplicateName() {
         //given
         Line line = new Line("중곡", "khaki");
@@ -46,5 +49,24 @@ public class LineServiceTest {
         assertThatThrownBy(() -> lineService.save(line))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("이미 등록된 노선입니다.");
+    }
+
+    @Test
+    @DisplayName("전체 Line 목록을 조회한다.")
+    void findAll() {
+        //given
+        Line line1 = new Line("중곡", "khaki");
+        Line line2 = new Line("가산디지털", "khaki");
+        lineService.save(line1);
+        lineService.save(line2);
+
+        //when
+        List<Line> actual = lineService.findAll();
+
+        //then
+        assertAll(
+            () -> assertThat(equals(actual.get(0), line1)).isTrue(),
+            () -> assertThat(equals(actual.get(1), line2)).isTrue()
+        );
     }
 }
