@@ -37,4 +37,12 @@ public class LineService {
         }
         return foundLine.get();
     }
+
+    public void update(Line line) {
+        Optional<Line> foundLine = lineDao.findByName(line.getName());
+        if (foundLine.isPresent()) {
+            throw new IllegalArgumentException("이미 등록된 노선입니다.");
+        }
+        lineDao.update(line.getId(), line.getName(), line.getColor());
+    }
 }

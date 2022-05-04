@@ -96,4 +96,34 @@ public class LineServiceTest {
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("존재하지 않는 노선입니다.");
     }
+
+    @Test
+    @DisplayName("Line 을 수정한다.")
+    void update() {
+        //given
+        Line line = new Line("이수", "sky-blue");
+        Line savedLine = lineService.save(line);
+
+        //when
+        Line expected = new Line(savedLine.getId(), "가산디지털", "blue");
+        lineService.update(expected);
+        Line actual = lineService.findById(savedLine.getId());
+
+        //then
+        assertThat(equals(actual, expected)).isTrue();
+    }
+
+    @Test
+    @DisplayName("중복된 이름으로 수정하면 예외를 던진다.")
+    void updateWithDuplicatedName() {
+        //given
+        Line line = new Line("이수", "sky-blue");
+        Line savedLine = lineService.save(line);
+        Line duplicatedLine = new Line(savedLine.getId(), "이수", "sky-blue");
+
+        //then
+        assertThatThrownBy(() -> lineService.update(duplicatedLine))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("이미 등록된 노선입니다.");
+    }
 }
