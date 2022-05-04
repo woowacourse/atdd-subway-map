@@ -284,4 +284,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    @Test
+    @DisplayName("존재하지 않는 노선을 제거하면 BAD_REQUEST를 반환한다.")
+    void deleteLine_invalidId() {
+        // when
+        final ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/999")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

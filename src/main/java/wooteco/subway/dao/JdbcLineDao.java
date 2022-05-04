@@ -14,7 +14,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.InternalServerException;
 import wooteco.subway.exception.NotFoundException;
 
 @Repository
@@ -82,12 +81,16 @@ public class JdbcLineDao implements LineDao {
         try {
             final String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
             final int affectedRows = jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
-            if (affectedRows == 0) {
-                throw new IllegalArgumentException("id가 일치하는 노선이 존재하지 않습니다.");
-            }
+            checkAffectedRows(affectedRows);
             return setId(line, id);
         } catch (final DuplicateKeyException e) {
             throw new IllegalArgumentException("중복된 이름의 노선이 존재합니다.");
+        }
+    }
+
+    private void checkAffectedRows(final int affectedRows) {
+        if (affectedRows == 0) {
+            throw new IllegalArgumentException("id가 일치하는 노선이 존재하지 않습니다.");
         }
     }
 
@@ -95,9 +98,7 @@ public class JdbcLineDao implements LineDao {
     public Integer deleteById(final Long id) {
         final String sql = "DELETE FROM line WHERE id = ?";
         final int affectedRows = jdbcTemplate.update(sql, id);
-        if (affectedRows == 0) {
-            throw new InternalServerException("알 수 없는 이유로 노선을 삭제하지 못했습니다.");
-        }
+        checkAffectedRows(affectedRows);
         return affectedRows;
     }
 }
