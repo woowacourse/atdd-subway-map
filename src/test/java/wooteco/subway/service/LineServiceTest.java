@@ -2,10 +2,12 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
@@ -31,5 +33,19 @@ class LineServiceTest {
 
         // then
         assertThat(response.getName()).isEqualTo(request.getName());
+    }
+
+    @Test
+    @DisplayName("모든 노선을 조회한다.")
+    void showLines() {
+        // given
+        fakeLineDao.save(new Line("1호선", "bg-red-600"));
+        fakeLineDao.save(new Line("수인분당선", "bg-blue-600"));
+
+        // when
+        List<LineResponse> responses = lineService.findAll();
+
+        // then
+        assertThat(responses).hasSize(2);
     }
 }
