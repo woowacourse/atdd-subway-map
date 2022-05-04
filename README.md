@@ -8,13 +8,11 @@
   <img alt="GitHub" src="https://img.shields.io/github/license/woowacourse/atdd-subway-map">
 </p>
 
-<br>
-
 # 지하철 노선도 미션
 
 스프링 과정 실습을 위한 지하철 노선도 애플리케이션
 
-<br>
+--- 
 
 ## 기능 구현 목록
 
@@ -45,6 +43,8 @@
 - [x] id에 해당하는 노선 정보를 수정 할 수 있다.
 - [x] 노선을 삭제 할 수 있다.
     - 노선 ID를 받아서 해당하는 노선을 삭제한다
+
+---
 
 ### Domain
 
@@ -78,19 +78,19 @@
 ./gradlew bootRun
 ```
 
-<br>
+<br/>
 
 ## ✏️ Code Review Process
 
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
-<br>
+<br/>
 
 ## 🐞 Bug Report
 
 버그를 발견한다면, [Issues](https://github.com/woowacourse/atdd-subway-map/issues) 에 등록해주세요 :)
 
-<br>
+<br/>
 
 ## 📝 License
 
