@@ -20,17 +20,11 @@ public class LineService {
 
     public LineResponse create(String name, String color) {
         Line line = new Line(name, color);
-        validateDuplicationName(line);
         Line savedLine = lineDao.save(line);
         return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(), null);
     }
 
-    private void validateDuplicationName(Line line) {
-        List<Line> lines = lineDao.findAll();
-        if (lines.contains(line)) {
-            throw new DuplicateNameException("중복된 지하철 노선 이름이 있습니다.");
-        }
-    }
+
 
     public List<LineResponse> findAll() {
         return lineDao.findAll()
