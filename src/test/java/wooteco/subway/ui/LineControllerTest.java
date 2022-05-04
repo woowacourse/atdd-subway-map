@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -78,7 +79,7 @@ public class LineControllerTest {
         perform.andExpect(status().isBadRequest());
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() throws Exception {
         // given
@@ -96,5 +97,39 @@ public class LineControllerTest {
                 .andExpect(jsonPath("$[1].id").value(2))
                 .andExpect(jsonPath("$[1].name").value("test2"))
                 .andExpect(jsonPath("$[1].color").value("YELLOW"));
+    }
+
+    @DisplayName("id를 이용해 지하철 노선을 조회한다.")
+    @Test
+    void getLine() throws Exception {
+        // given
+        given(LineDao.findById(1L))
+                .willReturn(Optional.of(new Line(1L, "test1", "GREEN")));
+        // when
+        ResultActions perform = mockMvc.perform(get("/lines/1"));
+        // then
+        perform.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("id").value(1))
+                .andExpect(jsonPath("name").value("test1"))
+                .andExpect(jsonPath("color").value("GREEN"));
+    }
+
+    @DisplayName("존재하지 않는 id를 이용해 지하철 노선을 조회할 경우 에러가 발생한다.")
+    @Test
+    void getLine_noExistLine_exception() throws Exception {
+        // given
+        given(LineDao.findById(1L))
+                .willReturn(Optional.empty());
+        // when
+        ResultActions perform = mockMvc.perform(get("/lines/1"));
+        // then
+        perform.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value("해당 ID의 지하철 노선이 존재하지 않습니다."));
+    }
+
+    @AfterAll
+    static void afterAll() {
+        lineDao.close();
     }
 }

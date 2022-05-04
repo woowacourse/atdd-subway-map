@@ -23,7 +23,7 @@
   - [x] 노선 목록 조회 `GET /lines`
     - 결과 상태 코드는 `200 OK` 이다.
     - `응답` json으로 id, name, color를 가진 리스트를 반환한다.
-  - [ ] 노선 조회 `GET /lines/{id}`
+  - [x] 노선 조회 `GET /lines/{id}`
     - 결과 상태 코드는 `200 OK` 이다.
     - `응답` json으로 id, name, color를 반환한다.
   - [ ] 노선 수정 `PUT /lines/{id}`

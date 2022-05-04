@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,10 +20,10 @@ public class LineDaoTest {
     @DisplayName("새 지하철 노선을 저장한다.")
     @Test
     void save() {
-        Line testLine = new Line("test", "GREEN");
+        Line testLine = new Line("save", "GREEN");
         Line result = LineDao.save(testLine);
         assertThat(result.getId()).isNotNull();
-        assertThat(result.getName()).isEqualTo("test");
+        assertThat(result.getName()).isEqualTo("save");
         assertThat(result.getColor()).isEqualTo("GREEN");
     }
 
@@ -56,5 +57,22 @@ public class LineDaoTest {
         assertThat(lines.get(1).getId()).isEqualTo(2);
         assertThat(lines.get(1).getName()).isEqualTo("test2");
         assertThat(lines.get(1).getColor()).isEqualTo("YELLOW");
+    }
+
+    @DisplayName("id를 이용해 지하철 노선을 조회한다.")
+    @Test
+    void findById() {
+        LineDao.save(new Line("test1", "GREEN"));
+        Line line = LineDao.findById(1L).get();
+        Optional<Line> lineEmpty = LineDao.findById(1000L);
+        assertThat(line.getId()).isEqualTo(1);
+        assertThat(line.getName()).isEqualTo("test1");
+        assertThat(line.getColor()).isEqualTo("GREEN");
+        assertThat(lineEmpty).isEmpty();
+    }
+
+    @AfterAll
+    static void afterAll() {
+        LineDao.deleteAll();
     }
 }

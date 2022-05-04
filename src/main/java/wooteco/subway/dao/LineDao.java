@@ -40,4 +40,10 @@ public class LineDao {
     public static List<Line> findAll() {
         return Collections.unmodifiableList(lines);
     }
+
+    public static Optional<Line> findById(Long id) {
+        return lines.stream()
+                .filter(line -> line.getId().equals(id))
+                .findFirst();
+    }
 }
