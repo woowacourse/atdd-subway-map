@@ -31,7 +31,7 @@ create table if not exists LINE
     color varchar
 (
     20
-) not null,
+) not null unique,
     primary key
 (
     id
