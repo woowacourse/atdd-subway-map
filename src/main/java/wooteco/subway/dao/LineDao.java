@@ -1,52 +1,70 @@
 package wooteco.subway.dao;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Map;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
+@Repository
 public class LineDao {
 
-    private static Long seq = 0L;
-    private static final Map<Long, Line> lines = new HashMap<>();
+    private final JdbcTemplate jdbcTemplate;
 
-    public static Long save(Line line) {
-        validateDuplicateName(line);
-        Line newLine = new Line(++seq, line.getName(), line.getColor());
-        lines.put(seq, newLine);
-        return seq;
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static void validateDuplicateName(Line line) {
-        if (lines.containsValue(line)) {
-            throw new IllegalArgumentException("중복된 이름이 존재합니다.");
-        }
+    public Long save(Line line) {
+        final String sql = "INSERT INTO line (name, color) VALUES (?, ?)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, line.getName());
+            ps.setString(2, line.getColor());
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
     }
 
-    public static List<Line> findAll() {
-        return new ArrayList<>(lines.values());
+//    private void validateDuplicateName(Line line) {
+//        if (lines.containsValue(line)) {
+//            throw new IllegalArgumentException("중복된 이름이 존재합니다.");
+//        }
+//    }
+
+    public List<Line> findAll() {
+        final String sql = "SELECT * FROM line";
+        return jdbcTemplate.query(sql, lineMapper());
     }
 
-    public static boolean deleteById(Long lineId) {
-        if (lines.containsKey(lineId)) {
-            lines.remove(lineId);
-            return true;
-        }
-
-        return false;
+    private RowMapper<Line> lineMapper() {
+        return (resultSet, rowNum) -> new Line(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("color")
+        );
     }
 
-    public static Line findById(Long id) {
-        return lines.get(id);
+    public boolean deleteById(Long id) {
+        final String sql = "DELETE FROM line where id = ?";
+        int updateSize = jdbcTemplate.update(sql, id);
+        return updateSize != 0;
     }
 
-    public static boolean updateById(Long savedId, Line line) {
-        if (lines.containsKey(savedId)) {
-            lines.replace(savedId, new Line(savedId, line.getName(), line.getColor()));
-            return true;
-        }
+    public Line findById(Long id) {
+        final String sql = "SELECT * FROM line where id = ?";
+        return jdbcTemplate.queryForObject(sql, lineMapper(), id);
+    }
 
-        return false;
+    public boolean updateById(Long id, Line line) {
+        final String sql = "UPDATE line SET name = ?, color = ? where id = ?";
+        int updateSize = jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
+        return updateSize != 0;
     }
 }

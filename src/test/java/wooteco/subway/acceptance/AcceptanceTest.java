@@ -16,11 +16,15 @@ import wooteco.subway.domain.Station;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
+
     @LocalServerPort
     int port;
 
     @Autowired
     private StationDao stationDao;
+
+    @Autowired
+    private LineDao lineDao;
 
     @BeforeEach
     public void setUp() {
@@ -42,13 +46,13 @@ public class AcceptanceTest {
     }
 
     private void clearAllLines() {
-        List<Line> lines = LineDao.findAll();
+        List<Line> lines = lineDao.findAll();
         List<Long> lineIds = lines.stream()
             .map(Line::getId)
             .collect(Collectors.toList());
 
         for (Long lineId : lineIds) {
-            LineDao.deleteById(lineId);
+            lineDao.deleteById(lineId);
         }
     }
 }

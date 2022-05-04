@@ -20,18 +20,32 @@ import wooteco.subway.dto.LineResponse;
 @RestController
 public class LineController {
 
+    private final LineDao lineDao;
+
+    public LineController(LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
+
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Long savedId = LineDao.save(line);
+        validateDuplicationName(line);
+        Long savedId = lineDao.save(line);
         LineResponse lineResponse = new LineResponse(savedId, line.getName(), line.getColor(),
             new ArrayList<>());
         return ResponseEntity.created(URI.create("/lines/" + savedId)).body(lineResponse);
     }
 
+    private void validateDuplicationName(Line line) {
+        List<Line> lines = lineDao.findAll();
+        if (lines.contains(line)) {
+            throw new IllegalArgumentException("중복된 이름이 존재합니다.");
+        }
+    }
+
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = LineDao.findAll();
+        List<Line> lines = lineDao.findAll();
         List<LineResponse> lineResponses = lines.stream()
             .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), new ArrayList<>()))
             .collect(Collectors.toList());
@@ -40,7 +54,7 @@ public class LineController {
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        if (LineDao.deleteById(id)) {
+        if (lineDao.deleteById(id)) {
             return ResponseEntity.ok().build();
         }
 
@@ -50,7 +64,7 @@ public class LineController {
     @PutMapping("/lines/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        if (LineDao.updateById(id, line)) {
+        if (lineDao.updateById(id, line)) {
             return ResponseEntity.ok().build();
         }
 
