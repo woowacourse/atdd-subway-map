@@ -1,45 +1,17 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
 
-public class StationDao {
-    private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
+public interface StationDao {
 
-    public static Station save(Station station) {
-        Station persistStation = createNewObject(station);
-        if (hasDuplicateStation(persistStation)) {
-            throw new IllegalArgumentException("같은 이름의 역이 존재합니다.");
-        }
-        stations.add(persistStation);
-        return persistStation;
-    }
+    Long save(Station station);
 
-    public static List<Station> findAll() {
-        return stations;
-    }
+    Station findById(Long id);
 
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
-    }
+    List<Station> findAll();
 
-    private static boolean hasDuplicateStation(Station persistStation) {
-        return stations.stream()
-                .anyMatch(persistStation::isSameName);
-    }
+    boolean hasStation(String name);
 
-    public static void deleteById(Long id) {
-        boolean result = stations.removeIf(station -> station.getId() == id);
-        if (!result) {
-            throw new NoSuchElementException("해당하는 역이 존재하지 않습니다.");
-        }
-    }
+    void deleteById(Long id);
 }

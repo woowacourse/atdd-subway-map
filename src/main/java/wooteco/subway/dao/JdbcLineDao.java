@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
 @Repository
-public class JdbcLineDao {
+public class JdbcLineDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -24,6 +24,7 @@ public class JdbcLineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Long save(Line line) {
         final String sql = "insert into LINE (name, color) values (?, ?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -37,26 +38,31 @@ public class JdbcLineDao {
         return keyHolder.getKey().longValue();
     }
 
+    @Override
     public Line findById(Long id) {
         final String sql = "select * from LINE where id = ?";
         return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
 
+    @Override
     public List<Line> findAll() {
         final String sql = "select * from LINE";
         return jdbcTemplate.query(sql, lineRowMapper);
     }
 
+    @Override
     public boolean hasLine(String name) {
         final String sql = "select exists (select * from LINE where name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
+    @Override
     public void updateById(Long id, String name, String color) {
         final String sql = "update LINE set name = ?, color = ? where id = ?";
         jdbcTemplate.update(sql, name, color, id);
     }
 
+    @Override
     public void deleteById(Long id) {
         final String sql = "delete from LINE where id = ?";
         jdbcTemplate.update(sql, id);
