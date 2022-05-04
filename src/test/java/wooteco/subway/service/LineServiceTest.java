@@ -48,4 +48,20 @@ class LineServiceTest {
         // then
         assertThat(responses).hasSize(2);
     }
+
+    @Test
+    @DisplayName("id에 해당하는 노선을 조회한다.")
+    void findById() {
+        // given
+        String name = "1호선";
+        String color = "bg-red-600";
+        Line savedLine = fakeLineDao.save(new Line(name, color));
+
+        // when
+        LineResponse response = lineService.findById(savedLine.getId());
+
+        // then
+        assertThat(response.getName()).isEqualTo(name);
+        assertThat(response.getColor()).isEqualTo(color);
+    }
 }
