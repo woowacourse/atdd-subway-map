@@ -14,11 +14,11 @@ import wooteco.subway.domain.Station;
 
 public class StationServiceTest {
 
-    private final StationService stationService = StationService.getInstance();
+    private final StationService stationService = new StationService(new StationDao());
 
     @AfterEach
     void tearDown() {
-        StationDao.getInstance().deleteAll();
+        new StationDao().deleteAll();
     }
 
     @Test

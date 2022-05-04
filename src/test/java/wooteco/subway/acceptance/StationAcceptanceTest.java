@@ -23,11 +23,9 @@ import wooteco.subway.dto.StationResponse;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private final StationDao stationDao = StationDao.getInstance();
-
     @AfterEach
     void tearDown() {
-        stationDao.deleteAll();
+        new StationDao().deleteAll();
     }
 
     @DisplayName("지하철역을 생성한다.")

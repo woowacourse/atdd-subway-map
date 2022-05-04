@@ -13,11 +13,11 @@ import wooteco.subway.domain.Station;
 
 public class StationDaoTest {
 
-    private final StationDao stationDao = StationDao.getInstance();
+    private final StationDao stationDao = new StationDao();
 
     @AfterEach
     void tearDown() {
-        stationDao.deleteAll();
+        new StationDao().deleteAll();
     }
 
     @Test

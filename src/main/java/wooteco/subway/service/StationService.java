@@ -3,20 +3,18 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Service;
+
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
+@Service
 public class StationService {
 
-    private static final StationService INSTANCE = new StationService(StationDao.getInstance());
     private final StationDao stationDao;
 
-    private StationService(StationDao stationDao) {
+    public StationService(StationDao stationDao) {
         this.stationDao = stationDao;
-    }
-
-    public static StationService getInstance() {
-        return INSTANCE;
     }
 
     public Station save(Station station) {

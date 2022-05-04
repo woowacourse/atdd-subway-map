@@ -4,20 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Repository;
+
 import wooteco.subway.domain.Station;
 
+@Repository
 public class StationDao {
 
-    private static final StationDao INSTANCE = new StationDao();
     private static final List<Station> stations = new ArrayList<>();
     private static Long seq = 0L;
-
-    private StationDao() {
-    }
-
-    public static StationDao getInstance() {
-        return INSTANCE;
-    }
 
     public Station save(Station station) {
         Station persistStation = createNewObject(station);
