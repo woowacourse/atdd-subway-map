@@ -24,21 +24,4 @@ public class Line {
     public String getColor() {
         return color;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Line)) {
-            return false;
-        }
-        Line line = (Line) o;
-        return Objects.equals(name, line.name) && Objects.equals(color, line.color);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, color);
-    }
 }

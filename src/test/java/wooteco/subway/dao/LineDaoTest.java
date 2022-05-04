@@ -24,11 +24,11 @@ class LineDaoTest {
     }
 
     @ParameterizedTest(name = "name : {0}, color : {1}")
-    @CsvSource({"1호선, black"})
+    @CsvSource({"1호선, black", "1호선, blue", "2호선, black"})
     void duplicateNameAndColor(String name, String color) {
         LineDao.save(new Line(name, color));
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> LineDao.save(new Line(name, color)))
+            .isThrownBy(() -> LineDao.save(new Line("1호선", "black")))
             .withMessage("노선의 이름은 중복될 수 없습니다.");
     }
 

@@ -54,7 +54,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 ### 지하철 노선
 - [x] 지하철 노선을 등록한다.
     - [x] 같은 노선의 이름으로 중복될 수 없다.
-    - [ ] 색깔은 중복 될 수 없다.
+    - [x] 색깔은 중복 될 수 없다.
     - [ ] 노선 이름은 10글자를 넘길 수 없다.
     - [ ] 노선 이름은 3글자 이상이어야 한다.
     - [ ] 노선 이름은 한글이어야 한다.

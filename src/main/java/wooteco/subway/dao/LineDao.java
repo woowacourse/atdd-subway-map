@@ -23,9 +23,14 @@ public class LineDao {
     }
 
     private static void validateDuplication(Line line) {
-        if (lines.contains(line)) {
+        if (isDuplicate(line)) {
             throw new IllegalArgumentException("노선의 이름은 중복될 수 없습니다.");
         }
+    }
+
+    private static boolean isDuplicate(Line line) {
+        return lines.stream()
+            .anyMatch(value -> value.getName().equals(line.getName()) || value.getColor().equals(line.getColor()));
     }
 
     private static Line createUniqueId(Line line) {
