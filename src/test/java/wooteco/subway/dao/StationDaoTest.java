@@ -2,10 +2,13 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.*;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.domain.Station;
 
@@ -19,6 +22,16 @@ public class StationDaoTest {
         this.stationDao = stationDao;
     }
 
+    @BeforeEach
+    void set() {
+        stationDao.save("선릉역");
+    }
+
+    @AfterEach
+    void reset() {
+        stationDao.deleteAll();
+    }
+
     @Test
     @DisplayName("지하철역을 저장한다.")
     void save() {
@@ -30,6 +43,15 @@ public class StationDaoTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    @DisplayName("중복된 역을 저장할 경우 예외를 발생시킨다.")
+    void save_duplicate() {
+        String expected = "선릉역";
+
+        assertThatThrownBy(() -> stationDao.save(expected))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 존재하는 지하철역 이름입니다.");
+    }
 }
 
 
