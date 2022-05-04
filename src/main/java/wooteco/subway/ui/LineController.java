@@ -19,18 +19,32 @@ import wooteco.subway.dto.LineRequest;
 @RestController
 public class LineController {
 
+    private final LineDao lineDao;
+
+    public LineController(LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
+
     @PostMapping("/lines")
     public ResponseEntity<LineCreateResponse> createLine(@RequestBody LineRequest request) {
-        final Line line = new Line(request.getName(), request.getColor());
-        final Long savedId = LineDao.save(line);
+        final Line newLine = new Line(request.getName(), request.getColor());
+
+        final List<Line> lines = lineDao.findAll();
+        final boolean isExist = lines.stream()
+                .anyMatch(line -> line.getName().equals(newLine.getName()));
+        if (isExist) {
+            throw new IllegalArgumentException("중복된 지하철 노선이 존재합니다.");
+        }
+
+        final Long savedId = lineDao.save(newLine);
 
         return ResponseEntity.created(URI.create("/lines/" + savedId))
-                .body(new LineCreateResponse(savedId, line.getName(), line.getColor()));
+                .body(new LineCreateResponse(savedId, newLine.getName(), newLine.getColor()));
     }
 
     @GetMapping("/lines")
     public ResponseEntity<List<LineCreateResponse>> showLines() {
-        List<Line> lines = LineDao.findAll();
+        List<Line> lines = lineDao.findAll();
         final List<LineCreateResponse> lineResponses = lines.stream()
                 .map(line -> new LineCreateResponse(line.getId(), line.getName(), line.getColor()))
                 .collect(Collectors.toList());
@@ -40,7 +54,7 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineCreateResponse> showLine(@PathVariable Long id) {
-        final Line findLine = LineDao.findById(id);
+        final Line findLine = lineDao.findById(id);
         final LineCreateResponse lineResponse = new LineCreateResponse(id, findLine.getName(), findLine.getColor());
 
         return ResponseEntity.ok().body(lineResponse);
@@ -48,21 +62,14 @@ public class LineController {
 
     @PutMapping("/lines/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
-        LineDao.updateById(new Line(id, request.getName(), request.getColor()));
+        lineDao.updateById(new Line(id, request.getName(), request.getColor()));
 
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        LineDao.deleteById(id);
-
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/lines")
-    public ResponseEntity<Void> deleteAllLine() {
-        LineDao.deleteAll();
+        lineDao.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }

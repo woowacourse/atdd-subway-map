@@ -1,65 +1,64 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
+@Repository
 public class LineDao {
 
-    private static Long seq = 0L;
-    private final static List<Line> lines = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
 
-    public static Long save(Line line) {
-        if (lines.contains(line)) {
-            throw new IllegalArgumentException("중복된 지하철 노선이 존재합니다.");
-        }
-        final Line newLine = createNewObject(line);
-        lines.add(newLine);
-
-        return newLine.getId();
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public static Line findById(Long id) {
-        return lines.stream()
-                .filter(line -> line.getId().equals(id))
-                .findAny()
-                .orElseThrow(IllegalArgumentException::new);
+    private static RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("color")
+    );
+
+    public Long save(Line line) {
+        String sql = "INSERT INTO line (name, color) VALUES(?, ?)";
+
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            final PreparedStatement statement = connection.prepareStatement(sql, new String[]{"id"});
+            statement.setString(1, line.getName());
+            statement.setString(2, line.getColor());
+            return statement;
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
     }
 
-    private static Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+    public Line findById(Long id) {
+        String sql = "SELECT * FROM line WHERE id = ?";
+
+        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
 
-    public static List<Line> findAll() {
-        return List.copyOf(lines);
+    public List<Line> findAll() {
+        String sql = "SELECT * FROM line";
+
+        return jdbcTemplate.query(sql, lineRowMapper);
     }
 
-    public static void deleteAll() {
-        lines.clear();
+    public Long updateById(Line line) {
+        String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
+
+        jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
+        return line.getId();
     }
 
-    public static Long updateById(Line updateLine) {
-        final Line findLine = lines.stream()
-                .filter(line -> line.getId().equals(updateLine.getId()))
-                .findAny()
-                .orElseThrow(IllegalArgumentException::new);
-        lines.remove(findLine);
-        lines.add(updateLine);
-
-        return updateLine.getId();
-    }
-
-    public static void deleteById(Long id) {
-        final Line findLine = lines.stream()
-                .filter(line -> line.getId().equals(id))
-                .findAny()
-                .orElseThrow(IllegalArgumentException::new);
-
-        lines.remove(findLine);
+    public int deleteById(Long id) {
+        String sql = "DELETE FROM line WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 }

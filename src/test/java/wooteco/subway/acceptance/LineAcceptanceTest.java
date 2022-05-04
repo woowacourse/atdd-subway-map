@@ -10,23 +10,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineCreateResponse;
 
+@DisplayName("노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
-
-    @AfterEach
-    void rollback() {
-        RestAssured.given().log().all()
-                .when()
-                .delete("/lines")
-                .then().log().all()
-                .extract();
-    }
 
     @Test
     @DisplayName("노선을 등록한다.")
