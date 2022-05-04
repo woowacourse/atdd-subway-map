@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import wooteco.subway.dao.MemoryLineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.service.dto.LineDto;
 
 class LineServiceTest {
 
@@ -18,7 +17,7 @@ class LineServiceTest {
 	@DisplayName("지하철 노선을 저장한다.")
 	@Test
 	void create() {
-		LineDto line = lineService.create("신분당선", "bg-red-600");
+		Line line = lineService.create("신분당선", "bg-red-600");
 		assertThat(line.getId()).isGreaterThan(0);
 		assertThat(line.getName()).isEqualTo("신분당선");
 		assertThat(line.getColor()).isEqualTo("bg-red-600");
@@ -40,15 +39,15 @@ class LineServiceTest {
 		lineService.create("신분당선", "bg-red-600");
 		lineService.create("2호선", "bg-red-600");
 		lineService.create("분당선", "bg-red-600");
-		List<LineDto> lines = lineService.listLines();
+		List<Line> lines = lineService.listLines();
 		assertThat(lines).hasSize(3);
 	}
 
 	@DisplayName("id로 지하철 노선을 조회한다.")
 	@Test
 	void findOne() {
-		LineDto line = lineService.create("신분당선", "bg-red-600");
-		LineDto foundLine = lineService.findOne(line.getId());
+		Line line = lineService.create("신분당선", "bg-red-600");
+		Line foundLine = lineService.findOne(line.getId());
 		assertThat(foundLine.getId()).isEqualTo(line.getId());
 		assertThat(foundLine.getName()).isEqualTo(line.getName());
 		assertThat(foundLine.getColor()).isEqualTo(line.getColor());
@@ -57,8 +56,8 @@ class LineServiceTest {
 	@DisplayName("지하철 노선을 수정한다.")
 	@Test
 	void update() {
-		LineDto line = lineService.create("신분당선", "bg-red-600");
-		LineDto updatedLine = lineService.update(new Line(line.getId(), "분당선", "bg-blue-600"));
+		Line line = lineService.create("신분당선", "bg-red-600");
+		Line updatedLine = lineService.update(new Line(line.getId(), "분당선", "bg-blue-600"));
 		assertThat(updatedLine.getId()).isEqualTo(line.getId());
 		assertThat(updatedLine.getName()).isEqualTo("분당선");
 		assertThat(updatedLine.getColor()).isEqualTo("bg-blue-600");
@@ -67,7 +66,7 @@ class LineServiceTest {
 	@DisplayName("id로 지하철 노선을 삭제한다.")
 	@Test
 	void remove() {
-		LineDto line = lineService.create("신분당선", "bg-red-600");
+		Line line = lineService.create("신분당선", "bg-red-600");
 		lineService.remove(line.getId());
 		assertThat(lineService.listLines()).isEmpty();
 	}

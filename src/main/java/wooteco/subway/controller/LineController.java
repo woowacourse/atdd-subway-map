@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.controller.dto.LineRequest;
 import wooteco.subway.controller.dto.LineResponse;
+import wooteco.subway.domain.Line;
 import wooteco.subway.service.LineService;
-import wooteco.subway.service.dto.LineDto;
 
 @RestController
 @RequestMapping("/lines")
@@ -33,23 +33,23 @@ public class LineController {
 
 	@PostMapping
 	public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-		LineDto lineDto = lineService.create(lineRequest.getName(), lineRequest.getColor());
-		return ResponseEntity.created(URI.create("/lines/" + lineDto.getId()))
-			.body(new LineResponse(lineDto.getId(), lineDto.getName(), lineDto.getColor()));
+		Line line = lineService.create(lineRequest.getName(), lineRequest.getColor());
+		return ResponseEntity.created(URI.create("/lines/" + line.getId()))
+			.body(LineResponse.from(line));
 	}
 
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<LineResponse>> showLines() {
 		List<LineResponse> lineResponses = lineService.listLines().stream()
-			.map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+			.map(LineResponse::from)
 			.collect(Collectors.toList());
 		return ResponseEntity.ok().body(lineResponses);
 	}
 
 	@GetMapping("/{lineId}")
 	public ResponseEntity<LineResponse> showLine(@PathVariable Long lineId) {
-		LineDto line = lineService.findOne(lineId);
-		return ResponseEntity.ok(new LineResponse(line.getId(), line.getName(), line.getColor()));
+		Line line = lineService.findOne(lineId);
+		return ResponseEntity.ok(LineResponse.from(line));
 	}
 
 	@PutMapping("/{lineId}")

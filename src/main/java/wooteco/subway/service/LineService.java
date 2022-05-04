@@ -1,14 +1,12 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.service.dto.LineDto;
 
 @Service
 @Transactional(readOnly = true)
@@ -21,11 +19,10 @@ public class LineService {
 	}
 
 	@Transactional
-	public LineDto create(String name, String color) {
+	public Line create(String name, String color) {
 		validateNameNotDuplicated(name);
 		Long lineId = lineDao.save(new Line(name, color));
-		Line line = lineDao.findById(lineId);
-		return LineDto.from(line);
+		return lineDao.findById(lineId);
 	}
 
 	private void validateNameNotDuplicated(String name) {
@@ -34,19 +31,16 @@ public class LineService {
 		}
 	}
 
-	public List<LineDto> listLines() {
-		return lineDao.findAll()
-			.stream()
-			.map(LineDto::from)
-			.collect(Collectors.toUnmodifiableList());
+	public List<Line> listLines() {
+		return lineDao.findAll();
 	}
 
-	public LineDto findOne(Long id) {
-		return LineDto.from(lineDao.findById(id));
+	public Line findOne(Long id) {
+		return lineDao.findById(id);
 	}
 
 	@Transactional
-	public LineDto update(Line line) {
+	public Line update(Line line) {
 		lineDao.update(line);
 		return findOne(line.getId());
 	}
