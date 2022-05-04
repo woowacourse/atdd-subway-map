@@ -1,57 +1,79 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Map;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 
 import wooteco.subway.domain.Line;
 
 @Repository
 public class LineDao {
-    private Long seq = 0L;
-    private Map<Long, Line> lines = new LinkedHashMap<>();
+    private final JdbcTemplate jdbcTemplate;
+
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public Line save(Line line) {
-        Line persistLine = createNewObject(line);
-        lines.put(persistLine.getId(), persistLine);
-        return persistLine;
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sql = "INSERT INTO LINE(name, color) VALUES(?, ?)";
+        String name = line.getName();
+        String color = line.getColor();
+        jdbcTemplate.update((Connection conn) -> {
+            PreparedStatement pstmt = conn.prepareStatement(sql, new String[] {"id"});
+            pstmt.setString(1, name);
+            pstmt.setString(2, color);
+            return pstmt;
+        }, keyHolder);
+
+        Long id = keyHolder.getKey().longValue();
+
+        return new Line(id, name, color);
     }
 
     public boolean existByName(String name) {
-        return lines.values()
-            .stream()
-            .anyMatch(line -> line.getName().equals(name));
-    }
-
-    private Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+        String sql = "SELECT EXISTS(SELECT id FROM LINE WHERE name = ?) AS SUCCESS";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
     public List<Line> findAll() {
-        return new ArrayList<>(lines.values());
+        String sql = "SELECT id, name, color FROM LINE";
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
+            Line line = new Line(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("color")
+            );
+            return line;
+        });
     }
 
     public Line find(Long id) {
-        return lines.get(id);
+        String sql = "SELECT id, name, color FROM LINE WHERE id =?";
+        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) ->new Line(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("color")
+            ),id);
     }
 
     public boolean existById(Long id) {
-        return lines.containsKey(id);
+        String sql = "SELECT EXISTS(SELECT * FROM LINE WHERE id = ?) AS SUCCESS";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
-    public void update(Long id, Line line) {
-        lines.put(id, line);
+    public void update(Line line) {
+        String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
+        jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
     }
 
     public void delete(Long id) {
-        lines.remove(id);
+        String sql = "DELETE FROM LINE WHERE id =?";
+        jdbcTemplate.update(sql,id);
     }
 }

@@ -1,45 +1,57 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Map;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 
 import wooteco.subway.domain.Station;
 
 @Repository
 public class StationDao {
-    private Long seq = 0L;
-    private Map<Long, Station> stations = new LinkedHashMap<>();
+    private final JdbcTemplate jdbcTemplate;
+
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public Station save(Station station) {
-        Station persistStation = createNewObject(station);
-        stations.put(persistStation.getId(), persistStation);
-        return persistStation;
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sql = "INSERT INTO STATION(name) VALUES(?)";
+        String name = station.getName();
+        jdbcTemplate.update((Connection conn) -> {
+            PreparedStatement pstmt = conn.prepareStatement(sql, new String[] {"id"});
+            pstmt.setString(1, name);
+            return pstmt;
+        }, keyHolder);
+
+        Long id = keyHolder.getKey().longValue();
+
+        return new Station(id, name);
     }
 
     public boolean existByName(String name) {
-        return stations.values()
-            .stream()
-            .anyMatch(station -> station.getName().equals(name));
+        String sql = "SELECT EXISTS(SELECT id FROM STATION WHERE name = ?) AS SUCCESS";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
     public List<Station> findAll() {
-        return new ArrayList<>(stations.values());
-    }
-
-    private Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+        String sql = "SELECT id, name FROM STATION";
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
+            Station station = new Station(
+                resultSet.getLong("id"),
+                resultSet.getString("name")
+            );
+            return station;
+        });
     }
 
     public void delete(Long id) {
-        stations.remove(id);
+        String sql = "DELETE FROM STATION WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

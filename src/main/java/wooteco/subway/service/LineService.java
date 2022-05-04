@@ -49,7 +49,7 @@ public class LineService {
         }
         validateNameDuplication(lineRequest.getName());
         Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
-        lineDao.update(id, line);
+        lineDao.update(line);
     }
 
     public void delete(Long id) {
