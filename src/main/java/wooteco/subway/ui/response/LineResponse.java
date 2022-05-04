@@ -1,6 +1,7 @@
-package wooteco.subway.dto;
+package wooteco.subway.ui.response;
 
 public class LineResponse {
+
     private Long id;
     private String name;
     private String color;

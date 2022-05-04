@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.ErrorResponse;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
 import wooteco.subway.service.StationService;
+import wooteco.subway.ui.request.StationRequest;
+import wooteco.subway.ui.response.ErrorResponse;
+import wooteco.subway.ui.response.StationResponse;
 
 @RestController
 public class StationController {

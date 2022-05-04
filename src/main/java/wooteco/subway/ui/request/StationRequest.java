@@ -1,6 +1,7 @@
-package wooteco.subway.dto;
+package wooteco.subway.ui.request;
 
 public class StationRequest {
+
     private String name;
 
     public StationRequest() {
