@@ -33,9 +33,7 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
-    @GetMapping(value = "/lines"
-            , produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @GetMapping(value = "/lines")
     public ResponseEntity<List<LineDto>> showLines() {
         List<Line> lines = lineService.findAll();
         List<LineDto> lineResponses = lines.stream()
