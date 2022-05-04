@@ -12,7 +12,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.BlankArgumentException;
-import wooteco.subway.exception.NotExistStationException;
+import wooteco.subway.exception.NotExistException;
 
 class StationServiceTest {
 
@@ -63,6 +63,6 @@ class StationServiceTest {
     @Test
     void deleteNotExistStation() {
         assertThatThrownBy(() -> stationService.deleteById(50L))
-            .isInstanceOf(NotExistStationException.class);
+            .isInstanceOf(NotExistException.class);
     }
 }

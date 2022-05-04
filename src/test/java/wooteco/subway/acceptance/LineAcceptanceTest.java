@@ -120,4 +120,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getString("name")).isEqualTo(name);
         assertThat(response.jsonPath().getString("color")).isEqualTo(color);
     }
+
+    @DisplayName("존재하지 않는 지하철 노선 조회시 예외를 반환한다")
+    @Test
+    void showNotExistLine() {
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().get("/lines/" + 50L)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
 }

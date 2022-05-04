@@ -1,8 +1,5 @@
 package wooteco.subway.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +9,10 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.BlankArgumentException;
 import wooteco.subway.exception.DuplicateException;
+import wooteco.subway.exception.NotExistException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class LineServiceTest {
 
@@ -38,7 +39,7 @@ public class LineServiceTest {
     void saveLineWithEmptyName(String name) {
 
         assertThatThrownBy(() -> lineService.save(name, "bg-red-600"))
-            .isInstanceOf(BlankArgumentException.class);
+                .isInstanceOf(BlankArgumentException.class);
     }
 
     @DisplayName("지하철 노선 빈 색깔로 저장")
@@ -47,7 +48,7 @@ public class LineServiceTest {
     void saveLineWithEmptyColor(String color) {
 
         assertThatThrownBy(() -> lineService.save("신분당선", color))
-            .isInstanceOf(BlankArgumentException.class);
+                .isInstanceOf(BlankArgumentException.class);
     }
 
     @DisplayName("중복된 지하철노선 저장")
@@ -60,5 +61,13 @@ public class LineServiceTest {
 
         assertThatThrownBy(() -> lineService.save(lineName, lineColor))
                 .isInstanceOf(DuplicateException.class);
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선 조회시 예외를 반환한다")
+    @Test
+    void showNotExistLine() {
+        assertThatThrownBy(() -> lineService.findById(50L))
+                .isInstanceOf(NotExistException.class);
+
     }
 }

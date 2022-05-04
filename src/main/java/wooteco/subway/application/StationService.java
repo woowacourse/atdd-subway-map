@@ -3,7 +3,7 @@ package wooteco.subway.application;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateException;
-import wooteco.subway.exception.NotExistStationException;
+import wooteco.subway.exception.NotExistException;
 
 public class StationService {
 
@@ -19,7 +19,7 @@ public class StationService {
 
     public void deleteById(Long id) {
         if (!StationDao.existById(id)) {
-            throw new NotExistStationException();
+            throw new NotExistException();
         }
         StationDao.deleteById(id);
     }
