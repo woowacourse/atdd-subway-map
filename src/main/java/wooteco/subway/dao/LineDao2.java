@@ -1,0 +1,73 @@
+package wooteco.subway.dao;
+
+import java.lang.reflect.Field;
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Objects;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.ReflectionUtils;
+import wooteco.subway.domain.Line;
+
+@Repository
+public class LineDao2 {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    private final RowMapper<Line> rowMapper = (resultSet, rowNumber) -> {
+        Line line = new Line(
+                resultSet.getString("name"),
+                resultSet.getString("color")
+        );
+        return setId(line, resultSet.getLong("id"));
+    };
+
+    public LineDao2(final JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    private Line setId(Line line, long id) {
+        Field field = ReflectionUtils.findField(Line.class, "id");
+        Objects.requireNonNull(field).setAccessible(true);
+        ReflectionUtils.setField(field, line, id);
+        return line;
+    }
+
+    public Line findByName(String name) {
+        final String sql = "SELECT * FROM line WHERE name = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper, name);
+    }
+
+    public Line save(Line line) {
+        final String sql = "INSERT INTO line SET name = ? , color = ?";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement prepareStatement = con.prepareStatement(sql, new String[]{"id"});
+            prepareStatement.setString(1, line.getName());
+            prepareStatement.setString(2, line.getColor());
+            return prepareStatement;
+        }, keyHolder);
+        long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return setId(line, id);
+    }
+
+    public List<Line> findAll() {
+        return null;
+    }
+
+    public Line findById(Long id) {
+        return null;
+    }
+
+    public Line updateById(Long id, Line line) {
+        return null;
+    }
+
+    public Integer deleteById(Long id) {
+        return null;
+    }
+}
