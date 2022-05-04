@@ -1,7 +1,5 @@
 package wooteco.subway.dao;
 
-import static java.lang.Boolean.*;
-
 import java.sql.PreparedStatement;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,17 +24,11 @@ public class StationDao {
     );
 
     public Station save(Station station) {
-        String sql = "SELECT EXISTS (SELECT * FROM station WHERE name = ? LIMIT 1)";
+        String sql = "INSERT INTO station (name) values (?)";
 
-        final Boolean isExist = jdbcTemplate.queryForObject(sql, Boolean.class, station.getName());
-        if (TRUE.equals(isExist)) {
-            throw new IllegalArgumentException("중복된 지하철 역이 존재합니다.");
-        }
-
-        String saveSql = "INSERT INTO station (name) values (?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            final PreparedStatement statement = connection.prepareStatement(saveSql, new String[]{"id"});
+            final PreparedStatement statement = connection.prepareStatement(sql, new String[]{"id"});
             statement.setString(1, station.getName());
             return statement;
         }, keyHolder);
