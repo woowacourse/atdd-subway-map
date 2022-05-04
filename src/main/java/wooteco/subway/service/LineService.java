@@ -39,7 +39,7 @@ public class LineService {
     public LineResponse findById(Long id) {
         Line line = dao.findById(id);
         if (line == null) {
-            new IllegalArgumentException(LINE_NOT_FOUND);
+            throw new IllegalArgumentException(LINE_NOT_FOUND);
         }
         return new LineResponse(line);
     }
@@ -60,7 +60,7 @@ public class LineService {
 
     private void checkLineNotFound(Long id) {
         if (!dao.isExistId(id)) {
-            new IllegalArgumentException(LINE_NOT_FOUND);
+            throw new IllegalArgumentException(LINE_NOT_FOUND);
         }
     }
 

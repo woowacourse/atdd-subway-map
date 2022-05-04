@@ -40,7 +40,7 @@ public class StationService {
 
     public void delete(Long id) {
         if (dao.delete(id) == 0) {
-            new IllegalArgumentException(STATION_NOT_FOUND);
+            throw new IllegalArgumentException(STATION_NOT_FOUND);
         }
     }
 }
