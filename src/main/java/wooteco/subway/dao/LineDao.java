@@ -43,11 +43,6 @@ public class LineDao {
         return !numOfLine.equals(0);
     }
 
-    public void deleteAll() {
-        final String sql = "DELETE FROM line";
-        jdbcTemplate.update(sql);
-    }
-
     public List<Line> findAll() {
         final String sql = "SELECT * FROM line";
 
