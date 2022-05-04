@@ -63,6 +63,14 @@ public class StationDaoTest {
 
         assertThat(stations).hasSize(2);
     }
+
+    @Test
+    @DisplayName("입력된 id의 지하철 역을 삭제한다")
+    void deleteById() {
+        stationDao.deleteById(1L);
+
+        assertThat(stationDao.findAll()).hasSize(0);
+    }
 }
 
 

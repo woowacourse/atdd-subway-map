@@ -72,6 +72,16 @@ public class LineDaoTest {
     @DisplayName("입력된 id의 노선을 삭제한다")
     void deleteById() {
         lineDao.deleteById(1L);
+
         assertThat(lineDao.findAll()).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("입력된 id의 노선을 수정한다.")
+    void update() {
+        Line expected = new Line(1L, "분당선", "green");
+
+        lineDao.update(expected);
+        assertThat(lineDao.findById(1L).orElseThrow()).isEqualTo(expected);
     }
 }

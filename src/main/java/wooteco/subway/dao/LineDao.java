@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -14,7 +15,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
 
 @Repository
 public class LineDao {
@@ -25,7 +25,8 @@ public class LineDao {
             new Line(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
-                    resultSet.getString("color"));;
+                    resultSet.getString("color"));
+    ;
 
     public LineDao(final DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -58,7 +59,7 @@ public class LineDao {
         }
     }
 
-    private Optional<Line> findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String sql = "SELECT * FROM line WHERE id = :id";
         MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
         try {
@@ -86,9 +87,9 @@ public class LineDao {
         namedParameterJdbcTemplate.update(sql, parameters);
     }
 
-    //
-    // public static void update(Long id, LineRequest lineRequest) {
-    //     Line targetLine = LineDao.findById(id);
-    //     targetLine.update(lineRequest);
-    // }
+    public void update(final Line line) {
+        String sql = "UPDATE line SET name = :name, color = :color WHERE id = :id";
+        BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
+        namedParameterJdbcTemplate.update(sql, parameters);
+    }
 }
