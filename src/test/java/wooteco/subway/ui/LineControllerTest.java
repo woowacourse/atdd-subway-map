@@ -13,12 +13,14 @@ import wooteco.subway.acceptance.AcceptanceTest;
 import wooteco.subway.assembler.Assembler;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.NotFoundException;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineControllerTest extends AcceptanceTest {
@@ -101,6 +103,25 @@ class LineControllerTest extends AcceptanceTest {
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(updatedLine.getName()).isEqualTo("다른분당선"),
                 () -> assertThat(updatedLine.getColor()).isEqualTo("blue")
+        );
+    }
+
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void deleteLine() {
+        Line line = Assembler.getLineDao().save(new Line("신분당선", "red"));
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/lines/" + line.getId())
+                .then().log().all()
+                .extract();
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThatThrownBy(() -> Assembler.getLineDao().findById(line.getId()))
+                        .isInstanceOf(NotFoundException.class)
+                        .hasMessageMatching("id에 맞는 지하철 노선이 없습니다.")
         );
     }
 }

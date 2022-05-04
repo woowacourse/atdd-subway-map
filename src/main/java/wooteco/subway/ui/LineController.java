@@ -38,4 +38,10 @@ public class LineController {
         lineService.update(lineId, lineRequest.getName(), lineRequest.getColor());
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/lines/{lineId}")
+    public ResponseEntity<Void> deleteLine(@PathVariable Long lineId) {
+        lineService.delete(lineId);
+        return ResponseEntity.noContent().build();
+    }
 }
