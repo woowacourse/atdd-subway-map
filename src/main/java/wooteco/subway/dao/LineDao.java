@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,9 +20,6 @@ public class LineDao {
                 resultSet.getString("color")
         );
     };
-
-    private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -73,9 +69,5 @@ public class LineDao {
     public int delete(Long id) {
         final String sql = "delete from LINE where id = ?";
         return jdbcTemplate.update(sql, id);
-    }
-
-    public static void clear() {
-        lines.clear();
     }
 }
