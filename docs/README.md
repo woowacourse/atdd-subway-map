@@ -19,6 +19,7 @@
     - 결과 상태 코드는 `201 Created` 이다.
     - Location 헤더는 `/lines/{id}` 이다.
     - `응답` json으로 id, name, color를 반환한다.
+    - `예외` 지하철 노선 생성 시 이름이 중복된다면 에러를 응답한다.
   - [ ] 노선 목록 조회 `GET /lines`
     - 결과 상태 코드는 `200 OK` 이다.
     - `응답` json으로 id, name, color를 가진 리스트를 반환한다.
