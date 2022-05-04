@@ -53,4 +53,18 @@ public class JdbcLineDaoTest {
         assertThatThrownBy(() -> lineDao.findById(0L))
                 .isInstanceOf(EmptyResultDataAccessException.class);
     }
+
+    @DisplayName("노선을 수정한다.")
+    @Test
+    void 노선_수정() {
+        Line line = new Line("2호선", "bg-green-600");
+        Line savedLine = lineDao.save(line);
+
+        Line updatedLine = lineDao.update(savedLine.getId(), new Line("2호선", "bg-yellow-600"));
+
+        assertAll(
+                () -> assertThat(updatedLine.getName()).isEqualTo("2호선"),
+                () -> assertThat(updatedLine.getColor()).isEqualTo("bg-yellow-600")
+        );
+    }
 }
