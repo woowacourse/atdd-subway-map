@@ -11,9 +11,8 @@ import wooteco.subway.domain.Line;
 public class InmemoryLineDao implements LineDao {
 
     private static InmemoryLineDao INSTANCE;
-
-    private Long seq = 0L;
     private final Map<Long, Line> lines = new HashMap<>();
+    private Long seq = 0L;
 
     private InmemoryLineDao() {
     }

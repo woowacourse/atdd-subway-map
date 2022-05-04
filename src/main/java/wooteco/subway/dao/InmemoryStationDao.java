@@ -11,9 +11,8 @@ import wooteco.subway.domain.Station;
 public class InmemoryStationDao implements StationDao {
 
     private static InmemoryStationDao INSTANCE;
-
-    private Long seq = 0L;
     private final Map<Long, Station> stations = new HashMap<>();
+    private Long seq = 0L;
 
     private InmemoryStationDao() {
     }

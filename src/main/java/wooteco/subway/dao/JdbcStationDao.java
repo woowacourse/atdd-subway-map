@@ -14,15 +14,14 @@ import wooteco.subway.domain.Station;
 public class JdbcStationDao implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public JdbcStationDao(final JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private final RowMapper<Station> stationRowMapper = (rs, rowNum) -> new Station(
             rs.getLong("id"),
             rs.getString("name")
     );
+
+    public JdbcStationDao(final JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Station save(final Station station) {
