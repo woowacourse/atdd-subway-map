@@ -1,32 +1,43 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
 
 @Repository
 public class StationDao {
-    private Long seq = 0L;
-    private List<Station> stations = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
 
-    public Station save(Station station) {
-        Station persistStation = createNewObject(station);
-        validateDuplicateName(station.getName());
-        stations.add(persistStation);
-        return persistStation;
+    private final RowMapper<Station> rowMapper = (rs, rowNum) ->
+            new Station(
+                    rs.getLong("id"),
+                    rs.getString("name")
+            );
+
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+    public Station save(Station station) {
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        simpleJdbcInsert.withTableName("station").usingGeneratedKeyColumns("id");
+
+        String name = station.getName();
+        validateDuplicateName(name);
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return new Station(id, name);
     }
 
     private void validateDuplicateName(String stationName) {
+        List<Station> stations = findAll();
         boolean isDuplicate = stations.stream()
                 .anyMatch(station -> station.isSameName(stationName));
         if (isDuplicate) {
@@ -35,18 +46,12 @@ public class StationDao {
     }
 
     public List<Station> findAll() {
-        return stations;
+        String sql = "SELECT * FROM STATION";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     public void delete(Long id) {
-        Station foundStation = stations.stream()
-                .filter(station -> station.isSameId(id))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("해당 역은 존재하지 않습니다."));
-        stations.remove(foundStation);
-    }
-
-    public void clear() {
-        stations.clear();
+        String sql = "DELETE FROM STATION WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }
