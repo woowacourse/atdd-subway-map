@@ -19,10 +19,14 @@ public class LineService {
 
     public Line save(Line line) {
         Optional<Line> foundLine = lineDao.findByName(line.getName());
+        validateLineDuplication(foundLine);
+        return lineDao.save(line);
+    }
+
+    private void validateLineDuplication(Optional<Line> foundLine) {
         if (foundLine.isPresent()) {
             throw new IllegalArgumentException("이미 등록된 노선입니다.");
         }
-        return lineDao.save(line);
     }
 
     public List<Line> findAll() {
@@ -39,9 +43,7 @@ public class LineService {
 
     public void update(Line line) {
         Optional<Line> foundLine = lineDao.findByName(line.getName());
-        if (foundLine.isPresent()) {
-            throw new IllegalArgumentException("이미 등록된 노선입니다.");
-        }
+        validateLineDuplication(foundLine);
         lineDao.update(line.getId(), line.getName(), line.getColor());
     }
 
