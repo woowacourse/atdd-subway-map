@@ -71,14 +71,22 @@ public class LineService {
     }
 
     public void updateById(Long id, String name, String color) {
-        validateDuplicate(name, color);
+//        validateDuplicate(name, color);
         lineDao.findAll().stream()
                 .filter(it -> it.getId().equals(id))
                 .findAny()
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 노선 입니다."));
+        lineDao.findAll().stream()
+                .filter(it -> !it.getId().equals(id))
+                .filter(it -> it.getName().equals(name) || it.getColor().equals(color))
+                .findAny()
+                .ifPresent(s -> {
+                    throw new NoSuchElementException("[ERROR] 이미 존재하는 이름, 색상입니다.");
+                });
 
         lineDao.update(id, name, color);
     }
+
     public void deleteById(Long id) {
         lineDao.findAll().stream()
                 .filter(it -> it.getId().equals(id))

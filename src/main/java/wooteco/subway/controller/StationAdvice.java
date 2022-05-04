@@ -11,7 +11,7 @@ import java.util.NoSuchElementException;
 public class StationAdvice {
 
     @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class})
-    public ResponseEntity<Void> handle(){
+    public ResponseEntity<Void> handle(Exception e){
         return new ResponseEntity<>(
                 HttpStatus.BAD_REQUEST
         );
