@@ -3,15 +3,20 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static wooteco.subway.service.StationService.DUPLICATE_EXCEPTION_MESSAGE;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-
+import wooteco.subway.mock.MemoryStationDao;
 
 class StationServiceTest {
 
-    private StationDao MemoryStationDao = new MemoryStationDao();
-    private StationService stationService = new StationService(MemoryStationDao);
+    private MemoryStationDao memoryStationDao = new MemoryStationDao();
+    private StationService stationService = new StationService(memoryStationDao);
+
+    @BeforeEach
+    void beforeEach() {
+        memoryStationDao.clear();
+    }
 
     @Test
     void saveDuplicate() {

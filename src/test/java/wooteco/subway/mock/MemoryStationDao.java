@@ -1,4 +1,4 @@
-package wooteco.subway.service;
+package wooteco.subway.mock;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -42,5 +42,9 @@ public class MemoryStationDao implements StationDao {
     public boolean existByName(String name) {
         return stations.values().stream()
                 .anyMatch(station -> station.isSameName(name));
+    }
+
+    public void clear() {
+        stations.clear();
     }
 }
