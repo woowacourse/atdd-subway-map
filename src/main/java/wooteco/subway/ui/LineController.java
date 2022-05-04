@@ -1,8 +1,12 @@
 package wooteco.subway.ui;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +29,21 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line createdLine = lineDao.save(line);
-        LineResponse lineResponse = new LineResponse(createdLine.getId(), createdLine.getName(), createdLine.getColor());
+        LineResponse lineResponse = new LineResponse(
+            createdLine.getId(),
+            createdLine.getName(),
+            createdLine.getColor()
+        );
         return ResponseEntity.created(URI.create("/lines/" + createdLine.getId())).body(lineResponse);
+    }
+
+    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<LineResponse>> showLines() {
+        final List<Line> lines = lineDao.findAll();
+        return ResponseEntity.ok().body(
+            lines.stream()
+                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+                .collect(Collectors.toList())
+        );
     }
 }
