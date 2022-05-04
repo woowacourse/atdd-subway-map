@@ -1,47 +1,69 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.util.ReflectionUtils;
+import java.util.Map;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
+@Repository
 public class StationDao {
-    private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public static Station save(Station station) {
-        validateStationName(station);
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+    public StationDao(NamedParameterJdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static void validateStationName(Station persistStation) {
-        List<String> stationNames = stations.stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
-        String stationName = persistStation.getName();
+    public Station save(Station station) {
+        validateStationName(station);
 
-        if (stationNames.contains(stationName)) {
+        String sql = "INSERT INTO station (name) VALUES (:name)";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", station.getName());
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder);
+
+        long stationId = keyHolder.getKey().longValue();
+
+        return new Station(stationId, station.getName());
+    }
+
+    private void validateStationName(Station station) {
+        String sql = "SELECT id, name FROM station WHERE name = :name";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", station.getName());
+
+        List<Station> stations = jdbcTemplate.query(sql, params,
+                (rs, rowNum) -> new Station(rs.getLong("id"), rs.getString("name")));
+
+        if (stations.size() > 0) {
             throw new IllegalArgumentException("같은 이름의 역은 등록할 수 없습니다.");
         }
     }
 
-    public static List<Station> findAll() {
-        return stations;
+    public List<Station> findAll() {
+        String sql = "SELECT * FROM station";
+        return jdbcTemplate.query(sql, new MapSqlParameterSource(), (rs, rowNum) -> new Station(rs.getLong("id"), rs.getString("name")));
     }
 
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
-    }
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM station WHERE id=:id";
 
-    public static void deleteById(Long id) {
-        if (!stations.removeIf(it -> it.getId().equals(id))) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+
+        int affected = jdbcTemplate.update(sql, params);
+
+        if (affected == 0) {
             throw new IllegalArgumentException("존재하지 않는 역입니다.");
         }
     }
