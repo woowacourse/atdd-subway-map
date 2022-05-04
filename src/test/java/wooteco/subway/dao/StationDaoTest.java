@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
 
@@ -43,6 +45,15 @@ class StationDaoTest {
         final Station foundStation = stationDao.find(id);
 
         assertThat(foundStation.getName()).isEqualTo(station.getName());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 Id 조회 시, 예외를 발생한다.")
+    void findNotExistId() {
+        final long id = 1L;
+
+        assertThatThrownBy(() -> stationDao.find(id))
+                .isInstanceOf(EmptyResultDataAccessException.class);
     }
 
     @Test
