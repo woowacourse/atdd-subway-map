@@ -6,9 +6,10 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.assembler.Assembler;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.NotFoundException;
@@ -23,9 +24,13 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineControllerTest extends AcceptanceTest {
 
+    @Autowired
+    private LineDao lineDao;
+
+
     @AfterEach
     void afterEach() {
-        Assembler.getLineDao().clear();
+        lineDao.clear();
     }
 
     @DisplayName("지하철 노선을 등록한다.")
@@ -50,7 +55,7 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("중복된 이름을 가진 지하철 노선을 등록할 때 예외를 발생시킨다.")
     @Test
     void throwsExceptionWhenCreateDuplicatedName() {
-        Assembler.getLineDao().save(new Line("신분당선", "red"));
+        lineDao.save(new Line("신분당선", "red"));
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
@@ -70,8 +75,8 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
-        Assembler.getLineDao().save(new Line("신분당선", "red"));
-        Assembler.getLineDao().save(new Line("1호선", "blue"));
+        lineDao.save(new Line("신분당선", "red"));
+        lineDao.save(new Line("1호선", "blue"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -86,7 +91,7 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
-        Line line = Assembler.getLineDao().save(new Line("신분당선", "red"));
+        Line line = lineDao.save(new Line("신분당선", "red"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -106,7 +111,7 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
-        Line line = Assembler.getLineDao().save(new Line("신분당선", "red"));
+        Line line = lineDao.save(new Line("신분당선", "red"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(new Line("다른분당선", "blue"))
@@ -116,7 +121,7 @@ class LineControllerTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        Line updatedLine = Assembler.getLineDao().findById(line.getId());
+        Line updatedLine = lineDao.findById(line.getId());
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(updatedLine.getName()).isEqualTo("다른분당선"),
@@ -127,7 +132,7 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void deleteLine() {
-        Line line = Assembler.getLineDao().save(new Line("신분당선", "red"));
+        Line line = lineDao.save(new Line("신분당선", "red"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -137,7 +142,7 @@ class LineControllerTest extends AcceptanceTest {
 
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
-                () -> assertThatThrownBy(() -> Assembler.getLineDao().findById(line.getId()))
+                () -> assertThatThrownBy(() -> lineDao.findById(line.getId()))
                         .isInstanceOf(NotFoundException.class)
                         .hasMessageMatching("id에 맞는 지하철 노선이 없습니다.")
         );

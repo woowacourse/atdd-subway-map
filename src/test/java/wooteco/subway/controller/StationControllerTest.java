@@ -6,9 +6,10 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.assembler.Assembler;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.StationResponse;
 
 import java.util.Arrays;
@@ -22,9 +23,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 public class StationControllerTest extends AcceptanceTest {
 
+    @Autowired
+    private StationDao stationDao;
+
     @AfterEach
     void afterEach() {
-        Assembler.getStationDao().clear();
+        stationDao.clear();
     }
 
     @DisplayName("지하철역을 생성한다.")

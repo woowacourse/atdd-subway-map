@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.NotFoundException;
@@ -8,10 +9,14 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class LineDao {
 
     private static Long seq = 0L;
     private final List<Line> lines = new ArrayList<>();
+
+    public LineDao() {
+    }
 
     public Line save(Line line) {
         Line persistLine = createNewObject(line);

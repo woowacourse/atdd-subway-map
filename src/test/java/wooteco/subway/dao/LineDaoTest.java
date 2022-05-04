@@ -3,7 +3,8 @@ package wooteco.subway.dao;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.assembler.Assembler;
+import org.springframework.beans.factory.annotation.Autowired;
+import wooteco.subway.controller.AcceptanceTest;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.NotFoundException;
 
@@ -12,9 +13,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class LineDaoTest {
 
-    private LineDao lineDao = Assembler.getLineDao();
+public class LineDaoTest extends AcceptanceTest {
+
+    @Autowired
+    private LineDao lineDao;
     private Line line = new Line("신분당선", "red");
 
     @AfterEach
