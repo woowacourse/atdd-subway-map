@@ -74,11 +74,17 @@ public class LineDao {
 
     public void update(Long id, Line line) {
         final String sql = "update Line set name = ?, color = ? where id = ?";
+        if (!isExist(id)) {
+            throw new NoSuchElementException("해당하는 노선이 존재하지 않습니다.");
+        }
         jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
     public void deleteById(Long id) {
         final String sql = "delete from Line where id = ?";
+        if (!isExist(id)) {
+            throw new NoSuchElementException("해당하는 노선이 존재하지 않습니다.");
+        }
         jdbcTemplate.update(sql, id);
     }
 }

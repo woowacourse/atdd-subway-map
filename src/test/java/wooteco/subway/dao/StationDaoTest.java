@@ -8,7 +8,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
 
+import java.util.NoSuchElementException;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 public class StationDaoTest {
@@ -37,12 +40,28 @@ public class StationDaoTest {
     }
 
     @Test
+    @DisplayName("중복된 지하철역을 저장하는 경우 예외를 발생시킨다.")
+    void saveDuplicateTest() {
+        stationDao.save(new Station("선릉역"));
+        assertThatThrownBy(() -> stationDao.save(new Station("선릉역")))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
     @DisplayName("정상적으로 전체 조회되는 경우를 테스트한다.")
     void findAllTest() {
         stationDao.save(new Station("선릉역"));
         stationDao.save(new Station("역삼역"));
         stationDao.save(new Station("강남역"));
         assertThat(stationDao.findAll()).hasSize(3);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 지하철 역을 삭제하는 경우를 테스트한다.")
+    void deleteNotExistTest() {
+        assertThatThrownBy(() -> {
+            stationDao.deleteById(999999L);
+        }).isInstanceOf(NoSuchElementException.class);
     }
 
     @Test

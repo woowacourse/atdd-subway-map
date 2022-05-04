@@ -9,6 +9,7 @@ import wooteco.subway.domain.Station;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Component
@@ -26,9 +27,10 @@ public class StationDao {
     }
 
     public Station save(Station station) {
-        if (isContains(station)) {
+        if (isExistName(station)) {
             throw new IllegalStateException("중복된 지하철역을 저장할 수 없습니다.");
         }
+
         final String sql = "insert into Station (name) values (?)";
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -36,15 +38,22 @@ public class StationDao {
             statement.setString(1, station.getName());
             return statement;
         }, keyHolder);
+
         return new Station(
                 Objects.requireNonNull(keyHolder.getKey()).longValue(),
                 station.getName()
         );
     }
 
-    private boolean isContains(Station station) {
+    private boolean isExistName(Station station) {
         final String sql = "select count(*) from Station where name = ?";
         final int count = jdbcTemplate.queryForObject(sql, Integer.class, station.getName());
+        return count > 0;
+    }
+
+    private boolean isExistId(Long id) {
+        final String sql = "select count(*) from Station where id = ?";
+        final int count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count > 0;
     }
 
@@ -55,6 +64,9 @@ public class StationDao {
 
     public void deleteById(Long id) {
         final String sql = "delete from Station where id = ?";
+        if (!isExistId(id)) {
+            throw new NoSuchElementException("해당하는 지하철이 존재하지 않습니다.");
+        }
         jdbcTemplate.update(sql, id);
     }
 }

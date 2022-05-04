@@ -50,9 +50,24 @@ public class LineDaoTest {
     }
 
     @Test
+    @DisplayName("중복된 이름을 저장한 경우 예외를 발생시킨다")
+    void saveDuplicateTest() {
+        assertThatThrownBy(() -> {
+            lineDao.save(new Line("신분당선", "red"));
+        }).isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
     @DisplayName("정상적으로 전체 조회되는 경우를 테스트한다.")
     void findAllTest() {
         assertThat(lineDao.findAll()).hasSize(3);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 id를 조회하는 경우 예외를 발생시킨다.")
+    void findExceptionTest() {
+        assertThatThrownBy(() -> lineDao.findById(9999999L))
+                .isInstanceOf(NoSuchElementException.class);
     }
 
     @Test
@@ -87,5 +102,4 @@ public class LineDaoTest {
             lineDao.findById(newLine.getId());
         }).isInstanceOf(NoSuchElementException.class);
     }
-
 }

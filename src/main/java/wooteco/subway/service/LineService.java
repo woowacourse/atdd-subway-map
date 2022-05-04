@@ -19,22 +19,22 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public LineResponse save(LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = lineDao.save(line);
+    public LineResponse save(final LineRequest lineRequest) {
+        final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        final Line newLine = lineDao.save(line);
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(),
                 Collections.emptyList());
     }
 
     public List<LineResponse> findAll() {
-        List<Line> lines = lineDao.findAll();
+        final List<Line> lines = lineDao.findAll();
         return lines.stream()
                 .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), Collections.emptyList()))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(final Long id) {
-        Line line = lineDao.findById(id);
+        final Line line = lineDao.findById(id);
         return new LineResponse(line.getId(), line.getName(), line.getColor(), Collections.emptyList());
     }
 
