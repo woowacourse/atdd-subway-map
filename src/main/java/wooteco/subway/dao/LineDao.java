@@ -56,7 +56,7 @@ public class LineDao {
 
     public void deleteById(Long id) {
         if (!lines.removeIf(line -> line.getId().equals(id))) {
-            throw new IllegalArgumentException("존재하지 않는 노선 입니다.");
+            throw new IllegalArgumentException("존재하지 않는 노선입니다.");
         }
     }
 

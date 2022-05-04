@@ -126,4 +126,20 @@ public class LineServiceTest {
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("이미 등록된 노선입니다.");
     }
+
+    @Test
+    @DisplayName("Line 을 삭제한다.")
+    void delete() {
+        //given
+        Line line = new Line("이수", "sky-blue");
+        Long id = lineService.save(line).getId();
+
+        //when
+        lineService.deleteById(id);
+
+        //then
+        assertThatThrownBy(() -> lineService.findById(id))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("존재하지 않는 노선입니다.");
+    }
 }

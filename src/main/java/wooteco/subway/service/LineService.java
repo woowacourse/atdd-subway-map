@@ -45,4 +45,8 @@ public class LineService {
         }
         lineDao.update(line.getId(), line.getName(), line.getColor());
     }
+
+    public void deleteById(Long id) {
+        lineDao.deleteById(id);
+    }
 }
