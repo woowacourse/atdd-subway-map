@@ -27,23 +27,29 @@ public class LineController {
     private static final String LINE_DUPLICATION_EXCEPTION_MESSAGE = "중복되는 지하철 노선이 존재합니다.";
     private static final String NO_SUCH_LINE_EXCEPTION_MESSAGE = "해당 ID의 지하철 노선이 존재하지 않습니다.";
 
+    private final LineDao lineDao;
+
+    public LineController(LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
+
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         if (isDuplicateName(lineRequest.getName())) {
             throw new IllegalArgumentException(LINE_DUPLICATION_EXCEPTION_MESSAGE);
         }
-        Line newLine = LineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        Line newLine = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
         LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
     private boolean isDuplicateName(String name) {
-        return LineDao.findByName(name).isPresent();
+        return lineDao.findByName(name).isPresent();
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = LineDao.findAll();
+        List<Line> lines = lineDao.findAll();
         List<LineResponse> lineResponses = lines.stream()
                 .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
@@ -60,7 +66,7 @@ public class LineController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         Line line = findLineById(id);
-        LineDao.delete(line);
+        lineDao.delete(line);
         return ResponseEntity.noContent().build();
     }
 
@@ -70,13 +76,13 @@ public class LineController {
         if (isDuplicateName(lineRequest.getName()) && isNotSameName(lineRequest.getName(), findLine.getName())) {
             throw new IllegalArgumentException(LINE_DUPLICATION_EXCEPTION_MESSAGE);
         }
-        LineDao.update(findLine, new Line(id, lineRequest.getName(), lineRequest.getColor()));
+        lineDao.update(findLine, new Line(id, lineRequest.getName(), lineRequest.getColor()));
 
         return ResponseEntity.ok().build();
     }
 
     private Line findLineById(Long id) {
-        return LineDao.findById(id)
+        return lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_LINE_EXCEPTION_MESSAGE));
     }
 

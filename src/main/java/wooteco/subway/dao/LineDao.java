@@ -1,58 +1,87 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
+@Repository
 public class LineDao {
 
-    private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
+    private JdbcTemplate jdbcTemplate;
 
-    public static Line save(Line line) {
-        Line persistLine = createNewObject(line);
-        lines.add(persistLine);
-        return persistLine;
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public static Optional<Line> findById(Long id) {
-        return lines.stream()
-                .filter(line -> line.getId().equals(id))
-                .findFirst();
+    public Line save(Line line) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sql = "insert into line (name, color) values (?, ?)";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, line.getName());
+            ps.setString(2, line.getColor());
+            return ps;
+        }, keyHolder);
+
+        long savedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+
+        return new Line(savedId, line.getName(), line.getColor());
     }
 
-    public static Optional<Line> findByName(String name) {
-        return lines.stream()
-                .filter(line -> line.getName().equals(name))
-                .findFirst();
+    public Optional<Line> findById(Long id) {
+        String sql = "select * from line where id = ?";
+        try {
+            Line line = jdbcTemplate.queryForObject(sql, rowMapper(), id);
+            return Optional.ofNullable(line);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
-    public static List<Line> findAll() {
-        return Collections.unmodifiableList(lines);
+    public Optional<Line> findByName(String name) {
+        String sql = "select * from line where name = ?";
+        try {
+            Line line = jdbcTemplate.queryForObject(sql, rowMapper(), name);
+            return Optional.ofNullable(line);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
-    public static void update(Line findLine, Line newLine) {
-        lines.remove(findLine);
-        lines.add(newLine);
+    public List<Line> findAll() {
+        String sql = "select * from line";
+        return jdbcTemplate.query(sql, rowMapper());
     }
 
-    public static void delete(Line line) {
-        lines.remove(line);
+    public void update(Line findLine, Line newLine) {
+        String sql = "update line set name = ?, color = ? where id = ?";
+        jdbcTemplate.update(sql, newLine.getName(), newLine.getColor(), findLine.getId());
     }
 
-    public static void deleteAll() {
-        lines = new ArrayList<>();
-        seq = 0L;
+    public void delete(Line line) {
+        String sql = "delete from line where id = ?";
+        jdbcTemplate.update(sql, line.getId());
     }
 
-    private static Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+    public void deleteAll() {
+        String sql = "delete from line";
+        jdbcTemplate.update(sql);
+    }
+
+    private RowMapper<Line> rowMapper() {
+        return (rs, rowNum) ->
+                new Line(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("color"));
     }
 }

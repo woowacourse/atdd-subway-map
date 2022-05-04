@@ -26,20 +26,26 @@ public class StationController {
     private static final String STATION_DUPLICATION_EXCEPTION_MESSAGE = "중복되는 지하철역이 존재합니다.";
     private static final String NO_SUCH_STATION_EXCEPTION_MESSAGE = "해당 ID의 지하철역이 존재하지 않습니다.";
 
+    private StationDao stationDao;
+
+    public StationController(StationDao stationDao) {
+        this.stationDao = stationDao;
+    }
+
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        if (StationDao.findByName(stationRequest.getName()).isPresent()) {
+        if (stationDao.findByName(stationRequest.getName()).isPresent()) {
             throw new IllegalArgumentException(STATION_DUPLICATION_EXCEPTION_MESSAGE);
         }
         Station station = new Station(stationRequest.getName());
-        Station newStation = StationDao.save(station);
+        Station newStation = stationDao.save(station);
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = StationDao.findAll();
+        List<Station> stations = stationDao.findAll();
         List<StationResponse> stationResponses = stations.stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());
@@ -48,9 +54,9 @@ public class StationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        Station station = StationDao.findById(id)
+        Station station = stationDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION_MESSAGE));
-        StationDao.delete(station);
+        stationDao.delete(station);
         return ResponseEntity.noContent().build();
     }
 

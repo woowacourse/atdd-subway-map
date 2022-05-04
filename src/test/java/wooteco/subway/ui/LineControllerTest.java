@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -29,7 +30,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 
-@WebMvcTest
+@WebMvcTest(LineController.class)
 public class LineControllerTest {
 
     @Autowired
@@ -38,21 +39,17 @@ public class LineControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private static MockedStatic<LineDao> lineDao;
-
-    @BeforeAll
-    static void beforeAll() {
-        lineDao = mockStatic(LineDao.class);
-    }
+    @MockBean
+    private LineDao lineDao;
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() throws Exception {
         // given
         LineRequest test = new LineRequest("test", "GREEN");
-        given(LineDao.findByName("test"))
+        given(lineDao.findByName("test"))
                 .willReturn(Optional.empty());
-        given(LineDao.save(any(Line.class)))
+        given(lineDao.save(any(Line.class)))
                 .willReturn(new Line(1L, test.getName(), test.getColor()));
         // when
         ResultActions perform = mockMvc.perform(post("/lines")
@@ -71,7 +68,7 @@ public class LineControllerTest {
     void createLine_duplication_exception() throws Exception {
         // given
         LineRequest test = new LineRequest("test", "GREEN");
-        given(LineDao.findByName("test"))
+        given(lineDao.findByName("test"))
                 .willReturn(Optional.of(new Line(1L, test.getName(), test.getColor())));
         // when
         ResultActions perform = mockMvc.perform(post("/lines")
@@ -85,7 +82,7 @@ public class LineControllerTest {
     @Test
     void getLines() throws Exception {
         // given
-        given(LineDao.findAll())
+        given(lineDao.findAll())
                 .willReturn(List.of(new Line(1L, "test1", "GREEN"), new Line(2L, "test2", "YELLOW")));
         // when
         ResultActions perform = mockMvc.perform(get("/lines"));
@@ -105,7 +102,7 @@ public class LineControllerTest {
     @Test
     void getLine() throws Exception {
         // given
-        given(LineDao.findById(1L))
+        given(lineDao.findById(1L))
                 .willReturn(Optional.of(new Line(1L, "test1", "GREEN")));
         // when
         ResultActions perform = mockMvc.perform(get("/lines/1"));
@@ -121,7 +118,7 @@ public class LineControllerTest {
     @Test
     void getLine_noExistLine_exception() throws Exception {
         // given
-        given(LineDao.findById(1L))
+        given(lineDao.findById(1L))
                 .willReturn(Optional.empty());
         // when
         ResultActions perform = mockMvc.perform(get("/lines/1"));
@@ -134,7 +131,7 @@ public class LineControllerTest {
     @Test
     void deleteLine() throws Exception {
         // given
-        given(LineDao.findById(1L))
+        given(lineDao.findById(1L))
                 .willReturn(Optional.of(new Line(1L, "test", "BLACK")));
         // when
         ResultActions perform = mockMvc.perform(delete("/lines/1"));
@@ -146,7 +143,7 @@ public class LineControllerTest {
     @Test
     void deleteLine_noExistLine_exception() throws Exception {
         // given
-        given(LineDao.findById(1L))
+        given(lineDao.findById(1L))
                 .willReturn(Optional.empty());
         // when
         ResultActions perform = mockMvc.perform(delete("/lines/1"));
@@ -160,9 +157,9 @@ public class LineControllerTest {
     void updateLine() throws Exception {
         // given
         LineRequest updateRequest = new LineRequest("9호선", "GREEN");
-        given(LineDao.findById(1L))
+        given(lineDao.findById(1L))
                 .willReturn(Optional.of(new Line(1L, "11호선", "GRAY")));
-        given(LineDao.findByName("9호선")).willReturn(Optional.empty());
+        given(lineDao.findByName("9호선")).willReturn(Optional.empty());
         // when
         ResultActions perform = mockMvc.perform(put("/lines/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -176,7 +173,7 @@ public class LineControllerTest {
     void updateLine_noExistLine_Exception() throws Exception {
         // given
         LineRequest updateRequest = new LineRequest("9호선", "GREEN");
-        given(LineDao.findById(1L))
+        given(lineDao.findById(1L))
                 .willReturn(Optional.empty());
         // when
         ResultActions perform = mockMvc.perform(put("/lines/1")
@@ -191,9 +188,9 @@ public class LineControllerTest {
     void updateLine_duplicateName_Exception() throws Exception {
         // given
         LineRequest updateRequest = new LineRequest("9호선", "GREEN");
-        given(LineDao.findById(1L))
+        given(lineDao.findById(1L))
                 .willReturn(Optional.of(new Line(1L, "11호선", "GRAY")));
-        given(LineDao.findByName("9호선"))
+        given(lineDao.findByName("9호선"))
                 .willReturn(Optional.of(new Line(2L, "9호선", "BLUE")));
         // when
         ResultActions perform = mockMvc.perform(put("/lines/1")
@@ -201,10 +198,5 @@ public class LineControllerTest {
                 .content(objectMapper.writeValueAsString(updateRequest)));
         // then
         perform.andExpect(status().isBadRequest());
-    }
-
-    @AfterAll
-    static void afterAll() {
-        lineDao.close();
     }
 }

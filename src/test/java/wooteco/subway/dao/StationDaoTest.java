@@ -7,20 +7,30 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Station;
 
+@Sql("/sql/schema-test.sql")
+@JdbcTest
 class StationDaoTest {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    private StationDao stationDao;
 
     @BeforeEach
     void beforEach() {
-        StationDao.deleteAll();
+        stationDao = new StationDao(jdbcTemplate);
     }
 
     @DisplayName("새 지하철역을 저장한다.")
     @Test
     void save() {
         Station testStation = new Station(null, "hi");
-        Station result = StationDao.save(testStation);
+        Station result = stationDao.save(testStation);
         assertThat(result.getId()).isNotNull();
         assertThat(result.getName()).isEqualTo("hi");
     }
@@ -29,9 +39,9 @@ class StationDaoTest {
     @Test
     void findByName() {
         Station test = new Station(null, "test");
-        StationDao.save(test);
-        Station result = StationDao.findByName("test").orElse(null);
-        Optional<Station> result2 = StationDao.findByName("test2");
+        stationDao.save(test);
+        Station result = stationDao.findByName("test").orElse(null);
+        Optional<Station> result2 = stationDao.findByName("test2");
 
         assertThat(result.getName()).isEqualTo("test");
         assertThat(result2).isEmpty();
@@ -42,10 +52,10 @@ class StationDaoTest {
     void findAll() {
         Station test1 = new Station(null, "test1");
         Station test2 = new Station(null, "test2");
-        StationDao.save(test1);
-        StationDao.save(test2);
+        stationDao.save(test1);
+        stationDao.save(test2);
 
-        List<Station> stations = StationDao.findAll();
+        List<Station> stations = stationDao.findAll();
 
         assertThat(stations.size()).isEqualTo(2);
         assertThat(stations.get(0).getId()).isEqualTo(1);
@@ -58,9 +68,9 @@ class StationDaoTest {
     @Test
     void findById() {
         Station test = new Station(null, "test");
-        StationDao.save(test);
-        Station result = StationDao.findById(1L).orElse(null);
-        Optional<Station> result2 = StationDao.findById(2L);
+        stationDao.save(test);
+        Station result = stationDao.findById(1L).orElse(null);
+        Optional<Station> result2 = stationDao.findById(2L);
 
         assertThat(result.getName()).isEqualTo("test");
         assertThat(result2).isEmpty();
@@ -70,12 +80,12 @@ class StationDaoTest {
     @Test
     void deleteAll() {
         Station test = new Station(null, "test1");
-        StationDao.save(test);
+        stationDao.save(test);
         Station test2 = new Station(null, "test2");
-        StationDao.save(test2);
+        stationDao.save(test2);
 
-        StationDao.deleteAll();
-        List<Station> result = StationDao.findAll();
+        stationDao.deleteAll();
+        List<Station> result = stationDao.findAll();
         assertThat(result).isEmpty();
     }
 
@@ -83,13 +93,13 @@ class StationDaoTest {
     @Test
     void deleteStation() {
         Station test = new Station(null, "test1");
-        Station savedTest = StationDao.save(test);
+        Station savedTest = stationDao.save(test);
         Station test2 = new Station(null, "test2");
-        StationDao.save(test2);
+        stationDao.save(test2);
 
-        StationDao.delete(savedTest);
+        stationDao.delete(savedTest);
 
-        List<Station> result = StationDao.findAll();
+        List<Station> result = stationDao.findAll();
         assertThat(result.size()).isEqualTo(1);
     }
 }

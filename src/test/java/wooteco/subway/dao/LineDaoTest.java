@@ -4,24 +4,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Line;
 
+@Sql("/sql/schema-test.sql")
+@JdbcTest
 public class LineDaoTest {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    private LineDao lineDao;
 
     @BeforeEach
     void beforEach() {
-        LineDao.deleteAll();
+        lineDao = new LineDao(jdbcTemplate);
     }
 
     @DisplayName("새 지하철 노선을 저장한다.")
     @Test
     void save() {
         Line testLine = new Line("save", "GREEN");
-        Line result = LineDao.save(testLine);
+        Line result = lineDao.save(testLine);
         assertThat(result.getId()).isNotNull();
         assertThat(result.getName()).isEqualTo("save");
         assertThat(result.getColor()).isEqualTo("GREEN");
@@ -31,9 +40,9 @@ public class LineDaoTest {
     @Test
     void findByName() {
         Line test = new Line("test", "GREEN");
-        LineDao.save(test);
-        Line result = LineDao.findByName("test").orElse(null);
-        Optional<Line> result2 = LineDao.findByName("test2");
+        lineDao.save(test);
+        Line result = lineDao.findByName("test").orElse(null);
+        Optional<Line> result2 = lineDao.findByName("test2");
 
         assertThat(result.getName()).isEqualTo("test");
         assertThat(result.getColor()).isEqualTo("GREEN");
@@ -45,10 +54,10 @@ public class LineDaoTest {
     void findAll() {
         Line test1 = new Line("test1", "GREEN");
         Line test2 = new Line("test2", "YELLOW");
-        LineDao.save(test1);
-        LineDao.save(test2);
+        lineDao.save(test1);
+        lineDao.save(test2);
 
-        List<Line> lines = LineDao.findAll();
+        List<Line> lines = lineDao.findAll();
 
         assertThat(lines.size()).isEqualTo(2);
         assertThat(lines.get(0).getId()).isEqualTo(1);
@@ -62,9 +71,9 @@ public class LineDaoTest {
     @DisplayName("id를 이용해 지하철 노선을 조회한다.")
     @Test
     void findById() {
-        LineDao.save(new Line("test1", "GREEN"));
-        Line line = LineDao.findById(1L).get();
-        Optional<Line> lineEmpty = LineDao.findById(1000L);
+        lineDao.save(new Line("test1", "GREEN"));
+        Line line = lineDao.findById(1L).get();
+        Optional<Line> lineEmpty = lineDao.findById(1000L);
         assertThat(line.getId()).isEqualTo(1);
         assertThat(line.getName()).isEqualTo("test1");
         assertThat(line.getColor()).isEqualTo("GREEN");
@@ -75,13 +84,13 @@ public class LineDaoTest {
     @Test
     void deleteLine() {
         Line test = new Line("test1", "YELLOW");
-        Line savedTest = LineDao.save(test);
+        Line savedTest = lineDao.save(test);
         Line test2 = new Line("test2", "BROWN");
-        LineDao.save(test2);
+        lineDao.save(test2);
 
-        LineDao.delete(savedTest);
+        lineDao.delete(savedTest);
 
-        List<Line> result = LineDao.findAll();
+        List<Line> result = lineDao.findAll();
         assertThat(result.size()).isEqualTo(1);
     }
 
@@ -89,20 +98,14 @@ public class LineDaoTest {
     @Test
     void updateLine() {
         Line line = new Line("test1", "YELLOW");
-        Line savedLine = LineDao.save(line);
+        Line savedLine = lineDao.save(line);
         Line newLine = new Line(savedLine.getId(), "test2", "BROWN");
 
-        LineDao.update(savedLine, newLine);
+        lineDao.update(savedLine, newLine);
 
-        Line result = LineDao.findById(1L).get();
+        Line result = lineDao.findById(1L).get();
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getName()).isEqualTo("test2");
         assertThat(result.getColor()).isEqualTo("BROWN");
-
-    }
-
-    @AfterAll
-    static void afterAll() {
-        LineDao.deleteAll();
     }
 }
