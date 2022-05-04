@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -20,8 +21,8 @@ import javax.sql.DataSource;
 @Repository
 public class StationDao {
 
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate; // jdc <- data
-    private final SimpleJdbcInsert simpleJdbcInsert; // dData
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public StationDao(final DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -46,10 +47,9 @@ public class StationDao {
     private Optional<Station> findByName(String name) {
         String sql = "SELECT name FROM station WHERE name = :name";
         MapSqlParameterSource parameters = new MapSqlParameterSource("name", name);
-        try{
+        try {
             return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, Station.class));
-        }
-        catch(EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
@@ -58,8 +58,14 @@ public class StationDao {
         String sql = "truncate table station";
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource());
     }
-    //
-    // public List<Station> findAll() {
-    //     return stations;
-    // }
+
+    public List<Station> findAll() {
+        String sql = "SELECT * FROM station";
+        return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) ->
+                new Station(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name")
+                )
+        );
+    }
 }
