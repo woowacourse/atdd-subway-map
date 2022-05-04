@@ -2,12 +2,10 @@ package wooteco.subway.ui;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +24,7 @@ public class StationController {
     private static final String STATION_DUPLICATION_EXCEPTION_MESSAGE = "중복되는 지하철역이 존재합니다.";
     private static final String NO_SUCH_STATION_EXCEPTION_MESSAGE = "해당 ID의 지하철역이 존재하지 않습니다.";
 
-    private StationDao stationDao;
+    private final StationDao stationDao;
 
     public StationController(StationDao stationDao) {
         this.stationDao = stationDao;
@@ -58,12 +56,5 @@ public class StationController {
                 .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION_MESSAGE));
         stationDao.delete(station);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseEntity<Map<String, String>> handle(RuntimeException exception) {
-        return ResponseEntity.badRequest().body(Map.of(
-                "message", exception.getMessage()
-        ));
     }
 }
