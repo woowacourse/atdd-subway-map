@@ -20,6 +20,8 @@ public class Line {
     }
 
     public void update(String name, String color) {
+        validateNameRange(name);
+        validateLanguageType(name);
         this.name = name;
         this.color = color;
     }
