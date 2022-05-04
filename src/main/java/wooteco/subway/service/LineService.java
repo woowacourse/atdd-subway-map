@@ -13,7 +13,7 @@ public class LineService {
 
     private final LineDao lineDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(final LineDao lineDao) {
         this.lineDao = lineDao;
     }
 

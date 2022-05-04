@@ -2,9 +2,9 @@ package wooteco.subway.domain;
 
 public class Line {
 
-    private Long id;
-    private String name;
-    private String color;
+    private final Long id;
+    private final String name;
+    private final String color;
 
     public Line(final String name, final String color) {
         this(null, name, color);
