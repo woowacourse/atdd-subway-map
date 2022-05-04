@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
 
@@ -46,4 +47,10 @@ public class JdbcLineDaoTest {
                 .isInstanceOf(DuplicateKeyException.class);
     }
 
+    @DisplayName("존재하지 않는 노선을 조회할 경우 예외가 발생한다.")
+    @Test
+    void 노선_조회_예외발생() {
+        assertThatThrownBy(() -> lineDao.findById(0L))
+                .isInstanceOf(EmptyResultDataAccessException.class);
+    }
 }
