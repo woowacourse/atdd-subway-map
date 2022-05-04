@@ -52,6 +52,7 @@ public class LineService {
         int deletedRow = lineDao.delete(id);
         if (deletedRow == 0) {
             throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
-        };
+        }
+        ;
     }
 }

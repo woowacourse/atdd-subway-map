@@ -17,14 +17,14 @@ class LineDaoTest {
 
     private static final Line LINE = new Line("신분당선", "bg-red-600");
 
-    private LineDao lineDao;
+    private JdbcLineDao lineDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        lineDao = new LineDao(jdbcTemplate);
+        lineDao = new JdbcLineDao(jdbcTemplate);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
