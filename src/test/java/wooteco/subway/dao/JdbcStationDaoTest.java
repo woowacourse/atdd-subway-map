@@ -5,20 +5,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import wooteco.subway.domain.Station;
 
-public class StationDaoTest {
+public class JdbcStationDaoTest {
 
-    private final StationDao stationDao = new StationDao();
-
-    @AfterEach
-    void tearDown() {
-        new StationDao().deleteAll();
-    }
+    private final StationDao stationDao = new JdbcStationDao();
 
     @Test
     @DisplayName("Station 을 저장한다.")
