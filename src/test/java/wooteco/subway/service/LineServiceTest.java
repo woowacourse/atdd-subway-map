@@ -5,8 +5,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 class LineServiceTest {
 
@@ -43,5 +46,24 @@ class LineServiceTest {
     void findLineFail() {
         Assertions.assertThatThrownBy(() -> LineService.findLineInfos(1000000L))
                 .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    @DisplayName("노선 목록 조회")
+    void findAllLine() {
+        //given
+        var lineRequest1 = new LineRequest("99호선", "검은색", 0L, 0L, 0);
+        var lineRequest2 = new LineRequest("88호선", "흰색", 0L, 0L, 0);
+        var lineResponse1 = LineService.createLine(lineRequest1);
+        var lineResponse2 = LineService.createLine(lineRequest2);
+
+        //when
+        List<Long> ids = LineService.findAll().stream()
+                .map(it -> it.getId())
+                .collect(Collectors.toList());
+
+        //then
+        Assertions.assertThat(ids.contains(lineResponse1.getId())).isTrue();
+        Assertions.assertThat(ids.contains(lineResponse2.getId())).isTrue();
     }
 }

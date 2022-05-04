@@ -5,11 +5,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.StationResponse;
 import wooteco.subway.service.LineService;
 
 import java.net.URI;
@@ -34,12 +32,12 @@ public class LineController {
         );
     }
 
-//    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<List<LineResponse>> showStations() {
-//        List<Line> lines = LineDao.findAll();
-//        List<StationResponse> stationResponses = stations.stream()
-//                .map(it -> new StationResponse(it.getId(), it.getName()))
-//                .collect(Collectors.toList());
-//        return ResponseEntity.ok().body(stationResponses);
-//    }
+    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<LineResponse>> showStations() {
+        List<Line> lines = LineDao.findAll();
+        List<LineResponse> lineResponses = lines.stream()
+                .map(it -> new LineResponse(it))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok().body(lineResponses);
+    }
 }

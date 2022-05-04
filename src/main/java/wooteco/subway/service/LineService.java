@@ -5,6 +5,9 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class LineService {
 
     public static LineResponse createLine(LineRequest lineRequest) {
@@ -12,11 +15,19 @@ public class LineService {
             throw new IllegalArgumentException("[ERROR] 중복된 이름이 존재합니다.");
         }
         Line line = LineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        return new LineResponse(line);
     }
 
     public static LineResponse findLineInfos(Long id) {
         Line line = LineDao.findById(id);
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        return new LineResponse(line);
+    }
+
+    public static List<LineResponse> findAll() {
+        var allLines = LineDao.findAll();
+
+        return allLines.stream()
+                .map(it -> new LineResponse(it))
+                .collect(Collectors.toList());
     }
 }
