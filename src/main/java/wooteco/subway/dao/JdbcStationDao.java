@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -33,12 +34,15 @@ public class JdbcStationDao implements StationDao {
     public Station save(final Station station) {
         try {
             final String sql = "INSERT INTO station SET name = ?";
+
             final KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(con -> {
+            final PreparedStatementCreator statementCreator = con -> {
                 final PreparedStatement prepareStatement = con.prepareStatement(sql, new String[]{"id"});
                 prepareStatement.setString(1, station.getName());
                 return prepareStatement;
-            }, keyHolder);
+            };
+
+            jdbcTemplate.update(statementCreator, keyHolder);
             final long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
             return setId(station, id);
         } catch (final DuplicateKeyException e) {

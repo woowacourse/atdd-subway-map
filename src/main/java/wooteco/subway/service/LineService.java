@@ -24,8 +24,8 @@ public class LineService {
     }
 
     public List<LineResponse> findAll() {
-        final List<Line> lines = lineDao.findAll();
-        return lines.stream()
+        return lineDao.findAll()
+                .stream()
                 .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
     }

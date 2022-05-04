@@ -7,6 +7,7 @@ import java.util.Objects;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -45,12 +46,14 @@ public class JdbcLineDao implements LineDao {
             final String sql = "INSERT INTO line SET name = ?, color = ?";
 
             final KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(con -> {
+            final PreparedStatementCreator statementCreator = con -> {
                 final PreparedStatement prepareStatement = con.prepareStatement(sql, new String[]{"id"});
                 prepareStatement.setString(1, line.getName());
                 prepareStatement.setString(2, line.getColor());
                 return prepareStatement;
-            }, keyHolder);
+            };
+
+            jdbcTemplate.update(statementCreator, keyHolder);
             final long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
             return setId(line, id);
         } catch (final DuplicateKeyException e) {
@@ -69,7 +72,7 @@ public class JdbcLineDao implements LineDao {
         try {
             final String sql = "SELECT * FROM line WHERE id = ?";
             return jdbcTemplate.queryForObject(sql, rowMapper, id);
-        } catch (final EmptyResultDataAccessException exception) {
+        } catch (final EmptyResultDataAccessException e) {
             throw new NotFoundException("해당 ID에 맞는 노선을 찾지 못했습니다.");
         }
     }

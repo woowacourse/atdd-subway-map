@@ -7,11 +7,6 @@ public class Station {
     private Long id;
     private final String name;
 
-    public Station(final Long id, final String name) {
-        this.id = id;
-        this.name = name;
-    }
-
     public Station(final String name) {
         validateName(name);
         this.name = name;
