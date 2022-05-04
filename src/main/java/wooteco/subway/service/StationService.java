@@ -3,7 +3,7 @@ package wooteco.subway.service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.DuplicateStationNameException;
+import wooteco.subway.exception.DuplicateNameException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +26,7 @@ public class StationService {
     private void validateDuplicationName(Station station) {
         List<Station> stations = stationDao.findAll();
         if (stations.contains(station)) {
-            throw new DuplicateStationNameException();
+            throw new DuplicateNameException("중복된 역 이름이 있습니다.");
         }
     }
 

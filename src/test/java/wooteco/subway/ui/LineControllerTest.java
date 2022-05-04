@@ -1,7 +1,6 @@
 package wooteco.subway.ui;
 
 import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
@@ -46,7 +45,28 @@ class LineControllerTest extends AcceptanceTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isEqualTo("/lines/1");
+        assertThat(response.header("Location")).isNotBlank();
+    }
+
+    @DisplayName("중복된 이름을 가진 지하철 노선을 등록할 때 예외를 발생시킨다.")
+    @Test
+    void throwsExceptionWhenCreateDuplicatedName() {
+        Assembler.getLineDao().save(new Line("신분당선", "red"));
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "red");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")

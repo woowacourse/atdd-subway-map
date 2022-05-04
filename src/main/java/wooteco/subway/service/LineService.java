@@ -1,9 +1,9 @@
 package wooteco.subway.service;
 
-import org.springframework.http.ResponseEntity;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.DuplicateNameException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,8 +17,17 @@ public class LineService {
     }
 
     public LineResponse create(String name, String color) {
-        Line line = lineDao.save(new Line(name, color));
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), null);
+        Line line = new Line(name, color);
+        validateDuplicationName(line);
+        Line savedLine = lineDao.save(line);
+        return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(), null);
+    }
+
+    private void validateDuplicationName(Line line) {
+        List<Line> lines = lineDao.findAll();
+        if (lines.contains(line)) {
+            throw new DuplicateNameException("중복된 지하철 노선 이름이 있습니다.");
+        }
     }
 
     public List<LineResponse> findAll() {
