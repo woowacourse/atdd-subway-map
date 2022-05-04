@@ -91,4 +91,18 @@ public class LineDao2Test {
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("해당 ID에 맞는 노선을 찾지 못했습니다.");
     }
+
+    @Test
+    @DisplayName("id를 통해 해당하는 노선을 업데이트한다.")
+    void updateById() {
+        // given
+        final Line persistLine = lineDao2.save(new Line("7호선", "bg-red-600"));
+
+        // when
+        final Line line = new Line("5호선", "bg-green-600");
+        final Line updatedLine = lineDao2.updateById(persistLine.getId(), line);
+
+        // then
+        assertThat(updatedLine).isEqualTo(line);
+    }
 }

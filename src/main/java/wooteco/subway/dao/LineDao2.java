@@ -72,7 +72,9 @@ public class LineDao2 {
     }
 
     public Line updateById(Long id, Line line) {
-        return null;
+        String sql = "UPDATE line set name = ?, color = ? where id = ?";
+        jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
+        return setId(line, id);
     }
 
     public Integer deleteById(Long id) {
