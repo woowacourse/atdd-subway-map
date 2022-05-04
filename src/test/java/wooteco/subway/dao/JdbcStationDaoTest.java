@@ -51,6 +51,14 @@ class JdbcStationDaoTest {
     }
 
     @Test
+    @DisplayName("id를 가진 Station이 존재하는지 확인할 수 있다.")
+    void existById() {
+        Station station = stationDao.save(new Station("오리"));
+
+        assertThat(stationDao.existById(station.getId())).isTrue();
+    }
+
+    @Test
     @DisplayName("Station을 삭제할 수 있다.")
     void delete() {
         Station station = stationDao.save(new Station("오리"));
