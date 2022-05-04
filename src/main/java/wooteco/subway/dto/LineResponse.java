@@ -6,6 +6,7 @@ import wooteco.subway.dto.StationResponse;
 import java.util.List;
 
 public class LineResponse {
+
     private final Long id;
     private final String name;
     private final String color;
