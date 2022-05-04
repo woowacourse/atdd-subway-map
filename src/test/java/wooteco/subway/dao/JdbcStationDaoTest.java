@@ -12,12 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 
 import wooteco.subway.domain.Station;
 
 @JdbcTest
-@Sql("classpath:init.sql")
 public class JdbcStationDaoTest {
 
     @Autowired
@@ -40,8 +38,6 @@ public class JdbcStationDaoTest {
 
         //then
         assertThat(actual.getName()).isEqualTo(station.getName());
-        System.out.println(stationDao.findAll().size());
-
     }
 
     @Test
@@ -61,8 +57,6 @@ public class JdbcStationDaoTest {
             () -> assertThat(actual.get(0).getName()).isEqualTo(station1.getName()),
             () -> assertThat(actual.get(1).getName()).isEqualTo(station2.getName())
         );
-        System.out.println(stationDao.findAll().size());
-
     }
 
     @Test
@@ -77,8 +71,6 @@ public class JdbcStationDaoTest {
 
         //then
         assertThat(actual.getName()).isEqualTo(name);
-        System.out.println(stationDao.findAll().size());
-
     }
 
     @Test
@@ -93,8 +85,6 @@ public class JdbcStationDaoTest {
 
         //then
         assertThat(actual).isEmpty();
-        System.out.println(stationDao.findAll().size());
-
     }
 
     @Test
@@ -108,8 +98,6 @@ public class JdbcStationDaoTest {
 
         //then
         assertThat(actual.getName()).isEqualTo(station.getName());
-        System.out.println(stationDao.findAll().size());
-
     }
 
     @Test
@@ -124,7 +112,5 @@ public class JdbcStationDaoTest {
 
         //then
         assertThat(stationDao.findByName(name)).isEmpty();
-        System.out.println(stationDao.findAll().size());
-
     }
 }

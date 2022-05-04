@@ -10,11 +10,8 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -22,11 +19,7 @@ import io.restassured.response.Response;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
-@Sql("classpath:init.sql")
 public class StationAcceptanceTest extends AcceptanceTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @DisplayName("지하철역을 생성한다.")
     @Test
