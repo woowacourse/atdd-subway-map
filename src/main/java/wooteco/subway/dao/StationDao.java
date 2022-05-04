@@ -37,12 +37,10 @@ public class StationDao {
     }
 
     private RowMapper<Station> stationMapper() {
-        return (resultSet, rowNum) -> {
-            return new Station(
-                resultSet.getLong("id"),
-                resultSet.getString("name")
-            );
-        };
+        return (resultSet, rowNum) -> new Station(
+            resultSet.getLong("id"),
+            resultSet.getString("name")
+        );
     }
 
     public boolean deleteById(Long id) {

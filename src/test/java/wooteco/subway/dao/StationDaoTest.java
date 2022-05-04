@@ -21,7 +21,6 @@ class StationDaoTest {
 
     private StationDao stationDao;
 
-
     @BeforeEach
     void setUp() {
         stationDao = new StationDao(jdbcTemplate);

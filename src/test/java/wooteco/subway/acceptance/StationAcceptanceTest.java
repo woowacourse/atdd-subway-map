@@ -19,8 +19,8 @@ import wooteco.subway.dto.StationResponse;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("지하철역을 생성한다.")
     @Test
+    @DisplayName("지하철역을 생성한다.")
     void createStation() {
         // given
         Map<String, String> params = new HashMap<>();
@@ -40,8 +40,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     void createStationWithDuplicateName() {
         // given
         Map<String, String> params = new HashMap<>();
@@ -68,8 +68,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철역을 조회한다.")
     @Test
+    @DisplayName("지하철역을 조회한다.")
     void getStations() {
         /// given
         Map<String, String> params1 = new HashMap<>();
@@ -110,8 +110,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("존재하는 지하철역을 제거한다. 상태코드는 200 이어야 한다.")
     @Test
+    @DisplayName("존재하는 지하철역을 제거한다. 상태코드는 200 이어야 한다.")
     void deleteStation() {
         // given
         Map<String, String> params = new HashMap<>();
@@ -136,8 +136,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("존재하지 않는 지하철역을 제거한다. 상태코드는 204 이어야 한다.")
     @Test
+    @DisplayName("존재하지 않는 지하철역을 제거한다. 상태코드는 204 이어야 한다.")
     void deleteNonStation() {
         RestAssured.given().log().all()
             .when()

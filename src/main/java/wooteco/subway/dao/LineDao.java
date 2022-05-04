@@ -32,12 +32,6 @@ public class LineDao {
         return keyHolder.getKey().longValue();
     }
 
-//    private void validateDuplicateName(Line line) {
-//        if (lines.containsValue(line)) {
-//            throw new IllegalArgumentException("중복된 이름이 존재합니다.");
-//        }
-//    }
-
     public List<Line> findAll() {
         final String sql = "SELECT * FROM line";
         return jdbcTemplate.query(sql, lineMapper());

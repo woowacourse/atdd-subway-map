@@ -19,8 +19,8 @@ import wooteco.subway.dto.LineResponse;
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("존재하지 않는 노선을 생성한다.")
     @Test
+    @DisplayName("존재하지 않는 노선을 생성한다.")
     void createLine() {
         // given
         Map<String, String> params = new HashMap<>();
@@ -114,8 +114,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("존재하는 노선을 제거한다. 상태코드는 200 이어야 한다.")
     @Test
+    @DisplayName("존재하는 노선을 제거한다. 상태코드는 200 이어야 한다.")
     void deleteStation() {
         // given
         Map<String, String> params = new HashMap<>();
@@ -141,8 +141,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("존재하지 않는 노선을 제거한다. 상태코드는 204 이어야 한다.")
     @Test
+    @DisplayName("존재하지 않는 노선을 제거한다. 상태코드는 204 이어야 한다.")
     void deleteNonStation() {
         RestAssured.given().log().all()
             .when()
@@ -151,8 +151,8 @@ class LineAcceptanceTest extends AcceptanceTest {
             .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("")
     @Test
+    @DisplayName("존재하는 노선을 수정한다. 상태코드는 200이어야 한다.")
     void updateLine() {
         // given
         Map<String, String> params1 = new HashMap<>();
@@ -183,8 +183,8 @@ class LineAcceptanceTest extends AcceptanceTest {
             .statusCode(HttpStatus.OK.value());
     }
 
-    @DisplayName("")
     @Test
+    @DisplayName("존재하지 않는 노선을 수정한다. 상태코드는 204이어야 한다.")
     void updateNonLine() {
         // given
         Map<String, String> params = new HashMap<>();
