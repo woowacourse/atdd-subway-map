@@ -39,6 +39,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("노선 id로 조회한다.")
+    void showLine() {
+        Line line = LineDao.save(new Line("1호선", "blue"));
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines/{id}", line.getId())
+            .then()
+            .log().all().extract();
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo("1호선");
+        assertThat(response.body().jsonPath().getString("color")).isEqualTo("blue");
+    }
+
+    @Test
     @DisplayName("노선 목록을 조회한다.")
     void showLines() {
         LineDao.save(new Line("1호선", "blue"));

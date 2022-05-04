@@ -24,6 +24,14 @@ class LineDaoTest {
         assertThat(line.getName()).isEqualTo("2호선");
     }
 
+    @Test
+    @DisplayName("노선을 id로 조회한다.")
+    void findById() {
+        Line line = LineDao.save(new Line("2호선", "bg-red-600"));
+        Line findLine = LineDao.findById(line.getId());
+        assertThat(findLine.getName()).isEqualTo("2호선");
+    }
+
     @ParameterizedTest(name = "name : {0}, color : {1}")
     @CsvSource({"1호선, black", "1호선, blue", "2호선, black"})
     void duplicateNameAndColor(String name, String color) {

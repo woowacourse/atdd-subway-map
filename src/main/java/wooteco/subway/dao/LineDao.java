@@ -18,6 +18,13 @@ public class LineDao {
         return persistedLine;
     }
 
+    public static Line findById(Long id) {
+        return lines.stream()
+            .filter(value -> value.getId().equals(id))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("조회하려는 id가 없습니다."));
+    }
+
     public static void deleteAll() {
         lines.clear();
     }
