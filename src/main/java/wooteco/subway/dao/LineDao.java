@@ -46,4 +46,13 @@ public class LineDao {
             .findAny()
             .orElseThrow(() -> new IllegalStateException("조회하고자 하는 노선이 존재하지 않습니다."));
     }
+
+    public void update(Line line) {
+        final boolean isRemoved = lines.removeIf(it -> Objects.equals(it.getId(), line.getId()));
+        if (!isRemoved) {
+            throw new IllegalStateException("수정하고자 하는 노선이 존재하지 않습니다.");
+        }
+        lines.add(line);
+    }
+
 }

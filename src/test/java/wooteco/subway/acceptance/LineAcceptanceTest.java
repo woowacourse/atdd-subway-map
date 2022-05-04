@@ -110,4 +110,32 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
 
     }
+
+    @Test
+    @DisplayName("ID값으로 노선을 수정한다.")
+    public void modifyLine() {
+        // given
+        Map<String, String> params1 = Map.of("name", "신분당선", "color", "bg-red-600");
+        ExtractableResponse<Response> createdResponse = RestAssured.given().log().all()
+            .body(params1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+        // when
+        final Map<String, String> modificationParam =
+            Map.of("name", "구분당선", "color", "bg-red-800");
+        final String uri = createdResponse.header("Location");
+        final ExtractableResponse<Response> modifiedResponse = RestAssured.given().log().all()
+            .body(modificationParam)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().put(uri)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(modifiedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
 }

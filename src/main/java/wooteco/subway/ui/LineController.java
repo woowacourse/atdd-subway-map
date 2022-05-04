@@ -6,9 +6,11 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -55,4 +57,12 @@ public class LineController {
             new LineResponse(line.getId(), line.getName(), line.getColor())
         );
     }
+
+    @PutMapping("/lines/{id}")
+    public ResponseEntity<Void> modifyLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        final Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
+        lineDao.update(line);
+        return ResponseEntity.ok().build();
+    }
+
 }

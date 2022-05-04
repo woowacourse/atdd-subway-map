@@ -87,4 +87,28 @@ class LineDaoTest {
         // then
         assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> dao.findById(2L));
     }
+
+    @Test
+    @DisplayName("노선 정보를 수정한다.")
+    public void update() {
+        // given & when
+        LineDao dao = new LineDao();
+        final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
+        // then
+        assertThatNoException()
+            .isThrownBy(() -> dao.update(new Line(saved.getId(), "구분당선", LINE_COLOR)));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 ID값을 수정하는 경우 예외를 던진다.")
+    public void update_throwsExceptionWithInvalidId() {
+        // given
+        LineDao dao = new LineDao();
+        final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
+        // when
+        Line updateLine = new Line(100L, "사랑이넘치는", "우테코");
+        // then
+        assertThatExceptionOfType(IllegalStateException.class)
+            .isThrownBy(() -> dao.update(updateLine));
+    }
 }
