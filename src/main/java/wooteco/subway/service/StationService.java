@@ -11,13 +11,17 @@ public class StationService {
         if (StationDao.exists(station)) {
             throw new DuplicatedStationException();
         }
-        return StationDao.save(station);
+        return stationDao.save(station);
     }
 
-    public static void deleteById(long id) {
-        if (StationDao.findById(id).isEmpty()) {
+    public void deleteById(long id) {
+        int executionResult = stationDao.deleteById(id);
+        if (executionResult == 0) {
             throw new StationNotFoundException();
         }
-        StationDao.deleteById(id);
+    }
+
+    public List<Station> findAll() {
+        return stationDao.findAll();
     }
 }
