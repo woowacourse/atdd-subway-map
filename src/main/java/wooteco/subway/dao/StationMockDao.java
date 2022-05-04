@@ -9,6 +9,9 @@ import wooteco.subway.domain.Station;
 
 public class StationMockDao implements StationDao {
 
+    private static final int TRUE = 1;
+    private static final int FALSE = 0;
+
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
@@ -43,9 +46,9 @@ public class StationMockDao implements StationDao {
     public int delete(Long id) {
         boolean isRemoving = stations.removeIf(station -> station.getId().equals(id));
         if (!isRemoving) {
-            return 0;
+            return FALSE;
         }
-        return 1;
+        return TRUE;
     }
 
     public void clear() {

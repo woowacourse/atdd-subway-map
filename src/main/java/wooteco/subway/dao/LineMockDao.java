@@ -10,6 +10,9 @@ import wooteco.subway.domain.Line;
 
 public class LineMockDao implements LineDao {
 
+    private static final int TRUE = 1;
+    private static final int FALSE = 0;
+
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
 
@@ -57,20 +60,20 @@ public class LineMockDao implements LineDao {
 
     @Override
     public int update(long id, Line line) {
-        if (delete(id) == 1) {
+        if (delete(id) == TRUE) {
             lines.add(line);
-            return 1;
+            return TRUE;
         }
-        return 0;
+        return FALSE;
     }
 
     @Override
     public int delete(Long id) {
         boolean isRemoving = lines.removeIf(line -> line.getId().equals(id));
         if (!isRemoving) {
-            return 0;
+            return FALSE;
         }
-        return 1;
+        return TRUE;
     }
 
     public void clear() {
