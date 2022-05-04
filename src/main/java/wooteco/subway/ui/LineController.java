@@ -52,6 +52,4 @@ public class LineController {
         LineDao.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-
-
 }

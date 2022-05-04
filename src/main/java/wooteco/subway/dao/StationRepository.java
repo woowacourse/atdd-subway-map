@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
 
 import java.util.List;
 
