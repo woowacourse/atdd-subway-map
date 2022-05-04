@@ -45,11 +45,10 @@
 #### 예외 케이스
 
 - [x] 공백으로만 된 문자열을 허용하지 않는다 (null, white space)
-
   - Bad Request: 400
 
-- [ ] 지하철역가 마찬가지로 중복된 노선 이름 허용하지 않음
-  - 에러코드는 지하철역과 동일
+- [x] 지하철역가 마찬가지로 중복된 노선 이름 허용하지 않음
+  - Bad Request: 400
 
 ### 지하철 노선 목록
 
@@ -61,7 +60,12 @@
 
 #### 정상 케이스
 
-- [지하철 노선 조회 요청 & 응답](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#_%EC%A7%80%ED%95%98%EC%B2%A0_%EB%85%B8%EC%84%A0_%EC%A1%B0%ED%9A%8C)
+- [x] [지하철 노선 조회 요청 & 응답](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#_%EC%A7%80%ED%95%98%EC%B2%A0_%EB%85%B8%EC%84%A0_%EC%A1%B0%ED%9A%8C)
+
+#### 예외 케이스
+
+- 지하철 노선이 존재하지 않을 경우
+  - Not Found: 404
 
 ### 지하철 노선 수정
 
