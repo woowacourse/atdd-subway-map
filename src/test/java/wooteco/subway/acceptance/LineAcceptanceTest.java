@@ -128,7 +128,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("단일 노선을 조회한다.")
     void getStation() {
-        /// given
+        // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "4호선");
         params.put("color", "sky-blue");
@@ -154,5 +154,47 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(lineResponse.getName()).isEqualTo("4호선");
         assertThat(lineResponse.getColor()).isEqualTo("sky-blue");
+    }
+
+    @Test
+    @DisplayName("노선 정보를 수정한다.")
+    void update() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "4호선");
+        params1.put("color", "sky-blue");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(params1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        //when
+        String uri = createResponse.header("Location");
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "2호선");
+        params2.put("color", "green");
+        RestAssured.given().log().all()
+            .body(params2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put(uri)
+            .then()
+            .log().all()
+            .statusCode(HttpStatus.OK.value());
+
+        //then
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get(uri)
+            .then()
+            .log().all()
+            .extract();
+
+        LineResponse lineResponse = response.body().jsonPath().getObject(".", LineResponse.class);
+        assertThat(lineResponse.getName()).isEqualTo("2호선");
+        assertThat(lineResponse.getColor()).isEqualTo("green");
     }
 }
