@@ -35,12 +35,12 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> lineRespones = lineService.findAll()
+        List<LineResponse> lineResponse = lineService.findAll()
                 .stream()
                 .map(LineResponse::from)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok().body(lineRespones);
+        return ResponseEntity.ok().body(lineResponse);
     }
 
     @GetMapping("/{lineId}")
