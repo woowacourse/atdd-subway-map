@@ -1,23 +1,24 @@
 package wooteco.subway.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import wooteco.subway.controller.dto.StationResponse;
-
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
+
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import wooteco.subway.controller.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 class StationAcceptanceTest extends AcceptanceTest {
@@ -27,7 +28,7 @@ class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        params.put("name", "선릉역");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
