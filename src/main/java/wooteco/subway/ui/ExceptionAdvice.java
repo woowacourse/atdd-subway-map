@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.dto.ErrorResponse;
-import wooteco.subway.exception.InternalServerException;
 import wooteco.subway.exception.NotFoundException;
 
 @ControllerAdvice(assignableTypes = {StationController.class, LineController.class})
@@ -27,13 +26,6 @@ public class ExceptionAdvice {
         return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(value = {InternalServerException.class})
-    public ResponseEntity<ErrorResponse> handleInternalServerException(final Exception e,
-                                                                       final HttpServletRequest request) {
-        log(e, request);
-        return ResponseEntity.internalServerError().body(new ErrorResponse(e.getMessage()));
-    }
-
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<ErrorResponse> handleUnexpectedException(final Exception e,
                                                                    final HttpServletRequest request) {
@@ -42,7 +34,7 @@ public class ExceptionAdvice {
     }
 
     private void log(final Exception e, final HttpServletRequest request) {
-        String messageFormat = "[{}] {} {}";
+        final String messageFormat = "[{}] {} {}";
         logger.error(
                 messageFormat,
                 LocalDateTime.now(),
