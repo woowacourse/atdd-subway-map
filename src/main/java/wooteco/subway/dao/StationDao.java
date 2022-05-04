@@ -30,14 +30,14 @@ public class StationDao {
                     resultSet.getString("name")
             );
 
-    public StationDao(final DataSource dataSource) {
+    public StationDao(DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("station")
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Station save(final String name) {
+    public Station save(String name) {
         checkDuplicateName(name);
         SqlParameterSource parameters = new MapSqlParameterSource("name", name);
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();

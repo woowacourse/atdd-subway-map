@@ -28,14 +28,14 @@ public class LineDao {
                     resultSet.getString("color"));
     ;
 
-    public LineDao(final DataSource dataSource) {
+    public LineDao(DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("line")
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Line save(final String name, final String color) {
+    public Line save(String name, String color) {
         checkDuplicateName(name);
         SqlParameterSource parameters = new MapSqlParameterSource("name", name)
                 .addValue("color", color);
@@ -87,7 +87,7 @@ public class LineDao {
         namedParameterJdbcTemplate.update(sql, parameters);
     }
 
-    public void update(final Line line) {
+    public void update(Line line) {
         String sql = "UPDATE line SET name = :name, color = :color WHERE id = :id";
         BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
         namedParameterJdbcTemplate.update(sql, parameters);
