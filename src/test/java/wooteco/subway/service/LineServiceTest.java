@@ -47,4 +47,20 @@ public class LineServiceTest {
 
         assertThat(lineService.findAll()).hasSize(2);
     }
+
+    @DisplayName("지하철 노선 조회한다.")
+    @Test
+    void getLine() {
+        LineRequest lineRequest1 = new LineRequest("2호선", "red");
+        LineResponse lineResponse = lineService.save(lineRequest1);
+
+        assertThat(lineService.find(lineResponse.getId()).getName()).isEqualTo(lineRequest1.getName());
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선 조회한다.")
+    @Test
+    void getLineNotExists() {
+        assertThatThrownBy(() -> lineService.find(1L)).isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("존재하지 않는 지하철 노선 id입니다.");
+    }
 }
