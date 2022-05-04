@@ -17,6 +17,10 @@ import wooteco.subway.domain.Station;
 @Repository
 public class StationDao {
 
+    private static final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
+        new Station(resultSet.getLong("id"),
+            resultSet.getString("name"));
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public StationDao(NamedParameterJdbcTemplate jdbcTemplate) {
@@ -54,8 +58,4 @@ public class StationDao {
             throw new IllegalArgumentException("해당되는 역은 존재하지 않습니다.");
         }
     }
-
-    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
-            new Station(resultSet.getLong("id"),
-                    resultSet.getString("name"));
 }
