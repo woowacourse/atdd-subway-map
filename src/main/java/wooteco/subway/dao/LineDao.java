@@ -1,32 +1,46 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 
 @Repository
 public class LineDao {
-    private Long seq = 0L;
-    private List<Line> lines = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Line> rowMapper = (rs, rowNum) ->
+            new Line(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("color")
+            );
 
-    public Line save(Line line) {
-        Line persistLine = createNewObject(line);
-        validateDuplicateName(line.getName());
-        lines.add(persistLine);
-        return persistLine;
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+    public Line save(Line line) {
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        simpleJdbcInsert.withTableName("line").usingGeneratedKeyColumns("id");
+
+        String name = line.getName();
+        String color = line.getColor();
+        validateDuplicateName(name);
+        validateDuplicateColor(color);
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return new Line(id, name, color);
     }
 
     private void validateDuplicateName(String name) {
+        List<Line> lines = findAll();
         boolean isDuplicate = lines.stream()
                 .anyMatch(line -> line.isSameName(name));
         if (isDuplicate) {
@@ -34,31 +48,32 @@ public class LineDao {
         }
     }
 
+    private void validateDuplicateColor(String color) {
+        List<Line> lines = findAll();
+        boolean isDuplicate = lines.stream()
+                .anyMatch(line -> line.isSameColor(color));
+        if (isDuplicate) {
+            throw new IllegalArgumentException("색깔이 중복된 노선은 만들 수 없습니다.");
+        }
+    }
+
     public Line findById(Long id) {
-        return lines.stream()
-                .filter(line -> line.isSameId(id))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("해당 노선은 존재하지 않습니다."));
+        String sql = "SELECT * FROM LINE WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
     public List<Line> findAll() {
-        return lines;
+        String sql = "SELECT * FROM LINE";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     public void update(Long id, String name, String color) {
-        delete(id);
-        save(new Line(id, name, color));
+        String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
+        jdbcTemplate.update(sql, name, color, id);
     }
 
     public void delete(Long id) {
-        Line foundLine = lines.stream()
-                .filter(line -> line.isSameId(id))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("해당 노선은 존재하지 않습니다."));
-        lines.remove(foundLine);
-    }
-
-    public void clear() {
-        lines.clear();
+        String sql = "DELETE FROM LINE WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

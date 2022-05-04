@@ -9,6 +9,7 @@ public class Line {
     }
 
     public Line(Long id, String name, String color) {
+        this.id = id;
         this.name = name;
         this.color = color;
     }
@@ -18,12 +19,16 @@ public class Line {
         this.color = color;
     }
 
+    public boolean isSameId(Long id) {
+        return this.id.equals(id);
+    }
+
     public boolean isSameName(String name) {
         return this.name.equals(name);
     }
 
-    public boolean isSameId(Long id) {
-        return this.id.equals(id);
+    public boolean isSameColor(String color) {
+        return this.color.equals(color);
     }
 
     public Long getId() {
