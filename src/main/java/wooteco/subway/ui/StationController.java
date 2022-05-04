@@ -21,11 +21,9 @@ import wooteco.subway.service.StationService;
 @RestController
 public class StationController {
 
-    private final StationDao stationDao;
     private final StationService stationService;
 
-    public StationController(final StationDao stationDao, final StationService stationService) {
-        this.stationDao = stationDao;
+    public StationController(final StationService stationService) {
         this.stationService = stationService;
     }
 
@@ -43,10 +41,7 @@ public class StationController {
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        Integer affectedRows = stationDao.deleteById(id);
-        if (affectedRows == 0) {
-            throw new InternalServerException("알 수 없는 이유로 역을 삭제하지 못했습니다.");
-        }
+        stationService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

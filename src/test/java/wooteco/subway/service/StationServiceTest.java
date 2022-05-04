@@ -14,10 +14,12 @@ import wooteco.subway.dto.StationResponse;
 class StationServiceTest {
 
     private StationService stationService;
+    private FakeStationDao fakeStationDao;
 
     @BeforeEach
     void setUp() {
-        stationService = new StationService(new FakeStationDao());
+        fakeStationDao = new FakeStationDao();
+        stationService = new StationService(fakeStationDao);
     }
 
     @Test
@@ -37,13 +39,27 @@ class StationServiceTest {
     @DisplayName("모든 역을 조회한다.")
     void findAll() {
         // given
-        stationService.create(new StationRequest("노원역"));
-        stationService.create(new StationRequest("왕십리역"));
+        fakeStationDao.save(new Station("노원역"));
+        fakeStationDao.save(new Station("왕십리역"));
 
         // when
         List<StationResponse> stationResponses = stationService.findAll();
 
         // then
         assertThat(stationResponses).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("id에 해당하는 역을 삭제한다.")
+    void delete() {
+        // given
+        Station savedStation = fakeStationDao.save(new Station("마들역"));
+
+        // when
+        stationService.delete(savedStation.getId());
+
+        // then
+        List<Station> remainStations = fakeStationDao.findAll();
+        assertThat(remainStations).hasSize(0);
     }
 }

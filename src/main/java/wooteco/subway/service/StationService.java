@@ -30,4 +30,8 @@ public class StationService {
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());
     }
+
+    public void delete(Long id) {
+        stationDao.deleteById(id);
+    }
 }
