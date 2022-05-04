@@ -81,4 +81,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @Test
+    @DisplayName("ID값으로 노선을 조회한다.")
+    public void getLine() {
+        // given
+        Map<String, String> params1 = Map.of("name", "신분당선", "color", "bg-red-600");
+        ExtractableResponse<Response> createdResponse = RestAssured.given().log().all()
+            .body(params1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+        // when
+        final String uri = createdResponse.header("Location");
+        final ExtractableResponse<Response> foundResponse = RestAssured.given().log().all()
+            .when()
+            .get(uri)
+            .then().log().all()
+            .extract();
+
+        final LineResponse createdLineResponse = createdResponse.jsonPath().getObject(".", LineResponse.class);
+        final LineResponse foundLineResponse = foundResponse.jsonPath().getObject(".", LineResponse.class);
+        // then
+        Assertions.assertAll(
+            () -> assertThat(foundResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(foundLineResponse.getId()).isEqualTo(createdLineResponse.getId())
+        );
+
+    }
 }

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -61,5 +62,29 @@ class LineDaoTest {
         assertThat(lines).hasSize(1);
     }
 
+    @Test
+    @DisplayName("ID 값으로 노선을 조회한다")
+    public void findById() {
+        // given
+        LineDao dao = new LineDao();
+        final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
+        // when
+        final Line found = dao.findById(saved.getId());
+        // then
+        Assertions.assertAll(
+            () -> assertThat(found.getId()).isEqualTo(saved.getId()),
+            () -> assertThat(found.getName()).isEqualTo(saved.getName()),
+            () -> assertThat(found.getColor()).isEqualTo(saved.getColor())
+        );
+    }
 
+    @Test
+    @DisplayName("존재하지 않는 ID 값으로 노선을 조회하면 예외를 던진다")
+    public void findById_invalidID() {
+        // given & when
+        LineDao dao = new LineDao();
+        dao.save(new Line(LINE_NAME, LINE_COLOR));
+        // then
+        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> dao.findById(2L));
+    }
 }

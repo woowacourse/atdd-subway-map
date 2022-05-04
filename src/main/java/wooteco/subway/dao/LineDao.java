@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.util.ReflectionUtils;
 
@@ -37,5 +38,12 @@ public class LineDao {
 
     public List<Line> findAll() {
         return List.copyOf(lines);
+    }
+
+    public Line findById(Long id) {
+        return lines.stream()
+            .filter(line -> Objects.equals(line.getId(), id))
+            .findAny()
+            .orElseThrow(() -> new IllegalStateException("조회하고자 하는 노선이 존재하지 않습니다."));
     }
 }

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,6 +45,14 @@ public class LineController {
             lines.stream()
                 .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
                 .collect(Collectors.toList())
+        );
+    }
+
+    @GetMapping("/lines/{id}")
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+        final Line line = lineDao.findById(id);
+        return ResponseEntity.ok().body(
+            new LineResponse(line.getId(), line.getName(), line.getColor())
         );
     }
 }
