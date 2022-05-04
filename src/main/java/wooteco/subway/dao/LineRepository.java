@@ -61,4 +61,10 @@ public class LineRepository {
         SqlParameterSource nameParameters = new BeanPropertySqlParameterSource(lineUpdateDto);
         namedParameterJdbcTemplate.update(sql, nameParameters);
     }
+
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM line WHERE id = :id";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        namedParameterJdbcTemplate.update(sql, parameters);
+    }
 }

@@ -70,4 +70,13 @@ public class LineRepositoryTest {
                 () -> assertThat(findUpdateLine.getColor()).isEqualTo("bg-yellow-600")
         );
     }
+
+    @DisplayName("노선을 삭제한다.")
+    @Test
+    void deleteById() {
+        Line saveLine = lineRepository.save(new Line("분당선", "bg-red-600"));
+        lineRepository.deleteById(saveLine.getId());
+
+        assertThat(lineRepository.findAll()).isEmpty();
+    }
 }
