@@ -42,43 +42,33 @@ public class LineDao {
 
     public Line findById(Long id) {
         final String sql = "SELECT * FROM LINE WHERE id = ?";
-        Line line = jdbcTemplate.queryForObject(sql, lineRowMapper, id);
-        if (line == null) {
-            new IllegalArgumentException("존재하지 않는 노선입니다.");
-        }
-        return line;
+        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
 
     public void delete(Long id) {
         final String sql = "DELETE FROM LINE WHERE id = ?";
-        int count = jdbcTemplate.update(sql, id);
-        if (count == 0) {
-            new IllegalArgumentException("존재하지 않는 노선입니다.");
-        }
+        jdbcTemplate.update(sql, id);
     }
 
     public void update(Long id, String name, String color) {
         final String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
-        int count = jdbcTemplate.update(sql, name, color, id);
-        if (count == 0) {
-            new IllegalArgumentException("존재하지 않는 노선입니다.");
-        }
+        jdbcTemplate.update(sql, name, color, id);
     }
 
-    public void validate(String name) {
+    public boolean isExistId(Long id) {
+        final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    public boolean isExistName(String name) {
         final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE name = ?)";
-        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, name);
-        if (result) {
-            throw new IllegalArgumentException("지하철 노선 이름이 중복될 수 없습니다.");
-        }
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
-    public void validate(Long id, String name) {
+    public boolean isExistName(Long id, String name) {
         final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE id != ? AND name = ?)";
-        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, id, name);
-        if (result) {
-            throw new IllegalArgumentException("지하철 노선 이름이 중복될 수 없습니다.");
-        }
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id, name);
     }
+
 
 }

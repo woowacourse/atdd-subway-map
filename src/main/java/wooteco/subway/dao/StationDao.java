@@ -40,20 +40,14 @@ public class StationDao {
         return jdbcTemplate.query(sql, stationRowMapper);
     }
 
-    public void delete(Long id) {
+    public int delete(Long id) {
         final String sql = "DELETE FROM STATION WHERE id=?";
-        int count = jdbcTemplate.update(sql, id);
-        if (count == 0) {
-            new IllegalArgumentException("존재하지 않는 지하철역입니다.");
-        }
+        return jdbcTemplate.update(sql, id);
     }
 
-    public void validate(String name) {
+    public boolean isExistName(String name){
         final String sql = "SELECT EXISTS (SELECT * FROM STATION WHERE name=?)";
-        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, name);
-        if (result) {
-            throw new IllegalArgumentException("지하철 이름이 중복될 수 없습니다.");
-        }
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
 }
