@@ -51,9 +51,9 @@ public class StationDao {
         return jdbcTemplate.query(sql, stationRowMapper);
     }
 
-    public void deleteById(Long id) {
-        String deleteSql = "DELETE FROM station WHERE id = ?";
+    public int deleteById(Long id) {
+        String sql = "DELETE FROM station WHERE id = ?";
 
-        jdbcTemplate.update(deleteSql, id);
+        return jdbcTemplate.update(sql, id);
     }
 }
