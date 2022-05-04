@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineCreateRequest;
-import wooteco.subway.dto.LineCreateResponse;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 
 @Service
 public class LineService {
@@ -20,7 +20,7 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Long save(LineCreateRequest request) {
+    public Long save(LineRequest request) {
         validateDuplicateName(request.getName());
         Line line = new Line(request.getName(), request.getColor());
 
@@ -36,19 +36,19 @@ public class LineService {
         }
     }
 
-    public LineCreateResponse findById(Long id) {
+    public LineResponse findById(Long id) {
         final Line line = lineDao.findById(id);
 
-        return new LineCreateResponse(line.getId(), line.getName(), line.getColor());
+        return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 
-    public List<LineCreateResponse> findAll() {
+    public List<LineResponse> findAll() {
         return lineDao.findAll().stream()
-                .map(line -> new LineCreateResponse(line.getId(), line.getName(), line.getColor()))
+                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
                 .collect(toUnmodifiableList());
     }
 
-    public Long updateByLine(Long id, LineCreateRequest request) {
+    public Long updateByLine(Long id, LineRequest request) {
         final Line updateLine = new Line(id, request.getName(), request.getColor());
         return lineDao.updateByLine(updateLine);
     }

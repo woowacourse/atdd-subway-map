@@ -45,10 +45,10 @@ class StationServiceTest {
         stationService.save(station3);
 
         // when
-        final List<StationResponse> stations = stationService.findAll();
+        final List<StationResponse> reponses = stationService.findAll();
 
         // then
-        assertThat(stations).hasSize(3)
+        assertThat(reponses).hasSize(3)
                 .extracting("name")
                 .contains("지하철역이름", "새로운지하철역이름", "또다른지하철역이름");
     }
