@@ -88,9 +88,9 @@
 
 #### 정상 케이스
 
-- [지하철 노선 삭제 요청 & 응답](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#_%EC%A7%80%ED%95%98%EC%B2%A0_%EB%85%B8%EC%84%A0_%EC%82%AD%EC%A0%9C)
+- [x] [지하철 노선 삭제 요청 & 응답](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#_%EC%A7%80%ED%95%98%EC%B2%A0_%EB%85%B8%EC%84%A0_%EC%82%AD%EC%A0%9C)
 
 #### 예외 케이스
 
-- 지하철 노선이 존재하지 않을 경우
+- [x] 지하철 노선이 존재하지 않을 경우
   - Not Found: 404

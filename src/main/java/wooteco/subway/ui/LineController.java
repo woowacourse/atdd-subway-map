@@ -17,9 +17,11 @@ import java.util.stream.Collectors;
 public class LineController {
 
     private final LineService lineService;
+    private final LineDao lineDao;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, LineDao lineDao) {
         this.lineService = lineService;
+        this.lineDao = lineDao;
     }
 
     @PostMapping
@@ -31,7 +33,7 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = LineDao.findAll();
+        List<Line> lines = lineDao.findAll();
         List<LineResponse> lineResponses = lines.stream()
             .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
             .collect(Collectors.toList());
@@ -53,10 +55,6 @@ public class LineController {
         return ResponseEntity.ok(lineResponse);
     }
 
-    /**
-     * 성공 204 No Content
-     * 실패 404 낫파운드
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteById(id);

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.LineDao;
@@ -23,9 +24,12 @@ import static org.hamcrest.Matchers.*;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    @Autowired
+    private LineDao lineDao;
+
     @BeforeEach
     void beforeEach() {
-        LineDao.deleteAll();
+        lineDao.deleteAll();
     }
 
     @DisplayName("지하철 노선 이름에 빈 문자열을 사용할 수 없다")
@@ -264,5 +268,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .delete("/lines/50")
                 .then().log().all()
                 .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("지하철 노선을 삭제 시도")
+    @Test
+    void deleteLine() {
+        // given
+        ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600");
+        requestCreateLine("1호선", "bg-red-600");
+        long createdId = response.jsonPath().getLong("id");
+
+        // when
+        RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete("/lines/" + createdId)
+            .then().log().all()
+            .statusCode(HttpStatus.NO_CONTENT.value());
     }
 }

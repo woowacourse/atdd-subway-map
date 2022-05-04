@@ -22,9 +22,12 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
+    @Autowired
+    private LineDao lineDao;
+
     @BeforeEach
     void setUp() {
-        LineDao.deleteAll();
+        lineDao.deleteAll();
     }
 
     @DisplayName("지하철 노선 저장")
@@ -32,7 +35,7 @@ public class LineServiceTest {
     void saveLine() {
         Line line = lineService.save("신분당선", "bg-red-600");
 
-        assertThat(LineDao.findById(line.getId())).isNotEmpty();
+        assertThat(lineDao.findById(line.getId())).isNotEmpty();
     }
 
     @DisplayName("지하철 노선 빈 이름으로 저장")
@@ -97,7 +100,7 @@ public class LineServiceTest {
 
         lineService.update(line.getId(), "1호선", "bg-blue-600");
 
-        Line expectedLine = LineDao.findById(line.getId()).orElseThrow();
+        Line expectedLine = lineDao.findById(line.getId()).orElseThrow();
         assertThat(expectedLine.getName()).isEqualTo("1호선");
         assertThat(expectedLine.getColor()).isEqualTo("bg-blue-600");
     }
@@ -114,5 +117,15 @@ public class LineServiceTest {
     void deleteNotExistLine() {
         assertThatThrownBy(() -> lineService.deleteById(50L))
                 .isInstanceOf(NotExistException.class);
+    }
+
+    @DisplayName("지하철 노선을 삭제 시도")
+    @Test
+    void deleteLine() {
+        Line line = lineService.save("신분당선", "bg-red-600");
+
+        lineService.deleteById(line.getId());
+
+        assertThat(lineDao.findById(line.getId())).isEmpty();
     }
 }
