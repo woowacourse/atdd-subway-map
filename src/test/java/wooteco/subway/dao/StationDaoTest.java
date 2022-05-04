@@ -1,7 +1,6 @@
-package wooteco.subway.service;
+package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,31 +9,28 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
-class StationServiceTest {
+class StationDaoTest {
 
-    private StationService stationService;
+    private StationDao stationDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        StationDao stationDao = new StationDao(jdbcTemplate);
-        stationService = new StationService(stationDao);
+        stationDao = new StationDao(jdbcTemplate);
     }
 
-    @DisplayName("지하철역을 저장한다.")
+    @DisplayName("지하철역을 저장하고 찾는다.")
     @Test
-    void save() {
-        Station station = new Station("hunch");
-        stationService.save(station);
-        assertThatThrownBy(() -> stationService.save(station))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 해당 이름의 역이 있습니다.");
+    void saveAndFind() {
+        Station station = new Station("강남역");
+        stationDao.save(station);
+        assertThat(stationDao.find("강남역").getName())
+                .isEqualTo("강남역");
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -42,10 +38,10 @@ class StationServiceTest {
     void findAll() {
         Station station = new Station("강남역");
         Station station1 = new Station("선릉역");
-        stationService.save(station);
-        stationService.save(station1);
+        stationDao.save(station);
+        stationDao.save(station1);
 
-        assertThat(stationService.findAll())
+        assertThat(stationDao.findAll())
                 .hasSize(2);
     }
 
@@ -54,10 +50,10 @@ class StationServiceTest {
     void delete() {
         Station station = new Station("강남역");
 
-        stationService.save(station);
-        stationService.delete(1L);
+        stationDao.save(station);
+        stationDao.delete(1L);
 
-        List<Station> stations = stationService.findAll();
+        List<Station> stations = stationDao.findAll();
 
         assertThat(stations).hasSize(0);
     }

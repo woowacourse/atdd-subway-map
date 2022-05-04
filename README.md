@@ -45,6 +45,8 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] StationDao를 활용하여 지하철 역 정보를 관리
 - [x] 지하철 역 등록
     - [x] [예외] 지하철역 생성 시 이미 등록된 이름으로 요청한다면 에러를 응답
+- [x] 지하철역 db 생성 및 데이터 연결
+- [x] static 객체를 스프링 빈으로 변경
 
 ### 지하철 노선 관리 API 구현하기
 
@@ -54,6 +56,8 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 지하철 노선 조회
 - [x] 지하철 노선 수정
 - [x] 지하철 노선 삭제
+- [ ] 지하철 노선 db 생성 및 데이터 연결
+- [ ] static 객체를 스프링 빈으로 변경
 
 ### End to End 테스트 작성하기
 

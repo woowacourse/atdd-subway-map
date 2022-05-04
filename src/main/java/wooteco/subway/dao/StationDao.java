@@ -1,44 +1,60 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Objects;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
+
+@Repository
 public class StationDao {
     private static final String NO_ID_STATION_ERROR_MESSAGE = "해당 아이디의 역이 없습니다.";
-    private static final List<Station> stations = new ArrayList<>();
-    private static Long seq = 0L;
 
-    public static Station save(Station station) {
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+    private final JdbcTemplate jdbcTemplate;
+
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public static List<Station> findAll() {
-        return stations;
+    public void save(Station station) {
+        final String sql = "INSERT INTO station (name) VALUES (?);";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
+            preparedStatement.setString(1, station.getName());
+            return preparedStatement;
+        }, keyHolder);
     }
 
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+
+    public Station find(String name) {
+        final String sql = "SELECT * FROM station WHERE name = ?;";
+        try {
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Station(
+                            rs.getLong("id"),
+                            rs.getString("name")),
+                    name);
+        } catch (EmptyResultDataAccessException e) {
+            throw new IllegalArgumentException(NO_ID_STATION_ERROR_MESSAGE);
+        }
     }
 
-    public static void delete(Long id) {
-        Station result = stations.stream()
-                .filter(station -> Objects.equals(station.getId(), id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(NO_ID_STATION_ERROR_MESSAGE));
-        stations.remove(result);
+    public List<Station> findAll() {
+        final String sql = "SELECT * FROM station";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Station(
+                rs.getLong("id"),
+                rs.getString("name")
+        ));
     }
 
-    public static void clear() {
-        stations.clear();
-        seq = 0L;
+
+    public void delete(Long id) {
+        final String sql = "delete from station where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }
