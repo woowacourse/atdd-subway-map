@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/lines")
 public class LineController {
 
     private final LineService lineService;
@@ -21,7 +22,7 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping("/lines")
+    @PostMapping()
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = lineRequest.toEntity();
         Line newLine = lineService.createLine(line);
@@ -30,7 +31,7 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
-    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineService.getAllLines();
         List<LineResponse> lineResponses = lines.stream()
@@ -40,7 +41,7 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponses);
     }
 
-    @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.getLineById(id);
         LineResponse lineResponse = LineResponse.from(line);
@@ -48,7 +49,7 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponse);
     }
 
-    @PutMapping(value = "/lines/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line line = lineRequest.toEntity();
         lineService.update(id, line);
