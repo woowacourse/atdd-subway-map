@@ -12,9 +12,18 @@ public class StationDao {
     private List<Station> stations = new ArrayList<>();
 
     public Station save(Station station) {
+        validateDistinct(station);
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
+    }
+
+    private void validateDistinct(Station otherStation) {
+        boolean isDuplicated = stations.stream()
+            .anyMatch(station -> station.hasSameNameWith(otherStation));
+        if (isDuplicated) {
+            throw new IllegalStateException("이미 존재하는 역 이름입니다.");
+        }
     }
 
     public List<Station> findAll() {

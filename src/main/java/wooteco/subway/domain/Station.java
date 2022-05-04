@@ -16,16 +16,16 @@ public class Station {
         this.name = name;
     }
 
+    public boolean hasSameNameWith(Station otherStation) {
+        return this.name.equals(otherStation.name);
+    }
+
     public Long getId() {
         return id;
     }
 
     public String getName() {
         return name;
-    }
-
-    public boolean hasSameNameWith(Station otherStation) {
-        return this.name.equals(otherStation.name);
     }
 }
 
