@@ -23,24 +23,7 @@ public class LineDaoTest {
 
     @BeforeEach
     void setup() {
-        lineDao = new LineDao(jdbcTemplate);
-    }
-
-    @Test
-    @DisplayName("이름이 일치하는 노선 조회한다.")
-    void findByName() {
-        //given
-        String color = "bg-red-600";
-        String name = "7호선";
-        final Line line = new Line(name, color);
-        lineDao.save(line);
-
-        //when
-        Line foundLine = lineDao.findByName(name);
-
-        //then
-        assertThat(foundLine.getName()).isEqualTo(name);
-        assertThat(foundLine.getColor()).isEqualTo(color);
+        lineDao = new JdbcLineDao(jdbcTemplate);
     }
 
     @Test

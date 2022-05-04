@@ -23,7 +23,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        params.put("name", "노원역");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()

@@ -6,7 +6,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
@@ -14,7 +14,7 @@ import wooteco.subway.dto.StationResponse;
 class StationServiceTest {
 
     private StationService stationService;
-    private FakeStationDao fakeStationDao;
+    private StationDao fakeStationDao;
 
     @BeforeEach
     void setUp() {
