@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -57,6 +56,14 @@ class JdbcLineDaoTest {
         lineDao.save(new Line("신분당선", "bg-red-600"));
 
         assertThat(lineDao.existByName("신분당선")).isTrue();
+    }
+
+    @Test
+    @DisplayName("id에 해당하는 Line이 존재하는지 확인할 수 있다.")
+    void existById() {
+        Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
+
+        assertThat(lineDao.existById(line.getId())).isNotNull();
     }
 
     @Test

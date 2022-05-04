@@ -60,7 +60,8 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public boolean existById(final Long id) {
-        return false;
+        final String sql = "select exists (select * from LINE where id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
     @Override
