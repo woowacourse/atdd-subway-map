@@ -3,28 +3,30 @@ package wooteco.subway.dao;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 
+@Repository
 public class LineDao {
-    private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
+    private Long seq = 0L;
+    private List<Line> lines = new ArrayList<>();
 
-    public static Line save(Line line) {
+    public Line save(Line line) {
         Line persistLine = createNewObject(line);
         validateDuplicateName(line.getName());
         lines.add(persistLine);
         return persistLine;
     }
 
-    private static Line createNewObject(Line line) {
+    private Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
         return line;
     }
 
-    private static void validateDuplicateName(String name) {
+    private void validateDuplicateName(String name) {
         boolean isDuplicate = lines.stream()
                 .anyMatch(line -> line.isSameName(name));
         if (isDuplicate) {
@@ -32,23 +34,23 @@ public class LineDao {
         }
     }
 
-    public static Line findById(Long id) {
+    public Line findById(Long id) {
         return lines.stream()
                 .filter(line -> line.isSameId(id))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("해당 노선은 존재하지 않습니다."));
     }
 
-    public static List<Line> findAll() {
+    public List<Line> findAll() {
         return lines;
     }
 
-    public static void update(Long id, String name, String color) {
+    public void update(Long id, String name, String color) {
         delete(id);
         save(new Line(id, name, color));
     }
 
-    public static void delete(Long id) {
+    public void delete(Long id) {
         Line foundLine = lines.stream()
                 .filter(line -> line.isSameId(id))
                 .findAny()
@@ -56,7 +58,7 @@ public class LineDao {
         lines.remove(foundLine);
     }
 
-    public static void clear() {
+    public void clear() {
         lines.clear();
     }
 }
