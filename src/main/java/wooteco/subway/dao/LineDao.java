@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -59,11 +60,9 @@ public class LineDao {
         return jdbcTemplate.query(sql, LINE_ROW_MAPPER);
     }
 
-    public static Line find(Long id) {
-        return lines.stream()
-                .filter(line -> line.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+    public Optional<Line> find(Long id) {
+        final String sql = "select id, name, color from LINE where id = ?";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id));
     }
 
     public static void update(Line line) {

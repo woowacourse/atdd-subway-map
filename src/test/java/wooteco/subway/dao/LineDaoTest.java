@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,8 +57,18 @@ class LineDaoTest {
         lineDao.save(new Line("신분당선", "bg-red-600"));
         lineDao.save(new Line("다른분당선", "bg-green-600"));
 
-        List<Line> stations = lineDao.findAll();
+        List<Line> lines = lineDao.findAll();
 
-        assertThat(stations.size()).isEqualTo(2);
+        assertThat(lines.size()).isEqualTo(2);
+    }
+
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void find() {
+        long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
+
+        Optional<Line> line = lineDao.find(lineId);
+
+        assertThat(line).isNotNull();
     }
 }

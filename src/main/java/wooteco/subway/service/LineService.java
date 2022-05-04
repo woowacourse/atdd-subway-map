@@ -43,4 +43,9 @@ public class LineService {
     public List<Line> findAll() {
         return lineDao.findAll();
     }
+
+    public Line find(Long id) {
+        return lineDao.find(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 노선입니다."));
+    }
 }
