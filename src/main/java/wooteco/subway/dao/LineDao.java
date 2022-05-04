@@ -5,8 +5,8 @@ import java.util.Optional;
 import wooteco.subway.domain.Line;
 
 public interface LineDao {
-    
-    Line save(String name, String color);
+
+    Line save(final Line line);
 
     Optional<Line> findById(Long id);
 

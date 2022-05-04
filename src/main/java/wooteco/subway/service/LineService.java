@@ -17,9 +17,9 @@ public class LineService {
         this.lineDaoImpl = lineDaoImpl;
     }
 
-    public LineResponse create(LineRequest lineRequest) {
-        Line line = lineDaoImpl.save(lineRequest.getName(), lineRequest.getColor());
-        return new LineResponse(line);
+    public Line create(LineRequest lineRequest) {
+        final Line line = lineRequest.toEntity();
+        return lineDaoImpl.save(line);
     }
 
     public List<LineResponse> findAll() {

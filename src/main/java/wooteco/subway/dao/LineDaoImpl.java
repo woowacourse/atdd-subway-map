@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.LineDuplicateException;
 
 @Repository
 public class LineDaoImpl implements LineDao {
@@ -31,29 +32,23 @@ public class LineDaoImpl implements LineDao {
             .usingGeneratedKeyColumns("id");
     }
 
-    @Override
-    public Line save(final String name, final String color) {
-        checkDuplicateName(name);
-        SqlParameterSource parameters = new MapSqlParameterSource("name", name)
-            .addValue("color", color);
+    public Line save(final Line line) {
+        checkDuplicateName(line);
+        SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Line(id, name, color);
+        return new Line(id, line.getName(), line.getColor());
     }
 
-    private void checkDuplicateName(String name) {
-        if (findName(name).isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 노선입니다.");
+    private void checkDuplicateName(final Line line) {
+        if (isExistSameNameLine(line)) {
+            throw new LineDuplicateException("이미 존재하는 노선입니다.");
         }
     }
 
-    private Optional<String> findName(String name) {
-        String sql = "SELECT name FROM line WHERE name = :name";
-        MapSqlParameterSource parameters = new MapSqlParameterSource("name", name);
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, String.class));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+    private boolean isExistSameNameLine(Line line) {
+        String sql = "SELECT count(*) FROM line WHERE name = :name";
+        final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
+        return namedParameterJdbcTemplate.queryForObject(sql, parameters, Integer.class) > 0;
     }
 
     @Override
