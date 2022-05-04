@@ -18,6 +18,4 @@ public interface LineDao {
     void update(Long id, String name, String color);
 
     void deleteById(Long id);
-
-    void deleteAll();
 }

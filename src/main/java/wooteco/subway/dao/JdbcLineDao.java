@@ -1,9 +1,14 @@
 package wooteco.subway.dao;
 
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.Line;
@@ -11,58 +16,80 @@ import wooteco.subway.domain.Line;
 @Repository
 public class JdbcLineDao implements LineDao {
 
-    private final List<Line> lines = new ArrayList<>();
-    private long seq = 0L;
+    private final JdbcTemplate jdbcTemplate;
+
+    public JdbcLineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Line save(Line line) {
-        Line persistStation = createNewObject(line);
-        lines.add(persistStation);
-        return persistStation;
-    }
+        String sql = "insert into line (name, color) values (?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[] {"id"});
+            ps.setString(1, line.getName());
+            ps.setString(2, line.getColor());
+            return ps;
+        }, keyHolder);
 
-    private Line createNewObject(Line line) {
-        return new Line(++seq, line.getName(), line.getColor());
+        Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return new Line(id, line.getName(), line.getColor());
     }
 
     @Override
     public Optional<Line> findById(Long id) {
-        return lines.stream().filter(line -> line.getId().equals(id)).findFirst();
+        String sql = "select * from line where id = ?";
+
+        try {
+            Line line = jdbcTemplate.queryForObject(sql,
+                (rs, rowNum) -> new Line(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("color")
+                ), id);
+            return Optional.ofNullable(line);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Line> findByName(String name) {
-        return lines.stream()
-            .filter(line -> name.equals(line.getName()))
-            .findFirst();
+        String sql = "select * from line where name = ?";
+
+        try {
+            Line line = jdbcTemplate.queryForObject(sql,
+                (rs, rowNum) -> new Line(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("color")
+                ), name);
+            return Optional.ofNullable(line);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public List<Line> findAll() {
-        return List.copyOf(lines);
+        String sql = "select * from line";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Line(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("color")
+        ));
     }
 
     @Override
     public void update(Long id, String name, String color) {
-        int idx = 0;
-        for (Line line : lines) {
-            if (line.getId().equals(id)) {
-                lines.set(idx, new Line(id, name, color));
-                return;
-            }
-            idx++;
-        }
+        String sql = "update line set name = ?, color = ? where id = ?";
+        jdbcTemplate.update(sql, name, color, id);
     }
 
     @Override
     public void deleteById(Long id) {
-        if (!lines.removeIf(line -> line.getId().equals(id))) {
-            throw new IllegalArgumentException("존재하지 않는 노선입니다.");
-        }
-    }
-
-    @Override
-    public void deleteAll() {
-        lines.clear();
+        String sql = "delete from line where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

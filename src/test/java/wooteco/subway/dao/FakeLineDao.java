@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import wooteco.subway.domain.Line;
 
-public class FakeLineDao implements LineDao{
+public class FakeLineDao implements LineDao {
 
     private final List<Line> lines = new ArrayList<>();
     private long seq = 0L;
@@ -56,10 +56,5 @@ public class FakeLineDao implements LineDao{
         if (!lines.removeIf(line -> line.getId().equals(id))) {
             throw new IllegalArgumentException("존재하지 않는 노선입니다.");
         }
-    }
-
-    @Override
-    public void deleteAll() {
-        lines.clear();
     }
 }

@@ -5,19 +5,25 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.domain.Line;
 
+@JdbcTest
 public class JdbcLineDaoTest {
 
-    private final LineDao lineDao = new JdbcLineDao();
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    private LineDao lineDao;
 
-    @AfterEach
-    void tearDown() {
-        lineDao.deleteAll();
+    @BeforeEach
+    void setUp() {
+        lineDao = new JdbcLineDao(jdbcTemplate);
     }
 
     @Test
@@ -71,7 +77,7 @@ public class JdbcLineDaoTest {
     }
 
     @Test
-    @DisplayName("이름으로 station 을 조회한다.")
+    @DisplayName("이름으로 line 을 조회한다.")
     void findByName() {
         //given
         String name = "중곡";
