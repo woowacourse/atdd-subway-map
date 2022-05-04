@@ -14,15 +14,8 @@ public class LineService {
     }
 
     public Long save(Line line) {
-        validateDuplicationName(line);
+        line.validateDuplicate(lineDao.findAll());
         return lineDao.save(line);
-    }
-
-    private void validateDuplicationName(Line line) {
-        List<Line> lines = lineDao.findAll();
-        if (lines.contains(line)) {
-            throw new IllegalArgumentException("중복된 이름이 존재합니다.");
-        }
     }
 
     public List<Line> findAll() {

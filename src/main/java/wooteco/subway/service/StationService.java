@@ -15,15 +15,8 @@ public class StationService {
     }
 
     public Station save(Station station) {
-        validateDuplicationName(station);
+        station.validateDuplicate(stationDao.findAll());
         return stationDao.save(station);
-    }
-
-    private void validateDuplicationName(Station station) {
-        List<Station> stations = stationDao.findAll();
-        if (stations.contains(station)) {
-            throw new IllegalArgumentException("중복된 이름이 존재합니다.");
-        }
     }
 
     public List<Station> findAll() {

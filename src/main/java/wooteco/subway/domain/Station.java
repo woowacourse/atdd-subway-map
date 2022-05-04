@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Station {
@@ -16,6 +17,12 @@ public class Station {
 
     public Station(String name) {
         this.name = name;
+    }
+
+    public void validateDuplicate(List<Station> stations) {
+        if (stations.contains(this)) {
+            throw new IllegalArgumentException("중복된 이름이 존재합니다.");
+        }
     }
 
     public Long getId() {
