@@ -28,11 +28,7 @@ public class LineController {
     public LineController(LineService lineService) {
         this.lineService = lineService;
     }
-
-    public LineController() {
-        this(new LineService());
-    }
-
+    
     @PostMapping
     public ResponseEntity<LineResponse> createStation(@RequestBody LineRequest lineRequest) {
         try {

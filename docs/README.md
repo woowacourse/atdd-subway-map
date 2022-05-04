@@ -27,4 +27,4 @@
 ---
 
 - [ ] Spring JDBC를 이용해 DB에 데이터 관리하기
-- [ ] Spring Bean 적용
+- [x] Spring Bean 적용

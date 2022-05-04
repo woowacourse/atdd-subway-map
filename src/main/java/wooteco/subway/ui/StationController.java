@@ -24,15 +24,11 @@ import wooteco.subway.service.StationService;
 public class StationController {
 
     private final StationService stationService;
-
+    
     public StationController(StationService stationService) {
         this.stationService = stationService;
     }
-
-    public StationController() {
-        this(new StationService());
-    }
-
+    
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         try {
