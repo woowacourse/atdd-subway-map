@@ -1,11 +1,13 @@
-create table if not exists STATION
+drop table STATION if exists;
+create table STATION
 (
     id bigint auto_increment not null,
     name varchar(255) not null unique,
     primary key(id)
 );
 
-create table if not exists LINE
+drop table LINE if exists;
+create table LINE
 (
     id bigint auto_increment not null,
     name varchar(255) not null unique,
