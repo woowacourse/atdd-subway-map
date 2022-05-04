@@ -42,7 +42,15 @@ public class LineDao {
         return new ArrayList<>(lines.values());
     }
 
-    public static Line find(long id) {
+    public static Line find(Long id) {
         return lines.get(id);
+    }
+
+    public static boolean existById(Long id) {
+        return lines.containsKey(id);
+    }
+
+    public static void update(Long id, Line line) {
+        lines.put(id, line);
     }
 }

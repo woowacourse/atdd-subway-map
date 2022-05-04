@@ -43,7 +43,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철역을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLineWithDuplicateName() {
         // given
@@ -146,5 +146,80 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(createResponse1.jsonPath().getLong("id")).isEqualTo(response.jsonPath().getLong("id"));
         assertThat(createResponse1.jsonPath().getString("name")).isEqualTo(response.jsonPath().getString("name"));
         assertThat(createResponse1.jsonPath().getString("color")).isEqualTo(response.jsonPath().getString("color"));
+    }
+
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        /// given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "2호선");
+        params1.put("color", "green");
+        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+            .body(params1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+        String uri = createResponse1.header("Location");
+
+        // when
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "다른분당선");
+        params2.put("color", "green");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put(uri)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 수정한다.")
+    @Test
+    void updateLineWithDuplicateName() {
+        /// given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "2호선");
+        params1.put("color", "green");
+        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+            .body(params1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+        String uri = createResponse1.header("Location");
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "다른분당선");
+        params2.put("color", "blue");
+        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+            .body(params2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        // when
+        Map<String, String> params3 = new HashMap<>();
+        params3.put("name", "다른분당선");
+        params3.put("color", "green");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params3)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put(uri)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
