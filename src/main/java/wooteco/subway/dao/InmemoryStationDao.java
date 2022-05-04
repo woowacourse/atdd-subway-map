@@ -55,6 +55,11 @@ public class InmemoryStationDao implements StationDao {
     }
 
     @Override
+    public boolean existById(final Long id) {
+        return stations.containsKey(id);
+    }
+
+    @Override
     public int delete(final Long stationId) {
         stations.remove(stationId);
         return 1;
