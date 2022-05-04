@@ -19,7 +19,7 @@ import io.restassured.response.Response;
 import wooteco.subway.controller.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends AcceptanceTest {
+class LineAcceptanceTest extends AcceptanceTest {
 
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test

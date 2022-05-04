@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 public class Station {
+
     private static final long TEMPORARY_ID = 0L;
 
     private final Long id;

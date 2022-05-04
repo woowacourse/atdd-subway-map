@@ -10,8 +10,9 @@ import wooteco.subway.domain.Station;
 
 @Repository
 public class StationDao {
-	private Long seq = 0L;
+
 	private final List<Station> stations = new ArrayList<>();
+	private Long seq = 0L;
 
 	public Long save(Station station) {
 		Station newStation = new Station(++seq, station.getName());

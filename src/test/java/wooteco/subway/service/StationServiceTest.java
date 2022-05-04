@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.service.dto.StationDto;
 
-public class StationServiceTest {
+class StationServiceTest {
 
 	private final StationService stationService = new StationService(new StationDao());
 

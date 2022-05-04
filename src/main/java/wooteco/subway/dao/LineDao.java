@@ -11,8 +11,8 @@ import wooteco.subway.domain.Line;
 @Repository
 public class LineDao {
 
-	private Long seq = 0L;
 	private final List<Line> lines = new ArrayList<>();
+	private Long seq = 0L;
 
 	public Long save(Line line) {
 		Line newLine = new Line(++seq, line.getName(), line.getColor());
