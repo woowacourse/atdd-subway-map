@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.StationCreateRequest;
+import wooteco.subway.dto.StationCreateResponse;
 
 @SpringBootTest
 @Transactional
@@ -24,7 +24,7 @@ class StationServiceTest {
     @DisplayName("중복된 이름으로 지하철역을 생성할 수 없다.")
     void save() {
         // given
-        final StationRequest request = new StationRequest("지하철역이름");
+        final StationCreateRequest request = new StationCreateRequest("지하철역이름");
         stationService.save(request);
 
         // when & then
@@ -36,16 +36,16 @@ class StationServiceTest {
     @DisplayName("지하철역을 전체 조회할 수 있다.")
     void findAll() {
         // given
-        final StationRequest station1 = new StationRequest("지하철역이름");
-        final StationRequest station2 = new StationRequest("새로운지하철역이름");
-        final StationRequest station3 = new StationRequest("또다른지하철역이름");
+        final StationCreateRequest station1 = new StationCreateRequest("지하철역이름");
+        final StationCreateRequest station2 = new StationCreateRequest("새로운지하철역이름");
+        final StationCreateRequest station3 = new StationCreateRequest("또다른지하철역이름");
 
         stationService.save(station1);
         stationService.save(station2);
         stationService.save(station3);
 
         // when
-        final List<StationResponse> stations = stationService.findAll();
+        final List<StationCreateResponse> stations = stationService.findAll();
 
         // then
         assertThat(stations).hasSize(3)
@@ -57,8 +57,8 @@ class StationServiceTest {
     @DisplayName("지하철역을 삭제할 수 있다.")
     void deleteById() {
         // given
-        final StationRequest request = new StationRequest("지하철역이름");
-        final StationResponse response = stationService.save(request);
+        final StationCreateRequest request = new StationCreateRequest("지하철역이름");
+        final StationCreateResponse response = stationService.save(request);
 
         // when & then
         assertDoesNotThrow(() -> stationService.deleteById(response.getId()));

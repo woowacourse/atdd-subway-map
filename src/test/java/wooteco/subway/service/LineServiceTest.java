@@ -74,7 +74,7 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("노선을 삭제할 수 있다.")
     void deleteById() {
         // given
         LineCreateRequest request = new LineCreateRequest("신분당선", "bg-red-600");

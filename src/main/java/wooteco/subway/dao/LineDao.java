@@ -18,7 +18,7 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
+    private static final RowMapper<Line> LINE_ROW_MAPPER = (resultSet, rowNum) -> new Line(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("color")
@@ -41,13 +41,13 @@ public class LineDao {
     public Line findById(Long id) {
         String sql = "SELECT * FROM line WHERE id = ?";
 
-        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
+        return jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id);
     }
 
     public List<Line> findAll() {
         String sql = "SELECT * FROM line";
 
-        return jdbcTemplate.query(sql, lineRowMapper);
+        return jdbcTemplate.query(sql, LINE_ROW_MAPPER);
     }
 
     public Long updateByLine(Line line) {

@@ -18,7 +18,7 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
+    private static final RowMapper<Station> STATION_ROW_MAPPER = (resultSet, rowNum) -> new Station(
             resultSet.getLong("id"),
             resultSet.getString("name")
     );
@@ -39,13 +39,13 @@ public class StationDao {
     public Station findById(Long id) {
         String sql = "SELECT * FROM station WHERE id = ?";
 
-        return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
+        return jdbcTemplate.queryForObject(sql, STATION_ROW_MAPPER, id);
     }
 
     public List<Station> findAll() {
         String sql = "SELECT * FROM station";
 
-        return jdbcTemplate.query(sql, stationRowMapper);
+        return jdbcTemplate.query(sql, STATION_ROW_MAPPER);
     }
 
     public int deleteById(Long id) {

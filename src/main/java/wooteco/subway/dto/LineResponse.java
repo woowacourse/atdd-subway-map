@@ -3,15 +3,16 @@ package wooteco.subway.dto;
 import java.util.List;
 
 public class LineResponse {
+
     private Long id;
     private String name;
     private String color;
-    private List<StationResponse> stations;
+    private List<StationCreateResponse> stations;
 
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
+    public LineResponse(Long id, String name, String color, List<StationCreateResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -30,7 +31,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<StationResponse> getStations() {
+    public List<StationCreateResponse> getStations() {
         return stations;
     }
 }

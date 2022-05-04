@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.StationCreateRequest;
+import wooteco.subway.dto.StationCreateResponse;
 
 @Service
 public class StationService {
@@ -20,13 +20,13 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public StationResponse save(StationRequest request) {
+    public StationCreateResponse save(StationCreateRequest request) {
         validateDuplicateName(request.getName());
         final Station station = new Station(request.getName());
 
         final Long savedId = stationDao.save(station);
 
-        return new StationResponse(savedId, station.getName());
+        return new StationCreateResponse(savedId, station.getName());
     }
 
     private void validateDuplicateName(String name) {
@@ -39,9 +39,9 @@ public class StationService {
         }
     }
 
-    public List<StationResponse> findAll() {
+    public List<StationCreateResponse> findAll() {
         return stationDao.findAll().stream()
-                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .map(station -> new StationCreateResponse(station.getId(), station.getName()))
                 .collect(toUnmodifiableList());
     }
 

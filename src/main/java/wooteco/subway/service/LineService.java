@@ -28,8 +28,7 @@ public class LineService {
     }
 
     private void validateDuplicateName(String name) {
-        final List<Line> lines = lineDao.findAll();
-        final boolean isExist = lines.stream()
+        final boolean isExist = lineDao.findAll().stream()
                 .anyMatch(line -> line.getName().equals(name));
         if (isExist) {
             throw new IllegalArgumentException("중복된 지하철 노선이 존재합니다.");
@@ -50,6 +49,7 @@ public class LineService {
 
     public Long updateByLine(Long id, LineCreateRequest request) {
         final Line updateLine = new Line(id, request.getName(), request.getColor());
+
         return lineDao.updateByLine(updateLine);
     }
 
