@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -23,6 +24,11 @@ public class StationDao {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
+            new Station(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name")
+            );
 
     public StationDao(final DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -45,10 +51,10 @@ public class StationDao {
     }
 
     private Optional<Station> findByName(String name) {
-        String sql = "SELECT name FROM station WHERE name = :name";
+        String sql = "SELECT * FROM station WHERE name = :name";
         MapSqlParameterSource parameters = new MapSqlParameterSource("name", name);
         try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, Station.class));
+            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, stationRowMapper));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -61,11 +67,6 @@ public class StationDao {
 
     public List<Station> findAll() {
         String sql = "SELECT * FROM station";
-        return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) ->
-                new Station(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name")
-                )
-        );
+        return namedParameterJdbcTemplate.query(sql, stationRowMapper);
     }
 }
