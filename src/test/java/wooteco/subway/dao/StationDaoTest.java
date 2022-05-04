@@ -11,6 +11,8 @@ import wooteco.subway.domain.Station;
 
 class StationDaoTest {
 
+    private static final String STATION_NAME = "청구역";
+
     @Test
     @DisplayName("역을 저장한다.")
     public void save() {
@@ -43,7 +45,19 @@ class StationDaoTest {
         // when
         final List<Station> stations = dao.findAll();
         // then
-        assertThat(stations.size()).isEqualTo(0);
+        assertThat(stations).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("역을 하나 추가한 뒤, 역 목록을 불러온다.")
+    public void findAll_afterSaveOneStation() {
+        // given
+        StationDao dao = new StationDao();
+        dao.save(new Station(STATION_NAME));
+        // when
+        final List<Station> stations = dao.findAll();
+        // then
+        assertThat(stations).hasSize(1);
     }
 
     @Test
@@ -51,7 +65,7 @@ class StationDaoTest {
     public void deleteById() {
         // given
         StationDao dao = new StationDao();
-        final Station saved = dao.save(new Station("청구역"));
+        final Station saved = dao.save(new Station(STATION_NAME));
         // when
         final Long id = saved.getId();
         // then
