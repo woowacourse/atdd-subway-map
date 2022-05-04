@@ -3,7 +3,6 @@ package wooteco.subway.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import wooteco.subway.domain.Station;
 
@@ -33,11 +32,6 @@ public class FakeStationDao implements StationDao {
             return 1;
         }
         return 0;
-    }
-
-    @Override
-    public Optional<Station> findById(Long id) {
-        return Optional.of(stations.get(id));
     }
 
     @Override
