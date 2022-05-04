@@ -36,4 +36,15 @@ public class LineServiceTest {
         assertThatThrownBy(() -> lineService.save(lineRequest)).isInstanceOf(IllegalArgumentException.class)
             .hasMessage("중복된 지하철 노선 이름입니다.");
     }
+
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    @Test
+    void getLines() {
+        LineRequest lineRequest1 = new LineRequest("2호선", "red");
+        LineRequest lineRequest2 = new LineRequest("3호선", "red");
+        lineService.save(lineRequest1);
+        lineService.save(lineRequest2);
+
+        assertThat(lineService.findAll()).hasSize(2);
+    }
 }
