@@ -21,7 +21,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 생성한다.")
     @Test
-    void createStation() {
+    void createStationTest() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
@@ -42,7 +42,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
-    void createStationWithDuplicateName() {
+    void createStationWithDuplicateNameTest() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
@@ -70,7 +70,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 조회한다.")
     @Test
-    void getStations() {
+    void getStationsTest() {
         /// given
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "강남역");
@@ -101,18 +101,18 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+        List<Long> expectedStationIds = Arrays.asList(createResponse1, createResponse2).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
+        List<Long> resultStationIds = response.jsonPath().getList(".", StationResponse.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertThat(resultStationIds).containsAll(expectedStationIds);
     }
 
     @DisplayName("지하철역을 제거한다.")
     @Test
-    void deleteStation() {
+    void deleteStationTest() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
