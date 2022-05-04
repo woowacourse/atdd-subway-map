@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,15 +16,10 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.dto.LineResponse;
 
+@DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
-
-    // @AfterEach
-    // void tearDown() {
-    //     LineDao.deleteAll();
-    // }
 
     @Test
     void createLine() {
@@ -135,8 +130,8 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
         //when
         Map<String, String> requestParams = new HashMap<>();
-        params.put("name", "1호선");
-        params.put("color", "bg-red-600");
+        requestParams.put("name", "1호선");
+        requestParams.put("color", "bg-red-600");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(requestParams)
