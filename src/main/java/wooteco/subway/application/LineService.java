@@ -8,7 +8,7 @@ import wooteco.subway.exception.NotExistException;
 public class LineService {
 
     public Line save(String name, String color) {
-        if(LineDao.existByName(name)) {
+        if (LineDao.existByName(name)) {
             throw new DuplicateException();
         }
         return LineDao.save(new Line(name, color));
@@ -16,13 +16,18 @@ public class LineService {
 
     public Line findById(Long id) {
         return LineDao.findById(id)
-                .orElseThrow(NotExistException::new);
+            .orElseThrow(NotExistException::new);
     }
 
     public Line update(Long id, String name, String color) {
-        if(LineDao.existByName(name)) {
+        if (isDuplicateName(id, name)) {
             throw new DuplicateException();
         }
         return LineDao.update(new Line(id, name, color));
+    }
+
+    private boolean isDuplicateName(Long id, String name) {
+        Line line = findById(id);
+        return !line.isSameName(name) && LineDao.existByName(name);
     }
 }

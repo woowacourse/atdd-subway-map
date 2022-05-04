@@ -32,4 +32,8 @@ public class Line {
     public String getColor() {
         return color;
     }
+
+    public boolean isSameName(String name) {
+        return this.name.equals(name);
+    }
 }
