@@ -73,4 +73,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(responses).extracting("name").isEqualTo(List.of("1호선", "2호선"));
     }
 
+
+    @Test
+    @DisplayName("노선 목록을 조회한다.")
+    void notFindLine() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines/{id}", 1)
+            .then()
+            .log().all().extract();
+
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+
 }

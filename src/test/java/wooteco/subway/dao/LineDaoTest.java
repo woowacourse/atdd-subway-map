@@ -58,4 +58,12 @@ class LineDaoTest {
         assertThat(values).hasSize(2);
     }
 
+    @Test
+    @DisplayName("없는 노선 목록을 조회할 경우 예외를 발생시킨다.")
+    void notFindById() {
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> LineDao.findById(1L))
+            .withMessage("조회하려는 id가 없습니다.");
+    }
+
 }
