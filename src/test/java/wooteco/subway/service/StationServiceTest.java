@@ -1,19 +1,25 @@
 package wooteco.subway.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.service.dto.StationDto;
 
 class StationServiceTest {
 
-	private final StationService stationService = new StationService(new StationDao());
+	private StationService stationService;
 
+	@BeforeEach
+	void setUp() {
+		this.stationService = new StationService(new FakeStationDao());
+	}
 	@DisplayName("이름으로 지하철 역을 저장한다.")
 	@Test
 	void create() {

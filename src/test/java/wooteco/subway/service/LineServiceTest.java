@@ -1,18 +1,25 @@
 package wooteco.subway.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.FakeLineDao;
 import wooteco.subway.service.dto.LineDto;
 
 class LineServiceTest {
 
-	private final LineService lineService = new LineService(new LineDao());
+	private LineService lineService;
+
+	@BeforeEach
+	void setUp() {
+		this.lineService = new LineService(new FakeLineDao());
+	}
 
 	@DisplayName("지하철 노선을 저장한다.")
 	@Test

@@ -1,18 +1,32 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.jdbc;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
-class LineDaoTest {
+@JdbcTest
+class JdbcLineDaoTest {
 
-	private final LineDao lineDao = new LineDao();
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+	private LineDao lineDao;
+
+	@BeforeEach
+	void setUp() {
+		this.lineDao = new JdbcLineDao(jdbcTemplate);
+	}
 
 	@DisplayName("지하철 노선을 저장한다.")
 	@Test
@@ -62,14 +76,6 @@ class LineDaoTest {
 		assertThat(updatedLine.getColor()).isEqualTo("bg-blue-600");
 	}
 
-	@DisplayName("없는 지하철 노선을 수정하면 예외가 발생한다.")
-	@Test
-	void noSuchLineExceptionDuringUpdate() {
-		assertThatThrownBy(() -> lineDao.update(1L, "분당선", "bg-blue-600"))
-			.isInstanceOf(NoSuchElementException.class)
-			.hasMessage("해당 id에 맞는 지하철 노선이 없습니다.");
-	}
-
 	@DisplayName("지하철 노선을 삭제한다.")
 	@Test
 	void remove() {
@@ -77,14 +83,6 @@ class LineDaoTest {
 		lineDao.remove(lineId);
 
 		assertThat(lineDao.findAll()).isEmpty();
-	}
-
-	@DisplayName("없는 지하철 노선을 삭제하면 예외가 발생한다.")
-	@Test
-	void noSuchLineExceptionDuringRemove() {
-		assertThatThrownBy(() -> lineDao.remove(1L))
-			.isInstanceOf(NoSuchElementException.class)
-			.hasMessage("해당 id에 맞는 지하철 노선이 없습니다.");
 	}
 
 	@DisplayName("해당 이름의 노선이 존재하는지 확인한다.")

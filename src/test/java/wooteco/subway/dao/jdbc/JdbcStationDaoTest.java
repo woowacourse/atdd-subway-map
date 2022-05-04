@@ -1,18 +1,32 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.jdbc;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
-class StationDaoTest {
+@JdbcTest
+class JdbcStationDaoTest {
 
-	private final StationDao stationDao = new StationDao();
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+	private StationDao stationDao;
+
+	@BeforeEach
+	void setUp() {
+		this.stationDao = new JdbcStationDao(jdbcTemplate);
+	}
 
 	@DisplayName("지하철 역을 저장한다.")
 	@Test
@@ -45,7 +59,7 @@ class StationDaoTest {
 		assertThat(station.getName()).isEqualTo("강남역");
 	}
 
-	@DisplayName("없는 id로 조회하면 예외가 발생한다.")
+	@DisplayName("없는 지하철 역을 조회하면 예외가 발생한다.")
 	@Test
 	void findByIdException() {
 		assertThatThrownBy(() -> stationDao.findById(1L))
@@ -68,13 +82,5 @@ class StationDaoTest {
 		List<Station> stations = stationDao.findAll();
 
 		assertThat(stations).isEmpty();
-	}
-
-	@DisplayName("없는 지하철 역을 삭제하면 예외가 발생한다.")
-	@Test
-	void NoSuchLineException() {
-		assertThatThrownBy(() -> stationDao.remove(1L))
-			.isInstanceOf(NoSuchElementException.class)
-			.hasMessage("해당 id에 맞는 지하철 역이 없습니다.");
 	}
 }
