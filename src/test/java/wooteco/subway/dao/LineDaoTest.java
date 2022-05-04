@@ -67,4 +67,11 @@ public class LineDaoTest {
 
         assertThat(lines).hasSize(2);
     }
+
+    @Test
+    @DisplayName("입력된 id의 노선을 삭제한다")
+    void deleteById() {
+        lineDao.deleteById(1L);
+        assertThat(lineDao.findAll()).hasSize(0);
+    }
 }

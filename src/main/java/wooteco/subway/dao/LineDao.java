@@ -69,8 +69,10 @@ public class LineDao {
     }
 
     public void deleteAll() {
-        String sql = "truncate table line";
+        String sql = "TRUNCATE TABLE line";
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource());
+        String resetIdSql = "ALTER TABLE line ALTER COLUMN id RESTART WITH 1";
+        namedParameterJdbcTemplate.update(resetIdSql, new MapSqlParameterSource());
     }
 
     public List<Line> findAll() {
@@ -78,17 +80,12 @@ public class LineDao {
         return namedParameterJdbcTemplate.query(sql, lineRowMapper);
     }
 
-    //
-    // public static Line findById(final Long id) {
-    //      return lines.stream()
-    //             .filter(it -> it.getId() == id)
-    //             .findFirst()
-    //             .orElseThrow(()-> new IllegalArgumentException("해당 노선이 존재하지 않습니다."));
-    // }
-    //
-    // public static void deleteById(Long id) {
-    //     lines.remove(findById(id));
-    // }
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM line WHERE id = :id";
+        MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        namedParameterJdbcTemplate.update(sql, parameters);
+    }
+
     //
     // public static void update(Long id, LineRequest lineRequest) {
     //     Line targetLine = LineDao.findById(id);
