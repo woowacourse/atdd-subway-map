@@ -39,7 +39,7 @@ public class LineDao {
         return new Line(lineId, line.getName(), line.getColor());
     }
 
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String sql = "SELECT id, name, color FROM LINE WHERE id = ?";
 
         List<Line> lines = jdbcTemplate.query(sql, (resultSet, rowNum) -> new Line(
@@ -48,8 +48,7 @@ public class LineDao {
                 resultSet.getString("color")
         ), id);
 
-        // TODO: 서비스 레이어 추가시 Optional로 변경
-        return Optional.ofNullable(DataAccessUtils.singleResult(lines)).get();
+        return Optional.ofNullable(DataAccessUtils.singleResult(lines));
     }
 
     public List<Line> findAll() {
