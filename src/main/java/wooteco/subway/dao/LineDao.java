@@ -37,11 +37,14 @@ public class LineDao {
         return keyHolder.getKey().longValue();
     }
 
-    private static Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+    public boolean existLineByName(String name) {
+        final String sql = "select exists (select * from LINE where name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+    }
+
+    public boolean existLineByColor(String color) {
+        final String sql = "select exists (select * from LINE where color = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, color);
     }
 
     public static Line find(Long id) {
