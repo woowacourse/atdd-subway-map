@@ -1,59 +1,75 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import org.springframework.util.ReflectionUtils;
+import java.util.Map;
+import javax.sql.DataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
-import wooteco.subway.exception.LineDuplicateException;
-import wooteco.subway.exception.NoLineFoundException;
 
+@Repository
 public class LineDao {
-    private static Long seq = 0L;
-    private static final List<Line> lines = new ArrayList<>();
 
-    public static Line save(Line line) {
-        validateDuplicatedLine(line);
-        Line persistLine = createNewObject(line);
-        lines.add(persistLine);
-        return persistLine;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final SimpleJdbcInsert simpleInsert;
+    private final JdbcTemplate jdbcTemplate;
+
+    public LineDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate, DataSource dataSource,
+                   JdbcTemplate jdbcTemplate) {
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+        this.simpleInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("LINE")
+                .usingGeneratedKeyColumns("id");
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static void validateDuplicatedLine(Line line) {
-        if (lines.contains(line)) {
-            throw new LineDuplicateException();
-        }
+    public Line save(Line line) {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("name", line.getName());
+        params.put("color", line.getColor());
+        final Long id = simpleInsert.executeAndReturnKey(params).longValue();
+        return new Line(id, line.getName(), line.getColor());
     }
 
-    private static Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+    public List<Line> findAll() {
+        final String sql = "select id, name, color from LINE";
+        return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) -> {
+            return new Line(resultSet.getLong("id"), resultSet.getString("name"), resultSet.getString("color"));
+        });
     }
 
-    public static List<Line> findAll() {
-        return new ArrayList<>(lines);
+    public Line findById(Long id) {
+        final String sql = "select id, name, color from LINE where id = :id";
+        SqlParameterSource parameter = new MapSqlParameterSource(Map.of("id", id));
+        return namedParameterJdbcTemplate.queryForObject(sql, parameter, (resultSet, rowNum) -> {
+            return new Line(resultSet.getLong("id"), resultSet.getString("name"),
+                    resultSet.getString("color"));
+        });
     }
 
-    public static Line findById(Long id) {
-        return lines.stream()
-                .filter(line -> line.isSameId(id))
-                .findAny()
-                .orElseThrow(NoLineFoundException::new);
+    public void update(Long id, LineRequest lineRequest) {
+        final String sql = "update LINE set name = :name, color = :color where id = :id";
+        final Map<String, Object> params = new HashMap<>();
+        params.put("name", lineRequest.getName());
+        params.put("color", lineRequest.getColor());
+        params.put("id", id);
+        SqlParameterSource parameter = new MapSqlParameterSource(params);
+        namedParameterJdbcTemplate.update(sql, parameter);
     }
 
-    public static void deleteById(Long id) {
-        lines.remove(findById(id));
+    public void deleteById(Long id) {
+        final String sql = "delete from LINE where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
-    public static void deleteAll() {
-        lines.removeAll(new ArrayList<>(lines));
-    }
-
-    public static void update(Long id, LineRequest lineRequest) {
-        lines.remove(findById(id));
-        lines.add(new Line(id, lineRequest.getName(), lineRequest.getColor()));
+    public void deleteAll() {
+        final String sql = "delete from LINE";
+        jdbcTemplate.update(sql);
     }
 }

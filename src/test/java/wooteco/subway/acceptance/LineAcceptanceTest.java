@@ -11,21 +11,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.LineDao;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("노선 관련 기능")
+@Transactional
 public class LineAcceptanceTest extends AcceptanceTest {
-
-    @BeforeEach
-    void setup() {
-        LineDao.deleteAll();
-    }
 
     @DisplayName("노선을 생성한다.")
     @Test

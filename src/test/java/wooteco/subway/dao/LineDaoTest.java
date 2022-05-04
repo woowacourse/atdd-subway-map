@@ -5,23 +5,42 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.LineDuplicateException;
 
 @DisplayName("Line Dao를 통해서")
+@JdbcTest
+@Transactional
 class LineDaoTest {
 
     private static final Line LINE_FIXTURE = new Line(1L, "line1", "color");
     private static final Line LINE_FIXTURE2 = new Line(2L, "line2", "color");
     private static final Line LINE_FIXTURE3 = new Line(3L, "line3", "color");
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Autowired
+    private DataSource dataSource;
+
+    private LineDao lineDao;
+
     @BeforeEach
     void setup() {
-        LineDao.deleteAll();
+        lineDao = new LineDao(namedParameterJdbcTemplate, dataSource, jdbcTemplate);
     }
 
     @Nested
@@ -31,19 +50,16 @@ class LineDaoTest {
         @Test
         @DisplayName("노선 이름이 중복되지 않으면 저장할 수 있다.")
         void save_Success_If_Not_Exists() {
-            LineDao.deleteAll();
-            assertThatCode(() -> LineDao.save(LINE_FIXTURE))
+            assertThatCode(() -> lineDao.save(LINE_FIXTURE))
                     .doesNotThrowAnyException();
         }
 
         @Test
         @DisplayName("노선 이름이 중복되면 예외가 발생한다.")
         void save_Fail_If_Exists() {
-            LineDao.deleteAll();
-            LineDao.save(LINE_FIXTURE);
-            assertThatThrownBy(() -> LineDao.save(LINE_FIXTURE))
-                    .isInstanceOf(LineDuplicateException.class)
-                    .hasMessage("이미 존재하는 노선입니다.");
+            lineDao.save(LINE_FIXTURE);
+            assertThatThrownBy(() -> lineDao.save(LINE_FIXTURE))
+                    .isInstanceOf(DuplicateKeyException.class);
         }
     }
 
@@ -51,18 +67,18 @@ class LineDaoTest {
     @Test
     @DisplayName("전체 지하철 노선을 조회할 수 있다")
     void findAll() {
-        LineDao.save(LINE_FIXTURE);
-        LineDao.save(LINE_FIXTURE2);
-        LineDao.save(LINE_FIXTURE3);
+        lineDao.save(LINE_FIXTURE);
+        lineDao.save(LINE_FIXTURE2);
+        lineDao.save(LINE_FIXTURE3);
 
-        assertThat(LineDao.findAll()).isEqualTo(List.of(LINE_FIXTURE, LINE_FIXTURE2, LINE_FIXTURE3));
+        assertThat(lineDao.findAll()).isEqualTo(List.of(LINE_FIXTURE, LINE_FIXTURE2, LINE_FIXTURE3));
     }
 
     @Test
     @DisplayName("아이디로 지하철 노선을 조회할 수 있다")
     void findById() {
-        final Line line = LineDao.save(LINE_FIXTURE);
-        final Line found = LineDao.findById(line.getId());
+        final Line line = lineDao.save(LINE_FIXTURE);
+        final Line found = lineDao.findById(line.getId());
 
         assertThat(line).isEqualTo(found);
     }
@@ -70,10 +86,10 @@ class LineDaoTest {
     @Test
     @DisplayName("아이디로 지하철노선을 삭제할 수 있다")
     void deleteById() {
-        final Line line = LineDao.save(LINE_FIXTURE);
-        final List<Line> lines = LineDao.findAll();
-        LineDao.deleteById(line.getId());
-        final List<Line> afterDelete = LineDao.findAll();
+        final Line line = lineDao.save(LINE_FIXTURE);
+        final List<Line> lines = lineDao.findAll();
+        lineDao.deleteById(line.getId());
+        final List<Line> afterDelete = lineDao.findAll();
 
         assertThat(lines).isNotEmpty();
         assertThat(afterDelete).isEmpty();

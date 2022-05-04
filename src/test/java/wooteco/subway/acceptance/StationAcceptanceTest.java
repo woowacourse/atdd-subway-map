@@ -10,21 +10,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.StationDao;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
+@Transactional
 public class StationAcceptanceTest extends AcceptanceTest {
-
-    @BeforeEach
-    void setup() {
-        StationDao.deleteAll();
-    }
 
     @DisplayName("지하철역을 생성한다.")
     @Test
