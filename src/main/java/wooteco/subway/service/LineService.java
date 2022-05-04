@@ -14,18 +14,30 @@ public class LineService {
         String lineName = lineRequest.getName();
         String color = lineRequest.getColor();
 
-        List<Line> lines = LineDao.findAll();
-        for (Line line : lines) {
-            if (line.isSameName(lineName)) {
-                throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
-            }
-            if (line.isSameColor(color)) {
-                throw new IllegalArgumentException("이미 존재하는 노선 색깔입니다.");
-            }
-        }
+        validateRequest(lineName, color);
 
         Line newLine = LineDao.save(new Line(lineName, color));
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+    }
+
+    private void validateRequest(String lineName, String color) {
+        List<Line> lines = LineDao.findAll();
+        for (Line line : lines) {
+            validateName(lineName, line);
+            validateColor(color, line);
+        }
+    }
+
+    private void validateName(String lineName, Line line) {
+        if (line.isSameName(lineName)) {
+            throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
+        }
+    }
+
+    private void validateColor(String color, Line line) {
+        if (line.isSameColor(color)) {
+            throw new IllegalArgumentException("이미 존재하는 노선 색깔입니다.");
+        }
     }
 
     public List<LineResponse> findAll() {

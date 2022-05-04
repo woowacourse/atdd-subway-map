@@ -11,17 +11,26 @@ import wooteco.subway.dto.StationResponse;
 public class StationService {
 
     public StationResponse save(StationRequest stationRequest) {
-        List<Station> stations = StationDao.findAll();
         String stationName = stationRequest.getName();
 
-        for (Station station : stations) {
-            if (station.isSameName(stationName)) {
-                throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");
-            }
-        }
+        validateRequest(stationName);
 
         Station newStation = StationDao.save(new Station(stationName));
         return new StationResponse(newStation.getId(), newStation.getName());
+    }
+
+    private void validateRequest(String stationName) {
+        List<Station> stations = StationDao.findAll();
+
+        for (Station station : stations) {
+            validateName(stationName, station);
+        }
+    }
+
+    private void validateName(String stationName, Station station) {
+        if (station.isSameName(stationName)) {
+            throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");
+        }
     }
 
     public List<StationResponse> findAll() {
