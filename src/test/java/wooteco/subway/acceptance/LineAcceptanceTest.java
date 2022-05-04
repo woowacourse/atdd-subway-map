@@ -167,9 +167,9 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .getObject(".", LineResponse.class)
                 .getId();
 
-        Map<String, String> params2 = new HashMap<>();
-        params.put("name", "5호선");
-        params.put("color", "skyBlue");
+        Map<String, Object> params2 = new HashMap<>();
+        params2.put("name", "5호선");
+        params2.put("color", "skyBlue");
 
         //when
         ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()

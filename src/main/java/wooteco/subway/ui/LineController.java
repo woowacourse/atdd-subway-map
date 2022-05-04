@@ -19,17 +19,23 @@ import wooteco.subway.service.LineService;
 @RestController
 public class LineController {
 
+    private final LineService lineService;
+
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
+    }
+
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createStation(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = LineService.save(line);
+        Line newLine = lineService.save(line);
         LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), null);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> findAllLines() {
-        List<Line> lines = LineService.findAll();
+        List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
                 .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), null))
                 .collect(Collectors.toList());
@@ -38,7 +44,7 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
-        Line line = LineService.findLineById(id);
+        Line line = lineService.findLineById(id);
         LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), null);
         return ResponseEntity.ok().body(lineResponse);
     }
@@ -46,13 +52,13 @@ public class LineController {
     @PutMapping("/lines/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        LineService.update(id, line);
+        lineService.update(id, line);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        LineService.deleteById(id);
+        lineService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }
