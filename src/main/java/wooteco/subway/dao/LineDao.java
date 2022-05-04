@@ -19,11 +19,10 @@ public class LineDao {
         return persistLine;
     }
 
-    private static Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+    public static Optional<Line> findById(Long id) {
+        return lines.stream()
+                .filter(line -> line.getId().equals(id))
+                .findFirst();
     }
 
     public static Optional<Line> findByName(String name) {
@@ -32,27 +31,28 @@ public class LineDao {
                 .findFirst();
     }
 
-    public static void deleteAll() {
-        lines = new ArrayList<>();
-        seq = 0L;
-    }
-
     public static List<Line> findAll() {
         return Collections.unmodifiableList(lines);
     }
 
-    public static Optional<Line> findById(Long id) {
-        return lines.stream()
-                .filter(line -> line.getId().equals(id))
-                .findFirst();
+    public static void update(Line findLine, Line newLine) {
+        lines.remove(findLine);
+        lines.add(newLine);
     }
 
     public static void delete(Line line) {
         lines.remove(line);
     }
 
-    public static void update(Line findLine, Line newLine) {
-        lines.remove(findLine);
-        lines.add(newLine);
+    public static void deleteAll() {
+        lines = new ArrayList<>();
+        seq = 0L;
+    }
+
+    private static Line createNewObject(Line line) {
+        Field field = ReflectionUtils.findField(Line.class, "id");
+        field.setAccessible(true);
+        ReflectionUtils.setField(field, line, ++seq);
+        return line;
     }
 }
