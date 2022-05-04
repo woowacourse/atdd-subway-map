@@ -10,7 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import wooteco.subway.dao.FakeStationDao;
-import wooteco.subway.service.dto.StationDto;
+import wooteco.subway.service.dto.station.StationResponseDto;
 
 class StationServiceTest {
 
@@ -23,7 +23,7 @@ class StationServiceTest {
 	@DisplayName("이름으로 지하철 역을 저장한다.")
 	@Test
 	void create() {
-		StationDto station = stationService.create("강남역");
+		StationResponseDto station = stationService.create("강남역");
 		assertThat(station.getId()).isGreaterThan(0);
 		assertThat(station.getName()).isEqualTo("강남역");
 	}
@@ -43,14 +43,14 @@ class StationServiceTest {
 		List<String> names = List.of("강남역", "역삼역", "선릉역");
 		names.forEach(stationService::create);
 
-		List<StationDto> stations = stationService.listStations();
+		List<StationResponseDto> stations = stationService.listStations();
 		assertThat(stations).hasSize(3);
 	}
 
 	@DisplayName("지하철 역을 삭제한다.")
 	@Test
 	void delete() {
-		StationDto station = stationService.create("강남역");
+		StationResponseDto station = stationService.create("강남역");
 		stationService.remove(station.getId());
 
 		assertThat(stationService.listStations()).isEmpty();

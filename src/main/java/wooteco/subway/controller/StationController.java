@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.controller.dto.StationRequest;
-import wooteco.subway.controller.dto.StationResponse;
+import wooteco.subway.controller.dto.ControllerDtoAssembler;
+import wooteco.subway.controller.dto.station.StationRequest;
+import wooteco.subway.controller.dto.station.StationResponse;
 import wooteco.subway.service.StationService;
-import wooteco.subway.service.dto.StationDto;
 
 @RestController
 @RequestMapping("/stations")
@@ -32,15 +32,15 @@ public class StationController {
 
 	@PostMapping
 	public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-		StationDto stationDto = stationService.create(stationRequest.getName());
-		return ResponseEntity.created(URI.create("/stations/" + stationDto.getId()))
-			.body(new StationResponse(stationDto.getId(), stationDto.getName()));
+		StationResponse stationResponse = ControllerDtoAssembler.stationResponse(
+				stationService.create(stationRequest.getName()));
+		return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
 	}
 
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<StationResponse>> showStations() {
 		List<StationResponse> stationResponses = stationService.listStations().stream()
-			.map(station -> new StationResponse(station.getId(), station.getName()))
+			.map(ControllerDtoAssembler::stationResponse)
 			.collect(Collectors.toList());
 		return ResponseEntity.ok().body(stationResponses);
 	}

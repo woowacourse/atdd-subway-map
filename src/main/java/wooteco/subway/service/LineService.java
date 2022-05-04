@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.service.dto.LineDto;
+import wooteco.subway.service.dto.ServiceDtoAssembler;
+import wooteco.subway.service.dto.line.LineRequestDto;
+import wooteco.subway.service.dto.line.LineResponseDto;
 
 @Service
 public class LineService {
@@ -18,12 +20,12 @@ public class LineService {
 		this.lineDao = lineDao;
 	}
 
-	public LineDto create(String name, String color) {
+	public LineResponseDto create(String name, String color) {
 		validateNameNotDuplicated(name);
 		validateColorNotDuplicated(color);
 		Long lineId = lineDao.save(new Line(name, color));
 		Line line = lineDao.findById(lineId);
-		return LineDto.from(line);
+		return ServiceDtoAssembler.lineResponseDto(line);
 	}
 
 	private void validateNameNotDuplicated(String name) {
@@ -38,20 +40,21 @@ public class LineService {
 		}
 	}
 
-	public List<LineDto> listLines() {
+	public List<LineResponseDto> listLines() {
 		return lineDao.findAll()
 			.stream()
-			.map(LineDto::from)
+			.map(ServiceDtoAssembler::lineResponseDto)
 			.collect(Collectors.toUnmodifiableList());
 	}
 
-	public LineDto findOne(Long id) {
-		return LineDto.from(lineDao.findById(id));
+	public LineResponseDto findOne(Long id) {
+		return ServiceDtoAssembler.lineResponseDto(lineDao.findById(id));
 	}
 
-	public LineDto update(Long id, String name, String color) {
-		lineDao.update(id, name, color);
+	public LineResponseDto update(Long id, LineRequestDto lineRequestDto) {
+		lineDao.update(id, lineRequestDto.getName(), lineRequestDto.getColor());
 		return findOne(id);
+
 	}
 
 	public void remove(Long id) {

@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.controller.dto.LineRequest;
-import wooteco.subway.controller.dto.LineResponse;
+import wooteco.subway.controller.dto.ControllerDtoAssembler;
+import wooteco.subway.controller.dto.line.LineRequest;
+import wooteco.subway.controller.dto.line.LineResponse;
 import wooteco.subway.service.LineService;
-import wooteco.subway.service.dto.LineDto;
 
 @RestController
 @RequestMapping("/lines")
@@ -33,28 +33,27 @@ public class LineController {
 
 	@PostMapping
 	public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-		LineDto lineDto = lineService.create(lineRequest.getName(), lineRequest.getColor());
-		return ResponseEntity.created(URI.create("/lines/" + lineDto.getId()))
-			.body(new LineResponse(lineDto.getId(), lineDto.getName(), lineDto.getColor()));
+		LineResponse lineResponse = ControllerDtoAssembler.lineResponse(
+				lineService.create(lineRequest.getName(), lineRequest.getColor()));
+		return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
 	}
 
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<LineResponse>> showLines() {
 		List<LineResponse> lineResponses = lineService.listLines().stream()
-			.map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+			.map(ControllerDtoAssembler::lineResponse)
 			.collect(Collectors.toList());
 		return ResponseEntity.ok().body(lineResponses);
 	}
 
 	@GetMapping("/{lineId}")
 	public ResponseEntity<LineResponse> showLine(@PathVariable Long lineId) {
-		LineDto line = lineService.findOne(lineId);
-		return ResponseEntity.ok(new LineResponse(line.getId(), line.getName(), line.getColor()));
+		return ResponseEntity.ok(ControllerDtoAssembler.lineResponse(lineService.findOne(lineId)));
 	}
 
 	@PutMapping("/{lineId}")
 	public ResponseEntity<Void> updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
-		lineService.update(lineId, lineRequest.getName(), lineRequest.getColor());
+		lineService.update(lineId, ControllerDtoAssembler.lineRequestDto(lineRequest));
 		return ResponseEntity.ok().build();
 	}
 

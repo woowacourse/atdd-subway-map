@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +11,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import wooteco.subway.dao.FakeLineDao;
-import wooteco.subway.service.dto.LineDto;
+import wooteco.subway.service.dto.line.LineRequestDto;
+import wooteco.subway.service.dto.line.LineResponseDto;
 
 class LineServiceTest {
 
@@ -24,7 +26,7 @@ class LineServiceTest {
 	@DisplayName("지하철 노선을 저장한다.")
 	@Test
 	void create() {
-		LineDto line = lineService.create("신분당선", "bg-red-600");
+		LineResponseDto line = lineService.create("신분당선", "bg-red-600");
 		assertThat(line.getId()).isGreaterThan(0);
 		assertThat(line.getName()).isEqualTo("신분당선");
 		assertThat(line.getColor()).isEqualTo("bg-red-600");
@@ -46,15 +48,15 @@ class LineServiceTest {
 		lineService.create("신분당선", "bg-red-600");
 		lineService.create("2호선", "bg-red-601");
 		lineService.create("분당선", "bg-red-602");
-		List<LineDto> lines = lineService.listLines();
+		List<LineResponseDto> lines = lineService.listLines();
 		assertThat(lines).hasSize(3);
 	}
 
 	@DisplayName("id로 지하철 노선을 조회한다.")
 	@Test
 	void findOne() {
-		LineDto line = lineService.create("신분당선", "bg-red-600");
-		LineDto foundLine = lineService.findOne(line.getId());
+		LineResponseDto line = lineService.create("신분당선", "bg-red-600");
+		LineResponseDto foundLine = lineService.findOne(line.getId());
 		assertThat(foundLine.getId()).isEqualTo(line.getId());
 		assertThat(foundLine.getName()).isEqualTo(line.getName());
 		assertThat(foundLine.getColor()).isEqualTo(line.getColor());
@@ -63,8 +65,9 @@ class LineServiceTest {
 	@DisplayName("지하철 노선을 수정한다.")
 	@Test
 	void update() {
-		LineDto line = lineService.create("신분당선", "bg-red-600");
-		LineDto updatedLine = lineService.update(line.getId(), "분당선", "bg-blue-600");
+		LineResponseDto line = lineService.create("신분당선", "bg-red-600");
+		LineResponseDto updatedLine = lineService.update(line.getId(),
+				new LineRequestDto("분당선", "bg-blue-600", 1L, 2L, 10));
 		assertThat(updatedLine.getId()).isEqualTo(line.getId());
 		assertThat(updatedLine.getName()).isEqualTo("분당선");
 		assertThat(updatedLine.getColor()).isEqualTo("bg-blue-600");
@@ -73,7 +76,7 @@ class LineServiceTest {
 	@DisplayName("id로 지하철 노선을 삭제한다.")
 	@Test
 	void remove() {
-		LineDto line = lineService.create("신분당선", "bg-red-600");
+		LineResponseDto line = lineService.create("신분당선", "bg-red-600");
 		lineService.remove(line.getId());
 		assertThat(lineService.listLines()).isEmpty();
 	}
