@@ -18,20 +18,20 @@ public class LineService {
     }
 
     public LineResponse create(final LineRequest request) {
-        Line line = new Line(request.getName(), request.getColor());
+        final Line line = new Line(request.getName(), request.getColor());
         final Line newLine = lineDao.save(line);
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
     public List<LineResponse> findAll() {
-        List<Line> lines = lineDao.findAll();
+        final List<Line> lines = lineDao.findAll();
         return lines.stream()
                 .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findById(Long id) {
-        Line line = lineDao.findById(id);
+    public LineResponse findById(final Long id) {
+        final Line line = lineDao.findById(id);
         return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 

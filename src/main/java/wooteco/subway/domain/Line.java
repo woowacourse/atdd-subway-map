@@ -8,7 +8,7 @@ public class Line {
     private String name;
     private String color;
 
-    public Line(String name, String color) {
+    public Line(final String name, final String color) {
         if (name.isBlank()) {
             throw new IllegalArgumentException("노선의 이름이 공백이 되어서는 안됩니다.");
         }

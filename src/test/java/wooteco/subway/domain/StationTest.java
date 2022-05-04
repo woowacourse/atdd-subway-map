@@ -12,7 +12,7 @@ class StationTest {
     @ParameterizedTest
     @DisplayName("역 이름이 공백이면 예외가 발생한다")
     @ValueSource(strings = {"", " ", "    "})
-    void newStation_blankName(String name) {
+    void newStation_blankName(final String name) {
         assertThatThrownBy(() -> new Station(name))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("역의 이름이 공백이 되어서는 안됩니다.");

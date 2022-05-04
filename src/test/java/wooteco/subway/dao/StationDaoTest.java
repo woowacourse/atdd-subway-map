@@ -46,7 +46,7 @@ class StationDaoTest {
         stationDao.save(new Station("노원"));
 
         // when
-        List<Station> stations = stationDao.findAll();
+        final List<Station> stations = stationDao.findAll();
 
         // then
         assertThat(stations).hasSize(2);
@@ -56,10 +56,10 @@ class StationDaoTest {
     @DisplayName("id에 해당하는 역 삭제하기")
     void deleteById() {
         // given
-        Station station = stationDao.save(new Station("선릉"));
+        final Station station = stationDao.save(new Station("선릉"));
 
         // when
-        Integer affectedRows = stationDao.deleteById(station.getId());
+        final Integer affectedRows = stationDao.deleteById(station.getId());
 
         // then
         assertThat(affectedRows).isOne();

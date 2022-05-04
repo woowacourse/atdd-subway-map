@@ -33,28 +33,28 @@ public class JdbcLineDao implements LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private Line setId(Line line, long id) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
+    private Line setId(final Line line, final long id) {
+        final Field field = ReflectionUtils.findField(Line.class, "id");
         Objects.requireNonNull(field).setAccessible(true);
         ReflectionUtils.setField(field, line, id);
         return line;
     }
 
     @Override
-    public Line save(Line line) {
+    public Line save(final Line line) {
         try {
             final String sql = "INSERT INTO line SET name = ? , color = ?";
 
-            KeyHolder keyHolder = new GeneratedKeyHolder();
+            final KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(con -> {
-                PreparedStatement prepareStatement = con.prepareStatement(sql, new String[]{"id"});
+                final PreparedStatement prepareStatement = con.prepareStatement(sql, new String[]{"id"});
                 prepareStatement.setString(1, line.getName());
                 prepareStatement.setString(2, line.getColor());
                 return prepareStatement;
             }, keyHolder);
-            long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+            final long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
             return setId(line, id);
-        } catch (DuplicateKeyException e) {
+        } catch (final DuplicateKeyException e) {
             throw new IllegalArgumentException("중복된 이름의 노선은 저장할 수 없습니다.");
         }
     }
@@ -66,26 +66,26 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Line findById(Long id) {
+    public Line findById(final Long id) {
         try {
             final String sql = "SELECT * FROM line WHERE id = ?";
             return jdbcTemplate.queryForObject(sql, rowMapper, id);
-        } catch (EmptyResultDataAccessException exception) {
+        } catch (final EmptyResultDataAccessException exception) {
             throw new NotFoundException("해당 ID에 맞는 노선을 찾지 못했습니다.");
         }
     }
 
     @Override
-    public Line updateById(Long id, Line line) {
-        String sql = "UPDATE line set name = ?, color = ? where id = ?";
+    public Line updateById(final Long id, final Line line) {
+        final String sql = "UPDATE line set name = ?, color = ? where id = ?";
         jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
         return setId(line, id);
     }
 
     @Override
-    public Integer deleteById(Long id) {
-        String sql = "DELETE FROM line where id = ?";
-        int affectedRows = jdbcTemplate.update(sql, id);
+    public Integer deleteById(final Long id) {
+        final String sql = "DELETE FROM line where id = ?";
+        final int affectedRows = jdbcTemplate.update(sql, id);
         if (affectedRows == 0) {
             throw new InternalServerException("알 수 없는 이유로 노선을 삭제하지 못했습니다.");
         }

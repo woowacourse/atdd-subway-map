@@ -43,7 +43,7 @@ class LineServiceTest {
         fakeLineDao.save(new Line("수인분당선", "bg-blue-600"));
 
         // when
-        List<LineResponse> responses = lineService.findAll();
+        final List<LineResponse> responses = lineService.findAll();
 
         // then
         assertThat(responses).hasSize(2);
@@ -53,12 +53,12 @@ class LineServiceTest {
     @DisplayName("id에 해당하는 노선을 조회한다.")
     void findById() {
         // given
-        String name = "1호선";
-        String color = "bg-red-600";
-        Line savedLine = fakeLineDao.save(new Line(name, color));
+        final String name = "1호선";
+        final String color = "bg-red-600";
+        final Line savedLine = fakeLineDao.save(new Line(name, color));
 
         // when
-        LineResponse response = lineService.findById(savedLine.getId());
+        final LineResponse response = lineService.findById(savedLine.getId());
 
         // then
         assertThat(response.getName()).isEqualTo(name);
@@ -69,7 +69,7 @@ class LineServiceTest {
     @DisplayName("id에 해당하는 노선 정보를 수정한다.")
     void updateById() {
         // given
-        Line savedLine = fakeLineDao.save(new Line("1호선", "bg-red-600"));
+        final Line savedLine = fakeLineDao.save(new Line("1호선", "bg-red-600"));
 
         final String name = "7호선";
         final String color = "bg-blue-600";
@@ -88,7 +88,7 @@ class LineServiceTest {
     @DisplayName("id에 해당하는 노선을 삭제한다.")
     void deleteById() {
         // given
-        Line savedLine = fakeLineDao.save(new Line("1호선", "bg-red-600"));
+        final Line savedLine = fakeLineDao.save(new Line("1호선", "bg-red-600"));
 
         // when
         lineService.deleteById(savedLine.getId());

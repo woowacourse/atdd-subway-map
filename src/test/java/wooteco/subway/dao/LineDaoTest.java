@@ -33,7 +33,7 @@ public class LineDaoTest {
         final Line line = new Line("7호선", "bg-red-600");
 
         // when
-        Line savedLine = lineDao.save(line);
+        final Line savedLine = lineDao.save(line);
 
         // then
         assertThat(savedLine.getName()).isEqualTo(line.getName());
@@ -65,10 +65,10 @@ public class LineDaoTest {
     void findById() {
         // given
         final Line line7 = new Line("7호선", "bg-red-600");
-        Line persistLine = lineDao.save(line7);
+        final Line persistLine = lineDao.save(line7);
 
         // when
-        Line actual = lineDao.findById(persistLine.getId());
+        final Line actual = lineDao.findById(persistLine.getId());
 
         // then
         assertThat(actual).isEqualTo(persistLine);
@@ -103,8 +103,8 @@ public class LineDaoTest {
         final Line persistLine = lineDao.save(new Line("7호선", "bg-red-600"));
 
         // when
-        Long id = persistLine.getId();
-        Integer affectedRows = lineDao.deleteById(id);
+        final Long id = persistLine.getId();
+        final Integer affectedRows = lineDao.deleteById(id);
 
         // then
         assertThat(affectedRows).isOne();

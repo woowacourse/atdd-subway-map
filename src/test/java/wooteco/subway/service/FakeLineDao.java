@@ -10,7 +10,7 @@ import wooteco.subway.domain.Line;
 public class FakeLineDao implements LineDao {
 
     private Long seq = 0L;
-    private List<Line> lines = new ArrayList<>();
+    private final List<Line> lines = new ArrayList<>();
 
     @Override
     public Line save(final Line line) {
@@ -18,7 +18,7 @@ public class FakeLineDao implements LineDao {
             throw new IllegalArgumentException("중복된 이름의 노선은 저장할 수 없습니다.");
         }
 
-        Line persistLine = createNewObject(line);
+        final Line persistLine = createNewObject(line);
         lines.add(persistLine);
         return persistLine;
     }
@@ -34,14 +34,14 @@ public class FakeLineDao implements LineDao {
     }
 
     private Line createNewObject(final Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
+        final Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
         return line;
     }
 
     @Override
-    public Line findById(Long id) {
+    public Line findById(final Long id) {
         return lines.stream()
                 .filter(it -> it.isSameId(id))
                 .findFirst()
@@ -56,9 +56,9 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public Integer deleteById(Long id) {
-        Line line = findById(id);
-        boolean isDeleted = lines.remove(line);
+    public Integer deleteById(final Long id) {
+        final Line line = findById(id);
+        final boolean isDeleted = lines.remove(line);
         if (isDeleted) {
             return 1;
         }

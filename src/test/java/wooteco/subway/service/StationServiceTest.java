@@ -26,10 +26,10 @@ class StationServiceTest {
     @DisplayName("역을 생성한다.")
     void create() {
         // given
-        StationRequest request = new StationRequest("강남역");
+        final StationRequest request = new StationRequest("강남역");
 
         // when
-        StationResponse response = stationService.create(request);
+        final StationResponse response = stationService.create(request);
 
         // then
         assertThat(response.getName()).isEqualTo(request.getName());
@@ -43,7 +43,7 @@ class StationServiceTest {
         fakeStationDao.save(new Station("왕십리역"));
 
         // when
-        List<StationResponse> stationResponses = stationService.findAll();
+        final List<StationResponse> stationResponses = stationService.findAll();
 
         // then
         assertThat(stationResponses).hasSize(2);
@@ -53,13 +53,13 @@ class StationServiceTest {
     @DisplayName("id에 해당하는 역을 삭제한다.")
     void delete() {
         // given
-        Station savedStation = fakeStationDao.save(new Station("마들역"));
+        final Station savedStation = fakeStationDao.save(new Station("마들역"));
 
         // when
         stationService.delete(savedStation.getId());
 
         // then
-        List<Station> remainStations = fakeStationDao.findAll();
+        final List<Station> remainStations = fakeStationDao.findAll();
         assertThat(remainStations).hasSize(0);
     }
 }

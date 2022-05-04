@@ -10,15 +10,15 @@ import wooteco.subway.domain.Station;
 public class FakeStationDao implements StationDao {
 
     private Long seq = 0L;
-    private List<Station> stations = new ArrayList<>();
+    private final List<Station> stations = new ArrayList<>();
 
     @Override
-    public Station save(Station station) {
+    public Station save(final Station station) {
         if (isDuplicateName(station)) {
             throw new IllegalArgumentException("중복된 이름의 역은 저장할 수 없습니다.");
         }
 
-        Station persistStation = createNewObject(station);
+        final Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
     }
@@ -34,8 +34,8 @@ public class FakeStationDao implements StationDao {
     }
 
     @Override
-    public Integer deleteById(Long id) {
-        Station foundStation = stations.stream()
+    public Integer deleteById(final Long id) {
+        final Station foundStation = stations.stream()
                 .filter(station -> station.getId().equals(id))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
@@ -43,8 +43,8 @@ public class FakeStationDao implements StationDao {
         return 1;
     }
 
-    private Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
+    private Station createNewObject(final Station station) {
+        final Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;

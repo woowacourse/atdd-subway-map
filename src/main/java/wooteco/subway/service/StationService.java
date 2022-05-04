@@ -13,25 +13,25 @@ public class StationService {
 
     private final StationDao stationDao;
 
-    public StationService(StationDao stationDao) {
+    public StationService(final StationDao stationDao) {
         this.stationDao = stationDao;
     }
 
-    public StationResponse create(StationRequest request) {
-        Station station = new Station(request.getName());
-        Station savedStation = stationDao.save(station);
+    public StationResponse create(final StationRequest request) {
+        final Station station = new Station(request.getName());
+        final Station savedStation = stationDao.save(station);
         return new StationResponse(savedStation.getId(), savedStation.getName());
     }
 
     public List<StationResponse> findAll() {
-        List<Station> stations = stationDao.findAll();
+        final List<Station> stations = stationDao.findAll();
 
         return stations.stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());
     }
 
-    public void delete(Long id) {
+    public void delete(final Long id) {
         stationDao.deleteById(id);
     }
 }

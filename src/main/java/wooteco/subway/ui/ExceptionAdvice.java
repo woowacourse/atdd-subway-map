@@ -12,17 +12,17 @@ import wooteco.subway.exception.NotFoundException;
 public class ExceptionAdvice {
 
     @ExceptionHandler(value = {IllegalArgumentException.class})
-    public ResponseEntity<ErrorResponse> handleException(Exception exception) {
+    public ResponseEntity<ErrorResponse> handleException(final Exception exception) {
         return ResponseEntity.badRequest().body(new ErrorResponse(exception.getMessage()));
     }
 
     @ExceptionHandler(value = {NotFoundException.class})
-    public ResponseEntity<ErrorResponse> handleNotFoundException(Exception exception) {
+    public ResponseEntity<ErrorResponse> handleNotFoundException(final Exception exception) {
         return new ResponseEntity<>(new ErrorResponse(exception.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = {InternalServerException.class})
-    public ResponseEntity<ErrorResponse> handleInternalServerException(Exception exception) {
+    public ResponseEntity<ErrorResponse> handleInternalServerException(final Exception exception) {
         return ResponseEntity.internalServerError().body(new ErrorResponse(exception.getMessage()));
     }
 }

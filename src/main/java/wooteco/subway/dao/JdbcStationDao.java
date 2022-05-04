@@ -30,24 +30,24 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Station save(Station station) {
+    public Station save(final Station station) {
         try {
             final String sql = "INSERT INTO station SET name = ?";
-            KeyHolder keyHolder = new GeneratedKeyHolder();
+            final KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(con -> {
-                PreparedStatement prepareStatement = con.prepareStatement(sql, new String[]{"id"});
+                final PreparedStatement prepareStatement = con.prepareStatement(sql, new String[]{"id"});
                 prepareStatement.setString(1, station.getName());
                 return prepareStatement;
             }, keyHolder);
             final long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
             return setId(station, id);
-        } catch (DuplicateKeyException e) {
+        } catch (final DuplicateKeyException e) {
             throw new IllegalArgumentException("중복된 이름의 역은 저장할 수 없습니다.");
         }
     }
 
-    private Station setId(Station station, long id) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
+    private Station setId(final Station station, final long id) {
+        final Field field = ReflectionUtils.findField(Station.class, "id");
         Objects.requireNonNull(field).setAccessible(true);
         ReflectionUtils.setField(field, station, id);
         return station;
@@ -55,14 +55,14 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public List<Station> findAll() {
-        String sql = "SELECT * FROM station";
+        final String sql = "SELECT * FROM station";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
-    public Integer deleteById(Long id) {
-        String sql = "DELETE FROM station WHERE id = ?";
-        Integer affectedRows = jdbcTemplate.update(sql, id);
+    public Integer deleteById(final Long id) {
+        final String sql = "DELETE FROM station WHERE id = ?";
+        final Integer affectedRows = jdbcTemplate.update(sql, id);
         if (affectedRows == 0) {
             throw new InternalServerException("알 수 없는 이유로 역을 삭제하지 못했습니다.");
         }
