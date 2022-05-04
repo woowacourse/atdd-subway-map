@@ -1,7 +1,5 @@
 package wooteco.subway.dao;
 
-import java.sql.PreparedStatement;
-import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -9,12 +7,15 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
+import java.sql.PreparedStatement;
+import java.util.List;
+
 @Repository
 public class JdbcLineDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("color")

@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +8,8 @@ import wooteco.subway.dao.LineDaoImpl;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+
+import java.util.List;
 
 public class LineServiceTest {
     private final LineService lineService = new LineService(LineDaoImpl.getInstance());
