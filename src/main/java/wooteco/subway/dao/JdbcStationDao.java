@@ -1,6 +1,5 @@
 package wooteco.subway.dao;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -56,11 +55,5 @@ public class JdbcStationDao implements StationDao {
                         resultSet.getLong("id"),
                         resultSet.getString("name")
                 );
-    }
-
-    @Override
-    public void deleteAll() {
-        String sql = "delete from STATION";
-        jdbcTemplate.update(sql, Collections.emptyMap());
     }
 }
