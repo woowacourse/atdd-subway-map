@@ -97,6 +97,24 @@ public class LineDaoTest {
     }
 
     @Test
+    @DisplayName("업데이트하려는 노선 이름이 중복되면 에외가 발생한다.")
+    void updateById_duplicateName() {
+        // given
+        final String name = "5호선";
+
+        lineDao.save(new Line(name, "bg-red-600"));
+        final Line persistLine = lineDao.save(new Line("7호선", "bg-red-600"));
+
+        // when
+        final Line line = new Line(name, "bg-green-600");
+
+        // then
+        assertThatThrownBy(() -> lineDao.updateById(persistLine.getId(), line))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("중복된 이름의 노선이 존재합니다.");
+    }
+
+    @Test
     @DisplayName("id를 통해 해당하는 노선을 삭제한다.")
     void deleteById() {
         // given

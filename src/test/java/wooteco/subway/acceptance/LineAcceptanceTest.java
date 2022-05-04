@@ -186,6 +186,55 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("수정하려는 노선 이름이 중복되면 BAD_REQUEST를 반환한다.")
+    void updateLine2() {
+        // given
+        final String name = "5호선";
+
+        final Map<String, String> params1 = new HashMap<>();
+        params1.put("name", name);
+        params1.put("color", "bg-red-600");
+
+        RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        final Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "7호선");
+        params2.put("color", "bg-red-600");
+
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        final long id = Long.parseLong(response.header("Location").split("/")[2]);
+
+        // when
+        final Map<String, String> updateParams = new HashMap<>();
+        updateParams.put("name", name);
+        updateParams.put("color", "bg-green-600");
+
+        final ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+                .body(updateParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
     @DisplayName("지하철 노선 정보를 삭제한다.")
     void deleteLine() {
         // given
