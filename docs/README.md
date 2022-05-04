@@ -60,7 +60,7 @@
     - 역을 등록한다. `POST /stations -> 201(Created)`
         - [ ]  이미 존재할 경우 예외를 던진다.
     - 역 목록을 보여준다. `GET /stations -> 200(OK)`
-    - 역을 삭제한다. `DELETE /stations/{id} -> 204(No Content)`
+    - [x] 역을 삭제한다. `DELETE /stations/{id} -> 204(No Content)`
 - 노선(Section)
     - [ ]  노선을 등록한다. `POST /lines -> 201(Created)`
     - [ ]  노선의 목록을 보여준다. `GET /lines -> 200(OK)`

@@ -27,4 +27,15 @@ public class StationDao {
         ReflectionUtils.setField(field, station, ++seq);
         return station;
     }
+
+    public void deleteById(Long id) {
+        final boolean isRemoved = stations.removeIf(station -> station.getId().equals(id));
+        validateRemoved(isRemoved);
+    }
+
+    private void validateRemoved(boolean isRemoved) {
+        if (!isRemoved) {
+            throw new IllegalStateException("삭제하고자 하는 역이 존재하지 않습니다.");
+        }
+    }
 }

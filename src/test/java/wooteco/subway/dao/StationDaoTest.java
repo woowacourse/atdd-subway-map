@@ -34,4 +34,26 @@ class StationDaoTest {
         assertThat(stations.size()).isEqualTo(0);
     }
 
+    @Test
+    @DisplayName("ID값으로 역을 삭제한다.")
+    public void deleteById() {
+        // given
+        StationDao dao = new StationDao();
+        final Station saved = dao.save(new Station("청구역"));
+        // when
+        final Long id = saved.getId();
+        // then
+        assertThatNoException().isThrownBy(() -> dao.deleteById(id));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 역을 삭제할 수 없다.")
+    public void deleteById_doesNotExist() {
+        // given & when
+        StationDao dao = new StationDao();
+        // then
+        assertThatThrownBy(() -> dao.deleteById(1L))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("삭제하고자 하는 역이 존재하지 않습니다.");
+    }
 }
