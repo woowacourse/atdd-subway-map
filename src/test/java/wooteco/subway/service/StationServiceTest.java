@@ -44,4 +44,21 @@ public class StationServiceTest {
 
         assertThat(stationService.findAll()).hasSize(2);
     }
+
+    @DisplayName("지하철역을 삭제한다.")
+    @Test
+    void deleteStation() {
+        StationRequest stationRequest = new StationRequest("강남역");
+        StationResponse stationResponse = stationService.save(stationRequest);
+        stationService.delete(stationResponse.getId());
+
+        assertThat(stationService.findAll()).hasSize(0);
+    }
+
+    @DisplayName("존재하지 않는 id의 지하철역을 삭제한다.")
+    @Test
+    void deleteStationNotExists() {
+        assertThatThrownBy(() -> stationService.delete(1L)).isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("존재하지 않는 지하철 역입니다.");
+    }
 }
