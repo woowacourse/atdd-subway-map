@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.sql.DataSource;
@@ -13,6 +14,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 
 @Repository
 public class LineDao {
@@ -71,10 +73,11 @@ public class LineDao {
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource());
     }
 
-    //
-    // public static List<Line> findAll() {
-    //     return lines;
-    // }
+    public List<Line> findAll() {
+        String sql = "SELECT * FROM line";
+        return namedParameterJdbcTemplate.query(sql, lineRowMapper);
+    }
+
     //
     // public static Line findById(final Long id) {
     //      return lines.stream()
