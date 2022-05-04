@@ -30,8 +30,8 @@ public class StationService {
     }
 
     private void validateDuplicateName(String name) {
-        final List<Station> stations = stationDao.findAll();
-        final boolean isExist = stations.stream()
+        final boolean isExist = stationDao.findAll()
+                .stream()
                 .anyMatch(station -> station.getName().equals(name));
 
         if (isExist) {
@@ -40,7 +40,8 @@ public class StationService {
     }
 
     public List<StationResponse> findAll() {
-        return stationDao.findAll().stream()
+        return stationDao.findAll()
+                .stream()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(toUnmodifiableList());
     }

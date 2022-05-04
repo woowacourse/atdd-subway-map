@@ -28,8 +28,8 @@ class StationDaoTest {
         final Long savedId = stationDao.save(station);
 
         // then
-        final Station saveStation = stationDao.findById(savedId);
-        assertThat(station).isEqualTo(saveStation);
+        final Station savedStation = stationDao.findById(savedId);
+        assertThat(station).isEqualTo(savedStation);
     }
 
     @Test

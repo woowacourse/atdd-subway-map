@@ -77,8 +77,8 @@ class LineDaoTest {
         final Long savedId = lineDao.save(line);
 
         // when
-        final Line updateLine = new Line(savedId, "다른분당선", "bg-red-600");
-        lineDao.updateByLine(updateLine);
+        final Line newLine = new Line(savedId, "다른분당선", "bg-red-600");
+        lineDao.updateByLine(newLine);
 
         // then
         final Line findLine = lineDao.findById(savedId);

@@ -61,11 +61,11 @@ class LineServiceTest {
     void updateById() {
         // given
         final LineRequest request = new LineRequest("신분당선", "bg-red-600");
-        final Long saveId = lineService.save(request);
+        final Long savedId = lineService.save(request);
 
         // when
         final LineRequest updateRequest = new LineRequest("다른분당선", "bg-red-600");
-        Long updateId = lineService.updateByLine(saveId, updateRequest);
+        Long updateId = lineService.updateByLine(savedId, updateRequest);
 
         // then
         final LineResponse response = lineService.findById(updateId);
@@ -78,9 +78,9 @@ class LineServiceTest {
     void deleteById() {
         // given
         LineRequest request = new LineRequest("신분당선", "bg-red-600");
-        final Long saveId = lineService.save(request);
+        final Long savedId = lineService.save(request);
 
         // when & then
-        assertDoesNotThrow(() -> lineService.deleteById(saveId));
+        assertDoesNotThrow(() -> lineService.deleteById(savedId));
     }
 }
