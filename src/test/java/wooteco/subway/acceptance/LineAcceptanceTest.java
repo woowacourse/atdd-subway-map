@@ -39,6 +39,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("노선 생성시 빈 값일 경우 400응답을 한다.")
+    void saveEmpty() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "");
+        params.put("color", "");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @Test
     @DisplayName("노선을 id로 조회한다.")
     void showLine() {
         Line line = LineDao.save(new Line("1호선", "blue"));
@@ -103,6 +121,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .log().all().extract();
 
         assertThat(response.statusCode()).isEqualTo(200);
+    }
+
+    @Test
+    @DisplayName("노선 수정시 빈 값일 경우 400응답을 한다.")
+    void modifyEmpty() {
+        Map<String, String> prams = new HashMap<>();
+        prams.put("name", "");
+        prams.put("color", "");
+
+        Line line = LineDao.save(new Line("1호선", "blue"));
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(prams)
+            .when()
+            .put("/lines/{id}", line.getId())
+            .then()
+            .log().all().extract();
+
+        assertThat(response.statusCode()).isEqualTo(400);
     }
 
     @Test

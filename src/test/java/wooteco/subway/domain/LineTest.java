@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class LineTest {
@@ -14,6 +15,15 @@ class LineTest {
     @DisplayName("이름과 색깔로 노선을 생성한다.")
     void create() {
         assertThat(new Line("2호선", "bg-red-600")).isNotNull();
+    }
+
+    @ParameterizedTest
+    @EmptySource
+    @DisplayName("이름과 색깔이 값이 없을 경우 예외를 발생한다.")
+    void empty(String value) {
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> new Line(value, value))
+            .withMessage("이름과 색깔은 공백일 수 없습니다.");
     }
 
     @ParameterizedTest(name = "이름 : {0}, 메시지 : {1}")
@@ -40,6 +50,16 @@ class LineTest {
         Line line = new Line("2호선", "bg-red-600");
         line.update("3호선", "blue");
         assertThat(line.getName()).isEqualTo("3호선");
+    }
+
+    @ParameterizedTest
+    @EmptySource
+    @DisplayName("수정시 이름과 색깔이 값이 없을 경우 예외를 발생한다.")
+    void modifyEmpty(String value) {
+        Line line = new Line("2호선", "red");
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> line.update(value, value))
+            .withMessage("이름과 색깔은 공백일 수 없습니다.");
     }
 
     @ParameterizedTest(name = "이름 : {0}, 메시지 : {1}")

@@ -13,6 +13,7 @@ public class Line {
     private String color;
 
     public Line(String name, String color) {
+        validateEmpty(name, color);
         validateNameRange(name);
         validateLanguageType(name);
         this.name = name;
@@ -20,10 +21,17 @@ public class Line {
     }
 
     public void update(String name, String color) {
+        validateEmpty(name, color);
         validateNameRange(name);
         validateLanguageType(name);
         this.name = name;
         this.color = color;
+    }
+
+    private void validateEmpty(String name, String color) {
+        if (name.isBlank() || color.isBlank()) {
+            throw new IllegalArgumentException("이름과 색깔은 공백일 수 없습니다.");
+        }
     }
 
     private void validateNameRange(String name) {

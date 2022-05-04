@@ -58,6 +58,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] 노선 이름은 10글자를 넘길 수 없다.
     - [x] 노선 이름은 3글자 이상이어야 한다.
     - [x] 노선 이름은 한글과 숫자의 조합이어야 한다.
+    - [x] 이름과 색깔이 있어야 한다.
 - [x] 지하철 노선 목록을 조회한다.
 - [x] 지하철 노선 조회
     - [x] 조회할 노선이 있어야 한다.
@@ -67,6 +68,5 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] 노선 이름은 10글자를 넘길 수 없다.
     - [x] 노선 이름은 3글자 이상이어야 한다.
     - [x] 노선 이름은 한글이어야 한다.
-    - [ ] 수정할 노선이 있어야 한다.
-    - [ ] 이름과 색깔이 있어야 한다.
+    - [x] 이름과 색깔이 있어야 한다.
 - [x] 지하철 노선 삭제
