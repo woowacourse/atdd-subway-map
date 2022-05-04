@@ -62,7 +62,7 @@
     - 역 목록을 보여준다. `GET /stations -> 200(OK)`
     - [x] 역을 삭제한다. `DELETE /stations/{id} -> 204(No Content)`
 - 노선(Line)
-    - [ ]  노선을 등록한다. `POST /lines -> 201(Created)`
+    - [x]  노선을 등록한다. `POST /lines -> 201(Created)`
     - [ ]  노선의 목록을 보여준다. `GET /lines -> 200(OK)`
     - [ ]  특정 노선을 조회한다. `GET /lines/{id} -> 200(OK)`
     - [ ]  특정 노선을 수정한다. `PUT /lines/{id} -> 200(OK)`
