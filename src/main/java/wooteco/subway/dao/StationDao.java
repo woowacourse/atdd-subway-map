@@ -1,11 +1,7 @@
 package wooteco.subway.dao;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -13,10 +9,17 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
+import java.util.*;
+
 @Repository
 public class StationDao {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    private final RowMapper<Station> resultMapper = (rs, rowNum) -> new Station(
+            rs.getLong("id"),
+            rs.getString("name")
+    );
 
     public StationDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
@@ -28,9 +31,7 @@ public class StationDao {
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
 
-        List<Station> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params),
-                (rs, rowNum) ->
-                        new Station(rs.getLong("id"), rs.getString("name")));
+        List<Station> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params), resultMapper);
         return Optional.ofNullable(DataAccessUtils.singleResult(queryResult));
     }
 
@@ -40,9 +41,7 @@ public class StationDao {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
 
-        List<Station> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params),
-                (rs, rowNum) ->
-                        new Station(rs.getLong("id"), rs.getString("name")));
+        List<Station> queryResult = namedParameterJdbcTemplate.query(sql, new MapSqlParameterSource(params), resultMapper);
         return Optional.ofNullable(DataAccessUtils.singleResult(queryResult));
     }
 
