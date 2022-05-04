@@ -15,11 +15,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("노선 관련 기능")
-@Transactional
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선을 생성한다.")
