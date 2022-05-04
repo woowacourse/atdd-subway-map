@@ -56,8 +56,8 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 지하철 노선 조회
 - [x] 지하철 노선 수정
 - [x] 지하철 노선 삭제
-- [ ] 지하철 노선 db 생성 및 데이터 연결
-- [ ] static 객체를 스프링 빈으로 변경
+- [x] 지하철 노선 db 생성 및 데이터 연결
+- [x] static 객체를 스프링 빈으로 변경
 
 ### End to End 테스트 작성하기
 

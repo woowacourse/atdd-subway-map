@@ -54,8 +54,8 @@ class StationServiceTest {
     void delete() {
         Station station = new Station("강남역");
 
-        stationService.save(station);
-        stationService.delete(1L);
+        Station newStation = stationService.save(station);
+        stationService.delete(newStation.getId());
 
         List<Station> stations = stationService.findAll();
 

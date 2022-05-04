@@ -1,34 +1,38 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
+@Service
 public class LineService {
     private static final String ALREADY_IN_LINE_ERROR_MESSAGE = "이미 해당 이름의 노선이 있습니다.";
+    private final LineDao lineDao;
 
-    public Line save(Line line) {
-        if (isExistLineName(line)) {
-            throw new IllegalArgumentException(ALREADY_IN_LINE_ERROR_MESSAGE);
-        }
-        return LineDao.save(line);
+    public LineService(LineDao lineDao) {
+        this.lineDao = lineDao;
     }
 
-    private boolean isExistLineName(Line line) {
-        return LineDao.findAll()
-                .stream()
-                .anyMatch(inLine -> inLine.isSameName(line));
+    public Line save(Line line) {
+        try {
+            lineDao.find(line.getName());
+        } catch (IllegalArgumentException e) {
+            lineDao.save(line);
+            return lineDao.find(line.getName());
+        }
+        throw new IllegalArgumentException(ALREADY_IN_LINE_ERROR_MESSAGE);
     }
 
     public List<Line> findAll() {
-        return LineDao.findAll();
+        return lineDao.findAll();
     }
 
     public void update(Long id, Line line) {
-        LineDao.update(id, line);
+        lineDao.update(id, line);
     }
 
     public void delete(Long id) {
-        LineDao.delete(id);
+        lineDao.delete(id);
     }
 }

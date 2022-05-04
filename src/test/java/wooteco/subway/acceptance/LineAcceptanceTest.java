@@ -10,21 +10,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-
-    @BeforeEach
-    void clear() {
-        LineDao.clear();
-    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -93,8 +86,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         Map<String, String> params2 = new HashMap<>();
-        params1.put("name", "분당선");
-        params1.put("color", "bg-green-600");
+        params2.put("name", "분당선");
+        params2.put("color", "bg-green-600");
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
