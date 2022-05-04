@@ -75,15 +75,6 @@ class StationDaoTest {
     }
 
     @Test
-    @DisplayName("아이디로 지하철 역을 조회할 수 있다")
-    void findById() {
-        final Station station = stationDao.save(STATION_FIXTURE);
-        final Station found = stationDao.findById(station.getId());
-
-        assertThat(station).isEqualTo(found);
-    }
-
-    @Test
     @DisplayName("아이디로 지하철역을 삭제할 수 있다")
     void deleteById() {
         final Station station = stationDao.save(STATION_FIXTURE);
