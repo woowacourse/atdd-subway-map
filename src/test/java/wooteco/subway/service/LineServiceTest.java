@@ -83,4 +83,14 @@ public class LineServiceTest {
         );
     }
 
+
+    @DisplayName("노선을 제거 한다.")
+    @Test
+    void delete() {
+        Line line = lineRepository.save(new Line("분당선", "bg-red-600"));
+        lineService.delete(line.getId());
+
+        assertThat(lineRepository.findAll()).isEmpty();
+    }
+
 }

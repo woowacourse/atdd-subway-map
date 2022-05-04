@@ -51,4 +51,8 @@ public class LineService {
     public void update(final Long id, final LineRequest lineRequest) {
         lineRepository.update(LineUpdateDto.of(id, lineRequest));
     }
+
+    public void delete(final Long id) {
+        lineRepository.deleteById(id);
+    }
 }

@@ -10,7 +10,7 @@ import wooteco.subway.utils.exception.NameDuplicatedException;
 public class ControllerAdvice {
 
     @ExceptionHandler(NameDuplicatedException.class)
-    public ResponseEntity<ErrorResponse> nameDuplicatedExceptionHandler(NameDuplicatedException e){
+    public ResponseEntity<ErrorResponse> nameDuplicatedExceptionHandler(NameDuplicatedException e) {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }
 }
