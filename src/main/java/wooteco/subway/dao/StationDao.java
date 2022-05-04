@@ -66,11 +66,6 @@ public class StationDao {
         jdbcTemplate.update(sql, station.getId());
     }
 
-    public void deleteAll() {
-        String sql = "delete from station";
-        jdbcTemplate.update(sql);
-    }
-
     private RowMapper<Station> rowMapper() {
         return (rs, rowNum) ->
                 new Station(
