@@ -92,12 +92,11 @@
 
 # 고민할 사항
 
-* Line에 equals&hashCode는 어떤 필드가 들어가는 것이 적절한가?
-  * id?, name?, id&name?
+* ~~Line에 equals&hashCode는 어떤 필드가 들어가는 것이 적절한가?~~
+  * 도메인 규칙 상 노선의 이름과 색깔이 같아야 같은 노선으로 판단할 것이므로 equals&hashCode는 name과 color 필드로 비교하고 DB에 제약조건 추가
 * ~~Line 수정 API에서 name, color 두 필드 중 빈값이 존재할 때 어떻게 해야할까?~~
   * API 스펙상 PUT 메서드를 사용하기 때문에 두 필드 모두 변경하는 것으로 결정
 * ~~save, update 등 부수효과를 일으키는 메서드에서 객체를 반환하지 않도록 수정해야하지 않을까?(CQS 패턴)~~
-* 노선의 색이 같으면 어떻게 할 것인가??
 * LineDao와 StationDao 사이의 중복??
 * LineAcceptanceTest에서 존재하지 않는 노선의 ID로 조회하는 것이 사용자 입장에서 가능한가?
   * 사용자가 어떤 노선 ID에 대해 존재하는지 존재하지 않는지 알 수 있을까?

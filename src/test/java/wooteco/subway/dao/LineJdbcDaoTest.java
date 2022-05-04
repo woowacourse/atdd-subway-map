@@ -12,7 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.DuplicateLineNameException;
+import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NoSuchLineException;
 
 @Transactional
@@ -36,24 +36,34 @@ class LineJdbcDaoTest {
         Line line = new Line("line", "color");
 
         // when
-        dao.save(line);
+        Long savedId = dao.save(line);
 
         // then
-        List<Line> lines = dao.findAll();
-        Line actual = lines.get(0);
-        assertThat(actual.getName()).isEqualTo(line.getName());
-        assertThat(actual.getColor()).isEqualTo(line.getColor());
+        assertThat(dao.findById(savedId)).isEqualTo(line);
     }
 
     @DisplayName("같은 이름의 노선이 있는 경우 예외를 던진다")
     @Test
     void throwExceptionWhenHasDuplicateName() {
         // given
-        dao.save(new Line("line", "color"));
+        String name = "line";
+        dao.save(new Line(name, "color"));
 
         // when & then
-        assertThatThrownBy(() -> dao.save(new Line("line", "color2")))
-                .isInstanceOf(DuplicateLineNameException.class);
+        assertThatThrownBy(() -> dao.save(new Line(name, "color2")))
+                .isInstanceOf(DuplicateLineException.class);
+    }
+
+    @DisplayName("같은 색깔의 노선이 있는 경우 예외를 던진다")
+    @Test
+    void throwExceptionWhenHasDuplicateColor() {
+        // given
+        String color = "red";
+        dao.save(new Line("test", color));
+
+        // when & then
+        assertThatThrownBy(() -> dao.save(new Line("line", color)))
+                .isInstanceOf(DuplicateLineException.class);
     }
 
     @DisplayName("노선 목록을 조회한다")
@@ -83,9 +93,7 @@ class LineJdbcDaoTest {
         Line findLine = dao.findById(savedId);
 
         // then
-        assertThat(findLine.getId()).isEqualTo(savedId);
-        assertThat(findLine.getName()).isEqualTo(line.getName());
-        assertThat(findLine.getColor()).isEqualTo(line.getColor());
+        assertThat(findLine).isEqualTo(line);
     }
 
     @DisplayName("존재하지 않는 id로 노선을 조회하면 예외가 발생한다")
@@ -103,22 +111,37 @@ class LineJdbcDaoTest {
         Long updateId = dao.update(savedId, "changedName", "changedColor");
 
         Line findLine = dao.findById(updateId);
-        assertThat(findLine.getName()).isEqualTo("changedName");
-        assertThat(findLine.getColor()).isEqualTo("changedColor");
+        assertThat(findLine).isEqualTo(new Line("changedName", "changedColor"));
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 이름을 수정하면 예외가 발생한다")
     @Test
     void throwExceptionWhenUpdateToExistName() {
         // given
-        dao.save(new Line("line", "color"));
+        String name = "line";
+        dao.save(new Line(name, "color"));
 
         Line duplicateName = new Line("test", "test");
         Long savedId = dao.save(duplicateName);
 
         //when, then
-        assertThatThrownBy(() -> dao.update(savedId, "line", "changedColor"))
-                .isInstanceOf(DuplicateLineNameException.class);
+        assertThatThrownBy(() -> dao.update(savedId, name, "changedColor"))
+                .isInstanceOf(DuplicateLineException.class);
+    }
+
+    @DisplayName("기존에 존재하는 노선 색깔으로 색깔을 수정하면 예외가 발생한다")
+    @Test
+    void throwExceptionWhenUpdateToExistColor() {
+        // given
+        String color = "red";
+        dao.save(new Line("line", color));
+
+        Line toBeUpdate = new Line("duplicateColorLine", "test");
+        Long savedId = dao.save(toBeUpdate);
+
+        //when, then
+        assertThatThrownBy(() -> dao.update(savedId, "duplicateColorLine", color))
+                .isInstanceOf(DuplicateLineException.class);
     }
 
     @DisplayName("없는 노선 정보를 변경하려 할 때, 예외를 던진다")

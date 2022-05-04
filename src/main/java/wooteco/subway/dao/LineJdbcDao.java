@@ -9,7 +9,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.DuplicateLineNameException;
+import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NoSuchLineException;
 
 @Repository
@@ -33,7 +33,7 @@ public class LineJdbcDao {
                 return preparedStatement;
             }, keyHolder);
         } catch (DuplicateKeyException exception) {
-            throw new DuplicateLineNameException();
+            throw new DuplicateLineException();
         }
 
         return keyHolder.getKey().longValue();
@@ -72,7 +72,7 @@ public class LineJdbcDao {
                 throw new NoSuchLineException();
             }
         } catch (DuplicateKeyException exception) {
-            throw new DuplicateLineNameException();
+            throw new DuplicateLineException();
         }
         return id;
     }
