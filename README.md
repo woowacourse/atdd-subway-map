@@ -54,7 +54,7 @@
 
 #### 정상 케이스
 
-- [지하철 노선 목록 요청 & 응답](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#_%EC%A7%80%ED%95%98%EC%B2%A0_%EB%85%B8%EC%84%A0_%EB%AA%A9%EB%A1%9D)
+- [x] [지하철 노선 목록 요청 & 응답](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#_%EC%A7%80%ED%95%98%EC%B2%A0_%EB%85%B8%EC%84%A0_%EB%AA%A9%EB%A1%9D)
 
 ### 지하철 노선 조회
 
@@ -64,7 +64,7 @@
 
 #### 예외 케이스
 
-- 지하철 노선이 존재하지 않을 경우
+- [x] 지하철 노선이 존재하지 않을 경우
   - Not Found: 404
 
 ### 지하철 노선 수정

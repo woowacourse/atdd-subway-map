@@ -41,4 +41,8 @@ public class LineDao {
     public static void deleteAll() {
         lines.clear();
     }
+
+    public static List<Line> findAll() {
+        return lines;
+    }
 }

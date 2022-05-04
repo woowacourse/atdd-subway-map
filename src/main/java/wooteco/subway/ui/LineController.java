@@ -1,7 +1,8 @@
 package wooteco.subway.ui;
 
 import java.net.URI;
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,15 @@ public class LineController {
         Line line = lineService.save(lineRequest.getName(), lineRequest.getColor());
         LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<LineResponse>> showLines() {
+        List<Line> lines = LineDao.findAll();
+        List<LineResponse> lineResponses = lines.stream()
+            .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(lineResponses);
     }
 
     @GetMapping("/{id}")

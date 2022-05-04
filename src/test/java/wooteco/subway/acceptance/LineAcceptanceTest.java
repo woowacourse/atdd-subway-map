@@ -1,6 +1,5 @@
 package wooteco.subway.acceptance;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.equalTo;
@@ -8,10 +7,12 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
-import java.util.Map;
-
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,12 +35,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @ValueSource(strings = {"", "  ", "     "})
     void createLineWithEmptyName(String lineName) {
         RestAssured.given().log().all()
-                .body(Map.of("name", lineName, "color", "bg-red-600"))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+            .body(Map.of("name", lineName, "color", "bg-red-600"))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선 색깔에 빈 문자열을 사용할 수 없다")
@@ -91,17 +92,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> requestCreateLine(String lineName, String lineColor) {
         return RestAssured.given().log().all()
-                .body(Map.of("name", lineName, "color", lineColor))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+            .body(Map.of("name", lineName, "color", lineColor))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
     }
 
     @DisplayName("지하철 노선 조회")
     @Test
-    void getLineById() {
+    void showLineById() {
         // given
         String name = "신분당선";
         String color = "bg-red-600";
@@ -126,11 +127,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void showNotExistLine() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().get("/lines/" + 50L)
-                .then().log().all()
-                .extract();
+            .when().get("/lines/" + 50L)
+            .then().log().all()
+            .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("지하철 노선 목록 조회")
+    @Test
+    void showLines() {
+        // given
+        ExtractableResponse<Response> createResponse1 = requestCreateLine("신분당선", "bg-red-600");
+        ExtractableResponse<Response> createResponse2 = requestCreateLine("1호선", "bg-blue-600");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when().get("/lines")
+            .then().log().all()
+            .extract();
+
+        // then
+        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+            .map(it -> it.jsonPath().getObject("id", Long.class))
+            .collect(Collectors.toList());
+        List<Long> actualLineIds = response.jsonPath().getList("id", Long.class);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(expectedLineIds).containsExactlyInAnyOrderElementsOf(actualLineIds);
     }
 }
