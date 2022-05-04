@@ -2,6 +2,8 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -54,5 +56,15 @@ public class LineDaoTest {
         assertThatThrownBy(() -> lineDao.save(name, color))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 존재하는 노선입니다.");
+    }
+
+    @Test
+    @DisplayName("모든 노선을 조회한다")
+    void findAll() {
+        lineDao.save("1호선", "blue");
+
+        List<Line> lines = lineDao.findAll();
+
+        assertThat(lines).hasSize(2);
     }
 }
