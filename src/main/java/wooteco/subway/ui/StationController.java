@@ -3,6 +3,7 @@ package wooteco.subway.ui;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,9 +30,6 @@ public class StationController {
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody final StationRequest stationRequest) {
         final Station station = new Station(stationRequest.getName());
-        if (stationDao.countByName(station.getName()) > 0) {
-            return ResponseEntity.badRequest().build();
-        }
         final Long id = stationDao.save(station);
         final Station newStation = stationDao.find(id);
         final StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
@@ -53,7 +51,7 @@ public class StationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler({IllegalArgumentException.class})
+    @ExceptionHandler({IllegalArgumentException.class, DuplicateKeyException.class})
     public ResponseEntity<Void> handleException() {
         return ResponseEntity.badRequest().build();
     }

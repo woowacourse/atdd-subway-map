@@ -69,15 +69,4 @@ class StationDaoTest {
         final int actual = stationDao.findAll().size();
         assertThat(actual).isEqualTo(0);
     }
-
-    @Test
-    @DisplayName("역 이름의 수를 조회한다.")
-    void count() {
-        final Station station = new Station("한성대입구역");
-        stationDao.save(station);
-
-        final int count = stationDao.countByName(station.getName());
-
-        assertThat(count).isEqualTo(1);
-    }
 }

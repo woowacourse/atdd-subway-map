@@ -46,11 +46,6 @@ public class StationDao {
         jdbcTemplate.update(sql, id);
     }
 
-    public int countByName(final String name) {
-        final String sql = "SELECT COUNT(*) FROM STATION WHERE name = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, name);
-    }
-
     private RowMapper<Station> rowMapper() {
         return (resultSet, rowNum) -> new Station(
                 resultSet.getLong("id"),
