@@ -70,11 +70,9 @@ public class LineDao {
         return jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
-    public static void delete(Long id) {
-        boolean isRemoving = lines.removeIf(line -> line.getId().equals(id));
-        if (!isRemoving) {
-            throw new IllegalArgumentException("존재하지 않는 노선입니다.");
-        }
+    public int delete(Long id) {
+        final String sql = "delete from LINE where id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 
     public static void clear() {

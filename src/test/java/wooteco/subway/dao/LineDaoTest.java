@@ -82,4 +82,12 @@ class LineDaoTest {
 
         assertThat(lineDao.find(lineId).orElseThrow().getName()).isEqualTo("다른분당선");
     }
+
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void delete() {
+        long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
+
+        assertThat(lineDao.delete(lineId)).isEqualTo(1);
+    }
 }
