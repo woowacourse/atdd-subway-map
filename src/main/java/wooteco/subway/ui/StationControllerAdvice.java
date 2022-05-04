@@ -18,4 +18,9 @@ public class StationControllerAdvice {
     public ResponseEntity<Void> duplicateStation() {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Void> unknownException() {
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
