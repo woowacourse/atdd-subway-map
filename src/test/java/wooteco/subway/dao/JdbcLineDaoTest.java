@@ -12,7 +12,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
 
 @JdbcTest
 public class JdbcLineDaoTest {
@@ -78,7 +77,7 @@ public class JdbcLineDaoTest {
 
         assertThat(lineDao.findAll().size()).isEqualTo(3);
     }
-    
+
     @DisplayName("노선을 삭제한다.")
     @Test
     void 노선_삭제() {
