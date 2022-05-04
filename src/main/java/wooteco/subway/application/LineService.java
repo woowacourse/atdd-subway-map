@@ -20,6 +20,9 @@ public class LineService {
     }
 
     public Line update(Long id, String name, String color) {
+        if(LineDao.existByName(name)) {
+            throw new DuplicateException();
+        }
         return LineDao.update(new Line(id, name, color));
     }
 }

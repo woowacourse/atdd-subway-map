@@ -1,8 +1,5 @@
 package wooteco.subway.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +10,9 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.exception.BlankArgumentException;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotExistException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class LineServiceTest {
 
@@ -96,5 +96,15 @@ public class LineServiceTest {
         Line expectedLine = LineDao.findById(line.getId()).orElseThrow();
         assertThat(expectedLine.getName()).isEqualTo("1호선");
         assertThat(expectedLine.getColor()).isEqualTo("bg-blue-600");
+    }
+
+    @DisplayName("존재하지 않는 지하철 역을 제거한다.")
+    @Test
+    void deleteNotExistStation() {
+        Line createdLine = lineService.save("신분당선", "bg-red-600");
+        lineService.save("1호선", "bg-red-600");
+
+        assertThatThrownBy(() -> lineService.update(createdLine.getId(), "1호선", "bg-red-600"))
+                .isInstanceOf(DuplicateException.class);
     }
 }

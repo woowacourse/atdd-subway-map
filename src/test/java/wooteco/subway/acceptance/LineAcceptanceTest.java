@@ -1,19 +1,8 @@
 package wooteco.subway.acceptance;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.emptyOrNullString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +11,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.LineDao;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -223,5 +220,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getLong("id")).isEqualTo(createdId);
         assertThat(response.jsonPath().getString("name")).isEqualTo(newName);
         assertThat(response.jsonPath().getString("color")).isEqualTo(newColor);
+    }
+
+    @DisplayName("중복된 노선 이름 수정을 허용하지 않는다")
+    @Test
+    void canNotUpdateByDuplicationName() {
+        // given
+        ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600");
+        requestCreateLine("1호선", "bg-red-600");
+
+        long createdId = response.jsonPath().getLong("id");
+
+        // when
+        RestAssured.given().log().all()
+                .body(Map.of("name", "1호선", "color", "bg-red-600"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + createdId)
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 }
