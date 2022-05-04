@@ -66,11 +66,19 @@ public class LineJdbcDao {
     public Long update(final Long id, final String name, final String color) {
         final String sql = "UPDATE LINE SET name = (?), color = (?) WHERE id = (?)";
 
-        int affectedRow = jdbcTemplate.update(sql, name, color, id);
-        if (affectedRow == 0) {
-            throw new NoSuchLineException();
+        try {
+            int affectedRow = jdbcTemplate.update(sql, name, color, id);
+            if (isNoUpdateOccurred(affectedRow)) {
+                throw new NoSuchLineException();
+            }
+        } catch (DuplicateKeyException exception) {
+            throw new DuplicateLineNameException();
         }
         return id;
+    }
+
+    private boolean isNoUpdateOccurred(final int affectedRow) {
+        return affectedRow == 0;
     }
 
     public void deleteById(final Long id) {

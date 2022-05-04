@@ -107,6 +107,20 @@ class LineJdbcDaoTest {
         assertThat(findLine.getColor()).isEqualTo("changedColor");
     }
 
+    @DisplayName("기존에 존재하는 노선 이름으로 이름을 수정하면 예외가 발생한다")
+    @Test
+    void throwExceptionWhenUpdateToExistName() {
+        // given
+        dao.save(new Line("line", "color"));
+
+        Line duplicateName = new Line("test", "test");
+        Long savedId = dao.save(duplicateName);
+
+        //when, then
+        assertThatThrownBy(() -> dao.update(savedId, "line", "changedColor"))
+                .isInstanceOf(DuplicateLineNameException.class);
+    }
+
     @DisplayName("없는 노선 정보를 변경하려 할 때, 예외를 던진다")
     @Test
     void throwExceptionWhenTryToUpdateNoLine() {
