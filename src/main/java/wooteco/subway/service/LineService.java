@@ -20,12 +20,16 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
+        checkExistLineByName(lineRequest);
         final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        final Long newLineId = lineDao.save(line);
+        return new LineResponse(newLineId, line.getName(), line.getColor());
+    }
+
+    private void checkExistLineByName(LineRequest lineRequest) {
         if (lineDao.hasLine(lineRequest.getName())) {
             throw new IllegalArgumentException("같은 이름의 노선이 존재합니다.");
         }
-        final Long newLineId = lineDao.save(line);
-        return new LineResponse(newLineId, line.getName(), line.getColor());
     }
 
     @Transactional(readOnly = true)
@@ -38,21 +42,21 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        final Line line = checkExistLine(id);
+        final Line line = checkExistLineById(id);
         return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 
     public void updateLine(Long id, String name, String color) {
-        checkExistLine(id);
+        checkExistLineById(id);
         lineDao.updateById(id, name, color);
     }
 
     public void deleteLine(Long id) {
-        checkExistLine(id);
+        checkExistLineById(id);
         lineDao.deleteById(id);
     }
 
-    private Line checkExistLine(Long id) {
+    private Line checkExistLineById(Long id) {
         return lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 노선이 존재하지 않습니다."));
     }

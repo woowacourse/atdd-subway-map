@@ -20,12 +20,16 @@ public class StationService {
     }
 
     public StationResponse saveStation(StationRequest stationRequest) {
+        checkExistStationByName(stationRequest);
         final Station station = new Station(stationRequest.getName());
+        final Long newStationId = stationDao.save(station);
+        return new StationResponse(newStationId, station.getName());
+    }
+
+    private void checkExistStationByName(StationRequest stationRequest) {
         if (stationDao.hasStation(stationRequest.getName())) {
             throw new IllegalArgumentException("같은 이름의 역이 존재합니다.");
         }
-        final Long newStationId = stationDao.save(station);
-        return new StationResponse(newStationId, station.getName());
     }
 
     @Transactional(readOnly = true)
@@ -37,15 +41,14 @@ public class StationService {
     }
 
     public void deleteStation(Long id) {
-        checkExistStation(id);
+        checkExistStationById(id);
         stationDao.deleteById(id);
     }
 
-    private Station checkExistStation(Long id) {
+    private void checkExistStationById(Long id) {
         final Station station = stationDao.findById(id);
         if (station == null) {
             throw new IllegalArgumentException("해당하는 역이 존재하지 않습니다.");
         }
-        return station;
     }
 }
