@@ -11,15 +11,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
 
 @JdbcTest
-public class LineDaoTest {
-    private LineDao lineDao;
+public class JdbcLineDaoTest {
+    private JdbcLineDao lineDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        lineDao = new LineDao(jdbcTemplate);
+        lineDao = new JdbcLineDao(jdbcTemplate);
 
         jdbcTemplate.execute("create table if not exists LINE(\n"
                 + "    id bigint auto_increment not null,\n"
