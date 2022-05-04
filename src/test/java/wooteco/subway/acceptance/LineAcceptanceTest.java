@@ -138,7 +138,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않은 id로 조회하면 BAD_REQUEST를 반환한다.")
+    @DisplayName("존재하지 않은 id로 조회하면 NOT_FOUND를 반환한다.")
     void findById_invalidId() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -147,7 +147,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test

@@ -1,44 +1,58 @@
 package wooteco.subway.dao;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
 
+@Repository
 public class StationDao {
 
-    private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Station> rowMapper = (resultSet, rowNumber) -> {
+        Station station = new Station(
+                resultSet.getString("name")
+        );
+        return setId(station, resultSet.getLong("id"));
+    };
 
-    public static Station save(Station station) {
-        if (isDuplicateName(station)) {
-            throw new IllegalArgumentException("중복된 이름의 역은 저장할 수 없습니다.");
-        }
-
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+    public StationDao(final JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static boolean isDuplicateName(final Station station) {
-        return stations.stream()
-                .anyMatch(it -> it.isSameName(station));
+    public Station save(Station station) {
+        final String sql = "INSERT INTO station SET name = ?";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement prepareStatement = con.prepareStatement(sql, new String[]{"id"});
+            prepareStatement.setString(1, station.getName());
+            return prepareStatement;
+        }, keyHolder);
+        final long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return setId(station, id);
     }
 
-    public static List<Station> findAll() {
-        return stations;
-    }
-
-    private static Station createNewObject(Station station) {
+    private Station setId(Station station, long id) {
         Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
+        Objects.requireNonNull(field).setAccessible(true);
+        ReflectionUtils.setField(field, station, id);
         return station;
     }
 
-    public static void deleteAll() {
-        stations.clear();
-        seq = 0L;
+    public List<Station> findAll() {
+        String sql = "SELECT * FROM station";
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    public Integer deleteById(Long id) {
+        String sql = "DELETE FROM station WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 }

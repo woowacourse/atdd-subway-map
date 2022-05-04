@@ -20,17 +20,23 @@ import wooteco.subway.exception.InternalServerException;
 @RestController
 public class LineController {
 
+    private final LineDao lineDao;
+
+    public LineController(final LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
+
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = LineDao.save(line);
+        final Line newLine = lineDao.save(line);
         LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> showLines() {
-        final List<Line> lines = LineDao.findAll();
+        final List<Line> lines = lineDao.findAll();
         final List<LineResponse> lineResponses = lines.stream()
                 .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
@@ -39,7 +45,7 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line line = LineDao.findById(id);
+        Line line = lineDao.findById(id);
         LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
         return ResponseEntity.ok().body(lineResponse);
     }
@@ -47,13 +53,13 @@ public class LineController {
     @PutMapping("/lines/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        LineDao.updateById(id, line);
+        lineDao.updateById(id, line);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        Integer affectedRows = LineDao.deleteById(id);
+        Integer affectedRows = lineDao.deleteById(id);
         if (affectedRows == 0) {
             throw new InternalServerException("알 수 없는 이유로 노선을 삭제하지 못했습니다.");
         }

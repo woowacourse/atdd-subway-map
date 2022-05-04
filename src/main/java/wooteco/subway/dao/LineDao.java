@@ -1,66 +1,84 @@
 package wooteco.subway.dao;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.NotFoundException;
 
+@Repository
 public class LineDao {
 
-    private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
 
-    public static Line save(final Line line) {
-        if (isDuplicateName(line)) {
-            throw new IllegalArgumentException("중복된 이름의 노선은 저장할 수 없습니다.");
-        }
+    private final RowMapper<Line> rowMapper = (resultSet, rowNumber) -> {
+        Line line = new Line(
+                resultSet.getString("name"),
+                resultSet.getString("color")
+        );
+        return setId(line, resultSet.getLong("id"));
+    };
 
-        Line persistLine = createNewObject(line);
-        lines.add(persistLine);
-        return persistLine;
+    public LineDao(final JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static boolean isDuplicateName(final Line line) {
-        return lines.stream()
-                .anyMatch(it -> it.isSameName(line));
-    }
-
-    public static List<Line> findAll() {
-        return lines;
-    }
-
-    private static Line createNewObject(final Line line) {
+    private Line setId(Line line, long id) {
         Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
+        Objects.requireNonNull(field).setAccessible(true);
+        ReflectionUtils.setField(field, line, id);
         return line;
     }
 
-    public static void deleteAll() {
-        lines.clear();
-        seq = 0L;
+    public Line findByName(String name) {
+        final String sql = "SELECT * FROM line WHERE name = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper, name);
     }
 
-    public static Line findById(Long id) {
-        return lines.stream()
-                .filter(it -> it.isSameId(id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID에 맞는 노선을 찾지 못했습니다."));
+    public Line save(Line line) {
+        final String sql = "INSERT INTO line SET name = ? , color = ?";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement prepareStatement = con.prepareStatement(sql, new String[]{"id"});
+            prepareStatement.setString(1, line.getName());
+            prepareStatement.setString(2, line.getColor());
+            return prepareStatement;
+        }, keyHolder);
+        long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return setId(line, id);
     }
 
-    public static Line updateById(final Long id, final Line line) {
-        final Line persistLine = findById(id);
-        persistLine.update(line);
-        return persistLine;
+    public List<Line> findAll() {
+        final String sql = "SELECT * FROM line";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public static Integer deleteById(Long id) {
-        Line line = findById(id);
-        boolean isDeleted = lines.remove(line);
-        if (isDeleted) {
-            return 1;
+    public Line findById(Long id) {
+        try {
+            final String sql = "SELECT * FROM line WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        } catch (EmptyResultDataAccessException exception) {
+            throw new NotFoundException("해당 ID에 맞는 노선을 찾지 못했습니다.");
         }
-        return 0;
+    }
+
+    public Line updateById(Long id, Line line) {
+        String sql = "UPDATE line set name = ?, color = ? where id = ?";
+        jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
+        return setId(line, id);
+    }
+
+    public Integer deleteById(Long id) {
+        String sql = "DELETE FROM line where id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 }
