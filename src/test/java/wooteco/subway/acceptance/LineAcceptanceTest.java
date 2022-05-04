@@ -10,24 +10,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.FakeLineDao;
 import wooteco.subway.dto.LineResponse;
 
+@DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private FakeLineDao fakeLineDao = new FakeLineDao();
-
-    @AfterEach
-    void tearDown() {
-        fakeLineDao.deleteAll();
-    }
-
-    @DisplayName("노선을 생성한다")
+    @DisplayName("노선을 생성한다.")
     @Test
     void createLine() {
         Map<String, String> params = new HashMap<>();
@@ -154,7 +146,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(color).isEqualTo(response.body().jsonPath().getString("color"));
     }
 
-    @DisplayName("노선을 수정한다")
+    @DisplayName("노선을 수정한다.")
     @Test
     void updateLine() {
         Map<String, String> params = new HashMap<>();
@@ -172,8 +164,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long id = createResponse.body().jsonPath().getLong("id");
 
         Map<String, String> updatedParams = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "bg-blue-600");
+        updatedParams.put("name", "2호선");
+        updatedParams.put("color", "bg-blue-600");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(updatedParams)
@@ -186,7 +178,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("노선을 삭제한다")
+    @DisplayName("노선을 삭제한다.")
     @Test
     void deleteLine() {
         Map<String, String> params = new HashMap<>();

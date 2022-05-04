@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -70,6 +71,7 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public void deleteAll() {
-
+        String sql = "delete from LINE";
+        jdbcTemplate.update(sql, Collections.emptyMap());
     }
 }
