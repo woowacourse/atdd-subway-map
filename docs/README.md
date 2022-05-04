@@ -29,4 +29,4 @@
 
 3. 스프링 빈 활용하기
     - [X] DAO를 스프링 빈으로 변경하기
-    - [ ] Service Layer 추가
+    - [X] Service Layer 추가
