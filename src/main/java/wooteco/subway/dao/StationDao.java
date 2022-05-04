@@ -23,7 +23,7 @@ public class StationDao {
     }
 
     public Optional<Station> findById(Long id) {
-        String sql = "select * from STATION where id=:id";
+        String sql = "select * from STATION where id = :id";
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
@@ -35,7 +35,7 @@ public class StationDao {
     }
 
     public Optional<Station> findByName(String name) {
-        String sql = "select * from STATION where name=:name";
+        String sql = "select * from STATION where name = :name";
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);

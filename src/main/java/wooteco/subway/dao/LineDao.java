@@ -48,7 +48,7 @@ public class LineDao {
     }
 
     public Optional<Line> findById(Long id) {
-        String sql = "select * from LINE where id=:id";
+        String sql = "select * from LINE where id = :id";
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
@@ -60,7 +60,7 @@ public class LineDao {
     }
 
     public Optional<Line> findByName(String name) {
-        String sql = "select * from LINE where name=:name";
+        String sql = "select * from LINE where name = :name";
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
@@ -72,7 +72,8 @@ public class LineDao {
     }
 
     public int update(Long id, Line newLine) {
-        String sql = "update LINE set name=:name, color=:color where id=:id";
+        String sql = "update LINE set name = :name, color = :color where id = :id";
+
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
         params.put("name", newLine.getName());
