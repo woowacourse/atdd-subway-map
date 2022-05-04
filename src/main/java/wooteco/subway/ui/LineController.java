@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 
 @RestController
+@RequestMapping("/lines")
 public class LineController {
 
     private final LineDao lineDao;
@@ -22,39 +23,40 @@ public class LineController {
         this.lineDao = lineDao;
     }
 
-    @PostMapping("/lines")
+    @PostMapping()
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         String name = lineRequest.getName();
         String color = lineRequest.getColor();
 
         lineDao.validate(name);
-        Line newLine = lineDao.save(name, color);
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        Line line = lineDao.save(name, color);
+
+        LineResponse lineResponse = new LineResponse(line);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
     }
 
-    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineDao.findAll();
         List<LineResponse> lineResponses = lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+                .map(LineResponse::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
 
-    @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineDao.findById(id);
-        return ResponseEntity.ok().body(new LineResponse(line.getId(), line.getName(), line.getColor()));
+        return ResponseEntity.ok().body(new LineResponse(line));
     }
 
-    @DeleteMapping(value = "/lines/{id}")
+    @DeleteMapping(value = "/{id}")
     public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
         lineDao.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping(value = "/lines/{id}")
+    @PutMapping(value = "/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         String name = lineRequest.getName();
         lineDao.validate(id, name);
