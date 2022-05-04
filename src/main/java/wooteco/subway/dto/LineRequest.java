@@ -14,11 +14,6 @@ public class LineRequest {
     private LineRequest() {
     }
 
-    private LineRequest(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
-
     public Line toLine() {
         return new Line(name, color);
     }
