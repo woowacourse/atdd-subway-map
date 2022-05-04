@@ -61,7 +61,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 지하철 노선 목록을 조회한다.
 - [x] 지하철 노선 조회
     - [x] 조회할 노선이 있어야 한다.
-- [ ] 지하철 노선 수정
+- [x] 지하철 노선 수정
     - [ ] 같은 노선의 이름으로 중복될 수 없다.
     - [ ] 색깔은 중복 될 수 없다.
     - [ ] 노선 이름은 10글자를 넘길 수 없다.

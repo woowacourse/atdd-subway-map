@@ -19,6 +19,11 @@ public class Line {
         this.color = color;
     }
 
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
     private void validateNameRange(String name) {
         if (name.length() >= MAX_RANGE) {
             throw new IllegalArgumentException("노선 이름은 10글자를 초과할 수 없습니다.");

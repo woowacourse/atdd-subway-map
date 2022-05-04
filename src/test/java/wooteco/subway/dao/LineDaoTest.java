@@ -67,6 +67,16 @@ class LineDaoTest {
     }
 
     @Test
+    @DisplayName("id로 노선을 수정한다.")
+    void modifyById() {
+        Line savedLine = LineDao.save(new Line("1호선", "blue"));
+        LineDao.modify(savedLine.getId(),"3호선","green");
+
+        Line modifiedLine = LineDao.findById(savedLine.getId());
+        assertThat(modifiedLine.getName()).isEqualTo("3호선");
+    }
+
+    @Test
     @DisplayName("id로 노선을 삭제한다.")
     void deleteById() {
         Line savedLine = LineDao.save(new Line("1호선", "blue"));

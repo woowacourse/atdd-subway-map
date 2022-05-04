@@ -34,4 +34,12 @@ class LineTest {
             .withMessage("노선 이름은 한글과 숫자이어야 합니다.");
     }
 
+    @Test
+    @DisplayName("id로 노선 정보를 수정한다.")
+    void modify() {
+        Line line = new Line("2호선", "bg-red-600");
+        line.update("3호선", "blue");
+        assertThat(line.getName()).isEqualTo("3호선");
+    }
+
 }
