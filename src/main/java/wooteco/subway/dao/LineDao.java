@@ -53,4 +53,8 @@ public class LineDao {
     public static void update(Long id, Line line) {
         lines.put(id, line);
     }
+
+    public static void delete(Long id) {
+        lines.remove(id);
+    }
 }

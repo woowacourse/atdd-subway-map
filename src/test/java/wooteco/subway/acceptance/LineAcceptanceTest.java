@@ -222,4 +222,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("지하철 노선을 제거한다.")
+    @Test
+    void deleteLine() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "green");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        // when
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete(uri)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
 }
