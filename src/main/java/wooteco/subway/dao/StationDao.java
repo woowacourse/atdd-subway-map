@@ -11,6 +11,8 @@ import wooteco.subway.domain.Station;
 
 @Repository
 public class StationDao {
+    protected static final String DUPLICATE_EXCEPTION_MESSAGE = "이름이 중복된 역은 만들 수 없습니다.";
+
     private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Station> rowMapper = (rs, rowNum) ->
@@ -41,7 +43,7 @@ public class StationDao {
         boolean isDuplicate = stations.stream()
                 .anyMatch(station -> station.isSameName(stationName));
         if (isDuplicate) {
-            throw new IllegalArgumentException("이름이 중복된 역은 만들 수 없습니다.");
+            throw new IllegalArgumentException(DUPLICATE_EXCEPTION_MESSAGE);
         }
     }
 
