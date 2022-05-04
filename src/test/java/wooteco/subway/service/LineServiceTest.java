@@ -5,20 +5,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.FakeLineDao;
 import wooteco.subway.domain.Line;
 
 public class LineServiceTest {
 
-    private final LineService lineService = new LineService(new LineDao());
+    private LineService lineService;
 
-    @AfterEach
-    void tearDown() {
-        new LineDao().deleteAll();
+    @BeforeEach
+    void setUp() {
+        lineService = new LineService(new FakeLineDao());
     }
 
     @Test

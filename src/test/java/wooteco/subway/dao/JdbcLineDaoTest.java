@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 
 import wooteco.subway.domain.Line;
 
-public class LineDaoTest {
+public class JdbcLineDaoTest {
 
-    private final LineDao lineDao = new LineDao();
+    private final LineDao lineDao = new JdbcLineDao();
 
     @AfterEach
     void tearDown() {

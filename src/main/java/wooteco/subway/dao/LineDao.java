@@ -1,61 +1,23 @@
 package wooteco.subway.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Repository;
-
 import wooteco.subway.domain.Line;
 
-@Repository
-public class LineDao {
+public interface LineDao {
 
-    private final List<Line> lines = new ArrayList<>();
-    private long seq = 0L;
+    Line save(Line line);
 
-    public Line save(Line line) {
-        Line persistStation = createNewObject(line);
-        lines.add(persistStation);
-        return persistStation;
-    }
+    Optional<Line> findById(Long id);
 
-    private Line createNewObject(Line line) {
-        return new Line(++seq, line.getName(), line.getColor());
-    }
+    Optional<Line> findByName(String name);
 
-    public Optional<Line> findById(Long id) {
-        return lines.stream().filter(line -> line.getId().equals(id)).findFirst();
-    }
+    List<Line> findAll();
 
-    public Optional<Line> findByName(String name) {
-        return lines.stream()
-            .filter(line -> name.equals(line.getName()))
-            .findFirst();
-    }
+    void update(Long id, String name, String color);
 
-    public List<Line> findAll() {
-        return List.copyOf(lines);
-    }
+    void deleteById(Long id);
 
-    public void update(Long id, String name, String color) {
-        int idx = 0;
-        for (Line line : lines) {
-            if (line.getId().equals(id)) {
-                lines.set(idx, new Line(id, name, color));
-                return;
-            }
-            idx++;
-        }
-    }
-
-    public void deleteById(Long id) {
-        if (!lines.removeIf(line -> line.getId().equals(id))) {
-            throw new IllegalArgumentException("존재하지 않는 노선입니다.");
-        }
-    }
-
-    public void deleteAll() {
-        lines.clear();
-    }
+    void deleteAll();
 }

@@ -17,7 +17,7 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.JdbcLineDao;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -25,7 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @AfterEach
     void tearDown() {
-        new LineDao().deleteAll();
+        new JdbcLineDao().deleteAll();
     }
 
     @Test
