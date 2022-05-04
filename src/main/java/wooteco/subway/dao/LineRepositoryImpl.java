@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -49,6 +50,17 @@ public class LineRepositoryImpl implements LineRepository {
         return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
     }
 
+    @Override
+    public Line findByName(final String name) {
+        String sql = "SELECT * FROM line WHERE name = :name";
+        SqlParameterSource parameters = new MapSqlParameterSource("name", name);
+        try {
+            return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return null;
+        }
+    }
+
     private RowMapper<Line> rowMapper() {
         return (resultSet, rowNum) -> {
             long id = resultSet.getLong("id");
@@ -57,7 +69,6 @@ public class LineRepositoryImpl implements LineRepository {
             return new Line(id, name, color);
         };
     }
-
 
     @Override
     public void update(final LineUpdateDto lineUpdateDto) {

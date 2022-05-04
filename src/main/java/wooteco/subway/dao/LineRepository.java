@@ -13,6 +13,8 @@ public interface LineRepository {
 
     Line findById(Long id);
 
+    Line findByName(String name);
+
     void update(LineUpdateDto lineUpdateDto);
 
     void deleteById(Long id);
