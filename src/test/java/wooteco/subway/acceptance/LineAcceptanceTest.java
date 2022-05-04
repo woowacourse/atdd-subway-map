@@ -3,15 +3,11 @@ package wooteco.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.StationResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,11 +17,8 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    @BeforeEach
-    public void clear() {
-        LineDao.clearAll();
-    }
 
     @DisplayName("노선을 생성한다.")
     @Test

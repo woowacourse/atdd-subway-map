@@ -14,13 +14,16 @@ import java.util.stream.Collectors;
 
 @RestController
 public class StationController {
+    private final StationDao stationDao;
+
+    public StationController(StationDao stationDao) {
+        this.stationDao = stationDao;
+    }
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
-        Station newStation = StationDao.save(station);
-
-        //todo - 이미 존재하는 이름이면 에러 발생
+        Station newStation = stationDao.save(station);
 
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
@@ -28,7 +31,7 @@ public class StationController {
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = StationDao.findAll();
+        List<Station> stations = stationDao.findAll();
         List<StationResponse> stationResponses = stations.stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());

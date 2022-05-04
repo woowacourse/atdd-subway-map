@@ -1,56 +1,62 @@
 package wooteco.subway.dao;
 
-import org.springframework.util.ReflectionUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
+@Repository
 public class LineDao {
-    private static Long seq = 0L;
-    //private static final List<Line> lines = new ArrayList<>();
-    private static final List<Line> lines = new ArrayList<>();
 
-    public static Line save(Line line) {
-        checkDuplication(line.getName());
-        Line persistLine = createNewObject(line);
-        lines.add(persistLine);
-        return persistLine;
+    private final JdbcTemplate jdbcTemplate;
+
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static void checkDuplication(String name) {
-        if (lines.stream().anyMatch(line -> name.equals(line.getName()))) {
+    public Line save(Line line) {
+        checkDuplication(line.getName());
+        String sql = "insert into LINE (name, color) values (?, ?)";
+        jdbcTemplate.update(sql, line.getName(), line.getColor());
+
+        return createNewObject(line);
+    }
+
+    private void checkDuplication(String name) {
+        String sql = String.format("select count(*) from LINE where name = '%s'", name);
+
+        if (jdbcTemplate.queryForObject(sql, Integer.class) > 0) {
             throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
         }
     }
 
-    public static List<Line> findAll() {
-        return lines;
+    public List<Line> findAll() {
+        String sql = "select * from LINE";
+        return jdbcTemplate.query(sql, new LineMapper());
     }
 
-    private static Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+    private static class LineMapper implements RowMapper<Line> {
+        public Line mapRow(ResultSet rs, int rowCnt) throws SQLException {
+            return new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color"));
+        }
     }
 
-    public static Optional<Line> findById(Long id) {
-        return lines.stream()
-                .filter(line -> id.equals(line.getId()))
-                .findFirst();
+    private Line createNewObject(Line line) {
+        String sql2 = "select max(id) from LINE";
+        Long id = jdbcTemplate.queryForObject(sql2, Long.class);
+        return new Line(id, line.getName(), line.getColor());
     }
 
-    public static void edit(Long id, String name, String color) {
-        Line line = findById(id).get();
-        lines.remove(line);
-        lines.add(new Line(id, name, color));
+    public Line findById(Long id) {
+        String sql = String.format("select * from LINE where id = %d", id);
+        return jdbcTemplate.queryForObject(sql, new LineMapper());
     }
 
-    public static void clearAll() {
-        lines.clear();
-        seq = 0L;
+    public void edit(Long id, String name, String color) {
+        String sql = "update LINE set name = ?, color = ? where id = ?";
+        jdbcTemplate.update(sql, name, color, id);
     }
 }
