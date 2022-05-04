@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,4 +40,14 @@ class LineDaoTest {
         Line line2 = LineDao.save(new Line("3호선", "bg-blue-600"));
         assertThat(line2.getId() - line1.getId()).isEqualTo(1L);
     }
+
+    @Test
+    @DisplayName("노선 목록을 조회한다.")
+    void showLineList() {
+        LineDao.save(new Line("1호선", "blue"));
+        LineDao.save(new Line("2호선", "green"));
+        List<Line> values = LineDao.findAll();
+        assertThat(values).hasSize(2);
+    }
+
 }
