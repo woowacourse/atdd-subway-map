@@ -82,6 +82,7 @@ public class LineDaoTest {
         Line expected = new Line(1L, "분당선", "green");
 
         lineDao.update(expected);
+
         assertThat(lineDao.findById(1L).orElseThrow()).isEqualTo(expected);
     }
 }
