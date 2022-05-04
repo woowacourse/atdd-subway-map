@@ -22,7 +22,7 @@ public class LineDaoTest {
     private LineDao lineDao;
 
     @BeforeEach
-    void beforEach() {
+    void beforeEach() {
         lineDao = new LineDao(jdbcTemplate);
     }
 
