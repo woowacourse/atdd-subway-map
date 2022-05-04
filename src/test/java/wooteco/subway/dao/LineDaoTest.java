@@ -5,15 +5,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
 
 public class LineDaoTest {
 
     private final LineDao lineDao = LineDao.getInstance();
+
+    @AfterEach
+    void tearDown() {
+        lineDao.deleteAll();
+    }
 
     @Test
     @DisplayName("Line 을 저장한다.")

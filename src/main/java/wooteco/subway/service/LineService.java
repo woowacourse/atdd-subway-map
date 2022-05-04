@@ -29,4 +29,12 @@ public class LineService {
     public List<Line> findAll() {
         return lineDao.findAll();
     }
+
+    public Line findById(Long id) {
+        Optional<Line> foundLine = lineDao.findById(id);
+        if (foundLine.isEmpty()) {
+            throw new IllegalArgumentException("존재하지 않는 노선입니다.");
+        }
+        return foundLine.get();
+    }
 }

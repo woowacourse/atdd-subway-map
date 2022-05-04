@@ -69,4 +69,31 @@ public class LineServiceTest {
             () -> assertThat(equals(actual.get(1), line2)).isTrue()
         );
     }
+
+    @Test
+    @DisplayName("id로 Line 을 조회한다.")
+    void findById() {
+        //given
+        Line line = new Line("중곡", "khaki");
+        Line savedLine = lineService.save(line);
+
+        //when
+        Line actual = lineService.findById(savedLine.getId());
+
+        //then
+        assertThat(equals(actual, line)).isTrue();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 id 를 조회할 경우 예외를 던진다.")
+    void findByIdNotExists() {
+        //given
+        Line line = new Line("이수", "sky-blue");
+        Long id = lineService.save(line).getId();
+
+        //then
+        assertThatThrownBy(() -> lineService.findById(id + 1))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("존재하지 않는 노선입니다.");
+    }
 }
