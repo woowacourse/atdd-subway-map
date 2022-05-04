@@ -41,14 +41,24 @@ public class LineDao {
     }
 
     private void checkDuplicateName(String name) {
-        if (findByName(name).isPresent()) {
+        if (findName(name).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 노선입니다.");
         }
     }
 
-    private Optional<Line> findByName(String name) {
-        String sql = "SELECT * FROM line WHERE name = :name";
+    private Optional<String> findName(String name) {
+        String sql = "SELECT name FROM line WHERE name = :name";
         MapSqlParameterSource parameters = new MapSqlParameterSource("name", name);
+        try {
+            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, String.class));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    private Optional<Line> findById(Long id) {
+        String sql = "SELECT * FROM line WHERE id = :id";
+        MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
         try {
             return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, lineRowMapper));
         } catch (EmptyResultDataAccessException e) {
