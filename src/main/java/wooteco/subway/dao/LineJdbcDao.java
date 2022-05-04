@@ -7,10 +7,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.DuplicateLineNameException;
 import wooteco.subway.exception.NoSuchLineException;
 
+@Repository
 public class LineJdbcDao {
 
     private JdbcTemplate jdbcTemplate;

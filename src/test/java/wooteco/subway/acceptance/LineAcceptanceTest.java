@@ -10,22 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.dto.LineResponse;
 
 public class LineAcceptanceTest extends AcceptanceTest {
-
-    @Override
-    @BeforeEach
-    public void setUp() {
-        super.setUp();
-        LineDao.deleteAll();
-    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -187,6 +178,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         Map<String, String> updateParam = new HashMap<>();
+        updateParam.put("name", "1호선");
+        updateParam.put("color", "파란색");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(updateParam)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -247,23 +240,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    @DisplayName("존재하지 않는 노선을 제거한다")
-    @Test
-    void deleteNonExistLine() {
-        // given
-
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete("/lines/1")
-                .then().log().all()
-                .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
     }
 }
