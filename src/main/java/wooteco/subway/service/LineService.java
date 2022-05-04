@@ -8,9 +8,9 @@ public interface LineService {
 
     Line save(LineRequest lineRequest);
 
-    Line findById(Long id);
-
     List<Line> findAll();
+
+    Line findById(Long id);
 
     void update(Long id, LineRequest lineRequest);
 

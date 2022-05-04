@@ -23,13 +23,11 @@ public class SpringStationService implements StationService {
         return stationDao.save(station);
     }
 
-
     @Transactional(readOnly = true)
     @Override
     public List<Station> findAll() {
         return stationDao.findAll();
     }
-
 
     @Transactional
     @Override
