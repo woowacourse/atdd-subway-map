@@ -28,8 +28,8 @@ public class LineDao {
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디를 가진 노선이 존재하지 않습니다."));
     }
 
-    public static void delete(Long lineId) {
-        lines.removeIf(line -> line.isSameId(lineId));
+    public static boolean delete(Long lineId) {
+        return lines.removeIf(line -> line.isSameId(lineId));
     }
 
     public static void update(Long lineId, String lineName, String color) {
@@ -49,5 +49,9 @@ public class LineDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
         return line;
+    }
+
+    public static void deleteAll() {
+        lines.clear();
     }
 }

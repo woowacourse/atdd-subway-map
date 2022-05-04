@@ -21,8 +21,8 @@ public class StationDao {
         return new ArrayList<>(stations);
     }
 
-    public static void delete(Long stationId) {
-        stations.removeIf(station -> station.isSameId(stationId));
+    public static boolean delete(Long stationId) {
+        return stations.removeIf(station -> station.isSameId(stationId));
     }
 
     private static Station createNewObject(Station station) {
@@ -30,5 +30,9 @@ public class StationDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
+    }
+
+    public static void deleteAll() {
+        stations.clear();
     }
 }

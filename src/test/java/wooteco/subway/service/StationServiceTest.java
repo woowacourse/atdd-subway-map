@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Station;
+import wooteco.subway.dto.StationResponse;
 
 class StationServiceTest {
 
@@ -20,7 +20,7 @@ class StationServiceTest {
         stationService.save("station2");
         stationService.save("station3");
 
-        List<Station> stations = stationService.findAll();
+        List<StationResponse> stations = stationService.findAll();
 
         assertThat(stations).hasSize(3)
                 .extracting("name")
@@ -41,5 +41,13 @@ class StationServiceTest {
         assertThatThrownBy(() -> stationService.save("station1"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이미 존재하는 역 이름입니다.");
+    }
+
+    @Test
+    @DisplayName("없는 역을 제거하면 예외가 발생한다.")
+    void deleteNotExistStation() {
+        assertThatThrownBy(() -> stationService.delete(0l))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("존재하지 않는 역입니다.");
     }
 }
