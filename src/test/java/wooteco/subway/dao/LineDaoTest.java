@@ -1,8 +1,6 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static wooteco.subway.dao.LineDao.*;
 
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -18,11 +16,11 @@ class LineDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private LineDao lineDao;
+    private JdbcLineDao lineDao;
 
     @BeforeEach
     void beforeEach() {
-        lineDao = new LineDao(jdbcTemplate);
+        lineDao = new JdbcLineDao(jdbcTemplate);
     }
 
     @Test
@@ -32,28 +30,6 @@ class LineDaoTest {
         Line line = lineDao.save(new Line(name, color));
 
         assertThat(line.getName()).isEqualTo(name);
-    }
-
-    @Test
-    void saveDuplicateName() {
-        String name = "신분당선";
-        String color = "bg-red-600";
-        lineDao.save(new Line(name, color));
-
-        assertThatThrownBy(() -> lineDao.save(new Line(name, "blue")))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(NAME_DUPLICATE_EXCEPTION_MESSAGE);
-    }
-
-    @Test
-    void saveDuplicateColor() {
-        String name = "신분당선";
-        String color = "bg-red-600";
-        lineDao.save(new Line(name, color));
-
-        assertThatThrownBy(() -> lineDao.save(new Line("2호선", color)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(COLOR_DUPLICATE_EXCEPTION_MESSAGE);
     }
 
     @Test
@@ -83,7 +59,7 @@ class LineDaoTest {
         Long id = line.getId();
         String updateName = "2호선";
         String updateColor = "bg-blue-500";
-        lineDao.update(id, updateName, updateColor);
+        lineDao.update(new Line(id, updateName, updateColor));
 
         Line updatedLine = lineDao.findById(id);
         Assertions.assertAll(
