@@ -47,5 +47,12 @@ public class LineRepositoryTest {
         );
     }
 
+    @DisplayName("노선을 조회한다.")
+    @Test
+    void findById() {
+        Line saveLine = lineRepository.save(new Line("분당선", "bg-red-600"));
+        Line findLine = lineRepository.findById(saveLine.getId());
 
+        assertThat(findLine).isEqualTo(saveLine);
+    }
 }

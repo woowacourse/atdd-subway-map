@@ -39,6 +39,12 @@ public class LineRepository {
         return namedParameterJdbcTemplate.query(sql, rowMapper());
     }
 
+    public Line findById(Long id) {
+        String sql = "SELECT * FROM line WHERE id = :id";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        return namedParameterJdbcTemplate.queryForObject(sql ,parameters, rowMapper());
+    }
+
     private RowMapper<Line> rowMapper() {
         return (resultSet, rowNum) -> {
             long id = resultSet.getLong("id");
