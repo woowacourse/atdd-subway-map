@@ -12,19 +12,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
+@RequestMapping("/stations")
 @RestController
 public class StationController {
 
-    @PostMapping("/stations")
+    private static final String STATION_DUPLICATION_EXCEPTION_MESSAGE = "중복되는 지하철역이 존재합니다.";
+    private static final String NO_SUCH_STATION_EXCEPTION_MESSAGE = "해당 ID의 지하철역이 존재하지 않습니다.";
+
+    @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         if (StationDao.findByName(stationRequest.getName()).isPresent()) {
-            throw new IllegalArgumentException("중복되는 지하철역이 존재합니다.");
+            throw new IllegalArgumentException(STATION_DUPLICATION_EXCEPTION_MESSAGE);
         }
         Station station = new Station(stationRequest.getName());
         Station newStation = StationDao.save(station);
@@ -32,7 +37,7 @@ public class StationController {
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
     }
 
-    @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
         List<Station> stations = StationDao.findAll();
         List<StationResponse> stationResponses = stations.stream()
@@ -41,10 +46,10 @@ public class StationController {
         return ResponseEntity.ok().body(stationResponses);
     }
 
-    @DeleteMapping("/stations/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         Station station = StationDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 지하철역이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION_MESSAGE));
         StationDao.delete(station);
         return ResponseEntity.noContent().build();
     }
