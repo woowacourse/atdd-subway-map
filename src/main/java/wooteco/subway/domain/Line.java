@@ -49,17 +49,4 @@ public class Line {
     public int hashCode() {
         return Objects.hash(name, color);
     }
-
-    public void update(LineRequest lineRequest) {
-        String name = lineRequest.getName();
-        String color = lineRequest.getColor();
-        if (name != null) {
-            this.name = name;
-        }
-
-        if (color != null) {
-            this.color = color;
-        }
-
-    }
 }
