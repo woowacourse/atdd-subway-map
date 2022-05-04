@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
@@ -18,6 +19,9 @@ public class AcceptanceTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    private StationDao stationDao;
+
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
@@ -27,13 +31,13 @@ public class AcceptanceTest {
     }
 
     private void clearAllStations() {
-        List<Station> stations = StationDao.findAll();
+        List<Station> stations = stationDao.findAll();
         List<Long> stationIds = stations.stream()
             .map(Station::getId)
             .collect(Collectors.toList());
 
         for (Long stationId : stationIds) {
-            StationDao.deleteById(stationId);
+            stationDao.deleteById(stationId);
         }
     }
 

@@ -1,36 +1,53 @@
 package wooteco.subway.dao;
 
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
+@Repository
 public class StationDao {
 
-    private static Long seq = 0L;
-    private static final List<Station> stations = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
 
-    public static Station save(Station station) {
-        validateDuplicateName(station);
-        Station persistStation = createStation(station);
-        stations.add(persistStation);
-        return persistStation;
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static void validateDuplicateName(Station station) {
-        if (stations.contains(station)) {
-            throw new IllegalArgumentException("중복된 이름이 존재합니다.");
-        }
+    public Station save(Station station) {
+        final String sql = "INSERT INTO station (name) VALUES (?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, station.getName());
+            return ps;
+        }, keyHolder);
+        long id = keyHolder.getKey().longValue();
+
+        return new Station(id, station.getName());
     }
 
-    public static List<Station> findAll() {
-        return stations;
+    public List<Station> findAll() {
+        final String sql = "SELECT id, name FROM station";
+        return jdbcTemplate.query(sql, stationMapper());
     }
 
-    private static Station createStation(Station station) {
-        return new Station(++seq, station.getName());
+    private RowMapper<Station> stationMapper() {
+        return (resultSet, rowNum) -> {
+            return new Station(
+                resultSet.getLong("id"),
+                resultSet.getString("name")
+            );
+        };
     }
 
-    public static boolean deleteById(Long id) {
-        return stations.removeIf(it -> it.getId().equals(id));
+    public boolean deleteById(Long id) {
+        final String sql = "DELETE FROM station where id = ?";
+        int updateSize = jdbcTemplate.update(sql, id);
+        return updateSize != 0;
     }
 }

@@ -7,19 +7,32 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
 
+@JdbcTest
 class StationDaoTest {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private StationDao stationDao;
+
 
     @BeforeEach
     void setUp() {
-        List<Station> stations = StationDao.findAll();
+        stationDao = new StationDao(jdbcTemplate);
+
+        List<Station> stations = stationDao.findAll();
         List<Long> stationIds = stations.stream()
             .map(Station::getId)
             .collect(Collectors.toList());
 
         for (Long stationId : stationIds) {
-            StationDao.deleteById(stationId);
+            stationDao.deleteById(stationId);
         }
     }
 
@@ -29,7 +42,7 @@ class StationDaoTest {
         Station station = new Station("범고래");
 
         // when
-        Station result = StationDao.save(station);
+        Station result = stationDao.save(station);
 
         // then
         assertThat(station).isEqualTo(result);
@@ -38,11 +51,11 @@ class StationDaoTest {
     @Test
     void findAll() {
         // given
-        Station station1 = StationDao.save(new Station("범고래"));
-        Station station2 = StationDao.save(new Station("애쉬"));
+        Station station1 = stationDao.save(new Station("범고래"));
+        Station station2 = stationDao.save(new Station("애쉬"));
 
         // when
-        List<Station> stations = StationDao.findAll();
+        List<Station> stations = stationDao.findAll();
 
         // then
         assertThat(stations)
@@ -57,22 +70,21 @@ class StationDaoTest {
         Station station2 = new Station("범고래");
 
         // when
-        StationDao.save(station1);
+        stationDao.save(station1);
 
         // then
-        assertThatThrownBy(() -> StationDao.save(station2))
-            .hasMessage("중복된 이름이 존재합니다.")
-            .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> stationDao.save(station2))
+            .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
     void delete() {
         // given
-        Station station = StationDao.save(new Station("범고래"));
+        Station station = stationDao.save(new Station("범고래"));
 
         // when
-        StationDao.deleteById(station.getId());
-        List<Station> stations = StationDao.findAll();
+        stationDao.deleteById(station.getId());
+        List<Station> stations = stationDao.findAll();
 
         // then
         assertThat(stations)
