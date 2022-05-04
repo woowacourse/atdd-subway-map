@@ -24,7 +24,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        params.put("name", "사당역");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -66,12 +66,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
-        RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .delete("/stations");
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -113,15 +107,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
             .map(it -> it.getId())
             .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
 
-        for (Long resultLineId : resultLineIds) {
-            RestAssured.given().log().all()
-                .when()
-                .delete("/stations/" + resultLineId)
-                .then().log().all()
-                .extract();
-        }
+        assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
     @DisplayName("지하철역을 제거한다.")
