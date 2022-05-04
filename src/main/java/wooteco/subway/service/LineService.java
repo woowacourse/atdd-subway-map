@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.JdbcLineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -12,9 +12,9 @@ import wooteco.subway.dto.LineResponse;
 @Transactional
 @Service
 public class LineService {
-    private final LineDao lineDao;
+    private final JdbcLineDao lineDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(JdbcLineDao lineDao) {
         this.lineDao = lineDao;
     }
 
