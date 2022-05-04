@@ -76,19 +76,6 @@ class StationDaoTest {
         assertThat(result2).isEmpty();
     }
 
-    @DisplayName("저장된 모든 지하철역을 제거한다.")
-    @Test
-    void deleteAll() {
-        Station test = new Station(null, "test1");
-        stationDao.save(test);
-        Station test2 = new Station(null, "test2");
-        stationDao.save(test2);
-
-        stationDao.deleteAll();
-        List<Station> result = stationDao.findAll();
-        assertThat(result).isEmpty();
-    }
-
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
