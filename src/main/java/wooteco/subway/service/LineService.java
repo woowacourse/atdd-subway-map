@@ -27,13 +27,15 @@ public class LineService {
     }
 
     public Line findById(Long id) {
-        Line line = lineDaoImpl.findById(id)
+        final Line line = lineDaoImpl.findById(id)
             .orElseThrow(() -> new LineNotFoundException("해당 노선이 없습니다.", 1));
         return line;
     }
 
     public void update(Long id, LineRequest lineRequest) {
-        lineDaoImpl.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
+        final Line targetLine = findById(id);
+        targetLine.update(lineRequest.toEntity());
+        lineDaoImpl.update(targetLine);
     }
 
     public void delete(Long id) {
