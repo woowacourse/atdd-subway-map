@@ -16,6 +16,6 @@ public class SubwayExceptionController {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleOtherException(RuntimeException e) {
-        return ResponseEntity.badRequest().body(INTERNAL_ERROR_MESSAGE);
+        return ResponseEntity.internalServerError().body(INTERNAL_ERROR_MESSAGE);
     }
 }
