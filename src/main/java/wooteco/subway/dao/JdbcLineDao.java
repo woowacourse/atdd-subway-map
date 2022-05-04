@@ -34,7 +34,8 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public List<Line> findAll() {
-        return null;
+        String sql = "select * from LINE";
+        return jdbcTemplate.query(sql, generateMapper());
     }
 
     @Override
@@ -63,7 +64,8 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public void deleteById(Long id) {
-
+        String sql = "delete from LINE where id = :id";
+        jdbcTemplate.update(sql, Map.of("id", id));
     }
 
     @Override
