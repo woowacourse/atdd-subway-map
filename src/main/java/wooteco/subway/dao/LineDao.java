@@ -46,4 +46,8 @@ public class LineDao {
                 .filter(line -> line.getId().equals(id))
                 .findFirst();
     }
+
+    public static void delete(Line line) {
+        lines.remove(line);
+    }
 }

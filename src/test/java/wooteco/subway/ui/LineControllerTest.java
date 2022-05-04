@@ -3,6 +3,7 @@ package wooteco.subway.ui;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mockStatic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -123,6 +124,31 @@ public class LineControllerTest {
                 .willReturn(Optional.empty());
         // when
         ResultActions perform = mockMvc.perform(get("/lines/1"));
+        // then
+        perform.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value("해당 ID의 지하철 노선이 존재하지 않습니다."));
+    }
+
+    @DisplayName("지하철 노선을 제거한다.")
+    @Test
+    void deleteLine() throws Exception {
+        // given
+        given(LineDao.findById(1L))
+                .willReturn(Optional.of(new Line(1L, "test", "BLACK")));
+        // when
+        ResultActions perform = mockMvc.perform(delete("/lines/1"));
+        // then
+        perform.andExpect(status().isNoContent());
+    }
+
+    @DisplayName("삭제 요청 시 ID에 해당하는 지하철 노선이 없다면 에러를 응답한다.")
+    @Test
+    void deleteLine_noExistStation_exception() throws Exception {
+        // given
+        given(LineDao.findById(1L))
+                .willReturn(Optional.empty());
+        // when
+        ResultActions perform = mockMvc.perform(delete("/lines/1"));
         // then
         perform.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("message").value("해당 ID의 지하철 노선이 존재하지 않습니다."));

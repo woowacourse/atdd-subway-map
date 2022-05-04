@@ -71,6 +71,20 @@ public class LineDaoTest {
         assertThat(lineEmpty).isEmpty();
     }
 
+    @DisplayName("지하철역을 제거한다.")
+    @Test
+    void deleteLine() {
+        Line test = new Line("test1", "YELLOW");
+        Line savedTest = LineDao.save(test);
+        Line test2 = new Line("test2", "BROWN");
+        LineDao.save(test2);
+
+        LineDao.delete(savedTest);
+
+        List<Line> result = LineDao.findAll();
+        assertThat(result.size()).isEqualTo(1);
+    }
+
     @AfterAll
     static void afterAll() {
         LineDao.deleteAll();

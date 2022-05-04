@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,6 +46,14 @@ public class LineController {
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 지하철 노선이 존재하지 않습니다."));
         LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
         return ResponseEntity.ok().body(lineResponse);
+    }
+
+    @DeleteMapping("/lines/{id}")
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+        Line station = LineDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 지하철 노선이 존재하지 않습니다."));
+        LineDao.delete(station);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler({IllegalArgumentException.class})

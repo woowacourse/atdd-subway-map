@@ -29,6 +29,6 @@
   - [ ] 노선 수정 `PUT /lines/{id}`
     - `요청` json으로 name, color를 전송한다.
     - 결과 상태 코드는 `200 OK` 이다.
-  - [ ] 노선 삭제 `DELETE /lines/{id}`
+  - [x] 노선 삭제 `DELETE /lines/{id}`
     - 결과 상태 코드는 `204 No Content` 이다.
 
