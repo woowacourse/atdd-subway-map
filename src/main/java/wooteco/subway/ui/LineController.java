@@ -6,6 +6,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.service.LineService;
 
 import java.net.URI;
 import java.util.List;
@@ -15,12 +16,16 @@ import java.util.stream.Collectors;
 @RequestMapping("/lines")
 public class LineController {
 
+    private final LineService lineService;
+
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
+    }
+
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line savedLine = LineDao.save(line);
-        LineResponse lineResponse = new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor());
-        return ResponseEntity.created(URI.create("/lines/" + savedLine.getId())).body(lineResponse);
+        LineResponse lineResponse = lineService.create(lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping
