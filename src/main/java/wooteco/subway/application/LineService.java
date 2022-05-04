@@ -1,10 +1,14 @@
 package wooteco.subway.application;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotExistException;
 
+@Service
+@Transactional
 public class LineService {
 
     public Line save(String name, String color) {
@@ -14,6 +18,7 @@ public class LineService {
         return LineDao.save(new Line(name, color));
     }
 
+    @Transactional(readOnly = true)
     public Line findById(Long id) {
         return LineDao.findById(id)
             .orElseThrow(NotExistException::new);

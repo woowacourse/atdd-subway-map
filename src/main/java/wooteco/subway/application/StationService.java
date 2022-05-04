@@ -1,10 +1,14 @@
 package wooteco.subway.application;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotExistException;
 
+@Service
+@Transactional
 public class StationService {
 
     public StationService() {

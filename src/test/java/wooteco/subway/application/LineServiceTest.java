@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.BlankArgumentException;
@@ -14,13 +16,14 @@ import wooteco.subway.exception.NotExistException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SpringBootTest
 public class LineServiceTest {
 
+    @Autowired
     private LineService lineService;
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService();
         LineDao.deleteAll();
     }
 

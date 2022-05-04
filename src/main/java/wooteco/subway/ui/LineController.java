@@ -16,7 +16,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/lines")
 public class LineController {
 
-    private final LineService lineService = new LineService();
+    private final LineService lineService;
+
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
+    }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLines(@RequestBody LineRequest lineRequest) {
