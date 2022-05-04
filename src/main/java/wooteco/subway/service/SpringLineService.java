@@ -16,27 +16,32 @@ public class SpringLineService implements LineService {
         this.lineDao = lineDao;
     }
 
+    @Transactional
     @Override
     public Line save(LineRequest lineRequest) {
         Line line = new Line(null, lineRequest.getName(), lineRequest.getColor());
         return lineDao.save(line);
     }
 
-    @Override
-    public Line findById(Long id) {
-        return lineDao.findById(id);
-    }
-
+    @Transactional(readOnly = true)
     @Override
     public List<Line> findAll() {
         return lineDao.findAll();
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Line findById(Long id) {
+        return lineDao.findById(id);
+    }
+
+    @Transactional
     @Override
     public void update(Long id, LineRequest lineRequest) {
         lineDao.update(id, lineRequest);
     }
 
+    @Transactional
     @Override
     public void deleteById(Long id) {
         lineDao.deleteById(id);
