@@ -14,7 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
-class StationDaoTest {
+class StationDaoImplTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -23,7 +23,7 @@ class StationDaoTest {
 
     @BeforeEach
     void setUp() {
-        stationDao = new StationDao(jdbcTemplate);
+        stationDao = new StationDaoImpl(jdbcTemplate);
 
         List<Station> stations = stationDao.findAll();
         List<Long> stationIds = stations.stream()
