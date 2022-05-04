@@ -16,5 +16,4 @@ public class LineServiceTest {
 
         assertThat(LineDao.findById(line.getId())).isNotEmpty();
     }
-
 }
