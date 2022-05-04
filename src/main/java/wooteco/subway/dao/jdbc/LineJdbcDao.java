@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.jdbc;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -8,12 +8,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NoSuchLineException;
 
 @Repository
-public class LineJdbcDao {
+public class LineJdbcDao implements LineDao {
 
     private JdbcTemplate jdbcTemplate;
 
@@ -21,6 +22,7 @@ public class LineJdbcDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Long save(final Line line) {
         final String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
 
@@ -39,6 +41,7 @@ public class LineJdbcDao {
         return keyHolder.getKey().longValue();
     }
 
+    @Override
     public List<Line> findAll() {
         final String sql = "SELECT id, name, color FROM LINE";
 
@@ -49,6 +52,7 @@ public class LineJdbcDao {
         ));
     }
 
+    @Override
     public Line findById(final Long id) {
         final String sql = "SELECT id, name, color FROM LINE WHERE id = (?)";
 
@@ -63,6 +67,7 @@ public class LineJdbcDao {
         }
     }
 
+    @Override
     public Long update(final Long id, final String name, final String color) {
         final String sql = "UPDATE LINE SET name = (?), color = (?) WHERE id = (?)";
 
@@ -81,6 +86,7 @@ public class LineJdbcDao {
         return affectedRow == 0;
     }
 
+    @Override
     public void deleteById(final Long id) {
         final String sql = "DELETE FROM LINE WHERE id = (?)";
 

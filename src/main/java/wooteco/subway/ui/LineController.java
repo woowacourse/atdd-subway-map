@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.dao.LineJdbcDao;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -19,9 +19,9 @@ import wooteco.subway.dto.LineResponse;
 @RestController
 public class LineController {
 
-    private final LineJdbcDao lineDao;
+    private final LineDao lineDao;
 
-    public LineController(final LineJdbcDao lineDao) {
+    public LineController(final LineDao lineDao) {
         this.lineDao = lineDao;
     }
 

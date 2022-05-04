@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.jdbc;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -7,11 +7,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateStationNameException;
 
 @Repository
-public class StationJdbcDao {
+public class StationJdbcDao implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -19,6 +20,7 @@ public class StationJdbcDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Long save(final Station station) {
         final String sql = "INSERT INTO STATION (name) VALUES (?)";
 
@@ -36,6 +38,7 @@ public class StationJdbcDao {
         return keyHolder.getKey().longValue();
     }
 
+    @Override
     public List<Station> findAll() {
         final String sql = "SELECT id, name FROM STATION";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Station(
@@ -44,6 +47,7 @@ public class StationJdbcDao {
         ));
     }
 
+    @Override
     public void deleteById(final Long id) {
         final String sql = "DELETE FROM STATION WHERE id = (?)";
         jdbcTemplate.update(sql, id);

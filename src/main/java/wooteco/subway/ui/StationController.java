@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.dao.StationJdbcDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
@@ -18,9 +18,9 @@ import wooteco.subway.dto.StationResponse;
 @RestController
 public class StationController {
 
-    private final StationJdbcDao stationDao;
+    private final StationDao stationDao;
 
-    public StationController(final StationJdbcDao stationDao) {
+    public StationController(final StationDao stationDao) {
         this.stationDao = stationDao;
     }
 

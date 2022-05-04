@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.dao.memory.StationMemoryDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.NoSuchStationException;
 
@@ -14,7 +15,7 @@ class StationDaoTest {
 
     @BeforeEach
     void setUp() {
-        StationDao.deleteAll();
+        StationMemoryDao.deleteAll();
     }
 
     @DisplayName("새로운 지하철 역을 저장한다")
@@ -24,10 +25,10 @@ class StationDaoTest {
         Station station = new Station(1L, "강남역");
 
         // when
-        StationDao.save(station);
+        StationMemoryDao.save(station);
 
         // then
-        List<Station> stations = StationDao.findAll();
+        List<Station> stations = StationMemoryDao.findAll();
         assertThat(stations.get(0)).isEqualTo(station);
     }
 
@@ -35,9 +36,9 @@ class StationDaoTest {
     @Test
     void saveStationThrowException() {
         String name = "강남역";
-        StationDao.save(new Station(1L, name));
+        StationMemoryDao.save(new Station(1L, name));
 
-        assertThatThrownBy(() -> StationDao.save(new Station(2L, name)))
+        assertThatThrownBy(() -> StationMemoryDao.save(new Station(2L, name)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("같은 이름");
     }
@@ -46,12 +47,12 @@ class StationDaoTest {
     @Test
     void findAll() {
         // given
-        StationDao.save(new Station(1L, "name1"));
-        StationDao.save(new Station(2L, "name2"));
-        StationDao.save(new Station(3L, "name3"));
+        StationMemoryDao.save(new Station(1L, "name1"));
+        StationMemoryDao.save(new Station(2L, "name2"));
+        StationMemoryDao.save(new Station(3L, "name3"));
 
         // when
-        List<Station> stations = StationDao.findAll();
+        List<Station> stations = StationMemoryDao.findAll();
 
         // then
         assertThat(stations).hasSize(3);
@@ -62,32 +63,32 @@ class StationDaoTest {
     void deleteAll() {
         // given
         Station station = new Station(1L, "강남역");
-        StationDao.save(station);
+        StationMemoryDao.save(station);
 
         // when
-        StationDao.deleteAll();
+        StationMemoryDao.deleteAll();
 
         // then
-        assertThat(StationDao.findAll()).isEmpty();
+        assertThat(StationMemoryDao.findAll()).isEmpty();
     }
 
     @DisplayName("id로 역 하나를 삭제한다")
     @Test
     void deleteById() {
         // given
-        Long savedId = StationDao.save(new Station(1L, "station"));
+        Long savedId = StationMemoryDao.save(new Station(1L, "station"));
 
         // when
-        StationDao.deleteById(savedId);
+        StationMemoryDao.deleteById(savedId);
 
         // then
-        assertThat(StationDao.findAll()).isEmpty();
+        assertThat(StationMemoryDao.findAll()).isEmpty();
     }
 
     @DisplayName("삭제하려는 지하철 역이 없는 경우 예외를 발생시킨다")
     @Test
     void throwsExceptionWhenTargetIdDoesNotExist() {
-        assertThatThrownBy(() -> StationDao.deleteById(1))
+        assertThatThrownBy(() -> StationMemoryDao.deleteById(1))
                 .isInstanceOf(NoSuchStationException.class);
     }
 }
