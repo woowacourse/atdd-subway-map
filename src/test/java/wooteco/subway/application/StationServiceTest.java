@@ -1,5 +1,8 @@
 package wooteco.subway.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,9 +13,6 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.exception.EmptyNameException;
 import wooteco.subway.exception.NotExistStationException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class StationServiceTest {
 
@@ -38,7 +38,7 @@ class StationServiceTest {
         stationService.saveByName(stationName);
 
         assertThatThrownBy(() -> stationService.saveByName(stationName))
-                .isInstanceOf(DuplicateNameException.class);
+            .isInstanceOf(DuplicateNameException.class);
     }
 
     @DisplayName("지하철 역 이름에 빈 문자열을 저장할 수 없다")
@@ -46,7 +46,7 @@ class StationServiceTest {
     @ValueSource(strings = {"", "  ", "     "})
     void saveByEmptyName(String stationName) {
         assertThatThrownBy(() -> stationService.saveByName(stationName))
-                .isInstanceOf(EmptyNameException.class);
+            .isInstanceOf(EmptyNameException.class);
     }
 
     @DisplayName("지하철 역 삭제")
@@ -63,6 +63,6 @@ class StationServiceTest {
     @Test
     void deleteNotExistStation() {
         assertThatThrownBy(() -> stationService.deleteById(50L))
-                .isInstanceOf(NotExistStationException.class);
+            .isInstanceOf(NotExistStationException.class);
     }
 }
