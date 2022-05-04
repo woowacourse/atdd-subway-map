@@ -5,9 +5,6 @@ public class Line {
     private String name;
     private String color;
 
-    public Line() {
-    }
-
     public Line(Long id, String name, String color) {
         this.id = id;
         this.name = name;
@@ -17,10 +14,6 @@ public class Line {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
-    }
-
-    public boolean isSameId(Long id) {
-        return this.id.equals(id);
     }
 
     public boolean isSameName(String name) {
