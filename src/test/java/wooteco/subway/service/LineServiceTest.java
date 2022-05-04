@@ -35,7 +35,7 @@ class LineServiceTest {
 
         // when
         Long savedId = lineService.save(line);
-        Line line1 = lineDao.findById(savedId).get();
+        Line line1 = lineDao.findById(savedId);
 
         // then
         assertThat(line.getName()).isEqualTo(line1.getName());
@@ -106,7 +106,7 @@ class LineServiceTest {
         // when
         Line newLine = new Line("2호선", "bg-green-600");
         lineService.updateById(savedId, newLine);
-        Line line = lineDao.findById(savedId).get();
+        Line line = lineDao.findById(savedId);
 
         // then
         assertThat(line).isEqualTo(newLine);

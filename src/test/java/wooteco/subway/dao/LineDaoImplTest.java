@@ -1,16 +1,18 @@
 package wooteco.subway.dao;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
+
 import wooteco.subway.domain.Line;
 
 @JdbcTest
@@ -42,7 +44,7 @@ class LineDaoImplTest {
 
         // when
         Long savedId = lineDaoImpl.save(line);
-        Line line1 = lineDaoImpl.findById(savedId).get();
+        Line line1 = lineDaoImpl.findById(savedId);
 
         // then
         assertThat(line.getName()).isEqualTo(line1.getName());
@@ -60,6 +62,12 @@ class LineDaoImplTest {
         // then
         assertThatThrownBy(() -> lineDaoImpl.save(line2))
             .isInstanceOf(DuplicateKeyException.class);
+    }
+
+    @Test
+    @DisplayName("없는 id값으로 조회할 경우 예외를 반환해야 한다.")
+    void findByWrongId() {
+
     }
 
     @Test
@@ -112,7 +120,7 @@ class LineDaoImplTest {
         // when
         Line newLine = new Line("2호선", "bg-green-600");
         lineDaoImpl.updateById(savedId, newLine);
-        Line line = lineDaoImpl.findById(savedId).get();
+        Line line = lineDaoImpl.findById(savedId);
 
         // then
         assertThat(line).isEqualTo(newLine);
