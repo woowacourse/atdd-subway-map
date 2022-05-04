@@ -47,7 +47,7 @@ public class StationDaoImpl implements StationDao{
 
     @Override
     public boolean deleteById(Long id) {
-        final String sql = "DELETE FROM station where id = ?";
+        final String sql = "DELETE FROM station WHERE id = ?";
         int updateSize = jdbcTemplate.update(sql, id);
         return updateSize != 0;
     }

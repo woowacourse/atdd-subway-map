@@ -50,20 +50,20 @@ public class LineDaoImpl implements LineDao{
 
     @Override
     public boolean deleteById(Long id) {
-        final String sql = "DELETE FROM line where id = ?";
+        final String sql = "DELETE FROM line WHERE id = ?";
         int updateSize = jdbcTemplate.update(sql, id);
         return updateSize != 0;
     }
 
     @Override
     public Optional<Line> findById(Long id) {
-        final String sql = "SELECT * FROM line where id = ?";
+        final String sql = "SELECT * FROM line WHERE id = ?";
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineMapper(), id));
     }
 
     @Override
     public boolean updateById(Long id, Line line) {
-        final String sql = "UPDATE line SET name = ?, color = ? where id = ?";
+        final String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         int updateSize = jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
         return updateSize != 0;
     }
