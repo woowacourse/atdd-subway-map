@@ -92,4 +92,18 @@ public class StationServiceTest {
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("존재하지 않는 역입니다.");
     }
+
+    @Test
+    @DisplayName("Station 을 삭제한다.")
+    void deleteById() {
+        //given
+        Station station = new Station("이수");
+        Station savedStation = stationService.save(station);
+        stationService.deleteById(savedStation.getId());
+
+        //then
+        assertThatThrownBy(() -> stationService.findById(savedStation.getId()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("존재하지 않는 역입니다.");
+    }
 }

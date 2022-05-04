@@ -38,4 +38,8 @@ public class StationService {
     public List<Station> findAll() {
         return stationDao.findAll();
     }
+
+    public void deleteById(Long id) {
+        stationDao.deleteById(id);
+    }
 }
