@@ -37,17 +37,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void init() {
         jdbcTemplate.update("delete from STATION", new EmptySqlParameterSource());
 
+        savedId1 = insertData("강남역");
+        savedId2 = insertData("역삼역");
+    }
+
+    private Long insertData(String name) {
         String insertSql = "insert into STATION (name) values (:name)";
-        SqlParameterSource source = new MapSqlParameterSource("name", "강남역");
+        SqlParameterSource source = new MapSqlParameterSource("name", name);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(insertSql, source, keyHolder);
-        savedId1 = Objects.requireNonNull(keyHolder.getKey()).longValue();
-
-        insertSql = "insert into STATION (name) values (:name)";
-        source = new MapSqlParameterSource("name", "역삼역");
-        keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(insertSql, source, keyHolder);
-        savedId2 = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     @DisplayName("지하철역을 생성한다.")

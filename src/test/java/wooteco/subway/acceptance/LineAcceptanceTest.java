@@ -36,21 +36,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void init() {
         jdbcTemplate.update("delete from LINE", new EmptySqlParameterSource());
 
-        String insertSql = "insert into LINE (name, color) values (:name, :color)";
-        MapSqlParameterSource source = new MapSqlParameterSource();
-        source.addValue("name", "신분당선");
-        source.addValue("color", "bg-red-600");
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(insertSql, source, keyHolder);
-        savedId1 = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        savedId1 = insertData("신분당선", "bg-red-600");
+        savedId2 = insertData("분당선", "bg-green-600");
+    }
 
-        insertSql = "insert into LINE (name, color) values (:name, :color)";
-        source = new MapSqlParameterSource();
-        source.addValue("name", "분당선");
-        source.addValue("color", "bg-green-600");
-        keyHolder = new GeneratedKeyHolder();
+    private Long insertData(String name, String color) {
+        String insertSql = "insert into LINE (name, color) values (:name, :color)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        MapSqlParameterSource source = new MapSqlParameterSource();
+        source.addValue("name", name);
+        source.addValue("color", color);
+
         jdbcTemplate.update(insertSql, source, keyHolder);
-        savedId2 = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     @DisplayName("지하철 노선을 생성한다.")
