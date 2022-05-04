@@ -26,11 +26,11 @@ public class StationService {
     }
 
     public Station findById(Long id) {
-        Optional<Station> station = stationDao.findById(id);
-        if (station.isEmpty()) {
+        Optional<Station> foundStation = stationDao.findById(id);
+        if (foundStation.isEmpty()) {
             throw new IllegalArgumentException("존재하지 않는 역입니다.");
         }
-        return station.get();
+        return foundStation.get();
     }
 
     public List<Station> findAll() {
