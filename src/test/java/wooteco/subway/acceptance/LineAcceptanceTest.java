@@ -18,7 +18,7 @@ import wooteco.subway.dto.LineBasicResponse;
 
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayName("/lines에 대한 인수테스트")
-public class LineAcceptanceTest extends AcceptanceTest {
+class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("POST /lines - 지하철 노선 생성 테스트")
     @Nested
@@ -32,12 +32,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
             }};
 
             ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .body(params)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .when()
-                    .post("/lines")
-                    .then().log().all()
-                    .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
 
             LineBasicResponse actual = response.jsonPath().getObject(".", LineBasicResponse.class);
             LineBasicResponse expected = new LineBasicResponse(1L, "신분당선", "bg-red-600");
@@ -57,12 +57,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
             postLine(params);
 
             ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .body(params)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .when()
-                    .post("/lines")
-                    .then().log().all()
-                    .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
@@ -81,14 +81,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }});
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
+            .when()
+            .get("/lines")
+            .then().log().all()
+            .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<LineBasicResponse> responseBody = response.jsonPath().getList(".", LineBasicResponse.class);
-        assertThat(responseBody).hasSize(2);
+        List<LineBasicResponse> responseBody = response.jsonPath()
+            .getList(".", LineBasicResponse.class);
+        assertAll(() -> {
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(responseBody).hasSize(2);
+        });
     }
 
     @DisplayName("GET /lines/:id - 지하철 노선 조회 테스트")
@@ -97,30 +100,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 성공시_200_OK() {
-            postLine(new HashMap<>() {{
-                put("name", "신분당선");
-                put("color", "bg-red-600");
-            }});
+            postLine("신분당선", "bg-red-600");
 
             ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .when()
-                    .get("/lines/1")
-                    .then().log().all()
-                    .extract();
+                .when()
+                .get("/lines/1")
+                .then().log().all()
+                .extract();
 
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             LineBasicResponse actual = response.jsonPath().getObject(".", LineBasicResponse.class);
             LineBasicResponse expected = new LineBasicResponse(1L, "신분당선", "bg-red-600");
-            assertThat(actual).isEqualTo(expected);
+            assertAll(() -> {
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                assertThat(actual).isEqualTo(expected);
+            });
         }
 
         @Test
         void 존재하지_않는_노선인_경우_404_NOT_FOUND() {
             ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .when()
-                    .get("/lines/1")
-                    .then().log().all()
-                    .extract();
+                .when()
+                .get("/lines/1")
+                .then().log().all()
+                .extract();
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
         }
@@ -133,50 +135,44 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 성공시_200_OK() {
-            postLine(new HashMap<>() {{
-                put("name", "신분당선");
-                put("color", "bg-red-600");
-            }});
-            Map<String, String> params = new HashMap<>() {{
+            postLine("신분당선", "bg-red-600");
+            HashMap<String, String> params = new HashMap<>() {{
                 put("name", "NEW 분당선");
                 put("color", "bg-red-600");
             }};
 
             ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .body(params)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .when()
-                    .put("/lines/1")
-                    .then().log().all()
-                    .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/1")
+                .then().log().all()
+                .extract();
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         }
 
         @Test
         void 수정하려는_지하철_노선이_존재하지_않는_경우_400_BAD_REQUEST() {
-            Map<String, String> params = new HashMap<>() {{
+            HashMap<String, String> params = new HashMap<>() {{
                 put("name", "NEW 분당선");
                 put("color", "bg-red-600");
             }};
 
             ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .body(params)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .when()
-                    .put("/lines/1")
-                    .then().log().all()
-                    .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/1")
+                .then().log().all()
+                .extract();
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
 
         @Test
         void 이미_존재하는_지하철_노선_이름으로_수정시_400_BAD_REQUEST() {
-            postLine(new HashMap<>() {{
-                put("name", "신분당선");
-                put("color", "bg-red-600");
-            }});
+            postLine("신분당선", "bg-red-600");
             Map<String, String> params = new HashMap<>() {{
                 put("name", "NEW_분당선");
                 put("color", "bg-red-600");
@@ -184,12 +180,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
             postLine(params);
 
             ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .body(params)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .when()
-                    .put("/lines/1")
-                    .then().log().all()
-                    .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/1")
+                .then().log().all()
+                .extract();
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
@@ -201,16 +197,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 성공시_200_OK() {
-            postLine(new HashMap<>() {{
-                put("name", "신분당선");
-                put("color", "bg-red-600");
-            }});
+            postLine("신분당선", "bg-red-600");
 
             ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .when()
-                    .delete("/lines/1")
-                    .then().log().all()
-                    .extract();
+                .when()
+                .delete("/lines/1")
+                .then().log().all()
+                .extract();
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         }
@@ -218,22 +211,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
         @Test
         void 삭제하려는_지하철_노선이_존재하지_않는_경우_BAD_REQUEST() {
             ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .when()
-                    .delete("/lines/1")
-                    .then().log().all()
-                    .extract();
+                .when()
+                .delete("/lines/1")
+                .then().log().all()
+                .extract();
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
     }
 
+    private void postLine(String name, String color) {
+        postLine(new HashMap<>() {{
+            put("name", name);
+            put("color", color);
+        }});
+    }
+
     private void postLine(Map<String, String> params) {
         RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
     }
 }
