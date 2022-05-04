@@ -1,16 +1,15 @@
 package wooteco.subway.dao;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestConstructor;
-
 import wooteco.subway.domain.Line;
 
 @SpringBootTest
@@ -54,8 +53,8 @@ public class LineDaoTest {
         String color = "green";
 
         assertThatThrownBy(() -> lineDao.save(name, color))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 존재하는 노선입니다.");
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("이미 존재하는 노선입니다.");
     }
 
     @Test
