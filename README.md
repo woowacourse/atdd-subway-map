@@ -22,13 +22,13 @@
 
 #### 정상 케이스
 
-- [지하철역 목록 요청 & 응답](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#_%EC%A7%80%ED%95%98%EC%B2%A0%EC%97%AD_%EB%AA%A9%EB%A1%9D)
+- [x] [지하철역 목록 요청 & 응답](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#_%EC%A7%80%ED%95%98%EC%B2%A0%EC%97%AD_%EB%AA%A9%EB%A1%9D)
 
 ### 지하철역 삭제
 
 #### 정상 케이스
 
-- [지하철역 삭제 요청 & 응답](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#_%EC%A7%80%ED%95%98%EC%B2%A0%EC%97%AD_%EC%82%AD%EC%A0%9C)
+- [x] [지하철역 삭제 요청 & 응답](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#_%EC%A7%80%ED%95%98%EC%B2%A0%EC%97%AD_%EC%82%AD%EC%A0%9C)
 
 #### 예외 케이스
 

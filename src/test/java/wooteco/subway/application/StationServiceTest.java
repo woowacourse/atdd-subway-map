@@ -9,6 +9,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.exception.EmptyNameException;
+import wooteco.subway.exception.NotExistStationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -46,5 +47,22 @@ class StationServiceTest {
     void saveByEmptyName(String stationName) {
         assertThatThrownBy(() -> stationService.saveByName(stationName))
                 .isInstanceOf(EmptyNameException.class);
+    }
+
+    @DisplayName("지하철 역 삭제")
+    @Test
+    void deleteById() {
+        Station station = stationService.saveByName("강남역");
+
+        stationService.deleteById(station.getId());
+
+        assertThat(StationDao.existByName("강남역")).isFalse();
+    }
+
+    @DisplayName("존재하지 않는 지하철 역 삭제")
+    @Test
+    void deleteNotExistStation() {
+        assertThatThrownBy(() -> stationService.deleteById(50L))
+                .isInstanceOf(NotExistStationException.class);
     }
 }

@@ -35,11 +35,18 @@ public class StationDao {
                 .findAny();
     }
 
+
     public static boolean existByName(String name) {
-        return stations.stream().anyMatch(station -> station.isSameName(name));
+        return stations.stream()
+                .anyMatch(station -> station.isSameName(name));
     }
 
     public static void deleteAll() {
         stations.clear();
+    }
+
+    public static void deleteById(Long id) {
+        Optional<Station> station = findById(id);
+        stations.remove(station.get());
     }
 }
