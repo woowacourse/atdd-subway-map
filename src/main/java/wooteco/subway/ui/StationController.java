@@ -47,12 +47,8 @@ public class StationController {
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable final Long id) {
+        stationDao.find(id);
         stationDao.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler({IllegalArgumentException.class, DuplicateKeyException.class})
-    public ResponseEntity<Void> handleException() {
-        return ResponseEntity.badRequest().build();
     }
 }
