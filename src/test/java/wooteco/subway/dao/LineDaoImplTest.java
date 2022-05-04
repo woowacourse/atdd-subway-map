@@ -42,7 +42,7 @@ class LineDaoImplTest {
 
         // when
         Long savedId = lineDaoImpl.save(line);
-        Line line1 = lineDaoImpl.findById(savedId);
+        Line line1 = lineDaoImpl.findById(savedId).get();
 
         // then
         assertThat(line.getName()).isEqualTo(line1.getName());
@@ -112,7 +112,7 @@ class LineDaoImplTest {
         // when
         Line newLine = new Line("2호선", "bg-green-600");
         lineDaoImpl.updateById(savedId, newLine);
-        Line line = lineDaoImpl.findById(savedId);
+        Line line = lineDaoImpl.findById(savedId).get();
 
         // then
         assertThat(line).isEqualTo(newLine);
