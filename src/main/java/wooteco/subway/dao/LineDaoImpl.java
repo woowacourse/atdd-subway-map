@@ -1,17 +1,18 @@
 package wooteco.subway.dao;
 
+import org.springframework.util.ReflectionUtils;
+import wooteco.subway.domain.Line;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import org.springframework.util.ReflectionUtils;
-import wooteco.subway.domain.Line;
 
 public class LineDaoImpl implements LineDao {
-    private static LineDaoImpl stationDao = new LineDaoImpl();
+    private static final LineDaoImpl stationDao = new LineDaoImpl();
 
     private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
+    private static final List<Line> lines = new ArrayList<>();
 
     public static LineDaoImpl getInstance() {
         return stationDao;

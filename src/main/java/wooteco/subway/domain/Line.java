@@ -41,19 +41,19 @@ public class Line {
         return name;
     }
 
-    public String getColor() {
-        return color;
-    }
-
-    public List<Station> getStations() {
-        return stations;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
 
+    public String getColor() {
+        return color;
+    }
+
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public List<Station> getStations() {
+        return stations;
     }
 }
