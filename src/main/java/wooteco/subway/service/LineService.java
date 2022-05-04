@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.NotFoundException;
 
 @Service
 public class LineService {
@@ -31,11 +32,19 @@ public class LineService {
         return lineDao.findById(lineId);
     }
 
+    @Transactional
     public void update(final Line line) {
+        checkExistLine(line);
         lineDao.update(line);
     }
 
     public void delete(final Long lineId) {
         lineDao.delete(lineId);
+    }
+
+    private void checkExistLine(final Line line) {
+        if (!lineDao.existById(line.getId())) {
+            throw new NotFoundException("존재하지 않는 Line입니다.");
+        }
     }
 }
