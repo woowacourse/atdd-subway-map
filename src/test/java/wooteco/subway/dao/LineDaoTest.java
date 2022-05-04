@@ -15,6 +15,8 @@ import wooteco.subway.domain.Line;
 @JdbcTest
 class LineDaoTest {
 
+    private static final Line LINE = new Line("신분당선", "bg-red-600");
+
     private LineDao lineDao;
 
     @Autowired
@@ -28,7 +30,7 @@ class LineDaoTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void save() {
-        lineDao.save(new Line("신분당선", "bg-red-600"));
+        lineDao.save(LINE);
 
         Integer count = jdbcTemplate.queryForObject("select count(*) from LINE", Integer.class);
 
@@ -38,7 +40,7 @@ class LineDaoTest {
     @DisplayName("중복된 이름의 지하철 노선이 있다면 true를 반환한다.")
     @Test
     void existLineByName() {
-        lineDao.save(new Line("신분당선", "bg-red-600"));
+        lineDao.save(LINE);
 
         assertThat(lineDao.existLineByName("신분당선")).isTrue();
     }
@@ -46,7 +48,7 @@ class LineDaoTest {
     @DisplayName("중복된 색상의 지하철 노선이 있다면 true를 반환한다.")
     @Test
     void existLineByColor() {
-        lineDao.save(new Line("신분당선", "bg-red-600"));
+        lineDao.save(LINE);
 
         assertThat(lineDao.existLineByColor("bg-red-600")).isTrue();
     }
@@ -54,7 +56,7 @@ class LineDaoTest {
     @DisplayName("지하철 노선의 전체 목록을 조회한다.")
     @Test
     void findAll() {
-        lineDao.save(new Line("신분당선", "bg-red-600"));
+        lineDao.save(LINE);
         lineDao.save(new Line("다른분당선", "bg-green-600"));
 
         List<Line> lines = lineDao.findAll();
@@ -65,7 +67,7 @@ class LineDaoTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void find() {
-        long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
+        long lineId = lineDao.save(LINE);
 
         Optional<Line> line = lineDao.find(lineId);
 
@@ -75,7 +77,7 @@ class LineDaoTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void update() {
-        long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
+        long lineId = lineDao.save(LINE);
         Line updatedLine = new Line("다른분당선", "bg-red-600");
 
         lineDao.update(lineId, updatedLine);
@@ -86,7 +88,7 @@ class LineDaoTest {
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void delete() {
-        long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
+        long lineId = lineDao.save(LINE);
 
         assertThat(lineDao.delete(lineId)).isEqualTo(1);
     }
