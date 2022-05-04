@@ -81,7 +81,10 @@ public class JdbcLineDao implements LineDao {
     public Line updateById(final Long id, final Line line) {
         try {
             final String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
-            jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
+            final int affectedRows = jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
+            if (affectedRows == 0) {
+                throw new IllegalArgumentException("id가 일치하는 노선이 존재하지 않습니다.");
+            }
             return setId(line, id);
         } catch (final DuplicateKeyException e) {
             throw new IllegalArgumentException("중복된 이름의 노선이 존재합니다.");

@@ -187,7 +187,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("수정하려는 노선 이름이 중복되면 BAD_REQUEST를 반환한다.")
-    void updateLine2() {
+    void updateLine_duplicateName() {
         // given
         final String name = "5호선";
 
@@ -227,6 +227,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put("/lines/" + id)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("수정하려는 노선 id가 존재하지 않으면 BAD_REQUEST를 반환한다.")
+    void updateLine_invalidId() {
+        // when
+        final Map<String, String> updateParams = new HashMap<>();
+        updateParams.put("name", "5호선");
+        updateParams.put("color", "bg-green-600");
+
+        final ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+                .body(updateParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/999")
                 .then().log().all()
                 .extract();
 

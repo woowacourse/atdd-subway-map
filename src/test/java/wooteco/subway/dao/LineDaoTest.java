@@ -115,6 +115,21 @@ public class LineDaoTest {
     }
 
     @Test
+    @DisplayName("업데이트하려는 노선 이름이 중복되면 에외가 발생한다.")
+    void updateById_invalidId() {
+        // given
+        final String name = "5호선";
+
+        // when
+        final Line line = new Line(name, "bg-green-600");
+
+        // then
+        assertThatThrownBy(() -> lineDao.updateById(999L, line))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("id가 일치하는 노선이 존재하지 않습니다.");
+    }
+
+    @Test
     @DisplayName("id를 통해 해당하는 노선을 삭제한다.")
     void deleteById() {
         // given
