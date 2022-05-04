@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import wooteco.subway.domain.Line;
 
 public class FakeLineDao implements LineDao {
@@ -41,8 +42,8 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public Line findById(Long id) {
-        return lines.get(id);
+    public Optional<Line> findById(Long id) {
+        return Optional.ofNullable(lines.get(id));
     }
 
     @Override
