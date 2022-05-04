@@ -159,8 +159,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long id = Long.parseLong(createResponse.header(HttpHeaders.LOCATION).split("/")[2]);
 
         Map<String, String> updateParam = new HashMap<>();
-        params.put("name", "다른분당선");
-        params.put("color", "bg-red-600");
+        updateParam.put("name", "다른분당선");
+        updateParam.put("color", "bg-red-600");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(updateParam)

@@ -62,12 +62,24 @@ public class LineServiceTest {
     @Test
     void showLine() {
         Line line = lineRepository.save(new Line("분당선", "bg-red-600"));
-
         LineResponse lineResponse = lineService.showLine(line.getId());
 
         assertAll(
                 () -> assertThat(lineResponse.getName()).isEqualTo("분당선"),
                 () -> assertThat(lineResponse.getColor()).isEqualTo("bg-red-600")
+        );
+    }
+
+    @DisplayName("노선을 업데이트 한다.")
+    @Test
+    void update() {
+        Line line = lineRepository.save(new Line("분당선", "bg-red-600"));
+        lineService.update(line.getId(), new LineRequest("신분당선", "bg-yellow-600"));
+
+        Line findUpdateLine = lineRepository.findById(line.getId());
+        assertAll(
+                () -> assertThat(findUpdateLine.getName()).isEqualTo("신분당선"),
+                () -> assertThat(findUpdateLine.getColor()).isEqualTo("bg-yellow-600")
         );
     }
 

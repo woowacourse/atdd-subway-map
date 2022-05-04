@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.dto.LineUpdateDto;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
 
 import java.util.List;
 
@@ -78,7 +79,7 @@ public class LineRepositoryTest {
     @Test
     void update() {
         Line saveLine = lineRepository.save(new Line("분당선", "bg-red-600"));
-        LineUpdateDto lineUpdateDto = new LineUpdateDto(saveLine.getId(), "신분당선", "bg-yellow-600");
+        LineUpdateDto lineUpdateDto = LineUpdateDto.of(saveLine.getId(), new LineRequest("신분당선", "bg-yellow-600"));
         lineRepository.update(lineUpdateDto);
         Line findUpdateLine = lineRepository.findById(saveLine.getId());
 
