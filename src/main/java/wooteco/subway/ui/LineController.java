@@ -2,7 +2,6 @@ package wooteco.subway.ui;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,53 +12,44 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.service.LineService;
 
 @RestController
 public class LineController {
 
-    private final LineDao lineDao;
+    private final LineService lineService;
 
-    public LineController(LineDao lineDao) {
-        this.lineDao = lineDao;
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = lineDao.save(lineRequest.getName(), lineRequest.getColor());
-        LineResponse lineResponse = new LineResponse(line);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId()))
+        LineResponse lineResponse = lineService.create(lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
                 .body(lineResponse);
     }
 
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> findAllLine() {
-        List<Line> lines = lineDao.findAll();
-        List<LineResponse> lineResponses = lines.stream()
-                .map(LineResponse::new)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(lineResponses);
+        return ResponseEntity.ok(lineService.findAll());
     }
 
     @GetMapping("/lines/{id}")
-    public ResponseEntity<LineResponse> findById(@PathVariable Long id) {
-        Line line = lineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다."));
-        LineResponse lineResponse = new LineResponse(line);
-        return ResponseEntity.ok(lineResponse);
+    public ResponseEntity<LineResponse> findLineById(@PathVariable Long id) {
+        return ResponseEntity.ok(lineService.findById(id));
     }
 
     @PutMapping("/lines/{id}")
-    public void update(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineDao.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
+    public void updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        lineService.update(id, lineRequest);
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        lineDao.deleteById(id);
+        lineService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
