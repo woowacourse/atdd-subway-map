@@ -2,7 +2,8 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static wooteco.subway.dao.LineDao.*;
+import static wooteco.subway.dao.LineDao.COLOR_DUPLICATE_EXCEPTION_MESSAGE;
+import static wooteco.subway.dao.LineDao.NAME_DUPLICATE_EXCEPTION_MESSAGE;
 
 import java.util.List;
 import org.junit.jupiter.api.Assertions;

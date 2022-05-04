@@ -11,5 +11,4 @@ public class ControllerExceptionHandler {
     public ResponseEntity<String> errorResponse(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
-
 }

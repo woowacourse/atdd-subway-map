@@ -122,14 +122,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "신분당선");
         params1.put("color", "bg-red-600");
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
                 .extract();
-        long expectId = Long.parseLong(createResponse1.header("Location").split("/")[2]);
+        long expectId = Long.parseLong(createResponse.header("Location").split("/")[2]);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -149,14 +149,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "신분당선");
         params1.put("color", "bg-red-600");
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
                 .extract();
-        long lineId = Long.parseLong(createResponse1.header("Location").split("/")[2]);
+        long lineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
 
         // when
         Map<String, String> params2 = new HashMap<>();
