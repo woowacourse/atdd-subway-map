@@ -105,26 +105,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(params1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        /// given
+        ExtractableResponse<Response> createResponse1 = requestCreateStation("강남역");
+        ExtractableResponse<Response> createResponse2 = requestCreateStation("역삼역");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -135,30 +119,31 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        long id = createResponse1.body().jsonPath().getLong("id");
-
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                .map(it -> it.body().jsonPath().getLong("id"))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
+
+        // response.jsonPath().getList("id", Long.class)
+        List<Long> resultLineIds = response.jsonPath().getList("id", Long.class);
+
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    private ExtractableResponse<Response> requestCreateStation(String stationName) {
+        return RestAssured.given().log().all()
+                .body(Map.of("name", stationName))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
     }
 
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = requestCreateStation("강남역");
 
         // when
         String uri = createResponse.header("Location");
