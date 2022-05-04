@@ -52,6 +52,7 @@ class LineServiceTest {
                 .hasMessage("지하철 노선 색상이 중복됩니다.");
     }
 
+    @DisplayName("지하철 노선을 조회한다.")
     @Test
     void find() {
         long lineId = lineService.save(LINE);
@@ -60,6 +61,7 @@ class LineServiceTest {
                 .doesNotThrowAnyException();
     }
 
+    @DisplayName("존재하지 않는 지하철 노선을 조회할 경우 예외를 발생시킨다.")
     @Test
     void findNotExistLine() {
         assertThatThrownBy(() -> lineService.find(1L))
@@ -67,6 +69,7 @@ class LineServiceTest {
                 .hasMessage("존재하지 않는 지하철 노선입니다.");
     }
 
+    @DisplayName("지하철 노선을 수정한다.")
     @Test
     void update() {
         long lineId = lineService.save(LINE);
@@ -75,6 +78,7 @@ class LineServiceTest {
                 .doesNotThrowAnyException();
     }
 
+    @DisplayName("존재하지 않는 지하철 노선을 수정할 경우 예외를 발생시킨다.")
     @Test
     void updateNotExistLine() {
         assertThatThrownBy(() -> lineService.update(1L, new Line("다른분당선", "bg-green-600")))
@@ -82,6 +86,7 @@ class LineServiceTest {
                 .hasMessage("존재하지 않는 지하철 노선입니다.");
     }
 
+    @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void delete() {
         long lineId = lineService.save(LINE);
@@ -90,6 +95,7 @@ class LineServiceTest {
                 .doesNotThrowAnyException();
     }
 
+    @DisplayName("존재하지 않는 지하철 노선을 삭제할 경우 예외를 발생시킨다.")
     @Test
     void deleteNotExistLine() {
         assertThatThrownBy(() -> lineService.delete(1L))
