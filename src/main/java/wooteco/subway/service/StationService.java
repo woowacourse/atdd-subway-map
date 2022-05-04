@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.NotFoundException;
 
 @Service
 public class StationService {
@@ -27,7 +28,15 @@ public class StationService {
         return stationDao.findAll();
     }
 
+    @Transactional
     public void delete(final Long stationId) {
+        checkExistStation(stationId);
         stationDao.delete(stationId);
+    }
+
+    private void checkExistStation(final Long stationId) {
+        if (!stationDao.existById(stationId)) {
+            throw new NotFoundException("존재하지 않는 Station입니다.");
+        }
     }
 }
