@@ -13,7 +13,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.InternalServerException;
 
 @Repository
 public class JdbcStationDao implements StationDao {
@@ -68,7 +67,7 @@ public class JdbcStationDao implements StationDao {
         final String sql = "DELETE FROM station WHERE id = ?";
         final int affectedRows = jdbcTemplate.update(sql, id);
         if (affectedRows == 0) {
-            throw new InternalServerException("알 수 없는 이유로 역을 삭제하지 못했습니다.");
+            throw new IllegalArgumentException("id가 일치하는 역이 존재하지 않습니다.");
         }
         return affectedRows;
     }

@@ -134,4 +134,18 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    @DisplayName("존재하지 않는 역을 제거하면 BAD_REQUEST를 반환한다.")
+    @Test
+    void deleteStation_invalidId() {
+        // when
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/stations/999")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

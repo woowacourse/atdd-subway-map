@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,5 +64,13 @@ class StationDaoTest {
 
         // then
         assertThat(affectedRows).isOne();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 id의 역을 삭제하면 예외가 발생한다.")
+    void deleteById_invalidId() {
+        assertThatThrownBy(() -> stationDao.deleteById(999L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("id가 일치하는 역이 존재하지 않습니다.");
     }
 }
