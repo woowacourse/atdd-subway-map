@@ -1,15 +1,22 @@
 package wooteco.subway.application;
 
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.BlankArgumentException;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotExistException;
+
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -68,6 +75,5 @@ public class LineServiceTest {
     void showNotExistLine() {
         assertThatThrownBy(() -> lineService.findById(50L))
                 .isInstanceOf(NotExistException.class);
-
     }
 }

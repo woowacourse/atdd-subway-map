@@ -157,4 +157,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(expectedLineIds).containsExactlyInAnyOrderElementsOf(actualLineIds);
     }
+
+    @DisplayName("이름이 공백인 지하철 노선을 수정할 수 없다")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "  ", "     "})
+    void canNotUpdateLineWithEmptyName(String lineName) {
+
+        // given
+        ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600");
+        long createdId = response.jsonPath().getLong("id");
+
+        // when & then
+        RestAssured.given().log().all()
+                .body(Map.of("name", lineName, "color", "bg-red-600"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + createdId)
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
 }
