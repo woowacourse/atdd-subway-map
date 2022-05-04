@@ -44,4 +44,17 @@ class StationDao2Test {
         // then
         assertThat(stations).hasSize(2);
     }
+
+    @Test
+    @DisplayName("id에 해당하는 역 삭제하기")
+    void deleteById() {
+        // given
+        Station station = stationDao2.save(new Station("선릉"));
+
+        // when
+        Integer affectedRows = stationDao2.deleteById(station.getId());
+
+        // then
+        assertThat(affectedRows).isOne();
+    }
 }

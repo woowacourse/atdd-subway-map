@@ -53,6 +53,7 @@ public class StationDao2 {
     }
 
     public Integer deleteById(Long id) {
-        return null;
+        String sql = "DELETE FROM station WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 }
