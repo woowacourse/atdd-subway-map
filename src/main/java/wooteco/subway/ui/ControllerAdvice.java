@@ -16,4 +16,9 @@ public class ControllerAdvice {
     public ResponseEntity<String> handleNullPointerException() {
         return ResponseEntity.badRequest().body("정상적인 입력이 아닙니다.");
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleServerException(Exception e) {
+        return ResponseEntity.internalServerError().body(e.getMessage());
+    }
 }
