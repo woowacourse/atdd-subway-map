@@ -30,7 +30,7 @@ public class JdbcLineDaoTest {
     @DisplayName("Line 을 저장한다.")
     void save() {
         //given
-        Line line = new Line("가산디지털", "khaki");
+        Line line = new Line("7호털", "khaki");
 
         //when
         Line actual = lineDao.save(line);
@@ -47,8 +47,8 @@ public class JdbcLineDaoTest {
     @DisplayName("전체 Line 목록을 조회한다.")
     void findAll() {
         //given
-        Line line1 = new Line("가산디지털", "blue");
-        Line line2 = new Line("중곡", "khaki");
+        Line line1 = new Line("7호선", "khaki");
+        Line line2 = new Line("2호선", "green");
         lineDao.save(line1);
         lineDao.save(line2);
 
@@ -66,7 +66,7 @@ public class JdbcLineDaoTest {
     @DisplayName("단일 Line 을 id 로 조회한다.")
     void findById() {
         //given
-        Line line = new Line("가산디지털", "khaki");
+        Line line = new Line("7호선", "khaki");
         Line savedLine = lineDao.save(line);
 
         //when
@@ -80,7 +80,7 @@ public class JdbcLineDaoTest {
     @DisplayName("이름으로 line 을 조회한다.")
     void findByName() {
         //given
-        String name = "중곡";
+        String name = "2호선";
         String color = "khaki";
         Line savedLine = lineDao.save(new Line(name, color));
 
@@ -95,11 +95,11 @@ public class JdbcLineDaoTest {
     @DisplayName("Line 의 이름과 색깔을 변경한다.")
     void update() {
         //given
-        Line line = new Line("가산디지털", "blue");
+        Line line = new Line("7호선", "blue");
         Line savedLine = lineDao.save(line);
 
         //when
-        Line updatedLine = new Line("중곡", "khaki");
+        Line updatedLine = new Line("2호선", "khaki");
         lineDao.update(savedLine.getId(), updatedLine.getName(), updatedLine.getColor());
 
         //then
@@ -111,7 +111,7 @@ public class JdbcLineDaoTest {
     @DisplayName("Line 을 삭제한다.")
     void deleteById() {
         //given
-        Line line = new Line("가산디지털", "blue");
+        Line line = new Line("7호선", "khaki");
         Line savedLine = lineDao.save(line);
 
         //when

@@ -25,7 +25,7 @@ public class LineServiceTest {
     @DisplayName("Line 을 저장한다.")
     void save() {
         //given
-        Line line = new Line("가산디지털단지", "blue");
+        Line line = new Line("7호선", "khaki");
 
         //when
         Line savedLine = lineService.save(line);
@@ -42,7 +42,7 @@ public class LineServiceTest {
     @DisplayName("중복된 Line 을 저장할 수 없다.")
     void saveDuplicateName() {
         //given
-        Line line = new Line("중곡", "khaki");
+        Line line = new Line("7호선", "khaki");
         lineService.save(line);
 
         //then
@@ -55,8 +55,8 @@ public class LineServiceTest {
     @DisplayName("전체 Line 목록을 조회한다.")
     void findAll() {
         //given
-        Line line1 = new Line("중곡", "khaki");
-        Line line2 = new Line("가산디지털", "khaki");
+        Line line1 = new Line("2호선", "green");
+        Line line2 = new Line("7호선", "khaki");
         lineService.save(line1);
         lineService.save(line2);
 
@@ -74,7 +74,7 @@ public class LineServiceTest {
     @DisplayName("id로 Line 을 조회한다.")
     void findById() {
         //given
-        Line line = new Line("중곡", "khaki");
+        Line line = new Line("7호선", "khaki");
         Line savedLine = lineService.save(line);
 
         //when
@@ -88,7 +88,7 @@ public class LineServiceTest {
     @DisplayName("존재하지 않는 id 를 조회할 경우 예외를 던진다.")
     void findByIdNotExists() {
         //given
-        Line line = new Line("이수", "sky-blue");
+        Line line = new Line("4호선", "sky-blue");
         Long id = lineService.save(line).getId();
 
         //then
@@ -101,11 +101,11 @@ public class LineServiceTest {
     @DisplayName("Line 을 수정한다.")
     void update() {
         //given
-        Line line = new Line("이수", "sky-blue");
+        Line line = new Line("4호선", "sky-blue");
         Line savedLine = lineService.save(line);
 
         //when
-        Line expected = new Line(savedLine.getId(), "가산디지털", "blue");
+        Line expected = new Line(savedLine.getId(), "7호선", "khaki");
         lineService.update(expected);
         Line actual = lineService.findById(savedLine.getId());
 
@@ -117,9 +117,9 @@ public class LineServiceTest {
     @DisplayName("중복된 이름으로 수정하면 예외를 던진다.")
     void updateWithDuplicatedName() {
         //given
-        Line line = new Line("이수", "sky-blue");
+        Line line = new Line("4호선", "sky-blue");
         Line savedLine = lineService.save(line);
-        Line duplicatedLine = new Line(savedLine.getId(), "이수", "sky-blue");
+        Line duplicatedLine = new Line(savedLine.getId(), "4호선", "sky-blue");
 
         //then
         assertThatThrownBy(() -> lineService.update(duplicatedLine))
@@ -131,7 +131,7 @@ public class LineServiceTest {
     @DisplayName("Line 을 삭제한다.")
     void delete() {
         //given
-        Line line = new Line("이수", "sky-blue");
+        Line line = new Line("4호선", "sky-blue");
         Long id = lineService.save(line).getId();
 
         //when
