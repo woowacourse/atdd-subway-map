@@ -11,6 +11,8 @@ import wooteco.subway.dto.LineResponse;
 @Service
 public class LineService {
 
+    private static final String LINE_DUPLICATION = "이미 등록된 지하철 노선입니다.";
+    public static final int LINE_EXIST_VALUE = 1;
     private final JdbcLineDao jdbcLineDao;
 
     public LineService(JdbcLineDao jdbcLineDao) {
@@ -20,8 +22,16 @@ public class LineService {
     public LineResponse createLine(LineRequest lineRequest) {
         String name = lineRequest.getName();
         String color = lineRequest.getColor();
+        validateDuplication(name);
         Long id = jdbcLineDao.save(name, color);
         return new LineResponse(id, name, color);
+    }
+
+    private void validateDuplication(String name) {
+        int existFlag = jdbcLineDao.isExistLine(name);
+        if(existFlag == LINE_EXIST_VALUE) {
+            throw new IllegalArgumentException(LINE_DUPLICATION);
+        }
     }
 
     public List<LineResponse> getLines() {
@@ -37,6 +47,7 @@ public class LineService {
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
+        validateDuplication(lineRequest.getName());
         jdbcLineDao.updateById(id, lineRequest.getName(), lineRequest.getColor());
     }
 

@@ -61,4 +61,9 @@ public class JdbcLineDao {
         String sql = "delete from line where id = ?";
         return jdbcTemplate.update(sql, id) == FUNCTION_SUCCESS;
     }
+
+    public int isExistLine(String name) {
+        String sql = "select EXISTS (select name from line where name = ?) as success";
+        return jdbcTemplate.queryForObject(sql, Integer.class, name);
+    }
 }
