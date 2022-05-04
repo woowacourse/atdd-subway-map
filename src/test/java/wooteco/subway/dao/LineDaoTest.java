@@ -13,7 +13,7 @@ import wooteco.subway.domain.Line;
 
 public class LineDaoTest {
 
-    private final LineDao lineDao = LineDao.getInstance();
+    private final LineDao lineDao = new LineDao();
 
     @AfterEach
     void tearDown() {

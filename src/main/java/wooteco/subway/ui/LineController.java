@@ -23,7 +23,11 @@ import wooteco.subway.service.LineService;
 @RestController
 public class LineController {
 
-    private final LineService lineService = LineService.getInstance();
+    private final LineService lineService;
+
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
+    }
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {

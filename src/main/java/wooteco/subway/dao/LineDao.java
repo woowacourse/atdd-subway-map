@@ -4,20 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Repository;
+
 import wooteco.subway.domain.Line;
 
+@Repository
 public class LineDao {
 
-    private static final LineDao INSTANCE = new LineDao();
     private final List<Line> lines = new ArrayList<>();
     private long seq = 0L;
-
-    private LineDao() {
-    }
-
-    public static LineDao getInstance() {
-        return INSTANCE;
-    }
 
     public Line save(Line line) {
         Line persistStation = createNewObject(line);

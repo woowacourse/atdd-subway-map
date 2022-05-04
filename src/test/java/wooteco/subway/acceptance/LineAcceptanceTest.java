@@ -23,11 +23,9 @@ import wooteco.subway.dto.LineResponse;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private final LineDao lineDao = LineDao.getInstance();
-
     @AfterEach
     void tearDown() {
-        lineDao.deleteAll();
+        new LineDao().deleteAll();
     }
 
     @Test

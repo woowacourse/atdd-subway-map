@@ -14,11 +14,11 @@ import wooteco.subway.domain.Line;
 
 public class LineServiceTest {
 
-    private final LineService lineService = LineService.getInstance();
+    private final LineService lineService = new LineService(new LineDao());
 
     @AfterEach
     void tearDown() {
-        LineDao.getInstance().deleteAll();
+        new LineDao().deleteAll();
     }
 
     @Test
