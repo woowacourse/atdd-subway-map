@@ -45,6 +45,11 @@ public class StationDao {
         return keyHolder.getKey().longValue();
     }
 
+    public boolean existStationByName(String name) {
+        final String sql = "select exists (select * from STATION where name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+    }
+
     public List<Station> findAll() {
         final String sql = "select id, name from STATION";
         return jdbcTemplate.query(sql, STATION_ROW_MAPPER);

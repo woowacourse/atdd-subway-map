@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
@@ -16,19 +15,12 @@ public class StationService {
     }
 
     public long save(Station station) {
-        List<String> stationNames = getStationNames();
-        validateName(station, stationNames);
+        validateName(station);
         return stationDao.save(station);
     }
 
-    private List<String> getStationNames() {
-        return stationDao.findAll().stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
-    }
-
-    private static void validateName(Station station, List<String> stationNames) {
-        if (stationNames.contains(station.getName())) {
+    private void validateName(Station station) {
+        if (stationDao.existStationByName(station.getName())) {
             throw new IllegalArgumentException("지하철역 이름이 중복됩니다.");
         }
     }
