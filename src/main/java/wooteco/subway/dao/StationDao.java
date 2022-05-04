@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -15,7 +16,14 @@ import java.util.List;
 
 @Repository
 public class StationDao {
-    private static Long seq = 0L;
+
+    private static final RowMapper<Station> STATION_ROW_MAPPER = (resultSet, rowNum) -> {
+        return new Station(
+                resultSet.getLong("id"),
+                resultSet.getString("name")
+        );
+    };
+
     private static List<Station> stations = new ArrayList<>();
 
     private final JdbcTemplate jdbcTemplate;
@@ -37,15 +45,9 @@ public class StationDao {
         return keyHolder.getKey().longValue();
     }
 
-    public static List<Station> findAll() {
-        return Collections.unmodifiableList(stations);
-    }
-
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+    public List<Station> findAll() {
+        final String sql = "select id, name from STATION";
+        return jdbcTemplate.query(sql, STATION_ROW_MAPPER);
     }
 
     public static void delete(Long id) {

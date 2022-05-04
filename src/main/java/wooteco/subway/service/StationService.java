@@ -21,8 +21,8 @@ public class StationService {
         return stationDao.save(station);
     }
 
-    private static List<String> getStationNames() {
-        return StationDao.findAll().stream()
+    private List<String> getStationNames() {
+        return stationDao.findAll().stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());
     }
@@ -31,6 +31,10 @@ public class StationService {
         if (stationNames.contains(station.getName())) {
             throw new IllegalArgumentException("지하철역 이름이 중복됩니다.");
         }
+    }
+
+    public List<Station> findAll() {
+        return stationDao.findAll();
     }
 
     public static void delete(Long id) {

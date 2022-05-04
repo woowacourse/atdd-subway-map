@@ -2,6 +2,8 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +23,24 @@ class StationDaoTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void save() {
-        Station station = new Station("신분당선");
+        Station station = new Station("강남역");
         stationDao.save(station);
 
         Integer count = jdbcTemplate.queryForObject("select count(*) from STATION", Integer.class);
 
         assertThat(count).isEqualTo(1);
+    }
+
+    @DisplayName("지하철역의 전체 목록을 조회한다.")
+    @Test
+    void findAll() {
+        stationDao.save(new Station("강남역"));
+        stationDao.save(new Station("선릉역"));
+
+        List<String> stations = stationDao.findAll()
+                .stream().map(Station::getName)
+                .collect(Collectors.toList());
+
+        assertThat(stations).containsExactly("강남역", "선릉역");
     }
 }
