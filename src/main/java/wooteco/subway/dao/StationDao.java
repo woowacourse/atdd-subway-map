@@ -12,6 +12,8 @@ import wooteco.subway.domain.Station;
 @Repository
 public class StationDao {
 
+    private static final String NON_EXISTENT_ID_EXCEPTION = "존재하지 않는 id입니다.";
+
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
             resultSet.getLong("id"),
@@ -47,6 +49,12 @@ public class StationDao {
 
     public void deleteById(Long id) {
         final String sql = "DELETE FROM station where id = ?";
-        jdbcTemplate.update(sql, id);
+        validateResult(jdbcTemplate.update(sql, id));
+    }
+
+    private void validateResult(int result) {
+        if (result == 0) {
+            throw new IllegalArgumentException(NON_EXISTENT_ID_EXCEPTION);
+        }
     }
 }

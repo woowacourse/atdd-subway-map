@@ -11,6 +11,8 @@ import wooteco.subway.domain.Line;
 
 @Repository
 public class LineDao {
+    
+    private static final String NON_EXISTENT_ID_EXCEPTION = "존재하지 않는 id입니다.";
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
@@ -44,24 +46,28 @@ public class LineDao {
         return jdbcTemplate.query(sql, lineRowMapper);
     }
 
-    public boolean notExistsById(Long id) {
-        final String sql = "SELECT COUNT(*) FROM line WHERE id = ?";
-        final Integer numOfLine = jdbcTemplate.queryForObject(sql, Integer.class, id);
-        return numOfLine.equals(0);
-    }
-
     public Line findById(Long id) {
         final String sql = "SELECT * FROM line WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
+        final Line line = jdbcTemplate.queryForObject(sql, lineRowMapper, id);
+        if (line == null) {
+            throw new IllegalArgumentException(NON_EXISTENT_ID_EXCEPTION);
+        }
+        return line;
     }
 
     public void updateLineById(Long id, String name, String color) {
         final String sql = "UPDATE line SET name=?, color=? WHERE id=?";
-        jdbcTemplate.update(sql, name, color, id);
+        validateResult(jdbcTemplate.update(sql, name, color, id));
     }
 
     public void deleteById(Long id) {
         final String sql = "DELETE FROM line WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        validateResult(jdbcTemplate.update(sql, id));
+    }
+
+    private void validateResult(int result) {
+        if (result == 0) {
+            throw new IllegalArgumentException(NON_EXISTENT_ID_EXCEPTION);
+        }
     }
 }
