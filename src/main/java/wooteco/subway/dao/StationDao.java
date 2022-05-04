@@ -1,18 +1,13 @@
 package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
-import java.util.Collections;
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 
 @Repository
 public class StationDao {
@@ -23,8 +18,6 @@ public class StationDao {
                 resultSet.getString("name")
         );
     };
-
-    private static List<Station> stations = new ArrayList<>();
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -58,9 +51,5 @@ public class StationDao {
     public int delete(Long id) {
         final String sql = "delete from STATION where id = ?";
         return jdbcTemplate.update(sql, id);
-    }
-
-    public static void clear() {
-        stations.clear();
     }
 }
