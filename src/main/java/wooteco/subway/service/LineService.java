@@ -34,4 +34,8 @@ public class LineService {
         Line line = lineDao.findById(id);
         return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
+
+    public void deleteById(final Long id) {
+        lineDao.deleteById(id);
+    }
 }

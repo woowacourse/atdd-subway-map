@@ -56,10 +56,7 @@ public class LineController {
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        Integer affectedRows = lineDao.deleteById(id);
-        if (affectedRows == 0) {
-            throw new InternalServerException("알 수 없는 이유로 노선을 삭제하지 못했습니다.");
-        }
+        lineService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

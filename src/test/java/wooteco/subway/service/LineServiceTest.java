@@ -64,4 +64,18 @@ class LineServiceTest {
         assertThat(response.getName()).isEqualTo(name);
         assertThat(response.getColor()).isEqualTo(color);
     }
+
+    @Test
+    @DisplayName("id에 해당하는 노선을 삭제한다.")
+    void deleteById() {
+        // given
+        Line savedLine = fakeLineDao.save(new Line("1호선", "bg-red-600"));
+
+        // when
+        lineService.deleteById(savedLine.getId());
+
+        // then
+        final List<Line> remainLines = fakeLineDao.findAll();
+        assertThat(remainLines).hasSize(0);
+    }
 }

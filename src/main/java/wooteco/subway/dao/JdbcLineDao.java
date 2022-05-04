@@ -13,6 +13,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.InternalServerException;
 import wooteco.subway.exception.NotFoundException;
 
 @Repository
@@ -84,6 +85,10 @@ public class JdbcLineDao implements LineDao {
     @Override
     public Integer deleteById(Long id) {
         String sql = "DELETE FROM line where id = ?";
-        return jdbcTemplate.update(sql, id);
+        int affectedRows = jdbcTemplate.update(sql, id);
+        if (affectedRows == 0) {
+            throw new InternalServerException("알 수 없는 이유로 노선을 삭제하지 못했습니다.");
+        }
+        return affectedRows;
     }
 }
