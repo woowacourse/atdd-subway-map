@@ -22,16 +22,16 @@ public class LineDaoTest {
         lineDao.clear();
     }
 
-    @Test
     @DisplayName("노선을 등록한다.")
+    @Test
     void save() {
         Line actual = lineDao.save(line);
 
         assertThat(actual).isEqualTo(line);
     }
 
-    @Test
     @DisplayName("모든 노선 목록을 조회한다.")
+    @Test
     void findAll() {
         lineDao.save(line);
         lineDao.save(new Line("1호선", "blue"));
@@ -41,8 +41,8 @@ public class LineDaoTest {
         assertThat(lines.size()).isEqualTo(2);
     }
 
-    @Test
     @DisplayName("id에 맞는 노선을 조회한다.")
+    @Test
     void findById() {
         Line expected = lineDao.save(line);
 
@@ -51,16 +51,16 @@ public class LineDaoTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test
     @DisplayName("id에 맞는 노선이 없을 경우 예외를 발생시킨다.")
+    @Test
     void findByIdException() {
         assertThatThrownBy(() -> lineDao.findById(1L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageMatching("id에 맞는 지하철 노선이 없습니다.");
     }
 
-    @Test
     @DisplayName("노선의 이름과 색깔을 수정한다.")
+    @Test
     void update() {
         Line saveLine = lineDao.save(line);
         Line expected = new Line(saveLine.getId(), "다른 분당선", "green");
@@ -71,8 +71,8 @@ public class LineDaoTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test
     @DisplayName("노선을 삭제한다.")
+    @Test
     void delete() {
         Line saveLine = lineDao.save(line);
 

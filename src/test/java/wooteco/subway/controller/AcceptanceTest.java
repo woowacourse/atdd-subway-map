@@ -1,4 +1,4 @@
-package wooteco.subway.acceptance;
+package wooteco.subway.controller;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;

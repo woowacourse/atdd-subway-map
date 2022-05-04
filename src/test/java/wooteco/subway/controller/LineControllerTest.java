@@ -1,4 +1,4 @@
-package wooteco.subway.ui;
+package wooteco.subway.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -8,7 +8,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.acceptance.AcceptanceTest;
 import wooteco.subway.assembler.Assembler;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineResponse;
@@ -66,7 +65,6 @@ class LineControllerTest extends AcceptanceTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
