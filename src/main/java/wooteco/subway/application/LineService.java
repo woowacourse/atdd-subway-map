@@ -35,6 +35,7 @@ public class LineService {
     @Transactional
     public void updateLine(Long id, String name, String color) {
         checkExistsId(id);
+        checkExistsName(name);
         lineDao.updateLineById(id, name, color);
     }
 
