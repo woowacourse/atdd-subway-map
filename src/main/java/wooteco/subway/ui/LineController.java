@@ -29,26 +29,19 @@ public class LineController {
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> create(@RequestBody LineRequest lineRequest) {
         final Line newLine = lineService.save(lineRequest.getName(), lineRequest.getColor());
-
-        final LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
-
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(toLineResponse(newLine));
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineService.showLines();
-        List<LineResponse> lineResponses = lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(lineResponses);
+        return ResponseEntity.ok(toLineResponses(lines));
     }
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         final Line line = lineService.showLine(id);
-
-        return ResponseEntity.ok(new LineResponse(line.getId(), line.getName(), line.getColor()));
+        return ResponseEntity.ok(toLineResponse(line));
     }
 
     @PutMapping("/lines/{id}")
@@ -61,5 +54,15 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private List<LineResponse> toLineResponses(List<Line> lines) {
+        return lines.stream()
+            .map(this::toLineResponse)
+            .collect(Collectors.toList());
+    }
+
+    private LineResponse toLineResponse(Line line) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 }

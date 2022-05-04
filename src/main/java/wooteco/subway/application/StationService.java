@@ -17,9 +17,7 @@ public class StationService {
 
     @Transactional
     public Station createStation(String name) {
-        if (stationDao.existsByName(name)) {
-            throw new IllegalArgumentException("중복된 역 이름입니다.");
-        }
+        checkExistsName(name);
         return stationDao.save(new Station(name));
     }
 
@@ -31,5 +29,11 @@ public class StationService {
     @Transactional
     public void deleteStation(Long id) {
         stationDao.deleteById(id);
+    }
+
+    private void checkExistsName(String name) {
+        if (stationDao.existsByName(name)) {
+            throw new IllegalArgumentException("중복된 역 이름입니다.");
+        }
     }
 }

@@ -17,10 +17,7 @@ public class LineService {
 
     @Transactional
     public Line save(String name, String color) {
-        if (lineDao.existsByName(name)){
-            throw new IllegalArgumentException("중복된 노선 이름입니다.");
-        }
-
+        checkExistsName(name);
         return lineDao.save(new Line(name, color));
     }
 
@@ -31,26 +28,31 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public Line showLine(Long id) {
-        if (lineDao.notExistsById(id)) {
-            throw new IllegalArgumentException("존재하지 않는 id입니다.");
-        }
-
+        checkExistsId(id);
         return lineDao.findById(id);
     }
 
     @Transactional
     public void updateLine(Long id, String name, String color) {
-        if (lineDao.notExistsById(id)) {
-            throw new IllegalArgumentException("존재하지 않는 id입니다.");
-        }
+        checkExistsId(id);
         lineDao.updateLineById(id, name, color);
     }
 
     @Transactional
     public void deleteLine(Long id) {
+        checkExistsId(id);
+        lineDao.deleteById(id);
+    }
+
+    private void checkExistsName(String name) {
+        if (lineDao.existsByName(name)){
+            throw new IllegalArgumentException("중복된 노선 이름입니다.");
+        }
+    }
+
+    private void checkExistsId(Long id) {
         if (lineDao.notExistsById(id)) {
             throw new IllegalArgumentException("존재하지 않는 id입니다.");
         }
-        lineDao.deleteById(id);
     }
 }

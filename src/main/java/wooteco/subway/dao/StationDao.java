@@ -14,8 +14,8 @@ public class StationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
-            resultSet.getLong("id"),
-            resultSet.getString("name")
+        resultSet.getLong("id"),
+        resultSet.getString("name")
     );
 
     public StationDao(JdbcTemplate jdbcTemplate) {
@@ -24,7 +24,7 @@ public class StationDao {
 
     public Station save(Station station) {
         final SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("station").usingGeneratedKeyColumns("id");
+            .withTableName("station").usingGeneratedKeyColumns("id");
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", station.getName());
@@ -43,11 +43,6 @@ public class StationDao {
         final String sql = "select count(*) from station where name = ?";
         final Integer numOfStation = jdbcTemplate.queryForObject(sql, Integer.class, name);
         return !numOfStation.equals(0);
-    }
-
-    public void deleteAll() {
-        final String sql = "DELETE FROM station";
-        jdbcTemplate.update(sql);
     }
 
     public void deleteById(Long id) {

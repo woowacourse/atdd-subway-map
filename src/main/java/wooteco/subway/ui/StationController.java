@@ -29,22 +29,29 @@ public class StationController {
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
 
         Station newStation = stationService.createStation(stationRequest.getName());
-        StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
+        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(
+            toStationResponse(newStation));
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
         List<Station> stations = stationService.showStations();
-        List<StationResponse> stationResponses = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationResponses);
+        return ResponseEntity.ok().body(toStationResponses(stations));
     }
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.deleteStation(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private StationResponse toStationResponse(Station newStation) {
+        return new StationResponse(newStation.getId(), newStation.getName());
+    }
+
+    private List<StationResponse> toStationResponses(List<Station> stations) {
+        return stations.stream()
+            .map(this::toStationResponse)
+            .collect(Collectors.toList());
     }
 }
