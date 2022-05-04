@@ -138,4 +138,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(modifiedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @Test
+    @DisplayName("ID값으로 노선을 제거한다.")
+    public void deleteLine() {
+        // given
+        Map<String, String> params1 = Map.of("name", "신분당선", "color", "bg-red-600");
+        ExtractableResponse<Response> createdResponse = RestAssured.given().log().all()
+            .body(params1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+        // when
+        final String uri = createdResponse.header("Location");
+        final ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
+            .when()
+            .delete(uri)
+            .then().log().all()
+            .extract();
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
 }

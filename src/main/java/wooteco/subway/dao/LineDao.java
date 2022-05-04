@@ -55,4 +55,10 @@ public class LineDao {
         lines.add(line);
     }
 
+    public void delete(Long id) {
+        final boolean isRemoved = lines.removeIf(it -> Objects.equals(it.getId(), id));
+        if (!isRemoved) {
+            throw new IllegalStateException("삭제하고자 하는 노선이 존재하지 않습니다.");
+        }
+    }
 }

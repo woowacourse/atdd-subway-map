@@ -66,7 +66,7 @@
     - [x]  노선의 목록을 보여준다. `GET /lines -> 200(OK)`
     - [x]  특정 노선을 조회한다. `GET /lines/{id} -> 200(OK)`
     - [x]  특정 노선을 수정한다. `PUT /lines/{id} -> 200(OK)`
-    - [ ]  특정 노선을 삭제한다. `DELETE /lines/{id} -> 204(No content)`
+    - [x]  특정 노선을 삭제한다. `DELETE /lines/{id} -> 204(No content)`
 
 ## Test
 

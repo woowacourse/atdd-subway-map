@@ -111,4 +111,30 @@ class LineDaoTest {
         assertThatExceptionOfType(IllegalStateException.class)
             .isThrownBy(() -> dao.update(updateLine));
     }
+
+    @Test
+    @DisplayName("ID값으로 노선을 삭제한다.")
+    public void delete() {
+        // given
+        LineDao dao = new LineDao();
+        Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
+        // when
+
+        // then
+        assertThatNoException()
+            .isThrownBy(() -> dao.delete(saved.getId()));
+    }
+
+    @Test
+    @DisplayName("존재하지않는 ID값을 삭제하는 경우 예외를 던진다.")
+    public void delete_throwsExceptionWithInvalidId() {
+        // given
+        LineDao dao = new LineDao();
+        Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
+        // when
+        Long deleteId = 100L;
+        // then
+        assertThatExceptionOfType(IllegalStateException.class)
+            .isThrownBy(() -> dao.delete(deleteId));
+    }
 }
