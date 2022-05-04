@@ -3,7 +3,6 @@ package wooteco.subway.controller;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +25,6 @@ class LineControllerTest extends AcceptanceTest {
 
     @Autowired
     private LineDao lineDao;
-
-
-    @AfterEach
-    void afterEach() {
-        lineDao.clear();
-    }
 
     @DisplayName("지하철 노선을 등록한다.")
     @Test

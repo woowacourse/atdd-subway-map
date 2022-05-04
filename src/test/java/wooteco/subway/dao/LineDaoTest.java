@@ -1,28 +1,34 @@
 package wooteco.subway.dao;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import wooteco.subway.controller.AcceptanceTest;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.NotFoundException;
 
+import javax.sql.DataSource;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-
-public class LineDaoTest extends AcceptanceTest {
+@JdbcTest
+public class LineDaoTest {
 
     @Autowired
+    private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private DataSource dataSource;
     private LineDao lineDao;
+
     private Line line = new Line("신분당선", "red");
 
-    @AfterEach
-    void afterEach() {
-        lineDao.clear();
+    @BeforeEach
+    void setUp() {
+        lineDao = new LineDao(jdbcTemplate, dataSource);
     }
 
     @DisplayName("노선을 등록한다.")
@@ -67,9 +73,9 @@ public class LineDaoTest extends AcceptanceTest {
     void update() {
         Line saveLine = lineDao.save(line);
         Line expected = new Line(saveLine.getId(), "다른 분당선", "green");
-        Line actual = lineDao.findById(saveLine.getId());
 
         lineDao.update(expected);
+        Line actual = lineDao.findById(saveLine.getId());
 
         assertThat(actual).isEqualTo(expected);
     }
