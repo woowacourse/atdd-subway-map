@@ -5,18 +5,32 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
 
+@JdbcTest
 public class LineDaoTest {
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
+
+    private LineDao lineDao;
+
+    @BeforeEach
+    void setUp() {
+        this.lineDao = new LineDao(jdbcTemplate);
+    }
 
     @DisplayName("노선을 저장한다.")
     @Test
     void save() {
         Line line = new Line("2호선", "green");
-        Line savedLine = LineDao.save(line);
+        Line savedLine = lineDao.save(line);
 
         assertThat(line.getName()).isEqualTo(savedLine.getName());
     }
@@ -25,10 +39,10 @@ public class LineDaoTest {
     @Test
     void saveExistingName() {
         Line line = new Line("2호선", "green");
-        LineDao.save(line);
+        lineDao.save(line);
 
         assertThatThrownBy(() -> {
-            LineDao.save(line);
+            lineDao.save(line);
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("같은 이름의 노선은 등록할 수 없습니다.");
     }
@@ -39,31 +53,39 @@ public class LineDaoTest {
         Line line1 = new Line("2호선", "green");
         Line line2 = new Line("3호선", "orange");
         Line line3 = new Line("8호선", "pink");
-        LineDao.save(line1);
-        LineDao.save(line2);
-        LineDao.save(line3);
+        lineDao.save(line1);
+        lineDao.save(line2);
+        lineDao.save(line3);
 
-        assertThat(LineDao.findAll().size()).isEqualTo(3);
+        assertThat(lineDao.findAll().size()).isEqualTo(3);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void findById() {
         Line line = new Line("2호선", "green");
-        Line savedLine = LineDao.save(line);
+        Line savedLine = lineDao.save(line);
 
-        Line foundLine = LineDao.findById(savedLine.getId());
+        Line foundLine = lineDao.findById(savedLine.getId());
 
         assertThat(foundLine.getName()).isEqualTo(savedLine.getName());
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 조회할 경우 예외가 발생한다.")
+    @Test
+    void findNotExistingLine() {
+        assertThatThrownBy(() -> lineDao.findById(1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재하지 않는 노선입니다.");
     }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
         Line line = new Line("2호선", "green");
-        Line savedLine = LineDao.save(line);
+        Line savedLine = lineDao.save(line);
 
-        Line updatedLine = LineDao.update(savedLine.getId(), "3호선", "orange");
+        Line updatedLine = lineDao.update(savedLine.getId(), "3호선", "orange");
 
         assertThat(updatedLine.getName()).isEqualTo("3호선");
     }
@@ -72,24 +94,18 @@ public class LineDaoTest {
     @Test
     void deleteById() {
         Line line = new Line("2호선", "green");
-        Line savedLine = LineDao.save(line);
+        Line savedLine = lineDao.save(line);
 
-        LineDao.deleteById(savedLine.getId());
+        lineDao.deleteById(savedLine.getId());
 
-        assertThat(LineDao.findAll().size()).isZero();
+        assertThat(lineDao.findAll().size()).isZero();
     }
 
     @DisplayName("존재하지 않는 노선을 삭제할 경우 예외가 발생한다.")
     @Test
-    void deleteNotExistingStation() {
-        assertThatThrownBy(() -> LineDao.deleteById(1L))
+    void deleteNotExistingLine() {
+        assertThatThrownBy(() -> lineDao.deleteById(1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재하지 않는 노선입니다.");
-    }
-
-    @AfterEach
-    void reset() {
-        List<Line> lines = LineDao.findAll();
-        lines.clear();
     }
 }
