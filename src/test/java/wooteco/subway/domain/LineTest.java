@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class LineTest {
 
@@ -23,4 +24,14 @@ class LineTest {
             .isThrownBy(() -> new Line(value, "blue"))
             .withMessage(message);
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"1line", "line", "1호sun"})
+    @DisplayName("노선 이름은 한글과 숫자가 아닌 경우 예외를 발생한다.")
+    void invalidName(String name) {
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> new Line(name, "blue"))
+            .withMessage("노선 이름은 한글과 숫자이어야 합니다.");
+    }
+
 }
