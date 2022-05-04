@@ -23,7 +23,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
-    void createStation() {
+    void createLine() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
@@ -45,7 +45,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철역을 생성한다.")
     @Test
-    void createStationWithDuplicateName() {
+    void createLineWithDuplicateName() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
@@ -74,7 +74,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선 전체를 조회한다.")
     @Test
-    void getStations() {
+    void getLines() {
         /// given
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "2호선");
@@ -123,7 +123,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "2호선");
         params1.put("color", "green");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
             .body(params1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
@@ -132,7 +132,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
 
         // when
-        String uri = createResponse.header("Location");
+        String uri = createResponse1.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
             .get(uri)
@@ -141,10 +141,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        Long expectedLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
+        Long expectedLineId = Long.parseLong(createResponse1.header("Location").split("/")[2]);
         assertThat(expectedLineId).isEqualTo(response.jsonPath().getLong("id"));
-        assertThat(createResponse.jsonPath().getLong("id")).isEqualTo(response.jsonPath().getLong("id"));
-        assertThat(createResponse.jsonPath().getString("name")).isEqualTo(response.jsonPath().getString("name"));
-        assertThat(createResponse.jsonPath().getString("color")).isEqualTo(response.jsonPath().getString("color"));
+        assertThat(createResponse1.jsonPath().getLong("id")).isEqualTo(response.jsonPath().getLong("id"));
+        assertThat(createResponse1.jsonPath().getString("name")).isEqualTo(response.jsonPath().getString("name"));
+        assertThat(createResponse1.jsonPath().getString("color")).isEqualTo(response.jsonPath().getString("color"));
     }
 }
