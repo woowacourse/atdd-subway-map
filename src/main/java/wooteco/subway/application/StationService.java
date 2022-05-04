@@ -11,20 +11,23 @@ import wooteco.subway.exception.NotExistException;
 @Transactional
 public class StationService {
 
-    public StationService() {
+    private final StationDao stationDao;
+
+    public StationService(StationDao stationDao) {
+        this.stationDao = stationDao;
     }
 
     public Station save(String name) {
-        if (StationDao.existByName(name)) {
+        if (stationDao.existByName(name)) {
             throw new DuplicateException();
         }
-        return StationDao.save(new Station(name));
+        return stationDao.save(new Station(name));
     }
 
     public void deleteById(Long id) {
-        if (!StationDao.existById(id)) {
+        if (!stationDao.existById(id)) {
             throw new NotExistException();
         }
-        StationDao.deleteById(id);
+        stationDao.deleteById(id);
     }
 }

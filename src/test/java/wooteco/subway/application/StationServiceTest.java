@@ -22,9 +22,12 @@ class StationServiceTest {
     @Autowired
     private StationService stationService;
 
+    @Autowired
+    private StationDao stationDao;
+
     @BeforeEach
     void setUp() {
-        StationDao.deleteAll();
+        stationDao.deleteAll();
     }
 
     @DisplayName("지하철역 저장")
@@ -32,7 +35,7 @@ class StationServiceTest {
     void saveByName() {
         String stationName = "something";
         Station station = stationService.save(stationName);
-        assertThat(StationDao.findById(station.getId())).isNotEmpty();
+        assertThat(stationDao.findById(station.getId())).isNotEmpty();
     }
 
     @DisplayName("중복된 지하철역 저장")
@@ -60,7 +63,7 @@ class StationServiceTest {
 
         stationService.deleteById(station.getId());
 
-        assertThat(StationDao.existByName("강남역")).isFalse();
+        assertThat(stationDao.existByName("강남역")).isFalse();
     }
 
     @DisplayName("존재하지 않는 지하철 역 삭제")

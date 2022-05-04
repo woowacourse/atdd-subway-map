@@ -18,9 +18,11 @@ import java.util.stream.Collectors;
 public class StationController {
 
     private final StationService stationService;
+    private final StationDao stationDao;
 
-    public StationController(StationService stationService) {
+    public StationController(StationService stationService, StationDao stationDao) {
         this.stationService = stationService;
+        this.stationDao = stationDao;
     }
 
     @PostMapping
@@ -34,7 +36,7 @@ public class StationController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = StationDao.findAll();
+        List<Station> stations = stationDao.findAll();
         List<StationResponse> stationResponses = stations.stream()
             .map(it -> new StationResponse(it.getId(), it.getName()))
             .collect(Collectors.toList());

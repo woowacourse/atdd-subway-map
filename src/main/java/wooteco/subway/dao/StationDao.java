@@ -1,56 +1,73 @@
 package wooteco.subway.dao;
 
-import org.springframework.util.ReflectionUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class StationDao {
-    private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
 
-    public static Station save(Station station) {
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+    public static final RowMapper<Station> ROW_MAPPER = (rs, rowNum) -> {
+        long id = rs.getLong("id");
+        String name = rs.getString("name");
+        return new Station(id, name);
+    };
+    private final JdbcTemplate jdbcTemplate;
+
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+    public Station save(Station station) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection
+                    .prepareStatement("INSERT INTO STATION(name) VALUES(?)", new String[]{"id"});
+            ps.setString(1, station.getName());
+            return ps;
+        }, keyHolder);
+
+        Long id = keyHolder.getKey().longValue();
+        return new Station(id, station.getName());
     }
 
-    public static List<Station> findAll() {
-        return stations;
+    public List<Station> findAll() {
+        return jdbcTemplate.query("SELECT id, name FROM STATION", ROW_MAPPER);
     }
 
-    public static Optional<Station> findById(Long id) {
-        return stations.stream()
-                .filter(it -> id.equals(it.getId()))
-                .findAny();
+    public Optional<Station> findById(Long id) {
+        try {
+            Station station = jdbcTemplate.queryForObject("SELECT id, name FROM STATION WHERE id = ?", ROW_MAPPER, id);
+            return Optional.of(station);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
-    public static boolean existById(Long id) {
-        return stations.stream()
-            .anyMatch(station -> station.isSameId(id));
+    public boolean existById(Long id) {
+        return findById(id).isPresent();
     }
 
-    public static boolean existByName(String name) {
-        return stations.stream()
-                .anyMatch(station -> station.isSameName(name));
+    public boolean existByName(String name) {
+        return jdbcTemplate.queryForObject(
+                "SELECT EXISTS (SELECT id FROM STATION WHERE name = ? LIMIT 1 ) AS `exists`",
+                Boolean.class, name);
     }
 
-    public static void deleteAll() {
-        stations.clear();
+    public void deleteById(Long id) {
+        jdbcTemplate.update("DELETE FROM STATION WHERE id = ?", id);
     }
 
-    public static void deleteById(Long id) {
-        Optional<Station> station = findById(id);
-        stations.remove(station.get());
+    public void deleteAll() {
+        jdbcTemplate.update("DELETE FROM STATION");
     }
 }
