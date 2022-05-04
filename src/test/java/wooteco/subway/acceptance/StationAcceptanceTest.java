@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -19,6 +20,7 @@ import io.restassured.response.Response;
 import wooteco.subway.controller.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능 인수 테스트")
+@Sql(statements = "delete from station", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
