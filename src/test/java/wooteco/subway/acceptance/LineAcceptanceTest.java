@@ -1,5 +1,6 @@
 package wooteco.subway.acceptance;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.equalTo;
@@ -162,7 +163,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void canNotUpdateLineWithEmptyName(String lineName) {
-
         // given
         ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600");
         long createdId = response.jsonPath().getLong("id");
@@ -175,5 +175,53 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .put("/lines/" + createdId)
                 .then().log().all()
                 .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("색깔이 공백인 지하철 노선을 수정할 수 없다")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "  ", "     "})
+    void canNotUpdateLineWithEmptyColor(String lineColor) {
+        // given
+        ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600");
+        long createdId = response.jsonPath().getLong("id");
+
+        // when & then
+        RestAssured.given().log().all()
+            .body(Map.of("name", "신분당선", "color", lineColor))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/" + createdId)
+            .then().log().all()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철 노선 수정")
+    @Test
+    void updateLine() {
+        // given
+        String newName = "1호선";
+        String newColor = "bg-blue-600";
+        ExtractableResponse<Response> createResponse = requestCreateLine("신분당선", "bg-red-600");
+        long createdId = createResponse.jsonPath().getLong("id");
+
+        // when
+        RestAssured.given().log().all()
+            .body(Map.of("name", newName, "color", newColor))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/" + createdId)
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value());
+
+        // then
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().get("/lines/" + createdId)
+            .then().log().all()
+            .extract();
+
+        assertThat(response.jsonPath().getLong("id")).isEqualTo(createdId);
+        assertThat(response.jsonPath().getString("name")).isEqualTo(newName);
+        assertThat(response.jsonPath().getString("color")).isEqualTo(newColor);
     }
 }

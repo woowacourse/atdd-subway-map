@@ -10,7 +10,7 @@ public class StationService {
     public StationService() {
     }
 
-    public Station saveByName(String name) {
+    public Station save(String name) {
         if (StationDao.existByName(name)) {
             throw new DuplicateException();
         }

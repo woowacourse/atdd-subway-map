@@ -19,7 +19,7 @@ public class LineService {
                 .orElseThrow(NotExistException::new);
     }
 
-    public Line updateById(Long id, String name, String color) {
+    public Line update(Long id, String name, String color) {
         return LineDao.update(new Line(id, name, color));
     }
 }
