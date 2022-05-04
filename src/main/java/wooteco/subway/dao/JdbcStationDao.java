@@ -26,8 +26,6 @@ public class JdbcStationDao {
     }
 
     public Long save(String name) {
-        // TODO: validate 이름 중복에 대한 에러
-
         String sql = "insert into station (name) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -49,5 +47,10 @@ public class JdbcStationDao {
     public boolean deleteById(Long id) {
         String sql = "delete from station where id = ?";
         return jdbcTemplate.update(sql, id) == DELETE_SUCCESS;
+    }
+
+    public int isExistStation(String name) {
+        String sql = "select EXISTS (select name from station where name = ?) as success";
+        return jdbcTemplate.queryForObject(sql, Integer.class, name);
     }
 }

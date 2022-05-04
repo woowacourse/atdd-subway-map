@@ -11,6 +11,8 @@ import wooteco.subway.dto.StationResponse;
 @Service
 public class StationService {
 
+    private static final String STATION_DUPLICATION  = "이미 등록된 지하철 역입니다.";
+    public static final int STATION_EXIST_VALUE = 1;
     private final JdbcStationDao stationDao;
 
     public StationService(JdbcStationDao stationDao) {
@@ -18,8 +20,17 @@ public class StationService {
     }
 
     public StationResponse createStation(StationRequest stationRequest) {
+        validateDuplication(stationRequest);
+
         String name = stationRequest.getName();
         return new StationResponse(stationDao.save(name), name);
+    }
+
+    private void validateDuplication(StationRequest stationRequest) {
+        int existFlag = stationDao.isExistStation(stationRequest.getName());
+        if(existFlag == STATION_EXIST_VALUE) {
+            throw new IllegalArgumentException(STATION_DUPLICATION);
+        }
     }
 
     public List<StationResponse> getStations() {
