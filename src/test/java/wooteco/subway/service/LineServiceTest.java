@@ -7,6 +7,7 @@ import static org.assertj.core.groups.Tuple.tuple;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 class LineServiceTest {
@@ -16,9 +17,9 @@ class LineServiceTest {
     @Test
     @DisplayName("지하철 노선 추가, 조회, 삭제 테스트")
     void LineCRDTest() {
-        lineService.save("line1", "red");
-        lineService.save("line2", "yellow");
-        lineService.save("line3", "blue");
+        lineService.save(new LineRequest("line1", "red", null, null, 0));
+        lineService.save(new LineRequest("line2", "yellow", null, null, 0));
+        lineService.save(new LineRequest("line3", "blue", null, null, 0));
 
         List<LineResponse> lines = lineService.findAll();
 
@@ -36,9 +37,10 @@ class LineServiceTest {
     @Test
     @DisplayName("중복된 노선 이름 입력 시 예외 발생 테스트")
     void validateDuplicationNameTest() {
-        lineService.save("line1", "red");
+        lineService.save(new LineRequest("line1", "red", null, null, 0));
 
-        assertThatThrownBy(() -> lineService.save("line1", "yellow"))
+        assertThatThrownBy(() -> lineService.save(
+                new LineRequest("line1", "yellow", null, null, 0)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이미 존재하는 노선 이름입니다.");
 
@@ -49,9 +51,9 @@ class LineServiceTest {
     @Test
     @DisplayName("중복된 노선 색깔 입력 시 예외 발생 테스트")
     void validateDuplicationColorTest() {
-        lineService.save("line1", "red");
+        lineService.save(new LineRequest("line1", "red", null, null, 0));
 
-        assertThatThrownBy(() -> lineService.save("line2", "red"))
+        assertThatThrownBy(() -> lineService.save(new LineRequest("line2", "red", null, null, 0)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이미 존재하는 노선 색깔입니다.");
 
@@ -62,10 +64,12 @@ class LineServiceTest {
     @Test
     @DisplayName("노선을 수정한다.")
     void updateTest() {
-        LineResponse lineResponse = lineService.save("line1", "red");
+        LineResponse lineResponse = lineService.save(
+                new LineRequest("line1", "red", null, null, 0));
         Long lineId = lineResponse.getId();
 
-        lineService.update(lineId, "line2", "yellow");
+        lineService.update(lineId, new LineRequest(
+                "line2", "yellow", null, null, 0));
 
         assertThat(lineService.findById(lineId))
                 .extracting("name", "color")

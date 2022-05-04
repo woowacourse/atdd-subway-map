@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 class StationServiceTest {
@@ -16,9 +17,9 @@ class StationServiceTest {
     @Test
     @DisplayName("지하철역 추가, 조회, 삭제 테스트")
     void StationCRDTest() {
-        stationService.save("station1");
-        stationService.save("station2");
-        stationService.save("station3");
+        stationService.save(new StationRequest("station1"));
+        stationService.save(new StationRequest("station2"));
+        stationService.save(new StationRequest("station3"));
 
         List<StationResponse> stations = stationService.findAll();
 
@@ -36,9 +37,9 @@ class StationServiceTest {
     @Test
     @DisplayName("중복된 이름 입력 시 예외 발생 테스트")
     void validateDuplicationNameTest() {
-        stationService.save("station1");
+        stationService.save(new StationRequest("station1"));
 
-        assertThatThrownBy(() -> stationService.save("station1"))
+        assertThatThrownBy(() -> stationService.save(new StationRequest("station1")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이미 존재하는 역 이름입니다.");
     }

@@ -5,12 +5,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 public class StationService {
 
-    public StationResponse save(String stationName) {
+    public StationResponse save(StationRequest stationRequest) {
         List<Station> stations = StationDao.findAll();
+        String stationName = stationRequest.getName();
+
         for (Station station : stations) {
             if (station.isSameName(stationName)) {
                 throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");

@@ -5,11 +5,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 public class LineService {
 
-    public LineResponse save(String lineName, String color) {
+    public LineResponse save(LineRequest lineRequest) {
+        String lineName = lineRequest.getName();
+        String color = lineRequest.getColor();
+
         List<Line> lines = LineDao.findAll();
         for (Line line : lines) {
             if (line.isSameName(lineName)) {
@@ -42,7 +46,7 @@ public class LineService {
         throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
     }
 
-    public void update(Long lineId, String lineName, String color) {
-        LineDao.update(lineId, lineName, color);
+    public void update(Long lineId, LineRequest lineRequest) {
+        LineDao.update(lineId, lineRequest.getName(), lineRequest.getColor());
     }
 }
