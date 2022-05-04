@@ -1,16 +1,16 @@
 package wooteco.subway.service;
 
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import wooteco.subway.dao.FakeLineDao;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.StationRequest;
 import wooteco.subway.exception.ClientException;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -68,7 +68,7 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("노선정보를 삭제")
+    @DisplayName("노선 정보 삭제")
     void delete() {
         LineRequest line = new LineRequest("4호선", "red");
         LineResponse newLine = lineService.createLine(line);
@@ -77,7 +77,7 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("노선정보 업데이트")
+    @DisplayName("노선 정보 업데이트")
     void update() {
         LineRequest line = new LineRequest("4호선", "red");
         LineResponse newLine = lineService.createLine(line);
@@ -86,7 +86,7 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("노선정보한개 조회")
+    @DisplayName("노선 정보 조회")
     void find() {
         LineRequest line = new LineRequest("4호선", "red");
         LineResponse newLine = lineService.createLine(line);

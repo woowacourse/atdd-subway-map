@@ -1,5 +1,7 @@
 package wooteco.subway.service;
 
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,8 +11,6 @@ import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.ClientException;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -54,7 +54,7 @@ class StationServiceTest {
     }
 
     @Test
-    @DisplayName("역정보들 조회")
+    @DisplayName("역 정보들 조회")
     void findAll() {
         StationRequest firstStation = new StationRequest("역삼역");
         StationRequest secondStation = new StationRequest("삼성역");
@@ -62,14 +62,16 @@ class StationServiceTest {
         stationService.createStation(secondStation);
 
         List<StationResponse> stations = stationService.findAll();
-        stations.stream()
+        StationResponse stationResponse = stations.stream()
                 .filter(station -> station.getName().equals("역삼역"))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("지하철 정보가 없습니다."));
+
+        assertThat(stationResponse.getName()).isEqualTo(firstStation.getName());
     }
 
     @Test
-    @DisplayName("역정보를 삭제")
+    @DisplayName("역 정보를 삭제")
     void deleteStation() {
         StationRequest station = new StationRequest("역삼역");
         StationResponse newStation = stationService.createStation(station);

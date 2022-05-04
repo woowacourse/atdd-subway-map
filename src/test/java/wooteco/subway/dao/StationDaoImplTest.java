@@ -1,16 +1,17 @@
 package wooteco.subway.dao;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.domain.Station;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import wooteco.subway.domain.Station;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,7 +40,7 @@ class StationDaoImplTest {
         jdbcTemplate.batchUpdate("INSERT INTO station(name) VALUES (?)", splitStation);
     }
 
-    @DisplayName("역정보를 저장한다.")
+    @DisplayName("역 정보를 저장한다.")
     @Test
     void save() {
         Station station = new Station("역삼역");
@@ -48,7 +49,7 @@ class StationDaoImplTest {
         assertThat(newStation.getName()).isEqualTo("역삼역");
     }
 
-    @DisplayName("역정보들을 가져온다.")
+    @DisplayName("역 정보들을 가져온다.")
     @Test
     void findAll() {
         List<Station> stations = stationDaoImpl.findAll();
@@ -56,7 +57,7 @@ class StationDaoImplTest {
         assertThat(stations.size()).isEqualTo(3);
     }
 
-    @DisplayName("역정보를 삭제한다.")
+    @DisplayName("역 정보를 삭제한다.")
     @Test
     void delete() {
         Station station = new Station("역삼역");

@@ -1,18 +1,16 @@
 package wooteco.subway.service;
 
-import org.springframework.stereotype.Service;
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.LineDaoImpl;
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.exception.ClientException;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import wooteco.subway.dao.LineDao;
+import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.ClientException;
 
 @Service
 public class LineService {

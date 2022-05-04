@@ -1,7 +1,8 @@
 package wooteco.subway.dao;
-import wooteco.subway.domain.Line;
 
 import java.util.List;
+
+import wooteco.subway.domain.Line;
 
 public interface LineDao {
 

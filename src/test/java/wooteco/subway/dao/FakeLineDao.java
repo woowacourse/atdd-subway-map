@@ -1,15 +1,15 @@
 package wooteco.subway.dao;
 
-import org.springframework.util.ReflectionUtils;
-import wooteco.subway.domain.Line;
-import wooteco.subway.exception.ClientException;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.springframework.util.ReflectionUtils;
+
+import wooteco.subway.domain.Line;
+import wooteco.subway.exception.ClientException;
 public class FakeLineDao implements LineDao {
 
     private static Long seq = 0L;
