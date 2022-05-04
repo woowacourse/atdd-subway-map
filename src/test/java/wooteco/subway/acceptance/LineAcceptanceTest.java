@@ -10,22 +10,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.dto.LineResponse;
 
+@DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    @AfterEach
-    void rollback() {
-        LineDao.findAll().clear();
-    }
-
     @Test
+    @DisplayName("지하철 노선을 생성한다.")
     void createLine() {
         // given
         final Map<String, String> params = new HashMap<>();
@@ -253,7 +248,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("존재하지 않는 ID로 삭제한다면, 예외를 발생한다.")
-    void deleteLineNotExistId(){
+    void deleteLineNotExistId() {
         // given
         final long id = 1L;
 

@@ -7,8 +7,13 @@ public class Line {
     private String color;
 
     public Line(final String name, final String color) {
+        this(null, name, color);
+    }
+
+    public Line(final Long id, final String name, final String color) {
         validateName(name);
         validateColor(color);
+        this.id = id;
         this.name = name;
         this.color = color;
     }
@@ -23,23 +28,6 @@ public class Line {
         if (color.isBlank()) {
             throw new IllegalArgumentException("색상이 공백일 수 없습니다.");
         }
-    }
-
-    public boolean isSameId(final Long id) {
-        return this.id.equals(id);
-    }
-
-    public boolean isSameName(final String name) {
-        return this.name.equals(name);
-    }
-
-    public boolean isSameColor(final String color) {
-        return this.color.equals(color);
-    }
-
-    public void update(final String updateName, final String updateColor) {
-        this.name = updateName;
-        this.color = updateColor;
     }
 
     public Long getId() {

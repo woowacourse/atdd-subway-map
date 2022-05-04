@@ -5,16 +5,26 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
 
+@JdbcTest
 public class LineDaoTest {
 
-    @AfterEach
-    void rollback() {
-        LineDao.findAll().clear();
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    private LineDao lineDao;
+
+    @BeforeEach
+    void setUp() {
+        lineDao = new LineDao(jdbcTemplate);
     }
 
     @Test
@@ -22,12 +32,13 @@ public class LineDaoTest {
     void save() {
         final Line line = new Line("신분당선", "bg-red-600");
 
-        final Line savedLine = LineDao.save(line);
+        final Long id = lineDao.save(line);
 
+        final Line foundLine = lineDao.find(id);
         assertAll(() -> {
-            assertThat(savedLine.getId()).isNotNull();
-            assertThat(savedLine.getName()).isEqualTo(line.getName());
-            assertThat(savedLine.getColor()).isEqualTo(line.getColor());
+            assertThat(foundLine.getId()).isNotNull();
+            assertThat(foundLine.getName()).isEqualTo(line.getName());
+            assertThat(foundLine.getColor()).isEqualTo(line.getColor());
         });
     }
 
@@ -36,11 +47,10 @@ public class LineDaoTest {
     void saveDuplicateName() {
         final Line line1 = new Line("신분당선", "bg-red-600");
         final Line line2 = new Line("신분당선", "bg-blue-700");
-        LineDao.save(line1);
+        lineDao.save(line1);
 
-        assertThatThrownBy(() -> LineDao.save(line2))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("같은 이름의 노선이 이미 존재합니다.");
+        assertThatThrownBy(() -> lineDao.save(line2))
+                .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
@@ -48,11 +58,10 @@ public class LineDaoTest {
     void saveDuplicateColor() {
         final Line line1 = new Line("신분당선", "bg-red-600");
         final Line line2 = new Line("분당선", "bg-red-600");
-        LineDao.save(line1);
+        lineDao.save(line1);
 
-        assertThatThrownBy(() -> LineDao.save(line2))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("같은 색상의 노선이 이미 존재합니다.");
+        assertThatThrownBy(() -> lineDao.save(line2))
+                .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
@@ -60,10 +69,10 @@ public class LineDaoTest {
     void findAll() {
         final Line line1 = new Line("신분당선", "bg-red-600");
         final Line line2 = new Line("분당선", "bg-black-000");
-        LineDao.save(line1);
-        LineDao.save(line2);
+        lineDao.save(line1);
+        lineDao.save(line2);
 
-        final List<Line> lines = LineDao.findAll();
+        final List<Line> lines = lineDao.findAll();
 
         assertThat(lines).hasSize(2);
     }
@@ -72,13 +81,13 @@ public class LineDaoTest {
     @DisplayName("지하철 노선을 조회한다.")
     void find() {
         final Line line = new Line("신분당선", "bg-red-600");
-        final Line savedLine = LineDao.save(line);
+        final Long id = lineDao.save(line);
 
-        final Line foundLine = LineDao.find(savedLine.getId());
+        final Line foundLine = lineDao.find(id);
 
         assertAll(() -> {
-            assertThat(foundLine.getName()).isEqualTo(savedLine.getName());
-            assertThat(foundLine.getColor()).isEqualTo(savedLine.getColor());
+            assertThat(foundLine.getName()).isEqualTo(line.getName());
+            assertThat(foundLine.getColor()).isEqualTo(line.getColor());
         });
     }
 
@@ -87,21 +96,21 @@ public class LineDaoTest {
     void findNotExistId() {
         final long id = 1L;
 
-        assertThatThrownBy(() -> LineDao.find(id))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 노선입니다.");
+        assertThatThrownBy(() -> lineDao.find(id))
+                .isInstanceOf(EmptyResultDataAccessException.class);
     }
 
     @Test
     @DisplayName("노선 정보를 업데이트 한다.")
     void update() {
         final Line line = new Line("신분당선", "bg-red-600");
-        final Long id = LineDao.save(line).getId();
+        final Long id = lineDao.save(line);
 
         final String updateName = "분당선";
         String updateColor = "bg-blue-900";
-        final Line updatedLine = LineDao.update(id, updateName, updateColor);
+        lineDao.update(id, updateName, updateColor);
 
+        final Line updatedLine = lineDao.find(id);
         assertAll(() -> {
             assertThat(updatedLine.getName()).isEqualTo(updateName);
             assertThat(updatedLine.getColor()).isEqualTo(updateColor);
@@ -112,10 +121,10 @@ public class LineDaoTest {
     @DisplayName("노선을 삭제한다.")
     void delete() {
         final Line line = new Line("신분당선", "bg-red-600");
-        final Long id = LineDao.save(line).getId();
+        final Long id = lineDao.save(line);
 
-        LineDao.delete(id);
+        lineDao.delete(id);
 
-        assertThat(LineDao.findAll()).hasSize(0);
+        assertThat(lineDao.findAll()).hasSize(0);
     }
 }
