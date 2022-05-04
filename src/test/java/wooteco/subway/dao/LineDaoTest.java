@@ -45,5 +45,14 @@ public class LineDaoTest {
         assertThat(actualColor).isEqualTo(expectedColor);
     }
 
+    @Test
+    @DisplayName("중복된 노선을 저장할 경우 예외를 발생시킨다.")
+    void save_duplicate() {
+        String name = "2호선";
+        String color = "green";
 
+        assertThatThrownBy(() -> lineDao.save(name, color))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 존재하는 노선입니다.");
+    }
 }

@@ -5,12 +5,12 @@ import java.util.Optional;
 import javax.sql.DataSource;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.domain.Line;
 
@@ -19,6 +19,11 @@ public class LineDao {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
+            new Line(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("color"));;
 
     public LineDao(final DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -42,10 +47,10 @@ public class LineDao {
     }
 
     private Optional<Line> findByName(String name) {
-        String sql = "SELECT name FROM line WHERE name = :name";
+        String sql = "SELECT * FROM line WHERE name = :name";
         MapSqlParameterSource parameters = new MapSqlParameterSource("name", name);
         try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, Line.class));
+            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, lineRowMapper));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
