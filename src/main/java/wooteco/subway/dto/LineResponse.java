@@ -36,4 +36,12 @@ public class LineResponse {
         return color;
     }
 
+    @Override
+    public String toString() {
+        return "LineResponse{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                '}';
+    }
 }
