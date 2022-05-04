@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,5 +29,19 @@ class StationDao2Test {
 
         // then
         assertThat(savedStation.getName()).isEqualTo(name);
+    }
+
+    @Test
+    @DisplayName("모든 역 조회하기")
+    void findAll() {
+        // given
+        stationDao2.save(new Station("선릉"));
+        stationDao2.save(new Station("노원"));
+
+        // when
+        List<Station> stations = stationDao2.findAll();
+
+        // then
+        assertThat(stations).hasSize(2);
     }
 }

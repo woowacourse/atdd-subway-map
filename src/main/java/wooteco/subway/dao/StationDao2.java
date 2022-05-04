@@ -5,16 +5,24 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 
 @Repository
 public class StationDao2 {
 
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Station> rowMapper =(resultSet, rowNumber) -> {
+        Station station = new Station(
+                resultSet.getString("name")
+        );
+        return setId(station, resultSet.getLong("id"));
+    };
 
     public StationDao2(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -40,7 +48,8 @@ public class StationDao2 {
     }
 
     public List<Station> findAll() {
-        return null;
+        String sql = "SELECT * FROM station";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     public Integer deleteById(Long id) {
