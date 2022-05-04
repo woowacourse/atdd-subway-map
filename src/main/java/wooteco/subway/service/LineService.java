@@ -14,10 +14,6 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public static void update(Line line) {
-        LineDao.update(line);
-    }
-
     public static void delete(Long id) {
         LineDao.delete(id);
     }
@@ -47,5 +43,12 @@ public class LineService {
     public Line find(Long id) {
         return lineDao.find(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 노선입니다."));
+    }
+
+    public void update(long id, Line line) {
+        int updatedRow = lineDao.update(id, line);
+        if (updatedRow == 0) {
+            throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
+        }
     }
 }

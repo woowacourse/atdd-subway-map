@@ -65,9 +65,9 @@ public class LineDao {
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id));
     }
 
-    public static void update(Line line) {
-        delete(line.getId());
-        lines.add(line);
+    public int update(long id, Line line) {
+        final String sql = "update LINE set name = ?, color = ? where id = ?";
+        return jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
     public static void delete(Long id) {

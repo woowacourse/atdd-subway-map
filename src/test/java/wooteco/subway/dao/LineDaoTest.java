@@ -71,4 +71,15 @@ class LineDaoTest {
 
         assertThat(line).isNotNull();
     }
+
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void update() {
+        long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
+        Line updatedLine = new Line("다른분당선", "bg-red-600");
+
+        lineDao.update(lineId, updatedLine);
+
+        assertThat(lineDao.find(lineId).orElseThrow().getName()).isEqualTo("다른분당선");
+    }
 }
