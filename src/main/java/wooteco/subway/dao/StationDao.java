@@ -8,12 +8,12 @@ import wooteco.subway.domain.Station;
 
 public class StationDao {
 
-    private static Long seq = 0L;
+    private static Long sequence = 0L;
     private static final List<Station> stations = new ArrayList<>();
 
     public static Station save(Station station) {
         validateDuplicate(station);
-        Station persistStation = createNewObject(station);
+        Station persistStation = createUniqueId(station);
         stations.add(persistStation);
         return persistStation;
     }
@@ -27,12 +27,7 @@ public class StationDao {
     }
 
     public static void deleteById(Long id) {
-        Station value = stations.stream()
-            .filter(station -> station.getId().equals(id))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id 입니다."));
-
-        stations.removeIf(it -> it.equals(value));
+        stations.removeIf(station -> station.getId().equals(id));
     }
 
     private static void validateDuplicate(Station station) {
@@ -41,10 +36,10 @@ public class StationDao {
         }
     }
 
-    private static Station createNewObject(Station station) {
+    private static Station createUniqueId(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
+        ReflectionUtils.setField(field, station, ++sequence);
         return station;
     }
 }
