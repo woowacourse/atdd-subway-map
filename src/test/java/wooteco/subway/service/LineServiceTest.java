@@ -9,10 +9,12 @@ import wooteco.subway.dao.LineRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.utils.exception.NameDuplicatedException;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Transactional
@@ -36,6 +38,14 @@ public class LineServiceTest {
                 () -> assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName()),
                 () -> assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor())
         );
+    }
+
+    @DisplayName("노선 생성시 이름이 존재할 경우 예외 발생")
+    @Test
+    void createDuplicateName() {
+        lineRepository.save(new Line("분당선", "bg-red-600"));
+        assertThatThrownBy(() -> lineService.create(new LineRequest("분당선", "bg-red-600")))
+                .isInstanceOf(NameDuplicatedException.class);
     }
 
     @DisplayName("모든 노선을 조회한다.")
