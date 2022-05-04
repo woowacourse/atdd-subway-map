@@ -63,4 +63,23 @@ public class LineServiceTest {
         assertThatThrownBy(() -> lineService.find(1L)).isInstanceOf(IllegalArgumentException.class)
             .hasMessage("존재하지 않는 지하철 노선 id입니다.");
     }
+
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        LineRequest lineRequest = new LineRequest("2호선", "red");
+        LineResponse lineResponse = lineService.save(lineRequest);
+
+        LineRequest lineRequest2 = new LineRequest("3호선", "red");
+        lineService.update(lineResponse.getId(), lineRequest2);
+        assertThat(lineService.find(lineResponse.getId()).getName()).isEqualTo(lineRequest2.getName());
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선 수정한다.")
+    @Test
+    void updateLineNotExists() {
+        LineRequest lineRequest = new LineRequest("2호선", "red");
+        assertThatThrownBy(() -> lineService.update(1L, lineRequest)).isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("존재하지 않는 지하철 노선 id입니다.");
+    }
 }
