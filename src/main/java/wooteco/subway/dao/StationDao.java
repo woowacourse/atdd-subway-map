@@ -24,6 +24,15 @@ public class StationDao {
         return stations;
     }
 
+    public static void deleteById(Long id) {
+        final Station findStation = stations.stream()
+                .filter(station -> station.getId().equals(id))
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
+
+        stations.remove(findStation);
+    }
+
     public static void deleteAll() {
         stations.clear();
     }
