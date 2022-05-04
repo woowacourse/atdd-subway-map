@@ -1,65 +1,58 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.NoSuchElementException;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 
+@Repository
 public class LineDao {
 
-    private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
+    private static final RowMapper<Line> Line_ROW_MAPPER = (rs, rowNum) -> new Line(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("color")
+    );
+    private final JdbcTemplate jdbcTemplate;
 
-    public static Line save(Line line) {
-        Line persistLine = createNewObject(line);
-        lines.add(line);
-        return persistLine;
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+    public Line save(Line line) {
+        String sql = "INSERT INTO line (name, color) VALUES(?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement statement = connection.prepareStatement(sql, new String[]{"id"});
+            statement.setString(1, line.getName());
+            statement.setString(2, line.getColor());
+            return statement;
+        }, keyHolder);
+        return new Line(keyHolder.getKey().longValue(), line.getName(), line.getColor());
     }
 
-    public static Line findById(Long id) {
-        return lines.stream()
-                .filter(it -> it.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당 노선을 찾을 수 없습니다."));
+    public Line findById(Long id) {
+        String sql = "SELECT * FROM line WHERE id=?";
+        return jdbcTemplate.queryForObject(sql, Line_ROW_MAPPER, id);
     }
 
-    public static List<Line> findAll() {
-        return Collections.unmodifiableList(lines);
+    public List<Line> findAll() {
+        String sql = "SELECT * FROM line";
+        return jdbcTemplate.query(sql, Line_ROW_MAPPER);
     }
 
-    public static boolean existLineByName(String name) {
-        return lines.stream()
-                .anyMatch(it -> it.getName().equals(name));
+    public void update(Long id, String name, String color) {
+        String sql = "UPDATE line SET name=?, color=? WHERE id=?";
+        jdbcTemplate.update(sql, name, color, id);
     }
 
-    public static boolean existLineByColor(String color) {
-        return lines.stream()
-                .anyMatch(it -> it.getColor().equals(color));
-    }
-
-    public static void updateById(Long id, String name, String color) {
-        Line line = findById(id);
-        line.setName(name);
-        line.setColor(color);
-    }
-
-    public static void deleteById(Long id) {
-        lines.removeIf(line -> line.getId() == id);
-//        Line targetLine = lines.stream()
-//                .filter(it -> it.getId().equals(id))
-//                .findFirst()
-//                .orElseThrow();
-//
-//        lines.remove(targetLine);
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM line WHERE id=?";
+        jdbcTemplate.update(sql, id);
     }
 }
