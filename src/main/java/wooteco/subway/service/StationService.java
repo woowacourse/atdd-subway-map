@@ -28,13 +28,13 @@ public class StationService {
             throw new IllegalArgumentException(DUPLICATE_NAME_ERROR);
         }
         Station newStation = stationDao.save(station);
-        return new StationResponse(newStation.getId(), newStation.getName());
+        return StationResponse.of(newStation);
     }
 
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 
