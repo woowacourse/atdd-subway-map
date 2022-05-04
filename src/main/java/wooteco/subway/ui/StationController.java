@@ -3,7 +3,7 @@ package wooteco.subway.ui;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.ErrorResponse;
 import wooteco.subway.dto.StationRequest;
@@ -19,14 +19,14 @@ public class StationController {
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
-        Station newStation = StationDao.save(station);
+        Station newStation = FakeStationDao.save(station);
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = StationDao.findAll();
+        List<Station> stations = FakeStationDao.findAll();
         List<StationResponse> stationResponses = stations.stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());
