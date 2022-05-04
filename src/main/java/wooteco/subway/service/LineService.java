@@ -1,12 +1,11 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDaoImpl;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.LineNotFoundException;
 
 @Service
 public class LineService {
@@ -22,17 +21,15 @@ public class LineService {
         return lineDaoImpl.save(line);
     }
 
-    public List<LineResponse> findAll() {
+    public List<Line> findAll() {
         List<Line> lines = lineDaoImpl.findAll();
-        return lines.stream()
-            .map(LineResponse::new)
-            .collect(Collectors.toList());
+        return lines;
     }
 
-    public LineResponse findById(Long id) {
+    public Line findById(Long id) {
         Line line = lineDaoImpl.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다."));
-        return new LineResponse(line);
+            .orElseThrow(() -> new LineNotFoundException("해당 노선이 없습니다.", 1));
+        return line;
     }
 
     public void update(Long id, LineRequest lineRequest) {
