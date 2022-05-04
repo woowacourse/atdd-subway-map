@@ -3,6 +3,7 @@ package wooteco.subway.ui;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -12,7 +13,12 @@ import wooteco.subway.dto.SubwayErrorResponse;
 public class SubwayControllerAdvice {
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<SubwayErrorResponse> handleBusinessException(RuntimeException exception) {
+    public ResponseEntity<SubwayErrorResponse> handleBusinessException(IllegalStateException exception) {
+        return ResponseEntity.badRequest().body(SubwayErrorResponse.from(exception));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<SubwayErrorResponse> handleValidException(MethodArgumentNotValidException exception) {
         return ResponseEntity.badRequest().body(SubwayErrorResponse.from(exception));
     }
 
@@ -32,7 +38,7 @@ public class SubwayControllerAdvice {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Void> handleException() {
+    public ResponseEntity<Void> handleException(RuntimeException exception) {
         return ResponseEntity.internalServerError().build();
     }
 }
