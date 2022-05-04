@@ -2,15 +2,23 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
+@Service
 public class LineService {
 
-    public static Line save(Line line) {
+    private final LineDao lineDao;
+
+    public LineService(LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
+
+    public long save(Line line) {
         validateName(line);
         validateColor(line);
-        return LineDao.save(line);
+        return lineDao.save(line);
     }
 
     private static void validateName(Line line) {

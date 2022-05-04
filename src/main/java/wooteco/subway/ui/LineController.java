@@ -21,12 +21,18 @@ import wooteco.subway.service.LineService;
 @RestController
 public class LineController {
 
+    private final LineService lineService;
+
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
+    }
+
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = LineService.save(line);
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        long lineId = lineService.save(line);
+        LineResponse lineResponse = new LineResponse(lineId, line.getName(), line.getColor());
+        return ResponseEntity.created(URI.create("/lines/" + lineId)).body(lineResponse);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
