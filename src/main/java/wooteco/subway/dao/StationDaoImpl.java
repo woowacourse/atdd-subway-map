@@ -53,12 +53,6 @@ public class StationDaoImpl implements StationDao {
     }
 
     @Override
-    public Optional<Station> findById(Long id) {
-        String sql = "select * from station where id = ?";
-        return Optional.of(jdbcTemplate.queryForObject(sql, actorRowMapper, id));
-    }
-
-    @Override
     public boolean exists(Station station) {
         String sql = "select exists (select name from station where name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, station.getName());
