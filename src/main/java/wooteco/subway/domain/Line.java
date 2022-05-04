@@ -7,7 +7,6 @@ public class Line {
     private String color;
 
     public Line() {
-
     }
 
     public Line(Long id, String name, String color) {
