@@ -9,6 +9,8 @@ import wooteco.subway.domain.Station;
 @Service
 public class StationService {
 
+    private static final String DUPLICATE_STATION_NAME_EXCEPTION = "중복된 역 이름입니다.";
+
     private final StationDao stationDao;
 
     public StationService(StationDao stationDao) {
@@ -18,7 +20,7 @@ public class StationService {
     @Transactional
     public Station createStation(String name) {
         if (stationDao.existsByName(name)) {
-            throw new IllegalArgumentException("중복된 역 이름입니다.");
+            throw new IllegalArgumentException(DUPLICATE_STATION_NAME_EXCEPTION);
         }
         return stationDao.save(new Station(name));
     }

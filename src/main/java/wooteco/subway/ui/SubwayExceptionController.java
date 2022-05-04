@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class SubwayExceptionController {
 
+    private static final String INTERNAL_ERROR_MESSAGE = "서버에 오류가 있으니 잠시 후 다시 시도해주세요.";
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleIllegalArgumentException(RuntimeException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
@@ -14,6 +16,6 @@ public class SubwayExceptionController {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleOtherException(RuntimeException e) {
-        return ResponseEntity.badRequest().body("서버에 오류가 있으니 잠시 후 다시 시도해주세요.");
+        return ResponseEntity.badRequest().body(INTERNAL_ERROR_MESSAGE);
     }
 }
