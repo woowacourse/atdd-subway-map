@@ -17,13 +17,12 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dto.LineAndStationsResponse;
 import wooteco.subway.dto.LineResponse;
 
 class LineAcceptanceTest extends AcceptanceTest {
 
     @AfterEach
-    void tearDown(){
+    void tearDown() {
         LineDao.deleteAll();
     }
 
@@ -49,7 +48,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void  findAllLine(){
+    void findAllLine() {
         //given
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "신분당선");
@@ -94,7 +93,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void findLindById(){
+    void findLindById() {
         //given
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
@@ -121,7 +120,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void update(){
+    void update() {
         //given
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
