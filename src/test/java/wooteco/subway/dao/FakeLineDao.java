@@ -6,29 +6,32 @@ import java.util.List;
 import java.util.Map;
 import wooteco.subway.domain.Line;
 
-public class FakeLineDao {
+public class FakeLineDao implements LineDao {
 
-    private static Long seq = 0L;
-    private static final Map<Long, Line> lines = new HashMap<>();
+    private Long seq = 0L;
+    private final Map<Long, Line> lines = new HashMap<>();
 
-    public static Long save(Line line) {
+    @Override
+    public Long save(Line line) {
         validateDuplicateName(line);
         Line newLine = new Line(++seq, line.getName(), line.getColor());
         lines.put(seq, newLine);
         return seq;
     }
 
-    private static void validateDuplicateName(Line line) {
+    private void validateDuplicateName(Line line) {
         if (lines.containsValue(line)) {
             throw new IllegalArgumentException("중복된 이름이 존재합니다.");
         }
     }
 
-    public static List<Line> findAll() {
+    @Override
+    public List<Line> findAll() {
         return new ArrayList<>(lines.values());
     }
 
-    public static boolean deleteById(Long lineId) {
+    @Override
+    public boolean deleteById(Long lineId) {
         if (lines.containsKey(lineId)) {
             lines.remove(lineId);
             return true;
@@ -37,11 +40,13 @@ public class FakeLineDao {
         return false;
     }
 
-    public static Line findById(Long id) {
+    @Override
+    public Line findById(Long id) {
         return lines.get(id);
     }
 
-    public static boolean updateById(Long savedId, Line line) {
+    @Override
+    public boolean updateById(Long savedId, Line line) {
         if (lines.containsKey(savedId)) {
             lines.replace(savedId, new Line(savedId, line.getName(), line.getColor()));
             return true;

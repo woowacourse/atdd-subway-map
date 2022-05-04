@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
-import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.LineDaoImpl;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
@@ -24,7 +24,7 @@ public class AcceptanceTest {
     private StationDao stationDao;
 
     @Autowired
-    private LineDao lineDao;
+    private LineDaoImpl lineDaoImpl;
 
     @BeforeEach
     public void setUp() {
@@ -46,13 +46,13 @@ public class AcceptanceTest {
     }
 
     private void clearAllLines() {
-        List<Line> lines = lineDao.findAll();
+        List<Line> lines = lineDaoImpl.findAll();
         List<Long> lineIds = lines.stream()
             .map(Line::getId)
             .collect(Collectors.toList());
 
         for (Long lineId : lineIds) {
-            lineDao.deleteById(lineId);
+            lineDaoImpl.deleteById(lineId);
         }
     }
 }

@@ -12,40 +12,32 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.service.LineService;
 
 @RestController
 public class LineController {
 
-    private final LineDao lineDao;
+    private final LineService lineService;
 
-    public LineController(LineDao lineDao) {
-        this.lineDao = lineDao;
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        validateDuplicationName(line);
-        Long savedId = lineDao.save(line);
+        Long savedId = lineService.save(line);
         LineResponse lineResponse = new LineResponse(savedId, line.getName(), line.getColor(),
             new ArrayList<>());
         return ResponseEntity.created(URI.create("/lines/" + savedId)).body(lineResponse);
     }
 
-    private void validateDuplicationName(Line line) {
-        List<Line> lines = lineDao.findAll();
-        if (lines.contains(line)) {
-            throw new IllegalArgumentException("중복된 이름이 존재합니다.");
-        }
-    }
-
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineDao.findAll();
+        List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
             .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), new ArrayList<>()))
             .collect(Collectors.toList());
@@ -54,7 +46,7 @@ public class LineController {
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        if (lineDao.deleteById(id)) {
+        if (lineService.deleteById(id)) {
             return ResponseEntity.ok().build();
         }
 
@@ -64,7 +56,7 @@ public class LineController {
     @PutMapping("/lines/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        if (lineDao.updateById(id, line)) {
+        if (lineService.updateById(id, line)) {
             return ResponseEntity.ok().build();
         }
 

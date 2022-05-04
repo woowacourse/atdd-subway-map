@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -7,31 +7,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.dao.FakeLineDao;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
-@JdbcTest
-class LineDaoTest {
+class LineServiceTest {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    private LineDao lineDao;
+    private final LineDao lineDao = new FakeLineDao();
+    private final LineService lineService = new LineService(lineDao);
 
     @BeforeEach
     void setUp() {
-        lineDao = new LineDao(jdbcTemplate);
-
         List<Line> lines = lineDao.findAll();
-        List<Long> lineIds = lines.stream()
+        List<Long> stationIds = lines.stream()
             .map(Line::getId)
             .collect(Collectors.toList());
 
-        for (Long lineId : lineIds) {
-            lineDao.deleteById(lineId);
+        for (Long stationId : stationIds) {
+            lineDao.deleteById(stationId);
         }
     }
 
@@ -41,7 +34,7 @@ class LineDaoTest {
         Line line = new Line("1호선", "bg-red-600");
 
         // when
-        Long savedId = lineDao.save(line);
+        Long savedId = lineService.save(line);
         Line line1 = lineDao.findById(savedId);
 
         // then
@@ -55,11 +48,12 @@ class LineDaoTest {
         Line line2 = new Line("1호선", "bg-red-600");
 
         // when
-        lineDao.save(line1);
+        lineService.save(line1);
 
         // then
-        assertThatThrownBy(() -> lineDao.save(line2))
-            .isInstanceOf(DuplicateKeyException.class);
+        assertThatThrownBy(() -> lineService.save(line2))
+            .hasMessage("중복된 이름이 존재합니다.")
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -69,11 +63,11 @@ class LineDaoTest {
         Line line2 = new Line("2호선", "bg-green-600");
 
         // when
-        lineDao.save(line1);
-        lineDao.save(line2);
+        lineService.save(line1);
+        lineService.save(line2);
 
         // then
-        List<String> names = lineDao.findAll()
+        List<String> names = lineService.findAll()
             .stream()
             .map(Line::getName)
             .collect(Collectors.toList());
@@ -87,13 +81,13 @@ class LineDaoTest {
     void delete() {
         // given
         Line line = new Line("1호선", "bg-red-600");
-        Long savedId = lineDao.save(line);
+        Long savedId = lineService.save(line);
 
         // when
-        lineDao.deleteById(savedId);
+        lineService.deleteById(savedId);
 
         // then
-        List<Long> lineIds = lineDao.findAll()
+        List<Long> lineIds = lineService.findAll()
             .stream()
             .map(Line::getId)
             .collect(Collectors.toList());
@@ -107,11 +101,11 @@ class LineDaoTest {
     void update() {
         // given
         Line originLine = new Line("1호선", "bg-red-600");
-        Long savedId = lineDao.save(originLine);
+        Long savedId = lineService.save(originLine);
 
         // when
         Line newLine = new Line("2호선", "bg-green-600");
-        lineDao.updateById(savedId, newLine);
+        lineService.updateById(savedId, newLine);
         Line line = lineDao.findById(savedId);
 
         // then
