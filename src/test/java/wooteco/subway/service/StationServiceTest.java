@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DataNotExistException;
 
 public class StationServiceTest {
 
@@ -89,7 +90,7 @@ public class StationServiceTest {
 
         //then
         assertThatThrownBy(() -> stationService.findById(id + 1))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(DataNotExistException.class)
             .hasMessage("존재하지 않는 역입니다.");
     }
 

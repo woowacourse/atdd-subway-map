@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DataNotExistException;
 
 @Service
 public class StationService {
@@ -28,7 +29,7 @@ public class StationService {
     public Station findById(Long id) {
         Optional<Station> foundStation = stationDao.findById(id);
         if (foundStation.isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않는 역입니다.");
+            throw new DataNotExistException("존재하지 않는 역입니다.");
         }
         return foundStation.get();
     }

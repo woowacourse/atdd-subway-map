@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import wooteco.subway.dao.FakeLineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.DataNotExistException;
 
 public class LineServiceTest {
 
@@ -93,7 +94,7 @@ public class LineServiceTest {
 
         //then
         assertThatThrownBy(() -> lineService.findById(id + 1))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(DataNotExistException.class)
             .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 

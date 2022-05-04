@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.DataNotExistException;
 
 @Service
 public class LineService {
@@ -36,7 +37,7 @@ public class LineService {
     public Line findById(Long id) {
         Optional<Line> foundLine = lineDao.findById(id);
         if (foundLine.isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않는 노선입니다.");
+            throw new DataNotExistException("존재하지 않는 노선입니다.");
         }
         return foundLine.get();
     }

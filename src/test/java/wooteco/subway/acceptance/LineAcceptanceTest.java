@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.hamcrest.Matchers.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -74,7 +75,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("모든 노선을 조회한다.")
-    void getStations() {
+    void getLines() {
         /// given
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "4호선");
@@ -118,7 +119,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("단일 노선을 조회한다.")
-    void getStation() {
+    void getLine() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "4호선");
@@ -145,6 +146,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(lineResponse.getName()).isEqualTo("4호선");
         assertThat(lineResponse.getColor()).isEqualTo("sky-blue");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 노선을 조회할 경우 404 응답을 던진다.")
+    void getLineNotExists() {
+        RestAssured.given().log().all()
+            .when()
+            .get("/lines/1")
+            .then().log().all()
+            .statusCode(HttpStatus.NOT_FOUND.value())
+            .body("message", is("존재하지 않는 노선입니다."));
     }
 
     @Test
