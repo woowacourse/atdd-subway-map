@@ -44,7 +44,7 @@ public class StationDao {
     }
 
     private Optional<Station> findByName(String name) {
-        String sql = "SELECT * FROM station WHERE name = :name";
+        String sql = "SELECT name FROM station WHERE name = :name";
         MapSqlParameterSource parameters = new MapSqlParameterSource("name", name);
         try{
             return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, Station.class));
@@ -52,6 +52,11 @@ public class StationDao {
         catch(EmptyResultDataAccessException e){
             return Optional.empty();
         }
+    }
+
+    public void deleteAll() {
+        String sql = "truncate table station";
+        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource());
     }
     //
     // public List<Station> findAll() {
