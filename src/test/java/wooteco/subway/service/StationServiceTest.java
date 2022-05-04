@@ -65,4 +65,31 @@ public class StationServiceTest {
             () -> assertThat(actual.get(1).getName()).isEqualTo(station2.getName())
         );
     }
+
+    @Test
+    @DisplayName("id 로 Line 을 조회한다.")
+    void findById() {
+        //given
+        Station station = new Station("lala");
+        Long id = stationService.save(station).getId();
+
+        //when
+        Station actual = stationService.findById(id);
+
+        //then
+        assertThat(actual.getName()).isEqualTo(station.getName());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 id 로 조회할 경우 예외를 던진다.")
+    void findByIdNotExist() {
+        //given
+        Station station = new Station("lala");
+        Long id = stationService.save(station).getId();
+
+        //then
+        assertThatThrownBy(() -> stationService.findById(id + 1))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("존재하지 않는 역입니다.");
+    }
 }

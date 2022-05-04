@@ -67,6 +67,19 @@ public class StationDaoTest {
     }
 
     @Test
+    @DisplayName("id로 station 을 조회한다.")
+    void findById() {
+        //given
+        Station station = stationDao.save(new Station("lala"));
+
+        //when
+        Station actual = stationDao.findById(station.getId()).get();
+
+        //then
+        assertThat(actual.getName()).isEqualTo(station.getName());
+    }
+
+    @Test
     @DisplayName("id 로 station 을 삭제한다.")
     void deleteByName() {
         //given

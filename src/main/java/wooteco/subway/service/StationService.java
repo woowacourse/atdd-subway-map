@@ -27,6 +27,14 @@ public class StationService {
         return stationDao.save(station);
     }
 
+    public Station findById(Long id) {
+        Optional<Station> station = stationDao.findById(id);
+        if (station.isEmpty()) {
+            throw new IllegalArgumentException("존재하지 않는 역입니다.");
+        }
+        return station.get();
+    }
+
     public List<Station> findAll() {
         return stationDao.findAll();
     }

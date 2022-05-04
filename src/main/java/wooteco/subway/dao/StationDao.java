@@ -48,4 +48,10 @@ public class StationDao {
     public void deleteAll() {
         stations.clear();
     }
+
+    public Optional<Station> findById(Long id) {
+        return stations.stream()
+            .filter(station -> station.getId().equals(id))
+            .findFirst();
+    }
 }
