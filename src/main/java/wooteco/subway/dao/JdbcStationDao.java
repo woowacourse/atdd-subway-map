@@ -4,8 +4,7 @@ import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -31,15 +30,19 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public Station save(Station station) {
-        final String sql = "INSERT INTO station SET name = ?";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement prepareStatement = con.prepareStatement(sql, new String[]{"id"});
-            prepareStatement.setString(1, station.getName());
-            return prepareStatement;
-        }, keyHolder);
-        final long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return setId(station, id);
+        try {
+            final String sql = "INSERT INTO station SET name = ?";
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(con -> {
+                PreparedStatement prepareStatement = con.prepareStatement(sql, new String[]{"id"});
+                prepareStatement.setString(1, station.getName());
+                return prepareStatement;
+            }, keyHolder);
+            final long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+            return setId(station, id);
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException("중복된 이름의 역은 저장할 수 없습니다.");
+        }
     }
 
     private Station setId(Station station, long id) {
@@ -53,16 +56,6 @@ public class JdbcStationDao implements StationDao {
     public List<Station> findAll() {
         String sql = "SELECT * FROM station";
         return jdbcTemplate.query(sql, rowMapper);
-    }
-
-    @Override
-    public Optional<Station> findByName(String name) {
-        try {
-            final String sql = "SELECT * FROM station WHERE name = ?";
-            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, name));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
     }
 
     @Override
