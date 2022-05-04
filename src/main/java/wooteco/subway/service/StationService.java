@@ -37,7 +37,10 @@ public class StationService {
         return stationDao.findAll();
     }
 
-    public static void delete(Long id) {
-        StationDao.delete(id);
+    public void delete(Long id) {
+        int deletedRow = stationDao.delete(id);
+        if (deletedRow == 0) {
+            throw new IllegalArgumentException("존재하지 않는 지하철역입니다.");
+        }
     }
 }

@@ -43,4 +43,12 @@ class StationDaoTest {
 
         assertThat(stations).containsExactly("강남역", "선릉역");
     }
+
+    @DisplayName("지하철역을 삭제한다.")
+    @Test
+    void delete() {
+        long stationId = stationDao.save(new Station("강남역"));
+
+        assertThat(stationDao.delete(stationId)).isEqualTo(1);
+    }
 }

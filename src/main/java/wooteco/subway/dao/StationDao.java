@@ -50,11 +50,9 @@ public class StationDao {
         return jdbcTemplate.query(sql, STATION_ROW_MAPPER);
     }
 
-    public static void delete(Long id) {
-        boolean isRemoving = stations.removeIf(station -> station.getId().equals(id));
-        if (!isRemoving) {
-            throw new IllegalArgumentException("존재하지 않는 지하철역입니다.");
-        }
+    public int delete(Long id) {
+        final String sql = "delete from STATION where id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 
     public static void clear() {
