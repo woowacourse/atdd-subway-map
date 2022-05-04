@@ -24,11 +24,11 @@ import wooteco.subway.service.StationService;
 public class StationController {
 
     private final StationService stationService;
-    
+
     public StationController(StationService stationService) {
         this.stationService = stationService;
     }
-    
+
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         try {
@@ -47,7 +47,11 @@ public class StationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        stationService.delete(id);
-        return ResponseEntity.noContent().build();
+        try {
+            stationService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 }

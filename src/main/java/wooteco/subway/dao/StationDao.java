@@ -54,4 +54,9 @@ public class StationDao {
         String sql = "DELETE FROM STATION WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    public boolean existById(Long id) {
+        String sql = "SELECT EXISTS(SELECT * FROM STATION WHERE id = ?) AS SUCCESS";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
 }

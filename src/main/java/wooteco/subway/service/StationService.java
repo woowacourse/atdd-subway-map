@@ -36,6 +36,9 @@ public class StationService {
     }
 
     public void delete(Long id) {
+        if (!stationDao.existById(id)) {
+            throw new IllegalArgumentException("존재하지 않는 지하철 역입니다.");
+        }
         stationDao.delete(id);
     }
 }
