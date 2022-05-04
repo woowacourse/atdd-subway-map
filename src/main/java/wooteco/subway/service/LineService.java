@@ -5,7 +5,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineDto;
 import wooteco.subway.dto.LineRequest;
 
 @Service
@@ -38,10 +37,9 @@ public class LineService {
         }
     }
 
-    public LineDto findById(Long id) {
+    public Line findById(Long id) {
         try {
-            Line line = lineDao.findById(id);
-            return new LineDto(line.getId(), line.getName(), line.getColor());
+            return lineDao.findById(id);
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException(NONE_LINE_ERROR_MESSAGE);
         }

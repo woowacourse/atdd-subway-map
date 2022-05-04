@@ -32,7 +32,7 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineDto> createLine(@RequestBody LineRequest lineRequest) {
         Line newLine = lineService.save(lineRequest);
-        LineDto lineResponse = new LineDto(newLine.getId(), newLine.getName(), newLine.getColor());
+        LineDto lineResponse = LineDto.from(newLine);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
@@ -40,13 +40,13 @@ public class LineController {
     public List<LineDto> showLines() {
         List<Line> lines = lineService.findAll();
         return lines.stream()
-                .map(it -> new LineDto(it.getId(), it.getName(), it.getColor()))
+                .map(LineDto::from)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public LineDto findLine(@PathVariable Long id) {
-        return lineService.findById(id);
+        return LineDto.from(lineService.findById(id));
     }
 
     @PutMapping("/{id}")
