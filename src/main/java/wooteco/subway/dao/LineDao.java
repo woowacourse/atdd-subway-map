@@ -36,6 +36,12 @@ public class LineDao {
         return lines;
     }
 
+    public static boolean existById(Long id) {
+        return lines.stream()
+                .anyMatch(it -> it.getId().equals(id));
+
+    }
+
     public static boolean existByName(String name) {
         return lines.stream()
                 .anyMatch(it -> it.getName().equals(name));
@@ -46,6 +52,11 @@ public class LineDao {
         lines.remove(findLine);
         lines.add(line);
         return line;
+    }
+
+    public static void deleteById(Long id) {
+        Line findLine = findById(id).orElseThrow();
+        lines.remove(findLine);
     }
 
     public static void deleteAll() {

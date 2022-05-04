@@ -1,8 +1,5 @@
 package wooteco.subway.ui;
 
-import java.net.URI;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.application.LineService;
@@ -10,6 +7,10 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+
+import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/lines")
@@ -48,4 +49,13 @@ public class LineController {
         return ResponseEntity.ok(lineResponse);
     }
 
+    /**
+     * 성공 204 No Content
+     * 실패 404 낫파운드
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+        lineService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

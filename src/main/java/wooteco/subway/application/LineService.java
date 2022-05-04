@@ -32,4 +32,11 @@ public class LineService {
     private boolean isDuplicateName(Line line, String name) {
         return !line.isSameName(name) && LineDao.existByName(name);
     }
+
+    public void deleteById(Long id) {
+        if(!LineDao.existById(id)) {
+            throw new NotExistException();
+        }
+        LineDao.deleteById(id);
+    }
 }

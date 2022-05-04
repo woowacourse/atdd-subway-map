@@ -105,4 +105,11 @@ public class LineServiceTest {
         assertThatThrownBy(() -> lineService.update(50L, "1호선", "bg-red-600"))
                 .isInstanceOf(NotExistException.class);
     }
+
+    @DisplayName("존재하지 않는 지하철 노선을 삭제 시도시 예외 반환")
+    @Test
+    void deleteNotExistLine() {
+        assertThatThrownBy(() -> lineService.deleteById(50L))
+                .isInstanceOf(NotExistException.class);
+    }
 }

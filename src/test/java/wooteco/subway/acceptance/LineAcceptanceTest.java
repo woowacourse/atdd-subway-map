@@ -254,4 +254,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
+    @DisplayName("존재하지 않는 지하철 노선을 삭제 시도시 404 반환")
+    @Test
+    void deleteNotExistLine() {
+        // when
+        RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/50")
+                .then().log().all()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
 }
