@@ -40,7 +40,7 @@
 
 #### 정상 케이스
 
-- [ ] [지하철 노선 등록 요청 & 응답](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#_%EC%A7%80%ED%95%98%EC%B2%A0_%EB%85%B8%EC%84%A0_%EB%93%B1%EB%A1%9D)
+- [x] [지하철 노선 등록 요청 & 응답](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#_%EC%A7%80%ED%95%98%EC%B2%A0_%EB%85%B8%EC%84%A0_%EB%93%B1%EB%A1%9D)
 
 #### 예외 케이스
 
@@ -48,7 +48,7 @@
 
   - Bad Request: 400
 
-- 지하철역가 마찬가지로 중복된 노선 이름 허용하지 않음
+- [ ] 지하철역가 마찬가지로 중복된 노선 이름 허용하지 않음
   - 에러코드는 지하철역과 동일
 
 ### 지하철 노선 목록

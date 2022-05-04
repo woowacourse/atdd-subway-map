@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateNameException;
-import wooteco.subway.exception.EmptyNameException;
+import wooteco.subway.exception.BlankArgumentException;
 import wooteco.subway.exception.NotExistStationException;
 
 class StationServiceTest {
@@ -46,7 +46,7 @@ class StationServiceTest {
     @ValueSource(strings = {"", "  ", "     "})
     void saveByEmptyName(String stationName) {
         assertThatThrownBy(() -> stationService.saveByName(stationName))
-            .isInstanceOf(EmptyNameException.class);
+            .isInstanceOf(BlankArgumentException.class);
     }
 
     @DisplayName("지하철 역 삭제")

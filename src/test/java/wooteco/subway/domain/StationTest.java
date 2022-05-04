@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import wooteco.subway.exception.EmptyNameException;
+import wooteco.subway.exception.BlankArgumentException;
 
 class StationTest {
 
@@ -14,6 +14,6 @@ class StationTest {
     @ValueSource(strings = {"", "  ", "     "})
     void saveByEmptyName(String stationName) {
         assertThatThrownBy(() -> new Station(stationName))
-            .isInstanceOf(EmptyNameException.class);
+            .isInstanceOf(BlankArgumentException.class);
     }
 }

@@ -1,7 +1,9 @@
 package wooteco.subway.acceptance;
 
 import static org.hamcrest.Matchers.emptyOrNullString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
 import java.util.Map;
@@ -25,7 +27,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .when()
                 .post("/lines")
                 .then().log().all()
-                .assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선 색깔에 빈 문자열을 사용할 수 없다")
@@ -38,7 +40,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .when()
             .post("/lines")
             .then().log().all()
-            .assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
+            .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선 등록")
@@ -54,6 +56,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .post("/lines")
             .then().log().all()
             .statusCode(HttpStatus.CREATED.value())
-            .header("Location", not(emptyOrNullString()));
+            .header("Location", not(emptyOrNullString()))
+            .body("id", notNullValue())
+            .body("name", equalTo(name))
+            .body("color", equalTo(color));
     }
 }
