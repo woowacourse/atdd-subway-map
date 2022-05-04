@@ -12,7 +12,6 @@ public class Station {
         if (name.isBlank()) {
             throw new EmptyNameException();
         }
-
         this.id = id;
         this.name = name;
     }
@@ -32,6 +31,10 @@ public class Station {
 
     public boolean isSameName(String name) {
         return this.name.equals(name);
+    }
+
+    public boolean isSameId(Long id) {
+        return this.id.equals(id);
     }
 
     @Override

@@ -35,6 +35,10 @@ public class StationDao {
                 .findAny();
     }
 
+    public static boolean existById(Long id) {
+        return stations.stream()
+            .anyMatch(station -> station.isSameId(id));
+    }
 
     public static boolean existByName(String name) {
         return stations.stream()

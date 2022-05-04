@@ -21,8 +21,9 @@ public class StationService {
     }
 
     public void deleteById(Long id) {
-        Station findStation = StationDao.findById(id)
-                .orElseThrow(() -> new NotExistStationException());
-        StationDao.deleteById(findStation.getId());
+        if (!StationDao.existById(id)) {
+            throw new NotExistStationException();
+        }
+        StationDao.deleteById(id);
     }
 }
