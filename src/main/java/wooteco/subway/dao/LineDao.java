@@ -9,8 +9,8 @@ import wooteco.subway.domain.Line;
 
 public class LineDao {
     private static final String NO_ID_LINE_ERROR_MESSAGE = "해당 아이디의 노선이 없습니다.";
+    private static final List<Line> lines = new ArrayList<>();
     private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
 
     public static Line save(Line line) {
         Line persistLine = createNewObject(line);

@@ -1,17 +1,16 @@
 package wooteco.subway.dao;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-
 public class StationDao {
     private static final String NO_ID_STATION_ERROR_MESSAGE = "해당 아이디의 역이 없습니다.";
+    private static final List<Station> stations = new ArrayList<>();
     private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
 
     public static Station save(Station station) {
         Station persistStation = createNewObject(station);
