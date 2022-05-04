@@ -78,6 +78,7 @@ public class LineDao2 {
     }
 
     public Integer deleteById(Long id) {
-        return null;
+        String sql = "DELETE FROM line where id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 }
