@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -19,15 +18,6 @@ import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
-
-    @AfterEach
-    void rollback() {
-        RestAssured.given().log().all()
-                .when()
-                .delete("/stations")
-                .then().log().all()
-                .extract();
-    }
 
     @DisplayName("지하철역을 생성한다.")
     @Test

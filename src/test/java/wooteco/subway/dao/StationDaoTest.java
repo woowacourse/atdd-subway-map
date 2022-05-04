@@ -5,18 +5,20 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
 
+@SpringBootTest
+@Transactional
 class StationDaoTest {
 
-    @AfterEach
-    void rollback() {
-        StationDao.deleteAll();
-    }
+    @Autowired
+    private StationDao stationDao;
 
     @Test
     @DisplayName("지하철역을 등록할 수 있다.")
@@ -25,10 +27,10 @@ class StationDaoTest {
         final Station station = new Station("지하철역이름");
 
         // when
-        final Station saveStation = StationDao.save(station);
+        final Station saveStation = stationDao.save(station);
 
         // then
-        assertThat(station).isSameAs(saveStation);
+        assertThat(station).isEqualTo(saveStation);
     }
 
     @Test
@@ -39,12 +41,12 @@ class StationDaoTest {
         final Station station2 = new Station("새로운지하철역이름");
         final Station station3 = new Station("또다른지하철역이름");
 
-        StationDao.save(station1);
-        StationDao.save(station2);
-        StationDao.save(station3);
+        stationDao.save(station1);
+        stationDao.save(station2);
+        stationDao.save(station3);
 
         // when
-        final List<Station> stations = StationDao.findAll();
+        final List<Station> stations = stationDao.findAll();
 
         // then
         assertThat(stations).hasSize(3)
@@ -60,10 +62,10 @@ class StationDaoTest {
         void valid() {
             // given
             final Station station = new Station("지하철역이름");
-            final Station saveStation = StationDao.save(station);
+            final Station saveStation = stationDao.save(station);
 
             // when & then
-            assertDoesNotThrow(() -> StationDao.deleteById(saveStation.getId()));
+            assertDoesNotThrow(() -> stationDao.deleteById(saveStation.getId()));
         }
 
         @Test
@@ -71,7 +73,7 @@ class StationDaoTest {
         void invalidOfNumber() {
             // given
             final Station station = new Station("지하철역이름");
-            final Station saveStation = StationDao.save(station);
+            final Station saveStation = stationDao.save(station);
 
             // when & then
             assertThatThrownBy(() -> LineDao.deleteById(saveStation.getId() + 1L))

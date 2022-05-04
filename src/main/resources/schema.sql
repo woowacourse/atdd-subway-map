@@ -1,3 +1,7 @@
+DROP TABLE IF EXISTS STATION;
+DROP TABLE IF EXISTS LINE;
+DROP TABLE IF EXISTS SECTION;
+
 create table if not exists STATION
 (
     id bigint auto_increment not null,
