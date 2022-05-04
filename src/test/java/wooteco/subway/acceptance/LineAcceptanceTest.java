@@ -115,4 +115,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
+
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void getLine() {
+        /// given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "2호선");
+        params1.put("color", "green");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(params1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        // when
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get(uri)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        Long expectedLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
+        assertThat(expectedLineId).isEqualTo(response.jsonPath().getLong("id"));
+        assertThat(createResponse.jsonPath().getLong("id")).isEqualTo(response.jsonPath().getLong("id"));
+        assertThat(createResponse.jsonPath().getString("name")).isEqualTo(response.jsonPath().getString("name"));
+        assertThat(createResponse.jsonPath().getString("color")).isEqualTo(response.jsonPath().getString("color"));
+    }
 }

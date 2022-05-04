@@ -35,9 +35,14 @@ public class LineDao {
 
     public static void deleteAll() {
         lines.clear();
+        seq = 0L;
     }
 
     public static List<Line> findAll() {
         return new ArrayList<>(lines.values());
+    }
+
+    public static Line find(long id) {
+        return lines.get(id);
     }
 }

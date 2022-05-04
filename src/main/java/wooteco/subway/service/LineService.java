@@ -24,4 +24,9 @@ public class LineService {
             .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
             .collect(Collectors.toList());
     }
+
+    public LineResponse find(long id) {
+        Line line = LineDao.find(id);
+        return new LineResponse(line.getId(), line.getName(), line.getColor());
+    }
 }
