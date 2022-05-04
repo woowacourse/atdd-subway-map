@@ -20,4 +20,9 @@ public class ExceptionAdvice {
     public ResponseEntity<ErrorResponse> handleDataNotExistException(Exception exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(exception.getMessage()));
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException() {
+        return ResponseEntity.internalServerError().body(new ErrorResponse("서버에 문제가 발생했습니다. 다시 시도해주세요."));
+    }
 }
