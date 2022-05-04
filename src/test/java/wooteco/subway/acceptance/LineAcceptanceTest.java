@@ -73,7 +73,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(responses).extracting("name").isEqualTo(List.of("1호선", "2호선"));
     }
 
-
     @Test
     @DisplayName("노선 목록을 조회한다.")
     void notFindLine() {
@@ -104,6 +103,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .log().all().extract();
 
         assertThat(response.statusCode()).isEqualTo(200);
+    }
+
+    @Test
+    @DisplayName("노선이 중복될 경우 400응답을 한다.")
+    void duplicateUpdate() {
+        Map<String, String> prams = new HashMap<>();
+        prams.put("name", "신분당선");
+        prams.put("color", "red");
+
+        Line line = LineDao.save(new Line("신분당선", "red"));
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(prams)
+            .when()
+            .put("/lines/{id}", line.getId())
+            .then()
+            .log().all().extract();
+
+        assertThat(response.statusCode()).isEqualTo(400);
     }
 
     @Test

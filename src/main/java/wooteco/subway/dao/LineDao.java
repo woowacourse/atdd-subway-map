@@ -30,6 +30,9 @@ public class LineDao {
     }
 
     public static void modify(Long id, String name, String color) {
+        if (isDuplicate(name, color)) {
+            throw new IllegalArgumentException("노선의 이름과 색깔은 중복될 수 없습니다.");
+        }
         findById(id).update(name, color);
     }
 
@@ -42,14 +45,14 @@ public class LineDao {
     }
 
     private static void validateDuplication(Line line) {
-        if (isDuplicate(line)) {
+        if (isDuplicate(line.getName(), line.getColor())) {
             throw new IllegalArgumentException("노선의 이름은 중복될 수 없습니다.");
         }
     }
 
-    private static boolean isDuplicate(Line line) {
+    private static boolean isDuplicate(String name, String color) {
         return lines.stream()
-            .anyMatch(value -> value.getName().equals(line.getName()) || value.getColor().equals(line.getColor()));
+            .anyMatch(value -> value.getName().equals(name) || value.getColor().equals(color));
     }
 
     private static Line createUniqueId(Line line) {

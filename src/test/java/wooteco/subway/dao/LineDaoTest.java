@@ -76,6 +76,15 @@ class LineDaoTest {
         assertThat(modifiedLine.getName()).isEqualTo("3호선");
     }
 
+    @ParameterizedTest(name = "name : {0}, color : {1}")
+    @CsvSource({"1호선, black", "1호선, red"})
+    void modifyDuplicateNameAndColor(String name, String color) {
+        Line line = LineDao.save(new Line("1호선", "black"));
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> LineDao.modify(line.getId(), name, color))
+            .withMessage("노선의 이름과 색깔은 중복될 수 없습니다.");
+    }
+
     @Test
     @DisplayName("id로 노선을 삭제한다.")
     void deleteById() {
