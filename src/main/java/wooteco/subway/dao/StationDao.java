@@ -1,52 +1,60 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.List;
-import org.springframework.util.ReflectionUtils;
+import java.util.Objects;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
+@Repository
 public class StationDao {
 
-    private static final List<Station> stations = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
 
-    private static Long seq = 0L;
-
-    public static Station save(final Station station) {
-        validateDuplicateName(station.getName());
-
-        final Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static void validateDuplicateName(final String name) {
-        final boolean isDuplicate = stations.stream()
-                .anyMatch(station -> station.isSameName(name));
-        if (isDuplicate) {
-            throw new IllegalArgumentException("같은 이름의 역이 이미 존재합니다.");
-        }
+    public Long save(final Station station) {
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
+        final String sql = "INSERT INTO STATION (name) VALUES (?)";
+        jdbcTemplate.update((Connection con) -> {
+            PreparedStatement pstmt = con.prepareStatement(sql, new String[]{"id"});
+            pstmt.setString(1, station.getName());
+            return pstmt;
+        }, keyHolder);
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    private static Station createNewObject(final Station station) {
-        final Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+    public Station find(final Long id) {
+        final String sql = "SELECT * FROM STATION WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper(), id);
     }
 
-    public static List<Station> findAll() {
-        return stations;
+    public List<Station> findAll() {
+        final String sql = "SELECT * FROM STATION";
+        return jdbcTemplate.query(sql, rowMapper());
     }
 
-    public static void delete(final Long id) {
-        stations.remove(findById(id));
+    public void delete(final Long id) {
+        final String sql = "DELETE FROM STATION WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
-    private static Station findById(final Long id) {
-        return stations.stream()
-                .filter(station -> station.isSameId(id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+    public int countByName(final String name) {
+        final String sql = "SELECT COUNT(*) FROM STATION WHERE name = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, name);
+    }
+
+    private RowMapper<Station> rowMapper() {
+        return (resultSet, rowNum) -> new Station(
+                resultSet.getLong("id"),
+                resultSet.getString("name")
+        );
     }
 }

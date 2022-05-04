@@ -6,7 +6,12 @@ public class Station {
     private String name;
 
     public Station(String name) {
+        this(null, name);
+    }
+
+    public Station(final Long id, final String name) {
         validateName(name);
+        this.id = id;
         this.name = name;
     }
 
@@ -14,14 +19,6 @@ public class Station {
         if (name.isBlank()) {
             throw new IllegalArgumentException("역 이름은 공백일 수 없습니다.");
         }
-    }
-
-    public boolean isSameId(final Long id) {
-        return this.id.equals(id);
-    }
-
-    public boolean isSameName(final String name) {
-        return this.name.equals(name);
     }
 
     public Long getId() {

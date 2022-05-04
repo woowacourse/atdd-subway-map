@@ -10,21 +10,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
-
-    @AfterEach
-    void rollback() {
-        StationDao.findAll().clear();
-    }
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -141,22 +134,5 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 ID로 삭제한다면, 예외를 발생한다.")
-    void deleteStationWithNotExistId() {
-        // given
-        final long id = 1L;
-
-        // when
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete("/stations/" + id)
-                .then().log().all()
-                .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }

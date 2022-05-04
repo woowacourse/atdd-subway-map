@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,22 +20,27 @@ import wooteco.subway.dto.StationResponse;
 @RestController
 public class StationController {
 
+    private final StationDao stationDao;
+
+    public StationController(final StationDao stationDao) {
+        this.stationDao = stationDao;
+    }
+
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody final StationRequest stationRequest) {
         final Station station = new Station(stationRequest.getName());
-        Station newStation;
-        try {
-            newStation = StationDao.save(station);
-        } catch (final IllegalArgumentException e) {
+        if (stationDao.countByName(station.getName()) > 0) {
             return ResponseEntity.badRequest().build();
         }
+        final Long id = stationDao.save(station);
+        final Station newStation = stationDao.find(id);
         final StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        final List<Station> stations = StationDao.findAll();
+        final List<Station> stations = stationDao.findAll();
         final List<StationResponse> stationResponses = stations.stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());
@@ -43,11 +49,12 @@ public class StationController {
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable final Long id) {
-        try {
-            StationDao.delete(id);
-        } catch (final IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+        stationDao.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler({IllegalArgumentException.class})
+    public ResponseEntity<Void> handleException() {
+        return ResponseEntity.badRequest().build();
     }
 }
