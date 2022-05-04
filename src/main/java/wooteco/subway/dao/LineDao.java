@@ -25,6 +25,10 @@ public class LineDao {
             .orElseThrow(() -> new IllegalArgumentException("조회하려는 id가 없습니다."));
     }
 
+    public static List<Line> findAll() {
+        return List.copyOf(lines);
+    }
+
     public static void deleteAll() {
         lines.clear();
     }
@@ -45,9 +49,5 @@ public class LineDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++sequence);
         return line;
-    }
-
-    public static List<Line> findAll() {
-        return List.copyOf(lines);
     }
 }
