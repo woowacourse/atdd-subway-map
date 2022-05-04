@@ -1,19 +1,26 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 
 @Repository
 public class LineDao {
+
+    private static final RowMapper<Line> LINE_ROW_MAPPER = (resultSet, rowNum) -> {
+        return new Line(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("color")
+        );
+    };
+
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
 
@@ -47,15 +54,16 @@ public class LineDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, color);
     }
 
+    public List<Line> findAll() {
+        final String sql = "select id, name, color from LINE";
+        return jdbcTemplate.query(sql, LINE_ROW_MAPPER);
+    }
+
     public static Line find(Long id) {
         return lines.stream()
                 .filter(line -> line.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
-    }
-
-    public static List<Line> findAll() {
-        return Collections.unmodifiableList(lines);
     }
 
     public static void update(Line line) {

@@ -49,11 +49,9 @@ class StationDaoTest {
         stationDao.save(new Station("강남역"));
         stationDao.save(new Station("선릉역"));
 
-        List<String> stations = stationDao.findAll()
-                .stream().map(Station::getName)
-                .collect(Collectors.toList());
+        List<Station> stations = stationDao.findAll();
 
-        assertThat(stations).containsExactly("강남역", "선릉역");
+        assertThat(stations.size()).isEqualTo(2);
     }
 
     @DisplayName("지하철역을 삭제한다.")

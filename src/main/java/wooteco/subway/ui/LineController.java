@@ -37,7 +37,7 @@ public class LineController {
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = LineDao.findAll();
+        List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
                 .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
                 .collect(Collectors.toList());

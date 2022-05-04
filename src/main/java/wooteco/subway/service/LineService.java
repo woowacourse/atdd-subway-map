@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
@@ -37,5 +38,9 @@ public class LineService {
         if (lineDao.existLineByColor(line.getColor())) {
             throw new IllegalArgumentException("지하철 노선 색상이 중복됩니다.");
         }
+    }
+
+    public List<Line> findAll() {
+        return lineDao.findAll();
     }
 }
