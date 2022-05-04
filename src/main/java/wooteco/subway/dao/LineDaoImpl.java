@@ -6,13 +6,12 @@ import wooteco.subway.domain.Line;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 public class LineDaoImpl implements LineDao {
     private static final LineDaoImpl stationDao = new LineDaoImpl();
-
-    private static Long seq = 0L;
     private static final List<Line> lines = new ArrayList<>();
+    private static Long seq = 0L;
 
     public static LineDaoImpl getInstance() {
         return stationDao;
@@ -29,11 +28,10 @@ public class LineDaoImpl implements LineDao {
     }
 
     @Override
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         return lines.stream()
                 .filter(line -> line.getId() == id)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 노선이 존재하지 않습니다."));
+                .findFirst();
     }
 
     @Override
@@ -49,7 +47,8 @@ public class LineDaoImpl implements LineDao {
 
     @Override
     public void updateById(Long id, String name, String color) {
-        Line line = findById(id);
+        Line line = findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 노선이 존재하지 않습니다."));
         line.setName(name);
         line.setColor(color);
     }
@@ -58,7 +57,7 @@ public class LineDaoImpl implements LineDao {
     public void deleteById(Long id) {
         boolean result = lines.removeIf(line -> line.getId() == id);
         if (!result) {
-            throw new NoSuchElementException("해당하는 노선이 존재하지 않습니다.");
+            throw new IllegalArgumentException("해당하는 노선이 존재하지 않습니다.");
         }
     }
 

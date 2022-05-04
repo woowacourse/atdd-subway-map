@@ -9,6 +9,7 @@ import wooteco.subway.domain.Line;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JdbcLineDao implements LineDao {
@@ -40,9 +41,9 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         final String sql = "select * from LINE where id = ?";
-        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineRowMapper, id));
     }
 
     @Override

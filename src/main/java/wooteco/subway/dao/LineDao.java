@@ -3,12 +3,13 @@ package wooteco.subway.dao;
 import wooteco.subway.domain.Line;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LineDao {
 
     Long save(Line line);
 
-    Line findById(Long id);
+    Optional<Line> findById(Long id);
 
     List<Line> findAll();
 

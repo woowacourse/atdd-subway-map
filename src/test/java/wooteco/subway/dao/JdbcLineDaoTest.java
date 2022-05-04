@@ -61,7 +61,8 @@ public class JdbcLineDaoTest {
         final Line expected = new Line("다른분당선", "bg-blue-600");
         final long lineId = lineDao.save(expected);
 
-        final Line actual = lineDao.findById(lineId);
+        final Line actual = lineDao.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 노선이 존재하지 않습니다."));
 
         assertThat(actual.getName()).isEqualTo(expected.getName());
     }
@@ -74,7 +75,8 @@ public class JdbcLineDaoTest {
         final String expected = "또다른분당선";
         lineDao.updateById(lineId, expected, line3.getColor());
 
-        final Line updatedLine = lineDao.findById(lineId);
+        final Line updatedLine = lineDao.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 노선이 존재하지 않습니다."));
         final String actual = updatedLine.getName();
 
         assertThat(actual).isEqualTo(expected);

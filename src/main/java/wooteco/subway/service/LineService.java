@@ -53,10 +53,7 @@ public class LineService {
     }
 
     private Line checkExistLine(Long id) {
-        final Line line = lineDao.findById(id);
-        if (line == null) {
-            throw new IllegalArgumentException("해당하는 노선이 존재하지 않습니다.");
-        }
-        return line;
+        return lineDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 노선이 존재하지 않습니다."));
     }
 }
