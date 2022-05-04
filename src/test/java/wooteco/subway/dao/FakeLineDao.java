@@ -9,7 +9,7 @@ import wooteco.subway.domain.Line;
 public class FakeLineDao implements LineDao {
 
     private final List<Line> lines = new ArrayList<>();
-    private long seq = 0L;
+    private Long seq = 0L;
 
     @Override
     public Line save(Line line) {
