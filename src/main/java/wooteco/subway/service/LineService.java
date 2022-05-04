@@ -34,16 +34,18 @@ public class LineService {
 
     @Transactional
     public void update(final Line line) {
-        checkExistLine(line);
+        checkExistLine(line.getId());
         lineDao.update(line);
     }
 
+    @Transactional
     public void delete(final Long lineId) {
+        checkExistLine(lineId);
         lineDao.delete(lineId);
     }
 
-    private void checkExistLine(final Line line) {
-        if (!lineDao.existById(line.getId())) {
+    private void checkExistLine(final Long lineId) {
+        if (!lineDao.existById(lineId)) {
             throw new NotFoundException("존재하지 않는 Line입니다.");
         }
     }

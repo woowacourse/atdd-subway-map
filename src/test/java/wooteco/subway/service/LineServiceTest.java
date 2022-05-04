@@ -35,4 +35,12 @@ class LineServiceTest {
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 Line입니다.");
     }
+
+    @Test
+    @DisplayName("존재하지 않는 id로 delete하려할 경우 예외가 발생한다.")
+    void deleteExceptionByNotFoundLine() {
+        assertThatThrownBy(() -> lineService.delete(1L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 Line입니다.");
+    }
 }
