@@ -52,6 +52,14 @@ class InmemoryLineDaoTest {
     }
 
     @Test
+    @DisplayName("id에 해당하는 Line이 존재하는지 확인할 수 있다.")
+    void existById() {
+        Line line = inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));
+
+        assertThat(inmemoryLineDao.existById(line.getId())).isNotNull();
+    }
+
+    @Test
     @DisplayName("Line을 수정할 수 있다.")
     void update() {
         Line line = inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));

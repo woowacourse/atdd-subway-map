@@ -60,6 +60,11 @@ public class InmemoryLineDao implements LineDao {
     }
 
     @Override
+    public boolean existById(final Long id) {
+        return lines.containsKey(id);
+    }
+
+    @Override
     public int update(final Line line) {
         lines.put(line.getId(), line);
         return 1;
