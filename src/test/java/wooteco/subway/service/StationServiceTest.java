@@ -6,13 +6,24 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
+@JdbcTest
+@Sql("/schema.sql")
 class StationServiceTest {
 
-    private final StationService stationService = new StationService();
+    private final StationService stationService;
+
+    @Autowired
+    public StationServiceTest(JdbcTemplate jdbcTemplate) {
+        this.stationService = new StationService(new StationDao(jdbcTemplate));
+    }
 
     @Test
     @DisplayName("지하철역 추가, 조회, 삭제 테스트")
@@ -31,7 +42,7 @@ class StationServiceTest {
         stationService.delete(stations.get(1).getId());
         stationService.delete(stations.get(2).getId());
 
-        assertThat(StationDao.findAll()).hasSize(0);
+        assertThat(stationService.findAll()).hasSize(0);
     }
 
     @Test
@@ -42,13 +53,5 @@ class StationServiceTest {
         assertThatThrownBy(() -> stationService.save(new StationRequest("station1")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이미 존재하는 역 이름입니다.");
-    }
-
-    @Test
-    @DisplayName("없는 역을 제거하면 예외가 발생한다.")
-    void deleteNotExistStation() {
-        assertThatThrownBy(() -> stationService.delete(0l))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("존재하지 않는 역입니다.");
     }
 }

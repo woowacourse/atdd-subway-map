@@ -1,57 +1,72 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
+@Repository
 public class LineDao {
 
-    private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
 
-    public static Line save(Line line) {
-        Line persistLine = createNewObject(line);
-        lines.add(persistLine);
-        return persistLine;
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public static List<Line> findAll() {
-        return new ArrayList<>(lines);
-    }
-
-    public static Line findById(Long lineId) {
-        return lines.stream()
-                .filter(line -> line.isSameId(lineId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 아이디를 가진 노선이 존재하지 않습니다."));
-    }
-
-    public static boolean delete(Long lineId) {
-        return lines.removeIf(line -> line.isSameId(lineId));
-    }
-
-    public static void update(Long lineId, String lineName, String color) {
-        Line byId = findById(lineId);
-
-        Field field = ReflectionUtils.findField(Line.class, "name");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, byId, lineName);
-
-        field = ReflectionUtils.findField(Line.class, "color");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, byId, color);
-    }
-
-    private static Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> {
+        Line line = new Line(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("color")
+        );
         return line;
+    };
+
+    public Long save(Line line) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sql = "insert into LINE (name, color) values (?, ?)";
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
+            preparedStatement.setString(1, line.getName());
+            preparedStatement.setString(2, line.getColor());
+            return preparedStatement;
+        }, keyHolder);
+        return keyHolder.getKey().longValue();
     }
 
-    public static void deleteAll() {
-        lines.clear();
+    public List<Line> findAll() {
+        String sql = "select * from LINE";
+        return jdbcTemplate.query(sql, lineRowMapper);
+    }
+
+    public void deleteById(Long lineId) {
+        String sql = "delete from LINE where id = (?)";
+        jdbcTemplate.update(sql, lineId);
+    }
+
+    public Line findById(Long lineId) {
+        String sql = "select * from LINE where id = (?)";
+
+        return jdbcTemplate.queryForObject(sql, lineRowMapper, lineId);
+    }
+
+    public void update(Long lineId, Line line) {
+        String sql = "update LINE set name = (?), color = (?) where id = (?)";
+        jdbcTemplate.update(sql, line.getName(), line.getColor(), lineId);
+    }
+
+    public boolean existByName(Line line) {
+        String sql = "select exists (select * from LINE where name = (?))";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, line.getName());
+    }
+
+    public boolean existByColor(Line line) {
+        String sql = "select exists (select * from LINE where color = (?))";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, line.getColor());
     }
 }

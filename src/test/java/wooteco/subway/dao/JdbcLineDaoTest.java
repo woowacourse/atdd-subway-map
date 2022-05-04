@@ -18,11 +18,11 @@ import wooteco.subway.domain.Line;
 @Sql("/schema.sql")
 class JdbcLineDaoTest {
 
-    private final JdbcLineDao jdbcLineDao;
+    private final LineDao jdbcLineDao;
 
     @Autowired
     public JdbcLineDaoTest(JdbcTemplate jdbcTemplate) {
-        this.jdbcLineDao = new JdbcLineDao(jdbcTemplate);
+        this.jdbcLineDao = new LineDao(jdbcTemplate);
     }
 
     @Test
@@ -57,7 +57,7 @@ class JdbcLineDaoTest {
     @DisplayName("지하철 노선을 업데이트 한다.")
     void update() {
         Long lineId = jdbcLineDao.save(new Line("신분당선", "red"));
-        
+
         jdbcLineDao.update(lineId, new Line("분당선", "yellow"));
 
         Line newLine = jdbcLineDao.findById(lineId);

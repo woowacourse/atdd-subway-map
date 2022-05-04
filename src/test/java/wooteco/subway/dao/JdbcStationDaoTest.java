@@ -15,11 +15,11 @@ import wooteco.subway.domain.Station;
 @Sql("/schema.sql")
 class JdbcStationDaoTest {
 
-    private final JdbcStationDao stationDao;
+    private final StationDao stationDao;
 
     @Autowired
     public JdbcStationDaoTest(JdbcTemplate jdbcTemplate) {
-        this.stationDao = new JdbcStationDao(jdbcTemplate);
+        this.stationDao = new StationDao(jdbcTemplate);
     }
 
     @Test

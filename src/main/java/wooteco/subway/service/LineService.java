@@ -3,62 +3,67 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
+@Service
 public class LineService {
 
+    private final LineDao lineDao;
+
+    public LineService(LineDao jdbcLineDao) {
+        this.lineDao = jdbcLineDao;
+    }
+
     public LineResponse save(LineRequest lineRequest) {
-        String lineName = lineRequest.getName();
-        String color = lineRequest.getColor();
+        Line newLine = new Line(lineRequest.getName(), lineRequest.getColor());
+        validateRequest(newLine);
 
-        validateRequest(lineName, color);
-
-        Line newLine = LineDao.save(new Line(lineName, color));
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        Long lineId = lineDao.save(newLine);
+        return createLineResponse(lineDao.findById(lineId));
     }
 
-    private void validateRequest(String lineName, String color) {
-        List<Line> lines = LineDao.findAll();
-        for (Line line : lines) {
-            validateName(lineName, line);
-            validateColor(color, line);
-        }
+    private void validateRequest(Line line) {
+        validateName(line);
+        validateColor(line);
     }
 
-    private void validateName(String lineName, Line line) {
-        if (line.isSameName(lineName)) {
+    private void validateName(Line line) {
+        if (lineDao.existByName(line)) {
             throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
         }
     }
 
-    private void validateColor(String color, Line line) {
-        if (line.isSameColor(color)) {
+    private void validateColor(Line line) {
+        if (lineDao.existByColor(line)) {
             throw new IllegalArgumentException("이미 존재하는 노선 색깔입니다.");
         }
     }
 
     public List<LineResponse> findAll() {
-        return LineDao.findAll().stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+        return lineDao.findAll().stream()
+                .map(it -> createLineResponse(it))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long lineId) {
-        Line line = LineDao.findById(lineId);
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        Line line = lineDao.findById(lineId);
+        return createLineResponse(line);
     }
 
     public void delete(Long lineId) {
-        if (LineDao.delete(lineId)) {
-            return;
-        }
-        throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
+        lineDao.deleteById(lineId);
     }
 
     public void update(Long lineId, LineRequest lineRequest) {
-        LineDao.update(lineId, lineRequest.getName(), lineRequest.getColor());
+        Line newLine = new Line(lineRequest.getName(), lineRequest.getColor());
+        lineDao.update(lineId, newLine);
+    }
+
+    private LineResponse createLineResponse(Line newLine) {
+        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 }
