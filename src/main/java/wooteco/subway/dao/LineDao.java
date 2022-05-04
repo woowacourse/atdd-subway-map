@@ -35,10 +35,10 @@ public class LineDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public Line findByName(String name) {
-        String selectSql = "select * from LINE where name = :name";
+    public int countByName(String name) {
+        String selectSql = "select count(*) from LINE where name = :name";
         SqlParameterSource source = new MapSqlParameterSource("name", name);
-        return jdbcTemplate.queryForObject(selectSql, source, eventRowMapper);
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Integer.class));
     }
 
     public Line findById(Long id) {

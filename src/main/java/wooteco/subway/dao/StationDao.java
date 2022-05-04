@@ -32,15 +32,15 @@ public class StationDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
+    public int countByName(String name) {
+        String selectSql = "select count(*) from STATION where name = :name";
+        SqlParameterSource source = new MapSqlParameterSource("name", name);
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Integer.class));
+    }
+
     public List<Station> findAll() {
         String selectSql = "select * from STATION";
         return jdbcTemplate.query(selectSql, eventRowMapper);
-    }
-
-    public Station findByName(String name) {
-        String selectSql = "select * from STATION where name = :name";
-        SqlParameterSource source = new MapSqlParameterSource("name", name);
-        return jdbcTemplate.queryForObject(selectSql, source, eventRowMapper);
     }
 
     public void deleteById(Long id) {
