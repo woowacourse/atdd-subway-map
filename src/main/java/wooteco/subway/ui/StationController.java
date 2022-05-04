@@ -21,9 +21,14 @@ public class StationController {
 
     private final StationService stationService = new StationService();
 
-    @ExceptionHandler({DuplicateNameException.class, EmptyNameException.class, NotExistStationException.class})
-    private ResponseEntity<Void> handleException() {
+    @ExceptionHandler({DuplicateNameException.class, EmptyNameException.class})
+    private ResponseEntity<Void> handleExceptionToBadRequest() {
         return ResponseEntity.badRequest().build();
+    }
+    
+    @ExceptionHandler(NotExistStationException.class)
+    private ResponseEntity<Void> handleExceptionToNotFound() {
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping("/stations")
