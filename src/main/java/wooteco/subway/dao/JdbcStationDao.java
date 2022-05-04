@@ -36,6 +36,12 @@ public class JdbcStationDao implements StationDao {
         return jdbcTemplate.queryForObject(sql, Map.of("id", id), generateMapper());
     }
 
+    @Override
+    public List<Station> findAll() {
+        String sql = "select * from STATION";
+        return jdbcTemplate.query(sql, generateMapper());
+    }
+
     private RowMapper<Station> generateMapper() {
         return (resultSet, rowNum) ->
                 new Station(
@@ -45,12 +51,7 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public List<Station> findAll() {
-        return null;
-    }
-
-    @Override
     public void deleteAll() {
-
+        throw new UnsupportedOperationException();
     }
 }

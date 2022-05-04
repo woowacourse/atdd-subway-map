@@ -42,4 +42,14 @@ class JdbcStationDaoTest {
 
         assertThatThrownBy(() -> stationDao.save(station)).isInstanceOf(DuplicateKeyException.class);
     }
+
+    @DisplayName("모든 지하철역을 조회한다.")
+    @Test
+    void 모든_지하철역_조회() {
+        stationDao.save(new Station("중동역"));
+        stationDao.save(new Station("상수역"));
+        stationDao.save(new Station("서울대입구역"));
+
+        assertThat(stationDao.findAll().size()).isEqualTo(3);
+    }
 }
