@@ -1,9 +1,14 @@
 package wooteco.subway.dao;
 
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.Station;
@@ -11,48 +16,70 @@ import wooteco.subway.domain.Station;
 @Repository
 public class JdbcStationDao implements StationDao {
 
-    private final List<Station> stations = new ArrayList<>();
-    private Long seq = 0L;
+    private final JdbcTemplate jdbcTemplate;
+
+    public JdbcStationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Station save(Station station) {
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
-    }
+        String sql = "insert into station (name) values (?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[] {"id"});
+            ps.setString(1, station.getName());
+            return ps;
+        }, keyHolder);
 
-    private Station createNewObject(Station station) {
-        return new Station(++seq, station.getName());
+        Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return new Station(id, station.getName());
     }
 
     @Override
     public Optional<Station> findByName(String name) {
-        return stations.stream()
-            .filter(station -> name.equals(station.getName()))
-            .findFirst();
-    }
+        String sql = "select * from station where name = ?";
 
-    @Override
-    public List<Station> findAll() {
-        return List.copyOf(stations);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        if (!stations.removeIf(station -> station.getId().equals(id))) {
-            throw new IllegalArgumentException("존재하지 않는 역 입니다.");
+        try {
+            Station station = jdbcTemplate.queryForObject(sql,
+                (rs, rowNum) -> new Station(
+                    rs.getLong("id"),
+                    rs.getString("name")
+                ), name);
+            return Optional.ofNullable(station);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
         }
     }
 
     @Override
-    public void deleteAll() {
-        stations.clear();
+    public Optional<Station> findById(Long id) {
+        String sql = "select * from station where id = ?";
+
+        try {
+            Station station = jdbcTemplate.queryForObject(sql,
+                (rs, rowNum) -> new Station(
+                    rs.getLong("id"),
+                    rs.getString("name")
+                ), id);
+            return Optional.ofNullable(station);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public Optional<Station> findById(Long id) {
-        return stations.stream()
-            .filter(station -> station.getId().equals(id))
-            .findFirst();
+    public List<Station> findAll() {
+        String sql = "select * from station";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Station(
+            rs.getLong("id"),
+            rs.getString("name")
+        ));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        String sql = "delete from station where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

@@ -11,11 +11,9 @@ public interface StationDao {
 
     Optional<Station> findByName(String name);
 
+    Optional<Station> findById(Long id);
+
     List<Station> findAll();
 
     void deleteById(Long id);
-
-    void deleteAll();
-
-    Optional<Station> findById(Long id);
 }

@@ -30,6 +30,13 @@ public class FakeStationDao implements StationDao {
     }
 
     @Override
+    public Optional<Station> findById(Long id) {
+        return stations.stream()
+            .filter(station -> station.getId().equals(id))
+            .findFirst();
+    }
+
+    @Override
     public List<Station> findAll() {
         return List.copyOf(stations);
     }
@@ -39,17 +46,5 @@ public class FakeStationDao implements StationDao {
         if (!stations.removeIf(station -> station.getId().equals(id))) {
             throw new IllegalArgumentException("존재하지 않는 역 입니다.");
         }
-    }
-
-    @Override
-    public void deleteAll() {
-        stations.clear();
-    }
-
-    @Override
-    public Optional<Station> findById(Long id) {
-        return stations.stream()
-            .filter(station -> station.getId().equals(id))
-            .findFirst();
     }
 }
