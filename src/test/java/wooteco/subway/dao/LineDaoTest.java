@@ -13,7 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Line;
 
-@Sql("/sql/schema-test.sql")
+@Sql("/schema-test.sql")
 @JdbcTest
 public class LineDaoTest {
 
