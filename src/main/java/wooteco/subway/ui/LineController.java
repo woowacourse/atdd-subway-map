@@ -34,7 +34,7 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         if (isDuplicateName(lineRequest.getName())) {
-            throw new IllegalArgumentException(LINE_DUPLICATION_EXCEPTION_MESSAGE);
+            throw new IllegalArgumentException(lineRequest.getName() + " : " + LINE_DUPLICATION_EXCEPTION_MESSAGE);
         }
         Line newLine = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
         LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
@@ -72,7 +72,7 @@ public class LineController {
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line findLine = findLineById(id);
         if (isDuplicateName(lineRequest.getName()) && isNotSameName(lineRequest.getName(), findLine.getName())) {
-            throw new IllegalArgumentException(LINE_DUPLICATION_EXCEPTION_MESSAGE);
+            throw new IllegalArgumentException(lineRequest.getName() + " : " + LINE_DUPLICATION_EXCEPTION_MESSAGE);
         }
         lineDao.update(findLine, new Line(id, lineRequest.getName(), lineRequest.getColor()));
 
@@ -81,7 +81,7 @@ public class LineController {
 
     private Line findLineById(Long id) {
         return lineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_LINE_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new IllegalArgumentException(id + " : " + NO_SUCH_LINE_EXCEPTION_MESSAGE));
     }
 
     private boolean isNotSameName(String originName, String updateName) {

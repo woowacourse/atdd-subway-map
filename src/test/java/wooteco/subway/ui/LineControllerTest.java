@@ -120,7 +120,7 @@ public class LineControllerTest {
         ResultActions perform = mockMvc.perform(get("/lines/1"));
         // then
         perform.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value("해당 ID의 지하철 노선이 존재하지 않습니다."));
+                .andExpect(jsonPath("message").value("1 : 해당 ID의 지하철 노선이 존재하지 않습니다."));
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -145,7 +145,7 @@ public class LineControllerTest {
         ResultActions perform = mockMvc.perform(delete("/lines/1"));
         // then
         perform.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value("해당 ID의 지하철 노선이 존재하지 않습니다."));
+                .andExpect(jsonPath("message").value("1 : 해당 ID의 지하철 노선이 존재하지 않습니다."));
     }
 
     @DisplayName("노선을 수정한다.")

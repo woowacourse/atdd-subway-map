@@ -112,6 +112,6 @@ public class StationControllerTest {
         ResultActions perform = mockMvc.perform(delete("/stations/1"));
         // then
         perform.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value("해당 ID의 지하철역이 존재하지 않습니다."));
+                .andExpect(jsonPath("message").value("1 : 해당 ID의 지하철역이 존재하지 않습니다."));
     }
 }

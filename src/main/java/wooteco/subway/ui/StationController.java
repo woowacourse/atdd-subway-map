@@ -33,7 +33,8 @@ public class StationController {
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         if (stationDao.findByName(stationRequest.getName()).isPresent()) {
-            throw new IllegalArgumentException(STATION_DUPLICATION_EXCEPTION_MESSAGE);
+            throw new IllegalArgumentException(
+                    stationRequest.getName() + " : " + STATION_DUPLICATION_EXCEPTION_MESSAGE);
         }
         Station station = new Station(stationRequest.getName());
         Station newStation = stationDao.save(station);
@@ -53,7 +54,7 @@ public class StationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         Station station = stationDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new IllegalArgumentException(id + " : " + NO_SUCH_STATION_EXCEPTION_MESSAGE));
         stationDao.delete(station);
         return ResponseEntity.noContent().build();
     }
