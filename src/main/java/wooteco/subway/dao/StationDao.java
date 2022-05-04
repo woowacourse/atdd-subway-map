@@ -12,7 +12,7 @@ public class StationDao {
     private static final List<Station> stations = new ArrayList<>();
 
     public static Station save(Station station) {
-        validateDuplicate(station);
+        validateDuplication(station);
         Station persistStation = createUniqueId(station);
         stations.add(persistStation);
         return persistStation;
@@ -30,7 +30,7 @@ public class StationDao {
         stations.removeIf(station -> station.getId().equals(id));
     }
 
-    private static void validateDuplicate(Station station) {
+    private static void validateDuplication(Station station) {
         if (stations.contains(station)) {
             throw new IllegalArgumentException("이미 존재하는 역입니다.");
         }
