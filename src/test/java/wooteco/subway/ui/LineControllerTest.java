@@ -3,12 +3,15 @@ package wooteco.subway.ui;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mockStatic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -73,5 +76,25 @@ public class LineControllerTest {
                 .content(objectMapper.writeValueAsString(test)));
         // then
         perform.andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void getLines() throws Exception {
+        // given
+        given(LineDao.findAll())
+                .willReturn(List.of(new Line(1L, "test1", "GREEN"), new Line(2L, "test2", "YELLOW")));
+        // when
+        ResultActions perform = mockMvc.perform(get("/lines"));
+        // then
+        perform.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].name").value("test1"))
+                .andExpect(jsonPath("$[0].color").value("GREEN"))
+                .andExpect(jsonPath("$[1].id").value(2))
+                .andExpect(jsonPath("$[1].name").value("test2"))
+                .andExpect(jsonPath("$[1].color").value("YELLOW"));
     }
 }

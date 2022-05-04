@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.util.ReflectionUtils;
@@ -19,7 +20,7 @@ public class StationDao {
     }
 
     public static List<Station> findAll() {
-        return stations;
+        return Collections.unmodifiableList(stations);
     }
 
     public static Optional<Station> findByName(String name) {
