@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
 
@@ -40,7 +41,15 @@ class JdbcStationDaoTest {
 
         stationDao.save(station);
 
-        assertThatThrownBy(() -> stationDao.save(station)).isInstanceOf(DuplicateKeyException.class);
+        assertThatThrownBy(() -> stationDao.save(station))
+                .isInstanceOf(DuplicateKeyException.class);
+    }
+
+    @DisplayName("존재하지 않는 지하철역을 조회할 경우 예외가 발생한다.")
+    @Test
+    void 지하철역_조회_예외발생() {
+        assertThatThrownBy(() -> stationDao.findById(0L))
+                .isInstanceOf(EmptyResultDataAccessException.class);
     }
 
     @DisplayName("모든 지하철역을 조회한다.")
@@ -51,5 +60,15 @@ class JdbcStationDaoTest {
         stationDao.save(new Station("서울대입구역"));
 
         assertThat(stationDao.findAll().size()).isEqualTo(3);
+    }
+
+    @DisplayName("지하철역을 삭제한다.")
+    @Test
+    void 지하철역_삭제() {
+        Station station = stationDao.save(new Station("서울대입구역"));
+
+        stationDao.deleteById(station.getId());
+
+        assertThat(stationDao.findAll().size()).isEqualTo(0);
     }
 }
