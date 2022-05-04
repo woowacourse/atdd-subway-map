@@ -148,6 +148,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(createResponse1.jsonPath().getString("color")).isEqualTo(response.jsonPath().getString("color"));
     }
 
+    @DisplayName("존재하지 않는 지하철 노선을 조회한다.")
+    @Test
+    void getLineNotExists() {
+        // given
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines/1")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
@@ -178,6 +194,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 수정한다.")
+    @Test
+    void updateLineNotExists() {
+        // given
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .put("/lines/1")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 수정한다.")
@@ -248,5 +280,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 제거한다.")
+    @Test
+    void deleteLineNotExists() {
+        // given
+        
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete("/lines/1")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

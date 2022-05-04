@@ -47,8 +47,12 @@ public class LineController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        LineResponse lineResponse = lineService.find(id);
-        return ResponseEntity.ok().body(lineResponse);
+        try{
+            LineResponse lineResponse = lineService.find(id);
+            return ResponseEntity.ok().body(lineResponse);
+        }catch (IllegalArgumentException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @PutMapping(value = "/{id}")
@@ -63,7 +67,11 @@ public class LineController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        lineService.delete(id);
-        return ResponseEntity.noContent().build();
+        try{
+            lineService.delete(id);
+            return ResponseEntity.noContent().build();
+        }catch (IllegalArgumentException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 }

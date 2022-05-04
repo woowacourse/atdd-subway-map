@@ -39,20 +39,25 @@ public class LineService {
     }
 
     public LineResponse find(Long id) {
+        validateNotExists(id);
         Line line = lineDao.find(id);
         return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 
     public void update(Long id, LineRequest lineRequest) {
-        if (!lineDao.existById(id)) {
-            throw new IllegalArgumentException("존재하지 않는 지하철 노선 id입니다.");
-        }
+        validateNotExists(id);
         validateNameDuplication(lineRequest.getName());
         Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
         lineDao.update(line);
     }
 
+    private void validateNotExists(Long id){
+        if (!lineDao.existById(id)) {
+            throw new IllegalArgumentException("존재하지 않는 지하철 노선 id입니다.");
+        }
+    }
     public void delete(Long id) {
+        validateNotExists(id);
         lineDao.delete(id);
     }
 }
