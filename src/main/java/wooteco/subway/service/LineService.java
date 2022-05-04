@@ -35,6 +35,11 @@ public class LineService {
         return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 
+    public void updateById(final Long id, final LineRequest request) {
+        final Line line = new Line(request.getName(), request.getColor());
+        lineDao.updateById(id, line);
+    }
+
     public void deleteById(final Long id) {
         lineDao.deleteById(id);
     }

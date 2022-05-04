@@ -66,6 +66,25 @@ class LineServiceTest {
     }
 
     @Test
+    @DisplayName("id에 해당하는 노선 정보를 수정한다.")
+    void updateById() {
+        // given
+        Line savedLine = fakeLineDao.save(new Line("1호선", "bg-red-600"));
+
+        final String name = "7호선";
+        final String color = "bg-blue-600";
+        final LineRequest request = new LineRequest(name, color, null, null, 0);
+
+        // when
+        lineService.updateById(savedLine.getId(), request);
+
+        // then
+        final Line updatedLine = fakeLineDao.findById(savedLine.getId());
+        assertThat(updatedLine.getName()).isEqualTo(name);
+        assertThat(updatedLine.getColor()).isEqualTo(color);
+    }
+
+    @Test
     @DisplayName("id에 해당하는 노선을 삭제한다.")
     void deleteById() {
         // given
