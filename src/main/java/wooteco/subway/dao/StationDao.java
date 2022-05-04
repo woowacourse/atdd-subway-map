@@ -23,7 +23,7 @@ public class StationDao {
             resultSet.getString("name")
     );
 
-    public Station save(Station station) {
+    public Long save(Station station) {
         String sql = "INSERT INTO station (name) values (?)";
 
         final KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -33,9 +33,14 @@ public class StationDao {
             return statement;
         }, keyHolder);
 
-        return new Station(keyHolder.getKey().longValue(), station.getName());
+        return keyHolder.getKey().longValue();
     }
 
+    public Station findById(Long id) {
+        String sql = "SELECT * FROM station WHERE id = ?";
+
+        return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
+    }
 
     public List<Station> findAll() {
         String sql = "SELECT * FROM station";

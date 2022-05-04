@@ -25,9 +25,10 @@ class StationDaoTest {
         final Station station = new Station("지하철역이름");
 
         // when
-        final Station saveStation = stationDao.save(station);
+        final Long savedId = stationDao.save(station);
 
         // then
+        final Station saveStation = stationDao.findById(savedId);
         assertThat(station).isEqualTo(saveStation);
     }
 
@@ -57,9 +58,9 @@ class StationDaoTest {
     void deleteById() {
         // given
         final Station station = new Station("지하철역이름");
-        final Station saveStation = stationDao.save(station);
+        final Long savedId = stationDao.save(station);
 
         // when & then
-        assertDoesNotThrow(() -> stationDao.deleteById(saveStation.getId()));
+        assertDoesNotThrow(() -> stationDao.deleteById(savedId));
     }
 }

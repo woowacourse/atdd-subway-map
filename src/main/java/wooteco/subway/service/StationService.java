@@ -23,9 +23,9 @@ public class StationService {
         validateDuplicateName(request.getName());
         final Station station = new Station(request.getName());
 
-        final Station saveStation = stationDao.save(station);
+        final Long savedId = stationDao.save(station);
 
-        return new StationResponse(saveStation.getId(), saveStation.getName());
+        return new StationResponse(savedId, station.getName());
     }
 
     private void validateDuplicateName(String name) {
