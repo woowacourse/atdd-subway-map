@@ -2,7 +2,6 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,10 +44,9 @@ class LineDaoImplTest {
         Line updatingLine = new Line("7호선", "darkGreen");
         lineDao.update(line.getId(), updatingLine);
 
-        Optional<Line> updated = lineDao.findById(line.getId());
+        Line updated = lineDao.findById(line.getId());
 
-        assertThat(updated.isPresent()).isTrue();
-        assertThat(updated.get()).isEqualTo(new Line(line.getId(), "7호선", "darkGreen"));
+        assertThat(updated).isEqualTo(new Line(line.getId(), "7호선", "darkGreen"));
     }
 
     @DisplayName("id에 해당하는 노선을 제거한다.")

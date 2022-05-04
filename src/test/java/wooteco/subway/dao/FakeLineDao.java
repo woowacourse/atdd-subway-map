@@ -3,8 +3,8 @@ package wooteco.subway.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.dao.EmptyResultDataAccessException;
 import wooteco.subway.domain.Line;
 
 public class FakeLineDao implements LineDao {
@@ -37,11 +37,11 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findById(Long id) {
+    public Line findById(Long id) {
         if (!lines.containsKey(id)) {
-            return Optional.empty();
+            throw new EmptyResultDataAccessException(1);
         }
-        return Optional.of(lines.get(id));
+        return lines.get(id);
     }
 
     @Override
