@@ -15,14 +15,14 @@ public class LineDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public LineDao(JdbcTemplate jdbcTemplate) {
+    public LineDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Line save(Line line) {
-        String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
+    public Line save(final Line line) {
+        final String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
 
-        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, line.getName());
@@ -30,14 +30,14 @@ public class LineDao {
             return ps;
         }, keyHolder);
 
-        long lineId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        final long lineId = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return new Line(lineId, line.getName(), line.getColor());
     }
 
-    public Optional<Line> findById(Long id) {
-        String sql = "SELECT id, name, color FROM LINE WHERE id = ?";
+    public Optional<Line> findById(final Long id) {
+        final String sql = "SELECT id, name, color FROM LINE WHERE id = ?";
 
-        List<Line> lines = jdbcTemplate.query(sql, (resultSet, rowNum) -> new Line(
+        final List<Line> lines = jdbcTemplate.query(sql, (resultSet, rowNum) -> new Line(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("color")
@@ -47,7 +47,7 @@ public class LineDao {
     }
 
     public List<Line> findAll() {
-        String sql = "SELECT id, name, color FROM LINE";
+        final String sql = "SELECT id, name, color FROM LINE";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Line(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
@@ -55,13 +55,13 @@ public class LineDao {
         ));
     }
 
-    public void update(Long id, Line line) {
-        String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
+    public void update(final Long id, final Line line) {
+        final String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
         jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
-    public void deleteById(Long id) {
-        String sql = "DELETE FROM LINE WHERE id = ?";
+    public void deleteById(final Long id) {
+        final String sql = "DELETE FROM LINE WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 }

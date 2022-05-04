@@ -12,11 +12,11 @@ public class StationService {
 
     private final StationDao stationDao;
 
-    public StationService(StationDao stationDao) {
+    public StationService(final StationDao stationDao) {
         this.stationDao = stationDao;
     }
 
-    public Station createStation(Station station) {
+    public Station createStation(final Station station) {
         validateDuplicateName(station);
         return stationDao.save(station);
     }
@@ -25,13 +25,13 @@ public class StationService {
         return stationDao.findAll();
     }
 
-    public void delete(Long id) {
+    public void delete(final Long id) {
         validateExist(id);
         stationDao.deleteById(id);
     }
 
-    private void validateDuplicateName(Station station) {
-        List<String> names = stationDao.findAll().stream()
+    private void validateDuplicateName(final Station station) {
+        final List<String> names = stationDao.findAll().stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());
 
@@ -40,8 +40,8 @@ public class StationService {
         }
     }
 
-    private void validateExist(Long id) {
-        List<Long> stationIds = stationDao.findAll().stream()
+    private void validateExist(final Long id) {
+        final List<Long> stationIds = stationDao.findAll().stream()
                 .map(Station::getId)
                 .collect(Collectors.toList());
 

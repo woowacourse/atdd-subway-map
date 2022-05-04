@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ControllerAdvice {
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(Exception e) {
+    public ResponseEntity<String> handleIllegalArgumentException(final Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
@@ -18,7 +18,7 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleServerException(Exception e) {
+    public ResponseEntity<String> handleServerException(final Exception e) {
         return ResponseEntity.internalServerError().body(e.getMessage());
     }
 }

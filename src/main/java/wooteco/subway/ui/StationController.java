@@ -18,23 +18,23 @@ public class StationController {
 
     private final StationService stationService;
 
-    public StationController(StationService stationService) {
+    public StationController(final StationService stationService) {
         this.stationService = stationService;
     }
 
     @PostMapping()
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = stationRequest.toEntity();
-        Station newStation = stationService.createStation(station);
-        StationResponse stationResponse = StationResponse.from(newStation);
+    public ResponseEntity<StationResponse> createStation(@RequestBody final StationRequest stationRequest) {
+        final Station station = stationRequest.toEntity();
+        final Station newStation = stationService.createStation(station);
+        final StationResponse stationResponse = StationResponse.from(newStation);
 
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = stationService.getAllStations();
-        List<StationResponse> stationResponses = stations.stream()
+        final List<Station> stations = stationService.getAllStations();
+        final List<StationResponse> stationResponses = stations.stream()
                 .map(StationResponse::from)
                 .collect(Collectors.toList());
 
@@ -42,7 +42,7 @@ public class StationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStation(@PathVariable final Long id) {
         stationService.delete(id);
 
         return ResponseEntity.noContent().build();

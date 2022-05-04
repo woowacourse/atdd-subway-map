@@ -14,33 +14,33 @@ public class StationDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public StationDao(JdbcTemplate jdbcTemplate) {
+    public StationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Station save(Station station) {
-        String sql = "INSERT INTO STATION (name) VALUES (?)";
-        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+    public Station save(final Station station) {
+        final String sql = "INSERT INTO STATION (name) VALUES (?)";
+        final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            final PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, station.getName());
             return ps;
         }, keyHolder);
 
-        long stationId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        final long stationId = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return new Station(stationId, station.getName());
     }
 
     public List<Station> findAll() {
-        String sql = "SELECT id, name FROM STATION";
+        final String sql = "SELECT id, name FROM STATION";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Station(
                 resultSet.getLong("id"),
                 resultSet.getString("name")
         ));
     }
 
-    public void deleteById(Long id) {
-        String sql = "DELETE FROM STATION WHERE id = ?";
+    public void deleteById(final Long id) {
+        final String sql = "DELETE FROM STATION WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 }

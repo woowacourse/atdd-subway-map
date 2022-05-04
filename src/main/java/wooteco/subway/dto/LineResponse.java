@@ -10,16 +10,16 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color) {
+    public LineResponse(final Long id, final String name, final String color) {
         this.id = id;
         this.name = name;
         this.color = color;
     }
 
-    public static LineResponse from(Line line) {
-        Long id = line.getId();
-        String name = line.getName();
-        String color = line.getColor();
+    public static LineResponse from(final Line line) {
+        final Long id = line.getId();
+        final String name = line.getName();
+        final String color = line.getColor();
 
         return new LineResponse(id, name, color);
     }

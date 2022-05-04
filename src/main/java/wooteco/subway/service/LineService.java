@@ -14,11 +14,11 @@ public class LineService {
     private final LineDao lineDao;
 
     @Autowired
-    public LineService(LineDao lineDao) {
+    public LineService(final LineDao lineDao) {
         this.lineDao = lineDao;
     }
 
-    public Line createLine(Line line) {
+    public Line createLine(final Line line) {
         validateDuplicateName(line);
         return lineDao.save(line);
     }
@@ -27,23 +27,23 @@ public class LineService {
         return lineDao.findAll();
     }
 
-    public Line getLineById(Long id) {
+    public Line getLineById(final Long id) {
         return lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선 ID입니다."));
     }
 
-    public void update(Long id, Line newLine) {
+    public void update(final Long id, final Line newLine) {
         validateExist(id);
         lineDao.update(id, newLine);
     }
 
-    public void delete(Long id) {
+    public void delete(final Long id) {
         validateExist(id);
         lineDao.deleteById(id);
     }
 
-    private void validateDuplicateName(Line line) {
-        List<String> names = lineDao.findAll().stream()
+    private void validateDuplicateName(final Line line) {
+        final List<String> names = lineDao.findAll().stream()
                 .map(Line::getName)
                 .collect(Collectors.toList());
 
@@ -52,8 +52,8 @@ public class LineService {
         }
     }
 
-    private void validateExist(Long id) {
-        List<Long> lineIds = lineDao.findAll().stream()
+    private void validateExist(final Long id) {
+        final List<Long> lineIds = lineDao.findAll().stream()
                 .map(Line::getId)
                 .collect(Collectors.toList());
 

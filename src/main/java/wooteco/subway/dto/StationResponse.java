@@ -9,14 +9,14 @@ public class StationResponse {
     public StationResponse() {
     }
 
-    public StationResponse(Long id, String name) {
+    public StationResponse(final Long id, final String name) {
         this.id = id;
         this.name = name;
     }
 
-    public static StationResponse from(Station station) {
-        Long id = station.getId();
-        String name = station.getName();
+    public static StationResponse from(final Station station) {
+        final Long id = station.getId();
+        final String name = station.getName();
 
         return new StationResponse(id, name);
     }

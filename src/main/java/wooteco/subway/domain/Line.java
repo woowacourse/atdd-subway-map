@@ -10,21 +10,17 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, String color) {
+    public Line(final Long id, final String name, final String color) {
         this.id = id;
         this.name = name;
         this.color = color;
     }
 
-    public Line(String name, String color) {
+    public Line(final String name, final String color) {
         Objects.requireNonNull(name);
         Objects.requireNonNull(color);
         this.name = name;
         this.color = color;
-    }
-
-    public boolean isSameLine(Line other) {
-        return this.name.equals(other.name);
     }
 
     public Long getId() {
