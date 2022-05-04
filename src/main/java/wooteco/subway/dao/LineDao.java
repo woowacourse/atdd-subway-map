@@ -2,21 +2,25 @@ package wooteco.subway.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
-import java.sql.PreparedStatement;
+import javax.sql.DataSource;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class LineDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public LineDao(JdbcTemplate jdbcTemplate) {
+    public LineDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("LINE")
+                .usingGeneratedKeyColumns("id");
     }
 
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
@@ -27,17 +31,8 @@ public class LineDao {
             );
 
     public Line save(String name, String color) {
-        final String sql = "INSERT INTO LINE(name,color) VALUES (?,?)";
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, name);
-            ps.setString(2, color);
-            return ps;
-        }, keyHolder);
-
-        return new Line(keyHolder.getKey().longValue(), name, color);
+        Long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name",name,"color",color)).longValue();
+        return new Line(id, name, color);
     }
 
     public List<Line> findAll() {

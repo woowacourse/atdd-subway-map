@@ -2,21 +2,25 @@ package wooteco.subway.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
-import java.sql.PreparedStatement;
+import javax.sql.DataSource;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class StationDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public StationDao(JdbcTemplate jdbcTemplate) {
+    public StationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("STATION")
+                .usingGeneratedKeyColumns("id");
     }
 
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
@@ -27,16 +31,8 @@ public class StationDao {
 
 
     public Station save(String name) {
-        final String sql = "INSERT INTO STATION(name) VALUES (?)";
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, name);
-            return ps;
-        }, keyHolder);
-
-        return new Station(keyHolder.getKey().longValue(), name);
+        Long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name",name)).longValue();
+        return new Station(id, name);
     }
 
     public List<Station> findAll() {
