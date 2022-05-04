@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -47,5 +46,25 @@ public class LineDao2Test {
         // then
         assertThat(savedLine.getName()).isEqualTo(line.getName());
         assertThat(savedLine.getColor()).isEqualTo(line.getColor());
+    }
+
+    @Test
+    @DisplayName("모든 노선을 조회한다.")
+    void findAll() {
+        // given
+        final Line line7 = new Line("7호선", "bg-red-600");
+        lineDao2.save(line7);
+
+        final String line5Name = "5호선";
+        final String line5Color = "bg-green-600";
+        final Line line5 = new Line(line5Name, line5Color);
+        lineDao2.save(line5);
+
+        // when
+        final List<Line> lines = lineDao2.findAll();
+
+        // then
+        assertThat(lines.size()).isEqualTo(2);
+        assertThat(lines).contains(line7, new Line(line5Name, line5Color));
     }
 }

@@ -56,7 +56,8 @@ public class LineDao2 {
     }
 
     public List<Line> findAll() {
-        return null;
+        final String sql = "SELECT * FROM line";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     public Line findById(Long id) {
