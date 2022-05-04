@@ -1,15 +1,14 @@
 package wooteco.subway.dao;
 
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @Repository
 public class LineDao {
@@ -24,16 +23,12 @@ public class LineDao {
         String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        try { // TODO: Service Layer 에서 처리해야함
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-                ps.setString(1, line.getName());
-                ps.setString(2, line.getColor());
-                return ps;
-            }, keyHolder);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("중복된 이름을 입력할 수 없습니다.");
-        }
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, line.getName());
+            ps.setString(2, line.getColor());
+            return ps;
+        }, keyHolder);
 
         long lineId = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return new Line(lineId, line.getName(), line.getColor());

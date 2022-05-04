@@ -8,7 +8,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ControllerAdvice {
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handle(Exception e) {
+    public ResponseEntity<String> handleIllegalArgumentException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<String> handleNullPointerException() {
+        return ResponseEntity.badRequest().body("정상적인 입력이 아닙니다.");
     }
 }

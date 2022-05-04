@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
+
 public class Station {
     private Long id;
     private String name;
@@ -13,6 +15,7 @@ public class Station {
     }
 
     public Station(String name) {
+        Objects.requireNonNull(name);
         this.name = name;
     }
 
