@@ -25,24 +25,29 @@
 
 <br>
 
+
 ## 🚀 Getting Started
 ### Usage
 #### application 구동
+
 ```
 ./gradlew bootRun
 ```
 <br>
+
 
 ## ✏️ Code Review Process
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
 <br>
 
+
 ## 🐞 Bug Report
 
 버그를 발견한다면, [Issues](https://github.com/woowacourse/atdd-subway-map/issues) 에 등록해주세요 :)
 
 <br>
+
 
 ## 📝 License
 
