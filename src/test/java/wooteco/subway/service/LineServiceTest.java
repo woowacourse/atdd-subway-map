@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.mockDao.MockLineDao;
 
 class LineServiceTest {
@@ -39,7 +40,7 @@ class LineServiceTest {
         service.register("2호선", "bg-green-600");
 
         assertThatThrownBy(() -> service.register("2호선", "bg-green-600"))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DuplicateNameException.class)
                 .hasMessage("[ERROR] 이미 존재하는 노선 이름입니다.");
     }
 

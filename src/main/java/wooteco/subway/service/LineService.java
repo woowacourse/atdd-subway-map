@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.repository.dao.LineDao;
 import wooteco.subway.repository.entity.LineEntity;
 
@@ -30,7 +31,7 @@ public class LineService {
 
     private void validateDuplicateName(final String name) {
         if (lineDao.findByName(name).isPresent()) {
-            throw new IllegalArgumentException("[ERROR] 이미 존재하는 노선 이름입니다.");
+            throw new DuplicateNameException("[ERROR] 이미 존재하는 노선 이름입니다.");
         }
     }
 

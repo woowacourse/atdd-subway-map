@@ -4,18 +4,13 @@ import java.util.NoSuchElementException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import wooteco.subway.exception.DuplicateNameException;
 
 @RestControllerAdvice
 public class ExceptionAdvice {
 
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler(DuplicateNameException.class)
     public ResponseEntity<String> illegalArgument(final Exception exception) {
-        exception.printStackTrace();
-        return ResponseEntity.badRequest().body(exception.getMessage());
-    }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> illegalState(final Exception exception) {
         exception.printStackTrace();
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
@@ -27,7 +22,7 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler()
-    public ResponseEntity<String> unexpectedError(Exception exception) {
+    public ResponseEntity<String> unexpectedError(final Exception exception) {
         exception.printStackTrace();
         return ResponseEntity.internalServerError().body("[ERROR] 예기치 못한 에러가 발생했습니다.");
     }
