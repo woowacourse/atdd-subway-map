@@ -73,7 +73,6 @@ public class LineService {
                 .anyMatch(it -> it.getColor().equals(color));
     }
 
-    @Transactional
     public void updateById(Long id, String name, String color) {
         validateNonFoundId(id);
         validateExistName(id, name);
@@ -82,7 +81,6 @@ public class LineService {
         lineDao.update(id, name, color);
     }
 
-    @Transactional
     public void deleteById(Long id) {
         validateNonFoundId(id);
 
@@ -109,7 +107,7 @@ public class LineService {
     private void validateExistColor(Long id, String color) {
         lineDao.findAll().stream()
                 .filter(it -> !it.getId().equals(id))
-                .filter(it -> it.getName().equals(color))
+                .filter(it -> it.getColor().equals(color))
                 .findAny()
                 .ifPresent(s -> {
                     throw new NoSuchElementException("[ERROR] 이미 존재하는 색상입니다.");
