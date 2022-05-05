@@ -59,8 +59,8 @@ public class LineMockDao implements LineDao {
     }
 
     @Override
-    public int update(long id, Line line) {
-        if (delete(id) == TRUE) {
+    public int update(Line line) {
+        if (delete(line.getId()) == TRUE) {
             lines.add(line);
             return TRUE;
         }

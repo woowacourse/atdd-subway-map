@@ -16,7 +16,7 @@ public interface LineDao {
 
     Optional<Line> findById(Long id);
 
-    int update(long id, Line line);
+    int update(Line line);
 
     int delete(Long id);
 }

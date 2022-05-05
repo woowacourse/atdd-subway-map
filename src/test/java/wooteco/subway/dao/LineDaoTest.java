@@ -78,9 +78,9 @@ class LineDaoTest {
     @Test
     void update() {
         long lineId = lineDao.save(LINE);
-        Line updatedLine = new Line("다른분당선", "bg-red-600");
+        Line updatedLine = new Line(lineId, "다른분당선", "bg-red-600");
 
-        lineDao.update(lineId, updatedLine);
+        lineDao.update(updatedLine);
 
         assertThat(lineDao.findById(lineId).orElseThrow().getName()).isEqualTo("다른분당선");
     }

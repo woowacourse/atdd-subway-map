@@ -74,14 +74,14 @@ class LineServiceTest {
     void update() {
         long lineId = lineService.save(LINE);
 
-        assertThatCode(() -> lineService.update(lineId, new Line("다른분당선", "bg-green-600")))
+        assertThatCode(() -> lineService.update(new Line(lineId, "다른분당선", "bg-green-600")))
                 .doesNotThrowAnyException();
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 수정할 경우 예외를 발생시킨다.")
     @Test
     void updateNotExistLine() {
-        assertThatThrownBy(() -> lineService.update(1L, new Line("다른분당선", "bg-green-600")))
+        assertThatThrownBy(() -> lineService.update(new Line(1L, "다른분당선", "bg-green-600")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재하지 않는 지하철 노선입니다.");
     }
