@@ -13,20 +13,25 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.ExceptionMessage;
 import wooteco.subway.exception.InternalServerException;
 import wooteco.subway.exception.NotFoundException;
 
 @Repository
 public class JdbcLineDao implements LineDao {
 
+    private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_COLOR = "color";
+    private static final String COLUMN_ID = "id";
+
     private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Line> rowMapper = (resultSet, rowNumber) -> {
         Line line = new Line(
-                resultSet.getString("name"),
-                resultSet.getString("color")
+                resultSet.getString(COLUMN_NAME),
+                resultSet.getString(COLUMN_COLOR)
         );
-        return setId(line, resultSet.getLong("id"));
+        return setId(line, resultSet.getLong(COLUMN_ID));
     };
 
     public JdbcLineDao(final JdbcTemplate jdbcTemplate) {
@@ -34,7 +39,7 @@ public class JdbcLineDao implements LineDao {
     }
 
     private Line setId(Line line, long id) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
+        Field field = ReflectionUtils.findField(Line.class, COLUMN_ID);
         Objects.requireNonNull(field).setAccessible(true);
         ReflectionUtils.setField(field, line, id);
         return line;
@@ -47,7 +52,7 @@ public class JdbcLineDao implements LineDao {
 
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(con -> {
-                PreparedStatement prepareStatement = con.prepareStatement(sql, new String[]{"id"});
+                PreparedStatement prepareStatement = con.prepareStatement(sql, new String[]{COLUMN_ID});
                 prepareStatement.setString(1, line.getName());
                 prepareStatement.setString(2, line.getColor());
                 return prepareStatement;
@@ -55,7 +60,7 @@ public class JdbcLineDao implements LineDao {
             long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
             return setId(line, id);
         } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException("중복된 이름의 노선은 저장할 수 없습니다.");
+            throw new IllegalArgumentException(ExceptionMessage.DUPLICATED_LINE_NAME.getContent());
         }
     }
 
@@ -71,7 +76,7 @@ public class JdbcLineDao implements LineDao {
             final String sql = "SELECT * FROM line WHERE id = ?";
             return jdbcTemplate.queryForObject(sql, rowMapper, id);
         } catch (EmptyResultDataAccessException exception) {
-            throw new NotFoundException("해당 ID에 맞는 노선을 찾지 못했습니다.");
+            throw new NotFoundException(ExceptionMessage.NOT_FOUND_LINE_BY_ID.getContent());
         }
     }
 
@@ -87,7 +92,7 @@ public class JdbcLineDao implements LineDao {
         String sql = "DELETE FROM line where id = ?";
         int affectedRows = jdbcTemplate.update(sql, id);
         if (affectedRows == 0) {
-            throw new InternalServerException("알 수 없는 이유로 노선을 삭제하지 못했습니다.");
+            throw new InternalServerException(ExceptionMessage.UNKNOWN_DELETE_LINE_FAIL.getContent());
         }
         return affectedRows;
     }

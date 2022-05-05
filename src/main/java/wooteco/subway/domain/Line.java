@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.Objects;
+import wooteco.subway.exception.ExceptionMessage;
 
 public class Line {
 
@@ -10,7 +11,7 @@ public class Line {
 
     public Line(String name, String color) {
         if (name.isBlank()) {
-            throw new IllegalArgumentException("노선의 이름이 공백이 되어서는 안됩니다.");
+            throw new IllegalArgumentException(ExceptionMessage.BLANK_LINE_NAME.getContent());
         }
         this.name = name;
         this.color = color;

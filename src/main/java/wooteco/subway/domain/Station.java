@@ -1,19 +1,13 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.ExceptionMessage;
+
 public class Station {
 
     private static final int MAX_NAME_LENGTH = 15;
 
     private Long id;
-    private String name;
-
-    public Station() {
-    }
-
-    public Station(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+    private final String name;
 
     public Station(String name) {
         validateName(name);
@@ -22,10 +16,10 @@ public class Station {
 
     private void validateName(final String name) {
         if (name.isBlank()) {
-            throw new IllegalArgumentException("역의 이름이 공백이 되어서는 안됩니다.");
+            throw new IllegalArgumentException(ExceptionMessage.BLANK_STATION_NAME.getContent());
         }
         if (name.length() > MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException("역의 이름이 " + MAX_NAME_LENGTH + "자를 넘어서는 안됩니다.");
+            throw new IllegalArgumentException(String.format(ExceptionMessage.OVER_MAX_LENGTH_STATION_NAME.getContent(), MAX_NAME_LENGTH));
         }
     }
 

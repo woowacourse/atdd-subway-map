@@ -6,16 +6,17 @@ import java.util.List;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.ExceptionMessage;
 
 public class FakeLineDao implements LineDao {
 
     private Long seq = 0L;
-    private List<Line> lines = new ArrayList<>();
+    private final List<Line> lines = new ArrayList<>();
 
     @Override
     public Line save(final Line line) {
         if (isDuplicateName(line)) {
-            throw new IllegalArgumentException("중복된 이름의 노선은 저장할 수 없습니다.");
+            throw new IllegalArgumentException(ExceptionMessage.DUPLICATED_LINE_NAME.getContent());
         }
 
         Line persistLine = createNewObject(line);
@@ -45,7 +46,7 @@ public class FakeLineDao implements LineDao {
         return lines.stream()
                 .filter(it -> it.isSameId(id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID에 맞는 노선을 찾지 못했습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.NOT_FOUND_LINE_BY_ID.getContent()));
     }
 
     @Override
