@@ -4,21 +4,27 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 
 @Repository
 public class LineDao {
-    private static final String NO_ID_LINE_ERROR_MESSAGE = "해당 아이디의 노선이 없습니다.";
+    private static final RowMapper<Line> LINE_ROW_MAPPER = (rs, rowNum) -> new Line(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("color"));
+
     private final JdbcTemplate jdbcTemplate;
 
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void save(Line line) {
+    public Long save(Line line) {
         final String sql = "INSERT INTO line (name, color) VALUES (?, ?);";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -28,28 +34,22 @@ public class LineDao {
             preparedStatement.setString(2, line.getColor());
             return preparedStatement;
         }, keyHolder);
+        return keyHolder.getKey().longValue();
     }
 
-    public Line find(String name) {
+    public Line findById(Long id) {
+        final String sql = "SELECT * FROM line WHERE id = ?;";
+        return jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id);
+    }
+
+    public Line findByName(String name) {
         final String sql = "SELECT * FROM line WHERE name = ?;";
-        try {
-            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Line(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getString("color")),
-                    name);
-        } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException(NO_ID_LINE_ERROR_MESSAGE);
-        }
+        return jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, name);
     }
 
     public List<Line> findAll() {
         final String sql = "SELECT * FROM line";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Line(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("color")
-        ));
+        return jdbcTemplate.query(sql, LINE_ROW_MAPPER);
     }
 
     public void update(Long id, Line line) {
@@ -58,7 +58,7 @@ public class LineDao {
     }
 
     public void delete(Long id) {
-        final String sql = "delete from line where id = ?";
+        final String sql = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 }

@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
@@ -8,6 +9,7 @@ import wooteco.subway.domain.Line;
 @Service
 public class LineService {
     private static final String ALREADY_IN_LINE_ERROR_MESSAGE = "이미 해당 이름의 노선이 있습니다.";
+
     private final LineDao lineDao;
 
     public LineService(LineDao lineDao) {
@@ -15,13 +17,20 @@ public class LineService {
     }
 
     public Line save(Line line) {
-        try {
-            lineDao.find(line.getName());
-        } catch (IllegalArgumentException e) {
-            lineDao.save(line);
-            return lineDao.find(line.getName());
+        if (hasLine(line)) {
+            throw new IllegalArgumentException(ALREADY_IN_LINE_ERROR_MESSAGE);
         }
-        throw new IllegalArgumentException(ALREADY_IN_LINE_ERROR_MESSAGE);
+        Long id = lineDao.save(line);
+        return lineDao.findById(id);
+    }
+
+    private boolean hasLine(Line line) {
+        try {
+            lineDao.findByName(line.getName());
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+        return true;
     }
 
     public List<Line> findAll() {
