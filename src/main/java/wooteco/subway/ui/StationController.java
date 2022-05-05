@@ -30,9 +30,8 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
-        Station newStation = stationService.createStation(station);
-        StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
+        Station newStation = stationService.createStation(stationRequest.toEntity());
+        StationResponse stationResponse = new StationResponse(newStation);
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
     }
 
@@ -40,7 +39,7 @@ public class StationController {
     public ResponseEntity<List<StationResponse>> findStations() {
         List<Station> stations = stationService.findAll();
         List<StationResponse> stationResponses = stations.stream()
-            .map(it -> new StationResponse(it.getId(), it.getName()))
+            .map(StationResponse::new)
             .collect(Collectors.toList());
         return ResponseEntity.ok().body(stationResponses);
     }

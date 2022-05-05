@@ -31,9 +31,8 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = lineService.createLine(line);
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        Line newLine = lineService.createLine(lineRequest.toEntity());
+        LineResponse lineResponse = new LineResponse(newLine);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
@@ -41,7 +40,7 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> findLines() {
         List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
-            .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+            .map(LineResponse::new)
             .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
@@ -49,12 +48,12 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
-        return ResponseEntity.ok().body(new LineResponse(line.getId(), line.getName(), line.getColor()));
+        return ResponseEntity.ok().body(new LineResponse(line));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
+        lineService.update(lineRequest.toEntity());
         return ResponseEntity.ok().build();
     }
 
