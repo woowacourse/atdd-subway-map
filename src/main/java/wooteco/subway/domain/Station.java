@@ -16,15 +16,7 @@ public class Station {
     public Station(String name) {
         this.name = name;
     }
-
-    public boolean isSameName(String stationName) {
-        return name.equals(stationName);
-    }
-
-    public boolean isSameId(Long stationId) {
-        return id == stationId;
-    }
-
+    
     public Long getId() {
         return id;
     }

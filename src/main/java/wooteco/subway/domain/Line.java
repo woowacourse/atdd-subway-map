@@ -19,19 +19,7 @@ public class Line {
         this.name = name;
         this.color = color;
     }
-
-    public boolean isSameName(String lineName) {
-        return name.equals(lineName);
-    }
-
-    public boolean isSameId(Long lineId) {
-        return id == lineId;
-    }
-
-    public boolean isSameColor(String color) {
-        return this.color.equals(color);
-    }
-
+    
     public Long getId() {
         return id;
     }
