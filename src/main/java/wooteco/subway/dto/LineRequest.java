@@ -1,21 +1,25 @@
 package wooteco.subway.dto;
 
-public class LineRequest {
-    private String name;
-    private String color;
-    private Long upStationId;
-    private Long downStationId;
-    private int distance;
+import javax.validation.constraints.NotBlank;
+import wooteco.subway.domain.Line;
 
-    public LineRequest() {
+public class LineRequest {
+
+    @NotBlank(message = "line 이름은 공백 혹은 null이 들어올 수 없습니다.")
+    private String name;
+
+    @NotBlank(message = "line 색상은 공백 혹은 null이 들어올 수 없습니다.")
+    private String color;
+
+    private LineRequest() {
     }
 
-    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
-        this.name = name;
-        this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+    public Line toLine() {
+        return new Line(name, color);
+    }
+
+    public Line toLineWithId(final Long id) {
+        return new Line(id, name, color);
     }
 
     public String getName() {
@@ -24,17 +28,5 @@ public class LineRequest {
 
     public String getColor() {
         return color;
-    }
-
-    public Long getUpStationId() {
-        return upStationId;
-    }
-
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 }
