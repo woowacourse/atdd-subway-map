@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
@@ -65,6 +66,14 @@ class StationServiceTest {
         List<StationResponse> stationResponses = stationService.showAll();
 
         assertThat(stationResponses).isEmpty();
+    }
+
+    @DisplayName("삭제하려는 역이 없으면 예외가 발생한다.")
+    @Test
+    void deleteNotExist() {
+        assertThatThrownBy(() -> stationService.delete(Long.MAX_VALUE))
+                .isInstanceOf(EmptyResultDataAccessException.class)
+                .hasMessage("존재하지 않는 역입니다.");
     }
 
 }

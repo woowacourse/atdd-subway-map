@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
@@ -39,6 +40,9 @@ public class StationService {
     }
 
     public void delete(Long id) {
+        if (showAll().isEmpty()) {
+            throw new EmptyResultDataAccessException("존재하지 않는 역입니다.", 1);
+        }
         stationDao.deleteById(id);
     }
 
