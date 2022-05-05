@@ -32,10 +32,10 @@ public class LineServiceTest {
         Line createdLine = lineService.createLine(line);
 
         //then
-        assertThat(equals(createdLine, line)).isTrue();
+        assertThat(isSameName(createdLine, line)).isTrue();
     }
 
-    private boolean equals(Line lineA, Line lineB) {
+    private boolean isSameName(Line lineA, Line lineB) {
         return lineA.getColor().equals(lineB.getColor()) && lineA.getName().equals(lineB.getName());
     }
 
@@ -66,8 +66,8 @@ public class LineServiceTest {
 
         //then
         assertAll(
-            () -> assertThat(equals(actual.get(0), line1)).isTrue(),
-            () -> assertThat(equals(actual.get(1), line2)).isTrue()
+            () -> assertThat(isSameName(actual.get(0), line1)).isTrue(),
+            () -> assertThat(isSameName(actual.get(1), line2)).isTrue()
         );
     }
 
@@ -82,7 +82,7 @@ public class LineServiceTest {
         Line actual = lineService.findById(createdLine.getId());
 
         //then
-        assertThat(equals(actual, line)).isTrue();
+        assertThat(isSameName(actual, line)).isTrue();
     }
 
     @Test
@@ -111,7 +111,7 @@ public class LineServiceTest {
         Line actual = lineService.findById(createdLine.getId());
 
         //then
-        assertThat(equals(actual, expected)).isTrue();
+        assertThat(isSameName(actual, expected)).isTrue();
     }
 
     @Test

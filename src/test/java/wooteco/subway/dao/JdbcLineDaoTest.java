@@ -36,10 +36,10 @@ public class JdbcLineDaoTest {
         Line actual = lineDao.save(line);
 
         //then
-        assertThat(equals(actual, line)).isTrue();
+        assertThat(isSameNameAndColor(actual, line)).isTrue();
     }
 
-    private boolean equals(Line lineA, Line lineB) {
+    private boolean isSameNameAndColor(Line lineA, Line lineB) {
         return lineA.getColor().equals(lineB.getColor()) && lineA.getName().equals(lineB.getName());
     }
 
@@ -57,8 +57,8 @@ public class JdbcLineDaoTest {
 
         //then
         assertAll(
-            () -> assertThat(equals(actual.get(0), line1)).isTrue(),
-            () -> assertThat(equals(actual.get(1), line2)).isTrue()
+            () -> assertThat(isSameNameAndColor(actual.get(0), line1)).isTrue(),
+            () -> assertThat(isSameNameAndColor(actual.get(1), line2)).isTrue()
         );
     }
 
@@ -73,7 +73,7 @@ public class JdbcLineDaoTest {
         Line actual = lineDao.findById(savedLine.getId()).get();
 
         //then
-        assertThat(equals(actual, line)).isTrue();
+        assertThat(isSameNameAndColor(actual, line)).isTrue();
     }
 
     @Test
@@ -88,7 +88,7 @@ public class JdbcLineDaoTest {
         Line actual = lineDao.findByName(name).get();
 
         //then
-        assertThat(equals(actual, savedLine)).isTrue();
+        assertThat(isSameNameAndColor(actual, savedLine)).isTrue();
     }
 
     @Test
@@ -104,7 +104,7 @@ public class JdbcLineDaoTest {
 
         //then
         Line actual = lineDao.findById(savedLine.getId()).get();
-        assertThat(equals(actual, updatedLine)).isTrue();
+        assertThat(isSameNameAndColor(actual, updatedLine)).isTrue();
     }
 
     @Test
