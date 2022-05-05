@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
@@ -16,13 +17,20 @@ public class StationService {
     }
 
     public Station save(Station station) {
-        try {
-            stationDao.find(station.getName());
-        } catch (IllegalArgumentException e) {
-            stationDao.save(station);
-            return stationDao.find(station.getName());
+        if (hasStation(station)) {
+            throw new IllegalArgumentException(ALREADY_IN_STATION_ERROR_MESSAGE);
         }
-        throw new IllegalArgumentException(ALREADY_IN_STATION_ERROR_MESSAGE);
+        Long id = stationDao.save(station);
+        return stationDao.findById(id);
+    }
+
+    private boolean hasStation(Station station) {
+        try {
+            stationDao.findByName(station.getName());
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+        return true;
     }
 
     public List<Station> findAll() {

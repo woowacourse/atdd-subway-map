@@ -28,8 +28,8 @@ class StationDaoTest {
     @Test
     void saveAndFind() {
         Station station = new Station("강남역");
-        stationDao.save(station);
-        assertThat(stationDao.find("강남역").getName())
+        Long id = stationDao.save(station);
+        assertThat(stationDao.findById(id).getName())
                 .isEqualTo("강남역");
     }
 
@@ -50,8 +50,7 @@ class StationDaoTest {
     void delete() {
         Station station = new Station("강남역");
 
-        stationDao.save(station);
-        stationDao.delete(1L);
+        stationDao.delete(stationDao.findById(stationDao.save(station)).getId());
 
         List<Station> stations = stationDao.findAll();
 

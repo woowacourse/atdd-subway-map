@@ -32,6 +32,13 @@ class StationServiceTest {
     void save() {
         Station station = new Station("hunch");
         stationService.save(station);
+    }
+
+    @DisplayName("지하철역을 저장한다.")
+    @Test
+    void save_error() {
+        Station station = new Station("hunch");
+        stationService.save(station);
         assertThatThrownBy(() -> stationService.save(station))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 해당 이름의 역이 있습니다.");
