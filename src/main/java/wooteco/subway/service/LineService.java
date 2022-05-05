@@ -37,10 +37,9 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        Line line = dao.findById(id);
-        if (line == null) {
-            throw new IllegalArgumentException(LINE_NOT_FOUND);
-        }
+        Line line = dao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(LINE_NOT_FOUND));
+
         return new LineResponse(line);
     }
 

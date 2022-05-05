@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.BDDMockito.given;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,7 +75,7 @@ class LineServiceTest {
     @Test
     @DisplayName("존재하는 지하철 노선을 조회할 수 있다.")
     void findById() {
-        given(lineDao.findById(1L)).willReturn(new Line(1L, "name", "red"));
+        given(lineDao.findById(1L)).willReturn(Optional.of(new Line(1L, "name", "red")));
 
         LineResponse response = lineService.findById(1L);
 
@@ -86,7 +87,7 @@ class LineServiceTest {
     @Test
     @DisplayName("존재하지 않는 지하철 노선은 조회할 수 없다.")
     void findByIdNotFound() {
-        given(lineDao.findById(1L)).willReturn(null);
+        given(lineDao.findById(1L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> lineService.findById(1L))
                 .isInstanceOf(IllegalArgumentException.class)

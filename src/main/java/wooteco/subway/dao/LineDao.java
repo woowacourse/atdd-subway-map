@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -40,9 +41,9 @@ public class LineDao {
         return jdbcTemplate.query(sql, lineRowMapper);
     }
 
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         final String sql = "SELECT * FROM LINE WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineRowMapper, id));
     }
 
     public int delete(Long id) {
