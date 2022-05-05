@@ -1,7 +1,5 @@
 package wooteco.subway.domain;
 
-import java.util.Objects;
-
 public class Station {
     private final Long id;
     private final String name;
@@ -9,14 +7,6 @@ public class Station {
     public Station(Long id, String name) {
         this.id = id;
         this.name = name;
-    }
-
-    public boolean isSameId(Long id) {
-        return Objects.equals(this.id, id);
-    }
-
-    public boolean isSameName(String name) {
-        return this.name.equals(name);
     }
 
     public Long getId() {
