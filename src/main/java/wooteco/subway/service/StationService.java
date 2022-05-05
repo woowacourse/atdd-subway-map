@@ -18,11 +18,9 @@ public class StationService {
     }
 
     public StationResponse createStation(String name) {
-        List<String> names = stationDao.findAll()
-                .stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
-        if (names.contains(name)) {
+        boolean hasName = stationDao.findAll().stream()
+                .anyMatch(it -> it.getName().equals(name));
+        if (hasName) {
             throw new IllegalArgumentException("[ERROR] 중복된 이름이 존재합니다.");
         }
         Station newStation = stationDao.save(new Station(name));
@@ -30,13 +28,11 @@ public class StationService {
     }
 
     public void deleteStation(Long id) {
-        List<Long> ids = stationDao.findAll()
-                .stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-        if (!ids.contains(id)) {
-            throw new NoSuchElementException("[ERROR] 존재하지 않는 역 입니다.");
-        }
+        stationDao.findAll().stream()
+                .filter(it -> it.getId().equals(id))
+                .findAny()
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 역 입니다."));
+
         stationDao.deleteById(id);
     }
 
