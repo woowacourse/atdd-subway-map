@@ -2,6 +2,7 @@ package wooteco.subway.dto.line;
 
 public class LineRequest {
 
+    public static final long DEFAULT_VALUE = 0L;
     private String name;
     private String color;
     private Long upStationId;
@@ -12,7 +13,7 @@ public class LineRequest {
     }
 
     public LineRequest(String name, String color) {
-        this(name, color, null, null, 0);
+        this(name, color, DEFAULT_VALUE, DEFAULT_VALUE, 0);
     }
 
     public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {

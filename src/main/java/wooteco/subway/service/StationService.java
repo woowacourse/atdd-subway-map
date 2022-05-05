@@ -7,7 +7,6 @@ import wooteco.subway.dto.station.StationResponse;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @Service
 public class StationService {
@@ -34,22 +33,17 @@ public class StationService {
     }
 
     private void validateExistName(String name) {
-        List<String> names = stationDao.findAll().stream()
-                .filter(it -> it.getName().equals(name))
-                .map(Station::getName)
-                .collect(Collectors.toList());
-        if (names.contains(name)) {
+        boolean hasName = stationDao.findAll().stream()
+                .anyMatch(it -> it.getName().equals(name));
+        if (hasName) {
             throw new IllegalArgumentException("[ERROR] 중복된 이름이 존재합니다.");
         }
     }
 
     private void validateNonFoundId(Long id) {
-        List<Long> ids = stationDao.findAll()
-                .stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-        if (!ids.contains(id)) {
-            throw new NoSuchElementException("[ERROR] 존재하지 않는 역 입니다.");
-        }
+        stationDao.findAll().stream()
+                .filter(it -> it.getId().equals(id))
+                .findAny()
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 역 입니다."));
     }
 }

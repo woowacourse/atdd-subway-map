@@ -51,8 +51,7 @@ public class LineService {
     }
 
     private void validateDuplicateName(String name) {
-        boolean isDuplicated = isDuplicatedName(name);
-        if (name == null || isDuplicated) {
+        if (isDuplicatedName(name)) {
             throw new IllegalArgumentException("[ERROR] 중복된 이름이 존재합니다.");
         }
     }
@@ -63,7 +62,7 @@ public class LineService {
     }
 
     private void validateDuplicateColor(String color) {
-        if (color == null || isDuplicatedColor(color)) {
+        if (isDuplicatedColor(color)) {
             throw new IllegalArgumentException("[ERROR] 중복된 색이 존재합니다.");
         }
     }
