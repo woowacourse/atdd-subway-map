@@ -84,7 +84,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(it -> it.getId())
+                .map(LineResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
@@ -196,7 +196,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response1 = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .when()
                 .delete(uri)
                 .then().log().all()
