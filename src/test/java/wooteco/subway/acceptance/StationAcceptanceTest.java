@@ -28,8 +28,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        Map<String, String> params = Map.of("name", "강남역");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -56,14 +55,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        RestAssured.given().log().all()
+        Map<String, String> params = Map.of("name", "강남역");
+        RestAssured.given()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
-                .then().log().all()
+                .then()
                 .extract();
 
         // when
@@ -84,24 +82,22 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+        Map<String, String> params1 = Map.of("name", "강남역");
+        ExtractableResponse<Response> createResponse1 = RestAssured.given()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
-                .then().log().all()
+                .then()
                 .extract();
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+        Map<String, String> params2 = Map.of("name", "역삼역");
+        ExtractableResponse<Response> createResponse2 = RestAssured.given()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
-                .then().log().all()
+                .then()
                 .extract();
 
         // when
@@ -113,27 +109,35 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
+        List<Long> expectedLineIds = extractExpectedIds(createResponse1, createResponse2);
+        List<Long> resultLineIds = extractResultIds(response);
+        assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    private List<Long> extractExpectedIds(ExtractableResponse<Response> createResponse1,
+        ExtractableResponse<Response> createResponse2) {
+        return Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    private List<Long> extractResultIds(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", StationResponse.class).stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
     }
 
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+        Map<String, String> params = Map.of("name", "강남역");
+        ExtractableResponse<Response> createResponse = RestAssured.given()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
-                .then().log().all()
+                .then()
                 .extract();
 
         // when
