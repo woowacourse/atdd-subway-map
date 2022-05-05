@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
@@ -18,12 +19,9 @@ public class StationService {
 
     @Transactional
     public Station create(Station station) {
-        validateDuplicateName(station.getName());
-        return stationDao.save(station);
-    }
-
-    private void validateDuplicateName(String stationName) {
-        if (stationDao.existByName(stationName)) {
+        try {
+            return stationDao.save(station);
+        } catch (DuplicateKeyException e) {
             throw new IllegalArgumentException(DUPLICATE_EXCEPTION_MESSAGE);
         }
     }

@@ -38,4 +38,18 @@ class LineServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(DUPLICATE_EXCEPTION_MESSAGE);
     }
+
+    @Test
+    void updateDuplicate() {
+        String name = "신분당선";
+        String color = "bg-red-600";
+        lineService.create(new Line(name, color));
+
+        Line line = lineService.create(new Line("2호선", "bg-green-600"));
+
+        Line duplicateUpdate = new Line(line.getId(), name, color);
+        assertThatThrownBy(() -> lineService.update(duplicateUpdate))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(DUPLICATE_EXCEPTION_MESSAGE);
+    }
 }

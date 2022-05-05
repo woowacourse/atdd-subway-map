@@ -9,7 +9,6 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.mock.MemoryStationDao;
 
 class StationServiceTest {
-
     private MemoryStationDao memoryStationDao = new MemoryStationDao();
     private StationService stationService = new StationService(memoryStationDao);
 

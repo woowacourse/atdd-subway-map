@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
@@ -18,15 +19,9 @@ public class LineService {
 
     @Transactional
     public Line create(Line line) {
-        validateDuplicate(line);
-        return lineDao.save(line);
-    }
-
-    private void validateDuplicate(Line line) {
-        List<Line> lines = lineDao.findAll();
-        boolean isDuplicate = lines.stream()
-                .anyMatch(it -> it.isSameName(line.getName()) || it.isSameColor(line.getColor()));
-        if (isDuplicate) {
+        try {
+            return lineDao.save(line);
+        } catch (DuplicateKeyException e) {
             throw new IllegalArgumentException(DUPLICATE_EXCEPTION_MESSAGE);
         }
     }
@@ -41,8 +36,11 @@ public class LineService {
 
     @Transactional
     public void update(Line line) {
-        validateDuplicate(line);
-        lineDao.update(line);
+        try {
+            lineDao.update(line);
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException(DUPLICATE_EXCEPTION_MESSAGE);
+        }
     }
 
     public void delete(Long id) {
