@@ -20,8 +20,7 @@ public class StationService {
     public StationResponse createStation(final StationRequest request) {
         final Station station = new Station(request.getName());
         final Long id = stationDao.save(station);
-        final Station newStation = stationDao.find(id);
-        return new StationResponse(newStation.getId(), newStation.getName());
+        return new StationResponse(id, request.getName());
     }
 
     public List<StationResponse> showStations() {

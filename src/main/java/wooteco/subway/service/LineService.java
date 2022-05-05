@@ -20,8 +20,7 @@ public class LineService {
     public LineResponse createLine(final LineRequest request) {
         final Line line = new Line(request.getName(), request.getColor());
         final Long id = lineDao.save(line);
-        final Line newLine = lineDao.find(id);
-        return new LineResponse(id, newLine.getName(), newLine.getColor());
+        return new LineResponse(id, request.getName(), request.getColor());
     }
 
     public List<LineResponse> showLines() {
