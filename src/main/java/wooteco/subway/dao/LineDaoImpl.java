@@ -45,14 +45,14 @@ public class LineDaoImpl implements LineDao {
         }
     }
 
-    private boolean isExistSameNameLine(Line line) {
+    private boolean isExistSameNameLine(final Line line) {
         final String sql = "SELECT count(*) FROM line WHERE name = :name";
         final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
         return namedParameterJdbcTemplate.queryForObject(sql, parameters, Integer.class) > 0;
     }
 
     @Override
-    public Optional<Line> findById(Long id) {
+    public Optional<Line> findById(final Long id) {
         final String sql = "SELECT * FROM line WHERE id = :id";
         final MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
         try {

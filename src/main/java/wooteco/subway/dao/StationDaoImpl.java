@@ -46,28 +46,28 @@ public class StationDaoImpl implements StationDao {
     }
 
     private boolean isExistSameName(final Station station) {
-        String sql = "SELECT count(*) FROM station WHERE name = :name";
+        final String sql = "SELECT count(*) FROM station WHERE name = :name";
         final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
         return namedParameterJdbcTemplate.queryForObject(sql, parameters, Integer.class) > 0;
     }
 
     @Override
     public void deleteAll() {
-        String sql = "TRUNCATE TABLE station";
+        final String sql = "TRUNCATE TABLE station";
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource());
-        String resetIdSql = "ALTER TABLE station ALTER COLUMN id RESTART WITH 1";
+        final String resetIdSql = "ALTER TABLE station ALTER COLUMN id RESTART WITH 1";
         namedParameterJdbcTemplate.update(resetIdSql, new MapSqlParameterSource());
     }
 
     @Override
     public List<Station> findAll() {
-        String sql = "SELECT * FROM station";
+        final String sql = "SELECT * FROM station";
         return namedParameterJdbcTemplate.query(sql, stationRowMapper);
     }
 
     @Override
-    public void delete(Station station) {
-        String sql = "DELETE FROM station WHERE id = :id";
+    public void delete(final Station station) {
+        final String sql = "DELETE FROM station WHERE id = :id";
         final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
         namedParameterJdbcTemplate.update(sql, parameters);
     }
