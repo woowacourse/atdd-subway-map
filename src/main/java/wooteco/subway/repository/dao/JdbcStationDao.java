@@ -35,7 +35,10 @@ public class JdbcStationDao implements StationDao {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         final SqlParameterSource source = new BeanPropertySqlParameterSource(stationEntity);
         jdbcTemplate.update(sql, source, keyHolder);
-        final long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        if (keyHolder.getKey() == null) {
+            throw new RuntimeException("[ERROR] Station 테이블에 레코드 추가 후에 key가 반환되지 않았습니다.");
+        }
+        final long id = keyHolder.getKey().longValue();
         return new StationEntity(id, stationEntity.getName());
     }
 
