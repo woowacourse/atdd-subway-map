@@ -16,6 +16,10 @@ public class Station {
         this.name = name;
     }
 
+    public Station(String name) {
+        this(null, name);
+    }
+
     private void validateName(String name) {
         Objects.requireNonNull(name, "이름은 Null 일 수 없습니다.");
         validateNameLength(name);
@@ -26,10 +30,6 @@ public class Station {
         if (length < 1 || length > 30) {
             throw new IllegalArgumentException("이름은 1~30 자 이내여야 합니다.");
         }
-    }
-
-    public Station(String name) {
-        this.name = name;
     }
 
     public Long getId() {
