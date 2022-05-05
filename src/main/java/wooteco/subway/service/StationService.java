@@ -8,7 +8,7 @@ import wooteco.subway.domain.Station;
 
 @Service
 public class StationService {
-    protected static final String DUPLICATE_EXCEPTION_MESSAGE = "이름이 중복된 역은 만들 수 없습니다.";
+    static final String DUPLICATE_EXCEPTION_MESSAGE = "이름이 중복된 역은 만들 수 없습니다.";
 
     private final StationDao stationDao;
 
