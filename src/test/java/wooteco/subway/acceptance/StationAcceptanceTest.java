@@ -73,7 +73,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        /// given
+        // given
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "강남역");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()

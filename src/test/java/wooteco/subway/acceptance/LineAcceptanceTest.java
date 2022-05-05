@@ -76,7 +76,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("모든 노선을 조회한다.")
     void getLines() {
-        /// given
+        // given
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "4호선");
         params1.put("color", "sky-blue");

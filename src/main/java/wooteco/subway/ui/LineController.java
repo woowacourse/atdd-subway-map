@@ -36,7 +36,7 @@ public class LineController {
     }
 
     @GetMapping("/lines")
-    public ResponseEntity<List<LineResponse>> showLines() {
+    public ResponseEntity<List<LineResponse>> findLines() {
         List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
             .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
@@ -45,7 +45,7 @@ public class LineController {
     }
 
     @GetMapping("/lines/{id}")
-    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
         return ResponseEntity.ok().body(new LineResponse(line.getId(), line.getName(), line.getColor()));
     }
