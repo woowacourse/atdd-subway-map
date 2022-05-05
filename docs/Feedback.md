@@ -6,7 +6,7 @@
     - 요구사항 정리 오타 (17라인)
     - `LineDaoTest` - beforeEach()
 - [x] `DAO`에서 사용하는 JdbcTemplate 불변
-- [ ] `LineDao` 사용하지 않는 메서드 존재
+- [x] `LineDao` 사용하지 않는 메서드 존재
     - `deleteAll()`
 - [ ] `LineController`
     - [ ] 중복 관련 에러메세지 상세화 - 어떤 속성이 중복되는지 적절한 메세지 전달 필요

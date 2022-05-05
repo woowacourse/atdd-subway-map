@@ -72,11 +72,6 @@ public class LineDao {
         jdbcTemplate.update(sql, line.getId());
     }
 
-    public void deleteAll() {
-        String sql = "delete from line";
-        jdbcTemplate.update(sql);
-    }
-
     private RowMapper<Line> rowMapper() {
         return (rs, rowNum) ->
                 new Line(
