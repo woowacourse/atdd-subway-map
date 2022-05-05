@@ -1,16 +1,15 @@
 package wooteco.subway.dao;
 
 import java.util.List;
-import java.util.Optional;
 import javax.sql.DataSource;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.StationDuplicateException;
 
 @Repository
 public class StationDaoImpl implements StationDao {
@@ -31,27 +30,23 @@ public class StationDaoImpl implements StationDao {
     }
 
     @Override
-    public Station save(final String name) {
-        checkDuplicateName(name);
-        SqlParameterSource parameters = new MapSqlParameterSource("name", name);
-        Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Station(id, name);
+    public Station save(final Station station) {
+        checkDuplicateName(station);
+        final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
+        final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        return new Station(id, station.getName());
     }
 
-    private void checkDuplicateName(String name) {
-        if (findByName(name).isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 지하철역 이름입니다.");
+    private void checkDuplicateName(final Station station) {
+        if (isExistSameName(station)) {
+            throw new StationDuplicateException("이미 존재하는 지하철역 이름입니다.");
         }
     }
 
-    private Optional<Station> findByName(String name) {
-        String sql = "SELECT * FROM station WHERE name = :name";
-        MapSqlParameterSource parameters = new MapSqlParameterSource("name", name);
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, stationRowMapper));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+    private boolean isExistSameName(final Station station) {
+        String sql = "SELECT count(*) FROM station WHERE name = :name";
+        final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
+        return namedParameterJdbcTemplate.queryForObject(sql, parameters, Integer.class) > 0;
     }
 
     @Override

@@ -17,10 +17,9 @@ public class StationService {
         this.stationDaoImpl = stationDaoImpl;
     }
 
-    public StationResponse create(StationRequest stationRequest) {
-        String name = stationRequest.getName();
-        Station station = stationDaoImpl.save(name);
-        return new StationResponse(station);
+    public Station create(StationRequest stationRequest) {
+        final Station station = stationRequest.toEntity();
+        return stationDaoImpl.save(station);
     }
 
     public List<StationResponse> show() {

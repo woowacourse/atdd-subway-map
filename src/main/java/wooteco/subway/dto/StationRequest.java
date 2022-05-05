@@ -1,5 +1,7 @@
 package wooteco.subway.dto;
 
+import wooteco.subway.domain.Station;
+
 public class StationRequest {
     private String name;
 
@@ -12,5 +14,9 @@ public class StationRequest {
 
     public String getName() {
         return name;
+    }
+
+    public Station toEntity() {
+        return new Station(this.name);
     }
 }

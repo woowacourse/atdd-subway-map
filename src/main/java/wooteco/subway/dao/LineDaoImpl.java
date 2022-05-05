@@ -34,8 +34,8 @@ public class LineDaoImpl implements LineDao {
 
     public Line save(final Line line) {
         checkDuplicateName(line);
-        SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
-        Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        final SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
+        final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Line(id, line.getName(), line.getColor());
     }
 
@@ -46,15 +46,15 @@ public class LineDaoImpl implements LineDao {
     }
 
     private boolean isExistSameNameLine(Line line) {
-        String sql = "SELECT count(*) FROM line WHERE name = :name";
+        final String sql = "SELECT count(*) FROM line WHERE name = :name";
         final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
         return namedParameterJdbcTemplate.queryForObject(sql, parameters, Integer.class) > 0;
     }
 
     @Override
     public Optional<Line> findById(Long id) {
-        String sql = "SELECT * FROM line WHERE id = :id";
-        MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        final String sql = "SELECT * FROM line WHERE id = :id";
+        final MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
         try {
             return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, lineRowMapper));
         } catch (EmptyResultDataAccessException e) {
@@ -64,22 +64,22 @@ public class LineDaoImpl implements LineDao {
 
     @Override
     public void deleteAll() {
-        String sql = "TRUNCATE TABLE line";
+        final String sql = "TRUNCATE TABLE line";
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource());
-        String resetIdSql = "ALTER TABLE line ALTER COLUMN id RESTART WITH 1";
+        final String resetIdSql = "ALTER TABLE line ALTER COLUMN id RESTART WITH 1";
         namedParameterJdbcTemplate.update(resetIdSql, new MapSqlParameterSource());
     }
 
     @Override
     public List<Line> findAll() {
-        String sql = "SELECT * FROM line";
+        final String sql = "SELECT * FROM line";
         return namedParameterJdbcTemplate.query(sql, lineRowMapper);
     }
 
     @Override
     public void update(final Line line) {
-        String sql = "UPDATE line SET name = :name, color = :color WHERE id = :id";
-        BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
+        final String sql = "UPDATE line SET name = :name, color = :color WHERE id = :id";
+        final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
         namedParameterJdbcTemplate.update(sql, parameters);
     }
 

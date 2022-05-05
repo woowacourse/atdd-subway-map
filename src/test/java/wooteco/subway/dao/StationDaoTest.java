@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestConstructor;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.StationDuplicateException;
 
 @SpringBootTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -24,7 +25,7 @@ public class StationDaoTest {
 
     @BeforeEach
     void set() {
-        stationDao.save("선릉역");
+        stationDao.save(new Station("선릉역"));
     }
 
     @AfterEach
@@ -35,10 +36,9 @@ public class StationDaoTest {
     @Test
     @DisplayName("지하철역을 저장한다.")
     void save() {
-        String expected = "강남역";
+        final Station expected = new Station("강남역");
 
-        Station station = stationDao.save(expected);
-        String actual = station.getName();
+        final Station actual = stationDao.save(expected);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -46,17 +46,17 @@ public class StationDaoTest {
     @Test
     @DisplayName("중복된 역을 저장할 경우 예외를 발생시킨다.")
     void save_duplicate() {
-        String expected = "선릉역";
+        final Station expected = new Station("선릉역");
 
         assertThatThrownBy(() -> stationDao.save(expected))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(StationDuplicateException.class)
             .hasMessage("이미 존재하는 지하철역 이름입니다.");
     }
 
     @Test
     @DisplayName("모든 지하철 역을 조회한다")
     void findAll() {
-        stationDao.save("잠실역");
+        stationDao.save(new Station("잠실역"));
 
         List<Station> stations = stationDao.findAll();
 

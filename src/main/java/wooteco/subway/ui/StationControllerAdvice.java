@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.exception.LineDuplicateException;
 import wooteco.subway.exception.LineNotFoundException;
+import wooteco.subway.exception.StationDuplicateException;
 
 @RestControllerAdvice(annotations = RestController.class)
 public class StationControllerAdvice {
@@ -25,7 +26,7 @@ public class StationControllerAdvice {
             .build();
     }
 
-    @ExceptionHandler(value = LineDuplicateException.class)
+    @ExceptionHandler(value = {LineDuplicateException.class, StationDuplicateException.class})
     public ResponseEntity handleIllegalException(DuplicateKeyException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .build();
