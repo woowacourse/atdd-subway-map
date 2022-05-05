@@ -14,12 +14,14 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<String> handleDuplicateKey(DuplicateKeyException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+        return ResponseEntity.badRequest()
+                .body(e.getMessage());
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<Void> handleDataNotFound() {
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.notFound()
+                .build();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -34,7 +36,8 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleUnexpectedException() {
-        return ResponseEntity.internalServerError().body("서버에서 예상하지 못한 문제가 발생했습니다.");
+        return ResponseEntity.internalServerError()
+                .body("서버에서 예상하지 못한 문제가 발생했습니다.");
     }
-    
+
 }

@@ -28,19 +28,22 @@ public class StationController {
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationRequest stationRequest) {
         StationResponse stationResponse = stationService.create(stationRequest);
-        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
+        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId()))
+                .body(stationResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<StationResponse>> showStations() {
         List<StationResponse> stationResponses = stationService.showAll();
-        return ResponseEntity.ok().body(stationResponses);
+        return ResponseEntity.ok()
+                .body(stationResponses);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 
 }
