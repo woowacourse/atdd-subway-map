@@ -7,18 +7,16 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
-@Repository
-public class StationDao {
+public class JdbcStationDao {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;
     private final JdbcTemplate jdbcTemplate;
 
-    public StationDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate, DataSource dataSource,
-                      JdbcTemplate jdbcTemplate) {
+    public JdbcStationDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate, DataSource dataSource,
+                          JdbcTemplate jdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.simpleInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("STATION")

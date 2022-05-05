@@ -9,19 +9,17 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.ui.dto.LineRequest;
 
-@Repository
-public class LineDao {
+public class JdbcLineDao {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;
     private final JdbcTemplate jdbcTemplate;
 
-    public LineDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate, DataSource dataSource,
-                   JdbcTemplate jdbcTemplate) {
+    public JdbcLineDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate, DataSource dataSource,
+                       JdbcTemplate jdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.simpleInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("LINE")

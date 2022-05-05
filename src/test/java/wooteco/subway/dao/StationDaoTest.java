@@ -36,11 +36,11 @@ class StationDaoTest {
     @Autowired
     private DataSource dataSource;
 
-    private StationDao stationDao;
+    private JdbcStationDao stationDao;
 
     @BeforeEach
     void setup() {
-        stationDao = new StationDao(namedParameterJdbcTemplate, dataSource, jdbcTemplate);
+        stationDao = new JdbcStationDao(namedParameterJdbcTemplate, dataSource, jdbcTemplate);
     }
 
     @Nested

@@ -18,7 +18,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.ui.dto.LineRequest;
 
 @DisplayName("Line Dao를 통해서")
 @JdbcTest
@@ -38,11 +38,11 @@ class LineDaoTest {
     @Autowired
     private DataSource dataSource;
 
-    private LineDao lineDao;
+    private JdbcLineDao lineDao;
 
     @BeforeEach
     void setup() {
-        lineDao = new LineDao(namedParameterJdbcTemplate, dataSource, jdbcTemplate);
+        lineDao = new JdbcLineDao(namedParameterJdbcTemplate, dataSource, jdbcTemplate);
     }
 
     @Nested

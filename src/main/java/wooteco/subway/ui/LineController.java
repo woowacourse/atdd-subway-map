@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.dto.LineServiceRequest;
+import wooteco.subway.ui.dto.LineRequest;
+import wooteco.subway.ui.dto.LineResponse;
 
 @RestController
 @RequestMapping("/lines")
@@ -30,7 +31,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line newLine = lineService.save(lineRequest);
+        Line newLine = lineService.save(getLineServiceRequest(lineRequest));
         LineResponse lineResponse = getLineResponse(newLine);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
@@ -52,7 +53,7 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.update(id, lineRequest);
+        lineService.update(id, getLineServiceRequest(lineRequest));
         return ResponseEntity.ok().build();
     }
 
@@ -60,6 +61,12 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private LineServiceRequest getLineServiceRequest(LineRequest lineRequest) {
+        return new LineServiceRequest(null, lineRequest.getName(),
+                lineRequest.getColor(), lineRequest.getUpStationId(),
+                lineRequest.getDownStationId(), lineRequest.getDistance());
     }
 
     private LineResponse getLineResponse(Line it) {
