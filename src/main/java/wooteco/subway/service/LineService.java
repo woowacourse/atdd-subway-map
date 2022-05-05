@@ -29,7 +29,7 @@ public class LineService {
 
     private void validateDuplication(String name) {
         int existFlag = jdbcLineDao.isExistLine(name);
-        if(existFlag == LINE_EXIST_VALUE) {
+        if (existFlag == LINE_EXIST_VALUE) {
             throw new IllegalArgumentException(LINE_DUPLICATION);
         }
     }
@@ -46,12 +46,12 @@ public class LineService {
         return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 
-    public void updateLine(Long id, LineRequest lineRequest) {
+    public boolean updateLine(Long id, LineRequest lineRequest) {
         validateDuplication(lineRequest.getName());
-        jdbcLineDao.updateById(id, lineRequest.getName(), lineRequest.getColor());
+        return jdbcLineDao.updateById(id, lineRequest.getName(), lineRequest.getColor());
     }
 
-    public void deleteLine(Long id) {
-        jdbcLineDao.deleteById(id);
+    public boolean deleteLine(Long id) {
+        return jdbcLineDao.deleteById(id);
     }
 }
