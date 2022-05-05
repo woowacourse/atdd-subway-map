@@ -1,6 +1,5 @@
 package wooteco.subway.domain;
 
-import java.util.Objects;
 import wooteco.subway.exception.BlankArgumentException;
 
 public class Station {
@@ -26,14 +25,6 @@ public class Station {
 
     public String getName() {
         return name;
-    }
-
-    public boolean isSameName(String name) {
-        return this.name.equals(name);
-    }
-
-    public boolean isSameId(Long id) {
-        return this.id.equals(id);
     }
 }
 
