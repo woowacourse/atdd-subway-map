@@ -19,7 +19,7 @@ class LineDaoTest {
     @DisplayName("노선을 저장한다.")
     public void save() {
         // given
-        LineDao dao = new LineDao();
+        LineDao dao = new MemoryLineDao();
         Line Line = new Line(LINE_NAME, LINE_COLOR);
         // when
         final Line saved = dao.save(Line);
@@ -31,7 +31,7 @@ class LineDaoTest {
     @DisplayName("중복된 이름을 저장하는 경우 예외를 던진다.")
     public void save_throwsExceptionWithDuplicatedName() {
         // given
-        LineDao dao = new LineDao();
+        LineDao dao = new MemoryLineDao();
         // when
         dao.save(new Line(LINE_NAME, LINE_COLOR));
         // then
@@ -43,7 +43,7 @@ class LineDaoTest {
     @DisplayName("전체 노선을 조회한다.")
     public void findAll() {
         // given
-        LineDao dao = new LineDao();
+        LineDao dao = new MemoryLineDao();
         // when
         List<Line> lines = dao.findAll();
         // then
@@ -54,7 +54,7 @@ class LineDaoTest {
     @DisplayName("노선을 하나 추가한 뒤, 전체 노선을 조회한다")
     public void findAll_afterSaveOneLine() {
         // given
-        LineDao dao = new LineDao();
+        LineDao dao = new MemoryLineDao();
         dao.save(new Line(LINE_NAME, LINE_COLOR));
         // when
         List<Line> lines = dao.findAll();
@@ -66,7 +66,7 @@ class LineDaoTest {
     @DisplayName("ID 값으로 노선을 조회한다")
     public void findById() {
         // given
-        LineDao dao = new LineDao();
+        LineDao dao = new MemoryLineDao();
         final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
         // when
         final Line found = dao.findById(saved.getId());
@@ -82,7 +82,7 @@ class LineDaoTest {
     @DisplayName("존재하지 않는 ID 값으로 노선을 조회하면 예외를 던진다")
     public void findById_invalidID() {
         // given & when
-        LineDao dao = new LineDao();
+        LineDao dao = new MemoryLineDao();
         dao.save(new Line(LINE_NAME, LINE_COLOR));
         // then
         assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> dao.findById(2L));
@@ -92,7 +92,7 @@ class LineDaoTest {
     @DisplayName("노선 정보를 수정한다.")
     public void update() {
         // given & when
-        LineDao dao = new LineDao();
+        LineDao dao = new MemoryLineDao();
         final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
         // then
         assertThatNoException()
@@ -103,7 +103,7 @@ class LineDaoTest {
     @DisplayName("존재하지 않는 ID값을 수정하는 경우 예외를 던진다.")
     public void update_throwsExceptionWithInvalidId() {
         // given
-        LineDao dao = new LineDao();
+        LineDao dao = new MemoryLineDao();
         final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
         // when
         Line updateLine = new Line(100L, "사랑이넘치는", "우테코");
@@ -116,7 +116,7 @@ class LineDaoTest {
     @DisplayName("ID값으로 노선을 삭제한다.")
     public void delete() {
         // given
-        LineDao dao = new LineDao();
+        LineDao dao = new MemoryLineDao();
         Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
         // when
 
@@ -129,7 +129,7 @@ class LineDaoTest {
     @DisplayName("존재하지않는 ID값을 삭제하는 경우 예외를 던진다.")
     public void delete_throwsExceptionWithInvalidId() {
         // given
-        LineDao dao = new LineDao();
+        LineDao dao = new MemoryLineDao();
         Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
         // when
         Long deleteId = 100L;

@@ -17,7 +17,7 @@ class StationDaoTest {
     @DisplayName("역을 저장한다.")
     public void save() {
         // given
-        StationDao dao = new StationDao();
+        StationDao dao = new MemoryStationDao();
         Station station = new Station("청구역");
         // when
         final Station saved = dao.save(station);
@@ -29,7 +29,7 @@ class StationDaoTest {
     @DisplayName("중복된 이름을 저장하는 경우 예외를 던진다.")
     public void save_throwsExceptionWithDuplicatedName() {
         // given
-        StationDao dao = new StationDao();
+        StationDao dao = new MemoryStationDao();
         // when
         dao.save(new Station("청구역"));
         // then
@@ -41,7 +41,7 @@ class StationDaoTest {
     @DisplayName("역 목록을 불러온다.")
     public void findAll() {
         // given
-        StationDao dao = new StationDao();
+        StationDao dao = new MemoryStationDao();
         // when
         final List<Station> stations = dao.findAll();
         // then
@@ -52,7 +52,7 @@ class StationDaoTest {
     @DisplayName("역을 하나 추가한 뒤, 역 목록을 불러온다.")
     public void findAll_afterSaveOneStation() {
         // given
-        StationDao dao = new StationDao();
+        StationDao dao = new MemoryStationDao();
         dao.save(new Station(STATION_NAME));
         // when
         final List<Station> stations = dao.findAll();
@@ -64,7 +64,7 @@ class StationDaoTest {
     @DisplayName("ID값으로 역을 삭제한다.")
     public void deleteById() {
         // given
-        StationDao dao = new StationDao();
+        StationDao dao = new MemoryStationDao();
         final Station saved = dao.save(new Station(STATION_NAME));
         // when
         final Long id = saved.getId();
@@ -76,7 +76,7 @@ class StationDaoTest {
     @DisplayName("존재하지 않는 역을 삭제할 수 없다.")
     public void deleteById_doesNotExist() {
         // given & when
-        StationDao dao = new StationDao();
+        StationDao dao = new MemoryStationDao();
         // then
         assertThatThrownBy(() -> dao.deleteById(1L))
             .isInstanceOf(IllegalStateException.class)
