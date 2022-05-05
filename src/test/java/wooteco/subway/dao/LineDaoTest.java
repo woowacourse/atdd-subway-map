@@ -80,8 +80,8 @@ class LineDaoTest {
         Line line = new Line("2호선", "초록색");
         Long id = lineDao.save(line).getId();
 
-        Line updateLine = new Line("8호선", "분홍색");
-        lineDao.updateById(id, updateLine);
+        Line updateLine = new Line(id, "8호선", "분홍색");
+        lineDao.updateById(updateLine);
 
         Line actual = lineDao.findById(id);
         assertThat(actual.getName()).isEqualTo("8호선");

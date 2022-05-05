@@ -47,11 +47,9 @@ public class LineDao {
         return jdbcTemplate.queryForObject(sql, parameters, lineMapper);
     }
 
-    public void updateById(Long id, Line line) {
+    public void updateById(Line line) {
         String sql = "UPDATE LINE SET name = :name, color = :color WHERE id = :id";
-        SqlParameterSource parameters = new MapSqlParameterSource("id", id)
-                .addValue("name", line.getName())
-                .addValue("color", line.getColor());
+        SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
         jdbcTemplate.update(sql, parameters);
     }
 

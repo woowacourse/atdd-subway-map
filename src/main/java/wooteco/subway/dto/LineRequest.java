@@ -27,6 +27,10 @@ public class LineRequest {
         return new Line(name, color);
     }
 
+    public Line toEntity(Long id) {
+        return new Line(id, name, color);
+    }
+
     public String getName() {
         return name;
     }
