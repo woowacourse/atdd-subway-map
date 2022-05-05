@@ -26,13 +26,27 @@ class LineDaoTest {
         lineDao = new LineDao(jdbcTemplate);
     }
 
-    @DisplayName("지하철 노선을 저장하고 찾는다.")
+    @DisplayName("지하철 노선을 저장하고 아이디로 찾는다.")
     @Test
     void saveAndFind() {
+        //given
         Line line = new Line("신분당선", "red");
 
+        //when
         assertThat(lineDao.findById(lineDao.save(line)).getName())
-                .isEqualTo("신분당선");
+                .isEqualTo("신분당선");//then
+    }
+
+    @DisplayName("지하철 노선을 이름으로 검색한다.")
+    @Test
+    void findByName() {
+        //given
+        Line line = new Line("신분당선", "red");
+        lineDao.save(line);
+
+        //when
+        assertThat(lineDao.findByName("신분당선").getName())
+                .isEqualTo("신분당선");//then
     }
 
     @DisplayName("지하철 노선을 조회한다.")

@@ -2,7 +2,6 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,36 +23,54 @@ class StationDaoTest {
         stationDao = new StationDao(jdbcTemplate);
     }
 
-    @DisplayName("지하철역을 저장하고 찾는다.")
+    @DisplayName("지하철역을 저장하고 아이디로 찾는다.")
     @Test
     void saveAndFind() {
+        //given
         Station station = new Station("강남역");
+
+        //when
         Long id = stationDao.save(station);
         assertThat(stationDao.findById(id).getName())
-                .isEqualTo("강남역");
+                .isEqualTo("강남역");//then
+    }
+
+    @DisplayName("지하철역을 이름으로 검색한다.")
+    @Test
+    void findByName() {
+        //given
+        Station station = new Station("강남역");
+        stationDao.save(station);
+
+        //when
+        assertThat(stationDao.findByName("강남역").getName())
+                .isEqualTo("강남역");//then
     }
 
     @DisplayName("지하철역을 조회한다.")
     @Test
     void findAll() {
+        //given
         Station station = new Station("강남역");
         Station station1 = new Station("선릉역");
         stationDao.save(station);
         stationDao.save(station1);
 
+        //when
         assertThat(stationDao.findAll())
-                .hasSize(2);
+                .hasSize(2);//then
     }
 
     @DisplayName("지하철역을 삭제한다.")
     @Test
     void delete() {
+        //given
         Station station = new Station("강남역");
 
+        //when
         stationDao.delete(stationDao.findById(stationDao.save(station)).getId());
 
-        List<Station> stations = stationDao.findAll();
-
-        assertThat(stations).hasSize(0);
+        //then
+        assertThat(stationDao.findAll()).hasSize(0);
     }
 }

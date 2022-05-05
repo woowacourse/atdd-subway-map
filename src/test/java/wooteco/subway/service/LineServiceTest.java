@@ -3,7 +3,6 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,9 +14,7 @@ import wooteco.subway.domain.Line;
 
 @JdbcTest
 class LineServiceTest {
-
     private LineService lineService;
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -32,7 +29,18 @@ class LineServiceTest {
     void save() {
         Line line = new Line("신분당선", "red");
         lineService.save(line);
+    }
 
+    @DisplayName("이미 있는 이름의 지하철 노선을 저장할 수 없다.")
+    @Test
+    void save_error() {
+        //given
+        Line line = new Line("신분당선", "red");
+
+        //when
+        lineService.save(line);
+
+        //then
         assertThatThrownBy(() -> lineService.save(line))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 해당 이름의 노선이 있습니다.");
@@ -41,40 +49,42 @@ class LineServiceTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void findAll() {
+        //given
         Line line = new Line("신분당선", "red");
         Line line2 = new Line("분당선", "green");
         lineService.save(line);
         lineService.save(line2);
 
+        //when
         assertThat(lineService.findAll())
-                .hasSize(2);
+                .hasSize(2);//then
     }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void update() {
+        //given
         Line line = new Line("신분당선", "red");
         Line line2 = new Line("분당선", "green");
 
-        Line newLine = lineService.save(line);
-        lineService.update(newLine.getId(), line2);
+        //when
+        lineService.update(lineService.save(line).getId(), line2);
 
-        List<Line> lines = lineService.findAll();
-
-        assertThat(lines.get(0).getName())
+        //then
+        assertThat(lineService.findAll().get(0).getName())
                 .isEqualTo("분당선");
     }
 
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void delete() {
+        //given
         Line line = new Line("신분당선", "red");
 
-        Line newLine = lineService.save(line);
-        lineService.delete(newLine.getId());
+        //when
+        lineService.delete(lineService.save(line).getId());
 
-        List<Line> lines = lineService.findAll();
-
-        assertThat(lines).hasSize(0);
+        //then
+        assertThat(lineService.findAll()).hasSize(0);
     }
 }

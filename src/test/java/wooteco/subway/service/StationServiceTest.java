@@ -3,7 +3,6 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,9 +14,7 @@ import wooteco.subway.domain.Station;
 
 @JdbcTest
 class StationServiceTest {
-
     private StationService stationService;
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -34,11 +31,16 @@ class StationServiceTest {
         stationService.save(station);
     }
 
-    @DisplayName("지하철역을 저장한다.")
+    @DisplayName("이미 있는 이름의 지하철 역을 저장할 수 없다.")
     @Test
     void save_error() {
+        //given
         Station station = new Station("hunch");
+
+        //when
         stationService.save(station);
+
+        //then
         assertThatThrownBy(() -> stationService.save(station))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 해당 이름의 역이 있습니다.");
@@ -47,25 +49,27 @@ class StationServiceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void findAll() {
+        //given
         Station station = new Station("강남역");
         Station station1 = new Station("선릉역");
         stationService.save(station);
         stationService.save(station1);
 
+        //when
         assertThat(stationService.findAll())
-                .hasSize(2);
+                .hasSize(2);//then
     }
 
     @DisplayName("지하철역을 삭제한다.")
     @Test
     void delete() {
+        //given
         Station station = new Station("강남역");
 
-        Station newStation = stationService.save(station);
-        stationService.delete(newStation.getId());
+        //when
+        stationService.delete(stationService.save(station).getId());
 
-        List<Station> stations = stationService.findAll();
-
-        assertThat(stations).hasSize(0);
+        //then
+        assertThat(stationService.findAll()).hasSize(0);
     }
 }
