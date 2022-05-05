@@ -38,7 +38,6 @@ class LineServiceTest {
 
         // mocking
         given(lineDao.save(any())).willReturn(id);
-        given(lineDao.find(id)).willReturn(savedLine);
 
         // when
         final LineRequest request = new LineRequest(name, color);

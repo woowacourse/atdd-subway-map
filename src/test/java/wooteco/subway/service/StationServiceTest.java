@@ -38,7 +38,6 @@ class StationServiceTest {
 
         // mocking
         given(stationDao.save(any())).willReturn(id);
-        given(stationDao.find(id)).willReturn(savedStation);
 
         // when
         final StationResponse response = stationService.createStation(request);
