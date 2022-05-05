@@ -15,18 +15,18 @@ public class LineService {
     }
 
     public long save(Line line) {
-        validateName(line);
-        validateColor(line);
+        validateNameForSave(line);
+        validateColorForSave(line);
         return lineDao.save(line);
     }
 
-    private void validateName(Line line) {
+    private void validateNameForSave(Line line) {
         if (lineDao.existLineByName(line.getName())) {
             throw new IllegalArgumentException("지하철 노선 이름이 중복됩니다.");
         }
     }
 
-    private void validateColor(Line line) {
+    private void validateColorForSave(Line line) {
         if (lineDao.existLineByColor(line.getColor())) {
             throw new IllegalArgumentException("지하철 노선 색상이 중복됩니다.");
         }
@@ -41,18 +41,40 @@ public class LineService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 노선입니다."));
     }
 
-    public void update(long id, Line line) {
-        validateName(line);
-        validateColor(line);
-        int updatedRow = lineDao.update(id, line);
-        if (updatedRow == 0) {
-            throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
-        }
+    public void update(Line line) {
+        validateNameForUpdate(line);
+        validateColorForUpdate(line);
+        int updatedRow = lineDao.update(line);
+        validateExist(updatedRow);
+    }
+
+    private void validateNameForUpdate(Line line) {
+        findAll().stream()
+                .filter(it -> it.getName().equals(line.getName()))
+                .filter(it -> !it.getId().equals(line.getId()))
+                .findAny()
+                .ifPresent(ignored -> {
+                    throw new IllegalArgumentException("지하철 노선 이름이 중복됩니다.");
+                });
+    }
+
+    private void validateColorForUpdate(Line line) {
+        findAll().stream()
+                .filter(it -> it.getColor().equals(line.getColor()))
+                .filter(it -> !it.getId().equals(line.getId()))
+                .findAny()
+                .ifPresent(ignored -> {
+                    throw new IllegalArgumentException("지하철 노선 색상이 중복됩니다.");
+                });
     }
 
     public void delete(Long id) {
         int deletedRow = lineDao.delete(id);
-        if (deletedRow == 0) {
+        validateExist(deletedRow);
+    }
+
+    private void validateExist(int affectedRow) {
+        if (affectedRow == 0) {
             throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
         }
     }
