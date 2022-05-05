@@ -23,13 +23,6 @@ public class LineMockDao implements LineDao {
         return persistLine.getId();
     }
 
-    private Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
-    }
-
     @Override
     public boolean existLineByName(String name) {
         List<String> lineNames = lines.stream()
@@ -78,5 +71,12 @@ public class LineMockDao implements LineDao {
 
     public void clear() {
         lines.clear();
+    }
+
+    private Line createNewObject(Line line) {
+        Field field = ReflectionUtils.findField(Line.class, "id");
+        field.setAccessible(true);
+        ReflectionUtils.setField(field, line, ++seq);
+        return line;
     }
 }

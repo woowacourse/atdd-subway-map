@@ -22,13 +22,6 @@ public class StationMockDao implements StationDao {
         return persistStation.getId();
     }
 
-    private Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
-    }
-
     @Override
     public boolean existStationByName(String name) {
         List<String> stationNames = stations.stream()
@@ -53,5 +46,12 @@ public class StationMockDao implements StationDao {
 
     public void clear() {
         stations.clear();
+    }
+
+    private Station createNewObject(Station station) {
+        Field field = ReflectionUtils.findField(Station.class, "id");
+        field.setAccessible(true);
+        ReflectionUtils.setField(field, station, ++seq);
+        return station;
     }
 }

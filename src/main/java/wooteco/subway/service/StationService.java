@@ -19,12 +19,6 @@ public class StationService {
         return stationDao.save(station);
     }
 
-    private void validateName(Station station) {
-        if (stationDao.existStationByName(station.getName())) {
-            throw new IllegalArgumentException("지하철역 이름이 중복됩니다.");
-        }
-    }
-
     public List<Station> findAll() {
         return stationDao.findAll();
     }
@@ -33,6 +27,12 @@ public class StationService {
         int deletedRow = stationDao.delete(id);
         if (deletedRow == 0) {
             throw new IllegalArgumentException("존재하지 않는 지하철역입니다.");
+        }
+    }
+
+    private void validateName(Station station) {
+        if (stationDao.existStationByName(station.getName())) {
+            throw new IllegalArgumentException("지하철역 이름이 중복됩니다.");
         }
     }
 }

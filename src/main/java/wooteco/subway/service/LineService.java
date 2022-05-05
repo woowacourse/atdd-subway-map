@@ -19,6 +19,26 @@ public class LineService {
         return lineDao.save(line);
     }
 
+    public List<Line> findAll() {
+        return lineDao.findAll();
+    }
+
+    public Line find(Long id) {
+        return lineDao.find(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 노선입니다."));
+    }
+
+    public void update(long id, Line line) {
+        validateLine(line);
+        int updatedRow = lineDao.update(id, line);
+        validateAffectedRow(updatedRow);
+    }
+
+    public void delete(Long id) {
+        int deletedRow = lineDao.delete(id);
+        validateAffectedRow(deletedRow);
+    }
+
     private void validateLine(Line line) {
         validateName(line);
         validateColor(line);
@@ -36,29 +56,9 @@ public class LineService {
         }
     }
 
-    public List<Line> findAll() {
-        return lineDao.findAll();
-    }
-
-    public Line find(Long id) {
-        return lineDao.find(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 노선입니다."));
-    }
-
-    public void update(long id, Line line) {
-        validateLine(line);
-        int updatedRow = lineDao.update(id, line);
-        validateAffectedRow(updatedRow);
-    }
-
     private void validateAffectedRow(int affectedRow) {
         if (affectedRow == 0) {
             throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
         }
-    }
-
-    public void delete(Long id) {
-        int deletedRow = lineDao.delete(id);
-        validateAffectedRow(deletedRow);
     }
 }
