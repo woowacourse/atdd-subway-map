@@ -49,12 +49,12 @@ public class LineService {
 
     public void update(Long id, LineRequest lineRequest) {
         show(id);
-
         Line line = lineRequest.toEntity();
         lineDao.updateById(id, line);
     }
 
     public void delete(Long id) {
+        show(id);
         lineDao.deleteById(id);
     }
 

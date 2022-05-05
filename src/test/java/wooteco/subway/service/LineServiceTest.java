@@ -128,6 +128,14 @@ class LineServiceTest {
         assertThat(lineResponses).isEmpty();
     }
 
+    @DisplayName("삭제하려는 노선이 없으면 예외가 발생한다.")
+    @Test
+    void deleteNotExist() {
+        assertThatThrownBy(() -> lineService.delete(Long.MAX_VALUE))
+                .isInstanceOf(EmptyResultDataAccessException.class)
+                .hasMessage("존재하지 않는 노선입니다.");
+    }
+
     private void assertEquals(LineResponse expected, LineResponse actual) {
         assertThat(expected.getId()).isEqualTo(actual.getId());
         assertThat(expected.getName()).isEqualTo(actual.getName());
