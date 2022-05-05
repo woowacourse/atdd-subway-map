@@ -14,7 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dto.StationCreateResponse;
+import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -104,8 +104,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         List<Long> expectedLineIds = Stream.of(param1, param2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationCreateResponse.class).stream()
-                .map(StationCreateResponse::getId)
+        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
+                .map(StationResponse::getId)
                 .collect(toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
