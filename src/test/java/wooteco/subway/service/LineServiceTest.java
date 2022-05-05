@@ -34,11 +34,9 @@ class LineServiceTest {
         final long id = 1L;
         final String name = "2호선";
         final String color = "bg-red-600";
-        final Line savedLine = new Line(id, name, color);
 
         // mocking
         given(lineDao.save(any())).willReturn(id);
-        given(lineDao.find(id)).willReturn(savedLine);
 
         // when
         final LineRequest request = new LineRequest(name, color);

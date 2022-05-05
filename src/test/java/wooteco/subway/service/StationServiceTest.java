@@ -33,12 +33,10 @@ class StationServiceTest {
         // given
         final Long id = 1L;
         final String name = "한성대입구역";
-        final Station savedStation= new Station(id, name);
         final StationRequest request = new StationRequest(name);
 
         // mocking
         given(stationDao.save(any())).willReturn(id);
-        given(stationDao.find(id)).willReturn(savedStation);
 
         // when
         final StationResponse response = stationService.createStation(request);
