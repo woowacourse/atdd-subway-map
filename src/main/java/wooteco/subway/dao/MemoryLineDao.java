@@ -26,7 +26,7 @@ public class MemoryLineDao implements LineDao {
 	@Override
 	public Line findById(Long id) {
 		return lines.stream()
-			.filter(line -> id.equals(line.getId()))
+			.filter(line -> line.isSameId(id))
 			.findAny()
 			.orElseThrow(() -> new NoSuchElementException("해당 id에 맞는 지하철 노선이 없습니다."));
 	}
@@ -45,6 +45,6 @@ public class MemoryLineDao implements LineDao {
 	@Override
 	public Boolean existsByName(String name) {
 		return lines.stream()
-			.anyMatch(line -> name.equals(line.getName()));
+			.anyMatch(line -> line.isSameName(name));
 	}
 }

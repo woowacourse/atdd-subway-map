@@ -15,6 +15,10 @@ public class Name {
 		}
 	}
 
+	public boolean isSame(String value) {
+		return this.value.equals(value);
+	}
+
 	public String getValue() {
 		return value;
 	}

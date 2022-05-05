@@ -31,7 +31,7 @@ public class MemoryStationDao implements StationDao {
 	@Override
 	public Station findById(Long id) {
 		return stations.stream()
-			.filter(station -> station.getId().equals(id))
+			.filter(station -> station.isSameId(id))
 			.findAny()
 			.orElseThrow(() -> new NoSuchElementException("해당 id에 맞는 지하철 역이 없습니다."));
 	}
@@ -39,6 +39,6 @@ public class MemoryStationDao implements StationDao {
 	@Override
 	public Boolean existsByName(String name) {
 		return stations.stream()
-			.anyMatch(station -> name.equals(station.getName()));
+			.anyMatch(station -> station.isSameName(name));
 	}
 }

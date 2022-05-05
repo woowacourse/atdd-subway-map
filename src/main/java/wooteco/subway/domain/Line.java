@@ -18,6 +18,14 @@ public class Line {
 		this.color = color;
 	}
 
+	public boolean isSameName(String name) {
+		return this.name.isSame(name);
+	}
+
+	public boolean isSameId(Long id) {
+		return this.id.equals(id);
+	}
+
 	public Long getId() {
 		return id;
 	}

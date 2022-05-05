@@ -16,6 +16,14 @@ public class Station {
         this.name = new Name(name);
     }
 
+    public boolean isSameId(Long id) {
+        return this.id.equals(id);
+    }
+
+    public boolean isSameName(String name) {
+        return this.name.isSame(name);
+    }
+
     public Long getId() {
         return id;
     }
