@@ -106,6 +106,16 @@ class LineServiceTest {
         assertEquals(expected, actual);
     }
 
+    @DisplayName("수정하려는 노선이 없으면 예외가 발생한다.")
+    @Test
+    void updateNotExist() {
+        LineRequest updateRequest = new LineRequest("2호선", "초록색");
+
+        assertThatThrownBy(() -> lineService.update(Long.MAX_VALUE, updateRequest))
+                .isInstanceOf(EmptyResultDataAccessException.class)
+                .hasMessage("존재하지 않는 노선입니다.");
+    }
+
     @DisplayName("지정한 id에 해당하는 노선을 삭제한다.")
     @Test
     void delete() {
