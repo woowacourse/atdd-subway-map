@@ -11,6 +11,8 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -23,7 +25,7 @@ import wooteco.subway.ui.response.LineResponse;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
-    @DisplayName("지하철 노선을 생성한다.")
+    @DisplayName("지하철 노선을 등록한다.")
     void createLine() {
         //given
         Map<String, String> params = new HashMap<>();
@@ -44,8 +46,48 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
+    @ParameterizedTest
+    @CsvSource(value = {"라:0", "라:31"}, delimiter = ':')
+    @DisplayName("유효하지 않는 이름으로 노선을 등록할 경우 400 응답을 던진다.")
+    void createLineWithInvalidName(String name, int repeatCount) {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name.repeat(repeatCount));
+        params.put("color", "khaki");
+
+        //when, then
+        RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .statusCode(HttpStatus.BAD_REQUEST.value())
+            .body("message", is("이름은 1~30 자 이내여야 합니다."));
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"라:0", "라:21"}, delimiter = ':')
+    @DisplayName("유효하지 않는 색상으로 노선을 등록할 경우 400 응답을 던진다.")
+    void createLineWithInvalidColor(String color, int repeatCount) {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "7호선");
+        params.put("color", color.repeat(repeatCount));
+
+        //when, then
+        RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .statusCode(HttpStatus.BAD_REQUEST.value())
+            .body("message", is("색상은 1~20 자 이내여야 합니다."));
+    }
+
     @Test
-    @DisplayName("기존에 존재하는 이름으로 노선을 생성하면 400 상태 응답을 던진다.")
+    @DisplayName("기존에 존재하는 이름으로 노선을 등록하면 400 상태 응답을 던진다.")
     void createLineWithDuplicateName() {
         // given
         Map<String, String> params = new HashMap<>();
