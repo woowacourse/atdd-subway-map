@@ -64,7 +64,7 @@ public class LineService {
         }
     }
 
-    private void checkDuplicateName(Boolean result) {
+    private void checkDuplicateName(boolean result) {
         if (result) {
             throw new IllegalArgumentException(DUPLICATE_LINE_NAME);
         }
