@@ -78,16 +78,17 @@ class StationRepositoryTest {
     @Test
     @DisplayName("StationEntity 업데이트")
     void updateById() {
-        final StationEntity stationEntity = new StationEntity(1L, "선릉역");
+        final StationEntity stationEntity = new StationEntity("선릉역");
         final StationEntity saved = stationRepository.save(stationEntity);
-        final StationEntity newStationEntity = new StationEntity(1L, "삼성역");
+
+        final StationEntity newStationEntity = new StationEntity(saved.getId(), "삼성역");
         final long affectedRow = stationRepository.updateById(newStationEntity);
-        final Optional<StationEntity> found = stationRepository.findById(newStationEntity.getId());
+        final Optional<StationEntity> updated = stationRepository.findById(newStationEntity.getId());
 
         assertAll(
                 () -> assertThat(affectedRow).isOne(),
-                () -> assertThat(found).isPresent(),
-                () -> assertThat(found.get().getName()).isEqualTo(newStationEntity.getName())
+                () -> assertThat(updated).isPresent(),
+                () -> assertThat(updated.get().getName()).isEqualTo(newStationEntity.getName())
         );
     }
 

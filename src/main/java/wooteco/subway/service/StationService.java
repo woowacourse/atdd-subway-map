@@ -2,11 +2,11 @@ package wooteco.subway.service;
 
 import java.util.List;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
+import wooteco.subway.service.dto.StationServiceRequest;
 
 public interface StationService {
 
-    Station save(StationRequest stationRequest);
+    Station save(StationServiceRequest stationServiceRequest);
 
     List<Station> findAll();
 

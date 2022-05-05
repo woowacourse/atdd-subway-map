@@ -1,19 +1,18 @@
-package wooteco.subway.dao.entity;
+package wooteco.subway.service.dto;
 
-public class StationEntity {
-
+public class StationServiceRequest {
     private Long id;
     private String name;
 
-    public StationEntity() {
+    private StationServiceRequest() {
     }
 
-    public StationEntity(Long id, String name) {
+    public StationServiceRequest(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public StationEntity(String name) {
+    public StationServiceRequest(String name) {
         this(null, name);
     }
 

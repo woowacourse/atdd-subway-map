@@ -14,15 +14,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.service.dto.LineServiceRequest;
 
 @SpringBootTest
 @Transactional
 class SpringLineServiceTest {
 
-    private static final LineRequest LINE_FIXTURE = new LineRequest("2호선", "bg-color-600");
-    private static final LineRequest LINE_FIXTURE2 = new LineRequest("3호선", "bg-color-700");
-    private static final LineRequest LINE_FIXTURE3 = new LineRequest("4호선", "bg-color-800");
+    private static final LineServiceRequest LINE_FIXTURE = new LineServiceRequest("2호선", "bg-color-600");
+    private static final LineServiceRequest LINE_FIXTURE2 = new LineServiceRequest("3호선", "bg-color-700");
+    private static final LineServiceRequest LINE_FIXTURE3 = new LineServiceRequest("4호선", "bg-color-800");
 
     @Autowired
     private LineService lineService;
@@ -84,7 +84,7 @@ class SpringLineServiceTest {
     void update() {
         final Line line = lineService.save(LINE_FIXTURE);
         final Long id = line.getId();
-        final LineRequest lineRequest = new LineRequest("22호선", "bg-color-777");
+        final LineServiceRequest lineRequest = new LineServiceRequest("22호선", "bg-color-777");
 
         lineService.update(id, lineRequest);
         final Line updated = lineService.findById(id);

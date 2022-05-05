@@ -13,16 +13,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
+import wooteco.subway.service.dto.StationServiceRequest;
 
 @DisplayName("SpringStationService 는")
 @SpringBootTest
 @Transactional
 class SpringStationServiceTest {
 
-    private static final StationRequest STATION_FIXTURE = new StationRequest("선릉역");
-    private static final StationRequest STATION_FIXTURE2 = new StationRequest("강남역");
-    private static final StationRequest STATION_FIXTURE3 = new StationRequest("역삼역");
+    private static final StationServiceRequest STATION_FIXTURE = new StationServiceRequest("선릉역");
+    private static final StationServiceRequest STATION_FIXTURE2 = new StationServiceRequest("강남역");
+    private static final StationServiceRequest STATION_FIXTURE3 = new StationServiceRequest("역삼역");
 
     @Autowired
     private StationService stationService;

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.dao.entity.LineEntity;
 
 @Repository
-public final class LineRepository extends AbstractRepository<LineEntity, Long> {
+public class LineRepository extends AbstractRepository<LineEntity, Long> {
 
     public LineRepository(JdbcTemplate jdbcTemplate, DataSource dataSource,
                           NamedParameterJdbcTemplate namedParameterJdbcTemplate) {

@@ -80,13 +80,17 @@ class LineRepositoryTest {
     void updateById() {
         final LineEntity lineEntity = new LineEntity(null, "2호선", "bg-600-green");
         final LineEntity saved = lineRepository.save(lineEntity);
-        final LineEntity newLineEntity = new LineEntity(saved.getId(), "3호선", "bg-600-blue");
-        final long updatedId = lineRepository.updateById(newLineEntity);
-        final LineEntity updated = lineRepository.findById(updatedId).get();
+
+        final LineEntity newLineEntity = new LineEntity(saved.getId(), "3호선", "bg-700-blue");
+        final long affectedRow = lineRepository.updateById(newLineEntity);
+
+        final Optional<LineEntity> updated = lineRepository.findById(saved.getId());
 
         assertAll(
-                () -> assertThat(updated.getName()).isEqualTo(newLineEntity.getName()),
-                () -> assertThat(updated.getColor()).isEqualTo(newLineEntity.getColor())
+                () -> assertThat(affectedRow).isOne(),
+                () -> assertThat(updated).isPresent(),
+                () -> assertThat(updated.get().getName()).isEqualTo(newLineEntity.getName()),
+                () -> assertThat(updated.get().getColor()).isEqualTo(newLineEntity.getColor())
         );
     }
 
