@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,9 +32,11 @@ public class LineDaoTest {
     void save() {
         Line testLine = new Line("save", "GREEN");
         Line result = lineDao.save(testLine);
-        assertThat(result.getId()).isNotNull();
-        assertThat(result.getName()).isEqualTo("save");
-        assertThat(result.getColor()).isEqualTo("GREEN");
+        assertAll(
+                () -> assertThat(result.getId()).isNotNull(),
+                () -> assertThat(result.getName()).isEqualTo("save"),
+                () -> assertThat(result.getColor()).isEqualTo("GREEN")
+        );
     }
 
     @DisplayName("지하철 노선 이름을 이용해 지하철 노선을 조회한다.")
@@ -43,10 +46,11 @@ public class LineDaoTest {
         lineDao.save(test);
         Line result = lineDao.findByName("test").orElse(null);
         Optional<Line> result2 = lineDao.findByName("test2");
-
-        assertThat(result.getName()).isEqualTo("test");
-        assertThat(result.getColor()).isEqualTo("GREEN");
-        assertThat(result2).isEmpty();
+        assertAll(
+                () -> assertThat(result.getName()).isEqualTo("test"),
+                () -> assertThat(result.getColor()).isEqualTo("GREEN"),
+                () -> assertThat(result2).isEmpty()
+        );
     }
 
     @DisplayName("저장된 모든 지하철 노선을 조회한다.")
@@ -59,13 +63,15 @@ public class LineDaoTest {
 
         List<Line> lines = lineDao.findAll();
 
-        assertThat(lines.size()).isEqualTo(2);
-        assertThat(lines.get(0).getId()).isEqualTo(1);
-        assertThat(lines.get(0).getName()).isEqualTo("test1");
-        assertThat(lines.get(0).getColor()).isEqualTo("GREEN");
-        assertThat(lines.get(1).getId()).isEqualTo(2);
-        assertThat(lines.get(1).getName()).isEqualTo("test2");
-        assertThat(lines.get(1).getColor()).isEqualTo("YELLOW");
+        assertAll(
+                () -> assertThat(lines.size()).isEqualTo(2),
+                () -> assertThat(lines.get(0).getId()).isEqualTo(1),
+                () -> assertThat(lines.get(0).getName()).isEqualTo("test1"),
+                () -> assertThat(lines.get(0).getColor()).isEqualTo("GREEN"),
+                () -> assertThat(lines.get(1).getId()).isEqualTo(2),
+                () -> assertThat(lines.get(1).getName()).isEqualTo("test2"),
+                () -> assertThat(lines.get(1).getColor()).isEqualTo("YELLOW")
+        );
     }
 
     @DisplayName("id를 이용해 지하철 노선을 조회한다.")
@@ -74,10 +80,12 @@ public class LineDaoTest {
         lineDao.save(new Line("test1", "GREEN"));
         Line line = lineDao.findById(1L).get();
         Optional<Line> lineEmpty = lineDao.findById(1000L);
-        assertThat(line.getId()).isEqualTo(1);
-        assertThat(line.getName()).isEqualTo("test1");
-        assertThat(line.getColor()).isEqualTo("GREEN");
-        assertThat(lineEmpty).isEmpty();
+        assertAll(
+                () -> assertThat(line.getId()).isEqualTo(1),
+                () -> assertThat(line.getName()).isEqualTo("test1"),
+                () -> assertThat(line.getColor()).isEqualTo("GREEN"),
+                () -> assertThat(lineEmpty).isEmpty()
+        );
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -104,8 +112,10 @@ public class LineDaoTest {
         lineDao.update(savedLine, newLine);
 
         Line result = lineDao.findById(1L).get();
-        assertThat(result.getId()).isEqualTo(1L);
-        assertThat(result.getName()).isEqualTo("test2");
-        assertThat(result.getColor()).isEqualTo("BROWN");
+        assertAll(
+                () -> assertThat(result.getId()).isEqualTo(1L),
+                () -> assertThat(result.getName()).isEqualTo("test2"),
+                () -> assertThat(result.getColor()).isEqualTo("BROWN")
+        );
     }
 }
