@@ -27,6 +27,14 @@ public class JdbcStationDaoTest {
     }
 
     @Test
+    @DisplayName("지하철 역 이름 중복 여부 조회")
+    void duplicateName() {
+        Station station = new Station("호호역");
+        jdbcStationDao.save(station);
+        assertThat(jdbcStationDao.existByName("호호역")).isTrue();
+    }
+
+    @Test
     @DisplayName("지하철 역 전체 조회")
     void findAll() {
         Station station1 = new Station("호호역");
