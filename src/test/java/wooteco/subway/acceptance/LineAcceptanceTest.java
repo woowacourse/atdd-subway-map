@@ -96,7 +96,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then()
             .log().all().extract();
 
-        assertThat(response.statusCode()).isEqualTo(400);
+        assertThat(response.statusCode()).isEqualTo(404);
     }
 
     @Test

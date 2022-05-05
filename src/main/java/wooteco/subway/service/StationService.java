@@ -7,6 +7,7 @@ import wooteco.subway.dao.JdbcStationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.BadRequestException;
 
 @Service
 public class StationService {
@@ -37,7 +38,7 @@ public class StationService {
 
     private void validateDuplicateName(Station station) {
         if (jdbcStationDao.existByName(station.getName())) {
-            throw new IllegalArgumentException("지하철 역 이름은 중복될 수 없습니다.");
+            throw new BadRequestException("지하철 역 이름은 중복될 수 없습니다.");
         }
     }
 }

@@ -7,6 +7,8 @@ import wooteco.subway.dao.JdbcLineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.BadRequestException;
+import wooteco.subway.exception.NotFoundException;
 
 @Service
 public class LineService {
@@ -25,7 +27,7 @@ public class LineService {
 
     public LineResponse showById(Long id) {
         return LineResponse.from(jdbcLineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("조회하려는 id가 존재하지 않습니다.")));
+            .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다.")));
     }
 
     public List<LineResponse> showAll() {
@@ -45,7 +47,7 @@ public class LineService {
 
     private void validateDuplicateNameAndColor(String name, String color) {
         if (jdbcLineDao.existByNameAndColor(name, color)) {
-            throw new IllegalArgumentException("노선이 이름과 색상은 중복될 수 없습니다.");
+            throw new BadRequestException("노선이 이름과 색상은 중복될 수 없습니다.");
         }
     }
 }
