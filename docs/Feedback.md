@@ -5,7 +5,7 @@
 - [x] 오타
     - 요구사항 정리 오타 (17라인)
     - `LineDaoTest` - beforeEach()
-- [ ] `DAO`에서 사용하는 JdbcTemplate 불변
+- [x] `DAO`에서 사용하는 JdbcTemplate 불변
 - [ ] `LineDao` 사용하지 않는 메서드 존재
     - `deleteAll()`
 - [ ] `LineController`

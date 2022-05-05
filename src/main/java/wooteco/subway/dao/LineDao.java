@@ -15,7 +15,7 @@ import wooteco.subway.domain.Line;
 @Repository
 public class LineDao {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
