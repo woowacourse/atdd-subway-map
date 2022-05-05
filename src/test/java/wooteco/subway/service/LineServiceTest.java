@@ -24,15 +24,15 @@ public class LineServiceTest {
 
     @Test
     @DisplayName("Line 을 저장한다.")
-    void save() {
+    void create() {
         //given
         Line line = new Line("7호선", "khaki");
 
         //when
-        Line savedLine = lineService.save(line);
+        Line createdLine = lineService.createLine(line);
 
         //then
-        assertThat(equals(savedLine, line)).isTrue();
+        assertThat(equals(createdLine, line)).isTrue();
     }
 
     private boolean equals(Line lineA, Line lineB) {
@@ -41,13 +41,13 @@ public class LineServiceTest {
 
     @Test
     @DisplayName("중복된 Line 을 저장할 수 없다.")
-    void saveDuplicateName() {
+    void createDuplicateName() {
         //given
         Line line = new Line("7호선", "khaki");
-        lineService.save(line);
+        lineService.createLine(line);
 
         //then
-        assertThatThrownBy(() -> lineService.save(line))
+        assertThatThrownBy(() -> lineService.createLine(line))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("이미 등록된 노선입니다.");
     }
@@ -58,8 +58,8 @@ public class LineServiceTest {
         //given
         Line line1 = new Line("2호선", "green");
         Line line2 = new Line("7호선", "khaki");
-        lineService.save(line1);
-        lineService.save(line2);
+        lineService.createLine(line1);
+        lineService.createLine(line2);
 
         //when
         List<Line> actual = lineService.findAll();
@@ -76,10 +76,10 @@ public class LineServiceTest {
     void findById() {
         //given
         Line line = new Line("7호선", "khaki");
-        Line savedLine = lineService.save(line);
+        Line createdLine = lineService.createLine(line);
 
         //when
-        Line actual = lineService.findById(savedLine.getId());
+        Line actual = lineService.findById(createdLine.getId());
 
         //then
         assertThat(equals(actual, line)).isTrue();
@@ -90,7 +90,7 @@ public class LineServiceTest {
     void findByIdNotExists() {
         //given
         Line line = new Line("4호선", "sky-blue");
-        Long id = lineService.save(line).getId();
+        Long id = lineService.createLine(line).getId();
 
         //then
         assertThatThrownBy(() -> lineService.findById(id + 1))
@@ -103,12 +103,12 @@ public class LineServiceTest {
     void update() {
         //given
         Line line = new Line("4호선", "sky-blue");
-        Line savedLine = lineService.save(line);
+        Line createdLine = lineService.createLine(line);
 
         //when
-        Line expected = new Line(savedLine.getId(), "7호선", "khaki");
+        Line expected = new Line(createdLine.getId(), "7호선", "khaki");
         lineService.update(expected);
-        Line actual = lineService.findById(savedLine.getId());
+        Line actual = lineService.findById(createdLine.getId());
 
         //then
         assertThat(equals(actual, expected)).isTrue();
@@ -119,8 +119,8 @@ public class LineServiceTest {
     void updateWithDuplicatedName() {
         //given
         Line line = new Line("4호선", "sky-blue");
-        Line savedLine = lineService.save(line);
-        Line duplicatedLine = new Line(savedLine.getId(), "4호선", "sky-blue");
+        Line createdLine = lineService.createLine(line);
+        Line duplicatedLine = new Line(createdLine.getId(), "4호선", "sky-blue");
 
         //then
         assertThatThrownBy(() -> lineService.update(duplicatedLine))
@@ -133,7 +133,7 @@ public class LineServiceTest {
     void delete() {
         //given
         Line line = new Line("4호선", "sky-blue");
-        Long id = lineService.save(line).getId();
+        Long id = lineService.createLine(line).getId();
 
         //when
         lineService.deleteById(id);

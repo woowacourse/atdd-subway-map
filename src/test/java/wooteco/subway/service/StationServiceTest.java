@@ -24,12 +24,12 @@ public class StationServiceTest {
 
     @Test
     @DisplayName("station 을 저장한다.")
-    void save() {
+    void create() {
         //given
         Station station = new Station("lala");
 
         //when
-        Station actual = stationService.save(station);
+        Station actual = stationService.createStation(station);
 
         //then
         assertThat(actual.getName()).isEqualTo(station.getName());
@@ -37,13 +37,13 @@ public class StationServiceTest {
 
     @Test
     @DisplayName("중복된 역을 저장할 수 없다.")
-    void saveDuplicateName() {
+    void createDuplicateName() {
         //given
         Station station = new Station("lala");
-        Station actual = stationService.save(station);
+        Station actual = stationService.createStation(station);
 
         //then
-        assertThatThrownBy(() -> stationService.save(station))
+        assertThatThrownBy(() -> stationService.createStation(station))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("이미 등록된 역입니다.");
     }
@@ -54,8 +54,8 @@ public class StationServiceTest {
         //given
         Station station1 = new Station("lala");
         Station station2 = new Station("sojukang");
-        stationService.save(station1);
-        stationService.save(station2);
+        stationService.createStation(station1);
+        stationService.createStation(station2);
 
         //when
         List<Station> actual = stationService.findAll();
@@ -72,7 +72,7 @@ public class StationServiceTest {
     void findById() {
         //given
         Station station = new Station("lala");
-        Long id = stationService.save(station).getId();
+        Long id = stationService.createStation(station).getId();
 
         //when
         Station actual = stationService.findById(id);
@@ -86,7 +86,7 @@ public class StationServiceTest {
     void findByIdNotExist() {
         //given
         Station station = new Station("lala");
-        Long id = stationService.save(station).getId();
+        Long id = stationService.createStation(station).getId();
 
         //then
         assertThatThrownBy(() -> stationService.findById(id + 1))
@@ -99,11 +99,11 @@ public class StationServiceTest {
     void deleteById() {
         //given
         Station station = new Station("이수");
-        Station savedStation = stationService.save(station);
-        stationService.deleteById(savedStation.getId());
+        Station createdStation = stationService.createStation(station);
+        stationService.deleteById(createdStation.getId());
 
         //then
-        assertThatThrownBy(() -> stationService.findById(savedStation.getId()))
+        assertThatThrownBy(() -> stationService.findById(createdStation.getId()))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("존재하지 않는 역입니다.");
     }

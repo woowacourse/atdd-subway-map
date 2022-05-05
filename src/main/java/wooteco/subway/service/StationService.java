@@ -18,7 +18,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station save(Station station) {
+    public Station createStation(Station station) {
         Optional<Station> foundStation = stationDao.findByName(station.getName());
         if (foundStation.isPresent()) {
             throw new IllegalArgumentException("이미 등록된 역입니다.");

@@ -18,7 +18,7 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line save(Line line) {
+    public Line createLine(Line line) {
         Optional<Line> foundLine = lineDao.findByName(line.getName());
         validateLineDuplication(foundLine);
         return lineDao.save(line);
