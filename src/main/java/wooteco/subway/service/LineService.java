@@ -15,9 +15,13 @@ public class LineService {
     }
 
     public long save(Line line) {
+        validateLine(line);
+        return lineDao.save(line);
+    }
+
+    private void validateLine(Line line) {
         validateName(line);
         validateColor(line);
-        return lineDao.save(line);
     }
 
     private void validateName(Line line) {
@@ -42,16 +46,19 @@ public class LineService {
     }
 
     public void update(long id, Line line) {
+        validateLine(line);
         int updatedRow = lineDao.update(id, line);
-        if (updatedRow == 0) {
+        validateAffectedRow(updatedRow);
+    }
+
+    private void validateAffectedRow(int affectedRow) {
+        if (affectedRow == 0) {
             throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
         }
     }
 
     public void delete(Long id) {
         int deletedRow = lineDao.delete(id);
-        if (deletedRow == 0) {
-            throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
-        }
+        validateAffectedRow(deletedRow);
     }
 }
