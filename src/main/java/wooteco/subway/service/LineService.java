@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Line;
@@ -44,11 +45,16 @@ public class LineService {
     }
 
     public void modify(final Long id, final String name, final String color) {
-        if (lineDao.findById(id).isEmpty()) {
-            throw new NoSuchElementException("[ERROR] 노선이 존재하지 않습니다");
-        }
-        final Line newLine = new Line(id, name, color);
-        lineDao.update(new LineEntity(newLine));
+        final Optional<LineEntity> lineEntityToBeModified = lineDao.findById(id);
+        lineEntityToBeModified.ifPresentOrElse(
+                lineEntity -> {
+                    Line newLine = new Line(id, name, color);
+                    lineDao.update(new LineEntity(newLine));
+                },
+                () -> {
+                    throw new NoSuchElementException("[ERROR] 노선이 존재하지 않습니다");
+                }
+        );
     }
 
     public void remove(final Long id) {

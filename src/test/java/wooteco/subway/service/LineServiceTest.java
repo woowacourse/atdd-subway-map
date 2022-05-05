@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -88,6 +89,17 @@ class LineServiceTest {
                 () -> assertThat(searchedLine.getName()).isEqualTo("신분당선"),
                 () -> assertThat(searchedLine.getColor()).isEqualTo("bg-red-600")
         );
+    }
+
+    @DisplayName("존재하지 않는 노선을 수정한다.")
+    @Test
+    void modifyMissingLine() {
+        Line savedLine = service.register("2호선", "bg-green-600");
+
+        service.remove(savedLine.getId());
+        assertThatThrownBy(() -> service.modify(savedLine.getId(), "신분당선", "bg-red-600"))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("[ERROR] 노선이 존재하지 않습니다");
     }
 
     @DisplayName("id 로 노선을 삭제한다.")
