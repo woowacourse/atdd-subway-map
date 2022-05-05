@@ -4,7 +4,7 @@ public class StationRequest {
 
     private String name;
 
-    public StationRequest() {
+    private StationRequest() {
     }
 
     public StationRequest(String name) {

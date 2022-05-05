@@ -4,7 +4,7 @@ public class ErrorDto {
 
     private String message;
 
-    public ErrorDto() {
+    private ErrorDto() {
     }
 
     public ErrorDto(String message) {

@@ -8,7 +8,7 @@ public class LineResponse {
     private String name;
     private String color;
 
-    public LineResponse() {
+    private LineResponse() {
     }
 
     public LineResponse(Long id, String name, String color) {
