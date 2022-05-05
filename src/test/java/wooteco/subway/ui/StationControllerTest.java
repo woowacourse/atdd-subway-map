@@ -24,10 +24,10 @@ import wooteco.subway.dto.StationResponse;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class StationControllerTest {
-    
-    Station testStation1 = new Station("강남역"); 
+
+    Station testStation1 = new Station("강남역");
     Station testStation2 = new Station("역삼역");
-    
+
     @LocalServerPort
     int port;
 
@@ -66,17 +66,14 @@ class StationControllerTest {
                 .extract();
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .body(testStation1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
                 .then()
-                .log().all()
-                .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .log().all();
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -131,13 +128,11 @@ class StationControllerTest {
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .when()
                 .delete(uri)
-                .then().log().all()
-                .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+                .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value())
+                .log().all();
     }
 }

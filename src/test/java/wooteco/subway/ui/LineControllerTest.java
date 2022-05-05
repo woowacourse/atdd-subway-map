@@ -6,9 +6,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.StationResponse;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -68,17 +65,14 @@ class LineControllerTest {
                 .extract();
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .body(testLine1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then()
-                .log().all()
-                .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .log().all();
     }
 
     @DisplayName("노선을 조회한다.")
@@ -95,14 +89,11 @@ class LineControllerTest {
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .when()
                 .get(uri)
-                .then().log().all()
-                .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                .then().statusCode(HttpStatus.OK.value()).
+                log().all();
     }
 
     @DisplayName("노선들을 조회한다.")
@@ -157,14 +148,13 @@ class LineControllerTest {
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .when()
                 .delete(uri)
-                .then().log().all()
+                .then().
+                statusCode(HttpStatus.NO_CONTENT.value())
+                .log().all()
                 .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     @DisplayName("존재하는 id와 중복되지 않는 이름으로 바꾼다.")
@@ -189,16 +179,13 @@ class LineControllerTest {
 
         // when
         String uri = createResponse1.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .body(testLine3)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put(uri)
-                .then().log().all()
-                .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                .then()
+                .statusCode(HttpStatus.OK.value()).log().all();
     }
 
     @DisplayName("존재하지 않는 id의 노선 이름을 변경한다.")
@@ -228,11 +215,10 @@ class LineControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put(uri)
-                .then().log().all()
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .log().all()
                 .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     @DisplayName("이미 저장된 이름으로 이름을 바꾼다.")
@@ -257,15 +243,13 @@ class LineControllerTest {
 
         // when
         String uri = createResponse1.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .body(testLine2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put(uri)
-                .then().log().all()
-                .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                .log().all();
     }
 }
