@@ -29,19 +29,18 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
-        Station newStation = stationService.save(station);
-        StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
+        Station newStation = stationService.save(stationRequest.toEntity());
+        return ResponseEntity.created(URI.create("/stations/" + newStation.getId()))
+                .body(StationResponse.of(newStation));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = stationService.findAll();
-        List<StationResponse> stationResponses = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationResponses);
+        return ResponseEntity.ok()
+                .body(stationService.findAll()
+                        .stream()
+                        .map(StationResponse::of)
+                        .collect(Collectors.toList()));
     }
 
     @DeleteMapping("/{id}")

@@ -1,11 +1,14 @@
 package wooteco.subway.dto;
 
+import wooteco.subway.domain.Line;
+
 public class LineRequest {
     private String name;
     private String color;
     private Long upStationId;
     private Long downStationId;
     private int distance;
+
 
     public LineRequest() {
     }
@@ -16,6 +19,10 @@ public class LineRequest {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public Line toEntity() {
+        return new Line(name, color);
     }
 
     public String getName() {

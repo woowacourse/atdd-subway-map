@@ -30,25 +30,23 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = lineService.save(line);
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        Line newLine = lineService.save(lineRequest.toEntity());
+        return ResponseEntity.created(URI.create("/lines/" + newLine.getId()))
+                .body(LineResponse.of(newLine));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineService.findAll();
-        List<LineResponse> lineResponses = lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(lineResponses);
+        return ResponseEntity.ok()
+                .body(lineService.findAll()
+                        .stream()
+                        .map(LineResponse::of)
+                        .collect(Collectors.toList()));
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> putLines(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        lineService.update(id, line);
+        lineService.update(id, lineRequest.toEntity());
         return ResponseEntity.ok().build();
     }
 
