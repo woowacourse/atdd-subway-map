@@ -22,14 +22,14 @@ public class LineService {
     }
 
     public List<Line> findAll() {
-        List<Line> lines = lineDaoImpl.findAll();
-        return lines;
+        return lineDaoImpl.findAll();
     }
 
     public Line findById(Long id) {
-        final Line line = lineDaoImpl.findById(id)
-            .orElseThrow(() -> new LineNotFoundException("해당 노선이 없습니다.", 1));
-        return line;
+        return lineDaoImpl.findById(id)
+            .orElseThrow(
+                () -> new LineNotFoundException("해당 노선이 없습니다.", 1)
+            );
     }
 
     public void update(Long id, LineRequest lineRequest) {
@@ -39,6 +39,7 @@ public class LineService {
     }
 
     public void delete(Long id) {
-        lineDaoImpl.deleteById(id);
+        final Line targetLine = findById(id);
+        lineDaoImpl.delete(targetLine);
     }
 }

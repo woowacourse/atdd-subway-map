@@ -77,16 +77,17 @@ public class LineDaoImpl implements LineDao {
     }
 
     @Override
-    public void deleteById(Long id) {
-        String sql = "DELETE FROM line WHERE id = :id";
-        MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        namedParameterJdbcTemplate.update(sql, parameters);
-    }
-
-    @Override
     public void update(final Line line) {
         String sql = "UPDATE line SET name = :name, color = :color WHERE id = :id";
         BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
         namedParameterJdbcTemplate.update(sql, parameters);
     }
+
+    @Override
+    public void delete(final Line line) {
+        final String sql = "DELETE FROM line WHERE id = :id";
+        final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
+        namedParameterJdbcTemplate.update(sql, parameters);
+    }
+
 }
