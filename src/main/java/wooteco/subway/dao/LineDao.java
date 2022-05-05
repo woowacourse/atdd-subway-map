@@ -57,17 +57,17 @@ public class LineDao {
 
     public boolean isExistId(Long id) {
         final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
     }
 
     public boolean isExistName(String name) {
         final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE name = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
     }
 
     public boolean isExistName(Long id, String name) {
         final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE id != ? AND name = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id, name);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id, name));
     }
 
 }

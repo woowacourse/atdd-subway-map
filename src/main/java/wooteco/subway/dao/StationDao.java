@@ -47,7 +47,7 @@ public class StationDao {
 
     public boolean isExistName(String name) {
         final String sql = "SELECT EXISTS (SELECT * FROM STATION WHERE name=?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
     }
 
 }
