@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.JdbcStationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
@@ -10,6 +11,7 @@ import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.BadRequestException;
 
 @Service
+@Transactional(readOnly = true)
 public class StationService {
 
     private final JdbcStationDao jdbcStationDao;
@@ -18,6 +20,7 @@ public class StationService {
         this.jdbcStationDao = jdbcStationDao;
     }
 
+    @Transactional
     public StationResponse create(StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
         validateDuplicateName(station);
@@ -32,6 +35,7 @@ public class StationService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public void removeById(Long id) {
         jdbcStationDao.deleteById(id);
     }
