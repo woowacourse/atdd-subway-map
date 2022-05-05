@@ -37,8 +37,7 @@ public class LineController {
             throw new IllegalArgumentException(lineRequest.getName() + " : " + LINE_DUPLICATION_EXCEPTION_MESSAGE);
         }
         Line newLine = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(LineResponse.of(newLine));
     }
 
     private boolean isDuplicateName(String name) {
@@ -49,7 +48,7 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineDao.findAll();
         List<LineResponse> lineResponses = lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
@@ -57,7 +56,7 @@ public class LineController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = findLineById(id);
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
+        LineResponse lineResponse = LineResponse.of(line);
         return ResponseEntity.ok().body(lineResponse);
     }
 
