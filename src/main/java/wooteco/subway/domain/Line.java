@@ -27,8 +27,4 @@ public class Line {
     public String getColor() {
         return color;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }
