@@ -1,6 +1,8 @@
 package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -42,14 +44,18 @@ public class JdbcStationDao implements StationDao {
 
         try {
             Station station = jdbcTemplate.queryForObject(sql,
-                (rs, rowNum) -> new Station(
-                    rs.getLong("id"),
-                    rs.getString("name")
-                ), name);
+                (rs, rowNum) -> createStation(rs), name);
             return Optional.ofNullable(station);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    private Station createStation(ResultSet rs) throws SQLException {
+        return new Station(
+            rs.getLong("id"),
+            rs.getString("name")
+        );
     }
 
     @Override
@@ -58,10 +64,7 @@ public class JdbcStationDao implements StationDao {
 
         try {
             Station station = jdbcTemplate.queryForObject(sql,
-                (rs, rowNum) -> new Station(
-                    rs.getLong("id"),
-                    rs.getString("name")
-                ), id);
+                (rs, rowNum) -> createStation(rs), id);
             return Optional.ofNullable(station);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -71,10 +74,7 @@ public class JdbcStationDao implements StationDao {
     @Override
     public List<Station> findAll() {
         String sql = "select * from station";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Station(
-            rs.getLong("id"),
-            rs.getString("name")
-        ));
+        return jdbcTemplate.query(sql, (rs, rowNum) -> createStation(rs));
     }
 
     @Override
