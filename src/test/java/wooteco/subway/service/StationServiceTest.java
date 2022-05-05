@@ -16,6 +16,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.NotFoundException;
 
 @SpringBootTest
 class StationServiceTest {
@@ -79,7 +80,7 @@ class StationServiceTest {
         given(stationDao.delete(1L)).willReturn(0);
 
         assertThatThrownBy(() -> stationService.delete(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 지하철역입니다.");
     }
 }

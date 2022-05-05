@@ -8,6 +8,7 @@ import wooteco.subway.dto.LineResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import wooteco.subway.exception.NotFoundException;
 
 @Service
 public class LineService {
@@ -38,14 +39,14 @@ public class LineService {
 
     public LineResponse findById(Long id) {
         Line line = dao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(LINE_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND));
 
         return new LineResponse(line);
     }
 
     public void deleteById(Long id) {
         if (dao.delete(id) == 0) {
-            throw new IllegalArgumentException(LINE_NOT_FOUND);
+            throw new NotFoundException(LINE_NOT_FOUND);
         }
     }
 
@@ -55,7 +56,7 @@ public class LineService {
 
         int updateResult = dao.update(id, name, request.getColor());
         if (updateResult == 0) {
-            throw new IllegalArgumentException(LINE_NOT_FOUND);
+            throw new NotFoundException(LINE_NOT_FOUND);
         }
     }
 

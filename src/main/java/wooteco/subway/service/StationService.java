@@ -8,6 +8,7 @@ import wooteco.subway.dto.StationResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import wooteco.subway.exception.NotFoundException;
 
 @Service
 public class StationService {
@@ -40,7 +41,7 @@ public class StationService {
 
     public void delete(Long id) {
         if (dao.delete(id) == 0) {
-            throw new IllegalArgumentException(STATION_NOT_FOUND);
+            throw new NotFoundException(STATION_NOT_FOUND);
         }
     }
 }

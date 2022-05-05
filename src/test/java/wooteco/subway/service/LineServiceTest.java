@@ -17,6 +17,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.NotFoundException;
 
 @SpringBootTest
 class LineServiceTest {
@@ -90,7 +91,7 @@ class LineServiceTest {
         given(lineDao.findById(1L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> lineService.findById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 
@@ -108,7 +109,7 @@ class LineServiceTest {
         given(lineDao.isExistId(1L)).willReturn(false);
 
         assertThatThrownBy(() -> lineService.deleteById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 노선입니다.");
     }
 
@@ -132,7 +133,7 @@ class LineServiceTest {
         given(lineDao.isExistName(1L, "name2")).willReturn(false);
 
         assertThatThrownBy(() -> lineService.update(1L, lineRequest))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 노선입니다.");
     }
 
