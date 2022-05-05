@@ -6,11 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -71,7 +71,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        /// given
+        // given
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "신림역");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
@@ -99,7 +99,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedStationIds = Arrays.asList(createResponse1, createResponse2).stream()
+        List<Long> expectedStationIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultStationIds = response.jsonPath().getList(".", StationResponse.class).stream()

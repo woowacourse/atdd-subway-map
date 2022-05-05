@@ -17,6 +17,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.utils.StringFormat;
 
 @RequestMapping("/lines")
 @RestController
@@ -34,7 +35,8 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         if (isDuplicateName(lineRequest.getName())) {
-            throw new IllegalArgumentException(lineRequest.getName() + " : " + LINE_DUPLICATION_EXCEPTION_MESSAGE);
+            throw new IllegalArgumentException(
+                    StringFormat.errorMessage(lineRequest.getName(), LINE_DUPLICATION_EXCEPTION_MESSAGE));
         }
         Line newLine = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(LineResponse.of(newLine));
@@ -71,7 +73,8 @@ public class LineController {
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line findLine = findLineById(id);
         if (isDuplicateName(lineRequest.getName()) && isNotSameName(lineRequest.getName(), findLine.getName())) {
-            throw new IllegalArgumentException(lineRequest.getName() + " : " + LINE_DUPLICATION_EXCEPTION_MESSAGE);
+            throw new IllegalArgumentException(
+                    StringFormat.errorMessage(lineRequest.getName(), LINE_DUPLICATION_EXCEPTION_MESSAGE));
         }
         lineDao.update(findLine, new Line(id, lineRequest.getName(), lineRequest.getColor()));
 
@@ -80,7 +83,8 @@ public class LineController {
 
     private Line findLineById(Long id) {
         return lineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(id + " : " + NO_SUCH_LINE_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        StringFormat.errorMessage(id, NO_SUCH_LINE_EXCEPTION_MESSAGE)));
     }
 
     private boolean isNotSameName(String originName, String updateName) {

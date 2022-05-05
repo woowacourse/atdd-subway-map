@@ -16,6 +16,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.utils.StringFormat;
 
 @RequestMapping("/stations")
 @RestController
@@ -34,7 +35,7 @@ public class StationController {
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         if (stationDao.findByName(stationRequest.getName()).isPresent()) {
             throw new IllegalArgumentException(
-                    stationRequest.getName() + " : " + STATION_DUPLICATION_EXCEPTION_MESSAGE);
+                    StringFormat.errorMessage(stationRequest.getName(), STATION_DUPLICATION_EXCEPTION_MESSAGE));
         }
         Station station = new Station(stationRequest.getName());
         Station newStation = stationDao.save(station);
@@ -54,7 +55,8 @@ public class StationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         Station station = stationDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(id + " : " + NO_SUCH_STATION_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        StringFormat.errorMessage(id, NO_SUCH_STATION_EXCEPTION_MESSAGE)));
         stationDao.delete(station);
         return ResponseEntity.noContent().build();
     }

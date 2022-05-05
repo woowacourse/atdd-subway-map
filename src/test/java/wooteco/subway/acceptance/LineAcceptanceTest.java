@@ -6,11 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -76,7 +76,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선들을 조회한다.")
     @Test
     void getLines() {
-        /// given
+        // given
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "4호선");
         params1.put("color", "SKYBLUE");
@@ -107,11 +107,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(it -> it.getId())
+                .map(LineResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
@@ -119,7 +119,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("id를 통해 지하철 노선을 조회한다.")
     @Test
     void getLineById() {
-        /// given
+        // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "6호선");
         params.put("color", "SKYBLUE");
@@ -138,9 +138,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
         // then
-        assertThat(response.jsonPath().getString("name")).isEqualTo("6호선");
-        assertThat(response.jsonPath().getString("color")).isEqualTo("SKYBLUE");
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertAll(
+                () -> assertThat(response.jsonPath().getString("name")).isEqualTo("6호선"),
+                () -> assertThat(response.jsonPath().getString("color")).isEqualTo("SKYBLUE"),
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value())
+        );
     }
 
     @DisplayName("노선을 제거한다.")
@@ -203,7 +205,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하지 않는 ID의 노선을 수정한다.")
     @Test
     void updateLine_noExistLine_Exception() {
-        /// given
+        // given
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "10호선");
         params2.put("color", "ORANGE");
@@ -221,7 +223,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("중복된 이름으로 노선을 수정한다.")
     @Test
     void updateLine_duplicateName_Exception() {
-        /// given
+        // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "15호선");
         params.put("color", "BLUE");
