@@ -20,10 +20,10 @@ public class JdbcStationDaoTest {
     @DisplayName("지하철 역 저장")
     void save() {
         Station station = new Station("호호역");
-        Station saveStation = jdbcStationDao.save(station);
+        Station savedStation = jdbcStationDao.save(station);
 
-        assertThat(saveStation.getId()).isNotNull();
-        assertThat(saveStation.getName()).isEqualTo(station.getName());
+        assertThat(savedStation.getId()).isNotNull();
+        assertThat(savedStation.getName()).isEqualTo(station.getName());
     }
 
     @Test
@@ -51,12 +51,11 @@ public class JdbcStationDaoTest {
     @DisplayName("id로 지하철 역을 삭제")
     void deleteById() {
         Station station1 = new Station("호호역");
-        Station saveStation = jdbcStationDao.save(station1);
+        Station savedStation = jdbcStationDao.save(station1);
 
-        jdbcStationDao.deleteById(saveStation.getId());
+        jdbcStationDao.deleteById(savedStation.getId());
 
         assertThat(jdbcStationDao.findAll()).hasSize(0);
     }
-
 
 }

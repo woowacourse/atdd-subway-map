@@ -92,4 +92,5 @@ class LineDaoTest {
         LineDao.deleteById(savedLine.getId());
         assertThat(LineDao.findAll()).hasSize(0);
     }
+
 }

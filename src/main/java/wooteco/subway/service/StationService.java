@@ -21,8 +21,8 @@ public class StationService {
     public StationResponse create(StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
         validateDuplicateName(station);
-        Station saveStation = jdbcStationDao.save(station);
-        return new StationResponse(saveStation.getId(), saveStation.getName());
+        Station savedStation = jdbcStationDao.save(station);
+        return new StationResponse(savedStation.getId(), savedStation.getName());
     }
 
     public List<StationResponse> showAll() {

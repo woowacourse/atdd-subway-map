@@ -20,9 +20,9 @@ public class JdbcLineDaoTest {
     @DisplayName("노선 저장")
     void save() {
         Line line = new Line("1호선", "blue");
-        Line saveLine = jdbcLineDao.save(line);
-        assertThat(saveLine.getId()).isNotNull();
-        assertThat(saveLine.getName()).isEqualTo("1호선");
+        Line savedLine = jdbcLineDao.save(line);
+        assertThat(savedLine.getId()).isNotNull();
+        assertThat(savedLine.getName()).isEqualTo("1호선");
     }
 
     @Test
@@ -56,9 +56,9 @@ public class JdbcLineDaoTest {
     @Test
     @DisplayName("id로 노선 수정")
     void modifyById() {
-        Line saveLine = jdbcLineDao.save(new Line("1호선", "blue"));
-        jdbcLineDao.modifyById(saveLine.getId(), new Line("2호선", "red"));
-        Line updateLine = jdbcLineDao.findById(saveLine.getId()).get();
+        Line savedLine = jdbcLineDao.save(new Line("1호선", "blue"));
+        jdbcLineDao.modifyById(savedLine.getId(), new Line("2호선", "red"));
+        Line updateLine = jdbcLineDao.findById(savedLine.getId()).get();
         assertThat(updateLine.getName()).isEqualTo("2호선");
         assertThat(updateLine.getColor()).isEqualTo("red");
     }
@@ -66,8 +66,8 @@ public class JdbcLineDaoTest {
     @Test
     @DisplayName("id로 노선 삭제")
     void deleteById() {
-        Line saveLine = jdbcLineDao.save(new Line("1호선", "blue"));
-        jdbcLineDao.deleteById(saveLine.getId());
+        Line savedLine = jdbcLineDao.save(new Line("1호선", "blue"));
+        jdbcLineDao.deleteById(savedLine.getId());
         assertThat(jdbcLineDao.findAll()).hasSize(0);
     }
 

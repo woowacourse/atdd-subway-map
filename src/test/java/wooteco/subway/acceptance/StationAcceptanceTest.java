@@ -146,4 +146,5 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         assertThat(resultLineNames.contains("강남역")).isFalse();
     }
+
 }

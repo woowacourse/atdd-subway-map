@@ -27,7 +27,7 @@ public class StationDao {
     }
 
     public static void deleteById(Long id) {
-        stations.removeIf(station -> station.getId().equals(id));
+        stations.removeIf(value -> value.getId().equals(id));
     }
 
     private static void validateDuplication(Station station) {
