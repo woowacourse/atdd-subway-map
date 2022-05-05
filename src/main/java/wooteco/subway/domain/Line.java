@@ -20,6 +20,11 @@ public class Line {
         this.color = color;
     }
 
+    public Line(Long id, String name, String color) {
+        this(name, color);
+        this.id = id;
+    }
+
     public void update(String name, String color) {
         validateEmpty(name, color);
         validateNameRange(name);
