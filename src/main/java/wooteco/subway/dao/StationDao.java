@@ -30,7 +30,7 @@ public class StationDao {
             );
 
 
-    public Station save(String name) {
+    public Station insert(String name) {
         Long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name", name)).longValue();
         return new Station(id, name);
     }

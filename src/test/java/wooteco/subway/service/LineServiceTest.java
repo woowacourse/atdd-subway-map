@@ -30,11 +30,11 @@ class LineServiceTest {
     void save() {
         LineRequest lineRequest = new LineRequest("name", "red");
         given(lineDao.isExistName("name")).willReturn(false);
-        given(lineDao.save("name", "red")).willReturn(new Line(1L, "name", "red"));
+        given(lineDao.insert("name", "red")).willReturn(new Line(1L, "name", "red"));
 
-        assertThat(lineService.save(lineRequest).getId()).isEqualTo(1L);
-        assertThat(lineService.save(lineRequest).getName()).isEqualTo("name");
-        assertThat(lineService.save(lineRequest).getColor()).isEqualTo("red");
+        assertThat(lineService.insert(lineRequest).getId()).isEqualTo(1L);
+        assertThat(lineService.insert(lineRequest).getName()).isEqualTo("name");
+        assertThat(lineService.insert(lineRequest).getColor()).isEqualTo("red");
     }
 
     @Test
@@ -42,9 +42,9 @@ class LineServiceTest {
     void saveDuplicate() {
         LineRequest lineRequest = new LineRequest("name", "red");
         given(lineDao.isExistName("name")).willReturn(true);
-        given(lineDao.save("name", "red")).willReturn(new Line(1L, "name", "red"));
+        given(lineDao.insert("name", "red")).willReturn(new Line(1L, "name", "red"));
 
-        assertThatThrownBy(() -> lineService.save(lineRequest))
+        assertThatThrownBy(() -> lineService.insert(lineRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지하철 노선 이름이 중복될 수 없습니다.");
     }

@@ -21,14 +21,14 @@ public class StationService {
         this.dao = dao;
     }
 
-    public StationResponse save(StationRequest request) {
+    public StationResponse insert(StationRequest request) {
         String name = request.getName();
 
         if (dao.isExistName(name)) {
             throw new IllegalArgumentException(DUPLICATE_STATION_NAME);
         }
 
-        return new StationResponse(dao.save(name));
+        return new StationResponse(dao.insert(name));
     }
 
     public List<StationResponse> findAll() {

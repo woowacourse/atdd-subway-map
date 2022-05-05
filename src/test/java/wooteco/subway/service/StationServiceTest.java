@@ -29,21 +29,21 @@ class StationServiceTest {
     @DisplayName("지하철 역 이름이 중복되지 않는다면 등록할 수 있다.")
     void save() {
         StationRequest stationRequest = new StationRequest("name");
-        given(stationDao.save("name")).willReturn(new Station(1L, "name"));
+        given(stationDao.insert("name")).willReturn(new Station(1L, "name"));
         given(stationDao.isExistName("name")).willReturn(false);
 
-        assertThat(stationService.save(stationRequest).getId()).isEqualTo(1L);
-        assertThat(stationService.save(stationRequest).getName()).isEqualTo("name");
+        assertThat(stationService.insert(stationRequest).getId()).isEqualTo(1L);
+        assertThat(stationService.insert(stationRequest).getName()).isEqualTo("name");
     }
 
     @Test
     @DisplayName("지하철 역 이름이 중복된다면 등록할 수 없다.")
     void saveDuplicate() {
         StationRequest stationRequest = new StationRequest("name");
-        given(stationDao.save("name")).willReturn(new Station(1L, "name"));
+        given(stationDao.insert("name")).willReturn(new Station(1L, "name"));
         given(stationDao.isExistName("name")).willReturn(true);
 
-        assertThatThrownBy(() -> stationService.save(stationRequest))
+        assertThatThrownBy(() -> stationService.insert(stationRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지하철 이름이 중복될 수 없습니다.");
     }

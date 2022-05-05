@@ -30,7 +30,7 @@ public class LineDao {
                     resultSet.getString("color")
             );
 
-    public Line save(String name, String color) {
+    public Line insert(String name, String color) {
         Long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name", name, "color", color)).longValue();
         return new Line(id, name, color);
     }

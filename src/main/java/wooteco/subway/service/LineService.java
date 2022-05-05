@@ -21,11 +21,11 @@ public class LineService {
         this.dao = dao;
     }
 
-    public LineResponse save(LineRequest request) {
+    public LineResponse insert(LineRequest request) {
         String name = request.getName();
         checkDuplicateName(dao.isExistName(name));
 
-        Line line = dao.save(name, request.getColor());
+        Line line = dao.insert(name, request.getColor());
         return new LineResponse(line);
     }
 
