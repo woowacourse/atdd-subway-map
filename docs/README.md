@@ -69,8 +69,8 @@
     - [x]  특정 노선을 삭제한다. `DELETE /lines/{id} -> 204(No content)`
 
 - Spring
-  - [ ] JDBC 활용하여 H2 DB에 저장하기
-  - [ ] H2 Console을 활용하여 DB에 저장이 잘 되었는지 확인할 수 있도록 설정하기
+  - [x] JDBC 활용하여 H2 DB에 저장하기
+  - [x] H2 Console을 활용하여 DB에 저장이 잘 되었는지 확인할 수 있도록 설정하기
   - [x] Spring Bean 활용하기
 
 ## Test
