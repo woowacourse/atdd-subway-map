@@ -33,7 +33,7 @@ public class LineService {
         List<Line> lines = dao.findAll();
         return lines.stream()
                 .map(LineResponse::new)
-                .collect(Collectors.toList());
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public LineResponse findById(Long id) {

@@ -35,7 +35,7 @@ public class StationService {
         List<Station> stations = dao.findAll();
         return stations.stream()
                 .map(StationResponse::new)
-                .collect(Collectors.toList());
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public void delete(Long id) {
