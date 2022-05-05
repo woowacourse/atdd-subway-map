@@ -1,28 +1,31 @@
+DROP TABLE IF EXISTS SECTION;
 DROP TABLE IF EXISTS STATION;
 DROP TABLE IF EXISTS LINE;
-DROP TABLE IF EXISTS SECTION;
 
-create table if not exists STATION
+
+create table STATION
 (
-    id bigint auto_increment not null,
+    id   bigint auto_increment not null,
     name varchar(255) not null unique,
-    primary key(id)
-    );
+    primary key (id)
+);
 
-create table if not exists LINE
+create table LINE
 (
-    id bigint auto_increment not null,
-    name varchar(255) not null unique,
-    color varchar(20) not null,
-    primary key(id)
-    );
+    id    bigint auto_increment not null,
+    name  varchar(255) not null unique,
+    color varchar(20)  not null,
+    primary key (id)
+);
 
-create table if not exists SECTION
+create table SECTION
 (
-    id bigint auto_increment not null,
-    line_id bigint not null,
-    up_station_id bigint not null,
+    id              bigint auto_increment not null,
+    line_id         bigint not null,
+    up_station_id   bigint not null,
     down_station_id bigint not null,
-    distance int,
-    primary key(id)
-    );
+    distance        int,
+    primary key (id),
+    foreign key (up_station_id) references station (id),
+    foreign key (down_station_id) references station (id)
+);
