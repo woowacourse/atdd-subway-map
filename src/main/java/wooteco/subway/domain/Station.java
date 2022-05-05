@@ -1,19 +1,22 @@
 package wooteco.subway.domain;
 
-public class Station {
-    private Long id;
-    private String name;
+import wooteco.subway.exception.BlankArgumentException;
 
-    public Station() {
-    }
+public class Station {
+
+    private final Long id;
+    private final String name;
 
     public Station(Long id, String name) {
+        if (name.isBlank()) {
+            throw new BlankArgumentException();
+        }
         this.id = id;
         this.name = name;
     }
 
     public Station(String name) {
-        this.name = name;
+        this(null, name);
     }
 
     public Long getId() {
