@@ -28,8 +28,16 @@ public class StationControllerAdvice {
     }
 
     @ExceptionHandler(value = {LineDuplicateException.class, StationDuplicateException.class})
-    public ResponseEntity handleIllegalException(DuplicateKeyException e) {
+    public ResponseEntity handleDuplicateException(DuplicateKeyException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .build();
     }
+
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity handleUnexpectedException(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .build();
+    }
+
+
 }
