@@ -10,14 +10,14 @@ import wooteco.subway.exception.NotExistException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({DuplicateException.class, BlankArgumentException.class})
-    private ResponseEntity<Void> handleExceptionToBadRequest() {
-        return ResponseEntity.badRequest().build();
-    }
-
     @ExceptionHandler(NotExistException.class)
     private ResponseEntity<Void> handleExceptionToNotFound() {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler({DuplicateException.class, BlankArgumentException.class})
+    private ResponseEntity<Void> handleExceptionToBadRequest() {
+        return ResponseEntity.badRequest().build();
     }
 
 }
