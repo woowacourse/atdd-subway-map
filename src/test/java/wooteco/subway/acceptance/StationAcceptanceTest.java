@@ -25,7 +25,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "선릉역");
+        params.put("name", "낙성대역");
 
         // when
         ExtractableResponse<Response> response = createPostStationResponse(params);

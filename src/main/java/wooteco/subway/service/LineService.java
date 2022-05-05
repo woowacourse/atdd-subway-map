@@ -1,13 +1,15 @@
 package wooteco.subway.service;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -28,6 +30,7 @@ public class LineService {
         return new LineResponse(line);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         var allLines = lineDao.findAll();
 
@@ -70,28 +73,46 @@ public class LineService {
                 .anyMatch(it -> it.getColor().equals(color));
     }
 
+    @Transactional
     public void updateById(Long id, String name, String color) {
-        lineDao.findAll().stream()
-                .filter(it -> it.getId().equals(id))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 노선 입니다."));
-        lineDao.findAll().stream()
-                .filter(it -> !it.getId().equals(id))
-                .filter(it -> it.getName().equals(name) || it.getColor().equals(color))
-                .findAny()
-                .ifPresent(s -> {
-                    throw new NoSuchElementException("[ERROR] 이미 존재하는 이름, 색상입니다.");
-                });
+        validateNonFoundId(id);
+        validateExistName(id, name);
+        validateExistColor(id, color);
 
         lineDao.update(id, name, color);
     }
 
+    @Transactional
     public void deleteById(Long id) {
+        validateNonFoundId(id);
+
+        lineDao.deleteById(id);
+    }
+
+    private void validateNonFoundId(Long id) {
         lineDao.findAll().stream()
                 .filter(it -> it.getId().equals(id))
                 .findAny()
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 노선 입니다."));
+    }
 
-        lineDao.deleteById(id);
+    private void validateExistName(Long id, String name) {
+        lineDao.findAll().stream()
+                .filter(it -> !it.getId().equals(id))
+                .filter(it -> it.getName().equals(name))
+                .findAny()
+                .ifPresent(s -> {
+                    throw new NoSuchElementException("[ERROR] 이미 존재하는 이름입니다.");
+                });
+    }
+
+    private void validateExistColor(Long id, String color) {
+        lineDao.findAll().stream()
+                .filter(it -> !it.getId().equals(id))
+                .filter(it -> it.getName().equals(color))
+                .findAny()
+                .ifPresent(s -> {
+                    throw new NoSuchElementException("[ERROR] 이미 존재하는 색상입니다.");
+                });
     }
 }
