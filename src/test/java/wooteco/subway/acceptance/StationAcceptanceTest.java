@@ -125,13 +125,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+        List<StationResponse> expectedStationResponses = Stream.of(createResponse1, createResponse2)
+            .map(it -> it.jsonPath().getObject(".", StationResponse.class))
             .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-            .map(StationResponse::getId)
-            .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        List<StationResponse> stationResponses = response.jsonPath().getList(".", StationResponse.class);
+        assertThat(expectedStationResponses).containsAll(stationResponses);
     }
 
     @Test

@@ -150,13 +150,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+        List<LineResponse> expectedLineResponses = Stream.of(createResponse1, createResponse2)
+            .map(it -> it.jsonPath().getObject(".", LineResponse.class))
             .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-            .map(LineResponse::getId)
-            .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
+        assertThat(expectedLineResponses).containsAll(lineResponses);
     }
 
     @Test
