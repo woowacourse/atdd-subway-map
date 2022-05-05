@@ -1,10 +1,10 @@
 package wooteco.subway.dao;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
@@ -14,7 +14,7 @@ public class StationDao {
     protected static final String DUPLICATE_EXCEPTION_MESSAGE = "이름이 중복된 역은 만들 수 없습니다.";
 
     private final JdbcTemplate jdbcTemplate;
-
+    private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Station> rowMapper = (rs, rowNum) ->
             new Station(
                     rs.getLong("id"),
@@ -23,16 +23,16 @@ public class StationDao {
 
     public StationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("STATION")
+                .usingGeneratedKeyColumns("id");
     }
 
-    public Station save(Station station) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
-        simpleJdbcInsert.withTableName("station").usingGeneratedKeyColumns("id");
-
+    public Station insert(Station station) {
         String name = station.getName();
         validateDuplicateName(name);
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", name);
 
         long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new Station(id, name);

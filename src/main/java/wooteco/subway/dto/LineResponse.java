@@ -1,6 +1,7 @@
 package wooteco.subway.dto;
 
 import java.util.List;
+import wooteco.subway.domain.Line;
 
 public class LineResponse {
     private Long id;
@@ -22,6 +23,10 @@ public class LineResponse {
         this.id = id;
         this.name = name;
         this.color = color;
+    }
+
+    public LineResponse(Line line) {
+        this(line.getId(), line.getName(), line.getColor());
     }
 
     public Long getId() {

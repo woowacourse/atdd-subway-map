@@ -28,24 +28,24 @@ class StationDaoTest {
     void save() {
         String name = "강남역";
 
-        Station station = stationDao.save(new Station(name));
+        Station station = stationDao.insert(new Station(name));
         assertThat(station.getName()).isEqualTo(name);
     }
 
     @Test
     void saveDuplicate() {
         String name = "강남역";
-        stationDao.save(new Station(name));
+        stationDao.insert(new Station(name));
 
-        assertThatThrownBy(() -> stationDao.save(new Station(name)))
+        assertThatThrownBy(() -> stationDao.insert(new Station(name)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(DUPLICATE_EXCEPTION_MESSAGE);
     }
 
     @Test
     void findAll() {
-        stationDao.save(new Station("강남역"));
-        stationDao.save(new Station("역삼역"));
+        stationDao.insert(new Station("강남역"));
+        stationDao.insert(new Station("역삼역"));
 
         List<Station> stations = stationDao.findAll();
         assertThat(stations.size()).isEqualTo(2);
@@ -53,7 +53,7 @@ class StationDaoTest {
 
     @Test
     void delete() {
-        Station station = stationDao.save(new Station("강남역"));
+        Station station = stationDao.insert(new Station("강남역"));
         stationDao.delete(station.getId());
 
         List<Station> stations = stationDao.findAll();

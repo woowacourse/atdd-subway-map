@@ -1,10 +1,10 @@
 package wooteco.subway.dao;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
@@ -15,6 +15,7 @@ public class LineDao {
     protected static final String COLOR_DUPLICATE_EXCEPTION_MESSAGE = "색깔이 중복된 노선은 만들 수 없습니다.";
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Line> rowMapper = (rs, rowNum) ->
             new Line(
                     rs.getLong("id"),
@@ -24,19 +25,19 @@ public class LineDao {
 
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("LINE")
+                .usingGeneratedKeyColumns("id");
     }
 
-    public Line save(Line line) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
-        simpleJdbcInsert.withTableName("line").usingGeneratedKeyColumns("id");
-
+    public Line insert(Line line) {
         String name = line.getName();
         String color = line.getColor();
         validateDuplicateName(name);
         validateDuplicateColor(color);
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", name)
+                .addValue("color", color);
 
         long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new Line(id, name, color);

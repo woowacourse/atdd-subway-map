@@ -30,7 +30,7 @@ class LineDaoTest {
     void save() {
         String name = "신분당선";
         String color = "bg-red-600";
-        Line line = lineDao.save(new Line(name, color));
+        Line line = lineDao.insert(new Line(name, color));
 
         assertThat(line.getName()).isEqualTo(name);
     }
@@ -39,9 +39,9 @@ class LineDaoTest {
     void saveDuplicateName() {
         String name = "신분당선";
         String color = "bg-red-600";
-        lineDao.save(new Line(name, color));
+        lineDao.insert(new Line(name, color));
 
-        assertThatThrownBy(() -> lineDao.save(new Line(name, "blue")))
+        assertThatThrownBy(() -> lineDao.insert(new Line(name, "blue")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(NAME_DUPLICATE_EXCEPTION_MESSAGE);
     }
@@ -50,9 +50,9 @@ class LineDaoTest {
     void saveDuplicateColor() {
         String name = "신분당선";
         String color = "bg-red-600";
-        lineDao.save(new Line(name, color));
+        lineDao.insert(new Line(name, color));
 
-        assertThatThrownBy(() -> lineDao.save(new Line("2호선", color)))
+        assertThatThrownBy(() -> lineDao.insert(new Line("2호선", color)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(COLOR_DUPLICATE_EXCEPTION_MESSAGE);
     }
@@ -61,7 +61,7 @@ class LineDaoTest {
     void findById() {
         String name = "신분당선";
         String color = "bg-red-600";
-        Line line = lineDao.save(new Line(name, color));
+        Line line = lineDao.insert(new Line(name, color));
 
         Line foundLine = lineDao.findById(line.getId());
 
@@ -70,8 +70,8 @@ class LineDaoTest {
 
     @Test
     void findAll() {
-        lineDao.save(new Line("신분당선", "bg-red-600"));
-        lineDao.save(new Line("2호선", "bg-blue-500"));
+        lineDao.insert(new Line("신분당선", "bg-red-600"));
+        lineDao.insert(new Line("2호선", "bg-blue-500"));
 
         List<Line> lines = lineDao.findAll();
         assertThat(lines.size()).isEqualTo(2);
@@ -79,7 +79,7 @@ class LineDaoTest {
 
     @Test
     void update() {
-        Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
+        Line line = lineDao.insert(new Line("신분당선", "bg-red-600"));
 
         Long id = line.getId();
         String updateName = "2호선";
@@ -97,7 +97,7 @@ class LineDaoTest {
     void delete() {
         String name = "신분당선";
         String color = "bg-red-600";
-        Line line = lineDao.save(new Line(name, color));
+        Line line = lineDao.insert(new Line(name, color));
 
         lineDao.delete(line.getId());
         assertThat(lineDao.findAll()).isEmpty();
