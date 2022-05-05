@@ -4,27 +4,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.TestConstructor;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.StationDuplicateException;
 
-@SpringBootTest
+@JdbcTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class StationDaoTest {
 
-    private final StationDao stationDao;
+    @Autowired
+    private DataSource dataSource;
 
-    public StationDaoTest(StationDao stationDao) {
-        this.stationDao = stationDao;
-    }
+    private StationDao stationDao;
 
     @BeforeEach
     void set() {
+        stationDao = new StationDaoImpl(dataSource);
+
         stationDao.save(new Station("선릉역"));
     }
 
@@ -59,7 +62,6 @@ public class StationDaoTest {
         stationDao.save(new Station("잠실역"));
 
         List<Station> stations = stationDao.findAll();
-
         assertThat(stations).hasSize(2);
     }
 

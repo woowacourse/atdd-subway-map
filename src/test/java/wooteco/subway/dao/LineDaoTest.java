@@ -4,27 +4,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.TestConstructor;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.LineDuplicateException;
 
-@SpringBootTest
+@JdbcTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class LineDaoTest {
 
-    private final LineDao lineDao;
+    @Autowired
+    private DataSource dataSource;
 
-    public LineDaoTest(LineDao lineDao) {
-        this.lineDao = lineDao;
-    }
+    private LineDao lineDao;
 
     @BeforeEach
     void set() {
+        lineDao = new LineDaoImpl(dataSource);
+        
         lineDao.save(new Line("2호선", "green"));
     }
 
