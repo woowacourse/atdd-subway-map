@@ -44,7 +44,7 @@ public class JdbcStationDaoTest {
 
         List<Station> stations = jdbcStationDao.findAll();
 
-        assertThat(stations).contains(station1, station2);
+        assertThat(stations).hasSize(2);
     }
 
     @Test
