@@ -244,6 +244,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("이미 존재하는 이름으로 수정할 경우 400 응답을 던진다.")
+    void updateWithDuplicatedName() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "4호선");
+        params1.put("color", "sky-blue");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(params1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        //when, then
+        String uri = createResponse.header("Location");
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "4호선");
+        params2.put("color", "green");
+        RestAssured.given().log().all()
+            .body(params2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/" + 3)
+            .then()
+            .log().all()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
     @DisplayName("노선을 제거한다.")
     void deleteLine() {
         // given

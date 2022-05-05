@@ -44,6 +44,10 @@ public class Line {
         }
     }
 
+    public boolean hasSameId(Line line) {
+        return id.equals(line.getId());
+    }
+
     public Long getId() {
         return id;
     }

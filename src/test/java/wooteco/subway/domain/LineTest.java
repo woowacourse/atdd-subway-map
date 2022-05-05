@@ -78,4 +78,16 @@ public class LineTest {
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("색상은 Null 일 수 없습니다.");
     }
+
+    @ParameterizedTest
+    @CsvSource(value = {"3:true", "20:false"}, delimiter = ':')
+    @DisplayName("같은 id 를 가지고 있는지 확인한다.")
+    void hasSameId(Long id, boolean expected) {
+        //given
+        Line line1 = new Line(3L, "2호선", "green");
+        Line line2 = new Line(id, "2호선", "green");
+
+        //when, then
+        assertThat(line1.hasSameId(line2)).isEqualTo(expected);
+    }
 }

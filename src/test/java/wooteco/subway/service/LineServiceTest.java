@@ -106,7 +106,7 @@ public class LineServiceTest {
         Line createdLine = lineService.createLine(line);
 
         //when
-        Line expected = new Line(createdLine.getId(), "7호선", "khaki");
+        Line expected = new Line(createdLine.getId(), "4호선", "khaki");
         lineService.update(expected);
         Line actual = lineService.findById(createdLine.getId());
 
@@ -118,9 +118,11 @@ public class LineServiceTest {
     @DisplayName("중복된 이름으로 수정하면 예외를 던진다.")
     void updateWithDuplicatedName() {
         //given
-        Line line = new Line("4호선", "sky-blue");
-        Line createdLine = lineService.createLine(line);
-        Line duplicatedLine = new Line(createdLine.getId(), "4호선", "sky-blue");
+        Line line2 = new Line("2호선", "sky-blue");
+        lineService.createLine(line2);
+        Line line4 = new Line("4호선", "sky-blue");
+        Line createdLine = lineService.createLine(line4);
+        Line duplicatedLine = new Line(createdLine.getId(), "2호선", "sky-blue");
 
         //then
         assertThatThrownBy(() -> lineService.update(duplicatedLine))
