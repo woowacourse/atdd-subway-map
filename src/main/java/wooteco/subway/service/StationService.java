@@ -40,7 +40,9 @@ public class StationService {
         stationDao.deleteById(id);
     }
 
-    public List<Station> findAll() {
-        return stationDao.findAll();
+    public List<StationResponse> findAll() {
+        return stationDao.findAll().stream()
+                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .collect(Collectors.toList());
     }
 }

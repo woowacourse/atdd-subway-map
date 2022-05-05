@@ -2,10 +2,8 @@ package wooteco.subway.controller;
 
 import java.net.URI;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,10 +33,7 @@ public class LineController {
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         LineResponse lineInfos = lineService.findLineInfos(id);
-        return new ResponseEntity<>(
-                lineInfos,
-                HttpStatus.OK
-        );
+        return ResponseEntity.ok().body(lineInfos);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -50,16 +45,12 @@ public class LineController {
     @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.updateById(id, lineRequest.getName(), lineRequest.getColor());
-        return new ResponseEntity<>(
-                HttpStatus.OK
-        );
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteById(id);
-        return new ResponseEntity<>(
-                HttpStatus.NO_CONTENT
-        );
+        return ResponseEntity.noContent().build();
     }
 }

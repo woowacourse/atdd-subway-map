@@ -8,12 +8,11 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
 
 @Repository
 public class LineDao {
 
-    private static final RowMapper<Line> Line_ROW_MAPPER = (rs, rowNum) -> new Line(
+    private static final RowMapper<Line> LINE_ROW_MAPPER = (rs, rowNum) -> new Line(
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("color")
@@ -38,12 +37,12 @@ public class LineDao {
 
     public Line findById(Long id) {
         String sql = "SELECT * FROM line WHERE id=?";
-        return jdbcTemplate.queryForObject(sql, Line_ROW_MAPPER, id);
+        return jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id);
     }
 
     public List<Line> findAll() {
         String sql = "SELECT * FROM line";
-        return jdbcTemplate.query(sql, Line_ROW_MAPPER);
+        return jdbcTemplate.query(sql, LINE_ROW_MAPPER);
     }
 
     public void update(Long id, String name, String color) {
