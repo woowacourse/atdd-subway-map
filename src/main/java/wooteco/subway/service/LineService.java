@@ -45,21 +45,17 @@ public class LineService {
     }
 
     public void deleteById(Long id) {
-        checkLineNotFound(id);
-        dao.delete(id);
+        if (dao.delete(id) == 0) {
+            throw new IllegalArgumentException(LINE_NOT_FOUND);
+        }
     }
 
     public void update(Long id, LineRequest request) {
-        checkLineNotFound(id);
-
         String name = request.getName();
         checkDuplicateName(dao.isExistName(id, name));
 
-        dao.update(id, name, request.getColor());
-    }
-
-    private void checkLineNotFound(Long id) {
-        if (!dao.isExistId(id)) {
+        int updateResult = dao.update(id, name, request.getColor());
+        if (updateResult == 0) {
             throw new IllegalArgumentException(LINE_NOT_FOUND);
         }
     }

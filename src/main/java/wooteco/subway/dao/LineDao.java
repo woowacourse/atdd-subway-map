@@ -45,14 +45,14 @@ public class LineDao {
         return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
 
-    public void delete(Long id) {
+    public int delete(Long id) {
         final String sql = "DELETE FROM LINE WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 
-    public void update(Long id, String name, String color) {
+    public int update(Long id, String name, String color) {
         final String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
-        jdbcTemplate.update(sql, name, color, id);
+        return jdbcTemplate.update(sql, name, color, id);
     }
 
     public boolean isExistId(Long id) {

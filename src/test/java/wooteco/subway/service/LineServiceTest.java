@@ -96,7 +96,7 @@ class LineServiceTest {
     @Test
     @DisplayName("존재하는 지하철 노선을 삭제할 수 있다.")
     void deleteById() {
-        given(lineDao.isExistId(1L)).willReturn(true);
+        given(lineDao.delete(1L)).willReturn(1);
 
         assertDoesNotThrow(() -> lineService.deleteById(1L));
     }
@@ -116,8 +116,8 @@ class LineServiceTest {
     void update() {
         LineRequest lineRequest = new LineRequest("name2", "blue");
 
-        given(lineDao.isExistId(1L)).willReturn(true);
-        given(lineDao.isExistName(1L, "name")).willReturn(false);
+        given(lineDao.update(1L, "name2", "blue")).willReturn(1);
+        given(lineDao.isExistName(1L, "name2")).willReturn(false);
 
         assertDoesNotThrow(() -> lineService.update(1L, lineRequest));
     }
@@ -127,8 +127,8 @@ class LineServiceTest {
     void updateNotFound() {
         LineRequest lineRequest = new LineRequest("name2", "blue");
 
-        given(lineDao.isExistId(1L)).willReturn(false);
-        given(lineDao.isExistName(1L, "name")).willReturn(false);
+        given(lineDao.update(1L, "name2", "blue")).willReturn(0);
+        given(lineDao.isExistName(1L, "name2")).willReturn(false);
 
         assertThatThrownBy(() -> lineService.update(1L, lineRequest))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -140,7 +140,7 @@ class LineServiceTest {
     void updateDuplicate() {
         LineRequest lineRequest = new LineRequest("name", "blue");
 
-        given(lineDao.isExistId(1L)).willReturn(true);
+        given(lineDao.update(1L, "name", "blue")).willReturn(1);
         given(lineDao.isExistName(1L, "name")).willReturn(true);
 
         assertThatThrownBy(() -> lineService.update(1L, lineRequest))
