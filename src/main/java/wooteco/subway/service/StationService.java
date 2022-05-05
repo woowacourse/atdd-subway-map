@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDaoImpl;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
+import wooteco.subway.exception.StationNotFoundException;
 
 @Service
 public class StationService {
@@ -25,6 +26,8 @@ public class StationService {
     }
 
     public void delete(Long id) {
-        stationDaoImpl.deleteById(id);
+        final Station targetLine = stationDaoImpl.findById(id)
+            .orElseThrow(() -> new StationNotFoundException("이미 존재하는 지하철역 이름입니다.", 1));
+        stationDaoImpl.delete(targetLine);
     }
 }

@@ -1,7 +1,9 @@
 package wooteco.subway.dao;
 
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -64,9 +66,20 @@ public class StationDaoImpl implements StationDao {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void delete(Station station) {
         String sql = "DELETE FROM station WHERE id = :id";
-        MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
         namedParameterJdbcTemplate.update(sql, parameters);
+    }
+
+    @Override
+    public Optional<Station> findById(final Long id) {
+        final String sql = "SELECT * FROM station WHERE id = :id";
+        final MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        try {
+            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, stationRowMapper));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

@@ -66,7 +66,7 @@ public class StationDaoTest {
     @Test
     @DisplayName("입력된 id의 지하철 역을 삭제한다")
     void deleteById() {
-        stationDao.deleteById(1L);
+        stationDao.delete(new Station(1L, "선릉역"));
 
         assertThat(stationDao.findAll()).isEmpty();
     }

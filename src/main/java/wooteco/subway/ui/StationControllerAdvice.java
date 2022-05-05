@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.exception.LineDuplicateException;
 import wooteco.subway.exception.LineNotFoundException;
 import wooteco.subway.exception.StationDuplicateException;
+import wooteco.subway.exception.StationNotFoundException;
 
 @RestControllerAdvice(annotations = RestController.class)
 public class StationControllerAdvice {
@@ -20,7 +21,7 @@ public class StationControllerAdvice {
             .build();
     }
 
-    @ExceptionHandler(value = LineNotFoundException.class)
+    @ExceptionHandler(value = {LineNotFoundException.class, StationNotFoundException.class})
     public ResponseEntity handleNotFoundException(EmptyResultDataAccessException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .build();
