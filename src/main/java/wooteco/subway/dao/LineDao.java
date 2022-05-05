@@ -13,15 +13,15 @@ import wooteco.subway.domain.Line;
 
 @Repository
 public class LineDao {
-
-    private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleInsert;
-
-    private final RowMapper<Line> lineMapper = (resultSet, rowNum) -> new Line(
+    private static final RowMapper<Line> lineMapper = (resultSet, rowNum) -> new Line(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("color")
     );
+
+    private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleInsert;
+
 
     public LineDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
