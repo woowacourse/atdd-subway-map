@@ -112,6 +112,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineId).isEqualTo(expectedLineId);
     }
 
+    @DisplayName("존재하지 않는 id로 지하철 단일 노선을 조회할 때 예외를 발생시킨다.")
+    @Test
+    void getLineByInvalidId() {
+        /// given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        ExtractableResponse<Response> createResponse = createLineResponse(params);
+
+        // when
+        long resultLineId = Long.parseLong(createResponse.header("Location").split("/")[2]) + 1L;
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + resultLineId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
@@ -142,6 +163,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하지 않는 지하철노선을 수정할 때 예외를 발생시킨다.")
     @Test
     void updateInvalidLine() {
+        // given
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "신분당선");
         params1.put("color", "bg-red-600");

@@ -49,7 +49,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철역 목록을 조회한다.")
     @Test
     void getStations() {
         /// given
@@ -98,6 +98,33 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    @DisplayName("존재하지 않는 지하철역을 제거할 때 예외를 발생시킨다.")
+    @Test
+    void deleteInvalidStation() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남역");
+        ExtractableResponse<Response> createResponse = createStationResponse(params);
+
+        // when
+        String uri = createResponse.header("Location");
+        RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 
     private ExtractableResponse<Response> createStationResponse(Map<String, String> params) {
         return RestAssured.given().log().all()
