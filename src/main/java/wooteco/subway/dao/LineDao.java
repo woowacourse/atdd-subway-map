@@ -1,22 +1,17 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
 
 @Repository
 public class LineDao {
-    public static final String DUPLICATE_LINE_NAME = "[ERROR] 중복된 노선 이름이 있습니다.";
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
 
