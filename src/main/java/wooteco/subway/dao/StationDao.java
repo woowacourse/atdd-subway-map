@@ -12,4 +12,6 @@ public interface StationDao {
     int deleteById(Long id);
 
     boolean exists(Station station);
+
+    boolean exists(Long id);
 }

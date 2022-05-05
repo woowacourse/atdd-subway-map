@@ -40,4 +40,9 @@ public class FakeStationDao implements StationDao {
                 .stream()
                 .anyMatch(it -> it.getName().equals(station.getName()));
     }
+
+    @Override
+    public boolean exists(final Long id) {
+        return stations.containsKey(id);
+    }
 }

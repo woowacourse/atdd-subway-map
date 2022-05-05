@@ -32,9 +32,17 @@ class LineDaoImplTest {
     @DisplayName("이름값을 받아 해당 이름값을 가진 노선이 있는지 확인한다.")
     @ParameterizedTest
     @CsvSource({"2호선, red, true", "신분당선, blue, true", "신분당선, red, true", "2호선, blue, false"})
-    void exists(String name, String color, boolean expected) {
+    void exists_line(String name, String color, boolean expected) {
         boolean actual = lineDao.exists(new Line(name, color));
 
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @DisplayName("id 값을 받아, 해당 id 값이 존재하는지 반환한다.")
+    @ParameterizedTest
+    @CsvSource({"1, true", "2, false"})
+    void exists_id(Long id, boolean expected) {
+        boolean actual = lineDao.exists(id);
         assertThat(actual).isEqualTo(expected);
     }
 

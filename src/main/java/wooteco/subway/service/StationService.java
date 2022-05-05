@@ -23,11 +23,11 @@ public class StationService {
         return stationDao.save(station);
     }
 
-    public void deleteById(long id) {
-        int executionResult = stationDao.deleteById(id);
-        if (executionResult == 0) {
+    public void deleteById(Long id) {
+        if (!stationDao.exists(id)) {
             throw new StationNotFoundException();
         }
+        stationDao.deleteById(id);
     }
 
     public List<Station> findAll() {

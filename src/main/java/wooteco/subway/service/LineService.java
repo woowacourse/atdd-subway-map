@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
@@ -29,23 +28,22 @@ public class LineService {
     }
 
     public void deleteById(Long id) {
-        int executionResult = lineDao.deleteById(id);
-        if (executionResult == 0) {
-            throw new LineNotFoundException();
-        }
+        validateId(id);
+        lineDao.deleteById(id);
     }
 
     public Line findLineById(Long id) {
-        try {
-            return lineDao.findById(id);
-        } catch (EmptyResultDataAccessException exception) {
-            throw new LineNotFoundException();
-        }
+        validateId(id);
+        return lineDao.findById(id);
     }
 
     public void update(Long id, Line updatingLine) {
-        int executionResult = lineDao.update(id, updatingLine);
-        if (executionResult == 0) {
+        validateId(id);
+        lineDao.update(id, updatingLine);
+    }
+
+    private void validateId(Long id) {
+        if (!lineDao.exists(id)) {
             throw new LineNotFoundException();
         }
     }

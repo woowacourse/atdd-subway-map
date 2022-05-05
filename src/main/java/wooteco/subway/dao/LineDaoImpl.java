@@ -66,6 +66,12 @@ public class LineDaoImpl implements LineDao {
     }
 
     @Override
+    public boolean exists(final Long id) {
+        String sql = "select exists (select id from line where id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    @Override
     public int update(Long id, Line updatingLine) {
         String sql = "update line set name = ?, color = ? where id = ?";
         return jdbcTemplate.update(sql, updatingLine.getName(), updatingLine.getColor(), id);
