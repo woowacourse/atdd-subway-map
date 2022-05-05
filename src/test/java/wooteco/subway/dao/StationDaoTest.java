@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestConstructor;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.LineDuplicateException;
 
 @SpringBootTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -50,7 +49,7 @@ public class StationDaoTest {
         String expected = "선릉역";
 
         assertThatThrownBy(() -> stationDao.save(expected))
-            .isInstanceOf(LineDuplicateException.class)
+            .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("이미 존재하는 지하철역 이름입니다.");
     }
 
