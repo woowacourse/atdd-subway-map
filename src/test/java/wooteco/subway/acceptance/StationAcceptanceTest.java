@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -20,8 +21,9 @@ import io.restassured.response.Response;
 import wooteco.subway.controller.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능 인수 테스트")
-@Sql(statements = "delete from station", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(statements = "delete from station", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 public class StationAcceptanceTest extends AcceptanceTest {
+
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
@@ -41,6 +43,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+        assertThat(toStationResponse(response).getName()).isEqualTo("강남역");
+    }
+
+    private StationResponse toStationResponse(ExtractableResponse<Response> response) {
+        return response.body()
+            .jsonPath()
+            .getObject(".", StationResponse.class);
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")

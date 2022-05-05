@@ -19,6 +19,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import wooteco.subway.controller.dto.LineResponse;
+import wooteco.subway.controller.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 인수 테스트")
 @Sql(statements = "delete from line", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
@@ -44,6 +45,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		assertThat(response.header("Location")).isNotBlank();
+		assertThat(toLineResponse(response).getName()).isEqualTo("신분당선");
+	}
+
+	private LineResponse toLineResponse(ExtractableResponse<Response> response) {
+		return response.body()
+			.jsonPath()
+			.getObject(".", LineResponse.class);
 	}
 
 	@DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 생성한다.")
