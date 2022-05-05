@@ -86,6 +86,28 @@ class LineServiceTest {
                 .hasMessage("존재하지 않는 지하철 노선입니다.");
     }
 
+    @DisplayName("중복된 이름으로 지하철 노선을 수정할 경우 예외를 발생시킨다.")
+    @Test
+    void updateDuplicatedName() {
+        long lineId = lineService.save(LINE);
+        lineService.save(new Line("다른분당선", "bg-green-600"));
+
+        assertThatThrownBy(() -> lineService.update(new Line(lineId, "다른분당선", "bg-green-600")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지하철 노선 이름이 중복됩니다.");
+    }
+
+    @DisplayName("중복된 색상으로 지하철 노선을 수정할 경우 예외를 발생시킨다.")
+    @Test
+    void updateDuplicatedColor() {
+        long lineId = lineService.save(LINE);
+        lineService.save(new Line("다른분당선", "bg-green-600"));
+
+        assertThatThrownBy(() -> lineService.update(new Line(lineId, "신분당선", "bg-green-600")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지하철 노선 색상이 중복됩니다.");
+    }
+
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void delete() {
