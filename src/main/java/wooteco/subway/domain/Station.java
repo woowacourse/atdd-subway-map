@@ -19,7 +19,8 @@ public class Station {
             throw new IllegalArgumentException(ExceptionMessage.BLANK_STATION_NAME.getContent());
         }
         if (name.length() > MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException(String.format(ExceptionMessage.OVER_MAX_LENGTH_STATION_NAME.getContent(), MAX_NAME_LENGTH));
+            throw new IllegalArgumentException(
+                    String.format(ExceptionMessage.OVER_MAX_LENGTH_STATION_NAME.getContent(), MAX_NAME_LENGTH));
         }
     }
 
