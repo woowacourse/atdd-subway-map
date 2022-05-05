@@ -43,7 +43,11 @@ public class LineDao {
 
     public Optional<Line> findById(Long id) {
         final String sql = "SELECT * FROM LINE WHERE id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineRowMapper, id));
+        List<Line> result = jdbcTemplate.query(sql, lineRowMapper, id);
+        if(result.isEmpty()){
+            return Optional.empty();
+        }
+        return Optional.of(result.get(0));
     }
 
     public int delete(Long id) {
