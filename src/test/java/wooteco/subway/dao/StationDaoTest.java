@@ -11,10 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Station;
 
-@Sql("/schema-test.sql")
 @JdbcTest
 class StationDaoTest {
 
@@ -53,21 +51,29 @@ class StationDaoTest {
         );
     }
 
+    @DisplayName("지하철역 이름을 이용해 지하철역을 조회할 때 없으면 empty를 반환한다.")
+    @Test
+    void findByName_noSuchName() {
+        Optional<Station> result = stationDao.findByName("test2");
+
+        assertThat(result).isEmpty();
+    }
+
     @DisplayName("저장된 모든 지하철역을 조회한다.")
     @Test
     void findAll() {
         Station test1 = new Station(null, "test1");
         Station test2 = new Station(null, "test2");
-        stationDao.save(test1);
-        stationDao.save(test2);
+        Station savedTestStation1 = stationDao.save(test1);
+        Station savedTestStation2 = stationDao.save(test2);
 
         List<Station> stations = stationDao.findAll();
 
         assertAll(
                 () -> assertThat(stations.size()).isEqualTo(2),
-                () -> assertThat(stations.get(0).getId()).isEqualTo(1),
+                () -> assertThat(stations.get(0).getId()).isEqualTo(savedTestStation1.getId()),
                 () -> assertThat(stations.get(0).getName()).isEqualTo("test1"),
-                () -> assertThat(stations.get(1).getId()).isEqualTo(2),
+                () -> assertThat(stations.get(1).getId()).isEqualTo(savedTestStation2.getId()),
                 () -> assertThat(stations.get(1).getName()).isEqualTo("test2")
         );
     }
@@ -76,14 +82,20 @@ class StationDaoTest {
     @Test
     void findById() {
         Station test = new Station(null, "test");
-        stationDao.save(test);
-        Station result = stationDao.findById(1L).orElse(null);
-        Optional<Station> result2 = stationDao.findById(2L);
+        Station savedStation = stationDao.save(test);
+        Station result = stationDao.findById(savedStation.getId()).orElse(null);
 
         assertAll(
-                () -> assertThat(result.getName()).isEqualTo("test"),
-                () -> assertThat(result2).isEmpty()
+                () -> assertThat(result.getId()).isEqualTo(savedStation.getId()),
+                () -> assertThat(result.getName()).isEqualTo("test")
         );
+    }
+
+    @DisplayName("지하철역 id를 이용해 지하철역을 조회할 때 없으면 empty를 반환한다.")
+    @Test
+    void findById_noSuchId() {
+        Optional<Station> result = stationDao.findById(1000L);
+        assertThat(result).isEmpty();
     }
 
     @DisplayName("지하철역을 제거한다.")

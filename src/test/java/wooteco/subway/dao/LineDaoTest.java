@@ -11,10 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Line;
 
-@Sql("/schema-test.sql")
 @JdbcTest
 public class LineDaoTest {
 
@@ -65,10 +63,10 @@ public class LineDaoTest {
 
         assertAll(
                 () -> assertThat(lines.size()).isEqualTo(2),
-                () -> assertThat(lines.get(0).getId()).isEqualTo(1),
+                () -> assertThat(lines.get(0).getId()).isNotNull(),
                 () -> assertThat(lines.get(0).getName()).isEqualTo("test1"),
                 () -> assertThat(lines.get(0).getColor()).isEqualTo("GREEN"),
-                () -> assertThat(lines.get(1).getId()).isEqualTo(2),
+                () -> assertThat(lines.get(1).getId()).isNotNull(),
                 () -> assertThat(lines.get(1).getName()).isEqualTo("test2"),
                 () -> assertThat(lines.get(1).getColor()).isEqualTo("YELLOW")
         );
@@ -77,15 +75,20 @@ public class LineDaoTest {
     @DisplayName("id를 이용해 지하철 노선을 조회한다.")
     @Test
     void findById() {
-        lineDao.save(new Line("test1", "GREEN"));
-        Line line = lineDao.findById(1L).get();
-        Optional<Line> lineEmpty = lineDao.findById(1000L);
+        Line savedLine = lineDao.save(new Line("test1", "GREEN"));
+        Line line = lineDao.findById(savedLine.getId()).get();
         assertAll(
-                () -> assertThat(line.getId()).isEqualTo(1),
+                () -> assertThat(line.getId()).isEqualTo(savedLine.getId()),
                 () -> assertThat(line.getName()).isEqualTo("test1"),
-                () -> assertThat(line.getColor()).isEqualTo("GREEN"),
-                () -> assertThat(lineEmpty).isEmpty()
+                () -> assertThat(line.getColor()).isEqualTo("GREEN")
         );
+    }
+
+    @DisplayName("id를 이용해 지하철 노선을 조회할 때 없으면 empty를 반환한다.")
+    @Test
+    void findById_noSuchId() {
+        Optional<Line> lineEmpty = lineDao.findById(1000L);
+        assertThat(lineEmpty).isEmpty();
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -111,9 +114,9 @@ public class LineDaoTest {
 
         lineDao.update(savedLine, newLine);
 
-        Line result = lineDao.findById(1L).get();
+        Line result = lineDao.findById(savedLine.getId()).get();
         assertAll(
-                () -> assertThat(result.getId()).isEqualTo(1L),
+                () -> assertThat(result.getId()).isEqualTo(savedLine.getId()),
                 () -> assertThat(result.getName()).isEqualTo("test2"),
                 () -> assertThat(result.getColor()).isEqualTo("BROWN")
         );
