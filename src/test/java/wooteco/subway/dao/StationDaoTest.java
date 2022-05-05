@@ -69,11 +69,17 @@ class StationDaoTest {
 			.hasMessage("해당 id에 맞는 지하철 역이 없습니다.");
 	}
 
-	@DisplayName("해당 이름의 지하철 역이 존재하는지 확인한다.")
+	@DisplayName("해당 이름의 지하철 역이 존재하면 true를 반환한다.")
 	@Test
-	void existsByName() {
+	void existsByNameTrue() {
 		stationDao.save(new Station("강남역"));
 		assertThat(stationDao.existsByName("강남역")).isTrue();
+	}
+
+	@DisplayName("해당 이름의 지하철 역이 존재하지 않으면 false를 반환한다.")
+	@Test
+	void existsByNameFalse() {
+		assertThat(stationDao.existsByName("강남역")).isFalse();
 	}
 
 	@DisplayName("지하철 역을 삭제한다.")

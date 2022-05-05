@@ -103,10 +103,16 @@ class LineDaoTest {
 			.hasMessage("해당 id에 맞는 지하철 노선이 없습니다.");
 	}
 
-	@DisplayName("해당 이름의 노선이 존재하는지 확인한다.")
+	@DisplayName("해당 이름의 노선이 존재하면 true를 반환한다.")
 	@Test
-	void existsByName() {
+	void existsByNameTrue() {
 		lineDao.save(new Line("신분당선", "bg-red-600"));
 		assertThat(lineDao.existsByName("신분당선")).isTrue();
+	}
+
+	@DisplayName("해당 이름의 노선이 존재하지 않으면 false를 반환한다.")
+	@Test
+	void existsByNameFalse() {
+		assertThat(lineDao.existsByName("신분당선")).isFalse();
 	}
 }
