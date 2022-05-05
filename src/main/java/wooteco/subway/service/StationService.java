@@ -18,7 +18,7 @@ public class StationService {
 
     public Station register(final String name) {
         validateDuplicateName(name);
-        final Station station = new Station(name);
+        final Station station = Station.createWithoutId(name);
         final StationEntity savedStationEntity = stationDao.save(new StationEntity(station));
         return new Station(savedStationEntity.getId(), savedStationEntity.getName());
     }

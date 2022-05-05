@@ -19,7 +19,7 @@ public class LineService {
 
     public Line register(final String name, final String color) {
         validateDuplicateName(name);
-        final LineEntity lineEntity = new LineEntity(new Line(name, color));
+        final LineEntity lineEntity = new LineEntity(Line.createWithoutId(name, color));
         final LineEntity savedLineEntity = lineDao.save(lineEntity);
         return new Line(savedLineEntity.getId(), savedLineEntity.getName(), savedLineEntity.getColor());
     }

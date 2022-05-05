@@ -26,7 +26,7 @@ class JdbcStationDaoTest {
     @DisplayName("지하철역을 저장하고 id로 지하철역을 찾는다.")
     @Test
     void saveAndFindById() {
-        Station station = new Station("잠실역");
+        Station station = Station.createWithoutId("잠실역");
         StationEntity savedStationEntity = stationDao.save(new StationEntity(station));
 
         StationEntity stationEntity = stationDao.findById(savedStationEntity.getId()).get();
@@ -37,9 +37,9 @@ class JdbcStationDaoTest {
     @DisplayName("모든 지하철역을 조회한다.")
     @Test
     void findAll() {
-        Station station1 = new Station("잠실역");
+        Station station1 = Station.createWithoutId("잠실역");
         stationDao.save(new StationEntity(station1));
-        Station station2 = new Station("선릉역");
+        Station station2 = Station.createWithoutId("선릉역");
         stationDao.save(new StationEntity(station2));
 
         assertThat(stationDao.findAll().size()).isEqualTo(2);
@@ -48,7 +48,7 @@ class JdbcStationDaoTest {
     @DisplayName("이름으로 노선을 찾는다.")
     @Test
     void findByName() {
-        Station station = new Station("잠실역");
+        Station station = Station.createWithoutId("잠실역");
         StationEntity savedStationEntity = stationDao.save(new StationEntity(station));
 
         StationEntity stationEntity = stationDao.findByName(savedStationEntity.getName()).get();
@@ -59,7 +59,7 @@ class JdbcStationDaoTest {
     @DisplayName("id 로 노선을 삭제한다.")
     @Test
     void deleteById() {
-        Station station = new Station("잠실역");
+        Station station = Station.createWithoutId("잠실역");
         StationEntity savedStationEntity = stationDao.save(new StationEntity(station));
 
         stationDao.deleteById(savedStationEntity.getId());

@@ -10,16 +10,19 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> illegalArgument(final Exception exception) {
+        exception.printStackTrace();
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<String> illegalState(final Exception exception) {
+        exception.printStackTrace();
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<String> noSuchElement(final Exception exception) {
+        exception.printStackTrace();
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 

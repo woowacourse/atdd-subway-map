@@ -12,8 +12,8 @@ public class Line {
         this.color = color;
     }
 
-    public Line(final String name, final String color) {
-        this(null, name, color);
+    public static Line createWithoutId(final String name, final String color) {
+        return new Line(null, name, color);
     }
 
     public Long getId() {

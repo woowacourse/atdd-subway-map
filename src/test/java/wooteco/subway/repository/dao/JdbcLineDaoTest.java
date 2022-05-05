@@ -27,7 +27,7 @@ class JdbcLineDaoTest {
     @DisplayName("노선을 저장하고 id로 노선을 찾는다.")
     @Test
     void saveAndFindById() {
-        Line line = new Line("2호선", "bg-green-600");
+        Line line = Line.createWithoutId("2호선", "bg-green-600");
         LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
 
         LineEntity lineEntity = lineDao.findById(savedLineEntity.getId()).get();
@@ -41,9 +41,9 @@ class JdbcLineDaoTest {
     @DisplayName("모든 노선을 조회한다.")
     @Test
     void findAll() {
-        Line line1 = new Line("2호선", "bg-green-600");
+        Line line1 = Line.createWithoutId("2호선", "bg-green-600");
         lineDao.save(new LineEntity(line1));
-        Line line2 = new Line("신분당선", "bg-red-600");
+        Line line2 = Line.createWithoutId("신분당선", "bg-red-600");
         lineDao.save(new LineEntity(line2));
 
         assertThat(lineDao.findAll().size()).isEqualTo(2);
@@ -52,7 +52,7 @@ class JdbcLineDaoTest {
     @DisplayName("이름으로 노선을 찾는다.")
     @Test
     void findByName() {
-        Line line = new Line("2호선", "bg-green-600");
+        Line line = Line.createWithoutId("2호선", "bg-green-600");
         LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
 
         LineEntity lineEntity = lineDao.findByName(savedLineEntity.getName()).get();
@@ -66,7 +66,7 @@ class JdbcLineDaoTest {
     @DisplayName("id 로 노선을 삭제한다.")
     @Test
     void deleteById() {
-        Line line = new Line("2호선", "bg-green-600");
+        Line line = Line.createWithoutId("2호선", "bg-green-600");
         LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
 
         lineDao.deleteById(savedLineEntity.getId());
@@ -77,7 +77,7 @@ class JdbcLineDaoTest {
     @DisplayName("노선을 수정한다.")
     @Test
     void update() {
-        Line line = new Line("2호선", "bg-green-600");
+        Line line = Line.createWithoutId("2호선", "bg-green-600");
         LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
         LineEntity newLineEntity = new LineEntity(savedLineEntity.getId(), "신분당선", "bg-red-600");
 
