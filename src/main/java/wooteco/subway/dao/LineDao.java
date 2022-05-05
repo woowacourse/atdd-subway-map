@@ -31,7 +31,7 @@ public class LineDao {
             );
 
     public Line save(String name, String color) {
-        Long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name",name,"color",color)).longValue();
+        Long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name", name, "color", color)).longValue();
         return new Line(id, name, color);
     }
 
@@ -69,6 +69,5 @@ public class LineDao {
         final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE id != ? AND name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, id, name);
     }
-
 
 }

@@ -6,7 +6,7 @@ public class StationResponse {
     private final Long id;
     private final String name;
 
-    public StationResponse(Station station){
+    public StationResponse(Station station) {
         id = station.getId();
         name = station.getName();
     }

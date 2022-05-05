@@ -10,7 +10,6 @@ import wooteco.subway.service.LineService;
 import java.net.URI;
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/lines")
 public class LineController {

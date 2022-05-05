@@ -31,7 +31,7 @@ public class StationDao {
 
 
     public Station save(String name) {
-        Long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name",name)).longValue();
+        Long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name", name)).longValue();
         return new Station(id, name);
     }
 
@@ -45,7 +45,7 @@ public class StationDao {
         return jdbcTemplate.update(sql, id);
     }
 
-    public boolean isExistName(String name){
+    public boolean isExistName(String name) {
         final String sql = "SELECT EXISTS (SELECT * FROM STATION WHERE name=?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }

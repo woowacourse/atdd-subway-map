@@ -7,7 +7,7 @@ public class LineResponse {
     private final String name;
     private final String color;
 
-    public LineResponse(Line line){
+    public LineResponse(Line line) {
         id = line.getId();
         name = line.getName();
         color = line.getColor();
