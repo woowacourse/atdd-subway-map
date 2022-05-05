@@ -8,7 +8,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import wooteco.subway.dto.ExceptionResponse;
 
 public class SimpleRestAssured {
 
