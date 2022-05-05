@@ -75,4 +75,4 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] H2 설정하기
 - [x] DAO 에 JDBC Template 사용하여 DB 에 저장하기
 - [ ] 스프링 빈으로 변경
-- [ ] 기존 테경스트를 DAO test 로 변경
+- [ ] 기존 테스트코드를 DAO test 로 변경

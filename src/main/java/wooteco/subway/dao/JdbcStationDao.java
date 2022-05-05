@@ -44,6 +44,11 @@ public class JdbcStationDao {
         jdbcTemplate.update(sql, id);
     }
 
+    public void deleteAll() {
+        String sql = "delete from station";
+        jdbcTemplate.update(sql);
+    }
+
     public boolean existByName(String name) {
         String sql = "select count(*) from station where name = (?)";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, name);

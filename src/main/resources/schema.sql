@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS line
 (
     id    BIGINT auto_increment NOT NULL,
     name  VARCHAR(255) NOT NULL UNIQUE,
-    color VARCHAR(20) NOT NULL,
+    color VARCHAR(20) NOT NULL UNIQUE,
     PRIMARY KEY(id)
 );
 

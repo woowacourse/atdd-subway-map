@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -38,9 +39,9 @@ public class JdbcLineDao {
         return new Line(id, line.getName(), line.getColor());
     }
 
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String sql = "select *  from line where id = ?";
-        return DataAccessUtils.singleResult(jdbcTemplate.query(sql, mapper, id));
+        return Optional.ofNullable(DataAccessUtils.singleResult(jdbcTemplate.query(sql, mapper, id)));
     }
 
     public List<Line> findAll() {
@@ -56,5 +57,16 @@ public class JdbcLineDao {
     public void deleteById(Long id) {
         String sql = "delete from line where id = (?)";
         jdbcTemplate.update(sql, id);
+    }
+
+    public void deleteAll() {
+        String sql = "delete from station";
+        jdbcTemplate.update(sql);
+    }
+
+    public boolean existByNameAndColor(String name, String color) {
+        String sql = "select count(*) from line where name = (?) and color = (?)";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, name, color);
+        return count != 0;
     }
 }
