@@ -33,7 +33,9 @@ public class StationController {
         Station station = stationRequest.toEntity();
         Station newStation = stationDao.save(station);
         StationResponse stationResponse = new StationResponse(station);
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
+        return ResponseEntity
+                .created(URI.create("/stations/" + newStation.getId()))
+                .body(stationResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
