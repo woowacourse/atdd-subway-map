@@ -54,6 +54,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("이미 존재하는 역입니다.");
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -116,6 +117,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = requestPost(params);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).contains("빈 값일 수 없습니다.");
     }
 
     private ExtractableResponse<Response> requestPost(Map<String, String> params) {

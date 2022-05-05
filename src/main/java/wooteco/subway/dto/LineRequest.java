@@ -4,9 +4,10 @@ import javax.validation.constraints.NotBlank;
 import wooteco.subway.domain.Line;
 
 public class LineRequest {
-    @NotBlank
+
+    @NotBlank(message = "노선 이름은 빈 값일 수 없습니다.")
     private String name;
-    @NotBlank
+    @NotBlank(message = "노선 색상은 빈 값일 수 없습니다.")
     private String color;
     private Long upStationId;
     private Long downStationId;
@@ -51,4 +52,5 @@ public class LineRequest {
     public int getDistance() {
         return distance;
     }
+    
 }
