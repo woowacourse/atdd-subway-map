@@ -21,7 +21,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
-public class StationAcceptanceTest extends AcceptanceTest {
+class StationAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     StationDao stationDao;
@@ -30,8 +30,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        Map<String, String> params = getParams("강남역");
 
         // when
         ExtractableResponse<Response> response = requestPost(params);
@@ -45,8 +44,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        Map<String, String> params = getParams("강남역");
         requestPost(params);
 
         // when
@@ -60,12 +58,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
+        Map<String, String> params1 = getParams("강남역");
         ExtractableResponse<Response> createResponse1 = requestPost(params1);
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
+        Map<String, String> params2 = getParams("역삼역");
         ExtractableResponse<Response> createResponse2 = requestPost(params2);
 
         // when
@@ -90,8 +86,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        Map<String, String> params = getParams("강남역");
         ExtractableResponse<Response> createResponse = requestPost(params);
 
         // when
@@ -110,8 +105,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @ParameterizedTest
     @NullAndEmptySource
     void notAllowNullOrBlankName(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
+        Map<String, String> params = getParams(name);
 
         ExtractableResponse<Response> response = requestPost(params);
 
@@ -126,5 +120,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .post("/stations")
                 .then().log().all()
                 .extract();
+    }
+
+    private Map<String, String> getParams(String name) {
+        return new HashMap<>(Map.of("name", name));
     }
 }

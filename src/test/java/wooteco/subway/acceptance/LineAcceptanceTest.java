@@ -18,7 +18,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends AcceptanceTest {
+class LineAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     LineDao lineDao;
@@ -26,9 +26,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "초록색");
+        Map<String, String> params = makeParams("2호선", "초록색");
 
         ExtractableResponse<Response> response = requestPost(params);
 
@@ -39,9 +37,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
     @Test
     void createLineWithDuplicateName() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "초록색");
+        Map<String, String> params = makeParams("2호선", "초록색");
 
         requestPost(params);
 
@@ -55,9 +51,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 노선 색상으로 노선을 생성한다.")
     @Test
     void createLineWithDuplicateColor() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "초록색");
+        Map<String, String> params = makeParams("2호선", "초록색");
 
         requestPost(params);
 
@@ -71,14 +65,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("전체 지하철 노선을 조회한다.")
     @Test
     void getLines() {
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "1호선");
-        params1.put("color", "군청색");
+        Map<String, String> params1 = makeParams("1호선", "군청색");
         requestPost(params1);
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "2호선");
-        params2.put("color", "초록색");
+        Map<String, String> params2 = makeParams("2호선", "초록색");
         requestPost(params2);
 
         ExtractableResponse<Response> response = requestGet();
@@ -90,12 +80,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 id로 조회한다.")
     @Test
     void getLine() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "초록색");
+        Map<String, String> params = makeParams("2호선", "초록색");
         ExtractableResponse<Response> createResponse = requestPost(params);
 
-        Long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
+        Long id = getId(createResponse);
         ExtractableResponse<Response> response = requestGet(id);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -106,16 +94,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("특정 id를 가지는 노선을 수정한다.")
     @Test
     void updateLine() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "초록색");
+        Map<String, String> params = makeParams("2호선", "초록색");
         ExtractableResponse<Response> createResponse = requestPost(params);
 
-        Long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
+        Long id = getId(createResponse);
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "1호선");
-        params2.put("color", "군청색");
+        Map<String, String> params2 = makeParams("1호선", "군청색");
         RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -135,12 +119,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("특정 id의 노선을 삭제한다.")
     @Test
     void deleteLine() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "초록색");
+        Map<String, String> params = makeParams("2호선", "초록색");
         ExtractableResponse<Response> createResponse = requestPost(params);
 
-        long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
+        long id = getId(createResponse);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -158,9 +140,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @ParameterizedTest
     @CsvSource(value = {",", "'',''", "' ',' '"})
     void notAllowNullOrBlankNameAndColor(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
+        Map<String, String> params = makeParams(name, color);
 
         ExtractableResponse<Response> response = requestPost(params);
 
@@ -193,5 +173,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .get("/lines/" + id)
                 .then().log().all()
                 .extract();
+    }
+
+    private long getId(ExtractableResponse<Response> createResponse) {
+        return Long.parseLong(createResponse.header("Location").split("/")[2]);
+    }
+
+    private Map<String, String> makeParams(String name, String color) {
+        return new HashMap<>(Map.of("name", name, "color", color));
     }
 }
