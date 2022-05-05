@@ -71,7 +71,6 @@ public class LineService {
     }
 
     public void updateById(Long id, String name, String color) {
-//        validateDuplicate(name, color);
         lineDao.findAll().stream()
                 .filter(it -> it.getId().equals(id))
                 .findAny()

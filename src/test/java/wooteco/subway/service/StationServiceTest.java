@@ -1,8 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +9,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.station.StationResponse;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @JdbcTest
 class StationServiceTest {
@@ -54,7 +55,7 @@ class StationServiceTest {
                 .stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
-        
+
         Assertions.assertThat(ids).doesNotContain(id);
     }
 
