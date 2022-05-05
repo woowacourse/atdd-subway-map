@@ -45,7 +45,7 @@ public class LineService {
     }
 
     public void deleteById(Long id) {
-        if(!lineDao.existById(id)) {
+        if (!lineDao.existById(id)) {
             throw new NotExistException();
         }
         lineDao.deleteById(id);

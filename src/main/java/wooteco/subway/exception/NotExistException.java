@@ -1,4 +1,5 @@
 package wooteco.subway.exception;
 
-public class NotExistException extends IllegalArgumentException{
+public class NotExistException extends IllegalArgumentException {
+
 }

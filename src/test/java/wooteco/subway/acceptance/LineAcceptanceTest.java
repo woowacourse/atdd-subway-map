@@ -1,8 +1,18 @@
 package wooteco.subway.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.emptyOrNullString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,14 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.LineDao;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -170,12 +172,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when & then
         RestAssured.given().log().all()
-                .body(Map.of("name", lineName, "color", "bg-red-600"))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/lines/" + createdId)
-                .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+            .body(Map.of("name", lineName, "color", "bg-red-600"))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/" + createdId)
+            .then().log().all()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("색깔이 공백인 지하철 노선을 수정할 수 없다")
@@ -237,12 +239,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         RestAssured.given().log().all()
-                .body(Map.of("name", "1호선", "color", "bg-red-600"))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/lines/" + createdId)
-                .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+            .body(Map.of("name", "1호선", "color", "bg-red-600"))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/" + createdId)
+            .then().log().all()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("존재하지 않는 노선 수정 시도")
@@ -263,11 +265,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteNotExistLine() {
         // when
         RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete("/lines/50")
-                .then().log().all()
-                .statusCode(HttpStatus.NOT_FOUND.value());
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete("/lines/50")
+            .then().log().all()
+            .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("지하철 노선을 삭제 시도")
