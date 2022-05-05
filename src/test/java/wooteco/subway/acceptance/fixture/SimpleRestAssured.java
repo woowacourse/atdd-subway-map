@@ -8,6 +8,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import wooteco.subway.dto.ExceptionResponse;
 
 public class SimpleRestAssured {
 
@@ -27,7 +28,7 @@ public class SimpleRestAssured {
         return thenExtract(given()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post(path));
+            .when().put(path));
     }
 
     public static ExtractableResponse<Response> delete(String path) {
@@ -43,6 +44,10 @@ public class SimpleRestAssured {
         return response
             .then().log().all()
             .extract();
+    }
+
+    public static <T> T toObject(ExtractableResponse<Response> response, Class<T> clazz) {
+        return response.body().jsonPath().getObject(".", clazz);
     }
 
 }

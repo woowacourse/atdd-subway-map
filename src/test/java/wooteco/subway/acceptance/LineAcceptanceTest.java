@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import wooteco.subway.acceptance.fixture.SimpleRestAssured;
+import wooteco.subway.dto.ExceptionResponse;
 import wooteco.subway.dto.LineResponse;
 
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -31,6 +32,43 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Assertions.assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
             () -> assertThat(response.header("Location")).isNotBlank()
+        );
+    }
+
+    @Test
+    @DisplayName("입력값이 비어있는 경우 노선을 생성할 수 없다.")
+    public void createLine_throwsExceptionWithBlankInput() {
+        // given
+        Map<String, String> params =
+            Map.of("name", "신분당선", "color", "");
+        // when
+        final ExtractableResponse<Response> response = SimpleRestAssured.post("/lines", params);
+        // then
+        Assertions.assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(SimpleRestAssured.toObject(response, ExceptionResponse.class)
+                .getMessage())
+                .contains("필수 입력")
+        );
+    }
+
+    @Test
+    @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성할 수 없다.")
+    public void createLine_throwsExceptionWithDuplicatedName() {
+        // given
+        Map<String, String> params1 =
+            Map.of("name", "신분당선", "color", "bg-red-600");
+        SimpleRestAssured.post("/lines", params1);
+        // when
+        Map<String, String> params2 =
+            Map.of("name", "신분당선", "color", "bg-red-800");
+        final ExtractableResponse<Response> response = SimpleRestAssured.post("/lines", params2);
+        // then
+        Assertions.assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(SimpleRestAssured.toObject(response, ExceptionResponse.class)
+                .getMessage())
+                .contains("이미 존재")
         );
     }
 
@@ -70,14 +108,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final String uri = createdResponse.header("Location");
         final ExtractableResponse<Response> foundResponse = SimpleRestAssured.get(uri);
 
-        final LineResponse createdLineResponse = createdResponse.jsonPath().getObject(".", LineResponse.class);
-        final LineResponse foundLineResponse = foundResponse.jsonPath().getObject(".", LineResponse.class);
+        final LineResponse createdLineResponse = SimpleRestAssured.toObject(createdResponse, LineResponse.class);
+        final LineResponse foundLineResponse = SimpleRestAssured.toObject(foundResponse, LineResponse.class);
         // then
         Assertions.assertAll(
             () -> assertThat(foundResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
             () -> assertThat(foundLineResponse.getId()).isEqualTo(createdLineResponse.getId())
         );
+    }
 
+    @Test
+    @DisplayName("존재하지 않는 ID값으로 노선을 조회할 수 없다.")
+    public void getLine_throwExceptionWithInvalidId() {
+        // given
+        Map<String, String> params = Map.of("name", "신분당선", "color", "bg-red-600");
+        SimpleRestAssured.post("/lines", params);
+        // when
+        final ExtractableResponse<Response> response = SimpleRestAssured.get("/lines/99");
+        // then
+        Assertions.assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(SimpleRestAssured.toObject(response, ExceptionResponse.class)
+                .getMessage())
+                .contains("존재하지 않습니다")
+        );
     }
 
     @Test
@@ -98,11 +152,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 ID값의 노선을 수정할 수 없다.")
+    public void modifyLine_throwExceptionWithInvalidId() {
+        // given
+        Map<String, String> params = Map.of("name", "신분당선", "color", "bg-red-600");
+        SimpleRestAssured.post("/lines", params);
+        // when
+        final Map<String, String> modificationParam =
+            Map.of("name", "구분당선", "color", "bg-red-800");
+        final ExtractableResponse<Response> response = SimpleRestAssured.put("/lines/99", modificationParam);
+        // then
+        Assertions.assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(SimpleRestAssured.toObject(response, ExceptionResponse.class)
+                .getMessage())
+                .contains("존재하지 않습니다")
+        );
+    }
+
+    @Test
     @DisplayName("ID값으로 노선을 제거한다.")
     public void deleteLine() {
         // given
-        Map<String, String> params1 = Map.of("name", "신분당선", "color", "bg-red-600");
-        ExtractableResponse<Response> createdResponse = SimpleRestAssured.post("/lines", params1);
+        Map<String, String> params = Map.of("name", "신분당선", "color", "bg-red-600");
+        ExtractableResponse<Response> createdResponse = SimpleRestAssured.post("/lines", params);
         // when
         final String uri = createdResponse.header("Location");
         final ExtractableResponse<Response> deleteResponse = SimpleRestAssured.delete(uri);
@@ -110,4 +183,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    @Test
+    @DisplayName("존재하지 않는 ID값의 노선을 제거할 수 없다.")
+    public void deleteLine_throwExceptionWithInvalidId() {
+        // given
+        Map<String, String> params = Map.of("name", "신분당선", "color", "bg-red-600");
+        SimpleRestAssured.post("/lines", params);
+        // when
+
+        final ExtractableResponse<Response> response = SimpleRestAssured.delete("/lines/99");
+        // then
+        Assertions.assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(SimpleRestAssured.toObject(response, ExceptionResponse.class)
+                .getMessage())
+                .contains("존재하지 않습니다")
+        );
+    }
+
 }

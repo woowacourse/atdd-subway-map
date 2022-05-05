@@ -9,8 +9,8 @@ import wooteco.subway.dto.ExceptionResponse;
 @RestControllerAdvice
 public class ExceptionAdviser {
 
-    @ExceptionHandler
-    public ResponseEntity<ExceptionResponse> handle(IllegalStateException exception) {
+    @ExceptionHandler({IllegalStateException.class, IllegalArgumentException.class})
+    public ResponseEntity<ExceptionResponse> handle(Exception exception) {
         return ResponseEntity.badRequest().body(ExceptionResponse.of(exception));
     }
 }

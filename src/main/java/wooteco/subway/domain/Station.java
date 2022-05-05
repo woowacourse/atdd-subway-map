@@ -4,16 +4,23 @@ public class Station {
     private Long id;
     private String name;
 
-    public Station() {
-    }
-
     public Station(Long id, String name) {
+        validateNotNull(name, "name");
         this.id = id;
         this.name = name;
     }
 
+    private void validateNotNull(String input, String param) {
+        if (input == null || input.isBlank()) {
+            throw new IllegalArgumentException(String.format("%s은 필수 입력값입니다.", param));
+        }
+    }
+
     public Station(String name) {
-        this.name = name;
+        this(null, name);
+    }
+
+    public Station() {
     }
 
     public boolean hasSameNameWith(Station otherStation) {

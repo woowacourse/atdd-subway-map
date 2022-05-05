@@ -86,4 +86,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    @Test
+    @DisplayName("존재하지 않는 지하철 역을 삭제하면 예외를 던진다.")
+    void deleteStation_throwsExceptionWithInvalidStation() {
+        // given
+        Map<String, String> params = Map.of("name", "강남역");
+        ExtractableResponse<Response> createResponse = SimpleRestAssured.post("/stations", params);
+        // when
+        final ExtractableResponse<Response> deleteResponse = SimpleRestAssured.delete("/lines/100");
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
