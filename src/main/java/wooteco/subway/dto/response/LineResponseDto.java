@@ -1,7 +1,5 @@
 package wooteco.subway.dto.response;
 
-import java.util.List;
-
 public class LineResponseDto {
 
     private Long id;

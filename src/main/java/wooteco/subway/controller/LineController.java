@@ -2,7 +2,6 @@ package wooteco.subway.controller;
 
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
