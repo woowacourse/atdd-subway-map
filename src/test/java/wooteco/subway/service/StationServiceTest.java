@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.station.DuplicatedStationException;
+import wooteco.subway.exception.station.DuplicatedStationNameException;
 
 class StationServiceTest {
 
@@ -27,7 +27,7 @@ class StationServiceTest {
         Station station = stationService.save(new Station("서울역"));
 
         assertThatThrownBy(() -> stationService.save(new Station("서울역")))
-                .isInstanceOf(DuplicatedStationException.class);
+                .isInstanceOf(DuplicatedStationNameException.class);
     }
 
     @DisplayName("새로운 역을 추가할 수 있다.")

@@ -10,8 +10,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import wooteco.subway.dao.FakeLineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.line.DuplicatedLineException;
-import wooteco.subway.exception.line.LineNotFoundException;
+import wooteco.subway.exception.line.DuplicatedLineNameException;
+import wooteco.subway.exception.line.InvalidLineIdException;
 
 class LineServiceTest {
 
@@ -29,7 +29,7 @@ class LineServiceTest {
     @CsvSource({"2호선, red", "신분당선, blue", "신분당선, red"})
     void createLine_exception(String name, String color) {
         assertThatThrownBy(() -> lineService.save(new Line(name, color)))
-                .isInstanceOf(DuplicatedLineException.class);
+                .isInstanceOf(DuplicatedLineNameException.class);
     }
 
     @DisplayName("새로운 노선을 추가할 수 있다.")
@@ -52,20 +52,20 @@ class LineServiceTest {
     @Test
     void deleteLine_exception() {
         assertThatThrownBy(() -> lineService.deleteById(2L))
-                .isInstanceOf(LineNotFoundException.class);
+                .isInstanceOf(InvalidLineIdException.class);
     }
 
     @DisplayName("존재하지 않는 노선을 반환하려하면 예외를 발생시킨다.")
     @Test
     void findLineById_exception() {
         assertThatThrownBy(() -> lineService.findLineById(2L))
-                .isInstanceOf(LineNotFoundException.class);
+                .isInstanceOf(InvalidLineIdException.class);
     }
 
     @DisplayName("존재하지 않는 노선을 수정하려하면 예외를 발생시킨다.")
     @Test
     void updateLineById_exception() {
         assertThatThrownBy(() -> lineService.update(2L, new Line("6호선", "brown")))
-                .isInstanceOf(LineNotFoundException.class);
+                .isInstanceOf(InvalidLineIdException.class);
     }
 }

@@ -1,10 +1,10 @@
 package wooteco.subway.exception;
 
-public class CustomException extends RuntimeException {
+public class InvalidSubwayResourceException extends RuntimeException {
 
     private final String message;
 
-    public CustomException(String message) {
+    public InvalidSubwayResourceException(String message) {
         this.message = message;
     }
 

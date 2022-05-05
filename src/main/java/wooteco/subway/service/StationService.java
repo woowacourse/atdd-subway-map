@@ -4,8 +4,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.station.DuplicatedStationException;
-import wooteco.subway.exception.station.StationNotFoundException;
+import wooteco.subway.exception.station.DuplicatedStationNameException;
+import wooteco.subway.exception.station.InvalidStationIdException;
 
 @Service
 public class StationService {
@@ -18,14 +18,14 @@ public class StationService {
 
     public Station save(Station station) {
         if (stationDao.exists(station)) {
-            throw new DuplicatedStationException();
+            throw new DuplicatedStationNameException();
         }
         return stationDao.save(station);
     }
 
     public void deleteById(Long id) {
         if (!stationDao.exists(id)) {
-            throw new StationNotFoundException();
+            throw new InvalidStationIdException();
         }
         stationDao.deleteById(id);
     }

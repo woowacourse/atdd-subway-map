@@ -4,13 +4,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.dto.ExceptionResponse;
-import wooteco.subway.exception.CustomException;
+import wooteco.subway.exception.InvalidSubwayResourceException;
 
 @RestControllerAdvice
 public class SubwayExceptionHandler {
 
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ExceptionResponse> handleException(CustomException customException) {
-        return ResponseEntity.badRequest().body(new ExceptionResponse(customException.getMessage()));
+    @ExceptionHandler(InvalidSubwayResourceException.class)
+    public ResponseEntity<ExceptionResponse> handleException(InvalidSubwayResourceException exception) {
+        return ResponseEntity.badRequest().body(new ExceptionResponse(exception.getMessage()));
     }
 }
