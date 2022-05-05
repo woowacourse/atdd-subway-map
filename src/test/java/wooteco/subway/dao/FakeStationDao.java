@@ -38,6 +38,6 @@ public class FakeStationDao implements StationDao {
     public boolean exists(Station station) {
         return stations.values()
                 .stream()
-                .anyMatch(it -> it.hasSameName(station));
+                .anyMatch(it -> it.getName().equals(station.getName()));
     }
 }

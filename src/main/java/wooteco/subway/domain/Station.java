@@ -19,10 +19,6 @@ public class Station {
         this.name = name;
     }
 
-    public boolean hasSameName(Station station) {
-        return this.name.equals(station.name);
-    }
-
     public Long getId() {
         return id;
     }
