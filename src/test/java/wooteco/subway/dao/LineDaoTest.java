@@ -1,9 +1,10 @@
 package wooteco.subway.dao;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import java.util.List;
-
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.AfterEach;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,16 +21,13 @@ import wooteco.subway.domain.Line;
 
 @JdbcTest
 class LineDaoTest {
-
     private static final String LINE_NAME = "신분당선";
     private static final String LINE_COLOR = "bg-red-600";
 
     @Autowired
     private DataSource dataSource;
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
     private LineDao dao;
 
     @BeforeEach
@@ -54,7 +53,7 @@ class LineDaoTest {
         dao.save(new Line(LINE_NAME, LINE_COLOR));
         // then
         assertThatExceptionOfType(IllegalStateException.class)
-            .isThrownBy(() -> dao.save(new Line(LINE_NAME, LINE_COLOR)));
+                .isThrownBy(() -> dao.save(new Line(LINE_NAME, LINE_COLOR)));
     }
 
     @Test
@@ -86,9 +85,9 @@ class LineDaoTest {
         final Line found = dao.findById(saved.getId());
         // then
         Assertions.assertAll(
-            () -> assertThat(found.getId()).isEqualTo(saved.getId()),
-            () -> assertThat(found.getName()).isEqualTo(saved.getName()),
-            () -> assertThat(found.getColor()).isEqualTo(saved.getColor())
+                () -> assertThat(found.getId()).isEqualTo(saved.getId()),
+                () -> assertThat(found.getName()).isEqualTo(saved.getName()),
+                () -> assertThat(found.getColor()).isEqualTo(saved.getColor())
         );
     }
 
@@ -108,7 +107,7 @@ class LineDaoTest {
         final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
         // then
         assertThatNoException()
-            .isThrownBy(() -> dao.update(new Line(saved.getId(), "구분당선", LINE_COLOR)));
+                .isThrownBy(() -> dao.update(new Line(saved.getId(), "구분당선", LINE_COLOR)));
     }
 
     @Test
@@ -120,7 +119,7 @@ class LineDaoTest {
         Line updateLine = new Line(100L, "사랑이넘치는", "우테코");
         // then
         assertThatExceptionOfType(IllegalStateException.class)
-            .isThrownBy(() -> dao.update(updateLine));
+                .isThrownBy(() -> dao.update(updateLine));
     }
 
     @Test
@@ -128,10 +127,9 @@ class LineDaoTest {
     public void delete() {
         // given & when
         Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
-
         // then
         assertThatNoException()
-            .isThrownBy(() -> dao.delete(saved.getId()));
+                .isThrownBy(() -> dao.delete(saved.getId()));
     }
 
     @Test
@@ -143,7 +141,7 @@ class LineDaoTest {
         Long deleteId = 100L;
         // then
         assertThatExceptionOfType(IllegalStateException.class)
-            .isThrownBy(() -> dao.delete(deleteId));
+                .isThrownBy(() -> dao.delete(deleteId));
     }
 
     @AfterEach

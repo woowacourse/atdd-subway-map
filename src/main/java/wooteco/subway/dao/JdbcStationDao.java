@@ -2,7 +2,6 @@ package wooteco.subway.dao;
 
 import java.lang.reflect.Field;
 import java.util.List;
-
 import javax.sql.DataSource;
 
 import org.springframework.dao.DuplicateKeyException;
@@ -23,8 +22,8 @@ public class JdbcStationDao implements StationDao {
 
     public JdbcStationDao(DataSource dataSource, JdbcTemplate jdbcTemplate) {
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
-            .withTableName("station")
-            .usingGeneratedKeyColumns("id");
+                .withTableName("station")
+                .usingGeneratedKeyColumns("id");
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -50,8 +49,8 @@ public class JdbcStationDao implements StationDao {
     public List<Station> findAll() {
         final String sql = "SELECT * FROM station";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Station(
-            resultSet.getLong("id"),
-            resultSet.getString("name")
+                resultSet.getLong("id"),
+                resultSet.getString("name")
         ));
     }
 

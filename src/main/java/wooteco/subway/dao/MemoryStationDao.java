@@ -22,7 +22,7 @@ public class MemoryStationDao implements StationDao {
 
     private void validateDistinct(Station otherStation) {
         boolean isDuplicated = stations.stream()
-            .anyMatch(station -> station.hasSameNameWith(otherStation));
+                .anyMatch(station -> station.hasSameNameWith(otherStation));
         if (isDuplicated) {
             throw new IllegalStateException("이미 존재하는 역 이름입니다.");
         }

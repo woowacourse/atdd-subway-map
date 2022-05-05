@@ -24,7 +24,7 @@ public class MemoryLineDao implements LineDao {
 
     private void validateDistinct(Line otherLine) {
         boolean isDuplicated = lines.stream()
-            .anyMatch(station -> station.hasSameNameWith(otherLine));
+                .anyMatch(station -> station.hasSameNameWith(otherLine));
         if (isDuplicated) {
             throw new IllegalStateException("이미 존재하는 노선 이름입니다.");
         }
@@ -45,9 +45,9 @@ public class MemoryLineDao implements LineDao {
     @Override
     public Line findById(Long id) {
         return lines.stream()
-            .filter(line -> Objects.equals(line.getId(), id))
-            .findAny()
-            .orElseThrow(() -> new IllegalStateException("조회하고자 하는 노선이 존재하지 않습니다."));
+                .filter(line -> Objects.equals(line.getId(), id))
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("조회하고자 하는 노선이 존재하지 않습니다."));
     }
 
     @Override
