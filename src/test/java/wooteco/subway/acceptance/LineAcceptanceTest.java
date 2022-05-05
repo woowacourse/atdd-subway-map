@@ -180,6 +180,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private Map<String, String> makeParams(String name, String color) {
-        return new HashMap<>(Map.of("name", name, "color", color));
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        return params;
     }
 }

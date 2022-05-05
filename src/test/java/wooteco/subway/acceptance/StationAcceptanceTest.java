@@ -123,6 +123,8 @@ class StationAcceptanceTest extends AcceptanceTest {
     }
 
     private Map<String, String> getParams(String name) {
-        return new HashMap<>(Map.of("name", name));
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        return params;
     }
 }
