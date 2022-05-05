@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,17 @@ class LineDaoImplTest {
     void exists_id(Long id, boolean expected) {
         boolean actual = lineDao.exists(id);
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @DisplayName("모든 노선을 반환한다.")
+    @Test
+    void findAll() {
+        lineDao.save(new Line("3호선", "orange"));
+
+        final List<Line> lines = lineDao.findAll();
+
+        assertThat(lines)
+                .contains(new Line(1L, "신분당선", "red"), new Line(2L, "3호선", "orange"));
     }
 
     @DisplayName("id에 해당하는 노선의 정보를 바꾼다.")
