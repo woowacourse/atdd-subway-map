@@ -39,7 +39,7 @@
 This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master/LICENSE) licensed.
 
 
-## 요구사항 도출 
+## 1단계 요구사항 도출 
 
 ### 지하철역
 - [x] 지하철 역을 등록한다. 
@@ -70,3 +70,9 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] 노선 이름은 한글이어야 한다.
     - [x] 이름과 색깔이 있어야 한다.
 - [x] 지하철 노선 삭제
+
+## 2단계 요구사항 도출
+- [x] H2 설정하기
+- [ ] DAO 에 JDBC Template 사용하여 DB 에 저장하기
+- [ ] 스프링 빈으로 변경
+- [ ] 기존 테경스트를 DAO test 로 변경
