@@ -52,7 +52,7 @@ public class LineMockDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> find(Long id) {
+    public Optional<Line> findById(Long id) {
         return lines.stream()
                 .filter(line -> line.getId().equals(id))
                 .findFirst();

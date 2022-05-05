@@ -66,10 +66,10 @@ class LineDaoTest {
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
-    void find() {
+    void findById() {
         long lineId = lineDao.save(LINE);
 
-        Optional<Line> line = lineDao.find(lineId);
+        Optional<Line> line = lineDao.findById(lineId);
 
         assertThat(line).isNotNull();
     }
@@ -82,7 +82,7 @@ class LineDaoTest {
 
         lineDao.update(lineId, updatedLine);
 
-        assertThat(lineDao.find(lineId).orElseThrow().getName()).isEqualTo("다른분당선");
+        assertThat(lineDao.findById(lineId).orElseThrow().getName()).isEqualTo("다른분당선");
     }
 
     @DisplayName("지하철 노선을 삭제한다.")

@@ -54,17 +54,17 @@ class LineServiceTest {
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
-    void find() {
+    void findById() {
         long lineId = lineService.save(LINE);
 
-        assertThatCode(() -> lineService.find(lineId))
+        assertThatCode(() -> lineService.findById(lineId))
                 .doesNotThrowAnyException();
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 조회할 경우 예외를 발생시킨다.")
     @Test
-    void findNotExistLine() {
-        assertThatThrownBy(() -> lineService.find(1L))
+    void findByIdNotExistLine() {
+        assertThatThrownBy(() -> lineService.findById(1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재하지 않는 지하철 노선입니다.");
     }

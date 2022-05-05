@@ -36,12 +36,14 @@ public class LineService {
         return lineDao.findAll();
     }
 
-    public Line find(Long id) {
-        return lineDao.find(id)
+    public Line findById(Long id) {
+        return lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 노선입니다."));
     }
 
     public void update(long id, Line line) {
+        validateName(line);
+        validateColor(line);
         int updatedRow = lineDao.update(id, line);
         if (updatedRow == 0) {
             throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");

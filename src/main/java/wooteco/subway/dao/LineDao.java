@@ -14,7 +14,7 @@ public interface LineDao {
 
     List<Line> findAll();
 
-    Optional<Line> find(Long id);
+    Optional<Line> findById(Long id);
 
     int update(long id, Line line);
 
