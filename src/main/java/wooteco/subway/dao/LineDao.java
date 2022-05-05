@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 
 import wooteco.subway.domain.Line;
 
+@Repository
 public class LineDao {
 
     private Long seq = 0L;

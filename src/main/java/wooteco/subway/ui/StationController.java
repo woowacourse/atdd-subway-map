@@ -23,8 +23,8 @@ public class StationController {
 
     private final StationDao stationDao;
 
-    public StationController() {
-        this.stationDao = new StationDao();
+    public StationController(StationDao stationDao) {
+        this.stationDao = stationDao;
     }
 
     @PostMapping("/stations")
