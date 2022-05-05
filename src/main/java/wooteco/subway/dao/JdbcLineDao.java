@@ -1,6 +1,8 @@
 package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -43,15 +45,19 @@ public class JdbcLineDao implements LineDao {
 
         try {
             Line line = jdbcTemplate.queryForObject(sql,
-                (rs, rowNum) -> new Line(
-                    rs.getLong("id"),
-                    rs.getString("name"),
-                    rs.getString("color")
-                ), id);
+                (rs, rowNum) -> createLine(rs), id);
             return Optional.ofNullable(line);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    private Line createLine(ResultSet rs) throws SQLException {
+        return new Line(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("color")
+        );
     }
 
     @Override
@@ -60,11 +66,7 @@ public class JdbcLineDao implements LineDao {
 
         try {
             Line line = jdbcTemplate.queryForObject(sql,
-                (rs, rowNum) -> new Line(
-                    rs.getLong("id"),
-                    rs.getString("name"),
-                    rs.getString("color")
-                ), name);
+                (rs, rowNum) -> createLine(rs), name);
             return Optional.ofNullable(line);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -74,11 +76,7 @@ public class JdbcLineDao implements LineDao {
     @Override
     public List<Line> findAll() {
         String sql = "select * from line";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Line(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("color")
-        ));
+        return jdbcTemplate.query(sql, (rs, rowNum) -> createLine(rs));
     }
 
     @Override
