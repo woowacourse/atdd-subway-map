@@ -11,11 +11,6 @@ public class Line {
         this.color = color;
     }
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
-
     public boolean isSameId(Long id) {
         return this.id == id;
     }
