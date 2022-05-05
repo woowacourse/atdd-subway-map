@@ -14,7 +14,7 @@
   - [x] 지하철역 삭제 `DELETE /stations/{id}`
     - 결과 상태 코드는 `204 No Content` 이다.
 - [x] 지하철 노선 관리 API 기능 완성하기
-  - [x] 노선 등록 `POS리T /lines`
+  - [x] 노선 등록 `POST /lines`
     - `요청` json으로 name, color를 전송한다.
     - 결과 상태 코드는 `201 Created` 이다.
     - Location 헤더는 `/lines/{id}` 이다.

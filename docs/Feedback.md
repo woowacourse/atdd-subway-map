@@ -2,7 +2,7 @@
 
 ### 지하철 노선도 미션 1,2단계 - 1차 피드백
 
-- [ ] 오타
+- [x] 오타
     - 요구사항 정리 오타 (17라인)
     - `LineDaoTest` - beforeEach()
 - [ ] `DAO`에서 사용하는 JdbcTemplate 불변
