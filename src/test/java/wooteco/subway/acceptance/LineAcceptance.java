@@ -192,8 +192,19 @@ public class LineAcceptance extends AcceptanceTest {
                 .extract();
         String id = createResponse.header("Location").split("/")[2];
 
+        originParams = new HashMap<>();
+        originParams.put("name", "분당선");
+        originParams.put("color", "yellow");
+        RestAssured.given().log().all()
+                .body(originParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
         Map<String, String> newParams = new HashMap<>();
-        newParams.put("name", "120호선");
+        newParams.put("name", "분당선");
         newParams.put("color", "회색1");
 
         // when
