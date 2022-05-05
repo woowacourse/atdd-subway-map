@@ -38,6 +38,6 @@ public class MockStationDao implements StationDao {
     }
 
     public void deleteById(final Long id) {
-        findById(id).ifPresent(stationEntity -> store.remove(stationEntity));
+        findById(id).ifPresent(store::remove);
     }
 }

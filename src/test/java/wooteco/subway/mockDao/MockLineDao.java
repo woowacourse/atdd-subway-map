@@ -38,7 +38,7 @@ public class MockLineDao implements LineDao {
     }
 
     public void deleteById(final Long id) {
-        findById(id).ifPresent(lineEntity -> store.remove(lineEntity));
+        findById(id).ifPresent(store::remove);
     }
 
     public void update(final LineEntity newLineEntity) {
