@@ -12,23 +12,23 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Section;
 
 @JdbcTest
-class SectionDaoTest {
+class JdbcSectionDaoTest {
 
-    private SectionDao sectionDao;
+    private SectionDao jdbcSectionDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        sectionDao = new SectionDao(jdbcTemplate);
+        jdbcSectionDao = new JdbcSectionDao(jdbcTemplate);
     }
 
     @Test
     @DisplayName("Section 을 저장할 수 있다.")
     void save() {
         Section section = new Section(null, 1L, 1L, 2L, 1);
-        Section savedSection = sectionDao.save(section);
+        Section savedSection = jdbcSectionDao.save(section);
 
         assertThat(savedSection.getLineId()).isNotNull();
     }
@@ -43,14 +43,14 @@ class SectionDaoTest {
         @Test
         void isTrue() {
             Section section = new Section(null, 1L, upStationId, downStationId, 1);
-            sectionDao.save(section);
+            jdbcSectionDao.save(section);
 
-            assertThat(sectionDao.existByUpStationIdAndDownStationId(upStationId, downStationId)).isTrue();
+            assertThat(jdbcSectionDao.existByUpStationIdAndDownStationId(upStationId, downStationId)).isTrue();
         }
 
         @Test
         void isFalse() {
-            assertThat(sectionDao.existByUpStationIdAndDownStationId(upStationId, downStationId)).isFalse();
+            assertThat(jdbcSectionDao.existByUpStationIdAndDownStationId(upStationId, downStationId)).isFalse();
         }
     }
 }
