@@ -70,6 +70,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 노선 기능에 대한 E2E 테스트를 작성
 
 ## TODO
+- [x] 컨트롤러 테스트코드 간소화
 
 ### 1단계 피드백
 
