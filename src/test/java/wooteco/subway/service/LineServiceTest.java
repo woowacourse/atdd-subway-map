@@ -145,4 +145,13 @@ public class LineServiceTest {
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("존재하지 않는 노선입니다.");
     }
+
+    @Test
+    @DisplayName("존재하지 않는 id 로 삭제할 경우 예외를 던진다.")
+    void deleteByIdWithIdNotExists() {
+        //then
+        assertThatThrownBy(() -> lineService.deleteById(1L))
+            .isInstanceOf(DataNotExistException.class)
+            .hasMessageContaining("존재하지 않는 노선입니다.");
+    }
 }

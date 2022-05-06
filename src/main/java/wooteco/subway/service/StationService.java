@@ -12,6 +12,8 @@ import wooteco.subway.exception.DataNotExistException;
 @Service
 public class StationService {
 
+    private static final int ROW_SIZE_WHEN_NOT_DELETED = 0;
+
     private final StationDao stationDao;
 
     public StationService(StationDao stationDao) {
@@ -39,6 +41,8 @@ public class StationService {
     }
 
     public void deleteById(Long id) {
-        stationDao.deleteById(id);
+        if (stationDao.deleteById(id) == ROW_SIZE_WHEN_NOT_DELETED) {
+            throw new DataNotExistException("존재하지 않는 역입니다.");
+        }
     }
 }

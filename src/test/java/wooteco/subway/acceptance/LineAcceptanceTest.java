@@ -294,4 +294,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .statusCode(HttpStatus.NO_CONTENT.value());
     }
+
+    @Test
+    @DisplayName("존재하지 않는 id 로 노선을 제거할 경우 404 응답을 던진다.")
+    void deleteLineWithIdNotExists() {
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete("/lines/1")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
 }

@@ -113,4 +113,14 @@ public class JdbcStationDaoTest {
         //then
         assertThat(stationDao.findByName(name)).isEmpty();
     }
+
+    @Test
+    @DisplayName("존재하지 않는 id 를 삭제하면 0을 반환한다.")
+    void deleteByIdNotExists() {
+        //when
+        int actual = stationDao.deleteById(1L);
+
+        //then
+        assertThat(actual).isEqualTo(0);
+    }
 }

@@ -52,9 +52,10 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         if (!lines.removeIf(line -> line.getId().equals(id))) {
-            throw new IllegalArgumentException("존재하지 않는 노선입니다.");
+            return 0;
         }
+        return 1;
     }
 }

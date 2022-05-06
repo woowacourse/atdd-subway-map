@@ -42,9 +42,10 @@ public class FakeStationDao implements StationDao {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         if (!stations.removeIf(station -> station.getId().equals(id))) {
-            throw new IllegalArgumentException("존재하지 않는 역 입니다.");
+            return 0;
         }
+        return 1;
     }
 }
