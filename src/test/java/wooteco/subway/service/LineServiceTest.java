@@ -50,7 +50,7 @@ class LineServiceTest {
         // then
         assertThat(responses).hasSize(2)
                 .extracting("name", "color")
-                .contains(
+                .containsExactlyInAnyOrder(
                         tuple("신분당선", "bg-red-600"),
                         tuple("분당선", "bg-green-600")
                 );
