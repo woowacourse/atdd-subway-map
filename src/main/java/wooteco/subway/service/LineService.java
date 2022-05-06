@@ -1,11 +1,8 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
-
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
@@ -29,13 +26,15 @@ public class LineService {
     }
 
     private void validateDuplicateLine(LineRequest lineRequest) {
-        Optional<Line> optional = lineDao.findAll()
-                .stream()
-                .filter(line -> line.getName().equals(lineRequest.getName()))
-                .findAny();
-        if (optional.isPresent()) {
+        if (isDuplicateLineName(lineRequest)) {
             throw new ClientException("이미 등록된 지하철노선입니다.");
         }
+    }
+
+    private boolean isDuplicateLineName(LineRequest lineRequest) {
+        return lineDao.findAll()
+                .stream()
+                .anyMatch(line -> line.getName().equals(lineRequest.getName()));
     }
 
     public List<LineResponse> findLines() {
