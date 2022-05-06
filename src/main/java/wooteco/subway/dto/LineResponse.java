@@ -1,6 +1,5 @@
 package wooteco.subway.dto;
 
-import org.springframework.util.ObjectUtils;
 import wooteco.subway.domain.Line;
 
 public class LineResponse {
