@@ -6,6 +6,8 @@ import wooteco.subway.domain.Line;
 
 public interface LineDao {
 
+    boolean existsName(Line line);
+
     Line save(final Line line);
 
     Optional<Line> findById(Long id);

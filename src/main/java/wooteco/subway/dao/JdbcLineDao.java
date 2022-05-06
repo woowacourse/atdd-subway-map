@@ -12,7 +12,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.LineDuplicateException;
 
 @Repository
 public class JdbcLineDao implements LineDao {
@@ -32,23 +31,17 @@ public class JdbcLineDao implements LineDao {
             .usingGeneratedKeyColumns("id");
     }
 
-    public Line save(final Line line) {
-        checkDuplicateName(line);
-        final SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
-        final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Line(id, line.getName(), line.getColor());
-    }
-
-    private void checkDuplicateName(final Line line) {
-        if (existsSameNameLine(line)) {
-            throw new LineDuplicateException("이미 존재하는 노선입니다.");
-        }
-    }
-
-    private boolean existsSameNameLine(final Line line) {
+    @Override
+    public boolean existsName(final Line line) {
         final String sql = "SELECT EXISTS (SELECT * FROM line WHERE name = :name)";
         final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
         return Boolean.TRUE.equals(namedParameterJdbcTemplate.queryForObject(sql, parameters, Boolean.class));
+    }
+
+    public Line save(final Line line) {
+        final SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
+        final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        return new Line(id, line.getName(), line.getColor());
     }
 
     @Override

@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.StationDuplicateException;
 
 @Repository
 public class JdbcStationDao implements StationDao {
@@ -33,19 +32,13 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public Station save(final Station station) {
-        checkDuplicateName(station);
         final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
         final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Station(id, station.getName());
     }
 
-    private void checkDuplicateName(final Station station) {
-        if (existsSameNameStation(station)) {
-            throw new StationDuplicateException("이미 존재하는 지하철역 이름입니다.");
-        }
-    }
-
-    private boolean existsSameNameStation(final Station station) {
+    @Override
+    public boolean existsName(final Station station) {
         final String sql = "SELECT EXISTS (SELECT * FROM station WHERE name = :name)";
         final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
         return Boolean.TRUE.equals(namedParameterJdbcTemplate.queryForObject(sql, parameters, Boolean.class));

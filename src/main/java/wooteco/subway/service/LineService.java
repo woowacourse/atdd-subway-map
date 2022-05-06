@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.exception.LineDuplicateException;
 import wooteco.subway.exception.LineNotFoundException;
 
 @Service
@@ -19,7 +20,14 @@ public class LineService {
 
     public Line create(final LineRequest lineRequest) {
         final Line line = lineRequest.toEntity();
+        checkDuplicateName(line);
         return lineDao.save(line);
+    }
+
+    private void checkDuplicateName(final Line line) {
+        if (lineDao.existsName(line)) {
+            throw new LineDuplicateException("이미 존재하는 노선입니다.");
+        }
     }
 
     @Transactional(readOnly = true)
