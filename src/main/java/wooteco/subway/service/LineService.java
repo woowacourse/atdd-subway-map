@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,14 +20,14 @@ public class LineService {
 
     public LineResponse save(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Long savedId = lineDao.save(line);
-        return new LineResponse(savedId, line.getName(), line.getColor(), new ArrayList<>());
+        lineDao.save(line);
+        return LineResponse.from(line);
     }
 
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
-            .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>()))
+            .map(LineResponse::from)
             .collect(Collectors.toList());
     }
 
