@@ -1,12 +1,5 @@
 package wooteco.subway.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.BDDMockito.given;
-
-import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,6 +9,14 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.BDDMockito.given;
 
 @SpringBootTest
 class LineServiceTest {
@@ -72,7 +73,7 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("존재하는 지하철 노선을 조회할 수 있다.")
+    @DisplayName("지하철 노선을 조회할 수 있다.")
     void findById() {
         given(lineDao.findById(1L)).willReturn(new Line(1L, "name", "red"));
 
@@ -83,56 +84,21 @@ class LineServiceTest {
         assertThat(response.getColor()).isEqualTo("red");
     }
 
-    @Test
-    @DisplayName("존재하지 않는 지하철 노선은 조회할 수 없다.")
-    void findByIdNotFound() {
-        given(lineDao.findById(1L)).willReturn(null);
-
-        assertThatThrownBy(() -> lineService.findById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("존재하지 않는 노선입니다.");
-    }
 
     @Test
-    @DisplayName("존재하는 지하철 노선을 삭제할 수 있다.")
+    @DisplayName("지하철 노선을 삭제할 수 있다.")
     void deleteById() {
-        given(lineDao.isExistId(1L)).willReturn(true);
-
         assertDoesNotThrow(() -> lineService.deleteById(1L));
     }
 
     @Test
-    @DisplayName("존재하지 않는 지하철 노선은 삭제할 수 없다.")
-    void deleteByIdNotFound() {
-        given(lineDao.isExistId(1L)).willReturn(false);
-
-        assertThatThrownBy(() -> lineService.deleteById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 노선입니다.");
-    }
-
-    @Test
-    @DisplayName("존재하는 지하철 노선을 수정할 수 있다.")
+    @DisplayName("지하철 노선을 수정할 수 있다.")
     void update() {
         LineRequest lineRequest = new LineRequest("name2", "blue");
 
-        given(lineDao.isExistId(1L)).willReturn(true);
         given(lineDao.isExistNameWithoutItself(1L, "name")).willReturn(false);
 
         assertDoesNotThrow(() -> lineService.update(1L, lineRequest));
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 지하철 노선을 수정할 수 없다.")
-    void updateNotFound() {
-        LineRequest lineRequest = new LineRequest("name2", "blue");
-
-        given(lineDao.isExistId(1L)).willReturn(false);
-        given(lineDao.isExistNameWithoutItself(1L, "name")).willReturn(false);
-
-        assertThatThrownBy(() -> lineService.update(1L, lineRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 노선입니다.");
     }
 
     @Test
@@ -140,7 +106,6 @@ class LineServiceTest {
     void updateDuplicate() {
         LineRequest lineRequest = new LineRequest("name", "blue");
 
-        given(lineDao.isExistId(1L)).willReturn(true);
         given(lineDao.isExistNameWithoutItself(1L, "name")).willReturn(true);
 
         assertThatThrownBy(() -> lineService.update(1L, lineRequest))

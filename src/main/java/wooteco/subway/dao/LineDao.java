@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -12,6 +13,8 @@ import java.util.Map;
 
 @Repository
 public class LineDao {
+
+    private static final String LINE_NOT_FOUND = "존재하지 않는 노선입니다.";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -31,7 +34,7 @@ public class LineDao {
             );
 
     public Line save(String name, String color) {
-        Long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name",name,"color",color)).longValue();
+        Long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name", name, "color", color)).longValue();
         return new Line(id, name, color);
     }
 
@@ -41,23 +44,28 @@ public class LineDao {
     }
 
     public Line findById(Long id) {
-        final String sql = "SELECT * FROM LINE WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
+        try {
+            final String sql = "SELECT * FROM LINE WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EmptyResultDataAccessException(LINE_NOT_FOUND, 1);
+        }
     }
 
     public void delete(Long id) {
         final String sql = "DELETE FROM LINE WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        int count = jdbcTemplate.update(sql, id);
+        if (count == 0) {
+            throw new EmptyResultDataAccessException(LINE_NOT_FOUND, 1);
+        }
     }
 
     public void update(Long id, String name, String color) {
         final String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
-        jdbcTemplate.update(sql, name, color, id);
-    }
-
-    public boolean isExistId(Long id) {
-        final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+        int count = jdbcTemplate.update(sql, name, color, id);
+        if (count == 0) {
+            throw new EmptyResultDataAccessException(LINE_NOT_FOUND, 1);
+        }
     }
 
     public boolean isExistName(String name) {

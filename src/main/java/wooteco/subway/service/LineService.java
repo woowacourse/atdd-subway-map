@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 @Service
 public class LineService {
 
-    private static final String LINE_NOT_FOUND = "존재하지 않는 노선입니다.";
     private static final String DUPLICATE_LINE_NAME = "지하철 노선 이름이 중복될 수 없습니다.";
 
     private final LineDao dao;
@@ -37,31 +36,18 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        Line line = dao.findById(id);
-        if (line == null) {
-            throw new IllegalArgumentException(LINE_NOT_FOUND);
-        }
-        return new LineResponse(line);
+        return new LineResponse(dao.findById(id));
     }
 
     public void deleteById(Long id) {
-        checkLineNotFound(id);
         dao.delete(id);
     }
 
     public void update(Long id, LineRequest request) {
-        checkLineNotFound(id);
-
         String name = request.getName();
         checkDuplicateName(dao.isExistNameWithoutItself(id, name));
 
         dao.update(id, name, request.getColor());
-    }
-
-    private void checkLineNotFound(Long id) {
-        if (!dao.isExistId(id)) {
-            throw new IllegalArgumentException(LINE_NOT_FOUND);
-        }
     }
 
     private void checkDuplicateName(Boolean result) {

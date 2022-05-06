@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -46,7 +47,7 @@ public class StationDao {
         final String sql = "DELETE FROM STATION WHERE id=?";
         int count = jdbcTemplate.update(sql, id);
         if (count == 0) {
-            throw new IllegalArgumentException(STATION_NOT_FOUND);
+            throw new EmptyResultDataAccessException(STATION_NOT_FOUND,1);
         }
     }
 
