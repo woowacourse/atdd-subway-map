@@ -22,7 +22,11 @@ public class LineRequest {
         return color;
     }
 
+    public Line toEntity(final Long id) {
+        return new Line(id, this.name, this.color);
+    }
+
     public Line toEntity() {
-        return new Line(this.name, this.color);
+        return toEntity(null);
     }
 }

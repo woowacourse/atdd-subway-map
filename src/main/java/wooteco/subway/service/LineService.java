@@ -31,9 +31,9 @@ public class LineService {
     }
 
     public void update(final Long id, final LineRequest lineRequest) {
-        final Line targetLine = findById(id);
-        targetLine.update(lineRequest.toEntity());
-        lineDao.update(targetLine);
+        findById(id);
+        final Line updatedLine = lineRequest.toEntity(id);
+        lineDao.update(updatedLine);
     }
 
     public void delete(final Long id) {
