@@ -37,10 +37,11 @@ class LineServiceTest {
     @Test
     void 중복된_노선_예외발생() {
         Line line = new Line("2호선", "bg-green-600");
+        Line duplicatedNameLine = new Line("2호선", "bg-red-600");
 
         lineService.save(line);
 
-        assertThatThrownBy(() -> lineService.save(line))
+        assertThatThrownBy(() -> lineService.save(duplicatedNameLine))
                 .isInstanceOf(DuplicateKeyException.class)
                 .hasMessageContaining("이미 존재하는 노선");
     }
@@ -48,11 +49,8 @@ class LineServiceTest {
     @DisplayName("모든 노선을 조회한다")
     @Test
     void 모든_노선_조회() {
-        Line line1 = new Line("1호선", "bg-darkblue-600");
-        Line line2 = new Line("2호선", "bg-green-600");
-
-        lineService.save(line1);
-        lineService.save(line2);
+        lineService.save(new Line("1호선", "bg-darkblue-600"));
+        lineService.save(new Line("2호선", "bg-green-600"));
 
         assertThat(lineService.findAll().size()).isEqualTo(2);
     }
