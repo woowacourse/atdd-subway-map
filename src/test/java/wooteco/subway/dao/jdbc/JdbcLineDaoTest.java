@@ -11,8 +11,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.sql.DataSource;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
@@ -20,12 +20,12 @@ import wooteco.subway.domain.Line;
 class JdbcLineDaoTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private DataSource dataSource;
     private LineDao lineDao;
 
     @BeforeEach
     void setUp() {
-        this.lineDao = new JdbcLineDao(jdbcTemplate);
+        this.lineDao = new JdbcLineDao(dataSource);
     }
 
     @DisplayName("지하철 노선을 저장한다.")
