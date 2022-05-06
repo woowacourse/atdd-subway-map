@@ -1,6 +1,8 @@
 package wooteco.subway.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +15,9 @@ class SectionTest {
     @ValueSource(ints = {-1, 0})
     @DisplayName("생성 시 distance 가 0 이하인 경우 예외 발생")
     void createExceptionByNotPositiveDistance(final int distance) {
-        Line line = new Line("신분당선", "bg-red-600");
-        Station upStation = new Station("오리");
-        Station downStation = new Station("배카라");
+        Line line = new Line(1L, "신분당선", "bg-red-600");
+        Station upStation = new Station(1L, "오리");
+        Station downStation = new Station(2L, "배카라");
 
         assertThatThrownBy(() -> new Section(line, upStation, downStation, distance))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -25,11 +27,25 @@ class SectionTest {
     @Test
     @DisplayName("upStation 과 downStation 이 중복될 경우 예외 발생")
     void createExceptionDByDuplicateStationId() {
-        Line line = new Line("신분당선", "bg-red-600");
-        Station station = new Station("오리");
+        Line line = new Line(1L, "신분당선", "bg-red-600");
+        Station station = new Station(1L, "오리");
 
         assertThatThrownBy(() -> new Section(line, station, station, 1))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("upstation과 downstation은 중복될 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("입력된 station이 downStation인지 확인할 수 있다.")
+    void isDownStation() {
+        Line line = new Line(1L, "신분당선", "bg-red-600");
+        Station upStation = new Station(1L, "오리");
+        Station downStation = new Station(2L, "배카라");
+        Section section = new Section(line, upStation, downStation, 2);
+
+        assertAll(
+                () -> assertThat(section.isDownStation(downStation)).isTrue(),
+                () -> assertThat(section.isDownStation(upStation)).isFalse()
+        );
     }
 }
