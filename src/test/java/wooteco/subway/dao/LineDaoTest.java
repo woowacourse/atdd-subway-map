@@ -52,7 +52,7 @@ class LineDaoTest {
 
     @DisplayName("전체 노선의 개수가 맞는지 확인한다.")
     @Test
-    void find_All_Line() {
+    void findAllLine() {
         Line lineTwo = new Line("2호선", "초록색");
         Line lineEight = new Line("8호선", "분홍색");
         lineDao.save(lineTwo);
@@ -75,7 +75,7 @@ class LineDaoTest {
 
     @DisplayName("특정 id를 가지는 노선의 이름과 색을 변경한다.")
     @Test
-    void updateLineById() {
+    void updateById() {
         Line line = new Line("2호선", "초록색");
         Long id = lineDao.save(line).getId();
         Line updateLine = new Line("8호선", "분홍색");
@@ -89,7 +89,7 @@ class LineDaoTest {
 
     @DisplayName("이미 저장된 노선의 이름 또는 색상으로는 변경할 수 없다.")
     @Test
-    void foo() {
+    void invalidUpdate() {
         Line line = new Line("2호선", "초록색");
         Long id = lineDao.save(line).getId();
         Line updateLine = new Line("8호선", "분홍색");
