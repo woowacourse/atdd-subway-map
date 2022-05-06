@@ -16,13 +16,12 @@ import wooteco.subway.dto.LineResponse;
 
 public class LineServiceTest {
 
-    private LineDao lineDao;
-    private LineService lineService;
+    private LineDao lineDao = new FakeLineDao();
+    private LineService lineService = new LineService(lineDao);
 
     @BeforeEach
     void setUp() {
-        lineDao = new FakeLineDao();
-        lineService = new LineService(lineDao);
+        ((FakeLineDao) lineDao).clear();
     }
 
     @Test

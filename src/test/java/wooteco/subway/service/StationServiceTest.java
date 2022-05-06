@@ -16,13 +16,12 @@ import wooteco.subway.dto.StationResponse;
 
 public class StationServiceTest {
 
-    private StationDao stationDao;
-    private StationService stationService;
+    private StationDao stationDao = new FakeStationDao();
+    private StationService stationService = new StationService(stationDao);
 
     @BeforeEach
     void setUp() {
-        stationDao = new FakeStationDao();
-        stationService = new StationService(stationDao);
+        ((FakeStationDao) stationDao).clear();
     }
 
     @Test

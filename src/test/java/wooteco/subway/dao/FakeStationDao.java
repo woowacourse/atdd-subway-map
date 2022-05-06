@@ -44,4 +44,8 @@ public class FakeStationDao implements StationDao {
                 .orElseThrow(() -> new IllegalArgumentException("해당 역은 존재하지 않습니다."));
         stations.remove(foundStation);
     }
+
+    public void clear() {
+        stations.clear();
+    }
 }
