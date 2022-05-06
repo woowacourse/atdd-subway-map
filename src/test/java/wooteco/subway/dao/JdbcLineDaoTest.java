@@ -33,12 +33,12 @@ class JdbcLineDaoTest {
         Line line = lineDao.findById(lineId);
 
         assertThat(line)
-                .extracting("name", "color")
-                .containsExactly("신분당선", "red");
+            .extracting("name", "color")
+            .containsExactly("신분당선", "red");
 
         lineDao.deleteById(lineId);
         assertThatThrownBy(() -> lineDao.findById(lineId))
-                .isInstanceOf(DataAccessException.class);
+            .isInstanceOf(DataAccessException.class);
     }
 
     @Test
@@ -48,8 +48,8 @@ class JdbcLineDaoTest {
         List<Line> lines = lineDao.findAll();
 
         assertThat(lines).hasSize(1)
-                .extracting("name", "color")
-                .containsExactly(tuple("신분당선", "red"));
+            .extracting("name", "color")
+            .containsExactly(tuple("신분당선", "red"));
 
         lineDao.deleteById(lineId);
     }
@@ -64,8 +64,8 @@ class JdbcLineDaoTest {
         Line newLine = lineDao.findById(lineId);
 
         assertThat(newLine)
-                .extracting("name", "color")
-                .containsExactly("분당선", "yellow");
+            .extracting("name", "color")
+            .containsExactly("분당선", "yellow");
 
         lineDao.deleteById(lineId);
     }

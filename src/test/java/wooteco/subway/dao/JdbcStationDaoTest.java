@@ -30,8 +30,8 @@ class JdbcStationDaoTest {
 
         List<Station> stations1 = stationDao.findAll();
         assertThat(stations1).hasSize(1)
-                .extracting("name")
-                .containsExactly("선릉역");
+            .extracting("name")
+            .containsExactly("선릉역");
 
         stationDao.deleteById(stationId);
 

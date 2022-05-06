@@ -15,6 +15,14 @@ public class JdbcLineDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertActor;
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> {
+        Line line = new Line(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("color")
+        );
+        return line;
+    };
 
     public JdbcLineDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -22,15 +30,6 @@ public class JdbcLineDao implements LineDao {
             .withTableName("LINE")
             .usingGeneratedKeyColumns("id");
     }
-
-    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> {
-        Line line = new Line(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("color")
-        );
-        return line;
-    };
 
     @Override
     public Long save(Line line) {
