@@ -40,7 +40,7 @@ public class StationServiceTest {
     void createDuplicateName() {
         //given
         Station station = new Station("lala");
-        Station actual = stationService.createStation(station);
+        stationService.createStation(station);
 
         //then
         assertThatThrownBy(() -> stationService.createStation(station))
@@ -49,7 +49,7 @@ public class StationServiceTest {
     }
 
     @Test
-    @DisplayName("모든 station 을 검색한다.")
+    @DisplayName("모든 station 목록을 조회한다.")
     void findAll() {
         //given
         Station station1 = new Station("lala");
