@@ -34,4 +34,28 @@ public class Section {
     public Section(final Long lineId, final long upStationId, final long downStationId, final int distance) {
         this(null, lineId, upStationId, downStationId, distance);
     }
+
+    public Section(final Long id, final Section section) {
+        this(id, section.lineId, section.upStationId, section.downStationId, section.distance);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public long getLineId() {
+        return lineId;
+    }
+
+    public long getUpStationId() {
+        return upStationId;
+    }
+
+    public long getDownStationId() {
+        return downStationId;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
 }
