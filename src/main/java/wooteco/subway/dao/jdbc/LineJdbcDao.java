@@ -39,17 +39,6 @@ public class LineJdbcDao implements LineDao {
         return new Line(keyHolder.getKey().longValue(), line.getName(), line.getColor());
     }
 
-    private void trySaveLine(final Line line, final KeyHolder keyHolder)
-            throws DuplicateKeyException {
-        jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO LINE (name, color) VALUES (?, ?)", new String[]{"id"});
-            preparedStatement.setString(1, line.getName());
-            preparedStatement.setString(2, line.getColor());
-            return preparedStatement;
-        }, keyHolder);
-    }
-
     @Override
     public List<Line> findAll() {
         final String sql = "SELECT id, name, color FROM LINE";
@@ -90,15 +79,26 @@ public class LineJdbcDao implements LineDao {
         }
     }
 
-    private void checkUpdated(final int affectedRow) {
-        if (affectedRow == 0) {
-            throw new NoSuchLineException();
-        }
-    }
-
     @Override
     public void deleteById(final Long id) {
         final String sql = "DELETE FROM LINE WHERE id = (?)";
         jdbcTemplate.update(sql, id);
+    }
+
+    private void trySaveLine(final Line line, final KeyHolder keyHolder)
+            throws DuplicateKeyException {
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "INSERT INTO LINE (name, color) VALUES (?, ?)", new String[]{"id"});
+            preparedStatement.setString(1, line.getName());
+            preparedStatement.setString(2, line.getColor());
+            return preparedStatement;
+        }, keyHolder);
+    }
+
+    private void checkUpdated(final int affectedRow) {
+        if (affectedRow == 0) {
+            throw new NoSuchLineException();
+        }
     }
 }
