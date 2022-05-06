@@ -1,4 +1,4 @@
-package wooteco.subway.ui;
+package wooteco.subway.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
