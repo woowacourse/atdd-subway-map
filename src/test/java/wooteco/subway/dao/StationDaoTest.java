@@ -12,11 +12,11 @@ import wooteco.subway.domain.Station;
 
 @JdbcTest
 class StationDaoTest {
-
     private StationDao stationDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private final Station station = new Station("강남역");
 
     @BeforeEach
     void setUp() {
@@ -26,10 +26,6 @@ class StationDaoTest {
     @DisplayName("지하철역을 저장하고 아이디로 찾는다.")
     @Test
     void saveAndFind() {
-        //given
-        Station station = new Station("강남역");
-
-        //when
         Long id = stationDao.save(station);
         assertThat(stationDao.findById(id))
                 .isEqualTo(station);
@@ -38,10 +34,8 @@ class StationDaoTest {
     @DisplayName("해당 이름의 지하철역이 있는지 확인한다.")
     @Test
     void hasStation_name() {
-        Station station = new Station("강남역");
         stationDao.save(station);
-
-        assertThat(stationDao.hasStation("강남역"))
+        assertThat(stationDao.hasStation(station.getName()))
                 .isTrue();
         assertThat(stationDao.hasStation("선릉역"))
                 .isFalse();
@@ -50,7 +44,6 @@ class StationDaoTest {
     @DisplayName("해당 id의 지하철역이 있는지 확인한다.")
     @Test
     void hasStation_id() {
-        Station station = new Station("강남역");
         Long id = stationDao.save(station);
 
         assertThat(stationDao.hasStation(id))
@@ -63,12 +56,11 @@ class StationDaoTest {
     @Test
     void findAll() {
         //given
-        Station station = new Station("강남역");
         Station station1 = new Station("선릉역");
         stationDao.save(station);
         stationDao.save(station1);
 
-        //when
+        //when then
         assertThat(stationDao.findAll())
                 .containsOnly(station, station1);
     }
@@ -77,12 +69,13 @@ class StationDaoTest {
     @Test
     void delete() {
         //given
-        Station station = new Station("강남역");
+        Long id = stationDao.save(station);
 
         //when
-        stationDao.delete(stationDao.findById(stationDao.save(station)).getId());
+        stationDao.delete(id);
 
         //then
-        assertThat(stationDao.findAll()).hasSize(0);
+        assertThat(stationDao.hasStation(id))
+                .isFalse();
     }
 }

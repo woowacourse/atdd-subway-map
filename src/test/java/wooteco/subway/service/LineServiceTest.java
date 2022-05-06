@@ -17,6 +17,7 @@ class LineServiceTest {
     private LineService lineService;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private final Line line = new Line("신분당선", "red");
 
     @BeforeEach
     void setUp() {
@@ -27,20 +28,14 @@ class LineServiceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void save() {
-        Line line = new Line("신분당선", "red");
         lineService.save(line);
     }
 
     @DisplayName("이미 있는 이름의 지하철 노선을 저장할 수 없다.")
     @Test
     void save_error() {
-        //given
-        Line line = new Line("신분당선", "red");
-
-        //when
         lineService.save(line);
 
-        //then
         assertThatThrownBy(() -> lineService.save(line))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 해당 이름의 노선이 있습니다.");
@@ -50,21 +45,19 @@ class LineServiceTest {
     @Test
     void findAll() {
         //given
-        Line line = new Line("신분당선", "red");
         Line line2 = new Line("분당선", "green");
         lineService.save(line);
         lineService.save(line2);
 
-        //when
+        //when then
         assertThat(lineService.findAll())
-                .hasSize(2);//then
+                .containsOnly(line, line2);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void update() {
         //given
-        Line line = new Line("신분당선", "red");
         Line line2 = new Line("분당선", "green");
         Long id = lineService.save(line).getId();
 
@@ -72,14 +65,13 @@ class LineServiceTest {
         lineService.update(id, line2);
 
         //then
-        assertThat(lineService.findAll().get(0).getName())
-                .isEqualTo("분당선");
+        assertThat(lineService.findAll())
+                .containsOnly(line2);
     }
 
     @DisplayName("없는 지하철 노선을 수정할 수 없다.")
     @Test
     void update_error() {
-        Line line = new Line("신분당선", "red");
         assertThatThrownBy(() -> lineService.update(100L, line))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 아이디의 노선이 없습니다.");
@@ -89,14 +81,14 @@ class LineServiceTest {
     @Test
     void delete() {
         //given
-        Line line = new Line("신분당선", "red");
         Long id = lineService.save(line).getId();
 
         //when
         lineService.delete(id);
 
         //then
-        assertThat(lineService.findAll()).hasSize(0);
+        assertThat(lineService.findAll())
+                .isNotIn(line);
     }
 
     @DisplayName("없는 지하철 노선을 삭제할 수 없다.")

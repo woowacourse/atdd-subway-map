@@ -76,10 +76,10 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] DAO 안에서 값 존재여부 검증
 - [x] 업데이트나 삭제에도 검증 추가
     - [x] 수정/삭제 시 예외케이스 테스트
-- [ ] SpringBootTest 사용 및 JdbcTest와 차이 공부
+- [x] station/ line 자체의 동등성비교로 검증
+- [x] given when then 에서 // when then 으로 붙여쓰기
+- [x] 사이즈가 0이어도 괜찮겠지만 해당 라인이름으로 검색시 조회가 되지않도록 하는게 더 나을 듯
+- [x] findAll()이 when이고 결과를 then에서 검증
 - [ ] 에러 메세지도 같이 던져주기
     - [ ] 각각 다른 에러마다 처리로직 분리(advice로?)
-- [ ] given when then 에서 // when then 으로 붙여쓰기
-- [ ] findAll()이 when이고 결과를 then에서 검증
-- [ ] 사이즈가 0이어도 괜찮겠지만 해당 라인이름으로 검색시 조회가 되지않도록 하는게 더 나을 듯
-- [ ] station/ line 자체의 동등성비교로 검증
+- [ ] SpringBootTest 사용 및 JdbcTest와 차이 공부

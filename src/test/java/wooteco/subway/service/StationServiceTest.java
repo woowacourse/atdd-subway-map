@@ -14,6 +14,7 @@ import wooteco.subway.domain.Station;
 
 @JdbcTest
 class StationServiceTest {
+    private static final Station station = new Station("강남역");
     private StationService stationService;
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -27,7 +28,6 @@ class StationServiceTest {
     @DisplayName("지하철역을 저장한다.")
     @Test
     void save() {
-        Station station = new Station("hunch");
         stationService.save(station);
     }
 
@@ -35,7 +35,6 @@ class StationServiceTest {
     @Test
     void save_error() {
         //given
-        Station station = new Station("hunch");
         stationService.save(station);
 
         //when then
@@ -48,28 +47,27 @@ class StationServiceTest {
     @Test
     void findAll() {
         //given
-        Station station = new Station("강남역");
-        Station station1 = new Station("선릉역");
+        Station station2 = new Station("선릉역");
         stationService.save(station);
-        stationService.save(station1);
+        stationService.save(station2);
 
-        //when
+        //when then
         assertThat(stationService.findAll())
-                .hasSize(2);//then
+                .containsOnly(station, station2);
     }
 
     @DisplayName("지하철역을 삭제한다.")
     @Test
     void delete() {
         //given
-        Station station = new Station("강남역");
         Long id = stationService.save(station).getId();
 
         //when
         stationService.delete(id);
 
         //then
-        assertThat(stationService.findAll()).hasSize(0);
+        assertThat(stationService.findAll())
+                .isNotIn(station);
     }
 
     @DisplayName("없는 지하철역을 삭제할 수 없다.")
