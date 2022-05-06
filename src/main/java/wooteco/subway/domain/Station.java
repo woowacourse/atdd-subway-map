@@ -1,19 +1,27 @@
 package wooteco.subway.domain;
 
 public class Station {
-    private Long id;
-    private String name;
 
-    public Station() {
+    private static final long TEMPORARY_ID = 0L;
+
+    private final Long id;
+    private final Name name;
+
+    public Station(String name) {
+        this(TEMPORARY_ID, name);
     }
 
     public Station(Long id, String name) {
         this.id = id;
-        this.name = name;
+        this.name = new Name(name);
     }
 
-    public Station(String name) {
-        this.name = name;
+    public boolean isSameId(Long id) {
+        return this.id.equals(id);
+    }
+
+    public boolean isSameName(String name) {
+        return this.name.isSame(name);
     }
 
     public Long getId() {
@@ -21,7 +29,7 @@ public class Station {
     }
 
     public String getName() {
-        return name;
+        return name.getValue();
     }
 }
 
