@@ -3,24 +3,24 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
 
 @JdbcTest
 class LineDaoTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private DataSource dataSource;
     private JdbcLineDao lineDao;
 
     @BeforeEach
     void beforeEach() {
-        lineDao = new JdbcLineDao(jdbcTemplate);
+        lineDao = new JdbcLineDao(dataSource);
     }
 
     @Test

@@ -1,10 +1,11 @@
 package wooteco.subway.dao;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
@@ -12,6 +13,7 @@ import wooteco.subway.domain.Line;
 @Repository
 public class JdbcLineDao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Line> rowMapper = (rs, rowNum) ->
             new Line(
                     rs.getLong("id"),
@@ -19,23 +21,18 @@ public class JdbcLineDao implements LineDao {
                     rs.getString("color")
             );
 
-    public JdbcLineDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcLineDao(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("LINE")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public Line save(Line line) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
-        simpleJdbcInsert.withTableName("line").usingGeneratedKeyColumns("id");
-
-        String name = line.getName();
-        String color = line.getColor();
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-
+        SqlParameterSource params = new BeanPropertySqlParameterSource(line);
         long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return new Line(id, name, color);
+        return new Line(id, line.getName(), line.getColor());
     }
 
     @Override

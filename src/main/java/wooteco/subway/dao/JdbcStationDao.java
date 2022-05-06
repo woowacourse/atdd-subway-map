@@ -1,10 +1,11 @@
 package wooteco.subway.dao;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
@@ -12,6 +13,7 @@ import wooteco.subway.domain.Station;
 @Repository
 public class JdbcStationDao implements StationDao {
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     private final RowMapper<Station> rowMapper = (rs, rowNum) ->
             new Station(
@@ -19,21 +21,18 @@ public class JdbcStationDao implements StationDao {
                     rs.getString("name")
             );
 
-    public JdbcStationDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcStationDao(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("STATION")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public Station save(Station station) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
-        simpleJdbcInsert.withTableName("station").usingGeneratedKeyColumns("id");
-
-        String name = station.getName();
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
+        SqlParameterSource params = new BeanPropertySqlParameterSource(station);
         long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return new Station(id, name);
+        return new Station(id, station.getName());
     }
 
     @Override
