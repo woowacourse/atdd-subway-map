@@ -12,10 +12,6 @@ public class Line {
         this.color = color;
     }
 
-    public boolean isSameId(Long id) {
-        return this.id.equals(id);
-    }
-
     public Long getId() {
         return id;
     }

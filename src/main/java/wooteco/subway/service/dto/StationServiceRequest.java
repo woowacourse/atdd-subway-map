@@ -4,9 +4,6 @@ public class StationServiceRequest {
     private Long id;
     private String name;
 
-    private StationServiceRequest() {
-    }
-
     public StationServiceRequest(Long id, String name) {
         this.id = id;
         this.name = name;
