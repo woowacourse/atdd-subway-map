@@ -5,8 +5,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineDto;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 
 @Service
 public class LineService {
@@ -34,10 +34,10 @@ public class LineService {
         }
     }
 
-    public LineDto findById(Long id) {
+    public LineResponse findById(Long id) {
         try {
             Line line = lineDao.findById(id);
-            return new LineDto(line.getId(), line.getName(), line.getColor());
+            return new LineResponse(line.getId(), line.getName(), line.getColor());
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("해당 ID의 노선은 존재하지 않습니다.");
         }

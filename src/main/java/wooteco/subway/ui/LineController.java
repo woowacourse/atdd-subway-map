@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineDto;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
 
 @RestController
@@ -28,10 +28,10 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineDto> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         validEmpty(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineService.save(lineRequest.getName(), lineRequest.getColor());
-        LineDto lineResponse = new LineDto(newLine.getId(), newLine.getName(), newLine.getColor());
+        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
@@ -42,15 +42,15 @@ public class LineController {
     }
 
     @GetMapping
-    public List<LineDto> showLines() {
+    public List<LineResponse> showLines() {
         List<Line> lines = lineService.findAll();
         return lines.stream()
-                .map(it -> new LineDto(it.getId(), it.getName(), it.getColor()))
+                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public LineDto findLine(@PathVariable Long id) {
+    public LineResponse findLine(@PathVariable Long id) {
         return lineService.findById(id);
     }
 

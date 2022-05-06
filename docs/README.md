@@ -26,10 +26,10 @@
 ### 리펙토링 목록
 - [x] LINE table column unique 확인
 - [x] @Controller & @RestController 차이점 알아보고 적용하기
-- [ ] Line Dto -> Line Response로 사용하기
+- [x] Line Dto -> Line Response로 사용하기
 - [ ] 생성자 정리
-- [ ] 중복확인 로직 은닉화
-- [ ] equals & hashcode 확인하고 적용하기
+- [x] 중복확인 로직 은닉화
+- [x] equals & hashcode 확인하고 적용하기
 - [ ] Service & Repository test 작성
 - [ ] Service 에서 Dto반환
 
