@@ -1,18 +1,21 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
+
 public class Section {
 
     private final Long id;
-    private final Line line;
+    private final long lineId;
     private final Station upStation;
     private final Station downStation;
     private final int distance;
 
-    public Section(final Long id, final Line line, final Station upStation, final Station downStation, final int distance) {
+    public Section(final Long id, final long lineId, final Station upStation, final Station downStation,
+                   final int distance) {
         validatePositiveDistance(distance);
         validateDuplicateStation(upStation, downStation);
         this.id = id;
-        this.line = line;
+        this.lineId = lineId;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -30,12 +33,12 @@ public class Section {
         }
     }
 
-    public Section(final Line line, final Station upStation, final Station downStation, final int distance) {
-        this(null, line, upStation, downStation, distance);
+    public Section(final long lineId, final Station upStation, final Station downStation, final int distance) {
+        this(null, lineId, upStation, downStation, distance);
     }
 
     public Section(final Long id, final Section section) {
-        this(id, section.line, section.upStation, section.downStation, section.distance);
+        this(id, section.lineId, section.upStation, section.downStation, section.distance);
     }
 
     public boolean isSameUpStationAndDownStation(final Station upStation, final Station downStation) {
@@ -55,8 +58,8 @@ public class Section {
         return id;
     }
 
-    public Line getLine() {
-        return line;
+    public long getLineId() {
+        return lineId;
     }
 
     public Station getUpStation() {
@@ -69,5 +72,22 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Section section = (Section) o;
+        return Objects.equals(id, section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

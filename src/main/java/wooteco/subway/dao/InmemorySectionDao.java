@@ -2,7 +2,9 @@ package wooteco.subway.dao;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
@@ -39,6 +41,14 @@ public class InmemorySectionDao implements SectionDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, section, ++seq);
         return section;
+    }
+
+    @Override
+    public List<Section> findAllByLineId(final long lineId) {
+        return sections.values()
+                .stream()
+                .filter(section -> section.getLineId() == lineId)
+                .collect(Collectors.toList());
     }
 
     @Override

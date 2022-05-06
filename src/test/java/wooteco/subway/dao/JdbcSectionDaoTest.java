@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -37,7 +38,7 @@ class JdbcSectionDaoTest {
         Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
         Station upStation = stationDao.save(new Station("오리"));
         Station downStation = stationDao.save(new Station("배카라"));
-        Section section = new Section(null, line, upStation, downStation, 1);
+        Section section = new Section(null, line.getId(), upStation, downStation, 1);
 
         // when
         Section savedSection = sectionDao.save(section);
@@ -56,7 +57,7 @@ class JdbcSectionDaoTest {
             Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
             Station upStation = stationDao.save(new Station("오리"));
             Station downStation = stationDao.save(new Station("배카라"));
-            Section section = new Section(null, line, upStation, downStation, 1);
+            Section section = new Section(null, line.getId(), upStation, downStation, 1);
             sectionDao.save(section);
 
             // when & then
@@ -70,5 +71,19 @@ class JdbcSectionDaoTest {
 
             assertThat(sectionDao.existByUpStationAndDownStation(upStation, downStation)).isFalse();
         }
+    }
+
+    @Test
+    @DisplayName("Line Id에 해당하는 Section을 조회할 수 있다.")
+    void findAllByLineId() {
+        Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
+        Station station1 = stationDao.save(new Station("오리"));
+        Station station2 = stationDao.save(new Station("배카라"));
+        Station station3 = stationDao.save(new Station("오카라"));
+
+        List<Section> expected = List.of(sectionDao.save(new Section(null, line.getId(), station1, station2, 1)),
+                sectionDao.save(new Section(null, line.getId(), station2, station3, 1)));
+
+        assertThat(sectionDao.findAllByLineId(line.getId())).isEqualTo(expected);
     }
 }
