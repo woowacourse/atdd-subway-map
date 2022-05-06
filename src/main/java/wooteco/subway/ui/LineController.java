@@ -30,24 +30,23 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = lineService.save(line);
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        Line line = lineService.save(lineRequest.toEntity());
+        LineResponse lineResponse = LineResponse.from(line);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
-            .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+            .map(LineResponse::from)
             .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
 
     @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> putLines(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        Line line = lineRequest.toEntity();
         lineService.update(id, line);
         return ResponseEntity.ok().build();
     }
