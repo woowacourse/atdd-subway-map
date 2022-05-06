@@ -21,6 +21,6 @@ public class ExceptionAdviser {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> exceptionHandler() {
-        return ResponseEntity.internalServerError().build();
+        return ResponseEntity.internalServerError().body(new ErrorResponse("현재 서버에 문제가 발생해 응답할 수 없습니다."));
     }
 }
