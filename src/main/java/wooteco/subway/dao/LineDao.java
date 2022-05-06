@@ -1,14 +1,15 @@
 package wooteco.subway.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class LineDao {
@@ -20,18 +21,19 @@ public class LineDao {
     }
 
     public Line save(Line line) {
-
         String sql = "insert into LINE (name, color) values (?, ?)";
         jdbcTemplate.update(sql, line.getName(), line.getColor());
 
         return createNewObject(line);
     }
 
-    public void checkDuplication(Line line) {
-        String sql = String.format("select count(*) from LINE where name = '%s'", line.getName());
+    public Optional<Line> getLinesHavingName(String name) {
+        String sql = String.format("select * from LINE where name = '%s'", name);
 
-        if (jdbcTemplate.queryForObject(sql, Integer.class) > 0) {
-            throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
+        try{
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new LineMapper()));
+        }catch(EmptyResultDataAccessException e){
+            return Optional.empty();
         }
     }
 
