@@ -1,8 +1,5 @@
 package wooteco.subway.domain;
 
-import java.util.List;
-import java.util.Objects;
-
 public class Line {
     private Long id;
     private final String name;
@@ -19,12 +16,6 @@ public class Line {
         this.color = color;
     }
 
-    public void validateDuplicate(List<Line> lines) {
-        if (lines.contains(this)) {
-            throw new IllegalArgumentException("중복된 이름이 존재합니다.");
-        }
-    }
-
     public Long getId() {
         return id;
     }
@@ -39,18 +30,18 @@ public class Line {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
+        if (this == o)
             return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null || getClass() != o.getClass())
             return false;
-        }
-        Line line = (Line) o;
-        return Objects.equals(name, line.name) && Objects.equals(color, line.color);
+
+        Line line = (Line)o;
+
+        return getName() != null ? getName().equals(line.getName()) : line.getName() == null;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, color);
+        return getName() != null ? getName().hashCode() : 0;
     }
 }

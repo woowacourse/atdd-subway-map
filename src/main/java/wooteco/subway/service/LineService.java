@@ -14,7 +14,6 @@ public class LineService {
     }
 
     public Long save(Line line) {
-        line.validateDuplicate(lineDao.findAll());
         return lineDao.save(line);
     }
 

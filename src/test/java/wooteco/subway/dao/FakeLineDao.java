@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.dao.DuplicateKeyException;
+
 import wooteco.subway.domain.Line;
 
 public class FakeLineDao implements LineDao {
@@ -22,7 +24,7 @@ public class FakeLineDao implements LineDao {
 
     private void validateDuplicateName(Line line) {
         if (lines.containsValue(line)) {
-            throw new IllegalArgumentException("중복된 이름이 존재합니다.");
+            throw new DuplicateKeyException("이미 존재하는 데이터 입니다.");
         }
     }
 

@@ -1,12 +1,14 @@
 package wooteco.subway.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DuplicateKeyException;
+
 import wooteco.subway.dao.FakeLineDao;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
@@ -52,8 +54,8 @@ class LineServiceTest {
 
         // then
         assertThatThrownBy(() -> lineService.save(line2))
-            .hasMessage("중복된 이름이 존재합니다.")
-            .isInstanceOf(IllegalArgumentException.class);
+            .hasMessage("이미 존재하는 데이터 입니다.")
+            .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
