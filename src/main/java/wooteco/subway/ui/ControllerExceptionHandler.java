@@ -42,6 +42,6 @@ public class ControllerExceptionHandler {
     @ExceptionHandler({Exception.class})
     public ResponseEntity<Map<String, String>> handleException(Exception exception) {
         logger.error(exception.getMessage());
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.internalServerError().build();
     }
 }
