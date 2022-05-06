@@ -13,11 +13,11 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 
 @Repository
-public class LineDaoImpl implements LineDao {
+public class LineJdbcDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public LineDaoImpl(JdbcTemplate jdbcTemplate) {
+    public LineJdbcDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

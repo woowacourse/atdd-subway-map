@@ -17,16 +17,16 @@ import wooteco.subway.dto.StationRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-class StationDaoImplTest {
+class StationJdbcDaoTest {
 
-    private StationDaoImpl stationDaoImpl;
+    private StationJdbcDao stationJdbcDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        stationDaoImpl = new StationDaoImpl(jdbcTemplate);
+        stationJdbcDao = new StationJdbcDao(jdbcTemplate);
 
         jdbcTemplate.execute("DROP TABLE station IF EXISTS");
         jdbcTemplate.execute("CREATE TABLE station(" +
@@ -45,7 +45,7 @@ class StationDaoImplTest {
     @Test
     void save() {
         StationRequest station = new StationRequest("역삼역");
-        Station newStation = stationDaoImpl.save(station);
+        Station newStation = stationJdbcDao.save(station);
 
         assertThat(newStation.getName()).isEqualTo("역삼역");
     }
@@ -53,7 +53,7 @@ class StationDaoImplTest {
     @DisplayName("역 정보들을 가져온다.")
     @Test
     void findAll() {
-        List<Station> stations = stationDaoImpl.findAll();
+        List<Station> stations = stationJdbcDao.findAll();
 
         assertThat(stations.size()).isEqualTo(3);
     }
@@ -62,8 +62,8 @@ class StationDaoImplTest {
     @Test
     void delete() {
         StationRequest station = new StationRequest("역삼역");
-        Station newStation = stationDaoImpl.save(station);
+        Station newStation = stationJdbcDao.save(station);
 
-        assertThat(stationDaoImpl.deleteStation(newStation.getId())).isEqualTo(1);
+        assertThat(stationJdbcDao.deleteStation(newStation.getId())).isEqualTo(1);
     }
 }

@@ -17,7 +17,7 @@ import wooteco.subway.dto.LineRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-public class LineDaoImplTest {
+public class LineJdbcDaoTest {
 
     private LineDao lineDao;
 
@@ -26,7 +26,7 @@ public class LineDaoImplTest {
 
     @BeforeEach
     void setUp() {
-        lineDao = new LineDaoImpl(jdbcTemplate);
+        lineDao = new LineJdbcDao(jdbcTemplate);
 
         jdbcTemplate.execute("DROP TABLE line IF EXISTS");
         jdbcTemplate.execute("create table if not exists LINE(\n" +
