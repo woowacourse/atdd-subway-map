@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -20,6 +21,11 @@ public class JdbcStationDao implements StationDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
+    private final RowMapper<Station> stationRowMapper =
+            (resultSet, rowNum) -> new Station(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name")
+            );
 
     public JdbcStationDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -38,11 +44,7 @@ public class JdbcStationDao implements StationDao {
     @Override
     public List<Station> findAll() {
         String query = "SELECT id, name from Station";
-        return jdbcTemplate.query(query,
-                (resultSet, rowNum) -> new Station(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name")
-                ));
+        return jdbcTemplate.query(query, stationRowMapper);
     }
 
     @Override
@@ -50,11 +52,7 @@ public class JdbcStationDao implements StationDao {
         String query = "SELECT id, name from Station WHERE id=(:id)";
         try {
             SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-            return jdbcTemplate.queryForObject(query, parameters,
-                    (resultSet, rowNum) -> new Station(
-                            resultSet.getLong("id"),
-                            resultSet.getString("name")
-                    ));
+            return jdbcTemplate.queryForObject(query, parameters, stationRowMapper);
         } catch (EmptyResultDataAccessException e) {
             throw new NoSuchElementException("해당 id에 맞는 지하철 역이 없습니다.");
         }
