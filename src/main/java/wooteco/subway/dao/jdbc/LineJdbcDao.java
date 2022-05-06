@@ -70,22 +70,22 @@ public class LineJdbcDao implements LineDao {
     }
 
     @Override
-    public Long update(final Long id, final String name, final String color) {
-        final String sql = "UPDATE LINE SET name = (?), color = (?) WHERE id = (?)";
+    public void update(final Long id, final String name, final String color)
+            throws NoSuchLineException, DuplicateLineException {
 
+        final String sql = "UPDATE LINE SET name = (?), color = (?) WHERE id = (?)";
         try {
             int affectedRow = jdbcTemplate.update(sql, name, color, id);
-            if (isNoUpdateOccurred(affectedRow)) {
-                throw new NoSuchLineException();
-            }
+            checkUpdated(affectedRow);
         } catch (DuplicateKeyException exception) {
             throw new DuplicateLineException();
         }
-        return id;
     }
 
-    private boolean isNoUpdateOccurred(final int affectedRow) {
-        return affectedRow == 0;
+    private void checkUpdated(final int affectedRow) {
+        if (affectedRow == 0) {
+            throw new NoSuchLineException();
+        }
     }
 
     @Override

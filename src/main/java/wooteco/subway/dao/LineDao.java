@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.DuplicateLineException;
+import wooteco.subway.exception.NoSuchLineException;
 
 public interface LineDao {
     Line save(Line line) throws DuplicateLineException;
@@ -12,7 +13,7 @@ public interface LineDao {
 
     Optional<Line> findById(Long id);
 
-    Long update(Long id, String name, String color);
+    void update(Long id, String name, String color) throws NoSuchLineException, DuplicateLineException;
 
     Long deleteById(Long id);
 }
