@@ -25,7 +25,7 @@ public class StationServiceTest {
         assertThat(stationResponse.getName()).isEqualTo(stationRequest.getName());
     }
 
-    @DisplayName("중복된 이름의 지하철역을 생성하면 에러를 반환한다.")
+    @DisplayName("중복된 이름의 지하철역을 생성 요청 시 예외를 던진다.")
     @Test
     void createStationWithDuplicateName() {
         StationRequest stationRequest = new StationRequest("강남역");
@@ -55,7 +55,7 @@ public class StationServiceTest {
         assertThat(stationService.findAll()).hasSize(0);
     }
 
-    @DisplayName("존재하지 않는 id의 지하철역을 삭제한다.")
+    @DisplayName("존재하지 않는 id의 지하철역 삭제 요청 시 예외를 던진다.")
     @Test
     void deleteStationNotExists() {
         assertThatThrownBy(() -> stationService.delete(1L)).isInstanceOf(IllegalArgumentException.class)

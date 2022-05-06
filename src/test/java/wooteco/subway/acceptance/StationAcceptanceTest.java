@@ -41,7 +41,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.(400에러)")
     @Test
     void createStationWithDuplicateName() {
         // given
@@ -137,7 +137,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("존재하지 않는 지하철역을 제거한다.")
+    @DisplayName("존재하지 않는 지하철역을 제거한다.(400에러)")
     @Test
     void deleteStationNotExists() {
         // given

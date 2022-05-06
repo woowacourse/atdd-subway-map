@@ -27,7 +27,7 @@ public class LineServiceTest {
         assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName());
     }
 
-    @DisplayName("중복된 지하철 노선을 생성한다.")
+    @DisplayName("중복된 이름으로 지하철 노선 생성 요청 시 예외를 던진다.")
     @Test
     void createLineWithDuplicateName() {
         LineRequest lineRequest = new LineRequest("2호선", "red");
@@ -57,7 +57,7 @@ public class LineServiceTest {
         assertThat(lineService.find(lineResponse.getId()).getName()).isEqualTo(lineRequest1.getName());
     }
 
-    @DisplayName("존재하지 않는 지하철 노선 조회한다.")
+    @DisplayName("존재하지 않는 지하철 노선 조회 요청 시 예외를 던진다.")
     @Test
     void getLineNotExists() {
         assertThatThrownBy(() -> lineService.find(1L)).isInstanceOf(IllegalArgumentException.class)
@@ -75,7 +75,7 @@ public class LineServiceTest {
         assertThat(lineService.find(lineResponse.getId()).getName()).isEqualTo(lineRequest2.getName());
     }
 
-    @DisplayName("존재하지 않는 지하철 노선 수정한다.")
+    @DisplayName("존재하지 않는 지하철 노선 수정 요청 시 예외를 던진다.")
     @Test
     void updateLineNotExists() {
         LineRequest lineRequest = new LineRequest("2호선", "red");
@@ -93,7 +93,7 @@ public class LineServiceTest {
         assertThat(lineService.findAll()).hasSize(0);
     }
 
-    @DisplayName("존재하지 않는 지하철 노선 삭제한다.")
+    @DisplayName("존재하지 않는 지하철 노선 삭제 요청 시 예외를 던진다.")
     @Test
     void deleteLineNotExists() {
         assertThatThrownBy(() -> lineService.delete(1L)).isInstanceOf(IllegalArgumentException.class)
