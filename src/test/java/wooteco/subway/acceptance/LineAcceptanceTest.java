@@ -18,10 +18,10 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import wooteco.subway.dto.LineResponse;
 
-@DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
+    @DisplayName("노선을 생성한다.")
     void createLine() {
         // given
         Map<String, String> params = new HashMap<>();
@@ -43,6 +43,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("모든 노선을 조회한다.")
     void findAllLine() {
         //given
         Map<String, String> params1 = new HashMap<>();
@@ -88,6 +89,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("id별 노선을 조회한다.")
     void findLindById() {
         //given
         Map<String, String> params = new HashMap<>();
@@ -115,6 +117,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("노선을 수정한다.")
     void update() {
         //given
         Map<String, String> params = new HashMap<>();
@@ -146,6 +149,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("노선을 삭제한다.")
     void delete() {
         //given
         Map<String, String> params = new HashMap<>();
