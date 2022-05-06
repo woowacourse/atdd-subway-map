@@ -2,6 +2,7 @@ package wooteco.subway.ui;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.info.LineInfo;
+import wooteco.subway.dto.request.LineRequest;
+import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.service.LineService;
 
 @RestController
@@ -29,25 +31,30 @@ public class LineController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse lineResponse = lineService.save(lineRequest);
+        LineInfo lineInfo = LineConverter.toInfo(lineRequest);
+        LineResponse lineResponse = LineConverter.toResponse(lineService.save(lineInfo));
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> lineResponses = lineService.findAll();
+        List<LineInfo> lineInfos = lineService.findAll();
+        List<LineResponse> lineResponses = lineInfos.stream()
+            .map(info -> LineConverter.toResponse(info))
+            .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        LineResponse lineResponse = lineService.find(id);
+        LineResponse lineResponse = LineConverter.toResponse(lineService.find(id));
         return ResponseEntity.ok().body(lineResponse);
     }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.update(id, lineRequest);
+        LineInfo lineInfo = LineConverter.toInfo(id, lineRequest);
+        lineService.update(lineInfo);
         return ResponseEntity.ok().build();
     }
 

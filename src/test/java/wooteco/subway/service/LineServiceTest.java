@@ -6,8 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.info.LineInfo;
 
 public class LineServiceTest {
 
@@ -21,29 +20,29 @@ public class LineServiceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        LineRequest lineRequest = new LineRequest("2호선", "red");
-        LineResponse lineResponse = lineService.save(lineRequest);
+        LineInfo lineInfoToRequest = new LineInfo("2호선", "red");
+        LineInfo lineInfoToResponse = lineService.save(lineInfoToRequest);
 
-        assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName());
+        assertThat(lineInfoToResponse.getName()).isEqualTo(lineInfoToRequest.getName());
     }
 
     @DisplayName("중복된 이름으로 지하철 노선 생성 요청 시 예외를 던진다.")
     @Test
     void createLineWithDuplicateName() {
-        LineRequest lineRequest = new LineRequest("2호선", "red");
-        lineService.save(lineRequest);
+        LineInfo lineInfoToRequest = new LineInfo("2호선", "red");
+        lineService.save(lineInfoToRequest);
 
-        assertThatThrownBy(() -> lineService.save(lineRequest)).isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> lineService.save(lineInfoToRequest)).isInstanceOf(IllegalArgumentException.class)
             .hasMessage("중복된 지하철 노선 이름입니다.");
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
-        LineRequest lineRequest1 = new LineRequest("2호선", "red");
-        LineRequest lineRequest2 = new LineRequest("3호선", "red");
-        lineService.save(lineRequest1);
-        lineService.save(lineRequest2);
+        LineInfo lineInfoToRequest = new LineInfo("2호선", "red");
+        LineInfo lineInfoToRequest2 = new LineInfo("3호선", "red");
+        lineService.save(lineInfoToRequest);
+        lineService.save(lineInfoToRequest2);
 
         assertThat(lineService.findAll()).hasSize(2);
     }
@@ -51,10 +50,10 @@ public class LineServiceTest {
     @DisplayName("지하철 노선 조회한다.")
     @Test
     void getLine() {
-        LineRequest lineRequest1 = new LineRequest("2호선", "red");
-        LineResponse lineResponse = lineService.save(lineRequest1);
+        LineInfo lineInfoToRequest = new LineInfo("2호선", "red");
+        LineInfo lineInfoToResponse = lineService.save(lineInfoToRequest);
 
-        assertThat(lineService.find(lineResponse.getId()).getName()).isEqualTo(lineRequest1.getName());
+        assertThat(lineService.find(lineInfoToResponse.getId()).getName()).isEqualTo(lineInfoToRequest.getName());
     }
 
     @DisplayName("존재하지 않는 지하철 노선 조회 요청 시 예외를 던진다.")
@@ -67,29 +66,29 @@ public class LineServiceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
-        LineRequest lineRequest = new LineRequest("2호선", "red");
-        LineResponse lineResponse = lineService.save(lineRequest);
+        LineInfo lineInfoToRequest = new LineInfo("2호선", "red");
+        LineInfo lineInfoToResponse = lineService.save(lineInfoToRequest);
 
-        LineRequest lineRequest2 = new LineRequest("3호선", "red");
-        lineService.update(lineResponse.getId(), lineRequest2);
-        assertThat(lineService.find(lineResponse.getId()).getName()).isEqualTo(lineRequest2.getName());
+        LineInfo lineInfoToRequest2 = new LineInfo(lineInfoToResponse.getId(), "3호선", "red");
+        lineService.update(lineInfoToRequest2);
+        assertThat(lineService.find(lineInfoToResponse.getId()).getName()).isEqualTo(lineInfoToRequest2.getName());
     }
 
     @DisplayName("존재하지 않는 지하철 노선 수정 요청 시 예외를 던진다.")
     @Test
     void updateLineNotExists() {
-        LineRequest lineRequest = new LineRequest("2호선", "red");
-        assertThatThrownBy(() -> lineService.update(1L, lineRequest)).isInstanceOf(IllegalArgumentException.class)
+        LineInfo lineInfo = new LineInfo(1L, "2호선", "green");
+        assertThatThrownBy(() -> lineService.update(lineInfo)).isInstanceOf(IllegalArgumentException.class)
             .hasMessage("존재하지 않는 지하철 노선 id입니다.");
     }
 
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void deleteLine() {
-        LineRequest lineRequest = new LineRequest("2호선", "red");
-        LineResponse lineResponse = lineService.save(lineRequest);
+        LineInfo lineInfoToRequest = new LineInfo("2호선", "red");
+        LineInfo lineInfoToResponse = lineService.save(lineInfoToRequest);
 
-        lineService.delete(lineResponse.getId());
+        lineService.delete(lineInfoToResponse.getId());
         assertThat(lineService.findAll()).hasSize(0);
     }
 

@@ -7,14 +7,14 @@ import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.request.StationRequest;
+import wooteco.subway.dto.response.StationResponse;
 
 @Service
 public class StationService {
     private static final String ERROR_MESSAGE_DUPLICATE_NAME = "중복된 지하철 역 이름입니다.";
     private static final String ERROR_MESSAGE_NOT_EXISTS_ID = "존재하지 않는 지하철 역입니다.";
-    
+
     private final StationDao stationDao;
 
     public StationService(StationDao stationDao) {
