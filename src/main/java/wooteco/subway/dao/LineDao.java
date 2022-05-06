@@ -10,7 +10,7 @@ public interface LineDao {
 
     List<Line> findAll();
 
-    Line find(Long id);
+    Line findById(Long id);
 
     int update(Long id, Line line);
 

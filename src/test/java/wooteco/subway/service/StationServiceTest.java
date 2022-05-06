@@ -12,7 +12,7 @@ import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.DuplicateNameException;
-import wooteco.subway.exception.DataNotExistException;
+import wooteco.subway.exception.DataNotFoundException;
 
 class StationServiceTest {
 
@@ -49,7 +49,7 @@ class StationServiceTest {
 
         assertThatThrownBy(() -> stationService.createStation(duplicateStation))
                 .isInstanceOf(DuplicateNameException.class)
-                .hasMessageContaining("이미 등록된 지하철역입니다.");
+                .hasMessageContaining("이미 등록된 지하철역 이름입니다.");
     }
 
     @Test
@@ -82,7 +82,7 @@ class StationServiceTest {
     @DisplayName("존재하지 않는 역 정보 삭제시 예외를 발생한다.")
     void deleteNotExistStation() {
         assertThatThrownBy(() -> stationService.deleteStation(12))
-                .isInstanceOf(DataNotExistException.class)
+                .isInstanceOf(DataNotFoundException.class)
                 .hasMessageContaining("존재하지 않는 역입니다.");
     }
 }

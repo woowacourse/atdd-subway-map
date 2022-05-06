@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.exception.ClientException;
 import wooteco.subway.exception.DuplicateNameException;
-import wooteco.subway.exception.DataNotExistException;
+import wooteco.subway.exception.DataNotFoundException;
 
 @RestControllerAdvice
 public class ControllerAdvice {
@@ -15,8 +15,8 @@ public class ControllerAdvice {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
-    @ExceptionHandler({DataNotExistException.class})
-    public ResponseEntity<String> handleNoDataExistException(ClientException exception) {
+    @ExceptionHandler({DataNotFoundException.class})
+    public ResponseEntity<String> handleDataNotFoundException(ClientException exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 }

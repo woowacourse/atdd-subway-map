@@ -127,10 +127,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         long resultLineId = response.jsonPath().getLong("id");
+        LineRequest newLineRequest = new LineRequest("4호선", "bg-red-600");
 
         ExtractableResponse<Response> newResponse = RestAssured.given().log()
                 .all()
-                .body(lineRequest)
+                .body(newLineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put("/lines/" + resultLineId)

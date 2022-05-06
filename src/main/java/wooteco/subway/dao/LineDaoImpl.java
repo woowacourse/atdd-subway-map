@@ -46,7 +46,7 @@ public class LineDaoImpl implements LineDao {
     }
 
     @Override
-    public Line find(Long id) {
+    public Line findById(Long id) {
         final String sql = "select * from line where id = (?)";
         return jdbcTemplate.queryForObject(sql, lineRowMapper(), id);
     }

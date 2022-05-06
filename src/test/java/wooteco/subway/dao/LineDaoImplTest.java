@@ -7,10 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import wooteco.subway.domain.Line;
 
 public class LineDaoImplTest extends DaoImplTest{
@@ -58,8 +55,8 @@ public class LineDaoImplTest extends DaoImplTest{
         Line line = new Line("5호선", "blue");
         Line newLine = lineDao.save(line);
 
-        assertThat(lineDao.find(newLine.getId()).getName()).isEqualTo("5호선");
-        assertThat(lineDao.find(newLine.getId()).getColor()).isEqualTo("blue");
+        assertThat(lineDao.findById(newLine.getId()).getName()).isEqualTo("5호선");
+        assertThat(lineDao.findById(newLine.getId()).getColor()).isEqualTo("blue");
     }
 
     @DisplayName("노선 정보를 변경한다.")

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.DataNotExistException;
+import wooteco.subway.exception.DataNotFoundException;
 
 public class FakeStationDao implements StationDao {
 
@@ -30,7 +30,7 @@ public class FakeStationDao implements StationDao {
         return stations.stream()
                 .filter(station -> station.getId() == id)
                 .findAny()
-                .orElseThrow(() -> new DataNotExistException("존재하지 않는 역입니다."));
+                .orElseThrow(() -> new DataNotFoundException("존재하지 않는 역입니다."));
     }
 
     private Station createNewObject(Station station) {
