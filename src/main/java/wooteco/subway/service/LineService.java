@@ -7,7 +7,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.exception.ClientException;
+import wooteco.subway.exception.DuplicateNameException;
 
 @Service
 public class LineService {
@@ -19,19 +19,19 @@ public class LineService {
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
-        validateDuplicateLine(lineRequest);
+        validateDuplicate(lineRequest);
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineDao.save(line);
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
-    private void validateDuplicateLine(LineRequest lineRequest) {
-        if (isDuplicateLineName(lineRequest)) {
-            throw new ClientException("이미 등록된 지하철노선입니다.");
+    private void validateDuplicate(LineRequest lineRequest) {
+        if (hasDuplicateLine(lineRequest)) {
+            throw new DuplicateNameException("이미 등록된 지하철노선입니다.");
         }
     }
 
-    private boolean isDuplicateLineName(LineRequest lineRequest) {
+    private boolean hasDuplicateLine(LineRequest lineRequest) {
         return lineDao.findAll()
                 .stream()
                 .anyMatch(line -> line.getName().equals(lineRequest.getName()));

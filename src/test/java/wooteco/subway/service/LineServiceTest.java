@@ -1,19 +1,17 @@
 package wooteco.subway.service;
 
-import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 import wooteco.subway.dao.FakeLineDao;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.exception.ClientException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import wooteco.subway.exception.DuplicateNameException;
 
 class LineServiceTest {
 
@@ -50,7 +48,7 @@ class LineServiceTest {
         lineService.createLine(line);
 
         assertThatThrownBy(() -> lineService.createLine(duplicateLine))
-                .isInstanceOf(ClientException.class)
+                .isInstanceOf(DuplicateNameException.class)
                 .hasMessageContaining("이미 등록된 지하철노선입니다.");
     }
 

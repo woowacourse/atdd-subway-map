@@ -10,6 +10,7 @@ import org.springframework.util.ReflectionUtils;
 
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.ClientException;
+
 public class FakeLineDao implements LineDao {
 
     private static Long seq = 0L;

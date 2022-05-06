@@ -7,7 +7,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.ClientException;
+import wooteco.subway.exception.DuplicateNameException;
 
 @Service
 public class StationService {
@@ -19,19 +19,19 @@ public class StationService {
     }
 
     public StationResponse createStation(StationRequest stationRequest) {
-        validateDuplicateStation(stationRequest);
+        validateDuplicate(stationRequest);
         Station station = new Station(stationRequest.getName());
         Station newStation = stationDao.save(station);
         return new StationResponse(newStation.getId(), newStation.getName());
     }
 
-    private void validateDuplicateStation(StationRequest stationRequest) {
-        if (isDuplicateStationName(stationRequest)) {
-            throw new ClientException("이미 등록된 지하철역입니다.");
+    private void validateDuplicate(StationRequest stationRequest) {
+        if (hasDuplicateStation(stationRequest)) {
+            throw new DuplicateNameException("이미 등록된 지하철역입니다.");
         }
     }
 
-    private boolean isDuplicateStationName(StationRequest stationRequest) {
+    private boolean hasDuplicateStation(StationRequest stationRequest) {
         return stationDao.findAll()
                 .stream()
                 .anyMatch(station -> station.getName().equals(stationRequest.getName()));

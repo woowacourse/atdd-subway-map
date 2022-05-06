@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.ClientException;
+import wooteco.subway.exception.DuplicateNameException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -49,7 +49,7 @@ class StationServiceTest {
         stationService.createStation(station);
 
         assertThatThrownBy(() -> stationService.createStation(duplicateStation))
-                .isInstanceOf(ClientException.class)
+                .isInstanceOf(DuplicateNameException.class)
                 .hasMessageContaining("이미 등록된 지하철역입니다.");
     }
 
