@@ -23,8 +23,7 @@ public class LineService {
 
     public LineResponse createLine(LineRequest lineRequest) {
         validateDuplicateLine(lineRequest);
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = lineDao.save(line);
+        Line newLine = lineDao.save(lineRequest);
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
@@ -51,8 +50,7 @@ public class LineService {
     }
 
     public int updateLine(Long id, LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        return lineDao.update(id, line);
+        return lineDao.update(id, lineRequest);
     }
 
     public int deleteLine(Long id) {

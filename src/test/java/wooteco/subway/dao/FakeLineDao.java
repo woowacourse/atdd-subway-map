@@ -1,32 +1,24 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.springframework.util.ReflectionUtils;
-
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.exception.ClientException;
+
 public class FakeLineDao implements LineDao {
 
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
 
     @Override
-    public Line save(Line line) {
-        Line persistLine = createNewObject(line);
+    public Line save(LineRequest line) {
+        Line persistLine = new Line(++seq, line.getName(), line.getColor());
         lines.add(persistLine);
         return persistLine;
-    }
-
-    private Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
     }
 
     @Override
@@ -43,13 +35,12 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public int update(Long id, Line line) {
+    public int update(Long id, LineRequest line) {
         int targetIndex = IntStream.range(0, lines.size())
                 .filter(index -> lines.get(index).getId() == id)
                 .findAny()
                 .orElseThrow(() -> new ClientException("존재하지 않는 노선입니다."));
-        lines.set(targetIndex, line);
-
+        lines.set(targetIndex, new Line(lines.get(targetIndex).getId(), line.getName(), line.getColor()));
         if (lines.get(targetIndex).getName().equals(line.getName())) {
             return 1;
         }
