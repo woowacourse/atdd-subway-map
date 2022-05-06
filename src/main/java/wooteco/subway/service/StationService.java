@@ -5,19 +5,21 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.request.StationRequest;
 import wooteco.subway.dto.response.StationResponse;
 
 @Service
-public class StationsService {
+public class StationService {
 
     private final StationDao stationDao;
 
-    public StationsService(StationDao stationDao) {
+    public StationService(StationDao stationDao) {
         this.stationDao = stationDao;
     }
 
-    public StationResponse save(Station station) {
-        Station savedStation = stationDao.save(station);
+    public StationResponse save(StationRequest stationRequest) {
+        Station newStation = new Station(stationRequest.getName());
+        Station savedStation = stationDao.save(newStation);
         return new StationResponse(savedStation.getId(), savedStation.getName());
     }
 
