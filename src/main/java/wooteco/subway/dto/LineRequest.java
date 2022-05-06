@@ -1,21 +1,20 @@
 package wooteco.subway.dto;
 
-public class LineRequest {
-    private String name;
-    private String color;
-    private Long upStationId;
-    private Long downStationId;
-    private int distance;
+import javax.validation.constraints.NotBlank;
 
-    public LineRequest() {
+public class LineRequest {
+
+    @NotBlank
+    private String name;
+    @NotBlank
+    private String color;
+
+    private LineRequest() {
     }
 
-    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public LineRequest(final String name, final String color) {
         this.name = name;
         this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
     }
 
     public String getName() {
@@ -24,17 +23,5 @@ public class LineRequest {
 
     public String getColor() {
         return color;
-    }
-
-    public Long getUpStationId() {
-        return upStationId;
-    }
-
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 }
