@@ -72,7 +72,7 @@ public class LineController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line findLine = findLineById(id);
-        if (isDuplicateName(lineRequest.getName()) && isNotSameName(lineRequest.getName(), findLine.getName())) {
+        if (isDuplicateName(lineRequest.getName()) && !findLine.isSameName(lineRequest.getName())) {
             throw new IllegalArgumentException(
                     StringFormat.errorMessage(lineRequest.getName(), LINE_DUPLICATION_EXCEPTION_MESSAGE));
         }
@@ -85,9 +85,5 @@ public class LineController {
         return lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
                         StringFormat.errorMessage(id, NO_SUCH_LINE_EXCEPTION_MESSAGE)));
-    }
-
-    private boolean isNotSameName(String originName, String updateName) {
-        return !originName.equals(updateName);
     }
 }
