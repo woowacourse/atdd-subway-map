@@ -17,6 +17,7 @@ import wooteco.subway.utils.exception.NameDuplicatedException;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class LineRepository {
@@ -61,13 +62,13 @@ public class LineRepository {
         }
     }
 
-    public Line findByName(final String name) {
+    public Optional<Line> findByName(final String name) {
         String sql = "SELECT * FROM line WHERE name = :name";
         SqlParameterSource parameters = new MapSqlParameterSource("name", name);
         try {
-            return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
+            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper()));
         } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
+            return Optional.empty();
         }
     }
 

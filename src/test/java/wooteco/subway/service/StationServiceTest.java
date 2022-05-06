@@ -58,7 +58,7 @@ class StationServiceTest {
     void deleteStation() {
         Station station = stationRepository.save(new Station("신림역"));
         stationService.deleteStation(station.getId());
-        assertThat(stationRepository.findById(station.getId())).isNull();
+        assertThat(stationRepository.findAll()).isEmpty();
     }
 
 }

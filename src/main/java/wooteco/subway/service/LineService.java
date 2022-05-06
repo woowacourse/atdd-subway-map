@@ -6,13 +6,13 @@ import wooteco.subway.dao.LineRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.utils.exception.ExceptionMessages;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Transactional
 @Service
 public class LineService {
 
@@ -22,6 +22,7 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
+    @Transactional
     public LineResponse create(final LineRequest lineRequest) {
         validateDuplicateName(lineRepository.findByName(lineRequest.getName()));
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
@@ -29,10 +30,10 @@ public class LineService {
         return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor());
     }
 
-    private void validateDuplicateName(final Line line) {
-        if (Objects.nonNull(line)) {
-            throw new NameDuplicatedException("[ERROR] 이미 존재하는 이름입니다.");
-        }
+    private void validateDuplicateName(final Optional<Line> line) {
+        line.ifPresent(l -> {
+            throw new NameDuplicatedException(ExceptionMessages.NAME_DUPLICATE_MESSAGE);
+        });
     }
 
     public List<LineResponse> showLines() {
@@ -47,7 +48,9 @@ public class LineService {
         return new LineResponse(findLine.getId(), findLine.getName(), findLine.getColor());
     }
 
+    @Transactional
     public void update(final Long id, final LineRequest lineRequest) {
+        validateDuplicateName(lineRepository.findByName(lineRequest.getName()));
         lineRepository.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
     }
 

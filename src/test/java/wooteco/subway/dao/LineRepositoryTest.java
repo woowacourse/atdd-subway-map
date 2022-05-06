@@ -72,17 +72,15 @@ public class LineRepositoryTest {
     @Test
     void findByName() {
         Line saveLine = lineRepository.save(new Line("분당선", "bg-red-600"));
-        Line findLine = lineRepository.findByName("분당선");
+        Line findLine = lineRepository.findByName("분당선").orElse(null);
 
         assertThat(findLine).isEqualTo(saveLine);
     }
 
-    @DisplayName("이름으로 노선을 조회시 없을 경우 null을 반환한다.")
+    @DisplayName("이름으로 노선을 조회시 없을 경우 빈 Optional을 반환한다.")
     @Test
     void findByNameNull() {
-        Line findLine = lineRepository.findByName("분당선");
-
-        assertThat(findLine).isNull();
+        assertThat(lineRepository.findByName("분당선").isEmpty()).isTrue();
     }
 
     @DisplayName("노선을 수정한다.")

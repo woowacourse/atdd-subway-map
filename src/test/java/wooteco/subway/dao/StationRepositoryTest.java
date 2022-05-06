@@ -84,10 +84,10 @@ class StationRepositoryTest {
     }
 
 
-    @DisplayName("이름으로 역 조회시 없다면 null 반환한다.")
+    @DisplayName("이름으로 역 조회시 없다면 Optional empty를 반환한다.")
     @Test
     void findByNameNoName() {
-        assertThat(stationRepository.findByName("신림역")).isNull();
+        assertThat(stationRepository.findByName("신림역").isEmpty()).isTrue();
     }
 
     @DisplayName("id로 역을 조회한다.")
