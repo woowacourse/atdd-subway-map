@@ -1,4 +1,4 @@
-package wooteco.subway.ui;
+package wooteco.subway.controller;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
