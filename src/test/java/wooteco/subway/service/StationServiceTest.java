@@ -12,6 +12,8 @@ import org.springframework.dao.DuplicateKeyException;
 import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
 
 class StationServiceTest {
 
@@ -33,26 +35,30 @@ class StationServiceTest {
     @Test
     void save() {
         // given
-        Station station = new Station("범고래");
+        StationRequest stationRequest = new StationRequest("범고래");
+        // Station station = new Station("범고래");
 
         // when
-        Station result = stationService.save(station);
+        StationResponse stationResponse = stationService.save(stationRequest);
 
         // then
-        assertThat(station).isEqualTo(result);
+        assertThat(stationRequest.getName()).isEqualTo(stationResponse.getName());
     }
 
     @Test
     void validateDuplication() {
         // given
-        Station station1 = new Station("범고래");
-        Station station2 = new Station("범고래");
+        // Station station1 = new Station("범고래");
+        // Station station2 = new Station("범고래");
+
+        StationRequest stationRequest1 = new StationRequest("범고래");
+        StationRequest stationRequest2 = new StationRequest("범고래");
 
         // when
-        stationService.save(station1);
+        stationService.save(stationRequest1);
 
         // then
-        assertThatThrownBy(() -> stationService.save(station2))
+        assertThatThrownBy(() -> stationService.save(stationRequest2))
             .hasMessage("이미 존재하는 데이터 입니다.")
             .isInstanceOf(DuplicateKeyException.class);
     }
@@ -60,30 +66,33 @@ class StationServiceTest {
     @Test
     void findAll() {
         // given
-        Station station1 = stationService.save(new Station("범고래"));
-        Station station2 = stationService.save(new Station("애쉬"));
+        // Station station1 = stationService.save(new Station("범고래"));
+        // Station station2 = stationService.save(new Station("애쉬"));
+
+        StationResponse stationResponse1 = stationService.save(new StationRequest("범고래"));
+        StationResponse stationResponse2 = stationService.save(new StationRequest("애쉬"));
 
         // when
-        List<Station> stations = stationService.findAll();
+        List<StationResponse> stationResponses = stationService.findAll();
 
         // then
-        assertThat(stations)
+        assertThat(stationResponses)
             .hasSize(2)
-            .contains(station1, station2);
+            .contains(stationResponse1, stationResponse2);
     }
 
     @Test
     void deleteById() {
         // given
-        Station station = stationService.save(new Station("범고래"));
+        StationResponse stationResponse = stationService.save(new StationRequest("범고래"));
 
         // when
-        stationService.deleteById(station.getId());
-        List<Station> stations = stationService.findAll();
+        stationService.deleteById(stationResponse.getId());
+        List<StationResponse> stationResponses = stationService.findAll();
 
         // then
-        assertThat(stations)
+        assertThat(stationResponses)
             .hasSize(0)
-            .doesNotContain(station);
+            .doesNotContain(stationResponse);
     }
 }
