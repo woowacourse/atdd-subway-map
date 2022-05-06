@@ -7,7 +7,7 @@ public class LineAndStationRequest {
     private final Long downStationId;
     private final int distance;
 
-    public LineAndStationRequest() {
+    private LineAndStationRequest() {
         this(null, null, null, null, 0);
     }
 

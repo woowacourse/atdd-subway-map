@@ -5,7 +5,7 @@ public class SectionRequest {
     private final Long downStationId;
     private final int distance;
 
-    public SectionRequest() {
+    private SectionRequest() {
         this(null, null, 0);
     }
 
