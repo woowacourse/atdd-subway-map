@@ -1,5 +1,7 @@
 package wooteco.subway.dao;
 
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -9,12 +11,17 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.utils.exception.ExceptionMessages;
+import wooteco.subway.utils.exception.IdNotFoundException;
+import wooteco.subway.utils.exception.NameDuplicatedException;
 
 import javax.sql.DataSource;
 import java.util.List;
 
 @Repository
 public class LineRepository {
+
+    private static final int NO_ROW = 0;
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -31,8 +38,12 @@ public class LineRepository {
                 .addValue("name", line.getName())
                 .addValue("color", line.getColor());
 
-        long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Line(id, line.getName(), line.getColor());
+        try {
+            long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+            return new Line(id, line.getName(), line.getColor());
+        } catch (DuplicateKeyException e) {
+            throw new NameDuplicatedException(ExceptionMessages.NAME_DUPLICATE_MESSAGE);
+        }
     }
 
     public List<Line> findAll() {
@@ -43,7 +54,11 @@ public class LineRepository {
     public Line findById(final Long id) {
         String sql = "SELECT * FROM line WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
+        try {
+            return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            throw new IdNotFoundException(ExceptionMessages.NO_ID_MESSAGE);
+        }
     }
 
     public Line findByName(final String name) {
@@ -68,12 +83,22 @@ public class LineRepository {
     public void update(final Line line) {
         String sql = "UPDATE line SET name = :name, color = :color WHERE id = :id";
         SqlParameterSource nameParameters = new BeanPropertySqlParameterSource(line);
-        namedParameterJdbcTemplate.update(sql, nameParameters);
+        try {
+            namedParameterJdbcTemplate.update(sql, nameParameters);
+        } catch (DuplicateKeyException e) {
+            throw new NameDuplicatedException(ExceptionMessages.NAME_DUPLICATE_MESSAGE);
+        } catch (EmptyResultDataAccessException e) {
+            throw new IdNotFoundException(ExceptionMessages.NO_ID_MESSAGE);
+        }
+
     }
 
     public void deleteById(final Long id) {
         String sql = "DELETE FROM line WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        namedParameterJdbcTemplate.update(sql, parameters);
+        int rowCounts = namedParameterJdbcTemplate.update(sql, parameters);
+        if (rowCounts == NO_ROW) {
+            throw new IdNotFoundException(ExceptionMessages.NO_ID_MESSAGE);
+        }
     }
 }

@@ -5,13 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.dto.LineUpdateDto;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.utils.exception.NameDuplicatedException;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Transactional
@@ -31,6 +31,16 @@ public class LineRepositoryTest {
                 () -> assertThat(saveLine.getId()).isNotNull(),
                 () -> assertThat(saveLine).isEqualTo(line)
         );
+    }
+
+    @DisplayName("노선 저장시 유니크 키에 위반되면 에러를 발생한다")
+    @Test
+    void saveUniqueException() {
+        Line line = new Line("분당선", "bg-red-600");
+        lineRepository.save(line);
+
+        assertThatThrownBy(() -> lineRepository.save(line))
+                .isInstanceOf(NameDuplicatedException.class);
     }
 
     @DisplayName("모든 노선을 조회한다.")
