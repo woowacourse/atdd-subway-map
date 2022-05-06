@@ -1,5 +1,6 @@
 package wooteco.subway.controller;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -13,20 +14,26 @@ import wooteco.subway.exception.DataLengthException;
 public class ExceptionHandlerController {
 
     @ExceptionHandler(DataLengthException.class)
-    public ResponseEntity<ErrorMessageResponse> DataLengthException(DataLengthException e) {
+    public ResponseEntity<ErrorMessageResponse> handleDataLengthException(DataLengthException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessageResponse(e.getMessage()));
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity<ErrorMessageResponse> EmptyResultDataAccessException() {
+    public ResponseEntity<ErrorMessageResponse> handleEmptyResultDataAccessException() {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorMessageResponse("요청한 리소스를 DB에서 찾을 수 없습니다."));
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<ErrorMessageResponse> DuplicateKeyException() {
+    public ResponseEntity<ErrorMessageResponse> handleDuplicateKeyException() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessageResponse("중복된 데이터가 존재합니다."));
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<ErrorMessageResponse> handleDataAccessException() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorMessageResponse("DB관련 작업에서 오류가 발생했습니다."));
     }
 }
