@@ -35,9 +35,8 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLines(@RequestBody LineRequest lineRequest) {
-        Line line = lineService.save(lineRequest);
-        LineResponse lineResponse = lineDao.queryByLineId(line.getId());
-        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
+        LineResponse response = lineService.save(lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 
     @GetMapping
@@ -51,8 +50,7 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line line = lineService.findById(id);
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
+        LineResponse lineResponse = lineService.queryById(id);
         return ResponseEntity.ok(lineResponse);
     }
 

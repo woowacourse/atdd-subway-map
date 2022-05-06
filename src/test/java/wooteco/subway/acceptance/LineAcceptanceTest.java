@@ -146,6 +146,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getLong("id")).isNotNull();
         assertThat(response.jsonPath().getString("name")).isEqualTo(name);
         assertThat(response.jsonPath().getString("color")).isEqualTo(color);
+        assertThat(response.jsonPath().getList("stations.id", Long.class))
+            .containsExactlyInAnyOrder(upStationId, downStationId);
     }
 
     @DisplayName("존재하지 않는 지하철 노선 조회시 예외를 반환한다")
@@ -153,7 +155,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void showNotExistLine() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when().get("/lines/" + 50L)
+            .when().get("/lines/" + 1L)
             .then().log().all()
             .extract();
 

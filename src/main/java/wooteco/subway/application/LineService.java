@@ -2,10 +2,12 @@ package wooteco.subway.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.repository.LineRepository;
@@ -21,46 +23,35 @@ public class LineService {
     private final LineRepository lineRepository;
     private final SectionRepository sectionRepository;
     private final StationService stationService;
+    private final LineDao lineDao;
 
     public LineService(LineRepository lineRepository,
                        SectionRepository sectionRepository,
-                       StationService stationService) {
+                       StationService stationService, LineDao lineDao) {
         this.lineRepository = lineRepository;
         this.sectionRepository = sectionRepository;
         this.stationService = stationService;
+        this.lineDao = lineDao;
     }
 
-    public Line save(LineRequest request) {
+    public LineResponse save(LineRequest request) {
         if (lineRepository.existByName(request.getName())) {
             throw new DuplicateException(String.format(DUPLICATE_MESSAGE, request.getName()));
         }
 
         Station upStation = stationService.findById(request.getUpStationId());
         Station downStation = stationService.findById(request.getDownStationId());
-
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        Section section = sectionRepository.save(
-            new Section(line, upStation, downStation, request.getDistance()));
+        sectionRepository.save(new Section(line, upStation, downStation, request.getDistance()));
 
-        line.addSection(section);
-        return line;
-    }
-
-    public Line save(String name, String color) {
-        if (lineRepository.existByName(name)) {
-            throw new DuplicateException(String.format(DUPLICATE_MESSAGE, name));
-        }
-        return lineRepository.save(new Line(name, color));
-    }
-
-    @Transactional(readOnly = true)
-    public Line findById(Long id) {
-        return lineRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, id)));
+        return lineDao.queryById(line.getId())
+            .orElseThrow(
+                () -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, line.getId())));
     }
 
     public Line update(Long id, String name, String color) {
-        Line line = findById(id);
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, id)));
 
         if (isDuplicateName(line, name)) {
             throw new DuplicateException(String.format(DUPLICATE_MESSAGE, name));
@@ -78,5 +69,11 @@ public class LineService {
             throw new NotFoundException(String.format(NOT_FOUND_MESSAGE, id));
         }
         lineRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public LineResponse queryById(Long id) {
+        return lineDao.queryById(id)
+            .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, id)));
     }
 }
