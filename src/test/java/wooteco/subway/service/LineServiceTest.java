@@ -39,6 +39,7 @@ class LineServiceTest {
         LineResponse newLine = lineService.createLine(line);
 
         assertThat(line.getName()).isEqualTo(newLine.getName());
+        assertThat(line.getColor()).isEqualTo(newLine.getColor());
     }
 
     @DisplayName("중복된 노선 저장시 예외")
@@ -92,5 +93,6 @@ class LineServiceTest {
         LineResponse newLine = lineService.createLine(line);
 
         assertThat(lineService.findLine(newLine.getId()).getName()).isEqualTo(line.getName());
+        assertThat(lineService.findLine(newLine.getId()).getColor()).isEqualTo(line.getColor());
     }
 }
