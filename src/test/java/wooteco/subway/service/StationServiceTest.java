@@ -35,4 +35,12 @@ class StationServiceTest {
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 Station입니다.");
     }
+
+    @Test
+    @DisplayName("존재하지 않는 id의 Station을 검증할 수 있다.")
+    void validateExistStation() {
+        assertThatThrownBy(() -> stationService.validateExistStation(1L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 Station입니다.");
+    }
 }

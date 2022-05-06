@@ -30,11 +30,11 @@ public class StationService {
 
     @Transactional
     public void delete(final Long stationId) {
-        checkExistStation(stationId);
+        validateExistStation(stationId);
         stationDao.delete(stationId);
     }
 
-    private void checkExistStation(final Long stationId) {
+    public void validateExistStation(final Long stationId) {
         if (!stationDao.existById(stationId)) {
             throw new NotFoundException("존재하지 않는 Station입니다.");
         }
