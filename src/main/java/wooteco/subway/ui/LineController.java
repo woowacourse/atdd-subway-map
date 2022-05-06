@@ -31,7 +31,7 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         validEmpty(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineService.save(lineRequest.getName(), lineRequest.getColor());
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        LineResponse lineResponse = new LineResponse(newLine);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
@@ -45,7 +45,7 @@ public class LineController {
     public List<LineResponse> showLines() {
         List<Line> lines = lineService.findAll();
         return lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+                .map(LineResponse::new)
                 .collect(Collectors.toList());
     }
 
