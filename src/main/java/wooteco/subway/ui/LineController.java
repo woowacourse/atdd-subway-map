@@ -17,29 +17,32 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.repository.LineRepository;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
 
     private final LineService lineService;
+    private final LineRepository lineRepository;
     private final LineDao lineDao;
 
-    public LineController(LineService lineService, LineDao lineDao) {
+    public LineController(LineService lineService, LineRepository lineRepository, LineDao lineDao) {
         this.lineService = lineService;
+        this.lineRepository = lineRepository;
         this.lineDao = lineDao;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLines(@RequestBody LineRequest lineRequest) {
-        Line line = lineService.save(lineRequest.getName(), lineRequest.getColor());
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
+        Line line = lineService.save(lineRequest);
+        LineResponse lineResponse = lineDao.queryByLineId(line.getId());
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineDao.findAll();
+        List<Line> lines = lineRepository.findAll();
         List<LineResponse> lineResponses = lines.stream()
             .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
             .collect(Collectors.toList());

@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.StationResponse;
 
 @Repository
 public class StationDao {
@@ -69,5 +70,17 @@ public class StationDao {
 
     public void deleteAll() {
         jdbcTemplate.update("DELETE FROM STATION");
+    }
+
+    public List<StationResponse> queryByLineId(Long lineId) {
+        String sql = "SELECT distinct s.id as id, s.name as name FROM STATION AS s " +
+            "JOIN SECTION AS sec ON s.id = sec.down_station_id OR s.id = sec.up_station_id " +
+            "WHERE sec.line_id = ?";
+
+        return jdbcTemplate.query(sql, (rs, rn) -> {
+            long stationId = rs.getLong("id");
+            String stationName = rs.getString("name");
+            return new StationResponse(stationId, stationName);
+        }, lineId);
     }
 }

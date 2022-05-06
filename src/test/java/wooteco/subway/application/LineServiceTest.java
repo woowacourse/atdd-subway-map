@@ -3,6 +3,8 @@ package wooteco.subway.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,10 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.SectionResponse;
 import wooteco.subway.exception.BlankArgumentException;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotExistException;
+import wooteco.subway.repository.LineRepository;
 
 @SpringBootTest
 @Transactional
@@ -24,14 +32,33 @@ public class LineServiceTest {
     private LineService lineService;
 
     @Autowired
-    private LineDao lineDao;
+    private StationService stationService;
+
+    @Autowired
+    private LineRepository lineRepository;
+
+    @Autowired
+    private SectionDao sectionDao;
 
     @DisplayName("지하철 노선 저장")
     @Test
     void saveLine() {
-        Line line = lineService.save("신분당선", "bg-red-600");
+        Station upStation = stationService.save("강남역");
+        Station downStation = stationService.save("역삼역");
+        LineRequest request = new LineRequest("신분당선", "bg-red-600",
+            upStation.getId(), downStation.getId(), 10);
 
-        assertThat(lineDao.findById(line.getId())).isNotEmpty();
+        Line line = lineService.save(request);
+
+        List<Long> expectedIds = line.getSections().stream()
+            .map(Section::getId)
+            .collect(Collectors.toList());
+        List<Long> actualIds = sectionDao.findAllByLineId(line.getId()).stream()
+            .map(SectionResponse::getId)
+            .collect(Collectors.toList());
+
+        assertThat(lineRepository.findById(line.getId())).isNotEmpty();
+        assertThat(actualIds).containsExactlyInAnyOrderElementsOf(expectedIds);
     }
 
     @DisplayName("지하철 노선 빈 이름으로 저장")
@@ -96,7 +123,7 @@ public class LineServiceTest {
 
         lineService.update(line.getId(), "1호선", "bg-blue-600");
 
-        Line expectedLine = lineDao.findById(line.getId()).orElseThrow();
+        Line expectedLine = lineRepository.findById(line.getId()).orElseThrow();
         assertThat(expectedLine.getName()).isEqualTo("1호선");
         assertThat(expectedLine.getColor()).isEqualTo("bg-blue-600");
     }
@@ -122,6 +149,6 @@ public class LineServiceTest {
 
         lineService.deleteById(line.getId());
 
-        assertThat(lineDao.findById(line.getId())).isEmpty();
+        assertThat(lineRepository.findById(line.getId())).isEmpty();
     }
 }
