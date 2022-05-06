@@ -1,12 +1,9 @@
 package wooteco.subway.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class LineService {
