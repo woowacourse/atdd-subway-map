@@ -4,26 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
 
-@JdbcTest
-class StationDaoTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    private StationDao stationDao;
-
-    @BeforeEach
-    void setUp() {
-        stationDao = new JdbcStationDao(jdbcTemplate);
-    }
+class StationDaoTest extends DaoTest {
 
     @Test
     @DisplayName("역을 저장하면 저장된 역 정보를 반환한다.")

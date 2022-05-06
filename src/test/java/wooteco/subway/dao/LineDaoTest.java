@@ -4,27 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.NotFoundException;
 
-@JdbcTest
-public class LineDaoTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    private LineDao lineDao;
-
-    @BeforeEach
-    void setup() {
-        lineDao = new JdbcLineDao(jdbcTemplate);
-    }
+public class LineDaoTest extends DaoTest {
 
     @Test
     @DisplayName("노선을 저장하면 저장된 노선 정보를 반환한다.")
