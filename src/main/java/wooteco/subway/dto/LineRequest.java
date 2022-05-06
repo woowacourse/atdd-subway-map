@@ -6,19 +6,19 @@ import wooteco.subway.domain.Line;
 public class LineRequest {
 
     @NotBlank(message = "노선 이름은 빈 값일 수 없습니다.")
-    private String name;
+    private final String name;
     @NotBlank(message = "노선 색상은 빈 값일 수 없습니다.")
-    private String color;
-    private Long upStationId;
-    private Long downStationId;
-    private int distance;
+    private final String color;
+    private final Long upStationId;
+    private final Long downStationId;
+    private final int distance;
 
-    public LineRequest() {
+    private LineRequest() {
+        this(null, null, null, null, 0);
     }
 
     public LineRequest(String name, String color) {
-        this.name = name;
-        this.color = color;
+        this(name, color, null, null, 0);
     }
 
     public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
@@ -52,5 +52,5 @@ public class LineRequest {
     public int getDistance() {
         return distance;
     }
-    
+
 }
