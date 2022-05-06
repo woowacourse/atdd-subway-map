@@ -36,7 +36,15 @@ class StationDaoTest {
         assertThat(count).isEqualTo(1);
     }
 
-    @DisplayName("중복된 이름의 지하철역이 있다면 true를 반환한다.")
+    @DisplayName("중복된 아이디의 지하철역이 있다면 true 를 반환한다.")
+    @Test
+    void existStationById() {
+        long stationId = stationDao.save(STATION);
+
+        assertThat(stationDao.existStationById(stationId)).isTrue();
+    }
+
+    @DisplayName("중복된 이름의 지하철역이 있다면 true 를 반환한다.")
     @Test
     void existStationByName() {
         stationDao.save(STATION);

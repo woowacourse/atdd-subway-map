@@ -37,7 +37,15 @@ class LineDaoTest {
         assertThat(count).isEqualTo(1);
     }
 
-    @DisplayName("중복된 이름의 지하철 노선이 있다면 true를 반환한다.")
+    @DisplayName("중복된 아이디의 지하철 노선이 있다면 true 를 반환한다.")
+    @Test
+    void existLineById() {
+        long lineId = lineDao.save(LINE);
+
+        assertThat(lineDao.existLineById(lineId)).isTrue();
+    }
+
+    @DisplayName("중복된 이름의 지하철 노선이 있다면 true 를 반환한다.")
     @Test
     void existLineByName() {
         lineDao.save(LINE);
@@ -45,7 +53,7 @@ class LineDaoTest {
         assertThat(lineDao.existLineByName("신분당선")).isTrue();
     }
 
-    @DisplayName("중복된 색상의 지하철 노선이 있다면 true를 반환한다.")
+    @DisplayName("중복된 색상의 지하철 노선이 있다면 true 를 반환한다.")
     @Test
     void existLineByColor() {
         lineDao.save(LINE);
