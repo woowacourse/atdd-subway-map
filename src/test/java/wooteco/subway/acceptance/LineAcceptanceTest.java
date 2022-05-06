@@ -1,8 +1,11 @@
 package wooteco.subway.acceptance;
 
+import static org.assertj.core.api.AbstractSoftAssertions.assertAll;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.core.Is.is;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
@@ -35,7 +38,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-        System.out.println(response.body());
+
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo("신분당선");
+        assertThat(response.body().jsonPath().getString("color")).isEqualTo("bg-red-600");
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -46,7 +51,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineRequest secondLineRequest = new LineRequest("분당선", "bg-green-600");
 
         // when
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+        ExtractableResponse<Response> firstCreateResponse = RestAssured.given().log().all()
                 .body(firstLineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -54,7 +59,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+        ExtractableResponse<Response> secondCreateResponse = RestAssured.given().log().all()
                 .body(secondLineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -70,13 +75,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertThat(response.body().jsonPath().getList(".", LineResponse.class)).hasSize(2);
     }
 
     @DisplayName("지하철 노선 조회")
@@ -106,6 +105,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(newResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultLineId).isEqualTo(newResponse.jsonPath().getLong("id"));
+
+        assertThat(newResponse.body().jsonPath().getString("name")).isEqualTo("신분당선");
+        assertThat(newResponse.body().jsonPath().getString("color")).isEqualTo("bg-red-600");
     }
 
     @DisplayName("지하철 노선 수정")
