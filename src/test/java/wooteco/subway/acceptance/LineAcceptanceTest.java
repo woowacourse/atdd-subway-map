@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -90,14 +91,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
         List<Long> expectedLineIds = Stream.of(newBundangPostResponse, bundangPostResponse)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
+        List<LineResponse> responses = response.jsonPath().getList(".", LineResponse.class);
 
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        List<Long> ids = responses.stream().map(LineResponse::getId).collect(Collectors.toList());
+
+        assertAll(
+                () -> assertThat(ids).containsAll(expectedLineIds),
+                () -> assertThat(responses.get(0).getName()).isEqualTo("신분당선"),
+                () -> assertThat(responses.get(0).getColor()).isEqualTo("bg-red-600"),
+                () -> assertThat(responses.get(1).getName()).isEqualTo("분당선"),
+                () -> assertThat(responses.get(1).getColor()).isEqualTo("bg-green-600")
+        );
     }
 
     @DisplayName("단건 노선을 조회하면 200 OK와 노선 정보를 반환한다")
