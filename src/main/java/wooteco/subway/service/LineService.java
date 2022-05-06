@@ -54,10 +54,9 @@ public class LineService {
         String name = request.getName();
         checkDuplicateName(dao.isExistName(id, name));
 
-        int updateResult = dao.update(id, name, request.getColor());
-        if (updateResult == 0) {
-            throw new NotFoundException(LINE_NOT_FOUND);
-        }
+        LineResponse lineResponse = findById(id);
+        Line line = new Line(lineResponse.getId(), request.getName(), request.getColor());
+        dao.update(line);
     }
 
     private void checkDuplicateName(boolean result) {

@@ -118,7 +118,7 @@ class LineServiceTest {
     void update() {
         LineRequest lineRequest = new LineRequest("name2", "blue");
 
-        given(lineDao.update(1L, "name2", "blue")).willReturn(1);
+        given(lineDao.update(new Line(1L, "name2", "blue"))).willReturn(1);
         given(lineDao.isExistName(1L, "name2")).willReturn(false);
 
         assertDoesNotThrow(() -> lineService.update(1L, lineRequest));
@@ -129,7 +129,7 @@ class LineServiceTest {
     void updateNotFound() {
         LineRequest lineRequest = new LineRequest("name2", "blue");
 
-        given(lineDao.update(1L, "name2", "blue")).willReturn(0);
+        given(lineDao.update(new Line(1L, "name2", "blue"))).willReturn(0);
         given(lineDao.isExistName(1L, "name2")).willReturn(false);
 
         assertThatThrownBy(() -> lineService.update(1L, lineRequest))
@@ -142,7 +142,7 @@ class LineServiceTest {
     void updateDuplicate() {
         LineRequest lineRequest = new LineRequest("name", "blue");
 
-        given(lineDao.update(1L, "name", "blue")).willReturn(1);
+        given(lineDao.update(new Line(1L, "name", "blue"))).willReturn(1);
         given(lineDao.isExistName(1L, "name")).willReturn(true);
 
         assertThatThrownBy(() -> lineService.update(1L, lineRequest))

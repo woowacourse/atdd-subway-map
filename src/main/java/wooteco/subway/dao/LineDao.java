@@ -55,9 +55,9 @@ public class LineDao {
         return jdbcTemplate.update(sql, id);
     }
 
-    public int update(Long id, String name, String color) {
+    public int update(Line line) {
         final String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
-        return jdbcTemplate.update(sql, name, color, id);
+        return jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
     }
 
     public boolean isExistId(Long id) {
