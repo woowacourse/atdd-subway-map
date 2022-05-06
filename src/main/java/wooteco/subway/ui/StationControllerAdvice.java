@@ -6,17 +6,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.exception.LineDuplicateException;
-import wooteco.subway.exception.NoLineFoundException;
-import wooteco.subway.exception.NoStationFoundException;
+import wooteco.subway.exception.NotFoundLineException;
+import wooteco.subway.exception.NotFoundStationException;
 import wooteco.subway.exception.StationDuplicateException;
+import wooteco.subway.ui.dto.ExceptionResponse;
 
-@RestControllerAdvice
+@RestControllerAdvice(basePackageClasses = {LineController.class, StationController.class})
 public class StationControllerAdvice {
 
-    @ExceptionHandler({StationDuplicateException.class, LineDuplicateException.class, NoLineFoundException.class,
-            NoStationFoundException.class, DuplicateKeyException.class})
-    public ResponseEntity<Void> duplicateStation() {
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    @ExceptionHandler({StationDuplicateException.class, LineDuplicateException.class, NotFoundLineException.class,
+            NotFoundStationException.class, DuplicateKeyException.class})
+    public ResponseEntity<ExceptionResponse> duplicateStation(Exception e) {
+        return new ResponseEntity<>(ExceptionResponse.from(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
