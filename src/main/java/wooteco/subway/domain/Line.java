@@ -2,8 +2,8 @@ package wooteco.subway.domain;
 
 public class Line {
     private Long id;
-    private String name;
-    private String color;
+    private final String name;
+    private final String color;
 
     public Line(Long id, String name, String color) {
         validateNameSize(name);
