@@ -16,7 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.StationResponse;
 
-@DisplayName("지하철역 관련 기능")
+@DisplayName("지하철역 관련 인수테스트")
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 생성한다.")
@@ -40,7 +40,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("기존에 존재하는 이름으로 지하철역을 생성할 경우 400 에러를 띄운다.")
     @Test
     void createStationWithDuplicateName() {
         // given

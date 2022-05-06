@@ -17,7 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineResponse;
 
-@DisplayName("지하철 노선 관련 기능")
+@DisplayName("지하철 노선 관련 인수테스트")
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -42,7 +42,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
+    @DisplayName("기존에 존재하는 이름으로 지하철 노선을 생성할 경우 400 에러를 띄운다.")
     @Test
     void createLineWithDuplicateName() {
         // given
@@ -74,7 +74,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 색상으로 지하철 노선을 생성한다.")
+    @DisplayName("기존에 존재하는 색상으로 지하철 노선을 생성할 경우 400 에러를 띄운다.")
     @Test
     void createLineWithDuplicateColor() {
         // given
@@ -106,7 +106,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("전체 지하철 노선 목록을 조회한다.")
+    @DisplayName("지하철 노선의 목록을 조회한다.")
     @Test
     void getLines() {
         /// given

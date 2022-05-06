@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
 
+@DisplayName("지하철 노선 관련 DAO 테스트")
 @JdbcTest
 class LineDaoTest {
 
@@ -61,7 +62,7 @@ class LineDaoTest {
         assertThat(lineDao.existLineByColor("bg-red-600")).isTrue();
     }
 
-    @DisplayName("지하철 노선의 전체 목록을 조회한다.")
+    @DisplayName("지하철 노선의 목록을 조회한다.")
     @Test
     void findAll() {
         lineDao.save(LINE);
@@ -69,7 +70,7 @@ class LineDaoTest {
 
         List<Line> lines = lineDao.findAll();
 
-        assertThat(lines.size()).isEqualTo(2);
+        assertThat(lines).hasSize(2);
     }
 
     @DisplayName("지하철 노선을 조회한다.")

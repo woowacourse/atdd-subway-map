@@ -4,13 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import wooteco.subway.dao.StationMockDao;
 import wooteco.subway.domain.Station;
 
+@DisplayName("지하철역 관련 service 테스트")
 @SpringBootTest
 class StationServiceTest {
 
@@ -19,8 +20,8 @@ class StationServiceTest {
     private final StationMockDao stationMockDao = new StationMockDao();
     private final StationService stationService = new StationService(stationMockDao);
 
-    @BeforeEach
-    void setUp() {
+    @AfterEach
+    void afterEach() {
         stationMockDao.clear();
     }
 
@@ -29,7 +30,7 @@ class StationServiceTest {
     void save() {
         stationService.save(STATION);
 
-        assertThat(stationService.findAll().size()).isEqualTo(1);
+        assertThat(stationService.findAll()).hasSize(1);
     }
 
     @DisplayName("중복된 지하철역을 생성할 경우 예외를 발생시킨다.")

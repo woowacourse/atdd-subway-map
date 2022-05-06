@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
 
+@DisplayName("지하철역 관련 DAO 테스트")
 @JdbcTest
 class StationDaoTest {
 
@@ -60,7 +61,7 @@ class StationDaoTest {
 
         List<Station> stations = stationDao.findAll();
 
-        assertThat(stations.size()).isEqualTo(2);
+        assertThat(stations).hasSize(2);
     }
 
     @DisplayName("지하철역을 삭제한다.")
