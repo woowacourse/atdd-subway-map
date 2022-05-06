@@ -13,13 +13,7 @@ public class Line {
     }
 
     public Line(String name, String color) {
-        this.id = null;
-        this.name = name;
-        this.color = color;
-    }
-
-    public boolean isSameName(Line line) {
-        return this.name.equals(line.name);
+        this(null, name, color);
     }
 
     public Long getId() {
@@ -32,10 +26,5 @@ public class Line {
 
     public String getColor() {
         return color;
-    }
-
-    public void update(Line line) {
-        this.name = line.name;
-        this.color = line.color;
     }
 }
