@@ -39,7 +39,10 @@ public class LineService {
     }
 
     public void updateById(final Long id, final LineRequest request) {
-        final Line line = new Line(request.getName(), request.getColor());
+        final Line line = lineDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("ID에 해당하는 노선이 존재하지 않습니다."));
+        line.updateName(request.getName());
+        line.updateColor(request.getColor());
         lineDao.updateById(id, line)
                 .orElseThrow(() -> new IllegalArgumentException("중복된 이름의 노선이 존재합니다."));
     }

@@ -13,9 +13,12 @@ public class Line {
         this.color = color;
     }
 
-    public void update(final Line line) {
-        this.name = line.name;
-        this.color = line.color;
+    public void updateName(final String name) {
+        this.name = new Name(name);
+    }
+
+    public void updateColor(final String color) {
+        this.color = color;
     }
 
     public boolean isSameName(final Line line) {

@@ -58,7 +58,8 @@ public class FakeLineDao implements LineDao {
         }
 
         final Line persistLine = findById(id).orElseThrow();
-        persistLine.update(line);
+        persistLine.updateName(line.getName());
+        persistLine.updateColor(line.getColor());
         return Optional.of(persistLine);
     }
 

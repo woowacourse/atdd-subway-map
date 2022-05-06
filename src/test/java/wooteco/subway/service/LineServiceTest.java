@@ -112,6 +112,18 @@ class LineServiceTest {
     }
 
     @Test
+    @DisplayName("업데이트하려는 노선이 존재하지 않으면 예외를 던진다.")
+    void UpdateById_NotExistId_ExceptionThrown() {
+        // given
+        final LineRequest request = new LineRequest("1호선", "bg-blue-600", null, null, 0);
+
+        // then
+        assertThatThrownBy(() -> lineService.updateById(999L, request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("ID에 해당하는 노선이 존재하지 않습니다.");
+    }
+
+    @Test
     @DisplayName("업데이트하려는 이름이 중복되면 예외를 던진다.")
     void UpdateById_DuplicateName_ExceptionThrown() {
         // given
