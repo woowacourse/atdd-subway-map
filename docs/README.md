@@ -31,7 +31,7 @@
 - [x] 중복확인 로직 은닉화
 - [x] equals & hashcode 확인하고 적용하기
 - [ ] Service & Repository test 작성
-- [ ] Service 에서 Dto반환
+- [x] Service 에서 Dto반환
 
 ### 페어 규칙
 

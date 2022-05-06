@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
@@ -17,10 +18,10 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line save(String name, String color) {
+    public LineResponse save(String name, String color) {
         validDuplicatedLine(name, color);
         Long id = lineDao.save(new Line(name, color));
-        return new Line(id, name, color);
+        return new LineResponse(id, name, color);
     }
 
     public void update(Long id, LineRequest lineRequest) {
@@ -43,8 +44,10 @@ public class LineService {
         }
     }
 
-    public List<Line> findAll() {
-        return lineDao.findAll();
+    public List<LineResponse> findAll() {
+        return lineDao.findAll().stream()
+                .map(LineResponse::new)
+                .collect(Collectors.toList());
     }
 
     public void deleteById(Long id) {

@@ -2,7 +2,6 @@ package wooteco.subway.ui;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
@@ -30,9 +28,8 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         validEmpty(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = lineService.save(lineRequest.getName(), lineRequest.getColor());
-        LineResponse lineResponse = new LineResponse(newLine);
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        LineResponse response = lineService.save(lineRequest.getName(), lineRequest.getColor());
+        return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 
     private void validEmpty(String name, String color) {
@@ -43,10 +40,7 @@ public class LineController {
 
     @GetMapping
     public List<LineResponse> showLines() {
-        List<Line> lines = lineService.findAll();
-        return lines.stream()
-                .map(LineResponse::new)
-                .collect(Collectors.toList());
+        return lineService.findAll();
     }
 
     @GetMapping("/{id}")

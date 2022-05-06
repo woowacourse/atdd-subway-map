@@ -1,10 +1,10 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
 
 @Service
 public class StationService {
@@ -15,10 +15,10 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station save(String name) {
+    public StationResponse save(String name) {
         validDuplicatedStation(name);
         Long id = stationDao.save(name);
-        return new Station(id, name);
+        return new StationResponse(id, name);
     }
 
     private void validDuplicatedStation(String name) {
@@ -27,8 +27,10 @@ public class StationService {
         }
     }
 
-    public List<Station> findAll() {
-        return stationDao.findAll();
+    public List<StationResponse> findAll() {
+        return stationDao.findAll().stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
     }
 
     public void deleteById(Long id) {
