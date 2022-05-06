@@ -27,7 +27,7 @@ public class LineService {
 
     public Line findById(final Long id) {
         return lineDao.findById(id)
-            .orElseThrow(() -> new LineNotFoundException("해당 노선이 없습니다.", 1));
+            .orElseThrow(() -> new LineNotFoundException("해당 노선이 없습니다."));
     }
 
     public void update(final Long id, final LineRequest lineRequest) {

@@ -27,7 +27,7 @@ public class StationService {
 
     public void delete(final Long id) {
         final Station targetLine = stationDao.findById(id)
-            .orElseThrow(() -> new StationNotFoundException("이미 존재하는 지하철역 이름입니다.", 1));
+            .orElseThrow(() -> new StationNotFoundException("이미 존재하는 지하철역 이름입니다."));
         stationDao.delete(targetLine);
     }
 }

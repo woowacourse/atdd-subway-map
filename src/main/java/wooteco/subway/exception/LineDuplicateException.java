@@ -1,8 +1,6 @@
 package wooteco.subway.exception;
 
-import org.springframework.dao.DuplicateKeyException;
-
-public class LineDuplicateException extends DuplicateKeyException {
+public class LineDuplicateException extends RuntimeException {
     public LineDuplicateException(final String msg) {
         super(msg);
     }
