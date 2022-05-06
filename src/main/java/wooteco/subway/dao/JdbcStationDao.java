@@ -35,8 +35,12 @@ public class JdbcStationDao implements StationDao {
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
+        return getStation(id);
+    }
 
-        return new Station(id, name);
+    private Station getStation(Long id) {
+        String sql = "SELECT * FROM STATION WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
     }
 
     public boolean existByName(String name) {

@@ -38,8 +38,12 @@ public class JdbcLineDao implements LineDao {
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
+        return getLine(id);
+    }
 
-        return new Line(id, name, color);
+    private Line getLine(Long id) {
+        String sql = "SELECT * FROM LINE WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
 
     public boolean existByName(String name) {
