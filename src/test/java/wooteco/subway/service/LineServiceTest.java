@@ -1,124 +1,151 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.LineDao;
+import org.mockito.InjectMocks;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.NotFoundException;
 
-class LineServiceTest {
+class LineServiceTest extends ServiceTest {
 
+    @InjectMocks
     private LineService lineService;
-    private LineDao fakeLineDao;
-
-    @BeforeEach
-    void setUp() {
-        fakeLineDao = new FakeLineDao();
-        lineService = new LineService(fakeLineDao);
-    }
 
     @Test
     @DisplayName("노선을 생성한다.")
     void createLine() {
         // given
-        final LineRequest request = new LineRequest("7호선", "bg-red-600", null, null, 0);
+        final String name = "7호선";
+        final String color = "bg-red-600";
+
+        final LineRequest request = new LineRequest(name, color, null, null, 0);
+        final Line expected = new Line(name, color);
+
+        given(lineDao.save(expected))
+                .willReturn(Optional.of(expected));
 
         // when
-        final LineResponse response = lineService.create(request);
+        final LineResponse actual = lineService.create(request);
 
         // then
-        assertThat(response.getName()).isEqualTo(request.getName());
+        assertThat(actual.getName()).isEqualTo(expected.getName());
+        assertThat(actual.getColor()).isEqualTo(expected.getColor());
     }
 
     @Test
     @DisplayName("저장하려는 노선의 이름이 중복되면 예외를 던진다.")
     void Create_DuplicateName_ExceptionThrown() {
         // given
-        final String name = "7호선";
-        final String color = "bg-red-600";
-        final Line line = new Line(name, color);
-        fakeLineDao.save(line);
+        final LineRequest request = new LineRequest("7호선", "bg-red-600", null, null, 0);
 
-        final LineRequest request = new LineRequest(name, color, null, null, 0);
+        given(lineDao.save(any(Line.class)))
+                .willReturn(Optional.empty());
 
         // then
         assertThatThrownBy(() -> lineService.create(request))
-                        .isInstanceOf(IllegalArgumentException.class)
-                        .hasMessage("중복된 이름의 노선은 저장할 수 없습니다.");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("중복된 이름의 노선은 저장할 수 없습니다.");
     }
 
     @Test
     @DisplayName("모든 노선을 조회한다.")
     void showLines() {
         // given
-        fakeLineDao.save(new Line("1호선", "bg-red-600"));
-        fakeLineDao.save(new Line("수인분당선", "bg-blue-600"));
+        final List<Line> expected = List.of(
+                new Line("7호선", "bg-red-600"),
+                new Line("5호선", "bg-blue-600")
+        );
+
+        given(lineDao.findAll())
+                .willReturn(expected);
 
         // when
-        final List<LineResponse> responses = lineService.findAll();
+        final List<LineResponse> actual = lineService.findAll();
 
         // then
-        assertThat(responses).hasSize(2);
+        assertThat(actual).hasSameSizeAs(expected);
     }
 
     @Test
     @DisplayName("id에 해당하는 노선을 조회한다.")
     void findById() {
         // given
-        final String name = "1호선";
+        final long id = 1L;
+        final String name = "7호선";
         final String color = "bg-red-600";
-        final Line savedLine = fakeLineDao.save(new Line(name, color)).orElseThrow();
+
+        final Line expected = new Line(name, color);
+
+        given(lineDao.findById(id))
+                .willReturn(Optional.of(expected));
 
         // when
-        final LineResponse response = lineService.findById(savedLine.getId());
+        final LineResponse actual = lineService.findById(id);
 
         // then
-        assertThat(response.getName()).isEqualTo(name);
-        assertThat(response.getColor()).isEqualTo(color);
+        assertThat(actual.getName()).isEqualTo(expected.getName());
+        assertThat(actual.getColor()).isEqualTo(expected.getColor());
     }
 
     @Test
     @DisplayName("id에 해당하는 노선이 존재하지 않으면 예외를 던진다.")
     void FindById_NotExistId_ExceptionThrown() {
-        assertThatThrownBy(() -> lineService.findById(999L))
-                        .isInstanceOf(NotFoundException.class)
-                        .hasMessage("해당 ID에 맞는 노선을 찾지 못했습니다.");
+        // given
+        final long id = 1L;
+        given(lineDao.findById(id))
+                .willReturn(Optional.empty());
+
+        // when
+        assertThatThrownBy(() -> lineService.findById(id))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("해당 ID에 맞는 노선을 찾지 못했습니다.");
     }
 
     @Test
     @DisplayName("id에 해당하는 노선 정보를 수정한다.")
     void updateById() {
         // given
-        final Line savedLine = fakeLineDao.save(new Line("1호선", "bg-red-600")).orElseThrow();
-
+        final long id = 1L;
         final String name = "7호선";
-        final String color = "bg-blue-600";
+        final String color = "bg-red-600";
+
+        final Line existLine = new Line("5호선", "bg-red-600");
+        given(lineDao.findById(id))
+                .willReturn(Optional.of(existLine));
+
+        final Line updateLine = new Line(name, color);
+        given(lineDao.updateById(id, updateLine))
+                .willReturn(Optional.of(updateLine));
+
         final LineRequest request = new LineRequest(name, color, null, null, 0);
 
-        // when
-        lineService.updateById(savedLine.getId(), request);
-
         // then
-        final Line updatedLine = fakeLineDao.findById(savedLine.getId()).orElseThrow();
-        assertThat(updatedLine.getName()).isEqualTo(name);
-        assertThat(updatedLine.getColor()).isEqualTo(color);
+        assertThatCode(() -> lineService.updateById(id, request))
+                .doesNotThrowAnyException();
     }
 
     @Test
     @DisplayName("업데이트하려는 노선이 존재하지 않으면 예외를 던진다.")
     void UpdateById_NotExistId_ExceptionThrown() {
         // given
+        final long id = 1L;
+        given(lineDao.findById(id))
+                .willReturn(Optional.empty());
+
         final LineRequest request = new LineRequest("1호선", "bg-blue-600", null, null, 0);
 
         // then
-        assertThatThrownBy(() -> lineService.updateById(999L, request))
+        assertThatThrownBy(() -> lineService.updateById(id, request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("ID에 해당하는 노선이 존재하지 않습니다.");
     }
@@ -127,31 +154,36 @@ class LineServiceTest {
     @DisplayName("업데이트하려는 이름이 중복되면 예외를 던진다.")
     void UpdateById_DuplicateName_ExceptionThrown() {
         // given
-        final String name = "1호선";
-        final String color = "bg-blue-600";
+        final long id = 1L;
+        final String name = "7호선";
+        final String color = "bg-red-600";
 
-        fakeLineDao.save(new Line(name, "bg-red-600"));
-        final Line line = fakeLineDao.save(new Line("5호선", color)).orElseThrow();
+        final Line existLine = new Line("5호선", "bg-blue-600");
+        given(lineDao.findById(id))
+                .willReturn(Optional.of(existLine));
+
+        final Line updateLine = new Line(name, color);
+        given(lineDao.updateById(id, updateLine))
+                .willReturn(Optional.empty());
 
         final LineRequest request = new LineRequest(name, color, null, null, 0);
 
         // then
-        assertThatThrownBy(() -> lineService.updateById(line.getId(), request))
-                        .isInstanceOf(IllegalArgumentException.class)
-                        .hasMessage("중복된 이름의 노선이 존재합니다.");
+        assertThatThrownBy(() -> lineService.updateById(id, request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("중복된 이름의 노선이 존재합니다.");
     }
 
     @Test
     @DisplayName("id에 해당하는 노선을 삭제한다.")
     void deleteById() {
         // given
-        final Line savedLine = fakeLineDao.save(new Line("1호선", "bg-red-600")).orElseThrow();
-
-        // when
-        lineService.deleteById(savedLine.getId());
+        final long id = 1L;
+        given(lineDao.deleteById(id))
+                .willReturn(1);
 
         // then
-        final List<Line> remainLines = fakeLineDao.findAll();
-        assertThat(remainLines).hasSize(0);
+        assertThatCode(() -> lineService.deleteById(id))
+                .doesNotThrowAnyException();
     }
 }
