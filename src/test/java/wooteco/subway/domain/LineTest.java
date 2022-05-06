@@ -16,7 +16,7 @@ class LineTest {
     void newLine_blankName(final String name) {
         assertThatThrownBy(() -> new Line(name, "bg-red-600"))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("노선의 이름이 공백이 되어서는 안됩니다.");
+                .hasMessage("이름이 공백이 되어서는 안됩니다.");
     }
 
     @Test

@@ -5,14 +5,11 @@ import java.util.Objects;
 public class Line {
 
     private Long id;
-    private String name;
+    private Name name;
     private String color;
 
     public Line(final String name, final String color) {
-        if (name.isBlank()) {
-            throw new IllegalArgumentException("노선의 이름이 공백이 되어서는 안됩니다.");
-        }
-        this.name = name;
+        this.name = new Name(name);
         this.color = color;
     }
 
@@ -34,7 +31,7 @@ public class Line {
     }
 
     public String getName() {
-        return name;
+        return name.getValue();
     }
 
     public String getColor() {

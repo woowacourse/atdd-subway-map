@@ -15,7 +15,7 @@ class StationTest {
     void newStation_blankName(final String name) {
         assertThatThrownBy(() -> new Station(name))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("역의 이름이 공백이 되어서는 안됩니다.");
+                .hasMessage("이름이 공백이 되어서는 안됩니다.");
     }
 
     @Test
@@ -27,7 +27,7 @@ class StationTest {
         // then
         assertThatThrownBy(() -> new Station(name))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("역의 이름이 15자를 넘어서는 안됩니다.");
+                .hasMessage("이름이 15자를 넘어서는 안됩니다.");
 
     }
 }
