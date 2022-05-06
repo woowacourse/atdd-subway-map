@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,9 +62,12 @@ class LineServiceTest {
         doReturn(List.of(new Line("신분당선", "bg-red-600"), new Line("분당선", "bg-green-600")))
                 .when(jdbcLineDao).findAll();
 
-        List<LineResponse> lineResponses = lineService.getLines();
+        List<Line> lines = lineService.getLines()
+                .stream()
+                .map(lineResponse -> new Line(lineResponse.getName(), lineResponse.getColor()))
+                .collect(Collectors.toList());
 
-        assertThat(lineResponses.size()).isEqualTo(2);
+        assertThat(lines).containsExactly(new Line("신분당선", "bg-red-600"), new Line("분당선", "bg-green-600"));
     }
 
     @DisplayName("지하철 노선 하나를 조회한다.")
