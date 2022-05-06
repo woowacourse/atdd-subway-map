@@ -15,10 +15,6 @@ public class Station {
         this.id = id;
     }
 
-    public boolean matchId(Long id) {
-        return this.id.equals(id);
-    }
-
     public Long getId() {
         return id;
     }
