@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+@DisplayName("지하철 노선 관련 기능")
 class LineControllerTest extends AcceptanceTest {
 
     @Autowired
