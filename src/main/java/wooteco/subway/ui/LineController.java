@@ -22,7 +22,7 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
         final Line line = lineRequest.toEntity();
         final Line newLine = lineService.createLine(line);

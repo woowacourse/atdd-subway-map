@@ -22,7 +22,7 @@ public class StationController {
         this.stationService = stationService;
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody final StationRequest stationRequest) {
         final Station station = stationRequest.toEntity();
         final Station newStation = stationService.createStation(station);
