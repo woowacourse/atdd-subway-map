@@ -33,10 +33,7 @@ public class LineService {
 
     public Line findById(Long id) {
         Optional<Line> foundLine = lineDao.findById(id);
-        if (foundLine.isEmpty()) {
-            throw new DataNotExistException("존재하지 않는 노선입니다.");
-        }
-        return foundLine.get();
+        return foundLine.orElseThrow(() -> new DataNotExistException("존재하지 않는 노선입니다."));
     }
 
     public void update(Line line) {
@@ -44,7 +41,7 @@ public class LineService {
         if (foundLine.isPresent() && !line.hasSameId(foundLine.get())) {
             throw new IllegalArgumentException("이미 등록된 노선입니다.");
         }
-        lineDao.update(line.getId(), line.getName(), line.getColor());
+        lineDao.update(line);
     }
 
     public void deleteById(Long id) {

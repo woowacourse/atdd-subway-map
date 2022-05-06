@@ -30,10 +30,7 @@ public class StationService {
 
     public Station findById(Long id) {
         Optional<Station> foundStation = stationDao.findById(id);
-        if (foundStation.isEmpty()) {
-            throw new DataNotExistException("존재하지 않는 역입니다.");
-        }
-        return foundStation.get();
+        return foundStation.orElseThrow(() -> new DataNotExistException("존재하지 않는 역입니다."));
     }
 
     public List<Station> findAll() {
