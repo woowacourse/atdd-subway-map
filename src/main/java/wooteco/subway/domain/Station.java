@@ -1,6 +1,9 @@
 package wooteco.subway.domain;
 
 public class Station {
+    private static final int NAME_SIZE_LIMIT = 255;
+    private static final String ERROR_MESSAGE_NAME_SIZE = "존재할 수 없는 이름입니다.";
+    
     private Long id;
     private final String name;
 
@@ -16,8 +19,8 @@ public class Station {
     }
 
     private void validateNameSize(String name) {
-        if (name == null || name.isBlank() || name.length() > 255) {
-            throw new IllegalArgumentException("존재할 수 없는 이름입니다.");
+        if (name == null || name.isBlank() || name.length() > NAME_SIZE_LIMIT) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_NAME_SIZE);
         }
     }
 
