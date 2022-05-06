@@ -29,8 +29,10 @@ public class LineService {
     }
 
     public LineResponse showById(Long id) {
-        return LineResponse.from(jdbcLineDao.findById(id)
-            .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다.")));
+        return LineResponse.from(
+            jdbcLineDao.findById(id)
+                .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다."))
+        );
     }
 
     public List<LineResponse> showAll() {
