@@ -12,7 +12,7 @@ import io.restassured.response.Response;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AcceptanceTest {
+class AcceptanceTest {
     @LocalServerPort
     int port;
 

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class LineTest {
+class LineTest {
 
     @ParameterizedTest
     @CsvSource(value = {"라:1", "라:30"}, delimiter = ':')

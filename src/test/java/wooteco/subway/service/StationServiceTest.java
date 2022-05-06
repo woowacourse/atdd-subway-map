@@ -9,11 +9,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DataNotExistException;
 
-public class StationServiceTest {
+class StationServiceTest {
 
     private StationService stationService;
 

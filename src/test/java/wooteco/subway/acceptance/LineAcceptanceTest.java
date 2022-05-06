@@ -18,7 +18,7 @@ import wooteco.subway.ui.request.LineRequest;
 import wooteco.subway.ui.response.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends AcceptanceTest {
+class LineAcceptanceTest extends AcceptanceTest {
 
     private final String defaultUri = "/lines";
 

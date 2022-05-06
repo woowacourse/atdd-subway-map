@@ -1,12 +1,13 @@
-package wooteco.subway.dao;
+package wooteco.subway.service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
-public class FakeStationDao implements StationDao {
+class FakeStationDao implements StationDao {
 
     private final List<Station> stations = new ArrayList<>();
     private Long seq = 0L;

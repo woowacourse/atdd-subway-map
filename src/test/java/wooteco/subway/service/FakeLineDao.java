@@ -1,12 +1,13 @@
-package wooteco.subway.dao;
+package wooteco.subway.service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
-public class FakeLineDao implements LineDao {
+class FakeLineDao implements LineDao {
 
     private final List<Line> lines = new ArrayList<>();
     private Long seq = 0L;

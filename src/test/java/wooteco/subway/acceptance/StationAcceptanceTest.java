@@ -18,7 +18,7 @@ import wooteco.subway.ui.request.StationRequest;
 import wooteco.subway.ui.response.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
-public class StationAcceptanceTest extends AcceptanceTest {
+class StationAcceptanceTest extends AcceptanceTest {
 
     private final String defaultUri = "/stations";
 

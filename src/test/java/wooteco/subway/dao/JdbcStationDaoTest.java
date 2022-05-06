@@ -16,7 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
-public class JdbcStationDaoTest {
+class JdbcStationDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

@@ -14,7 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
 
 @JdbcTest
-public class JdbcLineDaoTest {
+class JdbcLineDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
