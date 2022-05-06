@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
 
 @Service
@@ -32,7 +33,8 @@ public class LineService {
         return toLineResponseDto(line);
     }
 
-    public void update(Line line) {
+    public void update(Long id, LineRequest lineRequest) {
+        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
         lineDao.update(line);
     }
 
