@@ -22,7 +22,7 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler({RuntimeException.class, Exception.class})
-    public ResponseEntity<Void> runtimeExceptionHandler() {
+    public ResponseEntity<Void> serverExceptionHandler() {
         return ResponseEntity.internalServerError().build();
     }
 }
