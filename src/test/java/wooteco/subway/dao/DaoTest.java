@@ -1,27 +1,27 @@
 package wooteco.subway.dao;
 
-import io.restassured.RestAssured;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Transactional
+@JdbcTest
 class DaoTest {
 
     @Autowired
-    protected StationDao stationDao;
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    protected LineDao lineDao;
+    private DataSource dataSource;
 
-    @LocalServerPort
-    int port;
+    protected StationDao stationDao;
+
+    protected LineDao lineDao;
 
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
+        stationDao = new JdbcStationDao(jdbcTemplate, dataSource);
+        lineDao = new JdbcLineDao(jdbcTemplate, dataSource);
     }
 }
