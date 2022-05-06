@@ -23,9 +23,9 @@ import wooteco.subway.dto.LineResponse;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineControllerTest {
 
-    Line testLine1 = new Line("신분당선", "bg-red-600");
-    Line testLine2 = new Line("분당선", "bg-red-600");
-    Line testLine3 = new Line("2호선", "bg-green-500");
+    private Line testLine1 = new Line("신분당선", "bg-red-600");
+    private Line testLine2 = new Line("분당선", "bg-red-600");
+    private Line testLine3 = new Line("2호선", "bg-green-500");
 
     @LocalServerPort
     int port;

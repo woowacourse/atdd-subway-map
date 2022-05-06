@@ -25,8 +25,8 @@ import wooteco.subway.dto.StationResponse;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class StationControllerTest {
 
-    Station testStation1 = new Station("강남역");
-    Station testStation2 = new Station("역삼역");
+    private Station testStation1 = new Station("강남역");
+    private Station testStation2 = new Station("역삼역");
 
     @LocalServerPort
     int port;

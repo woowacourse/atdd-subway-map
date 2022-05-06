@@ -21,8 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    Station testStation1 = new Station("강남역");
-    Station testStation2 = new Station("역삼역");
+    private Station testStation1 = new Station("강남역");
+    private Station testStation2 = new Station("역삼역");
 
     @DisplayName("지하철역을 생성한다.")
     @Test
