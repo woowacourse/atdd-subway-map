@@ -56,8 +56,10 @@ public class InmemoryStationDao implements StationDao {
     }
 
     @Override
-    public int delete(final Long stationId) {
-        stations.remove(stationId);
-        return 1;
+    public void delete(final Long stationId) {
+        Station removedStation = stations.remove(stationId);
+        if (removedStation == null) {
+            throw new IllegalArgumentException("없는 station 입니다.");
+        }
     }
 }

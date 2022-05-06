@@ -1,6 +1,8 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -56,6 +58,29 @@ class JdbcStationDaoTest {
         Station station = stationDao.save(new Station("오리"));
         Long stationId = station.getId();
 
-        assertThat(stationDao.delete(stationId)).isEqualTo(1);
+        assertThatCode(() -> stationDao.delete(stationId)).doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("없는 id의 Station을 삭제할 수 없다.")
+    void deleteByInvalidId() {
+        Station station = stationDao.save(new Station("오리"));
+        Long stationId = station.getId() + 1;
+
+        assertThatThrownBy(() -> stationDao.delete(stationId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("없는 station 입니다.");
+    }
+
+    @Test
+    @DisplayName("이미 삭제한 id의 Station을 삭제할 수 없다.")
+    void deleteByDuplicatedId() {
+        Station station = stationDao.save(new Station("오리"));
+        Long stationId = station.getId();
+        stationDao.delete(stationId);
+
+        assertThatThrownBy(() -> stationDao.delete(stationId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("없는 station 입니다.");
     }
 }

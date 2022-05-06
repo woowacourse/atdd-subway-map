@@ -11,5 +11,5 @@ public interface StationDao {
 
     boolean existByName(String name);
 
-    int delete(Long stationId);
+    void delete(Long stationId);
 }

@@ -52,8 +52,11 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public int delete(final Long stationId) {
+    public void delete(final Long stationId) {
         final String sql = "delete from STATION where id = ?";
-        return jdbcTemplate.update(sql, stationId);
+        int update = jdbcTemplate.update(sql, stationId);
+        if (update == 0) {
+            throw new IllegalArgumentException("없는 station 입니다.");
+        }
     }
 }

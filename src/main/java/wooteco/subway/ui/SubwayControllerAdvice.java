@@ -27,7 +27,7 @@ public class SubwayControllerAdvice {
     }
 
     @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<Void> handleDataAcessException() {
+    public ResponseEntity<Void> handleDataAccessException() {
         return ResponseEntity.internalServerError().build();
     }
 
