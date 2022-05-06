@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
@@ -25,7 +26,7 @@ public class LineService {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Optional<Line> wrappedStation = lineDao.findByName(lineRequest.getName());
         if (wrappedStation.isPresent()) {
-            throw new IllegalArgumentException(DUPLICATE_NAME_ERROR);
+            throw new DuplicateKeyException(DUPLICATE_NAME_ERROR);
         }
         Line savedLine = lineDao.save(line);
         return LineResponse.of(savedLine);

@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
@@ -25,7 +26,7 @@ public class StationService {
         Station station = new Station(stationRequest.getName());
         Optional<Station> wrappedStation = stationDao.findByName(stationRequest.getName());
         if (wrappedStation.isPresent()) {
-            throw new IllegalArgumentException(DUPLICATE_NAME_ERROR);
+            throw new DuplicateKeyException(DUPLICATE_NAME_ERROR);
         }
         Station newStation = stationDao.save(station);
         return StationResponse.of(newStation);
