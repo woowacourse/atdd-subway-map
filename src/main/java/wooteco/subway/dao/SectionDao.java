@@ -33,4 +33,9 @@ public class SectionDao {
         long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return new Section(id, section);
     }
+
+    public boolean existByUpStationIdAndDownStationId(final long upStationId, final long downStationId) {
+        final String sql = "select exists (select * from SECTION where up_station_id = ? and down_station_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, upStationId, downStationId);
+    }
 }
