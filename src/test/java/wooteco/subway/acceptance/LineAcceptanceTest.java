@@ -30,13 +30,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", "bg-red-600");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = httpPostTest(params, "/lines");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -51,20 +45,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
 
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all();
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        httpPostTest(params, "/lines");
+        ExtractableResponse<Response> response = httpPostTest(params, "/lines");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -76,32 +58,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         newBundangLine.put("name", "신분당선");
         newBundangLine.put("color", "bg-red-600");
 
-        ExtractableResponse<Response> newBundangPostResponse = RestAssured.given().log().all()
-                .body(newBundangLine)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> newBundangPostResponse = httpPostTest(newBundangLine, "/lines");
 
         Map<String, String> bundangLine = new HashMap<>();
         bundangLine.put("name", "분당선");
         bundangLine.put("color", "bg-green-600");
 
-        ExtractableResponse<Response> bundangPostResponse = RestAssured.given().log().all()
-                .body(bundangLine)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> bundangPostResponse = httpPostTest(bundangLine, "/lines");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
-
+        ExtractableResponse<Response> response = httpGetTest("/lines");
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Arrays.asList(newBundangPostResponse, bundangPostResponse).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
@@ -119,22 +84,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
 
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = httpPostTest(params, "/lines");
 
         long id = Long.parseLong(createResponse.header(HttpHeaders.LOCATION).split("/")[2]);
 
-        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
-                .when()
-                .get("/lines/" + id)
-                .then().log().all()
-                .extract();
-
+        ExtractableResponse<Response> getResponse = httpGetTest("/lines/" + id);
         long responseId = getResponse.jsonPath().getLong("id");
         assertThat(id).isEqualTo(responseId);
     }
@@ -146,13 +100,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
 
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = httpPostTest(params, "/lines");
 
         long id = Long.parseLong(createResponse.header(HttpHeaders.LOCATION).split("/")[2]);
 
@@ -178,13 +126,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
 
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = httpPostTest(params, "/lines");
 
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
