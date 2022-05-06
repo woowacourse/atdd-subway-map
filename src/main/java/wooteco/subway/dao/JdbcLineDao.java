@@ -63,14 +63,6 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public void deleteAll() {
-        final String sql = "TRUNCATE TABLE line";
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource());
-        final String resetIdSql = "ALTER TABLE line ALTER COLUMN id RESTART WITH 1";
-        namedParameterJdbcTemplate.update(resetIdSql, new MapSqlParameterSource());
-    }
-
-    @Override
     public List<Line> findAll() {
         final String sql = "SELECT * FROM line";
         return namedParameterJdbcTemplate.query(sql, lineRowMapper);

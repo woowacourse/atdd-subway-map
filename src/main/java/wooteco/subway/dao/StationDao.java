@@ -8,8 +8,6 @@ public interface StationDao {
 
     Station save(Station station);
 
-    void deleteAll();
-
     List<Station> findAll();
 
     void delete(Station station);

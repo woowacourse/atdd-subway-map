@@ -52,14 +52,6 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public void deleteAll() {
-        final String sql = "TRUNCATE TABLE station";
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource());
-        final String resetIdSql = "ALTER TABLE station ALTER COLUMN id RESTART WITH 1";
-        namedParameterJdbcTemplate.update(resetIdSql, new MapSqlParameterSource());
-    }
-
-    @Override
     public List<Station> findAll() {
         final String sql = "SELECT * FROM station";
         return namedParameterJdbcTemplate.query(sql, stationRowMapper);
