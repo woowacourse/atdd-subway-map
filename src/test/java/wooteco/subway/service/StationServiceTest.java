@@ -1,8 +1,11 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -31,11 +34,22 @@ public class StationServiceTest {
         doReturn(1L)
                 .when(jdbcStationDao).save(new Station("강남역"));
         StationResponse stationResponse = stationService.createStation(new StationRequest("강남역"));
+
         assertAll(
                 () -> stationResponse.getId().equals(1L),
                 () -> stationResponse.getName().equals("강남역")
         );
+    }
 
+    @DisplayName("지하철역을 중복등록하려고 하면, 예외가 발생한다.")
+    @Test
+    void createDuplicatedStation() {
+        doThrow(new IllegalArgumentException("이미 등록된 지하철 역입니다."))
+                .when(jdbcStationDao).save(any(Station.class));
+
+        assertThatThrownBy(() -> stationService.createStation(new StationRequest("강남역")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 등록된 지하철 역입니다.");
     }
 
     @DisplayName("지하철역 목록들을 조회한다.")
