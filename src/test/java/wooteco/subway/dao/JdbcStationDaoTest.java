@@ -44,12 +44,21 @@ class JdbcStationDaoTest {
     }
 
     @Test
-    @DisplayName("Station 이름이 존재하는지 확인할 수 있다.")
+    @DisplayName("Station 이름이 존재하는 경우 확인한다.")
     void existByName() {
         String name = "배카라";
         stationDao.save(new Station(name));
 
         assertThat(stationDao.existByName(name)).isTrue();
+    }
+
+    @Test
+    @DisplayName("Station 이름이 존재하지 않는 경우 확인한다.")
+    void nonExistByName() {
+        String name = "배카라";
+        stationDao.save(new Station(name));
+
+        assertThat(stationDao.existByName("오리")).isFalse();
     }
 
     @Test

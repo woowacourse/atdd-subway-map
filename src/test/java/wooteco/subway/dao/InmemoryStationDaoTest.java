@@ -77,4 +77,13 @@ class InmemoryStationDaoTest {
 
         assertThat(inmemoryStationDao.existByName(name)).isTrue();
     }
+
+    @Test
+    @DisplayName("Station 이름이 존재하지 않는 경우 확인한다.")
+    void nonExistByName() {
+        String name = "배카라";
+        inmemoryStationDao.save(new Station(name));
+
+        assertThat(inmemoryStationDao.existByName("오리")).isFalse();
+    }
 }
