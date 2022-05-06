@@ -44,4 +44,8 @@ public class Line {
     public int hashCode() {
         return Objects.hash(name);
     }
+
+    public boolean isSameName(String name) {
+        return name.equals(this.name);
+    }
 }
