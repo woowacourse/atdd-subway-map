@@ -72,11 +72,10 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public Boolean existsByColor(String color) {
-        String query = "SELECT COUNT(*) as num FROM Line WHERE color=(:color)";
+        String query = "SELECT EXISTS(SELECT id FROM Line WHERE color=(:color)) as existable";
         SqlParameterSource parameters = new MapSqlParameterSource("color", color);
-        int count = jdbcTemplate.queryForObject(query, parameters,
-                (resultSet, rowNum) -> resultSet.getInt("num"));
-        return count != 0;
+        return jdbcTemplate.queryForObject(query, parameters,
+                (resultSet, rowNum) -> resultSet.getBoolean("existable"));
     }
 
     @Override

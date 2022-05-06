@@ -91,4 +91,11 @@ class JdbcLineDaoTest {
         lineDao.save(new Line("신분당선", "bg-red-600"));
         assertThat(lineDao.existsByName("신분당선")).isTrue();
     }
+
+    @DisplayName("해당 색상의 노선이 존재하는지 확인한다.")
+    @Test
+    void existsByColor() {
+        lineDao.save(new Line("신분당선", "bg-red-600"));
+        assertThat(lineDao.existsByColor("bg-red-600")).isTrue();
+    }
 }
