@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DuplicateStationNameException;
+import wooteco.subway.exception.ElementAlreadyExistException;
 import wooteco.subway.mockDao.MockStationDao;
 
 class StationServiceTest {
@@ -34,7 +36,7 @@ class StationServiceTest {
         service.register("선릉역");
 
         assertThatThrownBy(() -> service.register("선릉역"))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DuplicateStationNameException.class)
                 .hasMessage("[ERROR] 이미 존재하는 역 이름입니다.");
     }
 

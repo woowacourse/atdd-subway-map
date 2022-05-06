@@ -1,7 +1,7 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.exception.LineColorException;
-import wooteco.subway.exception.LineNameException;
+import wooteco.subway.exception.IllegalLineColorException;
+import wooteco.subway.exception.IllegalLineNameException;
 
 public class Line {
 
@@ -19,13 +19,13 @@ public class Line {
 
     private void validateName(final String name) {
         if (name.isBlank()) {
-            throw new LineNameException();
+            throw new IllegalLineNameException();
         }
     }
 
     private void validateColor(final String color) {
         if (color.isBlank()) {
-            throw new LineColorException();
+            throw new IllegalLineColorException();
         }
     }
 

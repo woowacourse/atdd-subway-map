@@ -1,6 +1,6 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.exception.StationNameException;
+import wooteco.subway.exception.IllegalStationNameException;
 
 public class Station {
 
@@ -15,7 +15,7 @@ public class Station {
 
     private void validateName(final String name) {
         if (name.isBlank()) {
-            throw new StationNameException();
+            throw new IllegalStationNameException();
         }
     }
 
