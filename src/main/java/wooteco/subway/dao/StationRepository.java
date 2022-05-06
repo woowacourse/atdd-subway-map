@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -8,6 +9,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
+import wooteco.subway.utils.exception.ExceptionMessages;
+import wooteco.subway.utils.exception.IdNotFoundException;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -15,9 +18,10 @@ import java.util.List;
 @Repository
 public class StationRepository {
 
+    private static final int NO_ROW = 0;
+
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-
 
     public StationRepository(DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -41,7 +45,10 @@ public class StationRepository {
 
     public void deleteById(final Long id) {
         String sql = "DELETE FROM station WHERE id = :id";
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource("id", id));
+        int rowCounts = namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource("id", id));
+        if (rowCounts == NO_ROW) {
+            throw new IdNotFoundException(ExceptionMessages.NO_ID_MESSAGE);
+        }
     }
 
     public Station findByName(final String name) {
@@ -49,18 +56,18 @@ public class StationRepository {
         SqlParameterSource parameters = new MapSqlParameterSource("name", name);
         try {
             return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
-        } catch (IncorrectResultSizeDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return null;
         }
     }
 
-    public Station findById(Long id) {
+    public Station findById(final Long id) {
         String sql = "SELECT * FROM station WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         try {
             return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
+        } catch (EmptyResultDataAccessException e) {
+            throw new IdNotFoundException(ExceptionMessages.NO_ID_MESSAGE);
         }
     }
 
