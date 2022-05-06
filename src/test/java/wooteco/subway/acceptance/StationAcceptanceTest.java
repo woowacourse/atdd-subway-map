@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.test_utils.HttpMethod;
-import wooteco.subway.test_utils.HttpRequestMessage;
+import wooteco.subway.test_utils.HttpUtils;
 
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayName("인수테스트 - /stations")
@@ -27,8 +27,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         void 지하철역을_생성한다() {
             Map<String, String> params = jsonStationOf("강남역");
 
-            ExtractableResponse<Response> response = HttpRequestMessage.ofJsonBody(params)
-                    .send(HttpMethod.POST, "/stations");
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", params);
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             assertThat(response.header("Location")).isNotBlank();
@@ -39,8 +38,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
             Map<String, String> params = jsonStationOf("강남역");
             postStation(params);
 
-            ExtractableResponse<Response> response = HttpRequestMessage.ofJsonBody(params)
-                    .send(HttpMethod.POST, "/stations");
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", params);
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
@@ -49,11 +47,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("GET /stations - 지하철역 조회 테스트")
     @Test
     void 지하철역을_조회한다() {
-        postStation("강남역");
-        postStation("역삼역");
+        postStations("강남역", "역삼역");
 
-        ExtractableResponse<Response> response = HttpRequestMessage.of()
-                .send(HttpMethod.GET, "/stations");
+        ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/stations");
 
         List<StationResponse> responseBody = response.jsonPath()
                 .getList(".", StationResponse.class);
@@ -68,10 +64,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 지하철역을_제거한다() {
-            postStation("강남역");
+            postStations("강남역");
 
-            ExtractableResponse<Response> response = HttpRequestMessage.of()
-                    .send(HttpMethod.DELETE, "/stations/1");
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.DELETE, "/stations/1");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         }
@@ -79,8 +74,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         @DisplayName("존재하지 않는 id로 지하철역을 제거하려는 경우 예외가 발생한다.")
         @Test
         void deleteNonExistingStation() {
-            ExtractableResponse<Response> response = HttpRequestMessage.of()
-                    .send(HttpMethod.DELETE, "/stations/999");
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.DELETE, "/stations/999");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
@@ -93,12 +87,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
         }};
     }
 
-    private void postStation(String name) {
-        postStation(jsonStationOf(name));
+    private void postStations(String... names) {
+        for (String name : names) {
+            postStation(jsonStationOf(name));
+        }
     }
 
     private void postStation(Map<String, String> params) {
-        HttpRequestMessage.ofJsonBody(params)
-                .send(HttpMethod.POST, "/stations");
+        HttpUtils.send(HttpMethod.POST, "/stations", params);
     }
 }

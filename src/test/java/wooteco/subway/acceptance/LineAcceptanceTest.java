@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.test_utils.HttpMethod;
-import wooteco.subway.test_utils.HttpRequestMessage;
+import wooteco.subway.test_utils.HttpUtils;
 
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayName("인수테스트 - /lines")
@@ -27,8 +27,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         void 성공시_201_CREATED() {
             Map<String, String> params = jsonLineOf("신분당선", "bg-red-600");
 
-            ExtractableResponse<Response> response = HttpRequestMessage.ofJsonBody(params)
-                    .send(HttpMethod.POST, "/lines");
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/lines", params);
             LineResponse actualBody = response.jsonPath().getObject(".", LineResponse.class);
             LineResponse expectedBody = new LineResponse(1L, "신분당선", "bg-red-600");
 
@@ -42,8 +41,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             Map<String, String> params = jsonLineOf("신분당선", "bg-red-600");
             postLine(params);
 
-            ExtractableResponse<Response> response = HttpRequestMessage.ofJsonBody(params)
-                    .send(HttpMethod.POST, "/lines");
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/lines", params);
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
@@ -55,8 +53,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         postLine("신분당선", "bg-red-600");
         postLine("분당선", "bg-green-600");
 
-        ExtractableResponse<Response> response = HttpRequestMessage.of()
-                .send(HttpMethod.GET, "/lines");
+        ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/lines");
         List<LineResponse> responseBody = response.jsonPath().getList(".", LineResponse.class);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -71,8 +68,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         void 성공시_200_OK() {
             postLine("신분당선", "bg-red-600");
 
-            ExtractableResponse<Response> response = HttpRequestMessage.of()
-                    .send(HttpMethod.GET, "/lines/1");
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/lines/1");
             LineResponse actualBody = response.jsonPath().getObject(".", LineResponse.class);
             LineResponse expectedBody = new LineResponse(1L, "신분당선", "bg-red-600");
 
@@ -82,8 +78,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 존재하지_않는_노선인_경우_404_NOT_FOUND() {
-            ExtractableResponse<Response> response = HttpRequestMessage.of()
-                    .send(HttpMethod.GET, "/lines/99999");
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/lines/99999");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
         }
@@ -98,8 +93,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             postLine("신분당선", "bg-red-600");
             Map<String, String> params = jsonLineOf("NEW 분당선", "bg-red-800");
 
-            ExtractableResponse<Response> response = HttpRequestMessage.ofJsonBody(params)
-                    .send(HttpMethod.PUT, "/lines/1");
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.PUT, "/lines/1", params);
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         }
@@ -108,8 +102,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         void 수정하려는_지하철_노선이_존재하지_않는_경우_400_BAD_REQUEST() {
             Map<String, String> params = jsonLineOf("NEW 분당선", "bg-red-600");
 
-            ExtractableResponse<Response> response = HttpRequestMessage.ofJsonBody(params)
-                    .send(HttpMethod.PUT, "/lines/9999");
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.PUT, "/lines/9999", params);
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
@@ -120,8 +113,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             postLine(duplicateLineParams);
             postLine("신분당선", "bg-red-600");
 
-            ExtractableResponse<Response> response = HttpRequestMessage.ofJsonBody(duplicateLineParams)
-                    .send(HttpMethod.PUT, "/lines/2");
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.PUT, "/lines/2", duplicateLineParams);
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
@@ -135,16 +127,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         void 성공시_200_OK() {
             postLine("신분당선", "bg-red-600");
 
-            ExtractableResponse<Response> response = HttpRequestMessage.of()
-                    .send(HttpMethod.DELETE, "/lines/1");
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.DELETE, "/lines/1");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         }
 
         @Test
         void 삭제하려는_지하철_노선이_존재하지_않는_경우_BAD_REQUEST() {
-            ExtractableResponse<Response> response = HttpRequestMessage.of()
-                    .send(HttpMethod.DELETE, "/lines/99999");
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.DELETE, "/lines/99999");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
@@ -162,7 +152,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void postLine(Map<String, String> params) {
-        HttpRequestMessage.ofJsonBody(params)
-                .send(HttpMethod.POST, "/lines");
+        HttpUtils.send(HttpMethod.POST, "/lines", params);
     }
 }
