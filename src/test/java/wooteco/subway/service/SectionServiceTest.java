@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.AfterEach;
@@ -27,5 +28,13 @@ class SectionServiceTest {
         assertThatThrownBy(() -> sectionService.save(section))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("이미 존재하는 Section입니다.");
+    }
+
+    @Test
+    @DisplayName("Section을 저장할 수 있다.")
+    void save() {
+        Section section = sectionService.save(new Section(null, 1L, 1L, 2L, 2));
+
+        assertThat(section.getLineId()).isNotNull();
     }
 }

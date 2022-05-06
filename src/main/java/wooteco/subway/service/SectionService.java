@@ -15,6 +15,6 @@ public class SectionService {
         if (sectionDao.existByUpStationIdAndDownStationId(section.getUpStationId(), section.getDownStationId())) {
             throw new IllegalStateException("이미 존재하는 Section입니다.");
         }
-        return null;
+        return sectionDao.save(section);
     }
 }
