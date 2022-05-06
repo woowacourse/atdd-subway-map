@@ -93,6 +93,18 @@ class LineServiceTest {
         assertThat(isUpdated).isTrue();
     }
 
+    @DisplayName("이미 존재하는 노선의 이름으로 노선을 수정하려고 할 때 예외가 발생한다.")
+    @Test
+    void updateNotExistLine() {
+        doThrow(new IllegalArgumentException("이미 등록된 지하철 노선입니다."))
+                .when(jdbcLineDao)
+                .updateById(anyLong(), any(Line.class));
+
+        assertThatThrownBy(() -> lineService.updateLine(1L, new LineRequest("신분당선", "bg-red-600")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 등록된 지하철 노선입니다.");
+    }
+
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void deleteLine() {
