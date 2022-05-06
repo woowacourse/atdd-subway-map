@@ -62,8 +62,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void ShowStations() {
         /// given
-        final ExtractableResponse<Response> response1 = createStation(gangNamStationRequest);
-        final ExtractableResponse<Response> response2 = createStation(jamSilStationRequest);
+        final ExtractableResponse<Response> expected1 = createStation(gangNamStationRequest);
+        final ExtractableResponse<Response> expected2 = createStation(jamSilStationRequest);
 
         // when
         final ExtractableResponse<Response> actual = RestAssured.given().log().all()
@@ -73,15 +73,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        final List<Long> expectedLineIds = Stream.of(response1, response2)
+        final List<Long> expectedLineIds = Stream.of(expected1, expected2)
                 .map(this::extractId)
                 .collect(Collectors.toList());
+
         final List<Long> actualLineIds = actual.jsonPath().getList(".", StationResponse.class).stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
 
-        assertThat(actualLineIds).containsAll(expectedLineIds);
         assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actualLineIds).containsAll(expectedLineIds);
     }
 
     private long extractId(final ExtractableResponse<Response> response) {
