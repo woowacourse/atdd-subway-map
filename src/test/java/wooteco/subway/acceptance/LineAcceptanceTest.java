@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -80,7 +81,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.body().jsonPath().get("name").toString()).isEqualTo("신분당선")
+        );
     }
 
     @DisplayName("특정 노선을 업데이트한다")
@@ -120,6 +124,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
         ExtractableResponse<Response> linesResponse = RestAssured.given().log().all()
                 .when()
                 .get("/lines")

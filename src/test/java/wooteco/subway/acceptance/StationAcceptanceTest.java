@@ -3,6 +3,7 @@ package wooteco.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.apache.http.protocol.HTTP;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 생성한다.")
-    @Transactional
     @Test
     void createStationTest() {
         ExtractableResponse<Response> response = createStation("강남역");
@@ -35,7 +35,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
-    @Transactional
     @Test
     void createStationWithDuplicateName() {
         createStation("강남역");
@@ -82,11 +81,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // when
         String uri = createResponse.header("Location");
         Long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
-        RestAssured.given().log().all()
+        ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
                 .when()
                 .delete(uri)
                 .then().log().all()
                 .extract();
+
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         // then
         ExtractableResponse<Response> stationsResponse = RestAssured.given().log().all()
