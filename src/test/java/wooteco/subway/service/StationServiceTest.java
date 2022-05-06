@@ -6,20 +6,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
-@SpringBootTest
-@Transactional
 class StationServiceTest {
 
-    @Autowired
-    private StationService stationService;
+    private final StationService stationService = new StationService(new FakeStationDao());
 
     @DisplayName("지하철 역을 저장한다.")
     @Test
