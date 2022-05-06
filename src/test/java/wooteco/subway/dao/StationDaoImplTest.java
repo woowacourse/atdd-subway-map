@@ -7,16 +7,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import wooteco.subway.domain.Station;
 
-@Sql(scripts = {"classpath:setupSchema.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = {"classpath:delete.sql"}, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
-@JdbcTest
-class StationDaoImplTest {
+class StationDaoImplTest extends DaoImplTest {
 
     private StationDaoImpl stationDaoImpl;
 

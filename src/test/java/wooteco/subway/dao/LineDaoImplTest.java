@@ -13,10 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import wooteco.subway.domain.Line;
 
-@Sql(scripts = {"classpath:setupSchema.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = {"classpath:delete.sql"}, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
-@JdbcTest
-public class LineDaoImplTest {
+public class LineDaoImplTest extends DaoImplTest{
 
     private LineDao lineDao;
 
