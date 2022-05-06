@@ -70,5 +70,4 @@ public class LineDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, id, name);
     }
 
-
 }
