@@ -15,6 +15,10 @@ public class LineEntity {
         this.color = color;
     }
 
+    public LineEntity(String name, String color) {
+        this(null, name, color);
+    }
+
     public Long getId() {
         return id;
     }

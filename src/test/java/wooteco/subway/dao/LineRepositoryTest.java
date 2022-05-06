@@ -37,7 +37,7 @@ class LineRepositoryTest {
     @Test
     @DisplayName("LineEntity 저장")
     void save() {
-        final LineEntity lineEntity = new LineEntity(null, "2호선", "bg-600-green");
+        final LineEntity lineEntity = new LineEntity("2호선", "bg-600-green");
         final LineEntity save = lineRepository.save(lineEntity);
 
         assertAll(
@@ -50,8 +50,8 @@ class LineRepositoryTest {
     @Test
     @DisplayName("LineEntity 전체 조회")
     void findAll() {
-        final LineEntity lineEntity = new LineEntity(null, "2호선", "bg-600-green");
-        final LineEntity lineEntity2 = new LineEntity(null, "3호선", "bg-600-blue");
+        final LineEntity lineEntity = new LineEntity("2호선", "bg-600-green");
+        final LineEntity lineEntity2 = new LineEntity("3호선", "bg-600-blue");
         final LineEntity save = lineRepository.save(lineEntity);
         final LineEntity save2 = lineRepository.save(lineEntity2);
 
@@ -63,7 +63,7 @@ class LineRepositoryTest {
     @Test
     @DisplayName("LineEntity 단 건 조회")
     void findById() {
-        final LineEntity lineEntity = new LineEntity(null, "2호선", "bg-600-green");
+        final LineEntity lineEntity = new LineEntity("2호선", "bg-600-green");
         final LineEntity saved = lineRepository.save(lineEntity);
 
         final Optional<LineEntity> found = lineRepository.findById(saved.getId());
@@ -78,7 +78,7 @@ class LineRepositoryTest {
     @Test
     @DisplayName("LineEntity 업데이트")
     void updateById() {
-        final LineEntity lineEntity = new LineEntity(null, "2호선", "bg-600-green");
+        final LineEntity lineEntity = new LineEntity("2호선", "bg-600-green");
         final LineEntity saved = lineRepository.save(lineEntity);
 
         final LineEntity newLineEntity = new LineEntity(saved.getId(), "3호선", "bg-700-blue");
@@ -97,7 +97,7 @@ class LineRepositoryTest {
     @Test
     @DisplayName("LineEntity 단 건 삭제")
     void deleteById() {
-        final LineEntity lineEntity = new LineEntity(null, "2호선", "bg-600-green");
+        final LineEntity lineEntity = new LineEntity("2호선", "bg-600-green");
         final LineEntity saved = lineRepository.save(lineEntity);
         final Long id = saved.getId();
 
