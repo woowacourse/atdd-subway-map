@@ -10,14 +10,18 @@ public class Section {
 
     public Section(final Long id, final long lineId, final long upStationId, final long downStationId,
                    final int distance) {
-        if (distance <= 0) {
-            throw new IllegalArgumentException("구간의 길이는 양수만 들어올 수 있습니다.");
-        }
+        validatePositiveDistance(distance);
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    private void validatePositiveDistance(final int distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException("구간의 길이는 양수만 들어올 수 있습니다.");
+        }
     }
 
     public Section(final Long lineId, final long upStationId, final long downStationId, final int distance) {
