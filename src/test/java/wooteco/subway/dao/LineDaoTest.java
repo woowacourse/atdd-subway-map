@@ -26,8 +26,8 @@ public class LineDaoTest {
 
     @BeforeEach
     void set() {
-        lineDao = new LineDaoImpl(dataSource);
-        
+        lineDao = new JdbcLineDao(dataSource);
+
         lineDao.save(new Line("2호선", "green"));
     }
 

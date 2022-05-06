@@ -13,7 +13,7 @@ import wooteco.subway.exception.StationDuplicateException;
 import wooteco.subway.exception.StationNotFoundException;
 
 @RestControllerAdvice(annotations = RestController.class)
-public class StationControllerAdvice {
+public class ControllerAdvice {
 
     @ExceptionHandler(value = IllegalArgumentException.class)
     public ResponseEntity handleIllegalException(RuntimeException e) {

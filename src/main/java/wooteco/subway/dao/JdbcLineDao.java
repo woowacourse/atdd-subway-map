@@ -15,7 +15,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.exception.LineDuplicateException;
 
 @Repository
-public class LineDaoImpl implements LineDao {
+public class JdbcLineDao implements LineDao {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -25,7 +25,7 @@ public class LineDaoImpl implements LineDao {
             resultSet.getString("name"),
             resultSet.getString("color"));
 
-    public LineDaoImpl(final DataSource dataSource) {
+    public JdbcLineDao(final DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
             .withTableName("line")

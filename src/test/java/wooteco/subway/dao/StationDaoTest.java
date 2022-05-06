@@ -26,7 +26,7 @@ public class StationDaoTest {
 
     @BeforeEach
     void set() {
-        stationDao = new StationDaoImpl(dataSource);
+        stationDao = new JdbcStationDao(dataSource);
 
         stationDao.save(new Station("선릉역"));
     }

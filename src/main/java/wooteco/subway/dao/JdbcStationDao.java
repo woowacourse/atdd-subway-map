@@ -14,7 +14,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.exception.StationDuplicateException;
 
 @Repository
-public class StationDaoImpl implements StationDao {
+public class JdbcStationDao implements StationDao {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -24,7 +24,7 @@ public class StationDaoImpl implements StationDao {
             resultSet.getString("name")
         );
 
-    public StationDaoImpl(final DataSource dataSource) {
+    public JdbcStationDao(final DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
             .withTableName("station")
