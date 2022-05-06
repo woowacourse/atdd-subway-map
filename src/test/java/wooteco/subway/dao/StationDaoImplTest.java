@@ -1,19 +1,19 @@
 package wooteco.subway.dao;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import org.springframework.test.context.jdbc.SqlConfig;
+import org.springframework.test.context.jdbc.SqlGroup;
 import wooteco.subway.domain.Station;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 class StationDaoImplTest {
@@ -23,21 +23,28 @@ class StationDaoImplTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @SqlGroup({
+            @Sql(
+                    scripts = {"/schema.sql"},
+                    config = @SqlConfig(
+                            dataSource = "dataSource",
+                            transactionManager = "transactionManager"
+                    ),
+                    executionPhase = ExecutionPhase.BEFORE_TEST_METHOD
+            ),
+            @Sql(
+                    scripts = {"/delete.sql"},
+                    config = @SqlConfig(
+                            dataSource = "dataSource",
+                            transactionManager = "transactionManager"
+                    ),
+                    executionPhase = ExecutionPhase.AFTER_TEST_METHOD
+            ),
+    })
+
     @BeforeEach
     void setUp() {
         stationDaoImpl = new StationDaoImpl(jdbcTemplate);
-
-        jdbcTemplate.execute("DROP TABLE station IF EXISTS");
-        jdbcTemplate.execute("CREATE TABLE station(" +
-                "id bigint auto_increment not null,\n" +
-                "name varchar(255) not null unique,\n" +
-                "primary key(id));");
-
-        List<Object[]> splitStation = Arrays.asList("선릉역", "잠실역", "강남역").stream()
-                .map(name -> name.split(" "))
-                .collect(Collectors.toList());
-
-        jdbcTemplate.batchUpdate("INSERT INTO station(name) VALUES (?)", splitStation);
     }
 
     @DisplayName("역 정보를 저장한다.")
