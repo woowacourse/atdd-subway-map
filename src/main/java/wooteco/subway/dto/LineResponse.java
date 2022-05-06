@@ -25,6 +25,10 @@ public class LineResponse {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>());
     }
 
+    public static LineResponse from(Long id, Line line) {
+        return new LineResponse(id, line.getName(), line.getColor(), new ArrayList<>());
+    }
+
     public Long getId() {
         return id;
     }

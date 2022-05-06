@@ -114,7 +114,7 @@ class LineServiceTest {
         // when
         LineRequest newLine = new LineRequest("2호선", "bg-green-600", null, null, 0);
         lineService.updateById(lineResponse.getId(), newLine);
-        Line line = lineDao.findById(lineResponse.getId());
+        Line line = lineDao.findById(lineResponse.getId()).get();
 
         // then
         assertThat(line.getName()).isEqualTo(newLine.getName());

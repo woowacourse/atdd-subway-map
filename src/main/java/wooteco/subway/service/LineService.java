@@ -20,8 +20,8 @@ public class LineService {
 
     public LineResponse save(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        lineDao.save(line);
-        return LineResponse.from(line);
+        Long savedId = lineDao.save(line);
+        return LineResponse.from(savedId, line);
     }
 
     public List<LineResponse> findAll() {
