@@ -33,10 +33,9 @@ class LineDaoTest {
         Line line = new Line("2호선", "초록색");
 
         Line persistLine = lineDao.save(line);
+        Line expected = new Line(persistLine.getId(), line.getName(), line.getColor());
 
-        assertThat(persistLine.getId()).isNotNull();
-        assertThat(persistLine.getName()).isEqualTo("2호선");
-        assertThat(persistLine.getColor()).isEqualTo("초록색");
+        assertEquals(expected, persistLine);
     }
 
     @DisplayName("중복된 이름이나 색상의 노선을 저장할 경우 예외가 발생한다.")
@@ -69,9 +68,9 @@ class LineDaoTest {
         Long id = lineDao.save(line).getId();
 
         Line actual = lineDao.findById(id);
-        assertThat(actual.getId()).isEqualTo(id);
-        assertThat(actual.getName()).isEqualTo("2호선");
-        assertThat(actual.getColor()).isEqualTo("초록색");
+        Line expected = new Line(id, line.getName(), line.getColor());
+
+        assertEquals(expected, actual);
     }
 
     @DisplayName("특정 id를 가지는 라인의 이름과 색을 변경한다.")
@@ -79,13 +78,13 @@ class LineDaoTest {
     void updateLineById() {
         Line line = new Line("2호선", "초록색");
         Long id = lineDao.save(line).getId();
-
         Line updateLine = new Line("8호선", "분홍색");
         lineDao.updateById(id, updateLine);
 
         Line actual = lineDao.findById(id);
-        assertThat(actual.getName()).isEqualTo("8호선");
-        assertThat(actual.getColor()).isEqualTo("분홍색");
+        Line expected = new Line(id, updateLine.getName(), updateLine.getColor());
+
+        assertEquals(expected, actual);
     }
 
     @DisplayName("특정 id를 가지는 노선을 삭제한다.")
@@ -98,4 +97,11 @@ class LineDaoTest {
 
         assertThat(lineDao.findAll()).isEmpty();
     }
+
+    private void assertEquals(Line expected, Line actual) {
+        assertThat(expected.getId()).isEqualTo(actual.getId());
+        assertThat(expected.getName()).isEqualTo(actual.getName());
+        assertThat(expected.getColor()).isEqualTo(actual.getColor());
+    }
+
 }

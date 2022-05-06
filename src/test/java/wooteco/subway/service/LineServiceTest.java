@@ -26,11 +26,10 @@ class LineServiceTest {
     void create() {
         LineRequest lineRequest = new LineRequest("2호선", "초록색");
 
-        LineResponse lineResponse = lineService.create(lineRequest);
+        LineResponse actual = lineService.create(lineRequest);
+        LineResponse expected = new LineResponse(actual.getId(), lineRequest.getName(), lineRequest.getColor());
 
-        assertThat(lineResponse.getId()).isNotNull();
-        assertThat(lineResponse.getName()).isEqualTo(lineResponse.getName());
-        assertThat(lineResponse.getColor()).isEqualTo(lineResponse.getColor());
+        assertEquals(expected, actual);
     }
 
     @DisplayName("이미 저장된 노선과 중복된 이름의 노선을 저장하려 하면 예외가 발생한다.")
