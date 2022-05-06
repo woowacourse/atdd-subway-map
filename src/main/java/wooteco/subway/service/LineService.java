@@ -20,8 +20,8 @@ public class LineService {
 
     public Line register(final String name, final String color) {
         validateDuplicateName(name);
-        final LineEntity lineEntity = new LineEntity(new Line(name, color));
-        final LineEntity savedLineEntity = lineDao.save(lineEntity);
+        final Line line = new Line(name, color);
+        final LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
         return new Line(savedLineEntity.getId(), savedLineEntity.getName(), savedLineEntity.getColor());
     }
 
@@ -32,8 +32,7 @@ public class LineService {
     }
 
     public Line searchById(final Long id) {
-        LineEntity lineEntity = lineDao.findById(id)
-                .orElseThrow(() -> new NoSuchLineException());
+        LineEntity lineEntity = lineDao.findById(id).orElseThrow(() -> new NoSuchLineException());
         return new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor());
     }
 

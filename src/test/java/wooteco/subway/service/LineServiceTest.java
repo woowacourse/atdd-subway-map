@@ -11,7 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.DuplicateLineNameException;
-import wooteco.subway.exception.ElementAlreadyExistException;
 import wooteco.subway.mockDao.MockLineDao;
 
 class LineServiceTest {
