@@ -10,7 +10,13 @@ public class SubwayControllerAdvice {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public void handleException(IllegalArgumentException e) {
+    public void handleIllegalArgumentException(IllegalArgumentException e) {
+        e.printStackTrace();
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public void handleException(Exception e) {
         e.printStackTrace();
     }
 }
