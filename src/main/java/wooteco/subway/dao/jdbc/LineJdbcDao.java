@@ -32,7 +32,7 @@ public class LineJdbcDao implements LineDao {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
-            trySaveLine(line, keyHolder);
+            trySave(line, keyHolder);
         } catch (DuplicateKeyException exception) {
             throw new DuplicateLineException();
         }
@@ -85,7 +85,7 @@ public class LineJdbcDao implements LineDao {
         jdbcTemplate.update(sql, id);
     }
 
-    private void trySaveLine(final Line line, final KeyHolder keyHolder)
+    private void trySave(final Line line, final KeyHolder keyHolder)
             throws DuplicateKeyException {
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(

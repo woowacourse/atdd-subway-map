@@ -6,9 +6,6 @@ public class Station {
     private Long id;
     private String name;
 
-    public Station() {
-    }
-
     public Station(Long id, String name) {
         this.id = id;
         this.name = name;
@@ -39,12 +36,12 @@ public class Station {
             return false;
         }
         final Station station = (Station) o;
-        return id.equals(station.id) && name.equals(station.name);
+        return id.equals(station.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(id);
     }
 
     @Override

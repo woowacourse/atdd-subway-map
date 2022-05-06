@@ -30,17 +30,11 @@ class StationJdbcDaoTest {
     @DisplayName("새로운 지하철 역을 저장한다")
     @Test
     void saveStation() {
-        // given
-        Station station = new Station("강남역");
+        Station savedStation = dao.save(new Station("강남역"));
 
-        // when
-        Long id = dao.save(station);
-
-        // then
         List<Station> stations = dao.findAll();
         Station actual = stations.get(0);
-        assertThat(actual.getId()).isEqualTo(id);
-        assertThat(actual.getName()).isEqualTo("강남역");
+        assertThat(actual).isEqualTo(savedStation);
     }
 
     @DisplayName("같은 지하철 역 이름이 있는 경우 예외를 발생시킨다")
@@ -72,10 +66,10 @@ class StationJdbcDaoTest {
     @Test
     void deleteById() {
         // given
-        Long savedId = dao.save(new Station("station"));
+        Station savedStation = dao.save(new Station("station"));
 
         // when
-        dao.deleteById(savedId);
+        dao.deleteById(savedStation.getId());
 
         // then
         assertThat(dao.findAll()).isEmpty();

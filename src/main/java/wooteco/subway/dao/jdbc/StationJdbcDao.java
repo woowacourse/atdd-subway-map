@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.ObjectUtils;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateStationNameException;
@@ -21,21 +22,19 @@ public class StationJdbcDao implements StationDao {
     }
 
     @Override
-    public Long save(final Station station) {
-        final String sql = "INSERT INTO STATION (name) VALUES (?)";
+    public Station save(final Station station) throws IllegalArgumentException {
+        if (ObjectUtils.isEmpty(station)) {
+            throw new IllegalArgumentException("passed station is null");
+        }
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
-            jdbcTemplate.update(connection -> {
-                PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-                preparedStatement.setString(1, station.getName());
-                return preparedStatement;
-            }, keyHolder);
+            trySave(station, keyHolder);
         } catch (DuplicateKeyException exception) {
             throw new DuplicateStationNameException();
         }
 
-        return keyHolder.getKey().longValue();
+        return new Station(keyHolder.getKey().longValue(), station.getName());
     }
 
     @Override
@@ -51,5 +50,14 @@ public class StationJdbcDao implements StationDao {
     public void deleteById(final Long id) {
         final String sql = "DELETE FROM STATION WHERE id = (?)";
         jdbcTemplate.update(sql, id);
+    }
+
+    private void trySave(final Station station, final KeyHolder keyHolder) {
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "INSERT INTO STATION (name) VALUES (?)", new String[]{"id"});
+            preparedStatement.setString(1, station.getName());
+            return preparedStatement;
+        }, keyHolder);
     }
 }

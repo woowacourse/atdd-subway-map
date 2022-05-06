@@ -28,10 +28,8 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
-        Long id = stationDao.save(station);
-        StationResponse stationResponse = new StationResponse(id, station.getName());
-        return ResponseEntity.created(URI.create("/stations/" + id)).body(stationResponse);
+        StationResponse stationResponse = StationResponse.from(stationDao.save(new Station(stationRequest.getName())));
+        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }
 
     @GetMapping
