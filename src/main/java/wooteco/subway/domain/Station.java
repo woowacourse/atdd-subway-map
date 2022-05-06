@@ -29,12 +29,12 @@ public class Station {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Station station = (Station) o;
-        return name.equals(station.name);
+        return Objects.equals(getId(), station.getId()) && Objects.equals(getName(), station.getName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(getId(), getName());
     }
 }
 

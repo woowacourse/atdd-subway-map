@@ -35,7 +35,7 @@ class StationDaoTest {
         Station expected = new Station("강남역");
         Station actual = stationDao.save(expected);
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual.getName()).isEqualTo(expected.getName());
     }
 
     @DisplayName("모든 역 정보를 조회한다.")
@@ -43,12 +43,12 @@ class StationDaoTest {
     void findAll() {
         Station station1 = new Station("강남역");
         Station station2 = new Station("신논현역");
-        stationDao.save(station1);
-        stationDao.save(station2);
+        Station savedStation1 = stationDao.save(station1);
+        Station savedStation2 = stationDao.save(station2);
 
         List<Station> actual = stationDao.findAll();
 
-        assertThat(actual).containsExactly(station1, station2);
+        assertThat(actual).containsExactly(savedStation1, savedStation2);
     }
 
     @DisplayName("역을 삭제한다.")

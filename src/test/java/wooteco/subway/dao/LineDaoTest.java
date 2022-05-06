@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
 public class LineDaoTest {
@@ -36,7 +37,10 @@ public class LineDaoTest {
     void save() {
         Line actual = lineDao.save(line);
 
-        assertThat(actual).isEqualTo(line);
+        assertAll(
+                () -> assertThat(actual.getName()).isEqualTo(line.getName()),
+                () -> assertThat(actual.getColor()).isEqualTo(line.getColor())
+        );
     }
 
     @DisplayName("모든 노선 목록을 조회한다.")
