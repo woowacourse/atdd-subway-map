@@ -9,29 +9,31 @@ public class Line {
     private static final int MAX_RANGE = 10;
     private static final int MIN_RANGE = 3;
 
-    private Long id;
+    private final Long id;
     private String name;
     private String color;
 
-    public Line(String name, String color) {
-        validateEmpty(name, color);
-        validateNameRange(name);
-        validateLanguageType(name);
+    public Line(Long id, String name, String color) {
+        validate(name, color);
+        this.id = id;
         this.name = name;
         this.color = color;
     }
 
-    public Line(Long id, String name, String color) {
-        this(name, color);
-        this.id = id;
+    public Line(String name, String color) {
+        this(null, name, color);
     }
 
     public void update(String name, String color) {
+        validate(name, color);
+        this.name = name;
+        this.color = color;
+    }
+
+    private void validate(String name, String color) {
         validateEmpty(name, color);
         validateNameRange(name);
         validateLanguageType(name);
-        this.name = name;
-        this.color = color;
     }
 
     private void validateEmpty(String name, String color) {
@@ -42,11 +44,11 @@ public class Line {
 
     private void validateNameRange(String name) {
         if (name.length() >= MAX_RANGE) {
-            throw new IllegalArgumentException("노선 이름은 10글자를 초과할 수 없습니다.");
+            throw new IllegalArgumentException(String.format("노선 이름은 %d글자를 초과할 수 없습니다.", MAX_RANGE));
         }
 
         if (name.length() < MIN_RANGE) {
-            throw new IllegalArgumentException("노선 이름은 3글자 이상이어야 합니다.");
+            throw new IllegalArgumentException(String.format("노선 이름은 %d글자 이상이어야 합니다.", MIN_RANGE));
         }
     }
 
