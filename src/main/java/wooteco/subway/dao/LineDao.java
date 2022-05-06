@@ -3,7 +3,6 @@ package wooteco.subway.dao;
 import java.util.List;
 import java.util.Optional;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NoSuchLineException;
 
 public interface LineDao {
@@ -13,7 +12,7 @@ public interface LineDao {
 
     Optional<Line> findById(Long id);
 
-    void update(Long id, String name, String color) throws NoSuchLineException, DuplicateLineException;
+    void update(Line line) throws NoSuchLineException, IllegalArgumentException;
 
     void deleteById(Long id);
 }

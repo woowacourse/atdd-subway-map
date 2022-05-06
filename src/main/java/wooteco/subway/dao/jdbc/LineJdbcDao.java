@@ -76,12 +76,14 @@ public class LineJdbcDao implements LineDao {
     }
 
     @Override
-    public void update(final Long id, final String name, final String color)
-            throws NoSuchLineException, DuplicateLineException {
+    public void update(final Line line) throws NoSuchLineException, IllegalArgumentException {
+        if (ObjectUtils.isEmpty(line)) {
+            throw new IllegalArgumentException("passed line is null");
+        }
 
         final String sql = "UPDATE LINE SET name = (?), color = (?) WHERE id = (?)";
         try {
-            int affectedRow = jdbcTemplate.update(sql, name, color, id);
+            int affectedRow = jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
             checkUpdated(affectedRow);
         } catch (DuplicateKeyException exception) {
             throw new DuplicateLineException();
