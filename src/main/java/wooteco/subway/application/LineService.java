@@ -2,9 +2,7 @@ package wooteco.subway.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.StationDao;
+import wooteco.subway.repository.SectionRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
@@ -12,21 +10,22 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotExistException;
 import wooteco.subway.repository.LineRepository;
+import wooteco.subway.repository.StationRepository;
 
 @Service
 @Transactional
 public class LineService {
 
     private final LineRepository lineRepository;
-    private final StationDao stationDao;
-    private final SectionDao sectionDao;
+    private final StationRepository stationRepository;
+    private final SectionRepository sectionRepository;
 
     public LineService(LineRepository lineRepository,
-                       StationDao stationDao,
-                       SectionDao sectionDao) {
+                       StationRepository stationRepository,
+                       SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
-        this.stationDao = stationDao;
-        this.sectionDao = sectionDao;
+        this.stationRepository = stationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     public Line save(LineRequest request) {
@@ -34,11 +33,11 @@ public class LineService {
             throw new DuplicateException(String.format("%s는 중복된 노선 이름입니다.", request.getName()));
         }
 
-        Station upStation = stationDao.findById(request.getUpStationId()).orElseThrow();
-        Station downStation = stationDao.findById(request.getDownStationId()).orElseThrow();
+        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow();
+        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow();
 
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        Section section = sectionDao.save(
+        Section section = sectionRepository.save(
             new Section(line, upStation, downStation, request.getDistance()));
         line.addSection(section);
         return line;

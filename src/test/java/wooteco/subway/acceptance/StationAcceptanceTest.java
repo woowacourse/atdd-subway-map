@@ -17,17 +17,17 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.StationDao;
+import wooteco.subway.repository.StationRepository;
 
 @DisplayName("지하철 역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @Autowired
-    private StationDao stationDao;
+    private StationRepository stationRepository;
 
     @BeforeEach
     void beforeEach() {
-        stationDao.deleteAll();
+        stationRepository.deleteAll();
     }
 
     @DisplayName("지하철 역을 생성한다.")

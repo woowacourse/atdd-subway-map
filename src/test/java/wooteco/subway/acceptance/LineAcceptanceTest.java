@@ -20,10 +20,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.StationDao;
+import wooteco.subway.repository.SectionRepository;
 import wooteco.subway.repository.LineRepository;
+import wooteco.subway.repository.StationRepository;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -32,22 +31,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private LineRepository lineRepository;
 
     @Autowired
-    private LineDao lineDao;
+    private StationRepository stationRepository;
 
     @Autowired
-    private StationDao stationDao;
-
-    @Autowired
-    private SectionDao sectionDao;
+    private SectionRepository sectionRepository;
 
     private Long upStationId;
     private Long downStationId;
 
     @BeforeEach
     void beforeEach() {
-        sectionDao.deleteAll();
+        sectionRepository.deleteAll();
         lineRepository.deleteAll();
-        stationDao.deleteAll();
+        stationRepository.deleteAll();
 
         upStationId = createStation("강남역");
         downStationId = createStation("역삼역");
@@ -64,9 +60,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @AfterEach
     void afterEach() {
-        sectionDao.deleteAll();
+        sectionRepository.deleteAll();
         lineRepository.deleteAll();
-        stationDao.deleteAll();
+        stationRepository.deleteAll();
     }
 
     @DisplayName("지하철 노선 이름에 빈 문자열을 사용할 수 없다")

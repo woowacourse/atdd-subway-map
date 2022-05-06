@@ -16,15 +16,19 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.repository.StationRepository;
 
 @RestController
 @RequestMapping("/stations")
 public class StationController {
 
+    private final StationRepository stationRepository;
     private final StationService stationService;
     private final StationDao stationDao;
 
-    public StationController(StationService stationService, StationDao stationDao) {
+    public StationController(StationRepository stationRepository,
+                             StationService stationService, StationDao stationDao) {
+        this.stationRepository = stationRepository;
         this.stationService = stationService;
         this.stationDao = stationDao;
     }
@@ -40,7 +44,7 @@ public class StationController {
 
     @GetMapping
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = stationDao.findAll();
+        List<Station> stations = stationRepository.findAll();
         List<StationResponse> stationResponses = stations.stream()
             .map(it -> new StationResponse(it.getId(), it.getName()))
             .collect(Collectors.toList());

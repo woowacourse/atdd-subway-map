@@ -14,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dto.StationResponse;
+import wooteco.subway.repository.SectionRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
@@ -38,7 +40,13 @@ public class LineServiceTest {
     private LineRepository lineRepository;
 
     @Autowired
+    private SectionRepository sectionRepository;
+
+    @Autowired
     private SectionDao sectionDao;
+
+    @Autowired
+    private LineDao lineDao;
 
     @DisplayName("지하철 노선 저장")
     @Test
@@ -50,15 +58,12 @@ public class LineServiceTest {
 
         Line line = lineService.save(request);
 
-        List<Long> expectedIds = line.getSections().stream()
-            .map(Section::getId)
-            .collect(Collectors.toList());
-        List<Long> actualIds = sectionDao.findAllByLineId(line.getId()).stream()
-            .map(SectionResponse::getId)
+        List<Long> actualIds = lineDao.queryByLineId(line.getId()).getStations().stream()
+            .map(StationResponse::getId)
             .collect(Collectors.toList());
 
         assertThat(lineRepository.findById(line.getId())).isNotEmpty();
-        assertThat(actualIds).containsExactlyInAnyOrderElementsOf(expectedIds);
+        assertThat(actualIds).containsExactlyInAnyOrder(upStation.getId(), downStation.getId());
     }
 
     @DisplayName("지하철 노선 빈 이름으로 저장")

@@ -10,11 +10,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.BlankArgumentException;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotExistException;
+import wooteco.subway.repository.StationRepository;
 
 @SpringBootTest
 @Transactional
@@ -24,14 +24,14 @@ class StationServiceTest {
     private StationService stationService;
 
     @Autowired
-    private StationDao stationDao;
+    private StationRepository stationRepository;
 
     @DisplayName("지하철역 저장")
     @Test
     void saveByName() {
         String stationName = "something";
         Station station = stationService.save(stationName);
-        assertThat(stationDao.findById(station.getId())).isNotEmpty();
+        assertThat(stationRepository.findById(station.getId())).isNotEmpty();
     }
 
     @DisplayName("중복된 지하철역 저장")
@@ -59,7 +59,7 @@ class StationServiceTest {
 
         stationService.deleteById(station.getId());
 
-        assertThat(stationDao.existByName("강남역")).isFalse();
+        assertThat(stationRepository.existByName("강남역")).isFalse();
     }
 
     @DisplayName("존재하지 않는 지하철 역 삭제")

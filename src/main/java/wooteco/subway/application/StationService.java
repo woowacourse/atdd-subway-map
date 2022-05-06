@@ -6,28 +6,29 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotExistException;
+import wooteco.subway.repository.StationRepository;
 
 @Service
 @Transactional
 public class StationService {
 
-    private final StationDao stationDao;
+    private final StationRepository stationRepository;
 
-    public StationService(StationDao stationDao) {
-        this.stationDao = stationDao;
+    public StationService(StationRepository stationRepository) {
+        this.stationRepository = stationRepository;
     }
 
     public Station save(String name) {
-        if (stationDao.existByName(name)) {
+        if (stationRepository.existByName(name)) {
             throw new DuplicateException(String.format("%s는 중복된 지하철역 이름입니다.", name));
         }
-        return stationDao.save(new Station(name));
+        return stationRepository.save(new Station(name));
     }
 
     public void deleteById(Long id) {
-        if (!stationDao.existById(id)) {
+        if (!stationRepository.existById(id)) {
             throw new NotExistException(String.format("%d와 동일한 ID의 지하철이 없습니다.", id));
         }
-        stationDao.deleteById(id);
+        stationRepository.deleteById(id);
     }
 }
