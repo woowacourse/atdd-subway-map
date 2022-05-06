@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 
 @Repository
 public class JdbcSectionDao implements SectionDao {
@@ -24,9 +25,9 @@ public class JdbcSectionDao implements SectionDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setLong(1, section.getLineId());
-            ps.setLong(2, section.getUpStationId());
-            ps.setLong(3, section.getDownStationId());
+            ps.setLong(1, section.getLine().getId());
+            ps.setLong(2, section.getUpStation().getId());
+            ps.setLong(3, section.getDownStation().getId());
             ps.setInt(4, section.getDistance());
             return ps;
         }, keyHolder);
@@ -36,9 +37,8 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public boolean existByUpStationIdAndDownStationId(final long upStationId, final long downStationId) {
-        final String sql = "select exists (select * from SECTION "
-                + "where (up_station_id = ? and down_station_id = ?) or (down_station_id = ? and up_station_id = ?))";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, upStationId, downStationId, upStationId, downStationId);
+    public boolean existByUpStationAndDownStation(final Station upStation, final Station downStation) {
+        final String sql = "select exists (select * from SECTION where up_station_id = ? and down_station_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, upStation.getId(), downStation.getId());
     }
 }

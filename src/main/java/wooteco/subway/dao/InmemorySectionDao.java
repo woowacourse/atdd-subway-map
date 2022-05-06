@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 
 public class InmemorySectionDao implements SectionDao {
 
@@ -41,9 +42,9 @@ public class InmemorySectionDao implements SectionDao {
     }
 
     @Override
-    public boolean existByUpStationIdAndDownStationId(final long upStationId, final long downStationId) {
+    public boolean existByUpStationAndDownStation(final Station upStation, final Station downStation) {
         return sections.values()
                 .stream()
-                .anyMatch(section -> section.isSameUpStationAndDownStation(upStationId, downStationId));
+                .anyMatch(section -> section.isSameUpStationAndDownStation(upStation, downStation));
     }
 }

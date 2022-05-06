@@ -3,19 +3,18 @@ package wooteco.subway.domain;
 public class Section {
 
     private final Long id;
-    private final long lineId;
-    private final long upStationId;
-    private final long downStationId;
+    private final Line line;
+    private final Station upStation;
+    private final Station downStation;
     private final int distance;
 
-    public Section(final Long id, final long lineId, final long upStationId, final long downStationId,
-                   final int distance) {
+    public Section(final Long id, final Line line, final Station upStation, final Station downStation, final int distance) {
         validatePositiveDistance(distance);
-        validateDuplicateStation(upStationId, downStationId);
+        validateDuplicateStation(upStation, downStation);
         this.id = id;
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
@@ -25,39 +24,39 @@ public class Section {
         }
     }
 
-    private void validateDuplicateStation(final long upStationId, final long downStationId) {
-        if (upStationId == downStationId) {
+    private void validateDuplicateStation(final Station upStation, final Station downStation) {
+        if (upStation.equals(downStation)) {
             throw new IllegalArgumentException("upstation과 downstation은 중복될 수 없습니다.");
         }
     }
 
-    public Section(final Long lineId, final long upStationId, final long downStationId, final int distance) {
-        this(null, lineId, upStationId, downStationId, distance);
+    public Section(final Line line, final Station upStation, final Station downStation, final int distance) {
+        this(null, line, upStation, downStation, distance);
     }
 
     public Section(final Long id, final Section section) {
-        this(id, section.lineId, section.upStationId, section.downStationId, section.distance);
+        this(id, section.line, section.upStation, section.downStation, section.distance);
     }
 
-    public boolean isSameUpStationAndDownStation(final long upStationId, final long downStationId) {
-        return (this.upStationId == upStationId && this.downStationId == downStationId) ||
-                (this.upStationId == downStationId && this.downStationId == upStationId);
+    public boolean isSameUpStationAndDownStation(final Station upStation, final Station downStation) {
+        return (this.upStation.equals(upStation) && this.downStation.equals(downStation)) ||
+                (this.upStation.equals(downStation) && this.downStation.equals(upStation));
     }
 
     public Long getId() {
         return id;
     }
 
-    public long getLineId() {
-        return lineId;
+    public Line getLine() {
+        return line;
     }
 
-    public long getUpStationId() {
-        return upStationId;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public long getDownStationId() {
-        return downStationId;
+    public Station getDownStation() {
+        return downStation;
     }
 
     public int getDistance() {
