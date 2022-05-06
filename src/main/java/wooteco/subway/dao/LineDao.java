@@ -57,6 +57,16 @@ public class LineDao {
         }
     }
 
+    public Optional<Line> findByColor(String color) {
+        String sql = "select * from line where color = ?";
+        try {
+            Line line = jdbcTemplate.queryForObject(sql, rowMapper(), color);
+            return Optional.ofNullable(line);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
     public List<Line> findAll() {
         String sql = "select * from line";
         return jdbcTemplate.query(sql, rowMapper());

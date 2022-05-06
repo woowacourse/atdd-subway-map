@@ -65,17 +65,36 @@ public class LineControllerTest {
 
     @DisplayName("지하철 노선 생성 시 이름이 중복된다면 에러를 응답한다.")
     @Test
-    void createLine_duplication_exception() throws Exception {
+    void createLine_duplicate_name_exception() throws Exception {
         // given
         LineRequest test = new LineRequest("test", "GREEN");
         given(lineDao.findByName("test"))
-                .willReturn(Optional.of(new Line(1L, test.getName(), test.getColor())));
+                .willReturn(Optional.of(new Line(1L, test.getName(), "NotGreen")));
         // when
         ResultActions perform = mockMvc.perform(post("/lines")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(test)));
         // then
-        perform.andExpect(status().isBadRequest());
+        perform.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value("중복되는 이름의 지하철 노선이 존재합니다."));
+    }
+
+    @DisplayName("지하철 노선 생성 시 색깔이 중복된다면 에러를 응답한다.")
+    @Test
+    void createLine_duplicate_color_exception() throws Exception {
+        // given
+        LineRequest test = new LineRequest("test", "GREEN");
+        given(lineDao.findByName("test"))
+            .willReturn(Optional.empty());
+        given(lineDao.findByColor("GREEN"))
+            .willReturn(Optional.of(new Line(1L, "NotTest", test.getColor())));
+        // when
+        ResultActions perform = mockMvc.perform(post("/lines")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(test)));
+        // then
+        perform.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value("중복되는 색깔의 지하철 노선이 존재합니다."));
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -124,7 +143,7 @@ public class LineControllerTest {
         ResultActions perform = mockMvc.perform(get("/lines/1"));
         // then
         perform.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value("해당 ID의 지하철 노선이 존재하지 않습니다."));
+                .andExpect(jsonPath("message").value("해당하는 ID의 지하철 노선이 존재하지 않습니다."));
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -149,7 +168,7 @@ public class LineControllerTest {
         ResultActions perform = mockMvc.perform(delete("/lines/1"));
         // then
         perform.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value("해당 ID의 지하철 노선이 존재하지 않습니다."));
+                .andExpect(jsonPath("message").value("해당하는 ID의 지하철 노선이 존재하지 않습니다."));
     }
 
     @DisplayName("노선을 수정한다.")
@@ -168,7 +187,7 @@ public class LineControllerTest {
         perform.andExpect(status().isOk());
     }
 
-    @DisplayName("존재하지 않는 ID의 노선을 수정한다.")
+    @DisplayName("존재하지 않는 ID의 노선을 수정한다면 예외가 발생한다.")
     @Test
     void updateLine_noExistLine_Exception() throws Exception {
         // given
@@ -185,7 +204,7 @@ public class LineControllerTest {
 
     @DisplayName("중복된 이름으로 노선을 수정한다.")
     @Test
-    void updateLine_duplicateName_Exception() throws Exception {
+    void updateLine_duplicate_name_exception() throws Exception {
         // given
         LineRequest updateRequest = new LineRequest("9호선", "GREEN");
         given(lineDao.findById(1L))
@@ -197,6 +216,25 @@ public class LineControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateRequest)));
         // then
-        perform.andExpect(status().isBadRequest());
+        perform.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value("중복되는 이름의 지하철 노선이 존재합니다."));
+    }
+
+    @DisplayName("중복된 색깔로 노선을 수정한다.")
+    @Test
+    void updateLine_duplicate_color_exception() throws Exception {
+        // given
+        LineRequest updateRequest = new LineRequest("9호선", "GREEN");
+        given(lineDao.findById(1L))
+            .willReturn(Optional.of(new Line(1L, "11호선", "GRAY")));
+        given(lineDao.findByColor("GREEN"))
+            .willReturn(Optional.of(new Line(2L, "12호선", "GREEN")));
+        // when
+        ResultActions perform = mockMvc.perform(put("/lines/1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(updateRequest)));
+        // then
+        perform.andExpect(status().isBadRequest())
+            .andExpect(jsonPath("message").value("중복되는 색깔의 지하철 노선이 존재합니다."));
     }
 }
