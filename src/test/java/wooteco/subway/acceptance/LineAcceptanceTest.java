@@ -203,6 +203,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLineById() {
         //given
         String id = String.valueOf(savedId1);
+        List<Long> expectedIds = selectLines();
+        expectedIds.remove(Long.parseLong(id));
 
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -212,6 +214,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(expectedIds).isEqualTo(selectLines());
+    }
+
+    private List<Long> selectLines() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines")
+                .then().log().all()
+                .extract();
+
+        return response.jsonPath().getList(".", LineDto.class).stream()
+                .map(LineDto::getId)
+                .collect(Collectors.toList());
     }
 }
