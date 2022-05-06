@@ -40,7 +40,8 @@ public class LineRepository {
                 .addValue("color", line.getColor());
 
         try {
-            long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+            long id = simpleJdbcInsert.executeAndReturnKey(parameters)
+                    .longValue();
             return new Line(id, line.getName(), line.getColor());
         } catch (DuplicateKeyException e) {
             throw new NameDuplicatedException(ExceptionMessages.NAME_DUPLICATE_MESSAGE);

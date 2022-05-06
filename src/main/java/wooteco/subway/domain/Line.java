@@ -15,6 +15,7 @@ public class Line {
     }
 
     public Line(String name, String color) {
+        id = null;
         this.name = name;
         this.color = color;
     }

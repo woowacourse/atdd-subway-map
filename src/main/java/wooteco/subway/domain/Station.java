@@ -15,6 +15,7 @@ public class Station {
     }
 
     public Station(String name) {
+        id = null;
         this.name = name;
     }
 

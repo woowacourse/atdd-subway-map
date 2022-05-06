@@ -37,7 +37,8 @@ public class StationRepository {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", station.getName());
         try {
-            Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+            Long id = simpleJdbcInsert.executeAndReturnKey(parameters)
+                    .longValue();
             return new Station(id, station.getName());
         } catch (DuplicateKeyException e) {
             throw new NameDuplicatedException(ExceptionMessages.NAME_DUPLICATE_MESSAGE);
