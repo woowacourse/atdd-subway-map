@@ -19,6 +19,10 @@ public class StationDao {
     private static final String STATION_NOT_FOUND_EXCEPTION_MESSAGE = "해당되는 역은 존재하지 않습니다.";
     private static final String NAME_NOT_ALLOWED_EXCEPTION_MESSAGE = "해당 이름의 지하철역을 생성할 수 없습니다.";
 
+    private static final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
+            new Station(resultSet.getLong("id"),
+                    resultSet.getString("name"));
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public StationDao(NamedParameterJdbcTemplate jdbcTemplate) {
@@ -52,8 +56,4 @@ public class StationDao {
                 .update()
                 .throwOnNonEffected(() -> new IllegalArgumentException(STATION_NOT_FOUND_EXCEPTION_MESSAGE));
     }
-
-    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
-            new Station(resultSet.getLong("id"),
-                    resultSet.getString("name"));
 }
