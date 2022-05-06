@@ -159,18 +159,16 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void deleteLine() {
-        Line line = lineDao.save(new Line("신분당선", "red"));
+        Line savedLine = lineDao.save(new Line("신분당선", "red"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .delete("/lines/" + line.getId())
+                .delete("/lines/" + savedLine.getId())
                 .then().log().all()
                 .extract();
 
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
-                () -> assertThatThrownBy(() -> lineDao.findById(line.getId()))
-                        .isInstanceOf(EmptyResultDataAccessException.class)
-        );
+        List<Line> lines = lineDao.findAll();
+
+        assertThat(lines.contains(savedLine)).isFalse();
     }
 }

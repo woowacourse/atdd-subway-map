@@ -57,8 +57,8 @@ class StationDaoTest {
         Station station = stationDao.save(new Station("강남역"));
 
         stationDao.deleteById(station.getId());
+        List<Station> stations = stationDao.findAll();
 
-        assertThatThrownBy(() -> stationDao.deleteById(station.getId()))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(stations.contains(station)).isFalse();
     }
 }

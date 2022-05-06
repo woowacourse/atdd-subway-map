@@ -89,8 +89,8 @@ public class LineDaoTest {
         Line saveLine = lineDao.save(line);
 
         lineDao.delete(saveLine.getId());
+        List<Line> lines = lineDao.findAll();
 
-        assertThatThrownBy(() -> lineDao.findById(saveLine.getId()))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(lines.contains(saveLine)).isFalse();
     }
 }
