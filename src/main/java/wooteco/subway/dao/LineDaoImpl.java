@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
 @Repository
-public class LineDaoImpl implements LineDao{
+public class LineDaoImpl implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -26,7 +26,7 @@ public class LineDaoImpl implements LineDao{
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement(sql, new String[] {"id"});
             ps.setString(1, line.getName());
             ps.setString(2, line.getColor());
             return ps;
