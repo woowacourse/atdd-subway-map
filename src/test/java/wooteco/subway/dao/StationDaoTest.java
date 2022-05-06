@@ -1,10 +1,10 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -16,15 +16,16 @@ class StationDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private StationDao stationDao;
+    private StationDaoImpl stationDao;
 
     @BeforeEach
     void beforeEach() {
-        stationDao = new StationDao(jdbcTemplate);
+        stationDao = new StationDaoImpl(jdbcTemplate);
     }
 
     @Test
-    void save() {
+    @DisplayName("지하철 역을 저장할 수 있다.")
+    void insert() {
         String name = "강남역";
 
         Station station = stationDao.insert(new Station(name));
@@ -32,6 +33,18 @@ class StationDaoTest {
     }
 
     @Test
+    @DisplayName("지하철 역 이름들을 조회할 수 있다.")
+    void findNames() {
+        stationDao.insert(new Station("강남역"));
+        stationDao.insert(new Station("역삼역"));
+
+        List<String> names = stationDao.findNames();
+
+        assertThat(names).contains("강남역", "역삼역");
+    }
+
+    @Test
+    @DisplayName("지하철 역들을 조회할 수 있다.")
     void findAll() {
         stationDao.insert(new Station("강남역"));
         stationDao.insert(new Station("역삼역"));
@@ -41,6 +54,7 @@ class StationDaoTest {
     }
 
     @Test
+    @DisplayName("지하철역을 삭제할 수 있다.")
     void delete() {
         Station station = stationDao.insert(new Station("강남역"));
         stationDao.delete(station.getId());

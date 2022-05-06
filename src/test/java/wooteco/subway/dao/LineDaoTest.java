@@ -17,11 +17,11 @@ class LineDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private LineDao lineDao;
+    private LineDaoImpl lineDao;
 
     @BeforeEach
     void beforeEach() {
-        lineDao = new LineDao(jdbcTemplate);
+        lineDao = new LineDaoImpl(jdbcTemplate);
     }
 
     @Test
