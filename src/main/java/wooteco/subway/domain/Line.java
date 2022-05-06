@@ -2,7 +2,7 @@ package wooteco.subway.domain;
 
 public class Line {
 
-    private Long id;
+    private final Long id;
     private final String name;
     private final String color;
 
