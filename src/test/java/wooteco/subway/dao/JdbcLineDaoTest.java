@@ -19,54 +19,54 @@ import wooteco.subway.domain.Line;
 @Sql("/schema.sql")
 class JdbcLineDaoTest {
 
-    private final LineDao jdbcLineDao;
+    private final LineDao lineDao;
 
     @Autowired
     public JdbcLineDaoTest(JdbcTemplate jdbcTemplate, DataSource dataSource) {
-        this.jdbcLineDao = new LineDao(jdbcTemplate, dataSource);
+        this.lineDao = new JdbcLineDao(jdbcTemplate, dataSource);
     }
 
     @Test
     @DisplayName("지하철 노선을 생성, 조회, 삭제한다.")
     void LineCRDTest() {
-        Long lineId = jdbcLineDao.save(new Line("신분당선", "red"));
-        Line line = jdbcLineDao.findById(lineId);
+        Long lineId = lineDao.save(new Line("신분당선", "red"));
+        Line line = lineDao.findById(lineId);
 
         assertThat(line)
                 .extracting("name", "color")
                 .containsExactly("신분당선", "red");
 
-        jdbcLineDao.deleteById(lineId);
-        assertThatThrownBy(() -> jdbcLineDao.findById(lineId))
+        lineDao.deleteById(lineId);
+        assertThatThrownBy(() -> lineDao.findById(lineId))
                 .isInstanceOf(DataAccessException.class);
     }
 
     @Test
     @DisplayName("지하철 노선을 전체 조회한다.")
     void findAll() {
-        Long lineId = jdbcLineDao.save(new Line("신분당선", "red"));
-        List<Line> lines = jdbcLineDao.findAll();
+        Long lineId = lineDao.save(new Line("신분당선", "red"));
+        List<Line> lines = lineDao.findAll();
 
         assertThat(lines).hasSize(1)
                 .extracting("name", "color")
                 .containsExactly(tuple("신분당선", "red"));
 
-        jdbcLineDao.deleteById(lineId);
+        lineDao.deleteById(lineId);
     }
 
     @Test
     @DisplayName("지하철 노선을 업데이트 한다.")
     void update() {
-        Long lineId = jdbcLineDao.save(new Line("신분당선", "red"));
+        Long lineId = lineDao.save(new Line("신분당선", "red"));
 
-        jdbcLineDao.update(lineId, new Line("분당선", "yellow"));
+        lineDao.update(lineId, new Line("분당선", "yellow"));
 
-        Line newLine = jdbcLineDao.findById(lineId);
+        Line newLine = lineDao.findById(lineId);
 
         assertThat(newLine)
                 .extracting("name", "color")
                 .containsExactly("분당선", "yellow");
 
-        jdbcLineDao.deleteById(lineId);
+        lineDao.deleteById(lineId);
     }
 }

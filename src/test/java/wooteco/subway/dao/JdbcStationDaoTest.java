@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import javax.sql.DataSource;
-import javax.xml.crypto.Data;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,7 @@ class JdbcStationDaoTest {
 
     @Autowired
     public JdbcStationDaoTest(JdbcTemplate jdbcTemplate, DataSource dataSource) {
-        this.stationDao = new StationDao(jdbcTemplate, dataSource);
+        this.stationDao = new JdbcStationDao(jdbcTemplate, dataSource);
     }
 
     @Test
