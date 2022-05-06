@@ -10,17 +10,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionAdviser {
 
     @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<ErrorResponse> duplicateKeyExceptionHandler() {
-        return ResponseEntity.badRequest().body(new ErrorResponse("중복된 이름입니다."));
+    public ResponseEntity<ErrorResponse> duplicateKeyExceptionHandler(DuplicateKeyException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponse("테이블 유니크 값 중복", e.getMessage()));
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity<ErrorResponse> EmptyResultDataAccessExceptionHandler() {
-        return ResponseEntity.badRequest().body(new ErrorResponse("해당 값이 존재하지 않습니다."));
+    public ResponseEntity<ErrorResponse> EmptyResultDataAccessExceptionHandler(EmptyResultDataAccessException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponse("존재하지 않는 PK", e.getMessage()));
     }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> exceptionHandler() {
-        return ResponseEntity.internalServerError().body(new ErrorResponse("현재 서버에 문제가 발생해 응답할 수 없습니다."));
+        return ResponseEntity.internalServerError().body(new ErrorResponse("런타임 에러", "현재 서버에 문제가 발생해 응답할 수 없습니다."));
     }
 }
