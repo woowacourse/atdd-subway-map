@@ -312,7 +312,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
-    @Disabled
     @DisplayName("지하철 노선을 삭제 시도")
     @Test
     void deleteLine() {

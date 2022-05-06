@@ -67,6 +67,7 @@ public class LineService {
         if (!lineRepository.existById(id)) {
             throw new NotFoundException(String.format(NOT_FOUND_MESSAGE, id));
         }
+        sectionRepository.deleteByLineId(id);
         lineRepository.deleteById(id);
     }
 

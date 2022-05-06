@@ -38,4 +38,8 @@ public class SectionRepository {
     public void deleteAll() {
         jdbcTemplate.update("DELETE FROM SECTION");
     }
+
+    public void deleteByLineId(Long lineId) {
+        jdbcTemplate.update("DELETE FROM SECTION WHERE line_id = ?", lineId);
+    }
 }
