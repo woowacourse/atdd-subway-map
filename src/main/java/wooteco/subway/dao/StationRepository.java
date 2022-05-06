@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 import wooteco.subway.utils.exception.ExceptionMessages;
 import wooteco.subway.utils.exception.IdNotFoundException;
+import wooteco.subway.utils.exception.NameDuplicatedException;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -33,8 +35,12 @@ public class StationRepository {
     public Station save(final Station station) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", station.getName());
-        Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Station(id, station.getName());
+        try {
+            Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+            return new Station(id, station.getName());
+        } catch (DuplicateKeyException e) {
+            throw new NameDuplicatedException(ExceptionMessages.NAME_DUPLICATE_MESSAGE);
+        }
     }
 
     public List<Station> findAll() {

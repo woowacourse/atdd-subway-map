@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
 import wooteco.subway.utils.exception.IdNotFoundException;
+import wooteco.subway.utils.exception.NameDuplicatedException;
 
 import java.util.List;
 
@@ -31,6 +32,16 @@ class StationRepositoryTest {
                 () -> assertThat(saveStation.getId()).isNotNull(),
                 () -> assertThat(saveStation).isEqualTo(station)
         );
+    }
+
+    @DisplayName("역 저장 시 유니크 키 이름에 접근하면 에러가 발생한다.")
+    @Test
+    void saveUniqueException() {
+        Station station = new Station("신림역");
+        stationRepository.save(station);
+
+        assertThatThrownBy(() -> stationRepository.save(station))
+                .isInstanceOf(NameDuplicatedException.class);
     }
 
     @DisplayName("모든 역을 조회한다.")
