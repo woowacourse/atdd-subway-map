@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
@@ -68,7 +69,18 @@ public class StationServiceTest {
     void deleteStation() {
         doReturn(true)
                 .when(jdbcStationDao).deleteById(1L);
-        boolean isDeleted = stationService.deleteStation(1L);
-        assertThat(isDeleted).isTrue();
+
+        assertThat(stationService.deleteStation(1L)).isTrue();
+    }
+
+    @DisplayName("존재하지 않은 지하철역을 삭제할 경우 예외를 발생시킨다.")
+    @Test
+    void deleteNotExistStation() {
+        doThrow(new IllegalArgumentException("존재하지 않은 지하철역입니다."))
+                .when(jdbcStationDao).deleteById(anyLong());
+
+        assertThatThrownBy(() -> stationService.deleteStation(1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재하지 않은 지하철역입니다.");
     }
 }

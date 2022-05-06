@@ -12,7 +12,9 @@ import wooteco.subway.dto.StationResponse;
 public class StationService {
 
     private static final String STATION_DUPLICATION  = "이미 등록된 지하철 역입니다.";
+    private static final String STATION_NOT_EXIST = "존재하지 않은 지하철역입니다.";
     public static final int STATION_EXIST_VALUE = 1;
+
     private final JdbcStationDao stationDao;
 
     public StationService(JdbcStationDao stationDao) {
@@ -41,6 +43,9 @@ public class StationService {
     }
 
     public boolean deleteStation(Long id) {
-        return stationDao.deleteById(id);
+        if (!stationDao.deleteById(id)) {
+            throw new IllegalArgumentException(STATION_NOT_EXIST);
+        }
+        return true;
     }
 }
