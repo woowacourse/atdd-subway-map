@@ -21,14 +21,11 @@ import wooteco.subway.domain.Station;
 @JdbcTest
 class StationDaoTest {
 
-    private StationDao stationDao;
+    private final StationDao stationDao;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    public void setUp() {
-        stationDao = new StationDao(jdbcTemplate);
+    private StationDaoTest(JdbcTemplate jdbcTemplate) {
+        this.stationDao = new StationDao(jdbcTemplate);
     }
 
     @DisplayName("중복되는 역 이름이 없을 때 성공적으로 저장되는지 테스트")

@@ -17,14 +17,11 @@ import wooteco.subway.domain.Line;
 @JdbcTest
 class LineDaoTest {
 
-    private LineDao lineDao;
+    private final LineDao lineDao;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    public void setUp() {
-        lineDao = new LineDao(jdbcTemplate);
+    private LineDaoTest(JdbcTemplate jdbcTemplate) {
+        this.lineDao = new LineDao(jdbcTemplate);
     }
 
     @DisplayName("중복되는 노선 이름이 없을 때 성공적으로 저장되는지 테스트")
