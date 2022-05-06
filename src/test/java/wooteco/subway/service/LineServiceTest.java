@@ -82,7 +82,7 @@ class LineServiceTest {
     void modify() {
         Line savedLine = service.register("2호선", "bg-green-600");
 
-        service.modify(savedLine.getId(), "신분당선", "bg-red-600");
+        service.modify(new Line(savedLine.getId(), "신분당선", "bg-red-600"));
         Line searchedLine = service.searchById(savedLine.getId());
 
         assertAll(
