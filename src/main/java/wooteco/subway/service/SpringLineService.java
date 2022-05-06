@@ -2,13 +2,13 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineRepository;
 import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.NoLineFoundException;
 import wooteco.subway.service.dto.LineServiceRequest;
 
 @Service
@@ -43,14 +43,10 @@ public class SpringLineService implements LineService {
     @Transactional(readOnly = true)
     @Override
     public Line findById(Long id) {
-        final Optional<LineEntity> lineEntity = lineRepository.findById(id);
-        if (lineEntity.isEmpty()) {
-            throw new NoSuchElementException();
-        }
+        final LineEntity lineEntity = lineRepository.findById(id)
+                .orElseThrow(NoLineFoundException::new);
 
-        final LineEntity found = lineEntity.get();
-
-        return new Line(found.getId(), found.getName(), found.getColor());
+        return new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor());
     }
 
     @Transactional
