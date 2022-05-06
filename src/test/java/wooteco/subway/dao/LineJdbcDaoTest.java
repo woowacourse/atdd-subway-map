@@ -10,13 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.jdbc.LineJdbcDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NoSuchLineException;
 
-@Transactional
 @JdbcTest
 class LineJdbcDaoTest {
 
