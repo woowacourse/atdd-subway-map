@@ -24,11 +24,11 @@ public class SpringLineService implements LineService {
     @Transactional
     @Override
     public Line save(LineServiceRequest lineServiceRequest) {
-        LineEntity lineENtity = new LineEntity(lineServiceRequest.getName(), lineServiceRequest.getColor());
+        LineEntity lineEntity = new LineEntity(lineServiceRequest.getName(), lineServiceRequest.getColor());
 
-        final LineEntity lineEntity = lineRepository.save(lineENtity);
+        final LineEntity saved = lineRepository.save(lineEntity);
 
-        return new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor());
+        return new Line(saved.getId(), saved.getName(), saved.getColor());
     }
 
     @Transactional(readOnly = true)
