@@ -63,12 +63,6 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public boolean existById(final Long id) {
-        final String sql = "select exists (select * from STATION where id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
-    }
-
-    @Override
     public int delete(final Long stationId) {
         final String sql = "delete from STATION where id = ?";
         return jdbcTemplate.update(sql, stationId);

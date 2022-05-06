@@ -73,12 +73,4 @@ class InmemoryStationDaoTest {
 
         assertThat(stationDao.existByName(name)).isTrue();
     }
-
-    @Test
-    @DisplayName("id를 가진 Station이 존재하는지 확인할 수 있다.")
-    void existById() {
-        Station station = stationDao.save(new Station("오리"));
-
-        assertThat(stationDao.existById(station.getId())).isTrue();
-    }
 }

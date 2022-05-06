@@ -35,8 +35,12 @@ public class StationService {
     }
 
     public void validateExistStation(final Long stationId) {
-        if (!stationDao.existById(stationId)) {
+        if (isNotExistStationById(stationId)) {
             throw new NotFoundException("존재하지 않는 Station입니다.");
         }
+    }
+
+    private boolean isNotExistStationById(final Long stationId) {
+        return stationDao.findById(stationId).isEmpty();
     }
 }
