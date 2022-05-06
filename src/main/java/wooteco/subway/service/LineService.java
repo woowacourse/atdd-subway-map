@@ -3,10 +3,8 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.JdbcLineDao;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
@@ -24,13 +22,14 @@ public class LineService {
 
     public LineResponse save(LineRequest lineRequest) {
         Line newLine = new Line(lineRequest.getName(), lineRequest.getColor());
-        validateRequest(newLine);
+        validateCreateRequest(newLine);
 
         Long lineId = lineDao.save(newLine);
+
         return createLineResponse(lineDao.findById(lineId));
     }
 
-    private void validateRequest(Line line) {
+    private void validateCreateRequest(Line line) {
         validateName(line);
         validateColor(line);
     }
@@ -64,7 +63,26 @@ public class LineService {
 
     public void update(Long lineId, LineRequest lineRequest) {
         Line newLine = new Line(lineRequest.getName(), lineRequest.getColor());
+        validateUpdateRequest(lineId, newLine);
+
         lineDao.update(lineId, newLine);
+    }
+
+    private void validateUpdateRequest(Long lineId, Line line) {
+        validateNameExceptSameId(lineId, line);
+        validateColorExceptSameId(lineId, line);
+    }
+
+    private void validateNameExceptSameId(Long lineId, Line line) {
+        if (lineDao.existByNameExceptSameId(lineId, line)) {
+            throw new IllegalArgumentException("이미 존재하는 노선 이름으로 업데이트할 수 없습니다.");
+        }
+    }
+
+    private void validateColorExceptSameId(Long lineId, Line line) {
+        if (lineDao.existByColorExceptSameId(lineId, line)) {
+            throw new IllegalArgumentException("이미 존재하는 노선 색깔로 업데이트할 수 없습니다.");
+        }
     }
 
     private LineResponse createLineResponse(Line newLine) {

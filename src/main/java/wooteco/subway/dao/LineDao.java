@@ -18,4 +18,8 @@ public interface LineDao {
     boolean existByName(Line line);
 
     boolean existByColor(Line line);
+
+    boolean existByNameExceptSameId(Long lineId, Line line);
+
+    boolean existByColorExceptSameId(Long lineId, Line line);
 }

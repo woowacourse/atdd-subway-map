@@ -67,7 +67,7 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("노선을 수정한다.")
+    @DisplayName("노선 업데이트 테스트")
     void updateTest() {
         LineResponse lineResponse = lineService.save(
             new LineRequest("line1", "red", null, null, 0));
@@ -79,5 +79,35 @@ class LineServiceTest {
         assertThat(lineService.findById(lineId))
             .extracting("name", "color")
             .containsExactly("line2", "yellow");
+    }
+
+    @Test
+    @DisplayName("이미 있는 노선 이름으로 업데이트 시 예외 발생 테스트")
+    void updateDuplicateNameExceptionTest() {
+        LineResponse lineResponse1 = lineService.save(
+            new LineRequest("1호선", "red", null, null, 0));
+        LineResponse lineResponse2 = lineService.save(
+            new LineRequest("2호선", "blue", null, null, 0));
+
+        assertThatThrownBy(() ->
+            lineService.update(lineResponse1.getId(),
+                new LineRequest("2호선", "yellow", null, null, 0)))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("이미 존재하는 노선 이름으로 업데이트할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("이미 있는 노선 색깔로 업데이트 시 예외 발생 테스트")
+    void updateDuplicateColorExceptionTest() {
+        LineResponse lineResponse1 = lineService.save(
+            new LineRequest("1호선", "red", null, null, 0));
+        LineResponse lineResponse2 = lineService.save(
+            new LineRequest("2호선", "blue", null, null, 0));
+
+        assertThatThrownBy(() ->
+            lineService.update(lineResponse1.getId(),
+                new LineRequest("1호선", "blue", null, null, 0)))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("이미 존재하는 노선 색깔로 업데이트할 수 없습니다.");
     }
 }

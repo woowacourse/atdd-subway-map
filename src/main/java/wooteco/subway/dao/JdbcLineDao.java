@@ -74,4 +74,16 @@ public class JdbcLineDao implements LineDao {
         String sql = "select exists (select * from LINE where color = (?))";
         return jdbcTemplate.queryForObject(sql, Boolean.class, line.getColor());
     }
+
+    @Override
+    public boolean existByNameExceptSameId(Long lineId, Line line) {
+        String sql = "select exists (select * from LINE where name = (?) and not id = (?))";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, line.getName(), lineId);
+    }
+
+    @Override
+    public boolean existByColorExceptSameId(Long lineId, Line line) {
+        String sql = "select exists (select * from LINE where color = (?) and not id = (?))";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, line.getColor(), lineId);
+    }
 }
