@@ -2,7 +2,6 @@ package wooteco.subway.dao;
 
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -92,7 +91,6 @@ public class LineRepository {
         } catch (EmptyResultDataAccessException e) {
             throw new IdNotFoundException(ExceptionMessages.NO_ID_MESSAGE + line.getId());
         }
-
     }
 
     public void deleteById(final Long id) {
