@@ -18,20 +18,20 @@ public class LineService {
     }
 
     public Line save(LineRequest lineRequest) {
-        validDuplicatedName(lineRequest.getName());
+        validDuplicatedLine(lineRequest.getName(), lineRequest.getColor());
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Long id = lineDao.save(line);
         return new Line(id, line.getName(), line.getColor());
     }
 
     public void update(Long id, LineRequest lineRequest) {
-        validDuplicatedName(lineRequest.getName());
+        validDuplicatedLine(lineRequest.getName(), lineRequest.getColor());
         lineDao.update(id, lineRequest);
     }
 
-    private void validDuplicatedName(String name) {
-        if (lineDao.countByName(name) > 0) {
-            throw new IllegalArgumentException("중복된 이름이 존재합니다.");
+    private void validDuplicatedLine(String name, String color) {
+        if (lineDao.existByName(name) || lineDao.existByColor(color)) {
+            throw new IllegalArgumentException("중복된 Line 이 존재합니다.");
         }
     }
 

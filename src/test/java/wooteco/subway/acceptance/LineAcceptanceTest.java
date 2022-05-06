@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -70,8 +71,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.header("Location")).isNotBlank()
+        );
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 지하철 노선을 생성한다.")
@@ -107,13 +110,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = List.of(savedId1, savedId2);
         List<Long> resultLineIds = response.jsonPath().getList(".", LineDto.class).stream()
                 .map(LineDto::getId)
                 .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(resultLineIds).containsAll(expectedLineIds)
+        );
     }
 
     @DisplayName("id 를 이용하여 노선을 조회한다.")
@@ -128,8 +133,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .get("/lines/" + id)
                 .then().log().all()
                 .extract();
-        //then
+
         Integer findId = response.jsonPath().get("id");
+        //then
         assertThat(findId).isEqualTo(Integer.parseInt(id));
     }
 
@@ -137,7 +143,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLineWithNoneId() {
         //given
-        String id = "999999";
+        String id = "-1";
 
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -156,12 +162,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         String id = String.valueOf(savedId1);
 
-        //when
         Map<String, String> parameter = new HashMap<>();
-        String name = "다른분당선";
-        parameter.put("name", name);
-        parameter.put("color", "bg-red-600");
-
+        parameter.put("name", "다른분당선");
+        parameter.put("color", "bg-black-600");
+        //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(parameter)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -180,12 +184,32 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         String id = String.valueOf(savedId1);
 
-        //when
         Map<String, String> parameter = new HashMap<>();
-        String name = "분당선";
-        parameter.put("name", name);
+        parameter.put("name", "분당선");
         parameter.put("color", "bg-red-600");
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(parameter)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + id)
+                .then().log().all()
+                .extract();
 
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("노선을 중복된 색으로 수정한다.")
+    @Test
+    void updateLineWithDuplicatedColor() {
+        //given
+        String id = String.valueOf(savedId1);
+
+        Map<String, String> parameter = new HashMap<>();
+        parameter.put("name", "신분당선");
+        parameter.put("color", "bg-red-600");
+        //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(parameter)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

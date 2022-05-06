@@ -35,10 +35,16 @@ public class LineDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public int countByName(String name) {
-        String selectSql = "select count(*) from LINE where name = :name";
+    public Boolean existByName(String name) {
+        String selectSql = "select EXISTS (select * from LINE where name = :name)";
         SqlParameterSource source = new MapSqlParameterSource("name", name);
-        return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Integer.class));
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Boolean.class));
+    }
+
+    public Boolean existByColor(String color) {
+        String selectSql = "select EXISTS (select * from LINE where color = :color)";
+        SqlParameterSource source = new MapSqlParameterSource("color", color);
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Boolean.class));
     }
 
     public Line findById(Long id) {
