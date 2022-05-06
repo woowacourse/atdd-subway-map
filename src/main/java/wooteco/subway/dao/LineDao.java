@@ -1,11 +1,12 @@
 package wooteco.subway.dao;
 
-import java.sql.PreparedStatement;
 import java.util.List;
+import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
@@ -13,9 +14,13 @@ import wooteco.subway.domain.Line;
 public class LineDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert insertActor;
 
-    public LineDao(JdbcTemplate jdbcTemplate) {
+    public LineDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
+        this.insertActor = new SimpleJdbcInsert(dataSource)
+            .withTableName("LINE")
+            .usingGeneratedKeyColumns("id");
     }
 
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> {
@@ -28,15 +33,8 @@ public class LineDao {
     };
 
     public Long save(Line line) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "insert into LINE (name, color) values (?, ?)";
-        jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, line.getName());
-            preparedStatement.setString(2, line.getColor());
-            return preparedStatement;
-        }, keyHolder);
-        return keyHolder.getKey().longValue();
+        SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
+        return insertActor.executeAndReturnKey(parameters).longValue();
     }
 
     public List<Line> findAll() {
