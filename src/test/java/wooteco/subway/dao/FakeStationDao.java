@@ -4,10 +4,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.util.ReflectionUtils;
-
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DataNotExistException;
 
 public class FakeStationDao implements StationDao {
 
@@ -20,19 +19,27 @@ public class FakeStationDao implements StationDao {
         stations.add(persistStation);
         return persistStation;
     }
-    
+
     @Override
     public List<Station> findAll() {
         return stations;
     }
-    
+
+    @Override
+    public Station findById(long id) {
+        return stations.stream()
+                .filter(station -> station.getId() == id)
+                .findAny()
+                .orElseThrow(() -> new DataNotExistException("존재하지 않는 역입니다."));
+    }
+
     private Station createNewObject(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
     }
-    
+
     @Override
     public int deleteStation(long id) {
         int beforeSize = stations.size();
