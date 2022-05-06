@@ -14,14 +14,6 @@ public class Station {
         this.name = name;
     }
 
-    public Station(String name) {
-        this.name = name;
-    }
-
-    public boolean matchId(Long id) {
-        return this.id.equals(id);
-    }
-
     public Long getId() {
         return id;
     }
@@ -35,23 +27,16 @@ public class Station {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Station)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         Station station = (Station) o;
-
-        if (!Objects.equals(id, station.id)) {
-            return false;
-        }
         return Objects.equals(name, station.name);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        return result;
+        return Objects.hash(name);
     }
 
     @Override

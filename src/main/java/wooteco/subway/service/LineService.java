@@ -17,11 +17,10 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line save(LineRequest lineRequest) {
-        validDuplicatedLine(lineRequest.getName(), lineRequest.getColor());
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Long id = lineDao.save(line);
-        return new Line(id, line.getName(), line.getColor());
+    public Line save(String name, String color) {
+        validDuplicatedLine(name, color);
+        Long id = lineDao.save(new Line(name, color));
+        return new Line(id, name, color);
     }
 
     public void update(Long id, LineRequest lineRequest) {

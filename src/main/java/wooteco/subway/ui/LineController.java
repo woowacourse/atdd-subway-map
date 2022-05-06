@@ -29,9 +29,16 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineDto> createLine(@RequestBody LineRequest lineRequest) {
-        Line newLine = lineService.save(lineRequest);
+        validEmpty(lineRequest.getName(), lineRequest.getColor());
+        Line newLine = lineService.save(lineRequest.getName(), lineRequest.getColor());
         LineDto lineResponse = new LineDto(newLine.getId(), newLine.getName(), newLine.getColor());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+    }
+
+    private void validEmpty(String name, String color) {
+        if (name.isEmpty() || color.isEmpty()) {
+            throw new IllegalArgumentException("노선의 이름과 색은 빈 값일 수 없습니다.");
+        }
     }
 
     @GetMapping

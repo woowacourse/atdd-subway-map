@@ -24,9 +24,9 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long save(Station station) {
+    public Long save(String name) {
         String insertSql = "insert into STATION (name) values (:name)";
-        SqlParameterSource source = new BeanPropertySqlParameterSource(station);
+        SqlParameterSource source = new MapSqlParameterSource("name", name);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(insertSql, source, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();

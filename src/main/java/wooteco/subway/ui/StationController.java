@@ -28,9 +28,16 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station newStation = stationService.save(stationRequest);
+        validEmpty(stationRequest.getName());
+        Station newStation = stationService.save(stationRequest.getName());
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
+    }
+
+    private void validEmpty(String name) {
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("지하철의 이름은 빈 값일 수 없습니다.");
+        }
     }
 
     @GetMapping

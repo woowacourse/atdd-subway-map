@@ -15,15 +15,14 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station save(StationRequest stationRequest) {
-        validDuplicatedStation(stationRequest);
-        Station station = new Station(stationRequest.getName());
-        Long id = stationDao.save(station);
-        return new Station(id, stationRequest.getName());
+    public Station save(String name) {
+        validDuplicatedStation(name);
+        Long id = stationDao.save(name);
+        return new Station(id, name);
     }
 
-    private void validDuplicatedStation(StationRequest stationRequest) {
-        if (stationDao.existByName(stationRequest.getName())) {
+    private void validDuplicatedStation(String name) {
+        if (stationDao.existByName(name)) {
             throw new IllegalArgumentException("중복된 Station 이 존재합니다.");
         }
     }
