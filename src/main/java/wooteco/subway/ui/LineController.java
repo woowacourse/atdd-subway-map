@@ -7,6 +7,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.NameDuplicationException;
 
 import java.net.URI;
 import java.util.List;
@@ -33,7 +34,7 @@ public class LineController {
 
     private void checkDuplication(String name) {
         if (lineDao.counts(name) > 0) {
-            throw new IllegalArgumentException();
+            throw new NameDuplicationException();
         }
     }
 
@@ -67,6 +68,6 @@ public class LineController {
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Void> lineNotFound() {
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.badRequest().build();
     }
 }

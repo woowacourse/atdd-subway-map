@@ -10,27 +10,29 @@ import java.util.List;
 
 @Repository
 public class LineDao {
-
     private final JdbcTemplate jdbcTemplate;
+
+    private final LineMapper lineMapper;
 
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.lineMapper = new LineMapper();
     }
 
     public Line save(Line line) {
         String sql = "insert into LINE (name, color) values (?, ?)";
         jdbcTemplate.update(sql, line.getName(), line.getColor());
-        return createNewObject(line);
+        return includeIdIn(line);
     }
 
     public int counts(String name) {
-        String sql = String.format("select counts(*) from LINE where name = '%s'", name);
+        String sql = String.format("select count(*) from LINE where name = '%s'", name);
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
     public List<Line> findAll() {
         String sql = "select * from LINE";
-        return jdbcTemplate.query(sql, new LineMapper());
+        return jdbcTemplate.query(sql, lineMapper);
     }
 
     private static class LineMapper implements RowMapper<Line> {
@@ -39,15 +41,15 @@ public class LineDao {
         }
     }
 
-    private Line createNewObject(Line line) {
-        String sql2 = "select max(id) from LINE";
-        Long id = jdbcTemplate.queryForObject(sql2, Long.class);
+    private Line includeIdIn(Line line) {
+        String sql = "select max(id) from LINE";
+        Long id = jdbcTemplate.queryForObject(sql, Long.class);
         return new Line(id, line.getName(), line.getColor());
     }
 
     public Line findById(Long id) {
         String sql = String.format("select * from LINE where id = %d", id);
-        return jdbcTemplate.queryForObject(sql, new LineMapper());
+        return jdbcTemplate.queryForObject(sql, lineMapper);
     }
 
     public void edit(Long id, String name, String color) {

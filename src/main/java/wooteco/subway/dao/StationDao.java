@@ -14,7 +14,6 @@ import java.util.List;
 
 @Repository
 public class StationDao {
-
     private final JdbcTemplate jdbcTemplate;
 
     public StationDao(JdbcTemplate jdbcTemplate) {
