@@ -62,9 +62,9 @@ class StationDaoTest {
     @Test
     void findById() {
         Station gangNam = new Station("강남역");
-        stationDao.save(gangNam);
+        Long id = stationDao.save(gangNam).getId();
 
-        Station actual = stationDao.findById(gangNam.getId());
+        Station actual = stationDao.findById(id);
 
         assertThat(actual.getName()).isEqualTo("강남역");
     }
