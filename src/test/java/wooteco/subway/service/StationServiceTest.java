@@ -36,7 +36,6 @@ class StationServiceTest {
     void save() {
         // given
         StationRequest stationRequest = new StationRequest("범고래");
-        // Station station = new Station("범고래");
 
         // when
         StationResponse stationResponse = stationService.save(stationRequest);
@@ -48,9 +47,6 @@ class StationServiceTest {
     @Test
     void validateDuplication() {
         // given
-        // Station station1 = new Station("범고래");
-        // Station station2 = new Station("범고래");
-
         StationRequest stationRequest1 = new StationRequest("범고래");
         StationRequest stationRequest2 = new StationRequest("범고래");
 
@@ -66,9 +62,6 @@ class StationServiceTest {
     @Test
     void findAll() {
         // given
-        // Station station1 = stationService.save(new Station("범고래"));
-        // Station station2 = stationService.save(new Station("애쉬"));
-
         StationResponse stationResponse1 = stationService.save(new StationRequest("범고래"));
         StationResponse stationResponse2 = stationService.save(new StationRequest("애쉬"));
 
