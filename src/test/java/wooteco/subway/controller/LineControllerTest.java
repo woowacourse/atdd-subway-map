@@ -45,6 +45,42 @@ class LineControllerTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
+    @DisplayName("비어있는 이름으로 역을 생성하면 400 상태코드를 받게 된다.")
+    @Test
+    void createLineWithInvalidNameDateSize() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "");
+        params.put("color", "red");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("비어있는 색으로 역을 생성하면 400 상태코드를 받게 된다.")
+    @Test
+    void createLineWithInvalidColorDateSize() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("중복된 이름을 가진 지하철 노선을 등록할 때 예외를 발생시킨다.")
     @Test
     void throwsExceptionWhenCreateDuplicatedName() {

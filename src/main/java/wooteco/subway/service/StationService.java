@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.DataLengthException;
 import wooteco.subway.exception.DuplicateNameException;
 
 import java.util.List;
@@ -19,10 +20,17 @@ public class StationService {
     }
 
     public StationResponse create(String name) {
+        validateDataSize(name);
         Station station = new Station(name);
         validateDuplicationName(station);
         Station newStation = stationDao.save(station);
         return new StationResponse(newStation.getId(), newStation.getName());
+    }
+
+    private void validateDataSize(String name) {
+        if (name.isEmpty() || name.length() > 255) {
+            throw new DataLengthException("역 이름이 빈 값이거나 최대 범위를 초과했습니다.");
+        }
     }
 
     private void validateDuplicationName(Station station) {
