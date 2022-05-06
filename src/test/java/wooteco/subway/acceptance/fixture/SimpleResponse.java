@@ -1,9 +1,12 @@
 package wooteco.subway.acceptance.fixture;
 
-import io.restassured.response.ExtractableResponse;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+
 import java.util.List;
+
 import org.springframework.http.HttpStatus;
+
 import wooteco.subway.dto.ExceptionResponse;
 
 public class SimpleResponse {
@@ -13,39 +16,38 @@ public class SimpleResponse {
         this.response = response;
     }
 
-    public ExtractableResponse<Response> thenExtract() {
-        return response
-                .then().log().all()
-                .extract();
-    }
-
-    public boolean hasStatus(HttpStatus status) {
-        return response.statusCode() == status.value();
-    }
-
     public boolean containsExceptionMessage(String message) {
         return this.toObject(ExceptionResponse.class)
                 .getMessage()
                 .contains(message);
     }
 
-    public String getHeader(String name) {
-        return response.header(name);
-    }
-
     public <T> T toObject(Class<T> clazz) {
-        return this.thenExtract()
-                .body().jsonPath()
+        return this.extractJsonPath()
                 .getObject(".", clazz);
     }
 
     public <T> List<T> toList(Class<T> clazz) {
-        return this.thenExtract()
-                .body().jsonPath()
+        return this.extractJsonPath()
                 .getList(".", clazz);
     }
 
+    private JsonPath extractJsonPath() {
+        return response
+                .then().log().all()
+                .extract()
+                .body().jsonPath();
+    }
+
+    public boolean hasStatus(HttpStatus status) {
+        return response.statusCode() == status.value();
+    }
+
     public Long getIdFromLocation() {
-        return Long.parseLong(response.header("Location").split("/")[2]);
+        return Long.parseLong(getHeader("Location").split("/")[2]);
+    }
+
+    public String getHeader(String name) {
+        return response.header(name);
     }
 }
