@@ -39,13 +39,14 @@ class LineControllerTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(testLine1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssured.
+                given().log().all()
+                    .body(testLine1)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE).
+                when()
+                    .post("/lines").
+                then()
+                    .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -56,72 +57,79 @@ class LineControllerTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        RestAssured.given().log().all()
-                .body(testLine1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        RestAssured.
+                given().log().all()
+                    .body(testLine1)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE).
+                when()
+                    .post("/lines").
+                then()
+                    .extract();
 
         // when
-        RestAssured.given().log().all()
-                .body(testLine1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
-                .log().all();
+        RestAssured.
+                given().log().all()
+                    .body(testLine1)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/lines").
+                then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("노선을 조회한다.")
     @Test
     void getLine() {
         /// given
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(testLine1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = RestAssured.
+                given().log().all()
+                    .body(testLine1)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE).
+                when()
+                    .post("/lines").
+                then().
+                    extract();
 
         // when
         String uri = createResponse.header("Location");
-        RestAssured.given().log().all()
-                .when()
-                .get(uri)
-                .then().statusCode(HttpStatus.OK.value()).
-                log().all();
+        RestAssured.
+                given().log().all().
+                when()
+                    .get(uri).
+                then().
+                    statusCode(HttpStatus.OK.value());
     }
 
     @DisplayName("노선들을 조회한다.")
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(testLine1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse1 = RestAssured.
+                given().log().all()
+                    .body(testLine1)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE).
+                when()
+                    .post("/lines").
+                then()
+                    .extract();
 
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(testLine2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse2 = RestAssured.
+                given().log().all()
+                    .body(testLine2)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE).
+                when()
+                    .post("/lines").
+                then().
+                    extract();
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssured.
+                given().
+                    log().all().
+                when().
+                    get("/lines")
+                .then().
+                    extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -138,118 +146,124 @@ class LineControllerTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(testLine1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = RestAssured.
+                given().log().all().
+                    body(testLine1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/lines").
+                then().
+                    extract();
 
         // when
         String uri = createResponse.header("Location");
-        RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().
-                statusCode(HttpStatus.NO_CONTENT.value())
-                .log().all()
-                .extract();
+        RestAssured.given().log().all().
+                when().
+                    delete(uri).
+                then().
+                    statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     @DisplayName("존재하는 id와 중복되지 않는 이름으로 바꾼다.")
     @Test
     void change_name_success() {
         /// given
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(testLine1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse1 = RestAssured.
+                given().log().all().
+                    body(testLine1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/lines").
+                then()
+                    .extract();
 
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(testLine2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse2 = RestAssured.
+                given().
+                    log().all()
+                    .body(testLine2).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/lines").
+                then().
+                     extract();
 
         // when
         String uri = createResponse1.header("Location");
-        RestAssured.given().log().all()
-                .body(testLine3)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put(uri)
-                .then()
-                .statusCode(HttpStatus.OK.value()).log().all();
+        RestAssured.
+                given().log().all().
+                    body(testLine3).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    put(uri).
+                then().
+                    statusCode(HttpStatus.OK.value()).log().all();
     }
 
     @DisplayName("존재하지 않는 id의 노선 이름을 변경한다.")
     @Test
     void change_name_no_id() {
         /// given
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(testLine1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse1 = RestAssured.
+                given().log().all().
+                    body(testLine1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/lines").
+                then()
+                    .extract();
 
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(testLine2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse2 = RestAssured.
+                given().log().all().
+                    body(testLine2).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/lines").
+                then().
+                    extract();
 
         // when
         String uri = "/lines/1000";
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(testLine3)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put(uri)
-                .then()
-                .statusCode(HttpStatus.NO_CONTENT.value())
-                .log().all()
-                .extract();
+        RestAssured.
+                given().log().all().
+                    body(testLine3).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    put(uri).
+                then().
+                    statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     @DisplayName("이미 저장된 이름으로 이름을 바꾼다.")
     @Test
     void change_name_name_duplicate() {
         /// given
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(testLine1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse1 = RestAssured.
+                given().log().all().
+                    body(testLine1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/lines").
+                then().
+                    extract();
 
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(testLine2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse2 = RestAssured.
+                given().log().all().
+                    body(testLine2).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/lines").
+                then().
+                    extract();
 
         // when
         String uri = createResponse1.header("Location");
-        RestAssured.given().log().all()
-                .body(testLine2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put(uri)
-                .then()
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
-                .log().all();
+        RestAssured.
+                given().log().all().
+                    body(testLine2).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    put(uri).
+                then().
+                    statusCode(HttpStatus.BAD_REQUEST.value());
     }
 }
