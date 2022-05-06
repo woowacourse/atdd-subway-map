@@ -8,11 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,11 +24,10 @@ public class StationControllerTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        StationRequest request = new StationRequest("강남역");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
@@ -43,11 +41,10 @@ public class StationControllerTest extends AcceptanceTest {
     @DisplayName("비어있는 값으로 이름을 생성하면 400 상태코드를 받게 된다.")
     @Test
     void createStationWithInvalidDataSize() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "");
+        StationRequest request = new StationRequest("");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
@@ -60,10 +57,9 @@ public class StationControllerTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        StationRequest request = new StationRequest("강남역");
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
@@ -71,7 +67,7 @@ public class StationControllerTest extends AcceptanceTest {
                 .extract();
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
@@ -85,20 +81,18 @@ public class StationControllerTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
+        StationRequest request1 = new StationRequest("강남역");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(params1)
+                .body(request1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
                 .then().log().all()
                 .extract();
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
+        StationRequest request2 = new StationRequest("역삼역");
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(params2)
+                .body(request2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
@@ -124,10 +118,9 @@ public class StationControllerTest extends AcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        StationRequest request = new StationRequest("강남역");
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")

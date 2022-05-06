@@ -11,11 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -29,12 +28,10 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 등록한다.")
     @Test
     void createLine() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
+        LineRequest request = new LineRequest("신분당선", "red", null, null, 0);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -48,12 +45,10 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("비어있는 이름으로 역을 생성하면 400 상태코드를 받게 된다.")
     @Test
     void createLineWithInvalidNameDateSize() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "");
-        params.put("color", "red");
+        LineRequest request = new LineRequest("", "red", null, null, 0);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -66,12 +61,10 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("비어있는 색으로 역을 생성하면 400 상태코드를 받게 된다.")
     @Test
     void createLineWithInvalidColorDateSize() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "");
+        LineRequest request = new LineRequest("신분당선", "", null, null, 0);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -85,13 +78,10 @@ class LineControllerTest extends AcceptanceTest {
     @Test
     void throwsExceptionWhenCreateDuplicatedName() {
         lineDao.save(new Line("신분당선", "red"));
-
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
+        LineRequest request = new LineRequest("신분당선", "red", null, null, 0);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
