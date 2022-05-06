@@ -35,7 +35,7 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = lineRequest.toLine();
         Long id = lineDao.save(line);
-        LineResponse lineResponse = new LineResponse(id, line.getName(), line.getColor());
+        LineResponse lineResponse = LineResponse.of(id, line.getName(), line.getColor());
         return ResponseEntity.created(URI.create(LINES_API_URI + "/" + id)).body(lineResponse);
     }
 
@@ -43,7 +43,7 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineDao.findAll();
         List<LineResponse> lineResponses = lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
@@ -51,7 +51,7 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineDao.findById(id);
-        LineResponse lineResponse = new LineResponse(id, line.getName(), line.getColor());
+        LineResponse lineResponse = LineResponse.of(id, line.getName(), line.getColor());
         return ResponseEntity.ok().body(lineResponse);
     }
 
