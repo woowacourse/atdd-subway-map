@@ -79,10 +79,22 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 정보 업데이트")
     void update() {
-        LineRequest line = new LineRequest("4호선", "red");
+        LineRequest line = new LineRequest("9호선", "red");
         LineResponse newLine = lineService.createLine(line);
 
-        assertThat(lineService.updateLine(newLine.getId(), line)).isEqualTo(1);
+        assertThat(lineService.updateLine(newLine.getId(), new LineRequest("7호선", "red")))
+                .isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("노선 정보 업데이트 - 이미 존재하는 노선으로 업데이트")
+    void updateDuplicateLine() {
+        LineRequest line = new LineRequest("9호선", "red");
+        LineResponse newLine = lineService.createLine(line);
+
+        assertThatThrownBy(() -> lineService.updateLine(newLine.getId(), new LineRequest("9호선", "red")))
+                .isInstanceOf(ClientException.class)
+                .hasMessageContaining("등록된 지하철노선으로 변경할 수 없습니다.");
     }
 
     @Test

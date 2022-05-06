@@ -17,6 +17,7 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.core.Is.is;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
@@ -26,18 +27,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
 
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        // then
+        RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
-                .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+                .statusCode(HttpStatus.CREATED.value())
+                .body("name", is("신분당선"))
+                .body("color", is("bg-red-600"))
+                .header("Location", "/lines/1");
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -48,31 +48,37 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineRequest newLineRequest = new LineRequest("분당선", "bg-green-600");
 
         // when
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .body("name", is("신분당선"))
+                .body("color", is("bg-red-600"))
                 .extract();
 
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+        ExtractableResponse<Response> newCreateResponse = RestAssured.given().log().all()
                 .body(newLineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .body("name", is("분당선"))
+                .body("color", is("bg-green-600"))
                 .extract();
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .get("/lines")
                 .then().log().all()
+                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
+        List<Long> expectedLineIds = Stream.of(createResponse, newCreateResponse)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
@@ -95,6 +101,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .when()
                 .post("/lines")
                 .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .body("name", is("신분당선"))
+                .body("color", is("bg-red-600"))
                 .extract();
 
         long resultLineId = response.jsonPath().getLong("id");
@@ -103,10 +112,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .when()
                 .get("/lines/" + resultLineId)
                 .then().log().all()
+                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         // then
-        assertThat(newResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultLineId).isEqualTo(newResponse.jsonPath().getLong("id"));
     }
 
@@ -124,21 +133,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .when()
                 .post("/lines")
                 .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .body("name", is("신분당선"))
+                .body("color", is("bg-red-600"))
                 .extract();
 
         long resultLineId = response.jsonPath().getLong("id");
 
-        ExtractableResponse<Response> newResponse = RestAssured.given().log()
+        RestAssured.given().log()
                 .all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put("/lines/" + resultLineId)
                 .then().log().all()
+                .statusCode(HttpStatus.OK.value())
                 .extract();
-
-        // then
-        assertThat(newResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선 삭제")
@@ -155,19 +165,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .when()
                 .post("/lines")
                 .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .body("name", is("신분당선"))
+                .body("color", is("bg-red-600"))
                 .extract();
 
         long resultLineId = response.jsonPath().getLong("id");
 
-        ExtractableResponse<Response> newResponse = RestAssured.given().log()
+        //then
+        RestAssured.given().log()
                 .all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .delete("/lines/" + resultLineId)
                 .then().log().all()
-                .extract();
-
-        // then
-        assertThat(newResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+                .statusCode(HttpStatus.OK.value());
     }
 }

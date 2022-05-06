@@ -43,7 +43,11 @@ public class LineService {
     }
 
     public int updateLine(Long id, LineRequest lineRequest) {
-        return lineDao.update(id, lineRequest);
+        try {
+            return lineDao.update(id, lineRequest);
+        } catch (DataAccessException exception) {
+            throw new ClientException("등록된 지하철노선으로 변경할 수 없습니다.");
+        }
     }
 
     public int deleteLine(Long id) {

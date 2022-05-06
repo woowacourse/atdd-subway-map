@@ -38,16 +38,18 @@ public class FakeLineDao implements LineDao {
         return LINES.keySet()
                 .stream()
                 .filter(key -> LINES.get(key).getId() == id)
-                .map(key -> LINES.get(key))
+                .map(LINES::get)
                 .findAny()
                 .orElseThrow(() -> new ClientException("존재하지 않는 노선입니다."));
     }
 
     @Override
     public int update(Long id, LineRequest line) {
-        if (!LINES.containsKey(line.getName())) {
-            throw new ClientException("존재하지 않는 노선입니다.");
+        if (LINES.containsKey(line.getName())) {
+            throw new ClientException("등록된 지하철노선으로 변경할 수 없습니다.");
         }
+        Line existingLine = find(id);
+        LINES.remove(existingLine.getName());
         LINES.put(line.getName(), new Line(id, line.getName(), line.getColor()));
         if (LINES.containsKey(line.getName())) {
             return 1;
