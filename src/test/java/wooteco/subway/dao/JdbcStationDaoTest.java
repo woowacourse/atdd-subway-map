@@ -28,17 +28,15 @@ class JdbcStationDaoTest {
     @DisplayName("지하철역을 저장한다.")
     @Test
     void save() {
-        String name = "강남역";
-        long actual = jdbcStationDao.save(name);
-
+        long actual = jdbcStationDao.save(new Station("강남역"));
         assertThat(actual).isNotNull();
     }
 
     @DisplayName("전체 지하철역들을 조회한다.")
     @Test
     void findAll() {
-        jdbcStationDao.save("강남역");
-        jdbcStationDao.save("양제역");
+        jdbcStationDao.save(new Station("강남역"));
+        jdbcStationDao.save(new Station("양제역"));
 
         List<Station> actual = jdbcStationDao.findAll();
         List<String> actualNames = actual.stream()
@@ -51,7 +49,7 @@ class JdbcStationDaoTest {
     @DisplayName("지하철역을 삭제한다.")
     @Test
     void deleteById() {
-        Long id = jdbcStationDao.save("강남역");
+        Long id = jdbcStationDao.save(new Station("강남역"));
         boolean isDeleted = jdbcStationDao.deleteById(id);
         assertThat(isDeleted).isTrue();
     }

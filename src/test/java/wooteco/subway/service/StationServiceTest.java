@@ -29,7 +29,7 @@ public class StationServiceTest {
     @Test
     void createStation() {
         doReturn(1L)
-                .when(jdbcStationDao).save("강남역");
+                .when(jdbcStationDao).save(new Station("강남역"));
         StationResponse stationResponse = stationService.createStation(new StationRequest("강남역"));
         assertAll(
                 () -> stationResponse.getId().equals(1L),

@@ -25,14 +25,14 @@ public class JdbcStationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long save(String name) {
+    public Long save(Station station) {
         String sql = "insert into station (name) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection
                     .prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1, name);
+            preparedStatement.setString(1, station.getName());
             return preparedStatement;
         }, keyHolder);
 
