@@ -2,6 +2,8 @@ package wooteco.subway.ui;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -12,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
+import wooteco.subway.service.StationService;
 
 @WebMvcTest(StationController.class)
 public class StationControllerTest {
@@ -35,21 +36,20 @@ public class StationControllerTest {
     ObjectMapper objectMapper;
 
     @MockBean
-    private StationDao stationDao;
+    private StationService stationService;
 
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() throws Exception {
         // given
-        StationRequest test = new StationRequest("test");
-        given(stationDao.findByName("test"))
-                .willReturn(Optional.empty());
-        given(stationDao.save(any(Station.class)))
-                .willReturn(new Station(1L, test.getName()));
+        StationRequest stationRequest = new StationRequest("test");
+        StationResponse stationResponse = new StationResponse(1L, "test");
+        given(stationService.createStation(any(StationRequest.class)))
+                .willReturn(stationResponse);
         // when
         ResultActions perform = mockMvc.perform(post("/stations")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(test)));
+                .content(objectMapper.writeValueAsString(stationRequest)));
         // then
         perform.andExpect(status().isCreated())
                 .andExpect(jsonPath("id").value(1))
@@ -62,8 +62,8 @@ public class StationControllerTest {
     void createStation_duplication_exception() throws Exception {
         // given
         StationRequest test = new StationRequest("test");
-        given(stationDao.findByName("test"))
-                .willReturn(Optional.of(new Station(1L, test.getName())));
+        given(stationService.createStation(any()))
+                .willThrow(new IllegalArgumentException("중복되는 지하철역이 존재합니다."));
         // when
         ResultActions perform = mockMvc.perform(post("/stations")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -76,8 +76,8 @@ public class StationControllerTest {
     @Test
     void getStations() throws Exception {
         // given
-        given(stationDao.findAll())
-                .willReturn(List.of(new Station(1L, "test1"), new Station(2L, "test2")));
+        given(stationService.showStations())
+                .willReturn(List.of(new StationResponse(1L, "test1"), new StationResponse(2L, "test2")));
         // when
         ResultActions perform = mockMvc.perform(get("/stations"));
         // then
@@ -94,8 +94,9 @@ public class StationControllerTest {
     @Test
     void deleteStation() throws Exception {
         // given
-        given(stationDao.findById(1L))
-                .willReturn(Optional.of(new Station(1L, "test")));
+        doNothing()
+                .when(stationService)
+                .deleteStation(any());
         // when
         ResultActions perform = mockMvc.perform(delete("/stations/1"));
         // then
@@ -106,8 +107,9 @@ public class StationControllerTest {
     @Test
     void deleteStation_noExistStation_exception() throws Exception {
         // given
-        given(stationDao.findById(1L))
-                .willReturn(Optional.empty());
+        doThrow(new IllegalArgumentException("해당 ID의 지하철역이 존재하지 않습니다."))
+                .when(stationService)
+                .deleteStation(any());
         // when
         ResultActions perform = mockMvc.perform(delete("/stations/1"));
         // then
