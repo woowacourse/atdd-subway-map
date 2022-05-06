@@ -18,8 +18,9 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.BlankArgumentException;
-import wooteco.subway.exception.DuplicateException;
-import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.DuplicateLineNameException;
+import wooteco.subway.exception.NotFoundLineException;
+import wooteco.subway.exception.NotFoundStationException;
 import wooteco.subway.repository.LineRepository;
 import wooteco.subway.repository.StationRepository;
 
@@ -91,7 +92,7 @@ public class LineServiceTest {
 
         assertThatThrownBy(() -> lineService
             .save(new LineRequest(name, color, newStation.getId(), upStation.getId(), 10))
-        ).isInstanceOf(DuplicateException.class);
+        ).isInstanceOf(DuplicateLineNameException.class);
     }
 
     @DisplayName("존재하지 않는 역으로 노선을 등록할 수 없다.")
@@ -100,14 +101,14 @@ public class LineServiceTest {
         LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
 
         assertThatThrownBy(() -> lineService.save(request))
-            .isInstanceOf(NotFoundException.class);
+            .isInstanceOf(NotFoundStationException.class);
     }
 
     @DisplayName("존재하지 않는 지하철 노선 조회시 예외를 반환한다")
     @Test
     void showNotExistLine() {
         assertThatThrownBy(() -> lineService.queryById(50L))
-            .isInstanceOf(NotFoundException.class);
+            .isInstanceOf(NotFoundLineException.class);
     }
 
     @DisplayName("지하철 노선 조회")
@@ -198,14 +199,14 @@ public class LineServiceTest {
     @Test
     void updateNotExistLine() {
         assertThatThrownBy(() -> lineService.update(50L, new LineRequest("1호선", "bg-red-600")))
-            .isInstanceOf(NotFoundException.class);
+            .isInstanceOf(NotFoundLineException.class);
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 삭제 시도시 예외 반환")
     @Test
     void deleteNotExistLine() {
         assertThatThrownBy(() -> lineService.deleteById(50L))
-            .isInstanceOf(NotFoundException.class);
+            .isInstanceOf(NotFoundLineException.class);
     }
 
     @DisplayName("지하철 노선을 삭제 시도")

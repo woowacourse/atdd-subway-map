@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.BlankArgumentException;
-import wooteco.subway.exception.DuplicateException;
-import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.DuplicateStationNameException;
+import wooteco.subway.exception.NotFoundStationException;
 import wooteco.subway.repository.StationRepository;
 
 @SpringBootTest
@@ -42,7 +42,7 @@ class StationServiceTest {
         stationService.save(new StationRequest(stationName));
 
         assertThatThrownBy(() -> stationService.save(new StationRequest(stationName)))
-            .isInstanceOf(DuplicateException.class);
+            .isInstanceOf(DuplicateStationNameException.class);
     }
 
     @DisplayName("지하철 역 이름에 빈 문자열을 저장할 수 없다")
@@ -67,6 +67,6 @@ class StationServiceTest {
     @Test
     void deleteNotExistStation() {
         assertThatThrownBy(() -> stationService.deleteById(50L))
-            .isInstanceOf(NotFoundException.class);
+            .isInstanceOf(NotFoundStationException.class);
     }
 }
