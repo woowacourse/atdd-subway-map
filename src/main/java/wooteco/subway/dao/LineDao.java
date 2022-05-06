@@ -2,7 +2,6 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -25,7 +24,7 @@ public class LineDao {
             resultSet.getString("color")
     );
 
-    public Long save(Line line) {
+    public Line save(Line line) {
         String sql = "INSERT INTO line (name, color) VALUES(?, ?)";
 
         final KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -36,7 +35,9 @@ public class LineDao {
             return statement;
         }, keyHolder);
 
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        final long id = keyHolder.getKey().longValue();
+
+        return new Line(id, line.getName(), line.getColor());
     }
 
     public Line findById(Long id) {

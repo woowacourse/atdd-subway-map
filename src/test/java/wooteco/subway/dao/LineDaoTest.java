@@ -29,11 +29,10 @@ class LineDaoTest {
         final Line line = new Line("신분당선", "bg-red-600");
 
         // when
-        final Long savedId = lineDao.save(line);
+        final Line savedLine = lineDao.save(line);
 
         // then
-        final Line findLine = lineDao.findById(savedId);
-        assertThat(findLine).extracting("name", "color")
+        assertThat(savedLine).extracting("name", "color")
                 .contains("신분당선", "bg-red-600");
     }
 
@@ -62,10 +61,10 @@ class LineDaoTest {
     void findById() {
         // given
         final Line line = new Line("신분당선", "bg-red-600");
-        final Long savedId = lineDao.save(line);
+        final Line savedLine = lineDao.save(line);
 
         // when
-        final Line findLine = lineDao.findById(savedId);
+        final Line findLine = lineDao.findById(savedLine.getId());
 
         // then
         assertThat(findLine).extracting("name", "color")
@@ -77,14 +76,14 @@ class LineDaoTest {
     void updateById() {
         // given
         final Line line = new Line("신분당선", "bg-red-600");
-        final Long savedId = lineDao.save(line);
+        final Line savedLine = lineDao.save(line);
 
         // when
-        final Line newLine = new Line(savedId, "다른분당선", "bg-red-600");
+        final Line newLine = new Line(savedLine.getId(), "다른분당선", "bg-red-600");
         lineDao.updateByLine(newLine);
 
         // then
-        final Line findLine = lineDao.findById(savedId);
+        final Line findLine = lineDao.findById(savedLine.getId());
         assertThat(findLine).extracting("name", "color")
                 .contains("다른분당선", "bg-red-600");
     }
@@ -94,9 +93,9 @@ class LineDaoTest {
     void deleteById() {
         // given
         final Line line = new Line("신분당선", "bg-red-600");
-        final Long savedId = lineDao.save(line);
+        final Line savedLine = lineDao.save(line);
 
         // when & then
-        assertDoesNotThrow(() -> lineDao.deleteById(savedId));
+        assertDoesNotThrow(() -> lineDao.deleteById(savedLine.getId()));
     }
 }

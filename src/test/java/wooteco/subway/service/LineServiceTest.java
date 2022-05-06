@@ -29,10 +29,9 @@ class LineServiceTest {
         LineRequest request = new LineRequest("신분당선", "bg-red-600");
 
         // when
-        Long savedId = lineService.save(request);
+        final LineResponse response = lineService.save(request);
 
         // then
-        LineResponse response = lineService.findById(savedId);
         assertThat(response).extracting("name", "color")
                 .contains("신분당선", "bg-red-600");
     }
@@ -63,11 +62,11 @@ class LineServiceTest {
     void updateById() {
         // given
         final LineRequest request = new LineRequest("신분당선", "bg-red-600");
-        final Long savedId = lineService.save(request);
+        final LineResponse savedResponse = lineService.save(request);
 
         // when
         final LineRequest updateRequest = new LineRequest("다른분당선", "bg-red-600");
-        Long updateId = lineService.updateByLine(savedId, updateRequest);
+        Long updateId = lineService.updateByLine(savedResponse.getId(), updateRequest);
 
         // then
         final LineResponse response = lineService.findById(updateId);
@@ -80,10 +79,10 @@ class LineServiceTest {
     void deleteById() {
         // given
         LineRequest request = new LineRequest("신분당선", "bg-red-600");
-        final Long savedId = lineService.save(request);
+        final LineResponse savedResponse = lineService.save(request);
 
         // when & then
-        assertDoesNotThrow(() -> lineService.deleteById(savedId));
+        assertDoesNotThrow(() -> lineService.deleteById(savedResponse.getId()));
     }
     
     @DisplayName("존재하지 않는 id로 조회하면 예외가 발생한다.")
@@ -91,10 +90,10 @@ class LineServiceTest {
     public void findByNotExistId() {
         // given
         final LineRequest request = new LineRequest("신분당선", "bg-red-600");
-        final Long savedId = lineService.save(request);
+        final LineResponse savedResponse = lineService.save(request);
 
         // when & then
-        Assertions.assertThatThrownBy(() -> lineService.findById(savedId + 1))
+        Assertions.assertThatThrownBy(() -> lineService.findById(savedResponse.getId() + 1))
                 .isInstanceOf(EmptyResultDataAccessException.class);
     }
 }

@@ -21,10 +21,12 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Long save(LineRequest request) {
+    public LineResponse save(LineRequest request) {
         Line line = new Line(request.getName(), request.getColor());
 
-        return lineDao.save(line);
+        final Line savedLine = lineDao.save(line);
+
+        return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor());
     }
 
     public LineResponse findById(Long id) {
