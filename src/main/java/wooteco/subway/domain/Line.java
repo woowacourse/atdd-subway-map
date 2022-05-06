@@ -8,16 +8,15 @@ public class Line {
     private String color;
 
     public Line(final Long id, final String name, final String color) {
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(color);
         this.id = id;
         this.name = name;
         this.color = color;
     }
 
     public Line(final String name, final String color) {
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(color);
-        this.name = name;
-        this.color = color;
+        this(null, name, color);
     }
 
     public Long getId() {

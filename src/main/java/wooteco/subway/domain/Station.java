@@ -7,13 +7,13 @@ public class Station {
     private String name;
 
     public Station(final Long id, final String name) {
+        Objects.requireNonNull(name);
         this.id = id;
         this.name = name;
     }
 
     public Station(final String name) {
-        Objects.requireNonNull(name);
-        this.name = name;
+        this(null, name);
     }
 
     public Long getId() {
