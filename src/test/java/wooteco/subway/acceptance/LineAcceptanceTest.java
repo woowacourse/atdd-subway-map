@@ -38,8 +38,10 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.header("Location")).isNotBlank()
+        );
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
@@ -105,14 +107,16 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponseDto.class).stream()
                 .map(LineResponseDto::getId)
                 .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(resultLineIds).containsAll(expectedLineIds)
+        );
     }
 
     @DisplayName("id 로 노선을 조회한다.")
@@ -134,7 +138,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get("/lines/" + id)
+                .get("/lines/{id}", id)
                 .then().log().all()
                 .extract();
         LineResponseDto responseBody = response.jsonPath().getObject(".", LineResponseDto.class);
@@ -170,12 +174,21 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .body(modifyParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put("/lines/" + id)
+                .put("/lines/{id}", id)
                 .then().log().all()
                 .extract();
+        LineResponseDto responseDto = RestAssured.given().log().all()
+                .when()
+                .get("/lines/{id}", id)
+                .then().log().all()
+                .extract().jsonPath().getObject(".", LineResponseDto.class);
 
         // then
-        assertThat(modifyResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertAll(
+                () -> assertThat(modifyResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(responseDto.getName()).isEqualTo("신분당선"),
+                () -> assertThat(responseDto.getColor()).isEqualTo("bg-red-600")
+        );
     }
 
     @DisplayName("노선을 제거한다.")
@@ -192,6 +205,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .post("/lines")
                 .then().log().all()
                 .extract();
+        long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
 
         // when
         String uri = createResponse.header("Location");
