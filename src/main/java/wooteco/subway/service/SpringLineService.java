@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineRepository;
 import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.NoLineFoundException;
+import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.service.dto.LineServiceRequest;
 
 @Service
@@ -44,7 +44,7 @@ public class SpringLineService implements LineService {
     @Override
     public Line findById(Long id) {
         final LineEntity lineEntity = lineRepository.findById(id)
-                .orElseThrow(NoLineFoundException::new);
+                .orElseThrow(() -> new NotFoundLineException(id));
 
         return new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor());
     }
