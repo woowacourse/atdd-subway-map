@@ -27,7 +27,7 @@ public class StationController {
         this.stationService = stationService;
     }
 
-    @PostMapping()
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         StationResponse stationResponse = stationService.save(stationRequest);
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
@@ -39,7 +39,7 @@ public class StationController {
         return ResponseEntity.ok().body(stationResponses);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         if (stationService.deleteById(id)) {
             return ResponseEntity.ok().build();
