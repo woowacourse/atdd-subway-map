@@ -7,9 +7,6 @@ public class Line {
     private String name;
     private String color;
 
-    public Line() {
-    }
-
     public Line(final Long id, final String name, final String color) {
         this.id = id;
         this.name = name;

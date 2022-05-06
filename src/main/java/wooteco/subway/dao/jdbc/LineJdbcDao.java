@@ -16,7 +16,7 @@ import wooteco.subway.exception.NoSuchLineException;
 @Repository
 public class LineJdbcDao implements LineDao {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public LineJdbcDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
