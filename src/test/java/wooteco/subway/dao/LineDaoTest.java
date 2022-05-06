@@ -5,9 +5,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.NotFoundException;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -24,7 +24,7 @@ public class LineDaoTest {
     private DataSource dataSource;
     private LineDao lineDao;
 
-    private Line line = new Line("신분당선", "red");
+    private final Line line = new Line("신분당선", "red");
 
     @BeforeEach
     void setUp() {
@@ -64,8 +64,7 @@ public class LineDaoTest {
     @Test
     void findByIdException() {
         assertThatThrownBy(() -> lineDao.findById(1L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessageMatching("id에 맞는 지하철 노선이 없습니다.");
+                .isInstanceOf(EmptyResultDataAccessException.class);
     }
 
     @DisplayName("노선의 이름과 색깔을 수정한다.")
@@ -88,7 +87,6 @@ public class LineDaoTest {
         lineDao.delete(saveLine.getId());
 
         assertThatThrownBy(() -> lineDao.findById(saveLine.getId()))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessageMatching("id에 맞는 지하철 노선이 없습니다.");
+                .isInstanceOf(EmptyResultDataAccessException.class);
     }
 }

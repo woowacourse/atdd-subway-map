@@ -5,9 +5,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.NotFoundException;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -59,7 +59,6 @@ class StationDaoTest {
         stationDao.deleteById(station.getId());
 
         assertThatThrownBy(() -> stationDao.deleteById(station.getId()))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessageMatching("id에 맞는 지하철역이 없습니다.");
+                .isInstanceOf(EmptyResultDataAccessException.class);
     }
 }

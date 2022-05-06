@@ -1,6 +1,5 @@
 package wooteco.subway.dao;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -8,7 +7,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.NotFoundException;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -48,11 +46,7 @@ public class LineDao {
 
     public Line findById(Long id) {
         String SQL = "select * from line where id = ?;";
-        try {
-            return jdbcTemplate.queryForObject(SQL, rowMapper(), id);
-        } catch (DataAccessException e) {
-            throw new NotFoundException("id에 맞는 지하철 노선이 없습니다.");
-        }
+        return jdbcTemplate.queryForObject(SQL, rowMapper(), id);
     }
 
     public void update(Line line) {
