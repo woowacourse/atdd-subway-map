@@ -86,7 +86,7 @@ class LineServiceTest {
     void updateLine() {
         final Line newLine = new Line(1L, "분당선", "bg-yellow-600");
 
-        given(lineDao.existById(1L)).willReturn(true);
+        given(lineDao.findById(1L)).willReturn(Optional.of(newLine));
 
         lineService.update(1L, newLine);
         verify(lineDao, times(1)).update(1L, newLine);
@@ -95,11 +95,12 @@ class LineServiceTest {
     @DisplayName("수정하려는 노선 ID가 존재하지 않을 경우 예외를 발생한다.")
     @Test
     void update_throwsExceptionIfLineIdIsNotExisting() {
-        given(lineDao.existById(1L)).willReturn(false);
+        given(lineDao.findById(1L)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> lineService.update(1L, new Line("분당선", "bg-yellow-600")))
+        assertThatThrownBy(() ->
+                lineService.update(1L, new Line("분당선", "bg-yellow-600")))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("대상 노선 ID가 존재하지 않습니다.");
+                .hasMessage("존재하지 않는 노선 ID입니다.");
     }
 
     @DisplayName("등록된 노선을 삭제한다.")

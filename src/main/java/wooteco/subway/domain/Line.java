@@ -19,6 +19,11 @@ public class Line {
         this(null, name, color);
     }
 
+    public void update(final Line newLine) {
+        name = newLine.name;
+        color = newLine.color;
+    }
+
     public Long getId() {
         return id;
     }

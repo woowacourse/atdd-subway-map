@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
@@ -29,8 +30,11 @@ public class LineService {
     }
 
     public void update(final Long id, final Line newLine) {
-        validateExist(id);
-        lineDao.update(id, newLine);
+        validateDuplicateName(newLine);
+        final Line result = getLineById(id);
+        result.update(newLine);
+
+        lineDao.update(id, result);
     }
 
     public void delete(final Long id) {
