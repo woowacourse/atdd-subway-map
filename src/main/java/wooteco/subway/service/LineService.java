@@ -53,7 +53,6 @@ public class LineService {
 
     public void update(Long id, LineRequestDto lineRequestDto) {
         lineDao.update(id, lineRequestDto.getName(), lineRequestDto.getColor());
-
     }
 
     public void remove(Long id) {
