@@ -47,11 +47,11 @@ public class Line {
             return false;
         }
         final Line line = (Line) o;
-        return Objects.equals(name, line.name) && Objects.equals(color, line.color);
+        return Objects.equals(id, line.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, color);
+        return Objects.hash(id);
     }
 }

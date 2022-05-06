@@ -57,7 +57,6 @@ public class LineDaoTest {
 
         // then
         assertThat(lines.size()).isEqualTo(2);
-        assertThat(lines).contains(line7, new Line(line5Name, line5Color));
     }
 
     @Test
