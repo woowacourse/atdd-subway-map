@@ -3,7 +3,6 @@ package wooteco.subway.ui;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.dto.ErrorResponse;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.service.StationService;
@@ -36,10 +35,5 @@ public class StationController {
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.deleteStation(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handleError(Exception e) {
-        return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }
 }
