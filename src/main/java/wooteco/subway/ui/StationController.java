@@ -36,9 +36,4 @@ public class StationController {
         stationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<Void> exception(Exception exception) {
-        return ResponseEntity.badRequest().build();
-    }
 }

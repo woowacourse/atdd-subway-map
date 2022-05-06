@@ -4,6 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineWithStationRequest;
+import wooteco.subway.dto.LineWithStationResponse;
 import wooteco.subway.service.LineService;
 
 import java.net.URI;
@@ -47,10 +49,5 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable final Long id) {
         lineService.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> exception(Exception exception) {
-        return ResponseEntity.badRequest().body(exception.getMessage());
     }
 }

@@ -5,6 +5,8 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineWithStationRequest;
+import wooteco.subway.dto.LineResponse;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,20 +24,18 @@ public class LineService {
     public LineResponse save(final LineRequest lineRequest) {
         final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         final Line newLine = lineDao.save(line);
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(),
-                Collections.emptyList());
+        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
     public List<LineResponse> findAll() {
         final List<Line> lines = lineDao.findAll();
         return lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), Collections.emptyList()))
+                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
     }
-
     public LineResponse findById(final Long id) {
         final Line line = lineDao.findById(id);
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), Collections.emptyList());
+        return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 
     public void update(final Long id, final LineRequest lineRequest) {

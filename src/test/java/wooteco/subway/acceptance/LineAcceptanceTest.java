@@ -7,8 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineWithStationResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,21 +45,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse1 = createLine("신분당선", "bg-red-600");
         ExtractableResponse<Response> createResponse2 = createLine("다른분당선", "bg-blue-600");
 
-        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .get("/lines")
                 .then().log().all()
                 .extract();
 
-        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
+        List<Long> resultLineIds = response.jsonPath().getList(".", LineWithStationResponse.class).stream()
+                .map(LineWithStationResponse::getId)
                 .collect(Collectors.toList());
 
         assertThat(resultLineIds).containsAll(expectedLineIds);
@@ -71,7 +68,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600");
 
-        // when
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -80,10 +76,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.body().jsonPath().get("name").toString()).isEqualTo("신분당선")
+        );
+    }
+
+    @DisplayName("존재하지 않는 노선을 조회한다")
+    @Test
+    void getLineNotExist() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/lines/9999")
+                .then().log().all()
+                .extract();
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value())
         );
     }
 
@@ -108,13 +118,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("존재하지 않는 노선을 업데이트한다")
+    @Test
+    public void updateLineNotExist() {
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "인간분당선");
+        params2.put("color", "bg-red-600");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/9999")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
     @DisplayName("노선을 삭제한다.")
     @Test
     void deleteLine() {
-        // given
         ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600");
 
-        // when
         String uri = createResponse.header("Location");
         Long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -123,7 +150,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         ExtractableResponse<Response> linesResponse = RestAssured.given().log().all()
@@ -132,11 +158,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        List<Long> resultLineIds = linesResponse.jsonPath().getList(".", LineResponse.class).stream()
+        List<Long> resultLineIds = linesResponse.jsonPath().getList(".", LineWithStationResponse.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
 
         assertThat(resultLineIds.contains(id)).isFalse();
+    }
+
+    @DisplayName("존재하지 않는 노선을 삭제한다.")
+    @Test
+    void deleteLineNotExist() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/lines/9999")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private ExtractableResponse<Response> createLine(final String name, final String color) {
@@ -144,7 +182,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("name", name);
         params.put("color", color);
 
-        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

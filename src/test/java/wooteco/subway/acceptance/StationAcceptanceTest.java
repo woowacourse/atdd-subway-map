@@ -44,21 +44,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("지하철역을 조회한다.")
-    @Transactional
     @Test
     void getStations() {
-        /// given
         ExtractableResponse<Response> createResponse1 = createStation("강남역");
         ExtractableResponse<Response> createResponse2 = createStation("역삼역");
 
-        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .get("/stations")
                 .then().log().all()
                 .extract();
 
-        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
@@ -72,13 +68,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("지하철역을 제거한다.")
-    @Transactional
     @Test
     void deleteStation() {
-        // given
         ExtractableResponse<Response> createResponse = createStation("강남역");
 
-        // when
         String uri = createResponse.header("Location");
         Long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
         ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
@@ -89,7 +82,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
-        // then
         ExtractableResponse<Response> stationsResponse = RestAssured.given().log().all()
                 .when()
                 .get("/stations")
@@ -101,6 +93,19 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
 
         assertThat(resultLineIds.contains(id)).isFalse();
+    }
+
+    @DisplayName("존재하지 않는 지하철역을 제거한다.")
+    @Test
+    void deleteStationNotExist() {
+
+        ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
+                .when()
+                .delete("/stations/9999")
+                .then().log().all()
+                .extract();
+
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private ExtractableResponse<Response> createStation(final String name) {
