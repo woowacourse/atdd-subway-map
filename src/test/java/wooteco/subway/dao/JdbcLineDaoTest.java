@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -36,11 +35,13 @@ public class JdbcLineDaoTest {
         Line actual = lineDao.save(line);
 
         //then
-        assertThat(isSameNameAndColor(actual, line)).isTrue();
+        checkHasSameNameAndColor(actual, line);
     }
 
-    private boolean isSameNameAndColor(Line lineA, Line lineB) {
-        return lineA.getColor().equals(lineB.getColor()) && lineA.getName().equals(lineB.getName());
+    private void checkHasSameNameAndColor(Line actual, Line expected) {
+        assertThat(actual).usingRecursiveComparison()
+            .ignoringFields("id")
+            .isEqualTo(expected);
     }
 
     @Test
@@ -56,10 +57,8 @@ public class JdbcLineDaoTest {
         List<Line> actual = lineDao.findAll();
 
         //then
-        assertAll(
-            () -> assertThat(isSameNameAndColor(actual.get(0), line1)).isTrue(),
-            () -> assertThat(isSameNameAndColor(actual.get(1), line2)).isTrue()
-        );
+        checkHasSameNameAndColor(actual.get(0), line1);
+        checkHasSameNameAndColor(actual.get(1), line2);
     }
 
     @Test
@@ -73,7 +72,7 @@ public class JdbcLineDaoTest {
         Line actual = lineDao.findById(savedLine.getId()).get();
 
         //then
-        assertThat(isSameNameAndColor(actual, line)).isTrue();
+        checkHasSameNameAndColor(actual, line);
     }
 
     @Test
@@ -88,7 +87,7 @@ public class JdbcLineDaoTest {
         Line actual = lineDao.findByName(name).get();
 
         //then
-        assertThat(isSameNameAndColor(actual, savedLine)).isTrue();
+        checkHasSameNameAndColor(actual, savedLine);
     }
 
     @Test
@@ -104,7 +103,7 @@ public class JdbcLineDaoTest {
 
         //then
         Line actual = lineDao.findById(savedLine.getId()).get();
-        assertThat(isSameNameAndColor(actual, updatedLine)).isTrue();
+        checkHasSameNameAndColor(actual, updatedLine);
     }
 
     @Test
