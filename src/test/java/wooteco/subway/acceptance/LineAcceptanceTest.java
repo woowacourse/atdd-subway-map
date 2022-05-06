@@ -19,9 +19,6 @@ import wooteco.subway.dto.LineResponse;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final String PATH_PREFIX = "/lines";
-    private static final String LOCATION = "Location";
-
     private final LineRequest lineOneRequest = new LineRequest("1호선", "bg-red-600", null, null, 0);
     private final LineRequest lineTwoRequest = new LineRequest("2호선", "bg-green-600", null, null, 0);
 
@@ -43,16 +40,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         });
     }
 
-    private ExtractableResponse<Response> createLine(final LineRequest request) {
-        return RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(PATH_PREFIX)
-                .then().log().all()
-                .extract();
-    }
-
     @DisplayName("모든 노선을 조회한다.")
     @Test
     void Show_Lines() {
@@ -63,7 +50,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         final ExtractableResponse<Response> actual = RestAssured.given().log().all()
                 .when()
-                .get(PATH_PREFIX)
+                .get(LINE_PATH_PREFIX)
                 .then().log().all()
                 .extract();
 
@@ -80,10 +67,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(actualLineIds).containsAll(expectedLineIds);
     }
 
-    private long extractId(final ExtractableResponse<Response> response) {
-        return Long.parseLong(response.header("Location").split("/")[2]);
-    }
-
     @DisplayName("id로 노선을 조회한다.")
     @Test
     void ShowLine() {
@@ -93,7 +76,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         final ExtractableResponse<Response> actual = RestAssured.given().log().all()
                 .when()
-                .get(PATH_PREFIX + "/" + id)
+                .get(LINE_PATH_PREFIX + SLASH + id)
                 .then().log().all()
                 .extract();
 
@@ -108,18 +91,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         });
     }
 
-    private long createAndGetLineId(LineRequest request) {
-        final ExtractableResponse<Response> response = createLine(request);
-        return extractId(response);
-    }
-
     @Test
     @DisplayName("존재하지 않은 id로 조회하면 NOT_FOUND를 반환한다.")
     void ShowLine_NotExistId_NotFound() {
         // when
         final ExtractableResponse<Response> actual = RestAssured.given().log().all()
                 .when()
-                .get(PATH_PREFIX + "/" + 999)
+                .get(LINE_PATH_PREFIX + SLASH + 999)
                 .then().log().all()
                 .extract();
 
@@ -138,7 +116,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(lineTwoRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put(PATH_PREFIX + "/" + id)
+                .put(LINE_PATH_PREFIX + SLASH + id)
                 .then().log().all()
                 .extract();
 
@@ -158,7 +136,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(lineOneRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put(PATH_PREFIX + "/" + id)
+                .put(LINE_PATH_PREFIX + SLASH + id)
                 .then().log().all()
                 .extract();
 
@@ -174,7 +152,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(lineOneRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put(PATH_PREFIX + "/" + 999)
+                .put(LINE_PATH_PREFIX + SLASH + 999)
                 .then().log().all()
                 .extract();
 
@@ -192,7 +170,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .delete(PATH_PREFIX + "/" + id)
+                .delete(LINE_PATH_PREFIX + SLASH + id)
                 .then().log().all()
                 .extract();
 
@@ -207,7 +185,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .delete(PATH_PREFIX + "/" + 999)
+                .delete(LINE_PATH_PREFIX + SLASH + 999)
                 .then().log().all()
                 .extract();
 

@@ -11,15 +11,11 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
-
-    private static final String PATH_PREFIX = "/stations";
-    private static final String LOCATION = "Location";
 
     private final StationRequest gangNamStationRequest = new StationRequest("강남역");
     private final StationRequest jamSilStationRequest = new StationRequest("잠실역");
@@ -33,16 +29,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header(LOCATION)).isNotBlank();
-    }
-
-    private ExtractableResponse<Response> createStation(final StationRequest request) {
-        return RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(PATH_PREFIX)
-                .then().log().all()
-                .extract();
     }
 
     @DisplayName("생성하려는 역의 이름이 중복되면 BadRequest 를 반환한다.")
@@ -68,7 +54,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // when
         final ExtractableResponse<Response> actual = RestAssured.given().log().all()
                 .when()
-                .get(PATH_PREFIX)
+                .get(STATION_PATH_PREFIX)
                 .then().log().all()
                 .extract();
 
@@ -85,21 +71,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(actualLineIds).containsAll(expectedLineIds);
     }
 
-    private long extractId(final ExtractableResponse<Response> response) {
-        return Long.parseLong(response.header(LOCATION).split("/")[2]);
-    }
-
     @DisplayName("지하철역을 제거한다.")
     @Test
     void DeleteStation() {
         // given
-        final ExtractableResponse<Response> createResponse = createStation(gangNamStationRequest);
-        final long id = extractId(createResponse);
+        final long id = createAndGetLineId(gangNamStationRequest);
 
         // when
         final ExtractableResponse<Response> actual = RestAssured.given().log().all()
                 .when()
-                .delete(PATH_PREFIX + "/" + id)
+                .delete(STATION_PATH_PREFIX + SLASH + id)
                 .then().log().all()
                 .extract();
 
@@ -113,7 +94,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // when
         final ExtractableResponse<Response> actual = RestAssured.given().log().all()
                 .when()
-                .delete(PATH_PREFIX + "/999")
+                .delete(STATION_PATH_PREFIX + SLASH + 999)
                 .then().log().all()
                 .extract();
 
