@@ -62,11 +62,10 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public Boolean existsByName(String name) {
-        String query = "SELECT COUNT(*) as num FROM Station WHERE name=(:name)";
+        String query = "SELECT EXISTS(SELECT id FROM Station WHERE name=(:name)) as existable";
         SqlParameterSource parameters = new MapSqlParameterSource("name", name);
-        int count = jdbcTemplate.queryForObject(query, parameters,
-                (resultSet, rowNum) -> resultSet.getInt("num"));
-        return count != 0;
+        return jdbcTemplate.queryForObject(query, parameters,
+                (resultSet, rowNum) -> resultSet.getBoolean("existable"));
     }
 
     @Override
