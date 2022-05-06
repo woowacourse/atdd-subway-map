@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,7 @@ class LineJdbcDaoTest {
         Long savedId = dao.save(line);
 
         // then
-        assertThat(dao.findById(savedId)).isEqualTo(line);
+        assertThat(dao.findById(savedId).get()).isEqualTo(line);
     }
 
     @DisplayName("같은 이름의 노선이 있는 경우 예외를 던진다")
@@ -89,17 +90,17 @@ class LineJdbcDaoTest {
         Long savedId = dao.save(line);
 
         // when
-        Line findLine = dao.findById(savedId);
+        Line findLine = dao.findById(savedId).get();
 
         // then
         assertThat(findLine).isEqualTo(line);
     }
 
-    @DisplayName("존재하지 않는 id로 노선을 조회하면 예외가 발생한다")
+    @DisplayName("존재하지 않는 id로 노선을 조회하면 빈 값을 반환한다")
     @Test
     void throwExceptionWhenTargetLineDoesNotExist() {
-        assertThatThrownBy(() -> dao.findById(1L))
-                .isInstanceOf(NoSuchLineException.class);
+        Optional<Line> optionalLine = dao.findById(1L);
+        assertThat(optionalLine).isEqualTo(Optional.empty());
     }
 
     @DisplayName("노선 정보를 수정한다")
@@ -109,7 +110,7 @@ class LineJdbcDaoTest {
 
         Long updateId = dao.update(savedId, "changedName", "changedColor");
 
-        Line findLine = dao.findById(updateId);
+        Line findLine = dao.findById(updateId).get();
         assertThat(findLine).isEqualTo(new Line("changedName", "changedColor"));
     }
 

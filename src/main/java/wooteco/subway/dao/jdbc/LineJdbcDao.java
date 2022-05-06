@@ -2,6 +2,7 @@ package wooteco.subway.dao.jdbc;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -55,17 +56,16 @@ public class LineJdbcDao implements LineDao {
     }
 
     @Override
-    public Line findById(final Long id) {
+    public Optional<Line> findById(final Long id) {
         final String sql = "SELECT id, name, color FROM LINE WHERE id = (?)";
-
         try {
-            return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> new Line(
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> new Line(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("color")
-            ), id);
+            ), id));
         } catch (EmptyResultDataAccessException exception) {
-            throw new NoSuchLineException();
+            return Optional.empty();
         }
     }
 
@@ -93,7 +93,6 @@ public class LineJdbcDao implements LineDao {
         final String sql = "DELETE FROM LINE WHERE id = (?)";
 
         int affectedRow = jdbcTemplate.update(sql, id);
-
         if (isDeleted(affectedRow)) {
             return id;
         }

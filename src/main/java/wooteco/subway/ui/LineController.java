@@ -4,6 +4,7 @@ import static wooteco.subway.ui.LineController.LINES_API_URI;
 
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +19,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.NoSuchLineException;
 
 @RestController
 @RequestMapping(LINES_API_URI)
@@ -50,7 +52,8 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line line = lineDao.findById(id);
+        Line line = lineDao.findById(id)
+                .orElseThrow(NoSuchLineException::new);
         LineResponse lineResponse = LineResponse.of(id, line.getName(), line.getColor());
         return ResponseEntity.ok().body(lineResponse);
     }
