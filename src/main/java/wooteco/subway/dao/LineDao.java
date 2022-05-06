@@ -62,14 +62,17 @@ public class LineDao {
     }
 
     public void update(Line line) {
-        findById(line.getId());
         String SQL = "update line set name = ?, color = ? where id = ?;";
-        jdbcTemplate.update(SQL, line.getName(), line.getColor(), line.getId());
+        if (jdbcTemplate.update(SQL, line.getName(), line.getColor(), line.getId()) == 0) {
+            throw new NotFoundException(line.getId() + "id를 가진 지하철 노선을 찾을 수 없습니다.");
+        }
     }
 
     public void delete(Long id) {
         findById(id);
         String SQL = "delete from line where id = ?";
-        jdbcTemplate.update(SQL, id);
+        if (jdbcTemplate.update(SQL, id) == 0) {
+            throw new NotFoundException(id + "id를 가진 지하철 노선을 찾을 수 없습니다.");
+        }
     }
 }

@@ -52,16 +52,8 @@ public class StationDao {
     }
 
     public void deleteById(Long id) {
-        findById(id);
         String SQL = "delete from station where id = ?";
-        jdbcTemplate.update(SQL, id);
-    }
-
-    private Station findById(Long id) {
-        String SQL = "select * from station where id = ?;";
-        try {
-            return jdbcTemplate.queryForObject(SQL, rowMapper(), id);
-        } catch (DataAccessException e) {
+        if(jdbcTemplate.update(SQL, id) == 0) {
             throw new NotFoundException(id + "id를 가진 지하철 역을 찾을 수 없습니다.");
         }
     }

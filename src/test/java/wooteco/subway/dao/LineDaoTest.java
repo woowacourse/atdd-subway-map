@@ -80,6 +80,15 @@ public class LineDaoTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @DisplayName("노선의 이름과 색깔을 수정할 때 id에 맞는 노선이 없으면 예외를 발생시킨다.")
+    @Test
+    void updateException() {
+        Line expected = new Line(1L, "다른 분당선", "green");
+
+        assertThatThrownBy(() -> lineDao.update(expected))
+                .isInstanceOf(NotFoundException.class);
+    }
+
     @DisplayName("노선을 삭제한다.")
     @Test
     void delete() {
@@ -90,5 +99,12 @@ public class LineDaoTest {
         assertThatThrownBy(() -> lineDao.findById(saveLine.getId()))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageMatching(saveLine.getId() + "id를 가진 지하철 노선을 찾을 수 없습니다.");
+    }
+
+    @DisplayName("노선을 삭제할 때 id에 맞는 노선이 없으면 예외를 발생시킨다.")
+    @Test
+    void deleteException() {
+        assertThatThrownBy(() -> lineDao.delete(1L))
+                .isInstanceOf(NotFoundException.class);
     }
 }
