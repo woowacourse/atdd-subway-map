@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.ui.dto.ExceptionResponse;
 import wooteco.subway.ui.dto.LineRequest;
 import wooteco.subway.ui.dto.LineResponse;
 
@@ -112,7 +113,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("노선을 제거 시 응답코드는 NO_CONTENT 이다")
+    @DisplayName("노선을 제거 시 응답코드는 NO_CONTENT 이다. 존재하지 않는 노선 조회 시, 응답코드는 BAD_REQUEST 이다")
     @Test
     void deleteLine() {
         // given
@@ -134,8 +135,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        ExtractableResponse<Response> findResponseAfterDeletion = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(uri)
+                .then().log().all()
+                .extract();
+        final ExceptionResponse exceptionResponseForNotExists = findResponseAfterDeletion.jsonPath()
+                .getObject(".", ExceptionResponse.class);
+
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(findResponseAfterDeletion.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(exceptionResponseForNotExists.getMessage()).contains("요청한 노선이 존재하지 않습니다")
+        );
     }
 
     @DisplayName("ID로 특정 노선의 정보를 조회할 수 있으며, 응답코드는 OK이다")
