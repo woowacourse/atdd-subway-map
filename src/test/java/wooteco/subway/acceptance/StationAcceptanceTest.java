@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 import java.util.Arrays;
@@ -20,15 +21,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+    private final StationRequest stationRequest1 = new StationRequest("강남역");
+    private final StationRequest stationRequest2 = new StationRequest("역삼역");
+
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남가");
-
         // when
-        ExtractableResponse<Response> response = createStationResponse(params);
+        ExtractableResponse<Response> response = createStationResponse(stationRequest1);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -39,12 +40,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        createStationResponse(params);
+        createStationResponse(stationRequest1);
 
         // when
-        ExtractableResponse<Response> response = createStationResponse(params);
+        ExtractableResponse<Response> response = createStationResponse(stationRequest1);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -54,13 +53,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
-        ExtractableResponse<Response> createResponse1 = createStationResponse(params1);
-
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
-        ExtractableResponse<Response> createResponse2 = createStationResponse(params2);
+        ExtractableResponse<Response> createResponse1 = createStationResponse(stationRequest1);
+        ExtractableResponse<Response> createResponse2 = createStationResponse(stationRequest2);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -84,9 +78,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        ExtractableResponse<Response> createResponse = createStationResponse(params);
+        ExtractableResponse<Response> createResponse = createStationResponse(stationRequest1);
 
         // when
         String uri = createResponse.header("Location");
@@ -104,9 +96,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteInvalidStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        ExtractableResponse<Response> createResponse = createStationResponse(params);
+        ExtractableResponse<Response> createResponse = createStationResponse(stationRequest1);
 
         // when
         String uri = createResponse.header("Location");
@@ -127,9 +117,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
 
-    private ExtractableResponse<Response> createStationResponse(Map<String, String> params) {
+    private ExtractableResponse<Response> createStationResponse(StationRequest stationRequest) {
         return RestAssured.given().log().all()
-                .body(params)
+                .body(stationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
