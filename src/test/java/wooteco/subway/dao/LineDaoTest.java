@@ -73,7 +73,7 @@ class LineDaoTest {
         assertEquals(expected, actual);
     }
 
-    @DisplayName("특정 id를 가지는 라인의 이름과 색을 변경한다.")
+    @DisplayName("특정 id를 가지는 노선의 이름과 색을 변경한다.")
     @Test
     void updateLineById() {
         Line line = new Line("2호선", "초록색");
@@ -85,6 +85,18 @@ class LineDaoTest {
         Line expected = new Line(id, updateLine.getName(), updateLine.getColor());
 
         assertEquals(expected, actual);
+    }
+
+    @DisplayName("이미 저장된 노선의 이름 또는 색상으로는 변경할 수 없다.")
+    @Test
+    void foo() {
+        Line line = new Line("2호선", "초록색");
+        Long id = lineDao.save(line).getId();
+        Line updateLine = new Line("8호선", "분홍색");
+        lineDao.save(updateLine);
+
+        assertThatThrownBy(() -> lineDao.updateById(id, updateLine))
+                .isInstanceOf(DuplicateKeyException.class);
     }
 
     @DisplayName("특정 id를 가지는 노선을 삭제한다.")

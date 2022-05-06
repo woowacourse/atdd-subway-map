@@ -56,6 +56,7 @@ public class FakeLineDao extends LineDao {
     public void updateById(Long id, Line line) {
         validateExist(id);
         Line updateLine = new Line(id, line.getName(), line.getColor());
+        validateUnique(updateLine);
         lines.put(id, updateLine);
     }
 

@@ -117,6 +117,20 @@ class LineServiceTest {
                 .hasMessage("존재하지 않는 노선입니다.");
     }
 
+    @DisplayName("이미 존재하는 노선의 이름이나 색상으로 수정하려고 하면 예외가 발생한다.")
+    @Test
+    void updateToDuplicateNameOrColor() {
+        LineRequest lineRequest = new LineRequest("2호선", "초록색");
+        Long id = lineService.create(lineRequest).getId();
+
+        LineRequest updateRequest = new LineRequest("8호선", "분홍색");
+        lineService.create(updateRequest);
+
+        assertThatThrownBy(() -> lineService.update(id, updateRequest))
+                .isInstanceOf(DuplicateKeyException.class)
+                .hasMessage("이미 존재하는 노선 이름이나 색상으로 변경할 수 없습니다.");
+    }
+
     @DisplayName("지정한 id에 해당하는 노선을 삭제한다.")
     @Test
     void delete() {

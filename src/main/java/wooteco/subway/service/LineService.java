@@ -51,7 +51,11 @@ public class LineService {
     public void update(Long id, LineRequest lineRequest) {
         validateExist(id);
         Line line = lineRequest.toEntity();
-        lineDao.updateById(id, line);
+        try {
+            lineDao.updateById(id, line);
+        } catch (DuplicateKeyException e) {
+            throw new DuplicateKeyException("이미 존재하는 노선 이름이나 색상으로 변경할 수 없습니다.");
+        }
     }
 
     public void delete(Long id) {
