@@ -53,6 +53,14 @@ class LineServiceTest {
                 .hasMessage("지하철 노선 색상이 중복됩니다.");
     }
 
+    @DisplayName("지하철 노선의 목록을 조회한다.")
+    @Test
+    void findAll() {
+        lineService.save(LINE);
+
+        assertThat(lineService.findAll()).hasSize(1);
+    }
+
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void find() {

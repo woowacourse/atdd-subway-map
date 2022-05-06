@@ -43,6 +43,14 @@ class StationServiceTest {
                 .hasMessage("지하철역 이름이 중복됩니다.");
     }
 
+    @DisplayName("지하철역의 목록을 조회한다.")
+    @Test
+    void findAll() {
+        stationService.save(STATION);
+
+        assertThat(stationService.findAll()).hasSize(1);
+    }
+
     @DisplayName("지하철역을 삭제한다.")
     @Test
     void delete() {
