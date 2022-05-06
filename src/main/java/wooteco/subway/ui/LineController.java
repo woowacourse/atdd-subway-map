@@ -23,11 +23,18 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line Line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = lineDao.save(Line);
+        checkDuplication(lineRequest.getName());
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        Line newLine = lineDao.save(line);
 
         LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+    }
+
+    private void checkDuplication(String name) {
+        if (lineDao.counts(name) > 0) {
+            throw new IllegalArgumentException();
+        }
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)

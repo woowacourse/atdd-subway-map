@@ -18,19 +18,14 @@ public class LineDao {
     }
 
     public Line save(Line line) {
-        checkDuplication(line.getName());
         String sql = "insert into LINE (name, color) values (?, ?)";
         jdbcTemplate.update(sql, line.getName(), line.getColor());
-
         return createNewObject(line);
     }
 
-    private void checkDuplication(String name) {
-        String sql = String.format("select count(*) from LINE where name = '%s'", name);
-
-        if (jdbcTemplate.queryForObject(sql, Integer.class) > 0) {
-            throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
-        }
+    public int counts(String name) {
+        String sql = String.format("select counts(*) from LINE where name = '%s'", name);
+        return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
     public List<Line> findAll() {
