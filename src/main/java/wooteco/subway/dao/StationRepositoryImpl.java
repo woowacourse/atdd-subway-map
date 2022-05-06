@@ -71,7 +71,7 @@ public class StationRepositoryImpl implements StationRepository {
     }
 
     private Optional<Station> getOptional(List<Station> stations) {
-        if(stations.isEmpty()){
+        if (stations.isEmpty()) {
             return Optional.empty();
         }
         return Optional.ofNullable(stations.get(0));

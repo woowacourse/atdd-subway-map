@@ -29,7 +29,7 @@ public class StationService {
     }
 
     private void validateDuplicateName(StationRequest stationRequest) {
-        if(stationRepository.existByName(stationRequest.getName())){
+        if (stationRepository.existByName(stationRequest.getName())) {
             throw new NameDuplicatedException("[ERROR] 이미 존재하는 역의 이름입니다.");
         }
     }

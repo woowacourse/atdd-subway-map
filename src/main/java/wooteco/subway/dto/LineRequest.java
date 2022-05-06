@@ -24,7 +24,7 @@ public class LineRequest {
         this.distance = distance;
     }
 
-    public Line toLine(){
+    public Line toLine() {
         return new Line(name, color);
     }
 

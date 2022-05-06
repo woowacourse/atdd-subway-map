@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationRepository;
 import wooteco.subway.dao.StationRepositoryImpl;
 import wooteco.subway.domain.Station;
@@ -29,7 +28,7 @@ class StationServiceTest {
     private StationRepository stationRepository;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         stationRepository = new StationRepositoryImpl(dataSource);
         stationService = new StationService(stationRepository);
     }

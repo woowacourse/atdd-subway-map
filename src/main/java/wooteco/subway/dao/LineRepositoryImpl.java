@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -68,7 +67,7 @@ public class LineRepositoryImpl implements LineRepository {
     }
 
     private Optional<Line> getOptional(List<Line> lines) {
-        if(lines.isEmpty()){
+        if (lines.isEmpty()) {
             return Optional.empty();
         }
         return Optional.ofNullable(lines.get(0));

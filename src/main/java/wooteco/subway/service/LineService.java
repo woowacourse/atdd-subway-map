@@ -30,7 +30,7 @@ public class LineService {
     }
 
     private void validateDuplicatedName(LineRequest lineRequest) {
-        if(lineRepository.existByName(lineRequest.getName())){
+        if (lineRepository.existByName(lineRequest.getName())) {
             throw new NameDuplicatedException("[ERROR] 이미 존재하는 노선의 이름입니다.");
         }
     }

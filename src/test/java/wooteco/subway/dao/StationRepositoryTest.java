@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
 
 import javax.sql.DataSource;
@@ -24,7 +23,7 @@ class StationRepositoryTest {
     private static final String SILLIM_STATION = "신림역";
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         stationRepository = new StationRepositoryImpl(dataSource);
     }
 

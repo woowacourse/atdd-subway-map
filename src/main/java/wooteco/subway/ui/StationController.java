@@ -1,6 +1,5 @@
 package wooteco.subway.ui;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.dto.StationRequest;
@@ -25,7 +24,7 @@ public class StationController {
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }
 
-    @GetMapping( "/stations")
+    @GetMapping("/stations")
     public ResponseEntity<List<StationResponse>> showStations() {
         return ResponseEntity.ok().body(stationService.showStations());
     }

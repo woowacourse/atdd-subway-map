@@ -9,7 +9,7 @@ public class StationResponse {
     private StationResponse() {
     }
 
-    public StationResponse(Station station){
+    public StationResponse(Station station) {
         this.id = station.getId();
         this.name = station.getName();
     }
