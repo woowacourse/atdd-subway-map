@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import wooteco.subway.service.StationService;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+
 @RestController
 @RequestMapping("/stations")
 public class StationController {
@@ -23,14 +26,14 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
+    public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
         long stationId = stationService.save(station);
         StationResponse stationResponse = new StationResponse(stationId, station.getName());
         return ResponseEntity.created(URI.create("/stations/" + stationId)).body(stationResponse);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<List<StationResponse>> showStations() {
         List<Station> stations = stationService.findAll();
         List<StationResponse> stationResponses = stations.stream()
@@ -40,7 +43,7 @@ public class StationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStation(@PathVariable @NotBlank Long id) {
         stationService.delete(id);
         return ResponseEntity.noContent().build();
     }

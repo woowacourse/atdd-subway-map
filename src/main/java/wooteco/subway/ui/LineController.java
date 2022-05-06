@@ -18,6 +18,9 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+
 @RestController
 @RequestMapping("/lines")
 public class LineController {
@@ -29,7 +32,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         long lineId = lineService.save(line);
         LineResponse lineResponse = new LineResponse(lineId, line.getName(), line.getColor());
@@ -46,21 +49,21 @@ public class LineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> showLine(@PathVariable @NotBlank Long id) {
         Line line = lineService.find(id);
         LineResponse lineResponse = LineResponse.of(line);
         return ResponseEntity.ok().body(lineResponse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<Void> updateLine(@PathVariable @NotBlank Long id, @RequestBody @Valid LineRequest lineRequest) {
         Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
         lineService.update(id, line);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable @NotBlank Long id) {
         lineService.delete(id);
         return ResponseEntity.noContent().build();
     }
