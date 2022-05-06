@@ -25,7 +25,7 @@ class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 역을 생성한다.")
     @Test
     void createStation() {
-        ExtractableResponse<Response> response = saveStation(Map.of("name", "선릉역"));
+        ExtractableResponse<Response> response = saveStation(Map.of("name", "광교역"));
 
         assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());

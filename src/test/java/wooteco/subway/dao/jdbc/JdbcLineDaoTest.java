@@ -40,8 +40,8 @@ class JdbcLineDaoTest {
     void findAll() {
         List<Line> lines = List.of(
                 new Line("신분당선", "bg-red-600"),
-                new Line("1호선", "bg-red-600"),
-                new Line("2호선", "bg-red-600")
+                new Line("1호선", "bg-red-601"),
+                new Line("2호선", "bg-red-602")
         );
         lines.forEach(lineDao::save);
         List<Line> foundLines = lineDao.findAll();
