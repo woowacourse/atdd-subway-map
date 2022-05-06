@@ -7,8 +7,7 @@ import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.request.StationRequest;
-import wooteco.subway.dto.response.StationResponse;
+import wooteco.subway.dto.info.StationInfo;
 
 @Service
 public class StationService {
@@ -21,19 +20,19 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public StationResponse save(StationRequest stationRequest) {
-        if (stationDao.existByName(stationRequest.getName())) {
+    public StationInfo save(StationInfo stationInfo) {
+        if (stationDao.existByName(stationInfo.getName())) {
             throw new IllegalArgumentException(ERROR_MESSAGE_DUPLICATE_NAME);
         }
-        Station station = new Station(stationRequest.getName());
+        Station station = new Station(stationInfo.getName());
         Station newStation = stationDao.save(station);
-        return new StationResponse(newStation.getId(), newStation.getName());
+        return new StationInfo(newStation.getId(), newStation.getName());
     }
 
-    public List<StationResponse> findAll() {
+    public List<StationInfo> findAll() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()
-            .map(it -> new StationResponse(it.getId(), it.getName()))
+            .map(it -> new StationInfo(it.getId(), it.getName()))
             .collect(Collectors.toList());
     }
 

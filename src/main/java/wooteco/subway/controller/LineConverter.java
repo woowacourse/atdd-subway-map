@@ -1,4 +1,4 @@
-package wooteco.subway.ui;
+package wooteco.subway.controller;
 
 import wooteco.subway.dto.info.LineInfo;
 import wooteco.subway.dto.request.LineRequest;
