@@ -3,7 +3,6 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,7 +36,15 @@ class LineDaoTest {
         assertThat(count).isEqualTo(1);
     }
 
-    @DisplayName("중복된 이름의 지하철 노선이 있다면 true를 반환한다.")
+    @DisplayName("해당 ID의 지하철 노선이 있다면 true를 반환한다.")
+    @Test
+    void existLineById() {
+        long lineId = lineDao.save(LINE);
+
+        assertThat(lineDao.existLineById(lineId)).isTrue();
+    }
+
+    @DisplayName("해당 이름의 지하철 노선이 있다면 true를 반환한다.")
     @Test
     void existLineByName() {
         lineDao.save(LINE);
@@ -45,7 +52,7 @@ class LineDaoTest {
         assertThat(lineDao.existLineByName("신분당선")).isTrue();
     }
 
-    @DisplayName("중복된 색상의 지하철 노선이 있다면 true를 반환한다.")
+    @DisplayName("해당 색상의 지하철 노선이 있다면 true를 반환한다.")
     @Test
     void existLineByColor() {
         lineDao.save(LINE);
@@ -69,7 +76,7 @@ class LineDaoTest {
     void findById() {
         long lineId = lineDao.save(LINE);
 
-        Optional<Line> line = lineDao.findById(lineId);
+        Line line = lineDao.findById(lineId);
 
         assertThat(line).isNotNull();
     }
@@ -82,7 +89,7 @@ class LineDaoTest {
 
         lineDao.update(updatedLine);
 
-        assertThat(lineDao.findById(lineId).orElseThrow().getName()).isEqualTo("다른분당선");
+        assertThat(lineDao.findById(lineId).getName()).isEqualTo("다른분당선");
     }
 
     @DisplayName("지하철 노선을 삭제한다.")
@@ -90,6 +97,8 @@ class LineDaoTest {
     void delete() {
         long lineId = lineDao.save(LINE);
 
-        assertThat(lineDao.delete(lineId)).isEqualTo(1);
+        lineDao.delete(lineId);
+
+        assertThat(lineDao.existLineById(lineId)).isFalse();
     }
 }

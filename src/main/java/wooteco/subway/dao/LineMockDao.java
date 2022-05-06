@@ -3,8 +3,8 @@ package wooteco.subway.dao;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 
@@ -31,6 +31,14 @@ public class LineMockDao implements LineDao {
     }
 
     @Override
+    public boolean existLineById(Long id) {
+        List<Long> lineNames = lines.stream()
+                .map(Line::getId)
+                .collect(Collectors.toList());
+        return lineNames.contains(id);
+    }
+
+    @Override
     public boolean existLineByName(String name) {
         List<String> lineNames = lines.stream()
                 .map(Line::getName)
@@ -52,10 +60,11 @@ public class LineMockDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findById(Long id) {
+    public Line findById(Long id) {
         return lines.stream()
                 .filter(line -> line.getId().equals(id))
-                .findFirst();
+                .findFirst()
+                .orElseThrow(() -> new EmptyResultDataAccessException("존재하지 않는 노선입니다.", 1));
     }
 
     @Override

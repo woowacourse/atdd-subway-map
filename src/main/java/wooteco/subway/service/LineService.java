@@ -37,8 +37,14 @@ public class LineService {
     }
 
     public Line findById(Long id) {
-        return lineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 노선입니다."));
+        validateExistLine(id);
+        return lineDao.findById(id);
+    }
+
+    private void validateExistLine(Long id) {
+        if (!lineDao.existLineById(id)) {
+            throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
+        }
     }
 
     public void update(Line line) {

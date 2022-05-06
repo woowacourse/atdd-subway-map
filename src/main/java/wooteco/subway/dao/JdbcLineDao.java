@@ -43,6 +43,12 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
+    public boolean existLineById(Long id) {
+        final String sql = "select exists (select * from LINE where id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    @Override
     public boolean existLineByName(String name) {
         final String sql = "select exists (select * from LINE where name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
@@ -61,9 +67,9 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findById(Long id) {
+    public Line findById(Long id) {
         final String sql = "select id, name, color from LINE where id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id));
+        return jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id);
     }
 
     @Override
