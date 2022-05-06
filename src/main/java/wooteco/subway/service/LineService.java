@@ -51,9 +51,8 @@ public class LineService {
 		return ServiceDtoAssembler.lineResponseDto(lineDao.findById(id));
 	}
 
-	public LineResponseDto update(Long id, LineRequestDto lineRequestDto) {
+	public void update(Long id, LineRequestDto lineRequestDto) {
 		lineDao.update(id, lineRequestDto.getName(), lineRequestDto.getColor());
-		return findOne(id);
 
 	}
 

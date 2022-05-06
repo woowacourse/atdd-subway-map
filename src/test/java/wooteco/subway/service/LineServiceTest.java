@@ -66,8 +66,10 @@ class LineServiceTest {
 	@Test
 	void update() {
 		LineResponseDto line = lineService.create("신분당선", "bg-red-600");
-		LineResponseDto updatedLine = lineService.update(line.getId(),
+		lineService.update(line.getId(),
 				new LineRequestDto("분당선", "bg-blue-600", 1L, 2L, 10));
+
+		LineResponseDto updatedLine = lineService.findOne(line.getId());
 		assertThat(updatedLine.getId()).isEqualTo(line.getId());
 		assertThat(updatedLine.getName()).isEqualTo("분당선");
 		assertThat(updatedLine.getColor()).isEqualTo("bg-blue-600");
