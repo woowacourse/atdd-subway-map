@@ -40,11 +40,11 @@ class StationServiceTest {
 
     @DisplayName("지하철 역 목록을 조회한다.")
     @Test
-    void listStations() {
+    void findAll() {
         List<String> names = List.of("강남역", "역삼역", "선릉역");
         names.forEach(stationService::create);
 
-        List<StationResponseDto> stations = stationService.listStations();
+        List<StationResponseDto> stations = stationService.findAll();
         assertThat(stations).hasSize(3);
     }
 
@@ -54,6 +54,6 @@ class StationServiceTest {
         StationResponseDto station = stationService.create("강남역");
         stationService.remove(station.getId());
 
-        assertThat(stationService.listStations()).isEmpty();
+        assertThat(stationService.findAll()).isEmpty();
     }
 }

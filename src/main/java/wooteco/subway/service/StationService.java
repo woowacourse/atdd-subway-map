@@ -32,7 +32,7 @@ public class StationService {
         }
     }
 
-    public List<StationResponseDto> listStations() {
+    public List<StationResponseDto> findAll() {
         return stationDao.findAll()
                 .stream()
                 .map(ServiceDtoAssembler::stationResponseDto)
