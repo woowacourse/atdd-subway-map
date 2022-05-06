@@ -43,11 +43,11 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public void modify(final Line line) {
-        if (lineDao.findById(line.getId()).isEmpty()) {
+    public void modify(final Long id, final String name, final String color) {
+        if (lineDao.findById(id).isEmpty()) {
             throw new NoSuchLineException();
         }
-        lineDao.update(new LineEntity(line));
+        lineDao.update(new LineEntity(id, name, color));
     }
 
     public void remove(final Long id) {
