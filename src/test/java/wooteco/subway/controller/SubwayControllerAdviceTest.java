@@ -1,4 +1,4 @@
-package wooteco.subway.ui;
+package wooteco.subway.controller;
 
 import io.restassured.RestAssured;
 import java.util.HashMap;
