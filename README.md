@@ -46,7 +46,8 @@
 - Line을 저장할 때 상행, 하행을 받아 저장할 수 있다.
 - [ERROR] 상행과 하행 station은 존재하지 않는 station일 경우 예외가 발생한다.
 - [ERROR] distance가 0이하인 경우 예외가 발생한다.
-- [ERROR] Section의 상행, 하행 station이 중복된 경우 예외가 발생한다. 
+- [ERROR] Section의 상행, 하행 station이 중복된 경우 예외가 발생한다.
+- [ERROR] 다른 Line이 사용중인 Section인 경우 예외가 발생한다.
 
 #### Section 추가 요구사항
 - Line에 새로운 section을 추가 등록할 수 있다.
