@@ -57,7 +57,6 @@ public class LineDao {
 
     public boolean existById(Long id) {
         return findById(id).isPresent();
-
     }
 
     public boolean existByName(String name) {
