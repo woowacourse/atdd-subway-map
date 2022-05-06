@@ -8,21 +8,23 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
-@JdbcTest
-@Sql("/schema.sql")
+@SpringBootTest
+@Transactional
 class StationServiceTest {
 
     private final StationService stationService;
 
     @Autowired
-    public StationServiceTest(JdbcTemplate jdbcTemplate) {
-        this.stationService = new StationService(new StationDao(jdbcTemplate));
+    public StationServiceTest(StationService stationService) {
+        this.stationService = stationService;
     }
 
     @Test
