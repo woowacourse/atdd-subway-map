@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,6 +13,8 @@ import org.springframework.dao.DuplicateKeyException;
 import wooteco.subway.dao.FakeLineDao;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 
 class LineServiceTest {
 
@@ -33,27 +36,30 @@ class LineServiceTest {
     @Test
     void save() {
         // given
-        Line line = new Line("1호선", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", null, null, 0);
 
         // when
-        Long savedId = lineService.save(line);
-        Line line1 = lineDao.findById(savedId);
+        LineResponse lineResponse = lineService.save(lineRequest);
 
         // then
-        assertThat(line.getName()).isEqualTo(line1.getName());
+        assertAll(
+            () -> assertThat(lineRequest.getName()).isEqualTo(lineResponse.getName()),
+            () -> assertThat(lineRequest.getColor()).isEqualTo(lineResponse.getColor())
+        );
+
     }
 
     @Test
     void validateDuplication() {
         // given
-        Line line1 = new Line("1호선", "bg-red-600");
-        Line line2 = new Line("1호선", "bg-red-600");
+        LineRequest lineRequest1 = new LineRequest("1호선", "bg-red-600", null, null, 0);
+        LineRequest lineRequest2 = new LineRequest("1호선", "bg-red-600", null, null, 0);
 
         // when
-        lineService.save(line1);
+        lineService.save(lineRequest1);
 
         // then
-        assertThatThrownBy(() -> lineService.save(line2))
+        assertThatThrownBy(() -> lineService.save(lineRequest2))
             .hasMessage("이미 존재하는 데이터 입니다.")
             .isInstanceOf(DuplicateKeyException.class);
     }
@@ -61,56 +67,56 @@ class LineServiceTest {
     @Test
     void findAll() {
         // given
-        Line line1 = new Line("1호선", "bg-red-600");
-        Line line2 = new Line("2호선", "bg-green-600");
+        LineRequest lineRequest1 = new LineRequest("1호선", "bg-red-600", null, null, 0);
+        LineRequest lineRequest2 = new LineRequest("2호선", "bg-green-600", null, null, 0);
 
         // when
-        lineService.save(line1);
-        lineService.save(line2);
+        lineService.save(lineRequest1);
+        lineService.save(lineRequest2);
 
         // then
         List<String> names = lineService.findAll()
             .stream()
-            .map(Line::getName)
+            .map(LineResponse::getName)
             .collect(Collectors.toList());
 
         assertThat(names)
             .hasSize(2)
-            .contains(line1.getName(), line2.getName());
+            .contains(lineRequest1.getName(), lineRequest2.getName());
     }
 
     @Test
     void delete() {
         // given
-        Line line = new Line("1호선", "bg-red-600");
-        Long savedId = lineService.save(line);
+        LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", null, null, 0);
+        LineResponse lineResponse = lineService.save(lineRequest);
 
         // when
-        lineService.deleteById(savedId);
+        lineService.deleteById(lineResponse.getId());
 
         // then
         List<Long> lineIds = lineService.findAll()
             .stream()
-            .map(Line::getId)
+            .map(LineResponse::getId)
             .collect(Collectors.toList());
 
         assertThat(lineIds)
             .hasSize(0)
-            .doesNotContain(savedId);
+            .doesNotContain(lineResponse.getId());
     }
 
     @Test
     void update() {
         // given
-        Line originLine = new Line("1호선", "bg-red-600");
-        Long savedId = lineService.save(originLine);
+        LineRequest originLine = new LineRequest("1호선", "bg-red-600", null, null, 0);
+        LineResponse lineResponse = lineService.save(originLine);
 
         // when
-        Line newLine = new Line("2호선", "bg-green-600");
-        lineService.updateById(savedId, newLine);
-        Line line = lineDao.findById(savedId);
+        LineRequest newLine = new LineRequest("2호선", "bg-green-600", null, null, 0);
+        lineService.updateById(lineResponse.getId(), newLine);
+        Line line = lineDao.findById(lineResponse.getId());
 
         // then
-        assertThat(line).isEqualTo(newLine);
+        assertThat(line.getName()).isEqualTo(newLine.getName());
     }
 }
