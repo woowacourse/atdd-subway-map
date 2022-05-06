@@ -67,8 +67,11 @@ public class InmemoryLineDao implements LineDao {
     }
 
     @Override
-    public int delete(final Long id) {
-        lines.remove(id);
-        return 1;
+    public void delete(final Long id) {
+        Line remove = lines.remove(id);
+
+        if (remove == null) {
+            throw new IllegalArgumentException("없는 line 입니다.");
+        }
     }
 }

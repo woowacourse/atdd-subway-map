@@ -15,5 +15,5 @@ public interface LineDao {
 
     int update(Line line);
 
-    int delete(Long id);
+    void delete(Long id);
 }

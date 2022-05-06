@@ -1,6 +1,8 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -64,8 +66,30 @@ class InmemoryLineDaoTest {
     @DisplayName("Line을 삭제할 수 있다.")
     void delete() {
         Line line = inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));
-        int result = inmemoryLineDao.delete(line.getId());
 
-        assertThat(result).isEqualTo(1);
+        assertThatCode(() -> inmemoryLineDao.delete(line.getId())).doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("없는 id의 Line을 삭제할 수 없다.")
+    void deleteByInvalidId() {
+        Line line = inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));
+        Long lineId = line.getId() + 1;
+
+        assertThatThrownBy(() -> inmemoryLineDao.delete(lineId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("없는 line 입니다.");
+    }
+
+    @Test
+    @DisplayName("이미 삭제한 id의 Line 삭제할 수 없다.")
+    void deleteByDuplicatedId() {
+        Line line = inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));
+        Long lineId = line.getId();
+        inmemoryLineDao.delete(lineId);
+
+        assertThatThrownBy(() -> inmemoryLineDao.delete(lineId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("없는 line 입니다.");
     }
 }

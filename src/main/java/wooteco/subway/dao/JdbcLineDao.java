@@ -66,8 +66,12 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public int delete(final Long id) {
+    public void delete(final Long id) {
         final String sql = "delete from LINE where id = ?";
-        return jdbcTemplate.update(sql, id);
+        int update = jdbcTemplate.update(sql, id);
+
+        if (update == 0) {
+            throw new IllegalArgumentException("없는 line 입니다.");
+        }
     }
 }
