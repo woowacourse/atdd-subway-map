@@ -24,7 +24,7 @@ import wooteco.subway.dto.LineResponse;
 class LineServiceTest {
 
     @Mock
-    private JdbcLineDao JdbcLineDao;
+    private JdbcLineDao jdbcLineDao;
 
     @InjectMocks
     private LineService lineService;
@@ -33,7 +33,7 @@ class LineServiceTest {
     @Test
     void createLine() {
         doReturn(1L)
-                .when(JdbcLineDao).save(any(Line.class));
+                .when(jdbcLineDao).save(any(Line.class));
 
         LineResponse lineResponse = lineService.createLine(new LineRequest("신분당선", "bg-red-600"));
 
@@ -48,7 +48,7 @@ class LineServiceTest {
     @Test
     void createDuplicatedLine() {
         doThrow(new IllegalArgumentException("이미 등록된 지하철 노선입니다."))
-                .when(JdbcLineDao).save(any(Line.class));
+                .when(jdbcLineDao).save(any(Line.class));
 
         assertThatThrownBy(() -> lineService.createLine(new LineRequest("신분당선", "bg-red-600")))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -59,7 +59,7 @@ class LineServiceTest {
     @Test
     void getLines() {
         doReturn(List.of(new Line("신분당선", "bg-red-600"), new Line("분당선", "bg-green-600")))
-                .when(JdbcLineDao).findAll();
+                .when(jdbcLineDao).findAll();
 
         List<LineResponse> lineResponses = lineService.getLines();
 
@@ -70,7 +70,7 @@ class LineServiceTest {
     @Test
     void getLine() {
         doReturn(new Line(1L, "신분당선", "bg-red-600"))
-                .when(JdbcLineDao)
+                .when(jdbcLineDao)
                 .findById(1L);
 
         LineResponse lineResponse = lineService.getLine(1L);
@@ -86,7 +86,7 @@ class LineServiceTest {
     @Test
     void updateLine() {
         doReturn(true)
-                .when(JdbcLineDao)
+                .when(jdbcLineDao)
                 .updateById(anyLong(), any(Line.class));
 
         boolean isUpdated = lineService.updateLine(1L, new LineRequest("분당선", "bg-green-600"));
@@ -97,10 +97,22 @@ class LineServiceTest {
     @Test
     void deleteLine() {
         doReturn(true)
-                .when(JdbcLineDao)
+                .when(jdbcLineDao)
                 .deleteById(1L);
 
         boolean isDeleted = lineService.deleteLine(1L);
         assertThat(isDeleted).isTrue();
+    }
+
+    @DisplayName("존재하지 않은 지하철 노선을 삭제하려고 할 때 예외를 발생시킨다.")
+    @Test
+    void deleteNotExistLine() {
+        doThrow(new IllegalArgumentException("존재하지 않은 지하철 노선입니다."))
+                .when(jdbcLineDao)
+                .deleteById(1L);
+
+        assertThatThrownBy(() -> lineService.deleteLine(1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재하지 않은 지하철 노선입니다.");
     }
 }

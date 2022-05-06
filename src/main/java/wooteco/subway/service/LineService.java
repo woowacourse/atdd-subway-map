@@ -12,6 +12,7 @@ import wooteco.subway.dto.LineResponse;
 public class LineService {
 
     private static final String LINE_DUPLICATION = "이미 등록된 지하철 노선입니다.";
+    private static final String LINE_NOT_EXIST = "존재하지 않은 지하철 노선입니다.";
     public static final int LINE_EXIST_VALUE = 1;
     private final JdbcLineDao jdbcLineDao;
 
@@ -54,6 +55,9 @@ public class LineService {
     }
 
     public boolean deleteLine(Long id) {
-        return jdbcLineDao.deleteById(id);
+        if (!jdbcLineDao.deleteById(id)) {
+            throw new IllegalArgumentException(LINE_NOT_EXIST);
+        }
+        return true;
     }
 }
