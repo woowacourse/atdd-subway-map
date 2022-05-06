@@ -25,7 +25,7 @@ public class JdbcLineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long save(String name, String color) {
+    public Long save(Line line) {
         String sql = "insert into line (name, color) values (?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -33,8 +33,8 @@ public class JdbcLineDao {
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection
                     .prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1, name);
-            preparedStatement.setString(2, color);
+            preparedStatement.setString(1, line.getName());
+            preparedStatement.setString(2, line.getColor());
             return preparedStatement;
         }, keyHolder);
 
@@ -52,9 +52,9 @@ public class JdbcLineDao {
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
-    public boolean updateById(Long id, String name, String color) {
-        String sql = "update line set name = ?, color = ?";
-        return jdbcTemplate.update(sql, name, color) == FUNCTION_SUCCESS;
+    public boolean updateById(Long id, Line line) {
+        String sql = "update line set name = ?, color = ? where id = ?";
+        return jdbcTemplate.update(sql, line.getName(), line.getColor(), id) == FUNCTION_SUCCESS;
     }
 
     public boolean deleteById(Long id) {

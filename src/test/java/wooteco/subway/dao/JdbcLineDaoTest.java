@@ -24,20 +24,20 @@ class JdbcLineDaoTest {
     @BeforeEach
     void setUp() {
         jdbcLineDao = new JdbcLineDao(jdbcTemplate);
-        id = jdbcLineDao.save("신분당선", "bg-red-600");
+        id = jdbcLineDao.save(new Line("신분당선", "bg-red-600"));
     }
 
     @DisplayName("지하철 노선을 등록한다.")
     @Test
     void save() {
-        Long id = jdbcLineDao.save("분당선", "bg-green-600");
+        Long id = jdbcLineDao.save(new Line("분당선", "bg-green-600"));
         assertThat(id).isNotNull();
     }
 
     @DisplayName("전체 지하철 노선을 조회한다.")
     @Test
     void findAll() {
-        jdbcLineDao.save("분당선", "bg-green-600");
+        jdbcLineDao.save(new Line("분당선", "bg-green-600"));
         List<Line> lines = jdbcLineDao.findAll();
         assertThat(lines.size()).isEqualTo(2);
     }
@@ -55,7 +55,7 @@ class JdbcLineDaoTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateById() {
-        boolean isUpdated = jdbcLineDao.updateById(id, "분당선", "bg-green-600");
+        boolean isUpdated = jdbcLineDao.updateById(id, new Line("분당선", "bg-green-600"));
         assertThat(isUpdated).isTrue();
     }
 

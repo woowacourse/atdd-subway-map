@@ -2,6 +2,8 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 
 import java.util.List;
@@ -29,7 +31,7 @@ class LineServiceTest {
     @Test
     void createLine() {
         doReturn(1L)
-                .when(JdbcLineDao).save("신분당선", "bg-red-600");
+                .when(JdbcLineDao).save(any(Line.class));
 
         LineResponse lineResponse = lineService.createLine(new LineRequest("신분당선", "bg-red-600"));
 
@@ -72,7 +74,7 @@ class LineServiceTest {
     void updateLine() {
         doReturn(true)
                 .when(JdbcLineDao)
-                .updateById(1L, "분당선", "bg-green-600");
+                .updateById(anyLong(), any(Line.class));
 
         boolean isUpdated = lineService.updateLine(1L, new LineRequest("분당선", "bg-green-600"));
         assertThat(isUpdated).isTrue();

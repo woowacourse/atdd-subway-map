@@ -22,8 +22,9 @@ public class LineService {
     public LineResponse createLine(LineRequest lineRequest) {
         String name = lineRequest.getName();
         String color = lineRequest.getColor();
+        Line line = new Line(name, color);
         validateDuplication(name);
-        Long id = jdbcLineDao.save(name, color);
+        Long id = jdbcLineDao.save(line);
         return new LineResponse(id, name, color);
     }
 
@@ -48,7 +49,8 @@ public class LineService {
 
     public boolean updateLine(Long id, LineRequest lineRequest) {
         validateDuplication(lineRequest.getName());
-        return jdbcLineDao.updateById(id, lineRequest.getName(), lineRequest.getColor());
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        return jdbcLineDao.updateById(id, line);
     }
 
     public boolean deleteLine(Long id) {
