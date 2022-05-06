@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.DataLengthException;
 
@@ -18,11 +19,11 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public StationResponse create(String name) {
-        validateDataSize(name);
-        Station station = new Station(name);
+    public StationResponse create(StationRequest request) {
+        validateDataSize(request.getName());
+        Station station = new Station(request.getName());
         Station newStation = stationDao.save(station);
-        return new StationResponse(newStation.getId(), newStation.getName());
+        return StationResponse.of(newStation);
     }
 
     private void validateDataSize(String name) {
@@ -34,7 +35,7 @@ public class StationService {
     public List<StationResponse> findAll() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 

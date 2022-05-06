@@ -20,7 +20,7 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse lineResponse = lineService.create(lineRequest.getName(), lineRequest.getColor());
+        LineResponse lineResponse = lineService.create(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
@@ -38,7 +38,7 @@ public class LineController {
 
     @PutMapping("/lines/{lineId}")
     public ResponseEntity<Void> updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
-        lineService.update(lineId, lineRequest.getName(), lineRequest.getColor());
+        lineService.update(lineId, lineRequest);
         return ResponseEntity.ok().build();
     }
 

@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.DataLengthException;
 
@@ -18,11 +19,11 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public LineResponse create(String name, String color) {
-        validateDataSize(name, color);
-        Line line = new Line(name, color);
+    public LineResponse create(LineRequest request) {
+        validateDataSize(request.getName(), request.getColor());
+        Line line = new Line(request.getName(), request.getColor());
         Line savedLine = lineDao.save(line);
-        return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor());
+        return LineResponse.of(savedLine);
     }
 
     private void validateDataSize(String name, String color) {
@@ -37,17 +38,17 @@ public class LineService {
     public List<LineResponse> findAll() {
         return lineDao.findAll()
                 .stream()
-                .map(l -> new LineResponse(l.getId(), l.getName(), l.getColor()))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long lineId) {
         Line line = lineDao.findById(lineId);
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        return LineResponse.of(line);
     }
 
-    public void update(Long lineId, String name, String color) {
-        lineDao.update(new Line(lineId, name, color));
+    public void update(Long lineId, LineRequest request) {
+        lineDao.update(new Line(lineId, request.getName(), request.getColor()));
     }
 
     public void delete(Long lineId) {
