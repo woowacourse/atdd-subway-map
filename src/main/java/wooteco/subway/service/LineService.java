@@ -40,7 +40,7 @@ public class LineService {
         }
     }
 
-    public List<LineResponseDto> listLines() {
+    public List<LineResponseDto> findAll() {
         return lineDao.findAll()
                 .stream()
                 .map(ServiceDtoAssembler::lineResponseDto)

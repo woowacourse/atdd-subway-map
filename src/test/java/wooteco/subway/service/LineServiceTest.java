@@ -43,11 +43,11 @@ class LineServiceTest {
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
-    void listLines() {
+    void findAll() {
         lineService.create("신분당선", "bg-red-600");
         lineService.create("2호선", "bg-red-601");
         lineService.create("분당선", "bg-red-602");
-        List<LineResponseDto> lines = lineService.listLines();
+        List<LineResponseDto> lines = lineService.findAll();
         assertThat(lines).hasSize(3);
     }
 
@@ -79,6 +79,6 @@ class LineServiceTest {
     void remove() {
         LineResponseDto line = lineService.create("신분당선", "bg-red-600");
         lineService.remove(line.getId());
-        assertThat(lineService.listLines()).isEmpty();
+        assertThat(lineService.findAll()).isEmpty();
     }
 }

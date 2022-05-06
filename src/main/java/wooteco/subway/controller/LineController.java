@@ -40,7 +40,7 @@ public class LineController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> lineResponses = lineService.listLines().stream()
+        List<LineResponse> lineResponses = lineService.findAll().stream()
                 .map(ControllerDtoAssembler::lineResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
