@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationRepository;
 import wooteco.subway.dao.entity.StationEntity;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.StationDeleteFailureException;
 import wooteco.subway.service.dto.StationServiceRequest;
 
 @Service
@@ -39,6 +40,10 @@ public class SpringStationService implements StationService {
     @Transactional
     @Override
     public void deleteById(Long id) {
-        stationRepository.deleteById(id);
+        final long affectedRow = stationRepository.deleteById(id);
+
+        if (affectedRow == 0) {
+            throw new StationDeleteFailureException(id);
+        }
     }
 }

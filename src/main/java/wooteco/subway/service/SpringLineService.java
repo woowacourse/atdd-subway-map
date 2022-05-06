@@ -1,13 +1,14 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineRepository;
 import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.LineDeleteFailureException;
+import wooteco.subway.exception.LineUpdateFailureException;
 import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.service.dto.LineServiceRequest;
 
@@ -56,7 +57,7 @@ public class SpringLineService implements LineService {
         final long affectedRow = lineRepository.updateById(lineEntity);
 
         if (affectedRow == 0) {
-            throw new NoSuchElementException();
+            throw new LineUpdateFailureException(id);
         }
     }
 
@@ -66,7 +67,7 @@ public class SpringLineService implements LineService {
         final long affectedRow = lineRepository.deleteById(id);
 
         if (affectedRow == 0) {
-            throw new NoSuchElementException();
+            throw new LineDeleteFailureException(id);
         }
     }
 }
