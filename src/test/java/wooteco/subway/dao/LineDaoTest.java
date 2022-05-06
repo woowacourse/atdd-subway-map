@@ -9,13 +9,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
 
 @JdbcTest
 class LineDaoTest {
 
+    private final LineDao lineDao;
+
     @Autowired
-    private LineDao lineDao;
+    public LineDaoTest(JdbcTemplate jdbcTemplate) {
+        this.lineDao = new LineDao(jdbcTemplate);
+    }
 
     @Test
     @DisplayName("노선을 등록할 수 있다.")

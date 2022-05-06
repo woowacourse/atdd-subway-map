@@ -8,13 +8,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
 class StationDaoTest {
 
+    private final StationDao stationDao;
+
     @Autowired
-    private StationDao stationDao;
+    public StationDaoTest(JdbcTemplate jdbcTemplate) {
+        this.stationDao = new StationDao(jdbcTemplate);
+    }
 
     @Test
     @DisplayName("지하철역을 등록할 수 있다.")

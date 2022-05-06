@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
@@ -29,7 +30,7 @@ class StationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> stationService.save(request))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
