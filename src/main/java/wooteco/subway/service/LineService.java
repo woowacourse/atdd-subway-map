@@ -45,8 +45,8 @@ public class LineService {
 
     public List<LineResponse> findAll() {
         return lineDao.findAll().stream()
-                .map(it -> createLineResponse(it))
-                .collect(Collectors.toList());
+                .map(this::createLineResponse)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public LineResponse findById(Long lineId) {

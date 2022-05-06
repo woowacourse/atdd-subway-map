@@ -34,8 +34,8 @@ public class StationService {
 
     public List<StationResponse> findAll() {
         return stationDao.findAll().stream()
-                .map(it -> createStationResponse(it))
-                .collect(Collectors.toList());
+                .map(this::createStationResponse)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public void delete(Long stationId) {
