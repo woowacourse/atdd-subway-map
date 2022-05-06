@@ -18,6 +18,7 @@ import wooteco.subway.utils.exception.NameDuplicatedException;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -42,7 +43,7 @@ class StationServiceTest {
     @Test
     void save() {
         StationResponse stationResponse = stationService.save(new StationRequest("신림역"));
-        Station findStation = stationRepository.findById(stationResponse.getId());
+        Station findStation = stationRepository.findById(stationResponse.getId()).get();
 
         assertThat(stationResponse.getId()).isEqualTo(findStation.getId());
     }
@@ -70,7 +71,7 @@ class StationServiceTest {
     void deleteStation() {
         Station station = stationRepository.save(new Station("신림역"));
         stationService.deleteStation(station.getId());
-        assertThat(stationRepository.findById(station.getId())).isNull();
+        assertThat(stationRepository.findById(station.getId())).isEmpty();
     }
 
 }

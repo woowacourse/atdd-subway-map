@@ -1,6 +1,5 @@
 package wooteco.subway.dao;
 
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -10,14 +9,22 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class StationRepositoryImpl implements StationRepository {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+
+    private RowMapper<Station> rowMapper() {
+        return (resultSet, rowNum) -> {
+            long id = resultSet.getLong("id");
+            String name = resultSet.getString("name");
+            return new Station(id, name);
+        };
+    }
 
     public StationRepositoryImpl(DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -48,32 +55,33 @@ public class StationRepositoryImpl implements StationRepository {
     }
 
     @Override
-    public Station findByName(final String name) {
+    public Optional<Station> findByName(final String name) {
         String sql = "SELECT * FROM station WHERE name = :name";
         SqlParameterSource parameters = new MapSqlParameterSource("name", name);
-        try {
-            return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
-        }
+        List<Station> stations = namedParameterJdbcTemplate.query(sql, parameters, rowMapper());
+        return getOptional(stations);
     }
 
     @Override
-    public Station findById(Long id) {
+    public Optional<Station> findById(Long id) {
         String sql = "SELECT * FROM station WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        try {
-            return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
-        }
+        List<Station> stations = namedParameterJdbcTemplate.query(sql, parameters, rowMapper());
+        return getOptional(stations);
     }
 
-    private RowMapper<Station> rowMapper() {
-        return (resultSet, rowNum) -> {
-            long id = resultSet.getLong("id");
-            String name = resultSet.getString("name");
-            return new Station(id, name);
-        };
+    private Optional<Station> getOptional(List<Station> stations) {
+        if(stations.isEmpty()){
+            return Optional.empty();
+        }
+        return Optional.ofNullable(stations.get(0));
+    }
+
+    @Override
+    public boolean existByName(String name) {
+        final String sql = "SELECT COUNT(*) FROM station WHERE name = :name";
+        SqlParameterSource parameters = new MapSqlParameterSource("name", name);
+        Integer count = namedParameterJdbcTemplate.queryForObject(sql, parameters, Integer.class);
+        return count != 0;
     }
 }

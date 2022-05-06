@@ -86,7 +86,7 @@ public class LineServiceTest {
         Line line = lineRepository.save(new Line("분당선", "bg-red-600"));
         lineService.update(line.getId(), new LineRequest("신분당선", "bg-yellow-600"));
 
-        Line findUpdateLine = lineRepository.findById(line.getId());
+        Line findUpdateLine = lineRepository.findById(line.getId()).get();
         assertAll(
                 () -> assertThat(findUpdateLine.getName()).isEqualTo("신분당선"),
                 () -> assertThat(findUpdateLine.getColor()).isEqualTo("bg-yellow-600")

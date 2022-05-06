@@ -59,11 +59,11 @@ public class LineRepositoryTest {
         );
     }
 
-    @DisplayName("노선을 조회한다.")
+    @DisplayName("식별자로 노선을 조회한다.")
     @Test
     void findById() {
         Line saveLine = lineRepository.save(new Line("분당선", "bg-red-600"));
-        Line findLine = lineRepository.findById(saveLine.getId());
+        Line findLine = lineRepository.findById(saveLine.getId()).get();
 
         assertThat(findLine).isEqualTo(saveLine);
     }
@@ -72,17 +72,16 @@ public class LineRepositoryTest {
     @Test
     void findByName() {
         Line saveLine = lineRepository.save(new Line("분당선", "bg-red-600"));
-        Line findLine = lineRepository.findByName("분당선");
+        Line findLine = lineRepository.findByName("분당선").get();
 
         assertThat(findLine).isEqualTo(saveLine);
     }
 
-    @DisplayName("이름으로 노선을 조회시 없을 경우 null을 반환한다.")
+    @DisplayName("동일한 이름의 노선이 존재할 경우 true를 반환한다.")
     @Test
-    void findByNameNull() {
-        Line findLine = lineRepository.findByName("분당선");
-
-        assertThat(findLine).isNull();
+    void existByName() {
+        lineRepository.save(new Line("분당선", "bg-red-600"));
+        assertThat(lineRepository.existByName("분당선")).isTrue();
     }
 
     @DisplayName("노선을 수정한다.")
@@ -91,7 +90,7 @@ public class LineRepositoryTest {
         Line saveLine = lineRepository.save(new Line("분당선", "bg-red-600"));
         LineUpdateDto lineUpdateDto = LineUpdateDto.of(saveLine.getId(), new LineRequest("신분당선", "bg-yellow-600"));
         lineRepository.update(lineUpdateDto);
-        Line findUpdateLine = lineRepository.findById(saveLine.getId());
+        Line findUpdateLine = lineRepository.findById(saveLine.getId()).get();
 
         assertAll(
                 () -> assertThat(findUpdateLine.getName()).isEqualTo("신분당선"),

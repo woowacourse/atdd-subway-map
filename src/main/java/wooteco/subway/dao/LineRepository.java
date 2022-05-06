@@ -4,6 +4,7 @@ import wooteco.subway.dao.dto.LineUpdateDto;
 import wooteco.subway.domain.Line;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LineRepository {
 
@@ -11,11 +12,13 @@ public interface LineRepository {
 
     List<Line> findAll();
 
-    Line findById(Long id);
+    Optional<Line> findById(Long id);
 
-    Line findByName(String name);
+    Optional<Line> findByName(String name);
 
     void update(LineUpdateDto lineUpdateDto);
 
     void deleteById(Long id);
+
+    boolean existByName(String name);
 }

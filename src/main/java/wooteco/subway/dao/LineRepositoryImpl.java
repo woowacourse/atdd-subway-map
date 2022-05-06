@@ -10,15 +10,27 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.dao.dto.LineUpdateDto;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 
 import javax.sql.DataSource;
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class LineRepositoryImpl implements LineRepository {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+
+    private RowMapper<Line> rowMapper() {
+        return (resultSet, rowNum) -> {
+            long id = resultSet.getLong("id");
+            String name = resultSet.getString("name");
+            String color = resultSet.getString("color");
+            return new Line(id, name, color);
+        };
+    }
 
     public LineRepositoryImpl(DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -44,30 +56,26 @@ public class LineRepositoryImpl implements LineRepository {
     }
 
     @Override
-    public Line findById(final Long id) {
+    public Optional<Line> findById(final Long id) {
         String sql = "SELECT * FROM line WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
+        List<Line> lines = namedParameterJdbcTemplate.query(sql, parameters, rowMapper());
+        return getOptional(lines);
     }
 
     @Override
-    public Line findByName(final String name) {
+    public Optional<Line> findByName(final String name) {
         String sql = "SELECT * FROM line WHERE name = :name";
         SqlParameterSource parameters = new MapSqlParameterSource("name", name);
-        try {
-            return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
-        }
+        List<Line> lines = namedParameterJdbcTemplate.query(sql, parameters, rowMapper());
+        return getOptional(lines);
     }
 
-    private RowMapper<Line> rowMapper() {
-        return (resultSet, rowNum) -> {
-            long id = resultSet.getLong("id");
-            String name = resultSet.getString("name");
-            String color = resultSet.getString("color");
-            return new Line(id, name, color);
-        };
+    private Optional<Line> getOptional(List<Line> lines) {
+        if(lines.isEmpty()){
+            return Optional.empty();
+        }
+        return Optional.ofNullable(lines.get(0));
     }
 
     @Override
@@ -82,5 +90,13 @@ public class LineRepositoryImpl implements LineRepository {
         String sql = "DELETE FROM line WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         namedParameterJdbcTemplate.update(sql, parameters);
+    }
+
+    @Override
+    public boolean existByName(String name) {
+        final String sql = "SELECT COUNT(*) FROM line WHERE name = :name";
+        SqlParameterSource parameters = new MapSqlParameterSource("name", name);
+        Integer count = namedParameterJdbcTemplate.queryForObject(sql, parameters, Integer.class);
+        return count != 0;
     }
 }
