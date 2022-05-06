@@ -1,6 +1,5 @@
 package wooteco.subway.dao;
 
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -8,12 +7,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.dao.dto.LineUpdateDto;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
 
 import javax.sql.DataSource;
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,9 +75,14 @@ public class LineRepositoryImpl implements LineRepository {
     }
 
     @Override
-    public void update(final LineUpdateDto lineUpdateDto) {
-        String sql = "UPDATE line SET name = :name, color = :color WHERE id = :id";
-        SqlParameterSource nameParameters = new BeanPropertySqlParameterSource(lineUpdateDto);
+    public void update(final Long id, final Line line) {
+        String sql = "UPDATE line SET name = :name,  color = :color WHERE id = :id";
+
+        SqlParameterSource nameParameters = new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("name", line.getName())
+                .addValue("color", line.getColor());
+
         namedParameterJdbcTemplate.update(sql, nameParameters);
     }
 

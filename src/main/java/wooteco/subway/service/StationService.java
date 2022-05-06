@@ -4,14 +4,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationRepository;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
-import wooteco.subway.utils.exception.NotFoundException;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -28,7 +25,7 @@ public class StationService {
         validateDuplicateName(stationRequest);
         Station saveStation = stationRepository.save(new Station(stationRequest.getName()));
 
-        return new StationResponse(saveStation.getId(), saveStation.getName());
+        return new StationResponse(saveStation);
     }
 
     private void validateDuplicateName(StationRequest stationRequest) {
@@ -40,7 +37,7 @@ public class StationService {
     @Transactional(readOnly = true)
     public List<StationResponse> showStations() {
         return stationRepository.findAll().stream()
-                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .map(StationResponse::new)
                 .collect(Collectors.toList());
     }
 

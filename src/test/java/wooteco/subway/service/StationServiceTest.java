@@ -5,10 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.LineRepository;
-import wooteco.subway.dao.LineRepositoryImpl;
 import wooteco.subway.dao.StationRepository;
 import wooteco.subway.dao.StationRepositoryImpl;
 import wooteco.subway.domain.Station;
@@ -18,7 +15,6 @@ import wooteco.subway.utils.exception.NameDuplicatedException;
 
 import javax.sql.DataSource;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

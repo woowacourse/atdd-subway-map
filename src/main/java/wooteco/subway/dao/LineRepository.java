@@ -1,6 +1,5 @@
 package wooteco.subway.dao;
 
-import wooteco.subway.dao.dto.LineUpdateDto;
 import wooteco.subway.domain.Line;
 
 import java.util.List;
@@ -16,7 +15,7 @@ public interface LineRepository {
 
     Optional<Line> findByName(String name);
 
-    void update(LineUpdateDto lineUpdateDto);
+    void update(Long id, Line line);
 
     void deleteById(Long id);
 
