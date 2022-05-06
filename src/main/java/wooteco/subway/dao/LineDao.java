@@ -6,7 +6,7 @@ import wooteco.subway.domain.Line;
 
 public interface LineDao {
 
-    Line save(Line line);
+    Optional<Line> save(Line line);
 
     List<Line> findAll();
 

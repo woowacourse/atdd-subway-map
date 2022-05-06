@@ -14,14 +14,14 @@ public class FakeLineDao implements LineDao {
     private final List<Line> lines = new ArrayList<>();
 
     @Override
-    public Line save(final Line line) {
+    public Optional<Line> save(final Line line) {
         if (isDuplicateName(line)) {
-            throw new IllegalArgumentException("중복된 이름의 노선은 저장할 수 없습니다.");
+            return Optional.empty();
         }
 
         final Line persistLine = createNewObject(line);
         lines.add(persistLine);
-        return persistLine;
+        return Optional.of(persistLine);
     }
 
     private boolean isDuplicateName(final Line line) {

@@ -38,6 +38,23 @@ class LineServiceTest {
     }
 
     @Test
+    @DisplayName("저장하려는 노선의 이름이 중복되면 예외를 던진다.")
+    void Create_DuplicateName_ExceptionThrown() {
+        // given
+        final String name = "7호선";
+        final String color = "bg-red-600";
+        final Line line = new Line(name, color);
+        fakeLineDao.save(line);
+
+        final LineRequest request = new LineRequest(name, color, null, null, 0);
+
+        // then
+        assertThatThrownBy(() -> lineService.create(request))
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessage("중복된 이름의 노선은 저장할 수 없습니다.");
+    }
+
+    @Test
     @DisplayName("모든 노선을 조회한다.")
     void showLines() {
         // given
@@ -57,7 +74,7 @@ class LineServiceTest {
         // given
         final String name = "1호선";
         final String color = "bg-red-600";
-        final Line savedLine = fakeLineDao.save(new Line(name, color));
+        final Line savedLine = fakeLineDao.save(new Line(name, color)).orElseThrow();
 
         // when
         final LineResponse response = lineService.findById(savedLine.getId());
@@ -79,7 +96,7 @@ class LineServiceTest {
     @DisplayName("id에 해당하는 노선 정보를 수정한다.")
     void updateById() {
         // given
-        final Line savedLine = fakeLineDao.save(new Line("1호선", "bg-red-600"));
+        final Line savedLine = fakeLineDao.save(new Line("1호선", "bg-red-600")).orElseThrow();
 
         final String name = "7호선";
         final String color = "bg-blue-600";
@@ -98,7 +115,7 @@ class LineServiceTest {
     @DisplayName("id에 해당하는 노선을 삭제한다.")
     void deleteById() {
         // given
-        final Line savedLine = fakeLineDao.save(new Line("1호선", "bg-red-600"));
+        final Line savedLine = fakeLineDao.save(new Line("1호선", "bg-red-600")).orElseThrow();
 
         // when
         lineService.deleteById(savedLine.getId());

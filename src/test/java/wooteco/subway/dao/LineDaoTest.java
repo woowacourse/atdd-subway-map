@@ -18,7 +18,7 @@ public class LineDaoTest extends DaoTest {
         final Line line = new Line("7호선", "bg-red-600");
 
         // when
-        final Line savedLine = lineDao.save(line);
+        final Line savedLine = lineDao.save(line).orElseThrow();
 
         // then
         assertThat(savedLine.getName()).isEqualTo(line.getName());
@@ -49,7 +49,7 @@ public class LineDaoTest extends DaoTest {
     void findById() {
         // given
         final Line line7 = new Line("7호선", "bg-red-600");
-        final Line persistLine = lineDao.save(line7);
+        final Line persistLine = lineDao.save(line7).orElseThrow();
 
         // when
         final Optional<Line> actual = lineDao.findById(persistLine.getId());
@@ -73,7 +73,7 @@ public class LineDaoTest extends DaoTest {
     @DisplayName("id를 통해 해당하는 노선을 업데이트한다.")
     void updateById() {
         // given
-        final Line persistLine = lineDao.save(new Line("7호선", "bg-red-600"));
+        final Line persistLine = lineDao.save(new Line("7호선", "bg-red-600")).orElseThrow();
 
         // when
         final Line line = new Line("5호선", "bg-green-600");
@@ -90,7 +90,7 @@ public class LineDaoTest extends DaoTest {
         final String name = "5호선";
 
         lineDao.save(new Line(name, "bg-red-600"));
-        final Line persistLine = lineDao.save(new Line("7호선", "bg-red-600"));
+        final Line persistLine = lineDao.save(new Line("7호선", "bg-red-600")).orElseThrow();
 
         // when
         final Line line = new Line(name, "bg-green-600");
@@ -120,7 +120,7 @@ public class LineDaoTest extends DaoTest {
     @DisplayName("id를 통해 해당하는 노선을 삭제한다.")
     void deleteById() {
         // given
-        final Line persistLine = lineDao.save(new Line("7호선", "bg-red-600"));
+        final Line persistLine = lineDao.save(new Line("7호선", "bg-red-600")).orElseThrow();
 
         // when
         final Long id = persistLine.getId();

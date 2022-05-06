@@ -44,13 +44,13 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Line save(final Line line) {
+    public Optional<Line> save(final Line line) {
         try {
             final SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
             final long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-            return setId(line, id);
+            return Optional.of(setId(line, id));
         } catch (final DuplicateKeyException e) {
-            throw new IllegalArgumentException("중복된 이름의 노선은 저장할 수 없습니다.");
+            return Optional.empty();
         }
     }
 
