@@ -1,5 +1,8 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.LineColorException;
+import wooteco.subway.exception.LineNameException;
+
 public class Line {
 
     private final Long id;
@@ -7,9 +10,23 @@ public class Line {
     private final String color;
 
     public Line(final Long id, final String name, final String color) {
+        validateName(name);
+        validateColor(color);
         this.id = id;
         this.name = name;
         this.color = color;
+    }
+
+    private void validateName(final String name) {
+        if (name.isBlank()) {
+            throw new LineNameException();
+        }
+    }
+
+    private void validateColor(final String color) {
+        if (color.isBlank()) {
+            throw new LineColorException();
+        }
     }
 
     public Line(final String name, final String color) {
