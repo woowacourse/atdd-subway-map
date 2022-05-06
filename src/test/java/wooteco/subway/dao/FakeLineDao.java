@@ -40,11 +40,11 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public void update(Long id, String name, String color) {
+    public void update(Line otherLine) {
         int idx = 0;
         for (Line line : lines) {
-            if (line.getId().equals(id)) {
-                lines.set(idx, new Line(id, name, color));
+            if (line.hasSameId(otherLine)) {
+                lines.set(idx, otherLine);
                 return;
             }
             idx++;

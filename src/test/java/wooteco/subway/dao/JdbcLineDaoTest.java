@@ -30,7 +30,7 @@ public class JdbcLineDaoTest {
     @DisplayName("Line 을 저장한다.")
     void save() {
         //given
-        Line line = new Line("7호털", "khaki");
+        Line line = new Line("7호선", "khaki");
 
         //when
         Line actual = lineDao.save(line);
@@ -99,8 +99,8 @@ public class JdbcLineDaoTest {
         Line savedLine = lineDao.save(line);
 
         //when
-        Line updatedLine = new Line("2호선", "khaki");
-        lineDao.update(savedLine.getId(), updatedLine.getName(), updatedLine.getColor());
+        Line updatedLine = new Line(savedLine.getId(), "2호선", "khaki");
+        lineDao.update(updatedLine);
 
         //then
         Line actual = lineDao.findById(savedLine.getId()).get();

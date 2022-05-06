@@ -15,7 +15,7 @@ public interface LineDao {
 
     List<Line> findAll();
 
-    void update(Long id, String name, String color);
+    void update(Line line);
 
     int deleteById(Long id);
 }
