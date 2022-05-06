@@ -58,6 +58,17 @@ class StationDaoTest {
         assertThat(stationDao.findAll().size()).isEqualTo(2);
     }
 
+    @DisplayName("특정 id를 가지는 역을 조회한다.")
+    @Test
+    void findById() {
+        Station gangNam = new Station("강남역");
+        stationDao.save(gangNam);
+
+        Station actual = stationDao.findById(gangNam.getId());
+
+        assertThat(actual.getName()).isEqualTo("강남역");
+    }
+
     @DisplayName("특정 id를 가지는 역을 삭제한다.")
     @Test
     void deleteStation() {

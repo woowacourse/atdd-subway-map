@@ -40,6 +40,12 @@ public class StationDao {
         return jdbcTemplate.query(sql, STATION_MAPPER);
     }
 
+    public Station findById(Long id) {
+        String sql = "SELECT * FROM STATION WHERE id = :id";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        return jdbcTemplate.queryForObject(sql, parameters, STATION_MAPPER);
+    }
+
     public void deleteById(Long id) {
         String sql = "DELETE FROM STATION WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
