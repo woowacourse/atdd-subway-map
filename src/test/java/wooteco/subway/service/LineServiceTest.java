@@ -118,7 +118,7 @@ class LineServiceTest {
     void update() {
         LineRequest lineRequest = new LineRequest("name2", "blue");
 
-        given(lineDao.update(new Line(1L, "name2", "blue"))).willReturn(1);
+        given(lineDao.findById(1L)).willReturn(Optional.of(new Line(1L, "name2", "blue")));
         given(lineDao.isExistName(1L, "name2")).willReturn(false);
 
         assertDoesNotThrow(() -> lineService.update(1L, lineRequest));
