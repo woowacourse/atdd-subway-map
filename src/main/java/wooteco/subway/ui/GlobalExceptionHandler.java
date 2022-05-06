@@ -7,13 +7,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice(annotations = RestController.class)
-public class StationControllerAdvice {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity handleIllegalException(RuntimeException e){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .build();
-
+    public ResponseEntity<Void> handleIllegalException(RuntimeException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
 }
