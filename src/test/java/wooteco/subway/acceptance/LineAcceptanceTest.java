@@ -5,15 +5,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.dto.ExceptionResponse;
 import wooteco.subway.dto.LineResponse;
 
 class LineAcceptanceTest extends AcceptanceTest {
@@ -35,8 +36,14 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        final LineResponse lineResponse = response.jsonPath()
+                .getObject(".", LineResponse.class);
+
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(lineResponse.getId()).isEqualTo(1L);
+        assertThat(lineResponse.getName()).isEqualTo("신분당선");
+        assertThat(lineResponse.getColor()).isEqualTo("red");
         assertThat(response.header("Location")).isNotBlank();
     }
 
@@ -48,7 +55,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         params.put("name", "신분당선");
         params.put("color", "red");
 
-        ExtractableResponse<Response> response1 = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -57,7 +64,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // when
-        ExtractableResponse<Response> response2 = RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -65,8 +72,12 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        final ExceptionResponse exceptionResponse = response.jsonPath()
+                .getObject(".", ExceptionResponse.class);
+
         // then
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(exceptionResponse.getExceptionMessage()).isEqualTo("노선 이름 혹은 노선 색이 이미 존재합니다.");
     }
 
     @DisplayName("노선 목록을 반환한다.")
@@ -105,11 +116,11 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(it -> it.getId())
+                .map(LineResponse::getId)
                 .collect(Collectors.toList());
 
         assertThat(resultLineIds).containsAll(expectedLineIds);
@@ -143,7 +154,13 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        final LineResponse lineResponse = response.jsonPath()
+                .getObject(".", LineResponse.class);
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse.getId()).isEqualTo(1L);
+        assertThat(lineResponse.getName()).isEqualTo("신분당선");
+        assertThat(lineResponse.getColor()).isEqualTo("red");
     }
 
     @DisplayName("노선 아이디에 해당하는 노선을 수정한다.")
@@ -218,7 +235,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         params.put("name", "신분당선");
         params.put("color", "red");
 
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -233,7 +250,11 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        final ExceptionResponse exceptionResponse = response.jsonPath()
+                .getObject(".", ExceptionResponse.class);
+
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(exceptionResponse.getExceptionMessage()).isEqualTo("존재하지 않는 노선입니다.");
     }
 }

@@ -2,7 +2,10 @@ package wooteco.subway.dto;
 
 public class ExceptionResponse {
 
-    private final String exceptionMessage;
+    private String exceptionMessage;
+
+    public ExceptionResponse() {
+    }
 
     public ExceptionResponse(String exceptionMessage) {
         this.exceptionMessage = exceptionMessage;

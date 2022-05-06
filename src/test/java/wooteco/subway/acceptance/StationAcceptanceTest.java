@@ -14,10 +14,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.dto.ExceptionResponse;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
-public class StationAcceptanceTest extends AcceptanceTest {
+class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -35,9 +36,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
 
+        final StationResponse stationResponse = response.jsonPath()
+                .getObject(".", StationResponse.class);
+
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+        assertThat(stationResponse.getId()).isEqualTo(1L);
+        assertThat(stationResponse.getName()).isEqualTo("사당역");
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
@@ -64,13 +70,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .log().all()
             .extract();
 
+        final ExceptionResponse exceptionResponse = response.jsonPath()
+                .getObject(".", ExceptionResponse.class);
+
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(exceptionResponse.getExceptionMessage()).isEqualTo("이미 존재하는 역 이름입니다.");
     }
 
     @DisplayName("지하철역을 조회한다.")
     @Test
-    void getStations() {
+    void getStations_success() {
         /// given
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "강남역");
@@ -113,7 +123,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 제거한다.")
     @Test
-    void deleteStation() {
+    void deleteStation_badRequest() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
@@ -135,5 +145,36 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("존재하지 않는 지하철 역을 삭제하려고 하면 badRequest를 응답한다.")
+    @Test
+    void deleteStation() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남역");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
+        Long invalidStationId = 2L;
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/stations/" + invalidStationId)
+                .then().log().all()
+                .extract();
+
+        final ExceptionResponse exceptionResponse = response.jsonPath()
+                .getObject(".", ExceptionResponse.class);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(exceptionResponse.getExceptionMessage()).isEqualTo("존재하지 않는 역입니다.");
     }
 }
