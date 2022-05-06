@@ -130,6 +130,21 @@ public class LineServiceTest {
             .containsExactlyInAnyOrder(upStation.getId(), downStation.getId());
     }
 
+    @Test
+    void queryAll() {
+        Station station1 = stationService.save("강남역");
+        Station station2 = stationService.save("역삼역");
+        Station station3 = stationService.save("선릉역");
+        LineResponse response1 = lineService.save(
+            new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10));
+        LineResponse response2 = lineService.save(
+            new LineRequest("1호선", "bg-blue-600", station1.getId(), station3.getId(), 10));
+
+        List<LineResponse> lineResponses = lineService.queryAll();
+
+        assertThat(lineResponses).containsExactlyInAnyOrder(response1, response2);
+    }
+
     @DisplayName("지하철 노선 빈 이름으로 수정")
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})

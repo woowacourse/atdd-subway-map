@@ -24,13 +24,9 @@ import wooteco.subway.repository.LineRepository;
 public class LineController {
 
     private final LineService lineService;
-    private final LineRepository lineRepository;
-    private final LineDao lineDao;
 
-    public LineController(LineService lineService, LineRepository lineRepository, LineDao lineDao) {
+    public LineController(LineService lineService) {
         this.lineService = lineService;
-        this.lineRepository = lineRepository;
-        this.lineDao = lineDao;
     }
 
     @PostMapping
@@ -41,10 +37,7 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineRepository.findAll();
-        List<LineResponse> lineResponses = lines.stream()
-            .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
-            .collect(Collectors.toList());
+        List<LineResponse> lineResponses = lineService.queryAll();
         return ResponseEntity.ok(lineResponses);
     }
 

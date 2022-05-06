@@ -1,5 +1,6 @@
 package wooteco.subway.application;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
@@ -43,10 +44,7 @@ public class LineService {
         Station downStation = stationService.findById(request.getDownStationId());
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
         sectionRepository.save(new Section(line, upStation, downStation, request.getDistance()));
-
-        return lineDao.queryById(line.getId())
-            .orElseThrow(
-                () -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, line.getId())));
+        return queryById(line.getId());
     }
 
     public Line update(Long id, String name, String color) {
@@ -75,5 +73,10 @@ public class LineService {
     public LineResponse queryById(Long id) {
         return lineDao.queryById(id)
             .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, id)));
+    }
+
+    @Transactional(readOnly = true)
+    public List<LineResponse> queryAll() {
+        return lineDao.queryAll();
     }
 }
