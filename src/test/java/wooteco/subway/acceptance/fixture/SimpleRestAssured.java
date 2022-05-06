@@ -11,27 +11,27 @@ import org.springframework.http.MediaType;
 
 public class SimpleRestAssured {
 
-    public static ExtractableResponse<Response> get(String path) {
-        return thenExtract(given()
+    public static SimpleResponse get(String path) {
+        return new SimpleResponse(given()
                 .when().get(path));
     }
 
-    public static ExtractableResponse<Response> post(String path, Map<String, String> params) {
-        return thenExtract(given()
+    public static SimpleResponse post(String path, Map<String, String> params) {
+        return new SimpleResponse(given()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(path));
     }
 
-    public static ExtractableResponse<Response> put(String path, Map<String, String> params) {
-        return thenExtract(given()
+    public static SimpleResponse put(String path, Map<String, String> params) {
+        return new SimpleResponse(given()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put(path));
     }
 
-    public static ExtractableResponse<Response> delete(String path) {
-        return thenExtract(given()
+    public static SimpleResponse delete(String path) {
+        return new SimpleResponse(given()
                 .when().delete(path));
     }
 
@@ -39,7 +39,7 @@ public class SimpleRestAssured {
         return RestAssured.given().log().all();
     }
 
-    private static ExtractableResponse<Response> thenExtract(Response response) {
+    public static ExtractableResponse<Response> thenExtract(Response response) {
         return response
                 .then().log().all()
                 .extract();

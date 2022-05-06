@@ -2,9 +2,6 @@ package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -16,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpStatus;
 
+import wooteco.subway.acceptance.fixture.SimpleResponse;
 import wooteco.subway.acceptance.fixture.SimpleRestAssured;
 import wooteco.subway.dto.StationResponse;
 
@@ -28,11 +26,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given
         Map<String, String> params = Map.of("name", "강남역");
         // when
-        ExtractableResponse<Response> response = SimpleRestAssured.post("/stations", params);
+        SimpleResponse response = SimpleRestAssured.post("/stations", params);
         // then
         Assertions.assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(response.header("Location")).isNotBlank()
+                () -> assertThat(response.hasStatus(HttpStatus.CREATED)).isTrue(),
+                () -> assertThat(response.getHeader("Location")).isNotBlank()
         );
     }
 
@@ -43,9 +41,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = Map.of("name", "강남역");
         SimpleRestAssured.post("/stations", params);
         // when
-        ExtractableResponse<Response> response = SimpleRestAssured.post("/stations", params);
+        SimpleResponse response = SimpleRestAssured.post("/stations", params);
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.hasStatus(HttpStatus.BAD_REQUEST)).isTrue();
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -54,21 +52,21 @@ public class StationAcceptanceTest extends AcceptanceTest {
         /// given
         Map<String, String> params1 = Map.of("name", "강남역");
         Map<String, String> params2 = Map.of("name", "역삼역");
-        ExtractableResponse<Response> createResponse1 = SimpleRestAssured.post("/stations", params1);
-        ExtractableResponse<Response> createResponse2 = SimpleRestAssured.post("/stations", params2);
+        SimpleResponse createResponse1 = SimpleRestAssured.post("/stations", params1);
+        SimpleResponse createResponse2 = SimpleRestAssured.post("/stations", params2);
 
         // when
-        ExtractableResponse<Response> response = SimpleRestAssured.get("/stations");
+        SimpleResponse response = SimpleRestAssured.get("/stations");
 
         // then
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                .map(SimpleResponse::getIdFromLocation)
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
+        List<Long> resultLineIds = response.toList(StationResponse.class).stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
         Assertions.assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.hasStatus(HttpStatus.OK)).isTrue(),
                 () -> assertThat(resultLineIds).containsAll(expectedLineIds)
         );
     }
@@ -78,12 +76,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void deleteStation() {
         // given
         Map<String, String> params = Map.of("name", "강남역");
-        ExtractableResponse<Response> createResponse = SimpleRestAssured.post("/stations", params);
+        SimpleResponse createResponse = SimpleRestAssured.post("/stations", params);
         // when
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = SimpleRestAssured.delete(uri);
+        String uri = createResponse.getHeader("Location");
+        SimpleResponse response = SimpleRestAssured.delete(uri);
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.hasStatus(HttpStatus.NO_CONTENT)).isTrue();
     }
 
     @Test
@@ -91,10 +89,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void deleteStation_throwsExceptionWithInvalidStation() {
         // given
         Map<String, String> params = Map.of("name", "강남역");
-        ExtractableResponse<Response> createResponse = SimpleRestAssured.post("/stations", params);
+        SimpleResponse createResponse = SimpleRestAssured.post("/stations", params);
         // when
-        final ExtractableResponse<Response> deleteResponse = SimpleRestAssured.delete("/lines/100");
+        final SimpleResponse deleteResponse = SimpleRestAssured.delete("/lines/100");
         // then
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(deleteResponse.hasStatus(HttpStatus.BAD_REQUEST)).isTrue();
     }
 }
