@@ -15,7 +15,6 @@ public class StationService {
     }
 
     public Station save(Station station) {
-        station.validateDuplicate(stationDao.findAll());
         return stationDao.save(station);
     }
 
