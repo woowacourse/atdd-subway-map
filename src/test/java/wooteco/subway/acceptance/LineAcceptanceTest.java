@@ -23,7 +23,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> params = new LinkedHashMap<>();
+        Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
 
@@ -39,6 +39,50 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+    }
+
+    @DisplayName("지하철 노선을 이름없이 생성한다.")
+    @Test
+    void createEmptyNameLine() {
+        // given
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("name", "");
+        params.put("color", "bg-red-600");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.header("Location")).isBlank();
+    }
+
+    @DisplayName("지하철 노선을 색깔없이 생성한다.")
+    @Test
+    void createEmptyColorLine() {
+        // given
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.header("Location")).isBlank();
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
