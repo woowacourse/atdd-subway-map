@@ -45,17 +45,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         lineRepository.deleteAll();
         stationRepository.deleteAll();
 
-        upStationId = createStation("강남역");
-        downStationId = createStation("역삼역");
-    }
-
-    private long createStation(String name) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(Map.of("name", name))
-            .when().post("/stations")
-            .then().log().all().extract();
-        return response.body().jsonPath().getLong("id");
+        upStationId = requestCreateStation("강남역").jsonPath().getLong("id");
+        downStationId = requestCreateStation("역삼역").jsonPath().getLong("id");
     }
 
     @AfterEach
@@ -68,41 +59,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 이름에 빈 문자열을 사용할 수 없다")
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
-    void createLineWithEmptyName(String lineName) {
-        Map<String, String> params = Map.of(
-            "name", lineName,
-            "color", "bg-red-600",
-            "upStationId", String.valueOf(upStationId),
-            "downStationId", String.valueOf(downStationId),
-            "distance", "10");
+    void createLineWithEmptyName(String name) {
+        ExtractableResponse<Response> response = requestCreateLine(name, "bg-red-600", upStationId,
+            downStationId);
 
-        RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .statusCode(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선 색깔에 빈 문자열을 사용할 수 없다")
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void createLineWithEmptyColor(String color) {
-        Map<String, String> params = Map.of(
-            "name", "신분당선",
-            "color", color,
-            "upStationId", String.valueOf(upStationId),
-            "downStationId", String.valueOf(downStationId),
-            "distance", "10");
+        ExtractableResponse<Response> response = requestCreateLine("신분당선", color, upStationId,
+            downStationId);
 
-        RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .statusCode(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선 등록")
@@ -111,20 +82,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String name = "신분당선";
         String color = "bg-red-600";
 
-        Map<String, String> params = Map.of(
-            "name", name,
-            "color", color,
-            "upStationId", String.valueOf(upStationId),
-            "downStationId", String.valueOf(downStationId),
-            "distance", "10");
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = requestCreateLine(name, color, upStationId,
+            downStationId);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -141,30 +100,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         String name = "신분당선";
         String color = "bg-red-600";
-        requestCreateLine(name, color);
+        requestCreateLine(name, color, upStationId, downStationId);
 
         // when
-        ExtractableResponse<Response> response = requestCreateLine(name, color);
+        ExtractableResponse<Response> response = requestCreateLine(name, color, upStationId,
+            downStationId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private ExtractableResponse<Response> requestCreateLine(String name, String color) {
-        Map<String, String> params = Map.of(
-            "name", name,
-            "color", color,
-            "upStationId", String.valueOf(upStationId),
-            "downStationId", String.valueOf(downStationId),
-            "distance", "10");
-
-        return RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
     }
 
     @DisplayName("지하철 노선 조회")
@@ -173,7 +116,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         String name = "신분당선";
         String color = "bg-red-600";
-        ExtractableResponse<Response> createResponse = requestCreateLine(name, color);
+        ExtractableResponse<Response> createResponse = requestCreateLine(name, color, upStationId,
+            downStationId);
         Long createdId = createResponse.jsonPath().getLong("id");
 
         // when
@@ -206,8 +150,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLines() {
         // given
-        ExtractableResponse<Response> createResponse1 = requestCreateLine("신분당선", "bg-red-600");
-        ExtractableResponse<Response> createResponse2 = requestCreateLine("1호선", "bg-blue-600");
+        ExtractableResponse<Response> createResponse1 = requestCreateLine("신분당선", "bg-red-600",
+            upStationId, downStationId);
+        ExtractableResponse<Response> createResponse2 = requestCreateLine("1호선", "bg-blue-600",
+            upStationId, downStationId);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -230,7 +176,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @ValueSource(strings = {"", "  ", "     "})
     void canNotUpdateLineWithEmptyName(String lineName) {
         // given
-        ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600");
+        ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600",
+            upStationId, downStationId);
         long createdId = response.jsonPath().getLong("id");
 
         // when & then
@@ -248,7 +195,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @ValueSource(strings = {"", "  ", "     "})
     void canNotUpdateLineWithEmptyColor(String lineColor) {
         // given
-        ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600");
+        ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600",
+            upStationId, downStationId);
         long createdId = response.jsonPath().getLong("id");
 
         // when & then
@@ -267,7 +215,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         String newName = "1호선";
         String newColor = "bg-blue-600";
-        ExtractableResponse<Response> createResponse = requestCreateLine("신분당선", "bg-red-600");
+        ExtractableResponse<Response> createResponse = requestCreateLine("신분당선", "bg-red-600",
+            upStationId, downStationId);
         long createdId = createResponse.jsonPath().getLong("id");
 
         // when
@@ -295,8 +244,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void canNotUpdateByDuplicationName() {
         // given
-        ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600");
-        requestCreateLine("1호선", "bg-red-600");
+        ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600",
+            upStationId, downStationId);
+        requestCreateLine("1호선", "bg-red-600", upStationId, downStationId);
 
         long createdId = response.jsonPath().getLong("id");
 
@@ -340,8 +290,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600");
-        requestCreateLine("1호선", "bg-red-600");
+        ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600",
+            upStationId, downStationId);
+        requestCreateLine("1호선", "bg-red-600", upStationId, downStationId);
         long createdId = response.jsonPath().getLong("id");
 
         // when

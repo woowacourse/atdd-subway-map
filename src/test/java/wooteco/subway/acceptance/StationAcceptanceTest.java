@@ -41,16 +41,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    private ExtractableResponse<Response> requestCreateStation(String stationName) {
-        return RestAssured.given().log().all()
-            .body(Map.of("name", stationName))
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
-    }
-
     @DisplayName("기존에 존재하는 지하철 역 이름으로 지하철 역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
