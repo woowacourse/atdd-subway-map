@@ -30,6 +30,14 @@ public class StationMockDao implements StationDao {
     }
 
     @Override
+    public boolean existStationById(Long id) {
+        List<Long> stationNames = stations.stream()
+                .map(Station::getId)
+                .collect(Collectors.toList());
+        return stationNames.contains(id);
+    }
+
+    @Override
     public boolean existStationByName(String name) {
         List<String> stationNames = stations.stream()
                 .map(Station::getName)
@@ -43,12 +51,8 @@ public class StationMockDao implements StationDao {
     }
 
     @Override
-    public int delete(Long id) {
-        boolean isRemoving = stations.removeIf(station -> station.getId().equals(id));
-        if (!isRemoving) {
-            return FALSE;
-        }
-        return TRUE;
+    public void delete(Long id) {
+        stations.removeIf(station -> station.getId().equals(id));
     }
 
     public void clear() {

@@ -7,9 +7,11 @@ public interface StationDao {
 
     long save(Station station);
 
+    boolean existStationById(Long id);
+
     boolean existStationByName(String name);
 
     List<Station> findAll();
 
-    int delete(Long id);
+    void delete(Long id);
 }

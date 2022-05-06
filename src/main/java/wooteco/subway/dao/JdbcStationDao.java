@@ -40,6 +40,12 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
+    public boolean existStationById(Long id) {
+        final String sql = "select exists (select * from STATION where id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    @Override
     public boolean existStationByName(String name) {
         final String sql = "select exists (select * from STATION where name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
@@ -52,8 +58,8 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public int delete(Long id) {
+    public void delete(Long id) {
         final String sql = "delete from STATION where id = ?";
-        return jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, id);
     }
 }

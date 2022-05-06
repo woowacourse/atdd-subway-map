@@ -48,10 +48,10 @@ public class LineService {
     }
 
     public void update(Line line) {
+        validateExistLine(line.getId());
         validateNameForUpdate(line);
         validateColorForUpdate(line);
-        int updatedRow = lineDao.update(line);
-        validateExist(updatedRow);
+        lineDao.update(line);
     }
 
     private void validateNameForUpdate(Line line) {
@@ -75,13 +75,7 @@ public class LineService {
     }
 
     public void delete(Long id) {
-        int deletedRow = lineDao.delete(id);
-        validateExist(deletedRow);
-    }
-
-    private void validateExist(int affectedRow) {
-        if (affectedRow == 0) {
-            throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
-        }
+        validateExistLine(id);
+        lineDao.delete(id);
     }
 }
