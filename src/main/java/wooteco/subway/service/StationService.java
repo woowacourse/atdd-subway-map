@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
@@ -26,6 +27,9 @@ public class StationService {
     }
 
     public void delete(final Long stationId) {
+        if (!stationDao.existById(stationId)) {
+            throw new NoSuchElementException("없는 Station 입니다.");
+        }
         stationDao.delete(stationId);
     }
 }
