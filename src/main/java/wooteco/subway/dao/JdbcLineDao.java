@@ -20,6 +20,7 @@ import wooteco.subway.exception.NotFoundException;
 public class JdbcLineDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Line> rowMapper = (resultSet, rowNumber) -> {
         Line line = new Line(
                 resultSet.getString("name"),
@@ -27,8 +28,6 @@ public class JdbcLineDao implements LineDao {
         );
         return setId(line, resultSet.getLong("id"));
     };
-
-    private SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcLineDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -49,7 +48,6 @@ public class JdbcLineDao implements LineDao {
         try {
             final SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
             final long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-
             return setId(line, id);
         } catch (final DuplicateKeyException e) {
             throw new IllegalArgumentException("중복된 이름의 노선은 저장할 수 없습니다.");

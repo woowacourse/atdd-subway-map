@@ -1,15 +1,15 @@
 package wooteco.subway.dao;
 
 import java.lang.reflect.Field;
-import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import javax.sql.DataSource;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
@@ -18,6 +18,7 @@ import wooteco.subway.domain.Station;
 public class JdbcStationDao implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Station> rowMapper = (resultSet, rowNumber) -> {
         Station station = new Station(
                 resultSet.getString("name")
@@ -25,24 +26,19 @@ public class JdbcStationDao implements StationDao {
         return setId(station, resultSet.getLong("id"));
     };
 
-    public JdbcStationDao(final JdbcTemplate jdbcTemplate) {
+    public JdbcStationDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("STATION")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public Station save(final Station station) {
         try {
-            final String sql = "INSERT INTO station SET name = ?";
 
-            final KeyHolder keyHolder = new GeneratedKeyHolder();
-            final PreparedStatementCreator statementCreator = con -> {
-                final PreparedStatement prepareStatement = con.prepareStatement(sql, new String[]{"id"});
-                prepareStatement.setString(1, station.getName());
-                return prepareStatement;
-            };
-
-            jdbcTemplate.update(statementCreator, keyHolder);
-            final long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+            final SqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
+            final long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
             return setId(station, id);
         } catch (final DuplicateKeyException e) {
             throw new IllegalArgumentException("중복된 이름의 역은 저장할 수 없습니다.");
