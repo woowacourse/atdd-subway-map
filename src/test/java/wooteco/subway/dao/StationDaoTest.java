@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,11 +21,6 @@ class StationDaoTest {
     @Autowired
     StationDaoTest(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.stationDao = new StationDao(namedParameterJdbcTemplate);
-    }
-
-    @BeforeEach
-    void clearAll() {
-        stationDao.deleteAll();
     }
 
     @DisplayName("지하철역을 저장한다.")

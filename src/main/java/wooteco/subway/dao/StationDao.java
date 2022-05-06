@@ -63,12 +63,6 @@ public class StationDao {
                 (rs, rowNum) -> new Station(rs.getLong("id"), rs.getString("name")));
     }
 
-    public int deleteAll() {
-        String sql = "delete from STATION";
-
-        return namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource());
-    }
-
     public int deleteById(Long id) {
         String sql = "delete from STATION where id = :id";
 
