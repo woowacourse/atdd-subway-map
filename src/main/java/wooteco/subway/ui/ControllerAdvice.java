@@ -21,8 +21,8 @@ public class ControllerAdvice {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ErrorResponse(e.getMessage()));
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Void> runtimeExceptionHandler(RuntimeException e) {
+    @ExceptionHandler({RuntimeException.class, Exception.class})
+    public ResponseEntity<Void> runtimeExceptionHandler() {
         return ResponseEntity.internalServerError().build();
     }
 }
