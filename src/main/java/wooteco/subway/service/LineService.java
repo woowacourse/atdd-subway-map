@@ -8,6 +8,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.NotExistException;
 
 @Service
 public class LineService {
@@ -48,7 +49,7 @@ public class LineService {
         final int isDeleted = lineDao.deleteById(id);
 
         if (isDeleted == DELETE_FAIL) {
-            throw new IllegalArgumentException("존재하지 않는 노선입니다.");
+            throw new NotExistException("존재하지 않는 노선입니다.");
         }
     }
 }
