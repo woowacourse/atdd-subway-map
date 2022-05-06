@@ -42,10 +42,6 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(LineResponse.of(newLine));
     }
 
-    private boolean isDuplicateName(String name) {
-        return lineDao.findByName(name).isPresent();
-    }
-
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineDao.findAll();
@@ -85,5 +81,9 @@ public class LineController {
         return lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
                         StringFormat.errorMessage(id, NO_SUCH_LINE_EXCEPTION_MESSAGE)));
+    }
+
+    private boolean isDuplicateName(String name) {
+        return lineDao.findByName(name).isPresent();
     }
 }
