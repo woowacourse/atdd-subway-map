@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
@@ -10,6 +11,7 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.NotFoundException;
 
 @Service
+@Transactional
 public class LineService {
 
     private final LineDao lineDao;
@@ -25,6 +27,7 @@ public class LineService {
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         return lineDao.findAll()
                 .stream()
@@ -32,6 +35,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(final Long id) {
         final Line line = lineDao.findById(id)
                 .orElseThrow(() -> new NotFoundException("해당 ID에 맞는 노선을 찾지 못했습니다."));
