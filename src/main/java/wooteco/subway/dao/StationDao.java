@@ -13,6 +13,8 @@ import java.util.Map;
 @Repository
 public class StationDao {
 
+    private static final String STATION_NOT_FOUND = "존재하지 않는 지하철역입니다.";
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -31,7 +33,7 @@ public class StationDao {
 
 
     public Station save(String name) {
-        Long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name",name)).longValue();
+        Long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name", name)).longValue();
         return new Station(id, name);
     }
 
@@ -40,12 +42,15 @@ public class StationDao {
         return jdbcTemplate.query(sql, stationRowMapper);
     }
 
-    public int delete(Long id) {
+    public void delete(Long id) {
         final String sql = "DELETE FROM STATION WHERE id=?";
-        return jdbcTemplate.update(sql, id);
+        int count = jdbcTemplate.update(sql, id);
+        if (count == 0) {
+            throw new IllegalArgumentException(STATION_NOT_FOUND);
+        }
     }
 
-    public boolean isExistName(String name){
+    public boolean isExistName(String name) {
         final String sql = "SELECT EXISTS (SELECT * FROM STATION WHERE name=?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }

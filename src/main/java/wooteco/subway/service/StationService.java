@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 @Service
 public class StationService {
 
-    private static final String STATION_NOT_FOUND = "존재하지 않는 지하철역입니다.";
     private static final String DUPLICATE_STATION_NAME = "지하철 이름이 중복될 수 없습니다.";
 
     private final StationDao dao;
@@ -39,8 +38,6 @@ public class StationService {
     }
 
     public void delete(Long id) {
-        if (dao.delete(id) == 0) {
-            throw new IllegalArgumentException(STATION_NOT_FOUND);
-        }
+        dao.delete(id);
     }
 }
