@@ -60,6 +60,6 @@ class StationDaoTest {
 
         assertThatThrownBy(() -> stationDao.deleteById(station.getId()))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessageMatching("id에 맞는 지하철역이 없습니다.");
+                .hasMessageMatching(station.getId() + "id를 가진 지하철 역을 찾을 수 없습니다.");
     }
 }

@@ -62,7 +62,7 @@ public class StationDao {
         try {
             return jdbcTemplate.queryForObject(SQL, rowMapper(), id);
         } catch (DataAccessException e) {
-            throw new NotFoundException("id에 맞는 지하철역이 없습니다.");
+            throw new NotFoundException(id + "id를 가진 지하철 역을 찾을 수 없습니다.");
         }
     }
 }
