@@ -18,36 +18,32 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.station.StationService;
 
 @RestController
 public class StationController {
 
-    private final StationDao stationDao;
+    private final StationService stationService;
 
-    public StationController(StationDao stationDao) {
-        this.stationDao = stationDao;
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
     }
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
-        Station newStation = stationDao.save(station);
-        StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
+        StationResponse stationResponse = stationService.create(stationRequest);
+        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = stationDao.findAll();
-        List<StationResponse> stationResponses = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationResponses);
+        List<StationResponse> all = stationService.findAll();
+        return ResponseEntity.ok().body(all);
     }
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        stationDao.deleteById(id);
+        stationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
