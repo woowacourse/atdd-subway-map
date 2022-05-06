@@ -6,7 +6,7 @@ import wooteco.subway.dto.LineRequest;
 
 public class Line {
     private final Long id;
-    private final String name;
+    private final Name name;
     private final String color;
 
     public Line(String name, String color) {
@@ -14,6 +14,10 @@ public class Line {
     }
 
     public Line(Long id, String name, String color) {
+        this(id, new Name(name), color);
+    }
+
+    public Line(Long id, Name name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -24,7 +28,7 @@ public class Line {
     }
 
     public String getName() {
-        return name;
+        return name.getValue();
     }
 
     public String getColor() {
@@ -38,7 +42,7 @@ public class Line {
         if (o == null || getClass() != o.getClass())
             return false;
         Line line = (Line)o;
-        return name.equals(line.name) && color.equals(line.color);
+        return Objects.equals(name, line.name) && Objects.equals(color, line.color);
     }
 
     @Override

@@ -3,17 +3,18 @@ package wooteco.subway.domain;
 import java.util.Objects;
 
 public class Station {
-    private Long id;
-    private String name;
-
-    public Station() {
-    }
+    private final Long id;
+    private final Name name;
 
     public Station(String name) {
         this(null, name);
     }
 
     public Station(Long id, String name) {
+        this(id, new Name(name));
+    }
+
+    public Station(Long id, Name name) {
         this.id = id;
         this.name = name;
     }
@@ -23,7 +24,7 @@ public class Station {
     }
 
     public String getName() {
-        return name;
+        return name.getValue();
     }
 
     @Override
@@ -33,7 +34,7 @@ public class Station {
         if (o == null || getClass() != o.getClass())
             return false;
         Station station = (Station)o;
-        return name.equals(station.name);
+        return Objects.equals(name, station.name);
     }
 
     @Override
