@@ -29,12 +29,6 @@ public class LineService {
         return new Line(savedLineEntity.getId(), savedLineEntity.getName(), savedLineEntity.getColor());
     }
 
-    private void validateDuplicateName(final String name) {
-        if (lineDao.findByName(name).isPresent()) {
-            throw new DuplicateNameException("[ERROR] 이미 존재하는 노선 이름입니다.");
-        }
-    }
-
     @Transactional(isolation = Isolation.READ_COMMITTED, readOnly = true)
     public Line searchById(final Long id) {
         LineEntity lineEntity = lineDao.findById(id)
@@ -55,6 +49,7 @@ public class LineService {
         final Optional<LineEntity> lineEntityToBeModified = lineDao.findById(id);
         lineEntityToBeModified.ifPresentOrElse(
                 lineEntity -> {
+                    validateDuplicateName(name);
                     Line newLine = new Line(id, name, color);
                     lineDao.update(new LineEntity(newLine));
                 },
@@ -62,6 +57,12 @@ public class LineService {
                     throw new NoSuchElementException("[ERROR] 노선이 존재하지 않습니다");
                 }
         );
+    }
+
+    private void validateDuplicateName(final String name) {
+        if (lineDao.findByName(name).isPresent()) {
+            throw new DuplicateNameException("[ERROR] 이미 존재하는 노선 이름입니다.");
+        }
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
