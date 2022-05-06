@@ -1,9 +1,9 @@
 package wooteco.subway.dao;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
@@ -11,37 +11,45 @@ import wooteco.subway.exception.ClientException;
 
 public class FakeLineDao implements LineDao {
 
+    private static final Map<String, Line> LINES = new HashMap<>();
+
     private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
 
     @Override
     public Line save(LineRequest line) {
+        if (LINES.containsKey(line.getName())) {
+            throw new ClientException("이미 등록된 지하철노선입니다.");
+        }
         Line persistLine = new Line(++seq, line.getName(), line.getColor());
-        lines.add(persistLine);
+        LINES.put(line.getName(), persistLine);
         return persistLine;
     }
 
     @Override
     public List<Line> findAll() {
-        return lines;
+        return LINES.keySet()
+                .stream()
+                .map(LINES::get)
+                .collect(Collectors.toList());
     }
 
     @Override
     public Line find(Long id) {
-        return lines.stream()
-                .filter(line -> line.getId() == id)
+        return LINES.keySet()
+                .stream()
+                .filter(key -> LINES.get(key).getId() == id)
+                .map(key -> LINES.get(key))
                 .findAny()
                 .orElseThrow(() -> new ClientException("존재하지 않는 노선입니다."));
     }
 
     @Override
     public int update(Long id, LineRequest line) {
-        int targetIndex = IntStream.range(0, lines.size())
-                .filter(index -> lines.get(index).getId() == id)
-                .findAny()
-                .orElseThrow(() -> new ClientException("존재하지 않는 노선입니다."));
-        lines.set(targetIndex, new Line(lines.get(targetIndex).getId(), line.getName(), line.getColor()));
-        if (lines.get(targetIndex).getName().equals(line.getName())) {
+        if (!LINES.containsKey(line.getName())) {
+            throw new ClientException("존재하지 않는 노선입니다.");
+        }
+        LINES.put(line.getName(), new Line(id, line.getName(), line.getColor()));
+        if (LINES.containsKey(line.getName())) {
             return 1;
         }
         return 0;
@@ -49,13 +57,15 @@ public class FakeLineDao implements LineDao {
 
     @Override
     public int delete(Long id) {
-        int beforeSize = lines.size();
-        lines = lines.stream()
-                .filter(line -> line.getId() != id)
-                .collect(Collectors.toList());
-        if (lines.size() < beforeSize) {
-            return 1;
+        String lineName = LINES.keySet()
+                .stream()
+                .filter(key -> LINES.get(key).getId() == id)
+                .findAny()
+                .orElseThrow(() -> new ClientException("존재하지 않는 노선입니다."));
+        LINES.remove(lineName);
+        if (LINES.containsKey(lineName)) {
+            return 0;
         }
-        return 0;
+        return 1;
     }
 }

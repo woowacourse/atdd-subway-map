@@ -22,8 +22,7 @@ public class LineDaoImpl implements LineDao {
     }
 
     private RowMapper<Line> lineRowMapper() {
-        return (rs, rowNum) ->
-                new Line(rs.getLong("id"),
+        return (rs, rowNum) -> new Line(rs.getLong("id"),
                         rs.getString("name"), rs.getNString("color"));
     }
 

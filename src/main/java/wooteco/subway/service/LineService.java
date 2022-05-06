@@ -1,9 +1,9 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.LineDao;
@@ -22,17 +22,10 @@ public class LineService {
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
-        validateDuplicateLine(lineRequest);
-        Line newLine = lineDao.save(lineRequest);
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
-    }
-
-    private void validateDuplicateLine(LineRequest lineRequest) {
-        Optional<Line> optional = lineDao.findAll()
-                .stream()
-                .filter(line -> line.getName().equals(lineRequest.getName()))
-                .findAny();
-        if (optional.isPresent()) {
+        try {
+            Line newLine = lineDao.save(lineRequest);
+            return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        } catch (DataAccessException exception) {
             throw new ClientException("이미 등록된 지하철노선입니다.");
         }
     }

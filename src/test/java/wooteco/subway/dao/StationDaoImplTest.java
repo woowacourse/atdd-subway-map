@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.StationRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,7 +44,7 @@ class StationDaoImplTest {
     @DisplayName("역 정보를 저장한다.")
     @Test
     void save() {
-        Station station = new Station("역삼역");
+        StationRequest station = new StationRequest("역삼역");
         Station newStation = stationDaoImpl.save(station);
 
         assertThat(newStation.getName()).isEqualTo("역삼역");
@@ -60,7 +61,7 @@ class StationDaoImplTest {
     @DisplayName("역 정보를 삭제한다.")
     @Test
     void delete() {
-        Station station = new Station("역삼역");
+        StationRequest station = new StationRequest("역삼역");
         Station newStation = stationDaoImpl.save(station);
 
         assertThat(stationDaoImpl.deleteStation(newStation.getId())).isEqualTo(1);
