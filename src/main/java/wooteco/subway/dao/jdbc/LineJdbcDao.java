@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.ObjectUtils;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.DuplicateLineException;
@@ -24,22 +25,29 @@ public class LineJdbcDao implements LineDao {
     }
 
     @Override
-    public Line save(final Line line) throws DuplicateLineException {
-        final String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
+    public Line save(final Line line) throws IllegalArgumentException {
+        if (ObjectUtils.isEmpty(line)) {
+            throw new IllegalArgumentException("passed line is null");
+        }
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
-            jdbcTemplate.update(connection -> {
-                PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-                preparedStatement.setString(1, line.getName());
-                preparedStatement.setString(2, line.getColor());
-                return preparedStatement;
-            }, keyHolder);
+            trySaveLine(line, keyHolder);
         } catch (DuplicateKeyException exception) {
             throw new DuplicateLineException();
         }
-
         return new Line(keyHolder.getKey().longValue(), line.getName(), line.getColor());
+    }
+
+    private void trySaveLine(final Line line, final KeyHolder keyHolder)
+            throws DuplicateKeyException {
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "INSERT INTO LINE (name, color) VALUES (?, ?)", new String[]{"id"});
+            preparedStatement.setString(1, line.getName());
+            preparedStatement.setString(2, line.getColor());
+            return preparedStatement;
+        }, keyHolder);
     }
 
     @Override

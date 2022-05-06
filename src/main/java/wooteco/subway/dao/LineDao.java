@@ -7,7 +7,7 @@ import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NoSuchLineException;
 
 public interface LineDao {
-    Line save(Line line) throws DuplicateLineException;
+    Line save(Line line) throws IllegalArgumentException;
 
     List<Line> findAll();
 

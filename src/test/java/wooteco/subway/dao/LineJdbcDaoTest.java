@@ -36,6 +36,13 @@ class LineJdbcDaoTest {
         assertThat(savedLine).isNotNull();
     }
 
+    @DisplayName("null을 입력받는 경우 예외를 던진다")
+    @Test
+    void throwExceptionWhenSaveNull() {
+        assertThatThrownBy(() -> dao.save(null))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     @DisplayName("같은 이름의 노선이 있는 경우 예외를 던진다")
     @Test
     void throwExceptionWhenHasDuplicateName() {
