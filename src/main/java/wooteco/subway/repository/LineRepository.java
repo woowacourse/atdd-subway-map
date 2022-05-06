@@ -52,10 +52,6 @@ public class LineRepository {
         }
     }
 
-    public List<Line> findAll() {
-        return jdbcTemplate.query("SELECT id, name, color FROM LINE", ROW_MAPPER);
-    }
-
     public boolean existById(Long id) {
         return findById(id).isPresent();
     }

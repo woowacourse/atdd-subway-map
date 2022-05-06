@@ -1,8 +1,12 @@
 package wooteco.subway.application;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.repository.StationRepository;
@@ -15,16 +19,23 @@ public class StationService {
     public static final String DUPLICATION_MESSAGE = "%s는 중복된 지하철역 이름입니다.";
 
     private final StationRepository stationRepository;
+    private final StationDao stationDao;
 
-    public StationService(StationRepository stationRepository) {
+    public StationService(StationRepository stationRepository,
+                          StationDao stationDao) {
         this.stationRepository = stationRepository;
+        this.stationDao = stationDao;
     }
 
-    public Station save(String name) {
-        if (stationRepository.existByName(name)) {
-            throw new DuplicateException(String.format(DUPLICATION_MESSAGE, name));
+    public StationResponse save(StationRequest request) {
+        if (stationRepository.existByName(request.getName())) {
+            throw new DuplicateException(String.format(DUPLICATION_MESSAGE, request.getName()));
         }
-        return stationRepository.save(new Station(name));
+
+        Station station = stationRepository.save(new Station(request.getName()));
+
+        return stationDao.queryById(station.getId())
+            .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, station.getId())));
     }
 
     public void deleteById(Long id) {
@@ -34,8 +45,14 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public Station findById(Long id) {
+    @Transactional(readOnly = true)
+    Station findById(Long id) {
         return stationRepository.findById(id)
             .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, id)));
+    }
+
+    @Transactional(readOnly = true)
+    public List<StationResponse> queryAll() {
+        return stationDao.queryAll();
     }
 }

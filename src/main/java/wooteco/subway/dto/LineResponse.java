@@ -19,10 +19,6 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public LineResponse(Long id, String name, String color) {
-        this(id, name, color, new ArrayList<>());
-    }
-
     public Long getId() {
         return id;
     }

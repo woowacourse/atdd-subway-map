@@ -40,10 +40,6 @@ public class StationRepository {
         return new Station(id, station.getName());
     }
 
-    public List<Station> findAll() {
-        return jdbcTemplate.query("SELECT id, name FROM STATION", ROW_MAPPER);
-    }
-
     public Optional<Station> findById(Long id) {
         try {
             Station station = jdbcTemplate

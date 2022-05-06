@@ -10,7 +10,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.domain.Station;
+import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.BlankArgumentException;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotFoundException;
@@ -30,7 +31,7 @@ class StationServiceTest {
     @Test
     void saveByName() {
         String stationName = "something";
-        Station station = stationService.save(stationName);
+        StationResponse station = stationService.save(new StationRequest(stationName));
         assertThat(stationRepository.findById(station.getId())).isNotEmpty();
     }
 
@@ -38,9 +39,9 @@ class StationServiceTest {
     @Test
     void saveByDuplicateName() {
         String stationName = "something";
-        stationService.save(stationName);
+        stationService.save(new StationRequest(stationName));
 
-        assertThatThrownBy(() -> stationService.save(stationName))
+        assertThatThrownBy(() -> stationService.save(new StationRequest(stationName)))
             .isInstanceOf(DuplicateException.class);
     }
 
@@ -48,14 +49,14 @@ class StationServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void saveByEmptyName(String stationName) {
-        assertThatThrownBy(() -> stationService.save(stationName))
+        assertThatThrownBy(() -> stationService.save(new StationRequest(stationName)))
             .isInstanceOf(BlankArgumentException.class);
     }
 
     @DisplayName("지하철 역 삭제")
     @Test
     void deleteById() {
-        Station station = stationService.save("강남역");
+        StationResponse station = stationService.save(new StationRequest("강남역"));
 
         stationService.deleteById(station.getId());
 

@@ -4,20 +4,45 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Map;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+import wooteco.subway.dto.StationRequest;
+import wooteco.subway.repository.LineRepository;
+import wooteco.subway.repository.SectionRepository;
+import wooteco.subway.repository.StationRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
 
     @LocalServerPort
-    int port;
+    private int port;
+
+    @Autowired
+    private LineRepository lineRepository;
+
+    @Autowired
+    private StationRepository stationRepository;
+
+    @Autowired
+    private SectionRepository sectionRepository;
 
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
+        sectionRepository.deleteAll();
+        lineRepository.deleteAll();
+        stationRepository.deleteAll();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        sectionRepository.deleteAll();
+        lineRepository.deleteAll();
+        stationRepository.deleteAll();
     }
 
     protected ExtractableResponse<Response> requestCreateStation(String stationName) {

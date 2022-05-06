@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,6 +21,7 @@ import wooteco.subway.exception.BlankArgumentException;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.repository.LineRepository;
+import wooteco.subway.repository.StationRepository;
 
 @SpringBootTest
 @Transactional
@@ -31,7 +31,7 @@ public class LineServiceTest {
     private LineService lineService;
 
     @Autowired
-    private StationService stationService;
+    private StationRepository stationRepository;
 
     @Autowired
     private LineRepository lineRepository;
@@ -39,8 +39,8 @@ public class LineServiceTest {
     @DisplayName("지하철 노선 저장")
     @Test
     void saveLine() {
-        Station upStation = stationService.save("강남역");
-        Station downStation = stationService.save("역삼역");
+        Station upStation = stationRepository.save(new Station("강남역"));
+        Station downStation = stationRepository.save(new Station("역삼역"));
         LineRequest request = new LineRequest("신분당선", "bg-red-600",
             upStation.getId(), downStation.getId(), 10);
 
@@ -58,8 +58,8 @@ public class LineServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void saveLineWithEmptyName(String name) {
-        Station upStation = stationService.save("강남역");
-        Station downStation = stationService.save("역삼역");
+        Station upStation = stationRepository.save(new Station("강남역"));
+        Station downStation = stationRepository.save(new Station("역삼역"));
 
         assertThatThrownBy(() -> lineService.save(
             new LineRequest(name, "bg-red-600", upStation.getId(), downStation.getId(), 10))
@@ -70,8 +70,8 @@ public class LineServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void saveLineWithEmptyColor(String color) {
-        Station upStation = stationService.save("강남역");
-        Station downStation = stationService.save("역삼역");
+        Station upStation = stationRepository.save(new Station("강남역"));
+        Station downStation = stationRepository.save(new Station("역삼역"));
 
         assertThatThrownBy(() -> lineService.save(
             new LineRequest("신분당선", color, upStation.getId(), downStation.getId(), 10))
@@ -83,9 +83,9 @@ public class LineServiceTest {
     void saveByDuplicateName() {
         String name = "신분당선";
         String color = "bg-red-600";
-        Station upStation = stationService.save("강남역");
-        Station downStation = stationService.save("역삼역");
-        Station newStation = stationService.save("선릉역");
+        Station upStation = stationRepository.save(new Station("강남역"));
+        Station downStation = stationRepository.save(new Station("역삼역"));
+        Station newStation = stationRepository.save(new Station("선릉역"));
 
         lineService.save(new LineRequest(name, color, upStation.getId(), downStation.getId(), 10));
 
@@ -113,8 +113,8 @@ public class LineServiceTest {
     @DisplayName("지하철 노선 조회")
     @Test
     void queryLine() {
-        Station upStation = stationService.save("강남역");
-        Station downStation = stationService.save("역삼역");
+        Station upStation = stationRepository.save(new Station("강남역"));
+        Station downStation = stationRepository.save(new Station("역삼역"));
         LineResponse response = lineService.save(
             new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10));
 
@@ -132,9 +132,9 @@ public class LineServiceTest {
 
     @Test
     void queryAll() {
-        Station station1 = stationService.save("강남역");
-        Station station2 = stationService.save("역삼역");
-        Station station3 = stationService.save("선릉역");
+        Station station1 = stationRepository.save(new Station("강남역"));
+        Station station2 = stationRepository.save(new Station("역삼역"));
+        Station station3 = stationRepository.save(new Station("선릉역"));
         LineResponse response1 = lineService.save(
             new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10));
         LineResponse response2 = lineService.save(
@@ -149,8 +149,8 @@ public class LineServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void updateLineWithEmptyName(String name) {
-        Station upStation = stationService.save("강남역");
-        Station downStation = stationService.save("역삼역");
+        Station upStation = stationRepository.save(new Station("강남역"));
+        Station downStation = stationRepository.save(new Station("역삼역"));
         LineRequest request = new LineRequest("신분당선", "bg-red-600",
             upStation.getId(), downStation.getId(), 10);
 
@@ -165,8 +165,8 @@ public class LineServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void updateLineWithEmptyColor(String color) {
-        Station upStation = stationService.save("강남역");
-        Station downStation = stationService.save("역삼역");
+        Station upStation = stationRepository.save(new Station("강남역"));
+        Station downStation = stationRepository.save(new Station("역삼역"));
         LineRequest request = new LineRequest("신분당선", "bg-red-600",
             upStation.getId(), downStation.getId(), 10);
 
@@ -180,8 +180,8 @@ public class LineServiceTest {
     @DisplayName("지하철 노선의 정보를 수정한다.")
     @Test
     void updateLine() {
-        Station upStation = stationService.save("강남역");
-        Station downStation = stationService.save("역삼역");
+        Station upStation = stationRepository.save(new Station("강남역"));
+        Station downStation = stationRepository.save(new Station("역삼역"));
         LineRequest request = new LineRequest("신분당선", "bg-red-600",
             upStation.getId(), downStation.getId(), 10);
 
@@ -211,8 +211,8 @@ public class LineServiceTest {
     @DisplayName("지하철 노선을 삭제 시도")
     @Test
     void deleteLine() {
-        Station upStation = stationService.save("강남역");
-        Station downStation = stationService.save("역삼역");
+        Station upStation = stationRepository.save(new Station("강남역"));
+        Station downStation = stationRepository.save(new Station("역삼역"));
         LineResponse response = lineService.save(
             new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10));
 

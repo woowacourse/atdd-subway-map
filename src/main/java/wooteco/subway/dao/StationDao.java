@@ -1,6 +1,8 @@
 package wooteco.subway.dao;
 
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -10,26 +12,29 @@ import wooteco.subway.dto.StationResponse;
 @Repository
 public class StationDao {
 
-    public static final RowMapper<Station> ROW_MAPPER = (rs, rowNum) -> {
+    public static final RowMapper<StationResponse> ROW_MAPPER = (rs, rn) -> {
         long id = rs.getLong("id");
         String name = rs.getString("name");
-        return new Station(id, name);
+        return new StationResponse(id, name);
     };
+
     private final JdbcTemplate jdbcTemplate;
 
     public StationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<StationResponse> queryByLineId(Long lineId) {
-        String sql = "SELECT distinct s.id as id, s.name as name FROM STATION AS s " +
-            "JOIN SECTION AS sec ON s.id = sec.down_station_id OR s.id = sec.up_station_id " +
-            "WHERE sec.line_id = ?";
+    public Optional<StationResponse> queryById(long id) {
+        try {
+            StationResponse response = jdbcTemplate
+                .queryForObject("SELECT id, name FROM STATION WHERE id = ?", ROW_MAPPER, id);
+            return Optional.of(response);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 
-        return jdbcTemplate.query(sql, (rs, rn) -> {
-            long stationId = rs.getLong("id");
-            String stationName = rs.getString("name");
-            return new StationResponse(stationId, stationName);
-        }, lineId);
+    public List<StationResponse> queryAll() {
+        return jdbcTemplate.query("SELECT id, name FROM STATION", ROW_MAPPER);
     }
 }
