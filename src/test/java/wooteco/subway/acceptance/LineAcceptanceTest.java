@@ -164,7 +164,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선으로 수정한다.")
+    @DisplayName("기존에 존재하는 지하철 노선으로 수정할 시 상태 코드 200을 반환한다.")
     @Test
     void updateLineWithDuplicateName() {
         // given
@@ -222,15 +222,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .post("/lines")
                 .then().log().all()
                 .extract();
-        String value = createResponse.header("Location").split("/")[2];
-        int expected = Integer.parseInt(value);
+
+        String uri = createResponse.header("Location");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .delete("/lines/" + expected)
+                .delete(uri)
                 .then().log().all()
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("존재하지 않은 지하철 노선을 삭제할시 상태코드 200을 반환한다.")
+    @Test
+    void deleteNotExistLine() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("lines/1")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
