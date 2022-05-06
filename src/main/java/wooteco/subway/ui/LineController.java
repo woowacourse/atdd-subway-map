@@ -33,7 +33,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        Line line = lineRequest.toLine();
         Long id = lineDao.save(line);
         LineResponse lineResponse = new LineResponse(id, line.getName(), line.getColor());
         return ResponseEntity.created(URI.create(LINES_API_URI + "/" + id)).body(lineResponse);
