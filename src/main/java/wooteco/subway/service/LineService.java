@@ -44,6 +44,7 @@ public class LineService {
     public void update(final Long id, final LineRequest lineRequest) {
         findById(id);
         final Line updatedLine = lineRequest.toEntity(id);
+        checkDuplicateName(updatedLine);
         lineDao.update(updatedLine);
     }
 
