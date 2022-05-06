@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
@@ -14,6 +15,7 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
+    @Transactional
     public long save(final Line line) {
         validateLine(line);
         return lineDao.save(line);
@@ -28,12 +30,14 @@ public class LineService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 노선입니다."));
     }
 
+    @Transactional
     public void update(final long id, final Line line) {
         validateLine(line);
         validateExistedLine(id);
         lineDao.update(id, line);
     }
 
+    @Transactional
     public void delete(final Long id) {
         validateExistedLine(id);
         lineDao.delete(id);

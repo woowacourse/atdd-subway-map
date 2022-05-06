@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
@@ -14,6 +15,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public long save(final Station station) {
         validateName(station);
         return stationDao.save(station);
@@ -23,6 +25,7 @@ public class StationService {
         return stationDao.findAll();
     }
 
+    @Transactional
     public void delete(final Long id) {
         validateExistedLine(id);
         stationDao.delete(id);
