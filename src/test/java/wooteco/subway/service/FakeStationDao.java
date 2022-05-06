@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
@@ -13,14 +14,14 @@ public class FakeStationDao implements StationDao {
     private final List<Station> stations = new ArrayList<>();
 
     @Override
-    public Station save(final Station station) {
+    public Optional<Station> save(final Station station) {
         if (isDuplicateName(station)) {
-            throw new IllegalArgumentException("중복된 이름의 역은 저장할 수 없습니다.");
+            return Optional.empty();
         }
 
         final Station persistStation = createNewObject(station);
         stations.add(persistStation);
-        return persistStation;
+        return Optional.of(persistStation);
     }
 
     private boolean isDuplicateName(final Station station) {

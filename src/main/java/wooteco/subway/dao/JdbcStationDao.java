@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -34,14 +35,13 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Station save(final Station station) {
+    public Optional<Station> save(final Station station) {
         try {
-
             final SqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
             final long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-            return setId(station, id);
+            return Optional.of(setId(station, id));
         } catch (final DuplicateKeyException e) {
-            throw new IllegalArgumentException("중복된 이름의 역은 저장할 수 없습니다.");
+            return Optional.empty();
         }
     }
 
