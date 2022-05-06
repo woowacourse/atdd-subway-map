@@ -24,7 +24,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("지하철 노선을 생성한다.")
-    void createLine() {
+    void CreateLine() {
         // given
         final String lineName = "7호선";
         final String lineColor = "bg-red-600";
@@ -56,7 +56,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("모든 노선을 조회한다.")
     @Test
-    void getLines() {
+    void Show_Lines() {
         /// given
         final Map<String, String> params1 = new HashMap<>();
         params1.put("name", "7호선");
@@ -100,7 +100,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("id로 노선을 조회한다.")
     @Test
-    void findById() {
+    void ShowLine() {
         /// given
         final String lineName = "7호선";
         final String lineColor = "bg-green-600";
@@ -139,7 +139,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("존재하지 않은 id로 조회하면 NOT_FOUND를 반환한다.")
-    void findById_invalidId() {
+    void ShowLine_NotExistId_NotFound() {
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .get("/lines/" + 1)
@@ -152,7 +152,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("지하철 노선 정보를 수정한다.")
-    void updateLine() {
+    void UpdateLine() {
         // given
         final Map<String, String> params = new HashMap<>();
         params.put("name", "7호선");
@@ -187,7 +187,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("수정하려는 노선 이름이 중복되면 BAD_REQUEST를 반환한다.")
-    void updateLine_duplicateName() {
+    void UpdateLine_DuplicateName_BadRequest() {
         // given
         final String name = "5호선";
 
@@ -236,7 +236,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("수정하려는 노선 id가 존재하지 않으면 BAD_REQUEST를 반환한다.")
-    void updateLine_invalidId() {
+    void UpdateLine_NotExistId_BadRequest() {
         // when
         final Map<String, String> updateParams = new HashMap<>();
         updateParams.put("name", "5호선");
@@ -256,7 +256,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("지하철 노선 정보를 삭제한다.")
-    void deleteLine() {
+    void DeleteLine() {
         // given
         final Map<String, String> params = new HashMap<>();
         params.put("name", "7호선");
@@ -287,7 +287,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("존재하지 않는 노선을 제거하면 BAD_REQUEST를 반환한다.")
-    void deleteLine_invalidId() {
+    void DeleteLine_NotExistId_BadRequest() {
         // when
         final ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

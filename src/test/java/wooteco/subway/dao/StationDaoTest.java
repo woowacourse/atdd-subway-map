@@ -12,7 +12,7 @@ class StationDaoTest extends DaoTest {
 
     @Test
     @DisplayName("역을 저장하면 저장된 역 정보를 반환한다.")
-    void save() {
+    void Save() {
         // given
         final String name = "선릉";
         final Station station = new Station(name);
@@ -26,7 +26,7 @@ class StationDaoTest extends DaoTest {
 
     @Test
     @DisplayName("모든 역 조회하기")
-    void findAll() {
+    void FindAll() {
         // given
         stationDao.save(new Station("선릉"));
         stationDao.save(new Station("노원"));
@@ -40,7 +40,7 @@ class StationDaoTest extends DaoTest {
 
     @Test
     @DisplayName("id에 해당하는 역 삭제하기")
-    void deleteById() {
+    void DeleteById() {
         // given
         final Station station = stationDao.save(new Station("선릉")).orElseThrow();
 
@@ -53,7 +53,7 @@ class StationDaoTest extends DaoTest {
 
     @Test
     @DisplayName("존재하지 않는 id의 역을 삭제하면 예외가 발생한다.")
-    void deleteById_invalidId() {
+    void DeleteById_InvalidId_ExceptionThrown() {
         assertThatThrownBy(() -> stationDao.deleteById(999L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("id가 일치하는 역이 존재하지 않습니다.");

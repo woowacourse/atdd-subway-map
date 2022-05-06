@@ -18,9 +18,10 @@ import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+
     @DisplayName("지하철역을 생성한다.")
     @Test
-    void createStation() {
+    void CreateStation() {
         // given
         final Map<String, String> params = new HashMap<>();
         params.put("name", "노원역");
@@ -41,7 +42,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
-    void createStationWithDuplicateName() {
+    void CreateStation_DuplicateName_BadRequest() {
         // given
         final Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
@@ -69,7 +70,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 조회한다.")
     @Test
-    void getStations() {
+    void ShowStations() {
         /// given
         final Map<String, String> params1 = new HashMap<>();
         params1.put("name", "강남역");
@@ -111,7 +112,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 제거한다.")
     @Test
-    void deleteStation() {
+    void DeleteStation() {
         // given
         final Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
@@ -137,7 +138,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("존재하지 않는 역을 제거하면 BAD_REQUEST를 반환한다.")
     @Test
-    void deleteStation_invalidId() {
+    void DeleteStation_NotExistId_BadRequest() {
         // when
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()

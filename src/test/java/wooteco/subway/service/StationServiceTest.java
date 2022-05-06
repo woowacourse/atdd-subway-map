@@ -25,7 +25,7 @@ class StationServiceTest {
 
     @Test
     @DisplayName("역을 생성한다.")
-    void create() {
+    void Create() {
         // given
         final StationRequest request = new StationRequest("강남역");
 
@@ -53,7 +53,7 @@ class StationServiceTest {
 
     @Test
     @DisplayName("모든 역을 조회한다.")
-    void findAll() {
+    void FindAll() {
         // given
         fakeStationDao.save(new Station("노원역"));
         fakeStationDao.save(new Station("왕십리역"));
@@ -67,7 +67,7 @@ class StationServiceTest {
 
     @Test
     @DisplayName("id에 해당하는 역을 삭제한다.")
-    void delete() {
+    void Delete() {
         // given
         final Station savedStation = fakeStationDao.save(new Station("마들역")).orElseThrow();
 

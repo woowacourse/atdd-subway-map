@@ -9,7 +9,7 @@ class LineTest {
 
     @Test
     @DisplayName("노선 객체 생성에 성공한다.")
-    void newLine() {
+    void NewLine() {
         // when
         final Line line = new Line("7호선", "bg-red-600");
 

@@ -23,7 +23,7 @@ class LineServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("노선을 생성한다.")
-    void createLine() {
+    void Create() {
         // given
         final String name = "7호선";
         final String color = "bg-red-600";
@@ -59,7 +59,7 @@ class LineServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("모든 노선을 조회한다.")
-    void showLines() {
+    void FindAll() {
         // given
         final List<Line> expected = List.of(
                 new Line("7호선", "bg-red-600"),
@@ -78,7 +78,7 @@ class LineServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("id에 해당하는 노선을 조회한다.")
-    void findById() {
+    void FindById() {
         // given
         final long id = 1L;
         final String name = "7호선";
@@ -113,7 +113,7 @@ class LineServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("id에 해당하는 노선 정보를 수정한다.")
-    void updateById() {
+    void UpdateById() {
         // given
         final long id = 1L;
         final String name = "7호선";
@@ -176,7 +176,7 @@ class LineServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("id에 해당하는 노선을 삭제한다.")
-    void deleteById() {
+    void DeleteById() {
         // given
         final long id = 1L;
         given(lineDao.deleteById(id))
