@@ -1,46 +1,43 @@
 package wooteco.subway.dao;
 
-import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Optional;
+import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
 @Repository
 public class LineDao {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public LineDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public LineDao(DataSource dataSource) {
+        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("LINE")
+                .usingGeneratedKeyColumns("id");
+        this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
     public Line save(Line line) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "insert into line (name, color) values (?, ?)";
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, line.getName());
-            ps.setString(2, line.getColor());
-            return ps;
-        }, keyHolder);
-
-        long savedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        Map<String, String> params = Map.of("name", line.getName(), "color", line.getColor());
+        long savedId = jdbcInsert.executeAndReturnKey(params).longValue();
 
         return new Line(savedId, line.getName(), line.getColor());
     }
 
     public Optional<Line> findById(Long id) {
-        String sql = "select * from line where id = ?";
+        String sql = "select * from line where id = :id";
+        SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
         try {
-            Line line = jdbcTemplate.queryForObject(sql, rowMapper(), id);
+            Line line = jdbcTemplate.queryForObject(sql, namedParameters, rowMapper());
             return Optional.ofNullable(line);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -48,9 +45,10 @@ public class LineDao {
     }
 
     public Optional<Line> findByName(String name) {
-        String sql = "select * from line where name = ?";
+        String sql = "select * from line where name = :name";
+        SqlParameterSource namedParameters = new MapSqlParameterSource("name", name);
         try {
-            Line line = jdbcTemplate.queryForObject(sql, rowMapper(), name);
+            Line line = jdbcTemplate.queryForObject(sql, namedParameters, rowMapper());
             return Optional.ofNullable(line);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -63,13 +61,19 @@ public class LineDao {
     }
 
     public void update(Long targetId, Line newLine) {
-        String sql = "update line set name = ?, color = ? where id = ?";
-        jdbcTemplate.update(sql, newLine.getName(), newLine.getColor(), targetId);
+        String sql = "update line set name = :name, color = :color where id = :id";
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("name", newLine.getName())
+                .addValue("color", newLine.getColor())
+                .addValue("id", targetId);
+
+        jdbcTemplate.update(sql, namedParameters);
     }
 
     public void delete(Line line) {
-        String sql = "delete from line where id = ?";
-        jdbcTemplate.update(sql, line.getId());
+        String sql = "delete from line where id = :id";
+        SqlParameterSource namedParameters = new MapSqlParameterSource("id", line.getId());
+        jdbcTemplate.update(sql, namedParameters);
     }
 
     private RowMapper<Line> rowMapper() {
