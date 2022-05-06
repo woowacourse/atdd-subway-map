@@ -3,27 +3,15 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
-@JdbcTest
-class LineServiceTest {
-    private LineService lineService;
+class LineServiceTest extends ServiceTest {
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private LineService lineService;
     private final Line line = new Line("신분당선", "red");
-
-    @BeforeEach
-    void setUp() {
-        LineDao lineDao = new LineDao(jdbcTemplate);
-        lineService = new LineService(lineDao);
-    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
