@@ -24,7 +24,7 @@
     - JdbcTemplate는 `NamedJdbcTemplate` 사용
 
 ### 리펙토링 목록
-- [ ] LINE table column unique 확인
+- [x] LINE table column unique 확인
 - [ ] @Controller & @RestController 차이점 알아보고 적용하기
 - [ ] Line Dto -> Line Response로 사용하기
 - [ ] 생성자 정리
