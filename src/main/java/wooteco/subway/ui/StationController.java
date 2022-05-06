@@ -43,11 +43,4 @@ public class StationController {
         stationService.deleteStation(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseEntity<Map<String, String>> handle(RuntimeException exception) {
-        return ResponseEntity.badRequest().body(Map.of(
-            "message", exception.getMessage()
-        ));
-    }
 }

@@ -55,11 +55,4 @@ public class LineController {
         lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok().build();
     }
-
-    @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseEntity<Map<String, String>> handle(RuntimeException exception) {
-        return ResponseEntity.badRequest().body(Map.of(
-            "message", exception.getMessage()
-        ));
-    }
 }
