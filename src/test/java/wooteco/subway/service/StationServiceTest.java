@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -59,7 +60,11 @@ class StationServiceTest {
         final List<StationResponse> responses = stationService.showStations();
 
         // then
-        assertThat(responses).hasSize(2);
+        assertAll(() -> {
+            assertThat(responses).hasSize(2);
+            assertThat(responses.get(0).getName()).isEqualTo(savedStation1.getName());
+            assertThat(responses.get(1).getName()).isEqualTo(savedStation2.getName());
+        });
     }
 
     @Test

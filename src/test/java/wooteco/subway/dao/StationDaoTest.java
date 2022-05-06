@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +56,11 @@ class StationDaoTest {
 
         final List<Station> stations = stationDao.findAll();
 
-        assertThat(stations).hasSize(2);
+        assertAll(() -> {
+            assertThat(stations).hasSize(2);
+            assertThat(stations).hasSize(2);
+            assertThat(stations).contains(station1, station2);
+        });
     }
 
     @Test

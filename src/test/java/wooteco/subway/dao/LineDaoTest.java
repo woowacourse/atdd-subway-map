@@ -74,7 +74,10 @@ public class LineDaoTest {
 
         final List<Line> lines = lineDao.findAll();
 
-        assertThat(lines).hasSize(2);
+        assertAll(() -> {
+            assertThat(lines).hasSize(2);
+            assertThat(lines).contains(line1, line2);
+        });
     }
 
     @Test

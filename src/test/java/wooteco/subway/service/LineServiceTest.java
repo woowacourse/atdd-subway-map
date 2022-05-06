@@ -53,17 +53,23 @@ class LineServiceTest {
     @DisplayName("모든 노선을 조회한다.")
     void showLines() {
         // given
-        final List<Line> value = List.of(new Line("신분당선", "bg-red-600"),
+        final List<Line> saveLines = List.of(new Line("신분당선", "bg-red-600"),
                 new Line("분당선", "bg-black-000"));
 
         // mocking
-        given(lineDao.findAll()).willReturn(value);
+        given(lineDao.findAll()).willReturn(saveLines);
 
         // when
         final List<LineResponse> responses = lineService.showLines();
 
         // then
-        assertThat(responses).hasSize(2);
+        assertAll(() -> {
+            assertThat(responses).hasSize(2);
+            assertThat(responses.get(0).getName()).isEqualTo(saveLines.get(0).getName());
+            assertThat(responses.get(0).getColor()).isEqualTo(saveLines.get(0).getColor());
+            assertThat(responses.get(1).getName()).isEqualTo(saveLines.get(1).getName());
+            assertThat(responses.get(1).getColor()).isEqualTo(saveLines.get(1).getColor());
+        });
     }
 
     @Test
