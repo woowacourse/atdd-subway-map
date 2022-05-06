@@ -9,7 +9,7 @@ public class Station {
 
     public Station(Long id, String name) {
         if (name.isBlank()) {
-            throw new BlankArgumentException();
+            throw new BlankArgumentException("지하철의 이름은 빈 문자열일 수 없습니다.");
         }
         this.id = id;
         this.name = name;

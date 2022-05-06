@@ -14,7 +14,7 @@ public class Line {
 
     public Line(Long id, String name, String color) {
         if (name.isBlank() || color.isBlank()) {
-            throw new BlankArgumentException();
+            throw new BlankArgumentException("노선의 이름과 색깔은 빈 문자열일 수 없습니다.");
         }
         this.id = id;
         this.name = name;

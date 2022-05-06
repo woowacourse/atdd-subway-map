@@ -19,7 +19,7 @@ public class LineService {
 
     public Line save(String name, String color) {
         if (lineDao.existByName(name)) {
-            throw new DuplicateException();
+            throw new DuplicateException(String.format("%s는 중복된 노선 이름입니다.", name));
         }
         return lineDao.save(new Line(name, color));
     }
@@ -27,14 +27,14 @@ public class LineService {
     @Transactional(readOnly = true)
     public Line findById(Long id) {
         return lineDao.findById(id)
-            .orElseThrow(NotExistException::new);
+            .orElseThrow(() -> new NotExistException(String.format("%d와 동일한 ID의 노선이 없습니다.", id)));
     }
 
     public Line update(Long id, String name, String color) {
         Line line = findById(id);
 
         if (isDuplicateName(line, name)) {
-            throw new DuplicateException();
+            throw new DuplicateException(String.format("%s는 중복된 노선 이름입니다.", name));
         }
 
         return lineDao.update(new Line(id, name, color));
@@ -46,7 +46,7 @@ public class LineService {
 
     public void deleteById(Long id) {
         if (!lineDao.existById(id)) {
-            throw new NotExistException();
+            throw new NotExistException(String.format("%d와 동일한 ID의 노선이 없습니다.", id));
         }
         lineDao.deleteById(id);
     }

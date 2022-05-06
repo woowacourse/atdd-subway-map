@@ -19,14 +19,14 @@ public class StationService {
 
     public Station save(String name) {
         if (stationDao.existByName(name)) {
-            throw new DuplicateException();
+            throw new DuplicateException(String.format("%s는 중복된 지하철역 이름입니다.", name));
         }
         return stationDao.save(new Station(name));
     }
 
     public void deleteById(Long id) {
         if (!stationDao.existById(id)) {
-            throw new NotExistException();
+            throw new NotExistException(String.format("%d와 동일한 ID의 지하철이 없습니다.", id));
         }
         stationDao.deleteById(id);
     }
