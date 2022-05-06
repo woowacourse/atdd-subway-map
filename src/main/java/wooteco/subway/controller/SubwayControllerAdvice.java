@@ -1,5 +1,6 @@
 package wooteco.subway.controller;
 
+import java.util.NoSuchElementException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,7 @@ import wooteco.subway.dto.SubwayErrorResponse;
 @RestControllerAdvice
 public class SubwayControllerAdvice {
 
-    @ExceptionHandler(IllegalStateException.class)
+    @ExceptionHandler({IllegalStateException.class, NoSuchElementException.class})
     public ResponseEntity<SubwayErrorResponse> handleBusinessException(RuntimeException exception) {
         return ResponseEntity.badRequest().body(SubwayErrorResponse.from(exception));
     }

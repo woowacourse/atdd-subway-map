@@ -13,6 +13,8 @@ public interface LineDao {
 
     boolean existByName(String name);
 
+    boolean existById(Long id);
+
     int update(Line line);
 
     void delete(Long id);

@@ -61,6 +61,11 @@ public class InmemoryLineDao implements LineDao {
     }
 
     @Override
+    public boolean existById(Long id) {
+        return lines.containsKey(id);
+    }
+
+    @Override
     public int update(final Line line) {
         lines.put(line.getId(), line);
         return 1;
@@ -68,10 +73,6 @@ public class InmemoryLineDao implements LineDao {
 
     @Override
     public void delete(final Long id) {
-        Line remove = lines.remove(id);
-
-        if (remove == null) {
-            throw new IllegalArgumentException("없는 line 입니다.");
-        }
+        lines.remove(id);
     }
 }

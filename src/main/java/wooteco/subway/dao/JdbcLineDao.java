@@ -60,6 +60,12 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
+    public boolean existById(Long id) {
+        final String sql = "select exists (select * from LINE where id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    @Override
     public int update(final Line line) {
         final String sql = "update LINE set name = ?, color = ? where id = ?";
         return jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
@@ -68,10 +74,6 @@ public class JdbcLineDao implements LineDao {
     @Override
     public void delete(final Long id) {
         final String sql = "delete from LINE where id = ?";
-        int update = jdbcTemplate.update(sql, id);
-
-        if (update == 0) {
-            throw new IllegalArgumentException("없는 line 입니다.");
-        }
+        jdbcTemplate.update(sql, id);
     }
 }
