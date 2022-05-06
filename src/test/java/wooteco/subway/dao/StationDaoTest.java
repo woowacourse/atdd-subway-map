@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
 
@@ -13,7 +12,6 @@ import javax.sql.DataSource;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 class StationDaoTest {
@@ -60,5 +58,14 @@ class StationDaoTest {
         List<Station> stations = stationDao.findAll();
 
         assertThat(stations.contains(station)).isFalse();
+    }
+
+    @DisplayName("id를 통해 역의 존재 여부를 판단한다.")
+    @Test
+    void existStationById() {
+        Station savedStation = stationDao.save(new Station("강남역"));
+        boolean isExist = stationDao.existStationById(savedStation.getId());
+
+        assertThat(isExist).isTrue();
     }
 }

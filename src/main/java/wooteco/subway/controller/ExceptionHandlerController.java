@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.dto.ErrorMessageResponse;
+import wooteco.subway.exception.AccessNoneDataException;
 import wooteco.subway.exception.DataLengthException;
 
 @ControllerAdvice
@@ -35,5 +36,11 @@ public class ExceptionHandlerController {
     public ResponseEntity<ErrorMessageResponse> handleDataAccessException() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessageResponse("DB관련 작업에서 오류가 발생했습니다."));
+    }
+
+    @ExceptionHandler(AccessNoneDataException.class)
+    public ResponseEntity<ErrorMessageResponse> handleAccessNoneDataException() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorMessageResponse("접근하려는 데이터가 존재하지 않습니다."));
     }
 }

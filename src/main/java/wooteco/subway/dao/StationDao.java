@@ -38,6 +38,11 @@ public class StationDao {
         };
     }
 
+    public boolean existStationById(Long id) {
+        final String SQL = "select exists (select * from station where id = ?)";
+        return jdbcTemplate.queryForObject(SQL, Boolean.class, id);
+    }
+
     public List<Station> findAll() {
         String SQL = "select * from station;";
         return jdbcTemplate.query(SQL, rowMapper());

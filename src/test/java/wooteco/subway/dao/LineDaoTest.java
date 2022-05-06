@@ -93,4 +93,13 @@ public class LineDaoTest {
 
         assertThat(lines.contains(saveLine)).isFalse();
     }
+
+    @DisplayName("id를 통해 노선의 존재 여부를 판단한다.")
+    @Test
+    void existLineById() {
+        Line savedLine = lineDao.save(line);
+        boolean isExist = lineDao.existLineById(savedLine.getId());
+
+        assertThat(isExist).isTrue();
+    }
 }

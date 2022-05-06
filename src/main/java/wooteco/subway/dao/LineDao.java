@@ -44,19 +44,22 @@ public class LineDao {
         };
     }
 
+    public boolean existLineById(Long id) {
+        final String SQL = "select exists (select * from line where id = ?)";
+        return jdbcTemplate.queryForObject(SQL, Boolean.class, id);
+    }
+
     public Line findById(Long id) {
         String SQL = "select * from line where id = ?;";
         return jdbcTemplate.queryForObject(SQL, rowMapper(), id);
     }
 
     public void update(Line line) {
-        findById(line.getId());
         String SQL = "update line set name = ?, color = ? where id = ?;";
         jdbcTemplate.update(SQL, line.getName(), line.getColor(), line.getId());
     }
 
     public void delete(Long id) {
-        findById(id);
         String SQL = "delete from line where id = ?";
         jdbcTemplate.update(SQL, id);
     }

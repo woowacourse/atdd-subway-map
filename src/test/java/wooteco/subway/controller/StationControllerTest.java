@@ -5,9 +5,12 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
@@ -20,6 +23,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 @Transactional
 public class StationControllerTest extends AcceptanceTest {
+
+    @Autowired
+    private StationDao stationDao;
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -135,5 +141,19 @@ public class StationControllerTest extends AcceptanceTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("지하철역을 제거한다.")
+    @Test
+    void deleteStationWithNotExistData() {
+        Station savedStation = stationDao.save(new Station("강남역"));
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/stations/" + (savedStation.getId() + 1))
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

@@ -6,7 +6,6 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.LineDao;
@@ -17,7 +16,6 @@ import wooteco.subway.dto.LineResponse;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineControllerTest extends AcceptanceTest {
@@ -170,5 +168,19 @@ class LineControllerTest extends AcceptanceTest {
         List<Line> lines = lineDao.findAll();
 
         assertThat(lines.contains(savedLine)).isFalse();
+    }
+
+    @DisplayName("존재하지 않는 데이터를 삭제하려고 한다면 400예외가 발생한다.")
+    @Test
+    void deleteLineWithNotExistData() {
+        Line savedLine = lineDao.save(new Line("신분당선", "red"));
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/lines/" + (savedLine.getId() + 1))
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

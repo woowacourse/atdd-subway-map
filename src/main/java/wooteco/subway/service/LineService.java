@@ -5,6 +5,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.AccessNoneDataException;
 import wooteco.subway.exception.DataLengthException;
 
 import java.util.List;
@@ -48,10 +49,19 @@ public class LineService {
     }
 
     public void update(Long lineId, LineRequest request) {
+        validateExistData(lineId);
         lineDao.update(new Line(lineId, request.getName(), request.getColor()));
     }
 
     public void delete(Long lineId) {
+        validateExistData(lineId);
         lineDao.delete(lineId);
+    }
+
+    private void validateExistData(Long lineId) {
+        boolean isExist = lineDao.existLineById(lineId);
+        if (!isExist) {
+            throw new AccessNoneDataException();
+        }
     }
 }

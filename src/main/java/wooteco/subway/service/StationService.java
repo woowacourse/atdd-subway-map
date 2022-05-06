@@ -5,6 +5,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.AccessNoneDataException;
 import wooteco.subway.exception.DataLengthException;
 
 import java.util.List;
@@ -40,6 +41,14 @@ public class StationService {
     }
 
     public void delete(Long id) {
+        validateExistData(id);
         stationDao.deleteById(id);
+    }
+
+    private void validateExistData(Long lineId) {
+        boolean isExist = stationDao.existStationById(lineId);
+        if (!isExist) {
+            throw new AccessNoneDataException();
+        }
     }
 }
