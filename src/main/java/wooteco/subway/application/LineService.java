@@ -47,15 +47,16 @@ public class LineService {
         return queryById(line.getId());
     }
 
-    public Line update(Long id, String name, String color) {
+    public LineResponse update(Long id, LineRequest request) {
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, id)));
 
-        if (isDuplicateName(line, name)) {
-            throw new DuplicateException(String.format(DUPLICATE_MESSAGE, name));
+        if (isDuplicateName(line, request.getName())) {
+            throw new DuplicateException(String.format(DUPLICATE_MESSAGE, request.getName()));
         }
+        lineRepository.update(new Line(id, request.getName(), request.getColor()));
 
-        return lineRepository.update(new Line(id, name, color));
+        return queryById(id);
     }
 
     private boolean isDuplicateName(Line line, String name) {

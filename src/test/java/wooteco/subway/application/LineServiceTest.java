@@ -156,7 +156,8 @@ public class LineServiceTest {
 
         LineResponse response = lineService.save(request);
 
-        assertThatThrownBy(() -> lineService.update(response.getId(), name, "bg-red-600"))
+        assertThatThrownBy(
+            () -> lineService.update(response.getId(), new LineRequest(name, "bg-red-600")))
             .isInstanceOf(BlankArgumentException.class);
     }
 
@@ -171,7 +172,8 @@ public class LineServiceTest {
 
         LineResponse response = lineService.save(request);
 
-        assertThatThrownBy(() -> lineService.update(response.getId(), "신분당선", color))
+        assertThatThrownBy(
+            () -> lineService.update(response.getId(), new LineRequest("신분당선", color)))
             .isInstanceOf(BlankArgumentException.class);
     }
 
@@ -185,7 +187,7 @@ public class LineServiceTest {
 
         LineResponse response = lineService.save(request);
 
-        lineService.update(response.getId(), "1호선", "bg-blue-600");
+        lineService.update(response.getId(), new LineRequest("1호선", "bg-blue-600"));
 
         Line expectedLine = lineRepository.findById(response.getId()).orElseThrow();
         assertThat(expectedLine.getName()).isEqualTo("1호선");
@@ -195,7 +197,7 @@ public class LineServiceTest {
     @DisplayName("존재하지 않는 지하철 노선을 수정한다.")
     @Test
     void updateNotExistLine() {
-        assertThatThrownBy(() -> lineService.update(50L, "1호선", "bg-red-600"))
+        assertThatThrownBy(() -> lineService.update(50L, new LineRequest("1호선", "bg-red-600")))
             .isInstanceOf(NotFoundException.class);
     }
 
