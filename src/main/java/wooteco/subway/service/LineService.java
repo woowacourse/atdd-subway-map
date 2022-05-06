@@ -9,6 +9,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.DuplicateLineException;
 
 @Service
 @Transactional
@@ -36,13 +37,13 @@ public class LineService {
 
     private void validateName(Line line) {
         if (lineDao.existByName(line)) {
-            throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
+            throw new DuplicateLineException("이미 존재하는 노선 이름입니다.");
         }
     }
 
     private void validateColor(Line line) {
         if (lineDao.existByColor(line)) {
-            throw new IllegalArgumentException("이미 존재하는 노선 색깔입니다.");
+            throw new DuplicateLineException("이미 존재하는 노선 색깔입니다.");
         }
     }
 
@@ -75,13 +76,13 @@ public class LineService {
 
     private void validateNameExceptSameId(Long lineId, Line line) {
         if (lineDao.existByNameExceptSameId(lineId, line)) {
-            throw new IllegalArgumentException("이미 존재하는 노선 이름으로 업데이트할 수 없습니다.");
+            throw new DuplicateLineException("이미 존재하는 노선 이름으로 업데이트할 수 없습니다.");
         }
     }
 
     private void validateColorExceptSameId(Long lineId, Line line) {
         if (lineDao.existByColorExceptSameId(lineId, line)) {
-            throw new IllegalArgumentException("이미 존재하는 노선 색깔로 업데이트할 수 없습니다.");
+            throw new DuplicateLineException("이미 존재하는 노선 색깔로 업데이트할 수 없습니다.");
         }
     }
 

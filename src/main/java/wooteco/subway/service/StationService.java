@@ -9,6 +9,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.DuplicateStationException;
 
 @Service
 @Transactional
@@ -30,7 +31,7 @@ public class StationService {
 
     private void validateName(Station station) {
         if (stationDao.existByName(station)) {
-            throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");
+            throw new DuplicateStationException("이미 존재하는 역 이름입니다.");
         }
     }
 

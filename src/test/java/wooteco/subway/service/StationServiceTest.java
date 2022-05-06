@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.DuplicateStationException;
 
 @SpringBootTest
 @Transactional
@@ -49,7 +50,7 @@ class StationServiceTest {
         stationService.save(new StationRequest("station1"));
 
         assertThatThrownBy(() -> stationService.save(new StationRequest("station1")))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(DuplicateStationException.class)
             .hasMessageContaining("이미 존재하는 역 이름입니다.");
     }
 }

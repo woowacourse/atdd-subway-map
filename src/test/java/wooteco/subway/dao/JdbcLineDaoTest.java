@@ -16,7 +16,6 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Line;
 
 @JdbcTest
-@Sql("/schema.sql")
 class JdbcLineDaoTest {
 
     private final LineDao lineDao;

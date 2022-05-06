@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.DuplicateLineException;
 
 @SpringBootTest
 @Transactional
@@ -52,7 +53,7 @@ class LineServiceTest {
 
         assertThatThrownBy(() -> lineService.save(
             new LineRequest("line1", "yellow", null, null, 0)))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(DuplicateLineException.class)
             .hasMessageContaining("이미 존재하는 노선 이름입니다.");
     }
 
@@ -62,7 +63,7 @@ class LineServiceTest {
         lineService.save(new LineRequest("line1", "red", null, null, 0));
 
         assertThatThrownBy(() -> lineService.save(new LineRequest("line2", "red", null, null, 0)))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(DuplicateLineException.class)
             .hasMessageContaining("이미 존재하는 노선 색깔입니다.");
     }
 
@@ -92,7 +93,7 @@ class LineServiceTest {
         assertThatThrownBy(() ->
             lineService.update(lineResponse1.getId(),
                 new LineRequest("2호선", "yellow", null, null, 0)))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(DuplicateLineException.class)
             .hasMessageContaining("이미 존재하는 노선 이름으로 업데이트할 수 없습니다.");
     }
 
@@ -107,7 +108,7 @@ class LineServiceTest {
         assertThatThrownBy(() ->
             lineService.update(lineResponse1.getId(),
                 new LineRequest("1호선", "blue", null, null, 0)))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(DuplicateLineException.class)
             .hasMessageContaining("이미 존재하는 노선 색깔로 업데이트할 수 없습니다.");
     }
 }
