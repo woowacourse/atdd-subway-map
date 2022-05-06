@@ -1,9 +1,10 @@
 package wooteco.subway.dto;
 
 public class StationRequest {
-    private String name;
+    private final String name;
 
-    public StationRequest() {
+    private StationRequest() {
+        this(null);
     }
 
     public StationRequest(String name) {
