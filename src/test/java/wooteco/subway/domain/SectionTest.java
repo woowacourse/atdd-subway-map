@@ -36,16 +36,36 @@ class SectionTest {
     }
 
     @Test
-    @DisplayName("입력된 station이 downStation인지 확인할 수 있다.")
-    void isDownStation() {
+    @DisplayName("입력된 section이 upSection인지 확인할 수 있다.")
+    void isUpSection() {
         Line line = new Line(1L, "신분당선", "bg-red-600");
-        Station upStation = new Station(1L, "오리");
-        Station downStation = new Station(2L, "배카라");
-        Section section = new Section(line, upStation, downStation, 2);
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Station station3 = new Station(3L, "오카라");
+
+        Section upSection = new Section(line, station1, station2, 2);
+        Section downSection = new Section(line, station2, station3, 3);
 
         assertAll(
-                () -> assertThat(section.isDownStation(downStation)).isTrue(),
-                () -> assertThat(section.isDownStation(upStation)).isFalse()
+                () -> assertThat(downSection.isUpSection(upSection)).isTrue(),
+                () -> assertThat(upSection.isUpSection(downSection)).isFalse()
+        );
+    }
+
+    @Test
+    @DisplayName("입력된 section이 downSection인지 확인할 수 있다.")
+    void isDownSection() {
+        Line line = new Line(1L, "신분당선", "bg-red-600");
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Station station3 = new Station(3L, "오카라");
+
+        Section upSection = new Section(line, station1, station2, 2);
+        Section downSection = new Section(line, station2, station3, 3);
+
+        assertAll(
+                () -> assertThat(upSection.isDownSection(downSection)).isTrue(),
+                () -> assertThat(downSection.isDownSection(upSection)).isFalse()
         );
     }
 }

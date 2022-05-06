@@ -43,8 +43,12 @@ public class Section {
                 (this.upStation.equals(downStation) && this.downStation.equals(upStation));
     }
 
-    public boolean isDownStation(final Station downStation) {
-        return this.downStation.equals(downStation);
+    public boolean isUpSection(final Section section) {
+        return this.upStation.equals(section.downStation);
+    }
+
+    public boolean isDownSection(final Section section) {
+        return this.downStation.equals(section.upStation);
     }
 
     public Long getId() {
