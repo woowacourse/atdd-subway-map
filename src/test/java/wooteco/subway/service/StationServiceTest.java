@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,9 +60,11 @@ public class StationServiceTest {
         doReturn(List.of(new Station("강남역"), new Station("잠실역")))
                 .when(jdbcStationDao).findAll();
 
-        List<StationResponse> stationResponses = stationService.getStations();
+        List<Station> stations = stationService.getStations().stream()
+                .map(stationResponse -> new Station(stationResponse.getName()))
+                .collect(Collectors.toList());
 
-        assertThat(stationResponses.size()).isEqualTo(2);
+        assertThat(stations).containsExactly(new Station("강남역"), new Station("잠실역"));
     }
 
     @DisplayName("지하철역을 삭제한다.")
