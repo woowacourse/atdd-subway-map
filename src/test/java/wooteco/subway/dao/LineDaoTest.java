@@ -19,7 +19,7 @@ public class LineDaoTest {
     @Test
     @DisplayName("노선 저장")
     void save() {
-        Line line = new Line("1호선", "blue");
+        Line line = new Line("선릉역", "blue");
         Line savedLine = lineDao.save(line);
         assertThat(savedLine.getId()).isNotNull();
         assertThat(savedLine.getName()).isEqualTo("1호선");

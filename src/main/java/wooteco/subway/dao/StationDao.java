@@ -45,8 +45,8 @@ public class StationDao {
     }
 
     public boolean existByName(String name) {
-        String sql = "select count(*) from station where name = ? limit 1";
-        int count = jdbcTemplate.queryForObject(sql, Integer.class, name);
-        return count != 0;
+        String sql = "select exists (select name from station where name = ? limit 1) as success";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 }
+
