@@ -2,7 +2,6 @@ package wooteco.subway.ui;
 
 import java.net.URI;
 import java.util.List;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +29,7 @@ public class StationController {
         return ResponseEntity.created(URI.create("/stations/" + response.getId())).body(response);
     }
 
-    @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/stations")
     public ResponseEntity<List<StationResponse>> showStations() {
         final List<StationResponse> response = stationService.findAll();
 
