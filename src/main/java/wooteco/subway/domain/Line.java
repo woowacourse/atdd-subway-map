@@ -20,10 +20,6 @@ public class Line {
         this.color = color;
     }
 
-    public boolean isSameName(Line line) {
-        return this.name.equals(line.name);
-    }
-
     public Long getId() {
         return id;
     }

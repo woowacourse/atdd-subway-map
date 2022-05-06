@@ -14,7 +14,7 @@ public class FakeLineDao implements LineDao {
 
     public Line save(Line line) {
         boolean existName = lines.stream()
-                .anyMatch(line::isSameName);
+                .anyMatch(it -> isSameName(it, line));
         if (existName) {
             throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
         }
@@ -52,5 +52,9 @@ public class FakeLineDao implements LineDao {
 
     public void deleteById(Long id) {
         lines.remove(findById(id));
+    }
+
+    private boolean isSameName(Line line1, Line line2) {
+        return line1.getName().equals(line2.getName());
     }
 }
