@@ -28,12 +28,11 @@ public class JdbcLineDao implements LineDao {
     public Line save(Line line) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO LINE(name, color) VALUES(?, ?)";
-        String name = line.getName();
-        String color = line.getColor();
+        
         jdbcTemplate.update((Connection conn) -> {
             PreparedStatement pstmt = conn.prepareStatement(sql, new String[] {"id"});
-            pstmt.setString(1, name);
-            pstmt.setString(2, color);
+            pstmt.setString(1, line.getName());
+            pstmt.setString(2, line.getColor());
             return pstmt;
         }, keyHolder);
 

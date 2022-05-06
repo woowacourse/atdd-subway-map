@@ -27,10 +27,10 @@ public class JdbcStationDao implements StationDao {
     public Station save(Station station) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO STATION(name) VALUES(?)";
-        String name = station.getName();
+        
         jdbcTemplate.update((Connection conn) -> {
             PreparedStatement pstmt = conn.prepareStatement(sql, new String[] {"id"});
-            pstmt.setString(1, name);
+            pstmt.setString(1, station.getName());
             return pstmt;
         }, keyHolder);
 
