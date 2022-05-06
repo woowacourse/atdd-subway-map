@@ -15,5 +15,5 @@ public interface LineDao {
 
     void update(Long id, String name, String color) throws NoSuchLineException, DuplicateLineException;
 
-    Long deleteById(Long id);
+    void deleteById(Long id);
 }
