@@ -24,7 +24,7 @@ public class LineService {
         Line line = new Line(name, color);
         validateDuplicationName(line);
         Line savedLine = lineDao.save(line);
-        return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(), null);
+        return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor());
     }
 
     private void validateDataSize(String name, String color) {
@@ -46,13 +46,13 @@ public class LineService {
     public List<LineResponse> findAll() {
         return lineDao.findAll()
                 .stream()
-                .map(l -> new LineResponse(l.getId(), l.getName(), l.getColor(), null))
+                .map(l -> new LineResponse(l.getId(), l.getName(), l.getColor()))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long lineId) {
         Line line = lineDao.findById(lineId);
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), null);
+        return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 
     public void update(Long lineId, String name, String color) {
