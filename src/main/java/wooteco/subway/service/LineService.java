@@ -22,7 +22,9 @@ public class LineService {
 
     public LineResponse save(LineRequest request) {
         String name = request.getName();
-        checkDuplicateName(dao.isExistName(name));
+        if(dao.isExistName(name)){
+            throw new IllegalArgumentException(DUPLICATE_LINE_NAME);
+        }
 
         Line line = dao.save(name, request.getColor());
         return new LineResponse(line);
@@ -45,14 +47,10 @@ public class LineService {
 
     public void update(Long id, LineRequest request) {
         String name = request.getName();
-        checkDuplicateName(dao.isExistNameWithoutItself(id, name));
-
-        dao.update(id, name, request.getColor());
-    }
-
-    private void checkDuplicateName(Boolean result) {
-        if (result) {
+        if(dao.isExistNameWithoutItself(id, name)){
             throw new IllegalArgumentException(DUPLICATE_LINE_NAME);
         }
+
+        dao.update(id, name, request.getColor());
     }
 }
