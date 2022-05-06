@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
+import wooteco.subway.utils.exception.IdNotFoundException;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Transactional
@@ -56,6 +58,13 @@ class StationRepositoryTest {
         assertThat(stationRepository.findAll()).isEmpty();
     }
 
+    @DisplayName("역 삭제 시 존재하지 않는 id일 경우 에러를 발생한다")
+    @Test
+    void deleteIdNotFound() {
+        assertThatThrownBy(() -> stationRepository.deleteById(1L))
+                .isInstanceOf(IdNotFoundException.class);
+    }
+
     @DisplayName("이름으로 역이 존재하는지 조회한다.")
     @Test
     void findByName() {
@@ -75,5 +84,12 @@ class StationRepositoryTest {
     void findById() {
         Station saveStation = stationRepository.save(new Station("신림역"));
         assertThat(stationRepository.findById(saveStation.getId())).isNotNull();
+    }
+
+    @DisplayName("id로 역 조회시 존재하지 않는 id일 경우 에러를 발생한다")
+    @Test
+    void findIdNotFound() {
+        assertThatThrownBy(() -> stationRepository.findById(1L))
+                .isInstanceOf(IdNotFoundException.class);
     }
 }
