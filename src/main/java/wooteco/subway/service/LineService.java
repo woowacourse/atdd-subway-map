@@ -53,7 +53,7 @@ public class LineService {
         checkLineNotFound(id);
 
         String name = request.getName();
-        checkDuplicateName(dao.isExistName(id, name));
+        checkDuplicateName(dao.isExistNameWithoutItself(id, name));
 
         dao.update(id, name, request.getColor());
     }

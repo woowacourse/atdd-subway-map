@@ -65,7 +65,7 @@ public class LineDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
-    public boolean isExistName(Long id, String name) {
+    public boolean isExistNameWithoutItself(Long id, String name) {
         final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE id != ? AND name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, id, name);
     }

@@ -117,7 +117,7 @@ class LineServiceTest {
         LineRequest lineRequest = new LineRequest("name2", "blue");
 
         given(lineDao.isExistId(1L)).willReturn(true);
-        given(lineDao.isExistName(1L, "name")).willReturn(false);
+        given(lineDao.isExistNameWithoutItself(1L, "name")).willReturn(false);
 
         assertDoesNotThrow(() -> lineService.update(1L, lineRequest));
     }
@@ -128,7 +128,7 @@ class LineServiceTest {
         LineRequest lineRequest = new LineRequest("name2", "blue");
 
         given(lineDao.isExistId(1L)).willReturn(false);
-        given(lineDao.isExistName(1L, "name")).willReturn(false);
+        given(lineDao.isExistNameWithoutItself(1L, "name")).willReturn(false);
 
         assertThatThrownBy(() -> lineService.update(1L, lineRequest))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -141,7 +141,7 @@ class LineServiceTest {
         LineRequest lineRequest = new LineRequest("name", "blue");
 
         given(lineDao.isExistId(1L)).willReturn(true);
-        given(lineDao.isExistName(1L, "name")).willReturn(true);
+        given(lineDao.isExistNameWithoutItself(1L, "name")).willReturn(true);
 
         assertThatThrownBy(() -> lineService.update(1L, lineRequest))
                 .isInstanceOf(IllegalArgumentException.class)

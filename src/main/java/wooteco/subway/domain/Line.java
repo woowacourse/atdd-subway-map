@@ -11,19 +11,6 @@ public class Line {
         this.color = color;
     }
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
-
-    public boolean isSameId(Long id) {
-        return this.id == id;
-    }
-
-    public boolean isSameName(String name) {
-        return this.name.equals(name);
-    }
-
     public Long getId() {
         return id;
     }
@@ -36,11 +23,4 @@ public class Line {
         return color;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
 }
