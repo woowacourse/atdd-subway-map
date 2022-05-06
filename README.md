@@ -101,6 +101,44 @@
 * LineAcceptanceTest에서 존재하지 않는 노선의 ID로 조회하는 것이 사용자 입장에서 가능한가?
   * 사용자가 어떤 노선 ID에 대해 존재하는지 존재하지 않는지 알 수 있을까?
 
+
+# 1단계 피드백 사항
+
+* lineDao.findById(id) -> 존재하지 않는 id가 들어가면 어떻게 되나요? , Optional 적용을 고민해볼 수 있을 것 같아요.
+  * 존재하지 않는 id로 조회할 경우 DB에서 예외처리를 하고 있음.
+
+```java
+@Override
+    public Line findById(final Long id) {
+        final String sql = "SELECT id, name, color FROM LINE WHERE id = (?)";
+
+        try {
+            return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> new Line(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("color")
+            ), id);
+        } catch (EmptyResultDataAccessException exception) {
+            throw new NoSuchLineException();
+        }
+    }
+```
+
+Dao에서는 Optional로 반환하고 서비스에서 예외처리를 하는 것이 맞을까? 아니면 Dao에서 예외처리를 해주는 것이 맞을까. 
+-> 해당 id가 존재하는지 검증하는 책임은 누구에게 있을까? Service일까 Dao일까
+
+<br>
+
+* 동등성 비교를 name과 color를 기준으로 하고 있네요. id는 어떤 역할을 하나요?
+  * Line의 동등성 비교는 무엇으로 해야할까? 도메인 규칙상 name과 color로 비교해야한다고 결론지었음.
+  * id는 auto_increment를 사용하기 때문에 id 값을 얻으려면 DB에 한번 저장이 되어야함. 그 전까지는 null
+  * DB 스키마로 name과 color를 unique 속성으로 제한했기 때문에 같은 name과 color를 가진 두 개의 데이터는 존재할 수 없음
+
+* 존재하지 않는 id를 삭제 시도 하면 어떻게 되나요?
+  * 원래 존재하지 않는 id로 삭제 시도를 할 경우 예외를 던지도록 설계했었음.
+  * JDBC로 DELETE문을 실행했을 때, 존재하지 않는 id라면 예외가 던져지지 않고 affected row가 0으로 반환됨.
+  * 사용자 입장에서 생각해봤을때, 삭제가 일어나지 않으면 문제이지만, 없는 id로 삭제 요청을 보내면 삭제가 되든 안되든 별로 중요하지 않음. 원래 존재하지 않았으니까.
+
 # 제약사항
 
 * @Controller 이외의 스프링 기능을 사용하지 않는다.
