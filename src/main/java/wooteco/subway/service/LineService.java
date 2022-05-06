@@ -30,9 +30,7 @@ public class LineService {
     }
 
     public LineResponse showById(Long id) {
-        Line line = jdbcLineDao.findById(id)
-            .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다."));
-        return LineResponse.from(line);
+        return LineResponse.from(findBy(id));
     }
 
     public List<LineResponse> showAll() {
@@ -44,12 +42,19 @@ public class LineService {
     @Transactional
     public void updateById(Long id, LineUpdateRequest request) {
         validateDuplicateNameAndColor(request.getName(), request.getColor());
-        jdbcLineDao.modifyById(id, new Line(request.getName(), request.getColor()));
+        Line line = findBy(id);
+        line.update(request.getName(), request.getColor());
+        jdbcLineDao.modifyById(id, line);
     }
 
     @Transactional
     public void removeById(Long id) {
         jdbcLineDao.deleteById(id);
+    }
+
+    private Line findBy(Long id) {
+        return jdbcLineDao.findById(id)
+            .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다."));
     }
 
     private void validateDuplicateNameAndColor(String name, String color) {

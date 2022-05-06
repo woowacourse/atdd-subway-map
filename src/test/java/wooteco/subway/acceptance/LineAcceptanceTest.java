@@ -138,6 +138,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("노선 수정시 존재하지 않는 id인 경우 400응답을 한다.")
+    void modifyNotfoundId() {
+        // given
+        long id = saveStationAndGetId("1호선", "blue");
+
+        // when
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "2호선");
+        params2.put("color", "green");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(params2)
+            .when()
+            .put("/lines/{id}", 2)
+            .then()
+            .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(404);
+    }
+
+    @Test
     @DisplayName("노선 수정시 빈 값일 경우 400응답을 한다.")
     void modifyEmpty() {
         // given
