@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -95,10 +97,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        List<StationResponse> responses = response.jsonPath().getList(".", StationResponse.class);
+
+        List<Long> ids = responses.stream().map(StationResponse::getId).collect(Collectors.toList());
+
+        assertAll(
+                () -> assertThat(ids).containsAll(expectedLineIds),
+                () -> assertThat(responses.get(0).getName()).isEqualTo("강남역"),
+                () -> assertThat(responses.get(1).getName()).isEqualTo("역삼역")
+        );
+
     }
 
     @DisplayName("지하철역을 제거한다.")
