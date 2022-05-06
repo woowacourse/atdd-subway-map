@@ -1,10 +1,12 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -40,6 +42,17 @@ class LineServiceTest {
                 () -> lineResponse.getName().equals("신분당선"),
                 () -> lineResponse.getColor().equals("bg-red-600")
         );
+    }
+
+    @DisplayName("지하철 노선을 중복 등록하면, 예외가 발생한다.")
+    @Test
+    void createDuplicatedLine() {
+        doThrow(new IllegalArgumentException("이미 등록된 지하철 노선입니다."))
+                .when(JdbcLineDao).save(any(Line.class));
+
+        assertThatThrownBy(() -> lineService.createLine(new LineRequest("신분당선", "bg-red-600")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 등록된 지하철 노선입니다.");
     }
 
     @DisplayName("지하철 노선 전체 목록을 조회한다.")
