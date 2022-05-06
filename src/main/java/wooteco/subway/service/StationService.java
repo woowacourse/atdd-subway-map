@@ -12,7 +12,6 @@ import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 @Service
-@Transactional
 public class StationService {
 
     private final StationDao stationDao;
@@ -21,6 +20,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public StationResponse create(StationRequest stationRequest) {
         Station station = stationRequest.toEntity();
         try {

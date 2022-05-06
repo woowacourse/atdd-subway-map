@@ -12,7 +12,6 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 @Service
-@Transactional
 public class LineService {
 
     private final LineDao lineDao;
@@ -21,6 +20,7 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
+    @Transactional
     public LineResponse create(LineRequest lineRequest) {
         Line line = lineRequest.toEntity();
         try {
@@ -47,6 +47,7 @@ public class LineService {
         }
     }
 
+    @Transactional
     public void update(Long id, LineRequest lineRequest) {
         validateExist(id);
         Line line = lineRequest.toEntity();
