@@ -10,6 +10,11 @@ import wooteco.subway.dto.ErrorResponse;
 @RestControllerAdvice
 public class ControllerAdvice {
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> globalException(Exception exception) {
+        return ResponseEntity.internalServerError().body(new ErrorResponse(exception.getMessage()));
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> illegalArgumentException(IllegalArgumentException exception) {
         return ResponseEntity.badRequest().body(new ErrorResponse(exception.getMessage()));
