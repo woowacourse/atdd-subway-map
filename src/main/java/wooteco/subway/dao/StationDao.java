@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -31,12 +32,17 @@ public class StationDao {
             preparedStatement.setString(1, station.getName());
             return preparedStatement;
         }, keyHolder);
-        return keyHolder.getKey().longValue();
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     public boolean hasStation(String name) {
         final String sql = "SELECT EXISTS (SELECT * FROM station WHERE name = ?);";
-        return jdbcTemplate.queryForObject(sql, Boolean.class ,name);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
+    }
+
+    public boolean hasStation(Long id) {
+        final String sql = "SELECT EXISTS (SELECT * FROM station WHERE id = ?);";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
     }
 
     public Station findById(Long id) {

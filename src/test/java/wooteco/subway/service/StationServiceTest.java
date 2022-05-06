@@ -36,11 +36,9 @@ class StationServiceTest {
     void save_error() {
         //given
         Station station = new Station("hunch");
-
-        //when
         stationService.save(station);
 
-        //then
+        //when then
         assertThatThrownBy(() -> stationService.save(station))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 해당 이름의 역이 있습니다.");
@@ -65,11 +63,20 @@ class StationServiceTest {
     void delete() {
         //given
         Station station = new Station("강남역");
+        Long id = stationService.save(station).getId();
 
         //when
-        stationService.delete(stationService.save(station).getId());
+        stationService.delete(id);
 
         //then
         assertThat(stationService.findAll()).hasSize(0);
+    }
+
+    @DisplayName("없는 지하철역을 삭제할 수 없다.")
+    @Test
+    void delete_error() {
+        assertThatThrownBy(() -> stationService.delete(100L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 아이디의 역이 없습니다.");
     }
 }

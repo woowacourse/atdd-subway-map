@@ -37,12 +37,26 @@ class StationDaoTest {
 
     @DisplayName("해당 이름의 지하철역이 있는지 확인한다.")
     @Test
-    void hasStation() {
+    void hasStation_name() {
         Station station = new Station("강남역");
         stationDao.save(station);
 
         assertThat(stationDao.hasStation("강남역"))
                 .isTrue();
+        assertThat(stationDao.hasStation("선릉역"))
+                .isFalse();
+    }
+
+    @DisplayName("해당 id의 지하철역이 있는지 확인한다.")
+    @Test
+    void hasStation_id() {
+        Station station = new Station("강남역");
+        Long id = stationDao.save(station);
+
+        assertThat(stationDao.hasStation(id))
+                .isTrue();
+        assertThat(stationDao.hasStation(100L))
+                .isFalse();
     }
 
     @DisplayName("지하철역을 조회한다.")

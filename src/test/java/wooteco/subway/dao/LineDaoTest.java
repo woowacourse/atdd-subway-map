@@ -1,14 +1,12 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
 
@@ -39,11 +37,24 @@ class LineDaoTest {
 
     @DisplayName("해당 이름의 지하철 노선이 있는지 여부를 확인한다.")
     @Test
-    void hasLine() {
+    void hasLine_name() {
         Line line = new Line("신분당선", "red");
         lineDao.save(line);
         assertThat(lineDao.hasLine("신분당선"))
                 .isTrue();
+        assertThat(lineDao.hasLine("분당선"))
+                .isFalse();
+    }
+
+    @DisplayName("해당 id의 지하철 노선이 있는지 여부를 확인한다.")
+    @Test
+    void hasLine_id() {
+        Line line = new Line("신분당선", "red");
+        Long id = lineDao.save(line);
+        assertThat(lineDao.hasLine(id))
+                .isTrue();
+        assertThat(lineDao.hasLine(100L))
+                .isFalse();
     }
 
     @DisplayName("지하철 노선을 조회한다.")

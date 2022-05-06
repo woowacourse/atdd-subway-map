@@ -66,13 +66,23 @@ class LineServiceTest {
         //given
         Line line = new Line("신분당선", "red");
         Line line2 = new Line("분당선", "green");
+        Long id = lineService.save(line).getId();
 
         //when
-        lineService.update(lineService.save(line).getId(), line2);
+        lineService.update(id, line2);
 
         //then
         assertThat(lineService.findAll().get(0).getName())
                 .isEqualTo("분당선");
+    }
+
+    @DisplayName("없는 지하철 노선을 수정할 수 없다.")
+    @Test
+    void update_error() {
+        Line line = new Line("신분당선", "red");
+        assertThatThrownBy(() -> lineService.update(100L, line))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 아이디의 노선이 없습니다.");
     }
 
     @DisplayName("지하철 노선을 삭제한다.")
@@ -80,11 +90,20 @@ class LineServiceTest {
     void delete() {
         //given
         Line line = new Line("신분당선", "red");
+        Long id = lineService.save(line).getId();
 
         //when
-        lineService.delete(lineService.save(line).getId());
+        lineService.delete(id);
 
         //then
         assertThat(lineService.findAll()).hasSize(0);
+    }
+
+    @DisplayName("없는 지하철 노선을 삭제할 수 없다.")
+    @Test
+    void delete_error() {
+        assertThatThrownBy(() -> lineService.delete(100L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 아이디의 노선이 없습니다.");
     }
 }
