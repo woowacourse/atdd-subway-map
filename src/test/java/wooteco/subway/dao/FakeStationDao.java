@@ -3,7 +3,6 @@ package wooteco.subway.dao;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
 
@@ -27,10 +26,9 @@ public class FakeStationDao implements StationDao {
     }
 
     @Override
-    public List<String> findNames() {
+    public Boolean existByName(Station station) {
         return stations.stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
+                .anyMatch(it -> it.getName().equals(station.getName()));
     }
 
     @Override

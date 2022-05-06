@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.Collections;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -38,15 +39,15 @@ public class StationDaoImpl implements StationDao {
     }
 
     @Override
-    public List<String> findNames() {
-        String sql = "SELECT name FROM STATION";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("name"));
+    public Boolean existByName(Station station) {
+        String sql = "SELECT EXISTS (SELECT * FROM STATION WHERE name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, station.getName());
     }
 
     @Override
     public List<Station> findAll() {
         String sql = "SELECT * FROM STATION";
-        return jdbcTemplate.query(sql, rowMapper);
+        return Collections.unmodifiableList(jdbcTemplate.query(sql, rowMapper));
     }
 
     @Override

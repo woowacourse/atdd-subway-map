@@ -9,9 +9,9 @@ public interface LineDao {
 
     Line findById(Long id);
 
-    List<String> findNames();
+    Boolean existByName(Line line);
 
-    List<String> findColors();
+    Boolean existByColor(Line line);
 
     List<Line> findAll();
 

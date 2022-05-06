@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.Collections;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -47,27 +48,27 @@ public class LineDaoImpl implements LineDao {
     }
 
     @Override
-    public List<String> findNames() {
-        String sql = "SELECT name FROM LINE";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("name"));
+    public Boolean existByName(Line line) {
+        String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, line.getName());
     }
 
     @Override
-    public List<String> findColors() {
-        String sql = "SELECT color FROM LINE";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("color"));
+    public Boolean existByColor(Line line) {
+        String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE color = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, line.getColor());
     }
 
     @Override
     public List<Line> findAll() {
         String sql = "SELECT * FROM LINE";
-        return jdbcTemplate.query(sql, rowMapper);
+        return Collections.unmodifiableList(jdbcTemplate.query(sql, rowMapper));
     }
 
     @Override
     public void update(Long id, String name, String color) {
         String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
-        jdbcTemplate.update(sql, name, color, id);
+        jdbcTemplate.update(sql, name, color, id, id);
     }
 
     @Override

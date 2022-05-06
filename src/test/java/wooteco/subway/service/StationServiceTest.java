@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
@@ -44,7 +45,7 @@ public class StationServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(StationService.DUPLICATE_EXCEPTION_MESSAGE);
     }
-    
+
     @Test
     @DisplayName("지하철 역들을 조회할 수 있다.")
     void findStations() {
@@ -70,7 +71,10 @@ public class StationServiceTest {
 
         stationService.deleteStation(id);
 
-        List<String> names = stationDao.findNames();
-        assertThat(names).doesNotContain("강남역");
+        List<Station> stations = stationDao.findAll();
+        List<String> stationNames = stations.stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        assertThat(stationNames).doesNotContain("강남역");
     }
 }

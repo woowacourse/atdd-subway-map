@@ -29,11 +29,11 @@ public class LineServiceTest {
     @DisplayName("지하철 노선을 저장할 수 있다.")
     void insertLine() {
         LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
-        lineService.insertLine(lineRequest);
+        LineResponse lineResponse = lineService.insertLine(lineRequest);
 
-        List<String> names = lineDao.findNames();
+        Line line = lineDao.findById(lineResponse.getId());
 
-        assertThat(names).contains("신분당선");
+        assertThat(line.getName()).isEqualTo("신분당선");
     }
 
     @Test
@@ -107,8 +107,8 @@ public class LineServiceTest {
         LineResponse lineResponse = lineService.insertLine(lineRequest);
 
         lineService.deleteLine(lineResponse.getId());
+        List<Line> lines = lineDao.findAll();
 
-        List<String> names = lineDao.findNames();
-        assertThat(names).doesNotContain("신분당선");
+        assertThat(lines).isEmpty();
     }
 }

@@ -7,7 +7,7 @@ public interface StationDao {
 
     Station insert(Station station);
 
-    List<String> findNames();
+    Boolean existByName(Station station);
 
     List<Station> findAll();
 

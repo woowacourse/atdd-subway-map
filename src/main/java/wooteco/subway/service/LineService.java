@@ -22,25 +22,21 @@ public class LineService {
     }
 
     public LineResponse insertLine(LineRequest lineRequest) {
-        String name = lineRequest.getName();
-        String color = lineRequest.getColor();
-        validateDuplicateName(name);
-        validateDuplicateColor(color);
-        Line line = new Line(name, color);
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        validateDuplicateName(line);
+        validateDuplicateColor(line);
         Line newLine = lineDao.insert(line);
         return new LineResponse(newLine);
     }
 
-    private void validateDuplicateName(String name) {
-        List<String> names = lineDao.findNames();
-        if (names.contains(name)) {
+    private void validateDuplicateName(Line line) {
+        if (lineDao.existByName(line)) {
             throw new IllegalArgumentException(NAME_DUPLICATE_EXCEPTION_MESSAGE);
         }
     }
 
-    private void validateDuplicateColor(String color) {
-        List<String> colors = lineDao.findColors();
-        if (colors.contains(color)) {
+    private void validateDuplicateColor(Line line) {
+        if (lineDao.existByColor(line)) {
             throw new IllegalArgumentException(COLOR_DUPLICATE_EXCEPTION_MESSAGE);
         }
     }
@@ -58,10 +54,6 @@ public class LineService {
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        String name = lineRequest.getName();
-        String color = lineRequest.getColor();
-        validateDuplicateName(name);
-        validateDuplicateColor(color);
         lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
     }
 

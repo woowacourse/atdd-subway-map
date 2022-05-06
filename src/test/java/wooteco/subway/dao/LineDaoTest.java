@@ -1,11 +1,11 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -25,7 +25,8 @@ class LineDaoTest {
     }
 
     @Test
-    void save() {
+    @DisplayName("지하철 노선을 저장할 수 있다.")
+    void insert() {
         String name = "신분당선";
         String color = "bg-red-600";
         Line line = lineDao.insert(new Line(name, color));
@@ -34,6 +35,7 @@ class LineDaoTest {
     }
 
     @Test
+    @DisplayName("id로 지하철 노선을 조회할 수 있다.")
     void findById() {
         String name = "신분당선";
         String color = "bg-red-600";
@@ -45,6 +47,25 @@ class LineDaoTest {
     }
 
     @Test
+    @DisplayName("이미 존재하는 이름의 노선인지 확인한다.")
+    void existByName() {
+        lineDao.insert(new Line("신분당선", "bg-red-600"));
+
+        Boolean actual = lineDao.existByName(new Line("신분당선", "bg-green-600"));
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    @DisplayName("이미 존재하는 색의 노선인지 확인한다.")
+    void existByColor() {
+        lineDao.insert(new Line("신분당선", "bg-red-600"));
+
+        Boolean actual = lineDao.existByColor(new Line("분당선", "bg-red-600"));
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    @DisplayName("지하철 노선들을 조회할 수 있다.")
     void findAll() {
         lineDao.insert(new Line("신분당선", "bg-red-600"));
         lineDao.insert(new Line("2호선", "bg-blue-500"));
@@ -54,6 +75,7 @@ class LineDaoTest {
     }
 
     @Test
+    @DisplayName("지하철 노선을 업데이트할 수 있다.")
     void update() {
         Line line = lineDao.insert(new Line("신분당선", "bg-red-600"));
 
@@ -70,10 +92,9 @@ class LineDaoTest {
     }
 
     @Test
+    @DisplayName("지하철 노선을 지울 수 있다.")
     void delete() {
-        String name = "신분당선";
-        String color = "bg-red-600";
-        Line line = lineDao.insert(new Line(name, color));
+        Line line = lineDao.insert(new Line("신분당선", "bg-red-600"));
 
         lineDao.delete(line.getId());
         assertThat(lineDao.findAll()).isEmpty();

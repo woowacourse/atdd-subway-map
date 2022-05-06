@@ -3,11 +3,10 @@ package wooteco.subway.dao;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 
-public class FakeLineDao implements LineDao{
+public class FakeLineDao implements LineDao {
 
     private Long seq = 0L;
     private List<Line> lines = new ArrayList<>();
@@ -35,17 +34,15 @@ public class FakeLineDao implements LineDao{
     }
 
     @Override
-    public List<String> findNames() {
+    public Boolean existByName(Line line) {
         return lines.stream()
-                .map(Line::getName)
-                .collect(Collectors.toList());
+                .anyMatch(it -> it.getName().equals(line.getName()));
     }
 
     @Override
-    public List<String> findColors() {
+    public Boolean existByColor(Line line) {
         return lines.stream()
-                .map(Line::getColor)
-                .collect(Collectors.toList());
+                .anyMatch(it -> it.getColor().equals(line.getColor()));
     }
 
     @Override

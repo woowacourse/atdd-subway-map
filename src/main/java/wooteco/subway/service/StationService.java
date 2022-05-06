@@ -22,15 +22,14 @@ public class StationService {
 
     public StationResponse insertStation(StationRequest stationRequest) {
         String name = stationRequest.getName();
-        validateDuplicateName(name);
         Station station = new Station(name);
+        validateDuplicateName(station);
         Station newStation = stationDao.insert(station);
         return new StationResponse(newStation);
     }
 
-    private void validateDuplicateName(String stationName) {
-        List<String> names = stationDao.findNames();
-        if(names.contains(stationName)){
+    private void validateDuplicateName(Station station) {
+        if(stationDao.existByName(station)){
             throw new IllegalArgumentException(DUPLICATE_EXCEPTION_MESSAGE);
         }
     }
