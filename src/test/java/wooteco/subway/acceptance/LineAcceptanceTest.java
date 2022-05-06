@@ -35,6 +35,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.jsonPath().getLong("id")).isEqualTo(1L);
+        assertThat(response.jsonPath().getString("name")).isEqualTo("신분당선");
+        assertThat(response.jsonPath().getString("color")).isEqualTo("bg-red-600");
     }
 
     @Test
