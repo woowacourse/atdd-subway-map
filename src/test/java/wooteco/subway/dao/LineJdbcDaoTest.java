@@ -113,7 +113,8 @@ class LineJdbcDaoTest {
 
         // then
         Line findLine = dao.findById(savedLine.getId()).get();
-        assertThat(findLine).isEqualTo(new Line("changedName", "changedColor"));
+        assertThat(findLine.getName()).isEqualTo("changedName");
+        assertThat(findLine.getColor()).isEqualTo("changedColor");
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 이름을 수정하면 예외가 발생한다")

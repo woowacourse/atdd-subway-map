@@ -44,12 +44,12 @@ public class Line {
             return false;
         }
         final Line line = (Line) o;
-        return name.equals(line.name) && color.equals(line.color);
+        return id.equals(line.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, color);
+        return Objects.hash(id);
     }
 
     @Override
