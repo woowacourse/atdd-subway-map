@@ -46,12 +46,12 @@ public class LineDaoTest {
     @DisplayName("모든 노선 목록을 조회한다.")
     @Test
     void findAll() {
-        lineDao.save(line);
-        lineDao.save(new Line("1호선", "blue"));
+        Line savedLine1 = lineDao.save(line);
+        Line savedLine2 = lineDao.save(new Line("1호선", "blue"));
 
         List<Line> lines = lineDao.findAll();
 
-        assertThat(lines.size()).isEqualTo(2);
+        assertThat(lines).containsExactly(savedLine1, savedLine2);
     }
 
     @DisplayName("id에 맞는 노선을 조회한다.")

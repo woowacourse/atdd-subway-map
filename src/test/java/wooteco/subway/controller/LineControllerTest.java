@@ -94,8 +94,8 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
-        lineDao.save(new Line("신분당선", "red"));
-        lineDao.save(new Line("1호선", "blue"));
+        Line savedLine1 = lineDao.save(new Line("신분당선", "red"));
+        Line savedLine2 = lineDao.save(new Line("1호선", "blue"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -104,7 +104,15 @@ class LineControllerTest extends AcceptanceTest {
                 .extract();
         List<LineResponse> actual = response.jsonPath().getList(".", LineResponse.class);
 
-        assertThat(actual.size()).isEqualTo(2);
+        assertAll(
+                () -> assertThat(actual.get(0).getId()).isEqualTo(savedLine1.getId()),
+                () -> assertThat(actual.get(0).getName()).isEqualTo(savedLine1.getName()),
+                () -> assertThat(actual.get(0).getColor()).isEqualTo(savedLine1.getColor()),
+
+                () -> assertThat(actual.get(1).getId()).isEqualTo(savedLine2.getId()),
+                () -> assertThat(actual.get(1).getName()).isEqualTo(savedLine2.getName()),
+                () -> assertThat(actual.get(1).getColor()).isEqualTo(savedLine2.getColor())
+        );
     }
 
     @DisplayName("지하철 노선을 조회한다.")
