@@ -1,6 +1,8 @@
 package wooteco.subway.domain;
 
 import java.util.Objects;
+import wooteco.subway.exception.ColorEmptyException;
+import wooteco.subway.exception.LineEmptyException;
 
 public class Line {
 
@@ -22,13 +24,13 @@ public class Line {
 
     private void validateName(final String name) {
         if (name.isBlank()) {
-            throw new IllegalArgumentException("노선 이름은 공백일 수 없습니다.");
+            throw new LineEmptyException();
         }
     }
 
     private void validateColor(final String color) {
         if (color.isBlank()) {
-            throw new IllegalArgumentException("색상이 공백일 수 없습니다.");
+            throw new ColorEmptyException();
         }
     }
 
