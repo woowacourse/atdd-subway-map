@@ -50,12 +50,12 @@ public class JdbcLineDao {
     }
 
     public void modifyById(Long id, Line line) {
-        String sql = "update line set name = (?), color = (?) where id = (?)";
+        String sql = "update line set name = ?, color = ? where id = ?";
         jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
     public void deleteById(Long id) {
-        String sql = "delete from line where id = (?)";
+        String sql = "delete from line where id = ?";
         jdbcTemplate.update(sql, id);
     }
 
@@ -65,7 +65,7 @@ public class JdbcLineDao {
     }
 
     public boolean existByNameAndColor(String name, String color) {
-        String sql = "select count(*) from line where name = (?) and color = (?)";
+        String sql = "select count(*) from line where name = ? and color = ?";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, name, color);
         return count != 0;
     }
