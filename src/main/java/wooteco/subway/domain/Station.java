@@ -39,5 +39,14 @@ public class Station {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("Station{");
+        sb.append("name=").append(name);
+        sb.append(", id=").append(id);
+        sb.append('}');
+        return sb.toString();
+    }
 }
 

@@ -42,4 +42,12 @@ public class Name {
     public int hashCode() {
         return Objects.hash(value);
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("Name{");
+        sb.append("value='").append(value).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }
