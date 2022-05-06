@@ -6,16 +6,13 @@ public class Station {
     private Long id;
     private String name;
 
-    public Station() {
+    public Station(String name) {
+        this.name = name;
     }
 
     public Station(Long id, String name) {
+        this(name);
         this.id = id;
-        this.name = name;
-    }
-
-    public Station(String name) {
-        this.name = name;
     }
 
     public boolean matchId(Long id) {
