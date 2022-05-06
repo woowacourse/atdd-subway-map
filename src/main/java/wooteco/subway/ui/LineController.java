@@ -32,7 +32,7 @@ public class LineController {
     public ResponseEntity<LineResponse> create(@RequestBody LineRequest lineRequest) {
         final Line newLine = lineService.save(lineRequest.getName(), lineRequest.getColor());
 
-        final LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        final LineResponse lineResponse = new LineResponse(newLine);
 
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
@@ -41,7 +41,7 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineService.showLines();
         List<LineResponse> lineResponses = lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+                .map(it -> new LineResponse(it))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(lineResponses);
     }
@@ -50,7 +50,7 @@ public class LineController {
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         final Line line = lineService.showLine(id);
 
-        return ResponseEntity.ok(new LineResponse(line.getId(), line.getName(), line.getColor()));
+        return ResponseEntity.ok(new LineResponse(line));
     }
 
     @PutMapping("/{id}")
