@@ -1,5 +1,6 @@
 package wooteco.subway.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -24,7 +25,7 @@ public class ExceptionAdvice {
 
     @ExceptionHandler({DuplicateLineNameException.class, DuplicateStationNameException.class})
     public ResponseEntity<String> duplicateNameError(final ElementAlreadyExistException e) {
-        return ResponseEntity.internalServerError().body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
     @ExceptionHandler(NoSuchLineException.class)
