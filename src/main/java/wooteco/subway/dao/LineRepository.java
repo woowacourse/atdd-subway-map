@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.dao.dto.LineUpdateDto;
 import wooteco.subway.domain.Line;
 
 import javax.sql.DataSource;
@@ -66,13 +65,13 @@ public class LineRepository {
         };
     }
 
-    public void update(final LineUpdateDto lineUpdateDto) {
+    public void update(final Line line) {
         String sql = "UPDATE line SET name = :name, color = :color WHERE id = :id";
-        SqlParameterSource nameParameters = new BeanPropertySqlParameterSource(lineUpdateDto);
+        SqlParameterSource nameParameters = new BeanPropertySqlParameterSource(line);
         namedParameterJdbcTemplate.update(sql, nameParameters);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         String sql = "DELETE FROM line WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         namedParameterJdbcTemplate.update(sql, parameters);

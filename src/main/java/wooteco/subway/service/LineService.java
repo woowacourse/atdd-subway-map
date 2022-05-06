@@ -49,7 +49,7 @@ public class LineService {
     }
 
     public void update(final Long id, final LineRequest lineRequest) {
-        lineRepository.update(LineUpdateDto.of(id, lineRequest));
+        lineRepository.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
     }
 
     public void delete(final Long id) {

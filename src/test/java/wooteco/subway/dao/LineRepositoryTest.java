@@ -79,8 +79,7 @@ public class LineRepositoryTest {
     @Test
     void update() {
         Line saveLine = lineRepository.save(new Line("분당선", "bg-red-600"));
-        LineUpdateDto lineUpdateDto = LineUpdateDto.of(saveLine.getId(), new LineRequest("신분당선", "bg-yellow-600"));
-        lineRepository.update(lineUpdateDto);
+        lineRepository.update(new Line(saveLine.getId(), "신분당선", "bg-yellow-600"));
         Line findUpdateLine = lineRepository.findById(saveLine.getId());
 
         assertAll(
