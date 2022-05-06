@@ -7,11 +7,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import wooteco.subway.dao.StationMockDao;
 import wooteco.subway.domain.Station;
 
-@SpringBootTest
 class StationServiceTest {
 
     private static final Station STATION = new Station("강남역");

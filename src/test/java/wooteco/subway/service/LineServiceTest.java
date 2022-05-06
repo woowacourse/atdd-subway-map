@@ -7,11 +7,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import wooteco.subway.dao.LineMockDao;
 import wooteco.subway.domain.Line;
 
-@SpringBootTest
 class LineServiceTest {
 
     private static final Line LINE = new Line("신분당선", "bg-red-600");
