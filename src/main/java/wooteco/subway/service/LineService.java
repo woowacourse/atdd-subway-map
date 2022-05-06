@@ -13,7 +13,6 @@ public class LineService {
 
     private final LineDao lineDao;
 
-    @Autowired
     public LineService(final LineDao lineDao) {
         this.lineDao = lineDao;
     }
