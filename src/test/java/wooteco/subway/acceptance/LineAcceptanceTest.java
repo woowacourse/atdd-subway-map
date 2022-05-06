@@ -38,6 +38,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.as(LineResponse.class).getName()).isEqualTo("신분당선");
+        assertThat(response.as(LineResponse.class).getColor()).isEqualTo("bg-red-600");
     }
 
     @Test
@@ -137,6 +139,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         final Long findId = response.response().jsonPath().getLong("id");
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(Long.valueOf(savedId)).isEqualTo(findId);
+
+        assertThat(response.as(LineResponse.class).getName()).isEqualTo("신분당선");
+        assertThat(response.as(LineResponse.class).getColor()).isEqualTo("bg-red-600");
     }
 
     @Test
