@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -21,8 +20,7 @@ public class StationService {
     }
 
     public StationResponse insertStation(StationRequest stationRequest) {
-        String name = stationRequest.getName();
-        Station station = new Station(name);
+        Station station = stationRequest.toEntity();
         validateDuplicateName(station);
         Station newStation = stationDao.insert(station);
         return new StationResponse(newStation);
@@ -35,10 +33,10 @@ public class StationService {
     }
 
     public List<StationResponse> findStations() {
-        List<Station> stations = Collections.unmodifiableList(stationDao.findAll());
+        List<Station> stations = stationDao.findAll();
         List<StationResponse> stationResponses = stations.stream()
                 .map(StationResponse::new)
-                .collect(Collectors.toList());
+                .collect(Collectors.toUnmodifiableList());
         return stationResponses;
     }
 

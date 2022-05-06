@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,7 @@ public class LineService {
     }
 
     public LineResponse insertLine(LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        Line line = lineRequest.toEntity();
         validateDuplicateName(line);
         validateDuplicateColor(line);
         Line newLine = lineDao.insert(line);
@@ -42,10 +41,10 @@ public class LineService {
     }
 
     public List<LineResponse> findLines() {
-        List<Line> lines = Collections.unmodifiableList(lineDao.findAll());
+        List<Line> lines = lineDao.findAll();
         return lines.stream()
                 .map(LineResponse::new)
-                .collect(Collectors.toList());
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public LineResponse findLine(Long id) {
