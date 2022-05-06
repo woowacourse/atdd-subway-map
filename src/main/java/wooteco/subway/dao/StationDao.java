@@ -62,11 +62,7 @@ public class StationDao {
         return jdbcTemplate.queryForObject(sql, new StationMapper());
     }
 
-    public List<Station> findByIdIn(Set<Long> ids) {
-        List<String> stringIds = ids.stream()
-                .map(id -> Long.toString(id))
-                .collect(Collectors.toList());
-
+    public List<Station> findByIdIn(List<String> stringIds) {
         String sql = String.format("select * from STATION where id in (%s)", String.join(", ", stringIds));
         return jdbcTemplate.query(sql, new StationMapper());
     }

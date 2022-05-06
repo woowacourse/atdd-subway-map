@@ -2,41 +2,43 @@ package wooteco.subway.ui;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.dao.SectionDao;
-import wooteco.subway.domain.Section;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.service.SectionService;
 
 import java.util.NoSuchElementException;
 
 @RequestMapping("/lines/{lineId}/sections")
 @RestController
 public class SectionController {
-    private final SectionDao sectionDao;
+    private final SectionService sectionService;
 
-    public SectionController(SectionDao sectionDao) {
-        this.sectionDao = sectionDao;
+    public SectionController(SectionService sectionService) {
+        this.sectionService = sectionService;
     }
 
     @PostMapping()
-    public ResponseEntity<Void> createStation(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        Section section = new Section(lineId, sectionRequest.getUpStationId(),
-                sectionRequest.getDownStationId(), sectionRequest.getDistance());
+    public ResponseEntity<Void> createSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
 
-        sectionDao.checkValid(section);
+        sectionService.checkValidAndSave(sectionRequest.toSection(lineId));
 
-        sectionDao.save(section);
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+                .ok()
+                .build();
     }
 
     @DeleteMapping()
-    public ResponseEntity<Void> deleteStation(@PathVariable Long lineId, @RequestParam Long stationId) {
-        sectionDao.delete(stationId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+        sectionService.checkAndDelete(lineId, stationId);
+
+        return ResponseEntity
+                .ok()
+                .build();
     }
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Void> lineNotFound() {
-        return ResponseEntity.noContent().build();
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 }
