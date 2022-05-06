@@ -2,8 +2,6 @@ package wooteco.subway.domain;
 
 import java.util.Objects;
 
-import wooteco.subway.dto.LineRequest;
-
 public class Line {
     private final Long id;
     private final Name name;
