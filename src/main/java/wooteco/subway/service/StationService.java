@@ -40,10 +40,16 @@ public class StationService {
     }
 
     public void delete(Long id) {
-        if (showAll().isEmpty()) {
+        validateExist(id);
+        stationDao.deleteById(id);
+    }
+
+    private void validateExist(Long id) {
+        try {
+            stationDao.findById(id);
+        } catch (EmptyResultDataAccessException e) {
             throw new EmptyResultDataAccessException("존재하지 않는 역입니다.", 1);
         }
-        stationDao.deleteById(id);
     }
 
 }

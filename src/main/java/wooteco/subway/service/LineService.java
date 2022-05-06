@@ -48,14 +48,22 @@ public class LineService {
     }
 
     public void update(Long id, LineRequest lineRequest) {
-        show(id);
+        validateExist(id);
         Line line = lineRequest.toEntity();
         lineDao.updateById(id, line);
     }
 
     public void delete(Long id) {
-        show(id);
+        validateExist(id);
         lineDao.deleteById(id);
+    }
+
+    private void validateExist(Long id) {
+        try {
+            lineDao.findById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EmptyResultDataAccessException("존재하지 않는 노선입니다.", 1);
+        }
     }
 
 }
