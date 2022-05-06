@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineDto;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.service.LineService;
 
 @RestController
@@ -50,7 +51,7 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public void updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public void updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest lineRequest) {
         lineService.update(id, lineRequest);
     }
 

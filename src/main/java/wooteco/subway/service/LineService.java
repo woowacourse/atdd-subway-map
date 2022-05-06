@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineUpdateRequest;
 
 @Service
 public class LineService {
@@ -26,7 +27,7 @@ public class LineService {
         return new Line(id, line.getName(), line.getColor());
     }
 
-    public void update(Long id, LineRequest lineRequest) {
+    public void update(Long id, LineUpdateRequest lineRequest) {
         validDuplicatedName(lineRequest.getName());
         lineDao.update(id, lineRequest);
     }
