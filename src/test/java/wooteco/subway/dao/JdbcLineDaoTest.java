@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
 
 @JdbcTest
-public class LineDaoImplTest {
+public class JdbcLineDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -20,7 +20,7 @@ public class LineDaoImplTest {
 
     @BeforeEach
     void setUp() {
-        lineDao = new LineDaoImpl(jdbcTemplate);
+        lineDao = new JdbcLineDao(jdbcTemplate);
     }
 
     @DisplayName("지하철 노선을 생성한다.")

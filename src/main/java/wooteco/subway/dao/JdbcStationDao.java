@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -12,10 +13,14 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
 @Repository
-public class StationDaoImpl implements StationDao {
+public class JdbcStationDao implements StationDao {
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
+        resultSet.getLong("id"),
+        resultSet.getString("name")
+    );
 
-    public StationDaoImpl(JdbcTemplate jdbcTemplate) {
+    public JdbcStationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -41,13 +46,7 @@ public class StationDaoImpl implements StationDao {
 
     public List<Station> findAll() {
         String sql = "SELECT id, name FROM STATION";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
-            Station station = new Station(
-                resultSet.getLong("id"),
-                resultSet.getString("name")
-            );
-            return station;
-        });
+        return jdbcTemplate.query(sql, stationRowMapper);
     }
 
     public void delete(Long id) {

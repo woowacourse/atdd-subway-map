@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -12,10 +13,15 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
 @Repository
-public class LineDaoImpl implements LineDao {
+public class JdbcLineDao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowMapper) -> new Line(
+        resultSet.getLong("id"),
+        resultSet.getString("name"),
+        resultSet.getString("color")
+    );
 
-    public LineDaoImpl(JdbcTemplate jdbcTemplate) {
+    public JdbcLineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -43,23 +49,12 @@ public class LineDaoImpl implements LineDao {
 
     public List<Line> findAll() {
         String sql = "SELECT id, name, color FROM LINE";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
-            Line line = new Line(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("color")
-            );
-            return line;
-        });
+        return jdbcTemplate.query(sql, lineRowMapper);
     }
 
     public Line find(Long id) {
         String sql = "SELECT id, name, color FROM LINE WHERE id =?";
-        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> new Line(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("color")
-        ), id);
+        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
 
     public boolean existById(Long id) {
