@@ -1,7 +1,9 @@
 package wooteco.subway.service;
 
 import java.util.List;
+
 import org.springframework.stereotype.Service;
+
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
@@ -16,10 +18,9 @@ public class LineService {
 
     public Line save(Line line) {
         try {
-            lineDao.find(line.getName());
-        } catch (IllegalArgumentException e) {
-            lineDao.save(line);
-            return lineDao.find(line.getName());
+            lineDao.findByName(line.getName());
+        } catch (IllegalArgumentException exception) {
+            return lineDao.save(line);
         }
         throw new IllegalArgumentException(ALREADY_IN_LINE_ERROR_MESSAGE);
     }

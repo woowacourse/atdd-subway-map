@@ -2,13 +2,13 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import org.springframework.dao.EmptyResultDataAccessException;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Station;
 
+import wooteco.subway.domain.Station;
 
 @Repository
 public class StationDao {
@@ -20,38 +20,38 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void save(Station station) {
+    public Station save(Station station) {
         final String sql = "INSERT INTO station (name) VALUES (?);";
-
         KeyHolder keyHolder = new GeneratedKeyHolder();
+
         jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[] {"id"});
             preparedStatement.setString(1, station.getName());
             return preparedStatement;
         }, keyHolder);
+
+        return new Station(keyHolder.getKey().longValue(), station.getName());
     }
 
-
-    public Station find(String name) {
+    public Station findByName(String name) {
         final String sql = "SELECT * FROM station WHERE name = ?;";
-        try {
-            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Station(
-                            rs.getLong("id"),
-                            rs.getString("name")),
-                    name);
-        } catch (EmptyResultDataAccessException e) {
+        List<Station> stations = jdbcTemplate.query(sql, (rs, rowNum) -> new Station(
+                rs.getLong("id"),
+                rs.getString("name"))
+            , name);
+        if (stations.isEmpty()) {
             throw new IllegalArgumentException(NO_ID_STATION_ERROR_MESSAGE);
         }
+        return stations.get(0);
     }
 
     public List<Station> findAll() {
         final String sql = "SELECT * FROM station";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new Station(
-                rs.getLong("id"),
-                rs.getString("name")
+            rs.getLong("id"),
+            rs.getString("name")
         ));
     }
-
 
     public void delete(Long id) {
         final String sql = "delete from station where id = ?";

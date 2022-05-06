@@ -1,14 +1,16 @@
 package wooteco.subway.dao;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+
 import wooteco.subway.domain.Station;
 
 @JdbcTest
@@ -29,8 +31,8 @@ class StationDaoTest {
     void saveAndFind() {
         Station station = new Station("강남역");
         stationDao.save(station);
-        assertThat(stationDao.find("강남역").getName())
-                .isEqualTo("강남역");
+        assertThat(stationDao.findByName("강남역").getName())
+            .isEqualTo("강남역");
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -42,7 +44,7 @@ class StationDaoTest {
         stationDao.save(station1);
 
         assertThat(stationDao.findAll())
-                .hasSize(2);
+            .hasSize(2);
     }
 
     @DisplayName("지하철역을 삭제한다.")

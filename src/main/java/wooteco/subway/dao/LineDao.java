@@ -2,11 +2,12 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import org.springframework.dao.EmptyResultDataAccessException;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+
 import wooteco.subway.domain.Line;
 
 @Repository
@@ -18,37 +19,39 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void save(Line line) {
+    public Line save(Line line) {
         final String sql = "INSERT INTO line (name, color) VALUES (?, ?);";
-
         KeyHolder keyHolder = new GeneratedKeyHolder();
+
         jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[] {"id"});
             preparedStatement.setString(1, line.getName());
             preparedStatement.setString(2, line.getColor());
             return preparedStatement;
         }, keyHolder);
+
+        return new Line(keyHolder.getKey().longValue(), line.getName(), line.getColor());
     }
 
-    public Line find(String name) {
+    public Line findByName(String name) {
         final String sql = "SELECT * FROM line WHERE name = ?;";
-        try {
-            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Line(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getString("color")),
-                    name);
-        } catch (EmptyResultDataAccessException e) {
+        List<Line> lines = jdbcTemplate.query(sql, (rs, rowNum) -> new Line(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("color")),
+            name);
+        if (lines.isEmpty()) {
             throw new IllegalArgumentException(NO_ID_LINE_ERROR_MESSAGE);
         }
+        return lines.get(0);
     }
 
     public List<Line> findAll() {
         final String sql = "SELECT * FROM line";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new Line(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("color")
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("color")
         ));
     }
 

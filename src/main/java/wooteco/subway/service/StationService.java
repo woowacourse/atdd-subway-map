@@ -1,7 +1,9 @@
 package wooteco.subway.service;
 
 import java.util.List;
+
 import org.springframework.stereotype.Service;
+
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
@@ -17,10 +19,9 @@ public class StationService {
 
     public Station save(Station station) {
         try {
-            stationDao.find(station.getName());
-        } catch (IllegalArgumentException e) {
-            stationDao.save(station);
-            return stationDao.find(station.getName());
+            stationDao.findByName(station.getName());
+        } catch (IllegalArgumentException exception) {
+            return stationDao.save(station);
         }
         throw new IllegalArgumentException(ALREADY_IN_STATION_ERROR_MESSAGE);
     }
