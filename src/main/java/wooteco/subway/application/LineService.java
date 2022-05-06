@@ -19,11 +19,15 @@ public class LineService {
 
     @Transactional
     public Line save(String name, String color) {
+        validateName(name);
+
+        return lineDao.save(new Line(name, color));
+    }
+
+    private void validateName(String name) {
         if (lineDao.existsByName(name)) {
             throw new IllegalArgumentException(DUPLICATE_LINE_NAME_EXCEPTION);
         }
-
-        return lineDao.save(new Line(name, color));
     }
 
     @Transactional(readOnly = true)
@@ -38,6 +42,8 @@ public class LineService {
 
     @Transactional
     public void updateLine(Long id, String name, String color) {
+        validateName(name);
+
         lineDao.updateLineById(id, name, color);
     }
 
