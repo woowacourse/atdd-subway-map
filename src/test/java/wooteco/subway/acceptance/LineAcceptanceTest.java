@@ -86,7 +86,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = requestGet();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getList(".", LineResponse.class).size()).isEqualTo(2);
+        assertThat(response.body().jsonPath().getList(".", LineResponse.class)).hasSize(2);
     }
 
     @DisplayName("지하철 노선을 id로 조회한다.")
@@ -153,7 +153,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> readResponse = requestGet();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertThat(readResponse.jsonPath().getList(".").size()).isEqualTo(0);
+        assertThat(readResponse.jsonPath().getList(".")).isEmpty();
     }
 
     @DisplayName("지하철 노선 이름이나 색으로 null 또는 공백이 올 수 없다.")
@@ -197,5 +197,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
-    
+
 }

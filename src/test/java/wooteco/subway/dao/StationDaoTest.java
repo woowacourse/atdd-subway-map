@@ -55,7 +55,7 @@ class StationDaoTest {
         stationDao.save(gangNam);
         stationDao.save(jamSil);
 
-        assertThat(stationDao.findAll().size()).isEqualTo(2);
+        assertThat(stationDao.findAll()).hasSize(2);
     }
 
     @DisplayName("특정 id를 가지는 역을 조회한다.")

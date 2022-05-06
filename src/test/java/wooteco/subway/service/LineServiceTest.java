@@ -69,7 +69,7 @@ class LineServiceTest {
 
         List<LineResponse> lineResponses = lineService.showAll();
 
-        assertThat(lineResponses.size()).isEqualTo(2);
+        assertThat(lineResponses).hasSize(2);
     }
 
     @DisplayName("지정한 id에 해당하는 노선을 조회한다.")

@@ -53,7 +53,7 @@ class StationServiceTest {
 
         List<StationResponse> stationResponses = stationService.showAll();
 
-        assertThat(stationResponses.size()).isEqualTo(2);
+        assertThat(stationResponses).hasSize(2);
     }
 
     @DisplayName("지정한 id에 해당하는 역을 삭제한다.")
