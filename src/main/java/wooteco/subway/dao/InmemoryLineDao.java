@@ -66,9 +66,8 @@ public class InmemoryLineDao implements LineDao {
     }
 
     @Override
-    public int update(final Line line) {
+    public void update(final Line line) {
         lines.put(line.getId(), line);
-        return 1;
     }
 
     @Override

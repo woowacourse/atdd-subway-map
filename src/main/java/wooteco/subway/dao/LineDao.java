@@ -15,7 +15,7 @@ public interface LineDao {
 
     boolean existById(Long id);
 
-    int update(Line line);
+    void update(Line line);
 
     void delete(Long id);
 }

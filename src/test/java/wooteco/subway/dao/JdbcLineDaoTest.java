@@ -64,9 +64,9 @@ class JdbcLineDaoTest {
     @DisplayName("Line을 수정할 수 있다.")
     void update() {
         Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
-        int result = lineDao.update(new Line(line.getId(), "분당선", line.getColor()));
+        lineDao.update(new Line(line.getId(), "분당선", line.getColor()));
 
-        assertThat(result).isEqualTo(1);
+        assertThat(lineDao.findById(line.getId()).getName()).isEqualTo("분당선");
     }
 
     @Test
