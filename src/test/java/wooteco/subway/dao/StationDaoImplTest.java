@@ -11,10 +11,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import org.springframework.test.context.jdbc.SqlConfig;
-import org.springframework.test.context.jdbc.SqlGroup;
 import wooteco.subway.domain.Station;
 
+@Sql(scripts = {"classpath:setupSchema.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"classpath:delete.sql"}, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 @JdbcTest
 class StationDaoImplTest {
 
@@ -22,25 +22,6 @@ class StationDaoImplTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    @SqlGroup({
-            @Sql(
-                    scripts = {"/schema.sql"},
-                    config = @SqlConfig(
-                            dataSource = "dataSource",
-                            transactionManager = "transactionManager"
-                    ),
-                    executionPhase = ExecutionPhase.BEFORE_TEST_METHOD
-            ),
-            @Sql(
-                    scripts = {"/delete.sql"},
-                    config = @SqlConfig(
-                            dataSource = "dataSource",
-                            transactionManager = "transactionManager"
-                    ),
-                    executionPhase = ExecutionPhase.AFTER_TEST_METHOD
-            ),
-    })
 
     @BeforeEach
     void setUp() {

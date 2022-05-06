@@ -3,25 +3,18 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import org.springframework.test.context.jdbc.SqlConfig;
-import org.springframework.test.context.jdbc.SqlGroup;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import wooteco.subway.domain.Line;
 
+@Sql(scripts = {"classpath:setupSchema.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"classpath:delete.sql"}, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 @JdbcTest
 public class LineDaoImplTest {
 
@@ -29,25 +22,6 @@ public class LineDaoImplTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    @SqlGroup({
-            @Sql(
-                    scripts = {"/schema.sql"},
-                    config = @SqlConfig(
-                            dataSource = "dataSource",
-                            transactionManager = "transactionManager"
-                    ),
-                    executionPhase = ExecutionPhase.BEFORE_TEST_METHOD
-            ),
-            @Sql(
-                    scripts = {"/delete.sql"},
-                    config = @SqlConfig(
-                            dataSource = "dataSource",
-                            transactionManager = "transactionManager"
-                    ),
-                    executionPhase = ExecutionPhase.AFTER_TEST_METHOD
-            ),
-    })
 
     @BeforeEach
     void setUp() {

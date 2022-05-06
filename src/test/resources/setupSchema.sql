@@ -15,3 +15,11 @@ create table if not exists LINE
     color varchar(20) not null,
     primary key(id)
 );
+
+insert into station (name) values ('선릉역');
+insert into station (name) values ('잠실역');
+insert into station (name) values ('강남역');
+
+insert into line (name, color) values ('신분당선', 'green');
+insert into line (name, color) values ('3호선', 'black');
+insert into line (name, color) values ('1호선', 'red');
