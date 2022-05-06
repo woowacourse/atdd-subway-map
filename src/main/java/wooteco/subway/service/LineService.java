@@ -18,19 +18,19 @@ public class LineService {
     }
 
     public LineResponse save(Line line) {
-        return toLineResponseDto(lineDao.save(line));
+        return toLineResponse(lineDao.save(line));
     }
 
     public List<LineResponse> findAll() {
         return lineDao.findAll()
                 .stream()
-                .map(this::toLineResponseDto)
+                .map(this::toLineResponse)
                 .collect(Collectors.toUnmodifiableList());
     }
 
     public LineResponse find(Long id) {
         Line line = lineDao.findById(id);
-        return toLineResponseDto(line);
+        return toLineResponse(line);
     }
 
     public void update(Long id, LineRequest lineRequest) {
@@ -42,7 +42,7 @@ public class LineService {
         lineDao.deleteById(id);
     }
 
-    private LineResponse toLineResponseDto(Line line) {
+    private LineResponse toLineResponse(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 }
