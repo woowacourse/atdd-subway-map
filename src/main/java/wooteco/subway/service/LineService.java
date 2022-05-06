@@ -22,7 +22,7 @@ public class LineService {
         validateDuplicateName(name);
         final Line line = new Line(name, color);
         final LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
-        return new Line(savedLineEntity.getId(), savedLineEntity.getName(), savedLineEntity.getColor());
+        return savedLineEntity.generateLine();
     }
 
     private void validateDuplicateName(final String name) {
@@ -33,7 +33,7 @@ public class LineService {
 
     public Line searchById(final Long id) {
         LineEntity lineEntity = lineDao.findById(id).orElseThrow(() -> new NoSuchLineException());
-        return new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor());
+        return lineEntity.generateLine();
     }
 
     public List<Line> searchAll() {

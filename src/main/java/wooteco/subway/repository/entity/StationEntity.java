@@ -17,6 +17,10 @@ public class StationEntity {
         this.name = station.getName();
     }
 
+    public Station generateStation() {
+        return new Station(id, name);
+    }
+
     public Long getId() {
         return id;
     }

@@ -20,6 +20,10 @@ public class LineEntity {
         this.color = line.getColor();
     }
 
+    public Line generateLine() {
+        return new Line(id, name, color);
+    }
+
     public Long getId() {
         return id;
     }

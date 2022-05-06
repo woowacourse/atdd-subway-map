@@ -21,7 +21,7 @@ public class StationService {
         validateDuplicateName(name);
         final Station station = new Station(name);
         final StationEntity savedStationEntity = stationDao.save(new StationEntity(station));
-        return new Station(savedStationEntity.getId(), savedStationEntity.getName());
+        return savedStationEntity.generateStation();
     }
 
     private void validateDuplicateName(final String name) {
