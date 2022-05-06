@@ -44,7 +44,7 @@ public class LineRepository {
                     .longValue();
             return new Line(id, line.getName(), line.getColor());
         } catch (DuplicateKeyException e) {
-            throw new NameDuplicatedException(ExceptionMessages.NAME_DUPLICATE_MESSAGE);
+            throw new NameDuplicatedException(ExceptionMessages.NAME_DUPLICATE_MESSAGE + line.getName());
         }
     }
 
@@ -59,7 +59,7 @@ public class LineRepository {
         try {
             return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
         } catch (EmptyResultDataAccessException e) {
-            throw new IdNotFoundException(ExceptionMessages.NO_ID_MESSAGE);
+            throw new IdNotFoundException(ExceptionMessages.NO_ID_MESSAGE + id);
         }
     }
 
@@ -68,7 +68,7 @@ public class LineRepository {
         SqlParameterSource parameters = new MapSqlParameterSource("name", name);
         try {
             return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper()));
-        } catch (IncorrectResultSizeDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
@@ -88,9 +88,9 @@ public class LineRepository {
         try {
             namedParameterJdbcTemplate.update(sql, nameParameters);
         } catch (DuplicateKeyException e) {
-            throw new NameDuplicatedException(ExceptionMessages.NAME_DUPLICATE_MESSAGE);
+            throw new NameDuplicatedException(ExceptionMessages.NAME_DUPLICATE_MESSAGE + line.getName());
         } catch (EmptyResultDataAccessException e) {
-            throw new IdNotFoundException(ExceptionMessages.NO_ID_MESSAGE);
+            throw new IdNotFoundException(ExceptionMessages.NO_ID_MESSAGE + line.getId());
         }
 
     }
@@ -100,7 +100,7 @@ public class LineRepository {
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         int rowCounts = namedParameterJdbcTemplate.update(sql, parameters);
         if (rowCounts == NO_ROW) {
-            throw new IdNotFoundException(ExceptionMessages.NO_ID_MESSAGE);
+            throw new IdNotFoundException(ExceptionMessages.NO_ID_MESSAGE + id);
         }
     }
 }
