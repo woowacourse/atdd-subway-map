@@ -11,19 +11,25 @@
 <br>
 
 # 지하철 노선도 미션
+
 스프링 과정 실습을 위한 지하철 노선도 애플리케이션
 
 <br>
 
 ## 🚀 Getting Started
+
 ### Usage
+
 #### application 구동
+
 ```
 ./gradlew bootRun
 ```
+
 <br>
 
 ## ✏️ Code Review Process
+
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
 <br>
@@ -61,4 +67,19 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 
 ### End to End 테스트 작성하기
 
--[x] 노선 기능에 대한 E2E 테스트를 작성
+- [x] 노선 기능에 대한 E2E 테스트를 작성
+
+## TODO
+
+### 1단계 피드백
+
+- [x] DAO 안에서 값 존재여부 검증
+- [ ] SpringBootTest 사용 및 JdbcTest와 차이 공부
+- [ ] 업데이트나 삭제에도 검증 추가
+- [ ] 에러 메세지도 같이 던져주기
+    - [ ] 각각 다른 에러마다 처리로직 분리(advice로?)
+- [ ] 수정/삭제 시 예외가 발생하는 케이스도 테스트
+- [ ] given when then 에서 // when then 으로 붙여쓰기
+- [ ] findAll()이 when이고 결과를 then에서 검증
+- [ ] 사이즈가 0이어도 괜찮겠지만 해당 라인이름으로 검색시 조회가 되지않도록 하는게 더 나을 듯
+- [ ] station/ line 자체의 동등성비교로 검증

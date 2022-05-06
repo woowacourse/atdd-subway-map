@@ -35,14 +35,14 @@ public class LineDao {
         return keyHolder.getKey().longValue();
     }
 
+    public boolean hasLine(String name) {
+        final String sql = "SELECT EXISTS (SELECT * FROM line WHERE name = ?);";
+        return jdbcTemplate.queryForObject(sql, Boolean.class ,name);
+    }
+
     public Line findById(Long id) {
         final String sql = "SELECT * FROM line WHERE id = ?;";
         return jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id);
-    }
-
-    public Line findByName(String name) {
-        final String sql = "SELECT * FROM line WHERE name = ?;";
-        return jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, name);
     }
 
     public List<Line> findAll() {

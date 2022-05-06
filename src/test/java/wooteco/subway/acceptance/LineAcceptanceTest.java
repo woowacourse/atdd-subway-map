@@ -18,7 +18,6 @@ import wooteco.subway.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-
     private Map<String, String> getLine(String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
@@ -166,8 +165,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.NO_CONTENT.value());
-
     }
-
-
 }

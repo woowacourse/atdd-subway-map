@@ -35,16 +35,14 @@ class StationDaoTest {
                 .isEqualTo("강남역");//then
     }
 
-    @DisplayName("지하철역을 이름으로 검색한다.")
+    @DisplayName("해당 이름의 지하철역이 있는지 확인한다.")
     @Test
-    void findByName() {
-        //given
+    void hasStation() {
         Station station = new Station("강남역");
         stationDao.save(station);
 
-        //when
-        assertThat(stationDao.findByName("강남역").getName())
-                .isEqualTo("강남역");//then
+        assertThat(stationDao.hasStation("강남역"))
+                .isTrue();
     }
 
     @DisplayName("지하철역을 조회한다.")

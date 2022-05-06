@@ -34,22 +34,20 @@ public class StationDao {
         return keyHolder.getKey().longValue();
     }
 
+    public boolean hasStation(String name) {
+        final String sql = "SELECT EXISTS (SELECT * FROM station WHERE name = ?);";
+        return jdbcTemplate.queryForObject(sql, Boolean.class ,name);
+    }
 
     public Station findById(Long id) {
         final String sql = "SELECT * FROM station WHERE id = ?;";
         return jdbcTemplate.queryForObject(sql, STATION_ROW_MAPPER, id);
     }
 
-    public Station findByName(String name) {
-        final String sql = "SELECT * FROM station WHERE name = ?;";
-        return jdbcTemplate.queryForObject(sql, STATION_ROW_MAPPER, name);
-    }
-
     public List<Station> findAll() {
         final String sql = "SELECT * FROM station";
         return jdbcTemplate.query(sql, STATION_ROW_MAPPER);
     }
-
 
     public void delete(Long id) {
         final String sql = "delete from station where id = ?";

@@ -37,16 +37,13 @@ class LineDaoTest {
                 .isEqualTo("신분당선");//then
     }
 
-    @DisplayName("지하철 노선을 이름으로 검색한다.")
+    @DisplayName("해당 이름의 지하철 노선이 있는지 여부를 확인한다.")
     @Test
-    void findByName() {
-        //given
+    void hasLine() {
         Line line = new Line("신분당선", "red");
         lineDao.save(line);
-
-        //when
-        assertThat(lineDao.findByName("신분당선").getName())
-                .isEqualTo("신분당선");//then
+        assertThat(lineDao.hasLine("신분당선"))
+                .isTrue();
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -77,10 +74,10 @@ class LineDaoTest {
         lineDao.update(id, line2);
 
         //then
-        assertThatThrownBy(() -> lineDao.findByName("신분당선"))
-                .isInstanceOf(EmptyResultDataAccessException.class);
-        assertThat(lineDao.findById(id).getName())
-                .isEqualTo("분당선");
+        assertThat(lineDao.hasLine("신분당선"))
+                .isFalse();
+        assertThat(lineDao.hasLine("분당선"))
+                .isTrue();
     }
 
     @DisplayName("지하철 노선을 삭제한다.")

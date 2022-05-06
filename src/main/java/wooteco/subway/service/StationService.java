@@ -17,20 +17,11 @@ public class StationService {
     }
 
     public Station save(Station station) {
-        if (hasStation(station)) {
+        if (stationDao.hasStation(station.getName())) {
             throw new IllegalArgumentException(ALREADY_IN_STATION_ERROR_MESSAGE);
         }
         Long id = stationDao.save(station);
         return stationDao.findById(id);
-    }
-
-    private boolean hasStation(Station station) {
-        try {
-            stationDao.findByName(station.getName());
-        } catch (EmptyResultDataAccessException e) {
-            return false;
-        }
-        return true;
     }
 
     public List<Station> findAll() {

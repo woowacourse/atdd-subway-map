@@ -17,20 +17,11 @@ public class LineService {
     }
 
     public Line save(Line line) {
-        if (hasLine(line)) {
+        if (lineDao.hasLine(line.getName())) {
             throw new IllegalArgumentException(ALREADY_IN_LINE_ERROR_MESSAGE);
         }
         Long id = lineDao.save(line);
         return lineDao.findById(id);
-    }
-
-    private boolean hasLine(Line line) {
-        try {
-            lineDao.findByName(line.getName());
-        } catch (EmptyResultDataAccessException e) {
-            return false;
-        }
-        return true;
     }
 
     public List<Line> findAll() {
