@@ -48,7 +48,7 @@ class StationServiceTest {
     void createStation_throwsExceptionWithDuplicateName() {
         final String name = "선릉역";
         final Station station = new Station(name);
-        given(stationDao.findAll()).willReturn(List.of(station));
+        given(stationDao.existByName("선릉역")).willReturn(true);
 
         assertThatThrownBy(() -> stationService.createStation(station))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -76,7 +76,7 @@ class StationServiceTest {
         final String name = "선릉역";
         final Station station = new Station(id, name);
 
-        given(stationDao.findAll()).willReturn(List.of(station));
+        given(stationDao.existById(1L)).willReturn(true);
 
         stationService.delete(1L);
         verify(stationDao, times(1)).deleteById(1L);
@@ -89,7 +89,7 @@ class StationServiceTest {
         final String name = "선릉역";
         final Station station = new Station(id, name);
 
-        given(stationDao.findAll()).willReturn(Collections.emptyList());
+        given(stationDao.existById(1L)).willReturn(false);
         stationService.createStation(station);
 
         assertThatThrownBy(() -> stationService.delete(id))

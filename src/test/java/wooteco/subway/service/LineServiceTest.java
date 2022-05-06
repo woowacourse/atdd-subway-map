@@ -53,7 +53,7 @@ class LineServiceTest {
         final String lineName = "신분당선";
         final String lineColor = "bg-red-600";
         final Line line = new Line(lineName, lineColor);
-        given(lineDao.findAll()).willReturn(List.of(line));
+        given(lineDao.existByName("신분당선")).willReturn(true);
 
         assertThatThrownBy(() -> lineService.createLine(line))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -89,7 +89,7 @@ class LineServiceTest {
     void updateLine() {
         final Line newLine = new Line(1L, "분당선", "bg-yellow-600");
 
-        given(lineDao.findAll()).willReturn(List.of(newLine));
+        given(lineDao.existById(1L)).willReturn(true);
 
         lineService.update(1L, newLine);
         verify(lineDao, times(1)).update(1L, newLine);
@@ -98,7 +98,7 @@ class LineServiceTest {
     @DisplayName("수정하려는 노선 ID가 존재하지 않을 경우 예외를 발생한다.")
     @Test
     void update_throwsExceptionIfLineIdIsNotExisting() {
-        given(lineDao.findAll()).willReturn(Collections.emptyList());
+        given(lineDao.existById(1L)).willReturn(false);
 
         assertThatThrownBy(() -> lineService.update(1L, new Line("분당선", "bg-yellow-600")))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -108,12 +108,8 @@ class LineServiceTest {
     @DisplayName("등록된 노선을 삭제한다.")
     @Test
     void delete() {
-        final Long id = 1L;
-        final String name = "신분당선";
-        final String color = "bg-red-600";
-        final Line line = new Line(id, name, color);
 
-        given(lineDao.findAll()).willReturn(List.of(line));
+        given(lineDao.existById(1L)).willReturn(true);
 
         lineService.delete(1L);
         verify(lineDao, times(1)).deleteById(1L);
@@ -122,7 +118,7 @@ class LineServiceTest {
     @DisplayName("삭제하려는 노선 ID가 존재하지 않을 경우 예외를 발생한다.")
     @Test
     void delete_throwsExceptionIfLineIdIsNotExisting() {
-        given(lineDao.findAll()).willReturn(Collections.emptyList());
+        given(lineDao.existById(1L)).willReturn(false);
 
         assertThatThrownBy(() -> lineService.delete(1L))
                 .isInstanceOf(IllegalArgumentException.class)

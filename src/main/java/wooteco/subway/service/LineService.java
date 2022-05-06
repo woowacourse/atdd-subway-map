@@ -42,21 +42,13 @@ public class LineService {
     }
 
     private void validateDuplicateName(final Line line) {
-        final List<String> names = lineDao.findAll().stream()
-                .map(Line::getName)
-                .collect(Collectors.toList());
-
-        if (names.contains(line.getName())) {
+        if (lineDao.existByName(line.getName())) {
             throw new IllegalArgumentException("이미 존재하는 노선입니다.");
         }
     }
 
     private void validateExist(final Long id) {
-        final List<Long> lineIds = lineDao.findAll().stream()
-                .map(Line::getId)
-                .collect(Collectors.toList());
-
-        if (!lineIds.contains(id)) {
+        if (!lineDao.existById(id)) {
             throw new IllegalArgumentException("대상 노선 ID가 존재하지 않습니다.");
         }
     }

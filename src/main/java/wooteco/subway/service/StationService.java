@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 
 import java.util.List;
@@ -31,21 +32,13 @@ public class StationService {
     }
 
     private void validateDuplicateName(final Station station) {
-        final List<String> names = stationDao.findAll().stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
-
-        if (names.contains(station.getName())) {
+        if (stationDao.existByName(station.getName())) {
             throw new IllegalArgumentException("이미 존재하는 지하철 역입니다.");
         }
     }
 
     private void validateExist(final Long id) {
-        final List<Long> stationIds = stationDao.findAll().stream()
-                .map(Station::getId)
-                .collect(Collectors.toList());
-
-        if (!stationIds.contains(id)) {
+        if (!stationDao.existById(id)) {
             throw new IllegalArgumentException("삭제하려는 지하철 역 ID가 존재하지 않습니다.");
         }
     }
