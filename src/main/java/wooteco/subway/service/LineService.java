@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
 
@@ -19,10 +20,10 @@ public class LineService {
     public Line save(Line line) {
         try {
             lineDao.findByName(line.getName());
-        } catch (IllegalArgumentException exception) {
+        } catch (NoSuchElementException exception) {
             return lineDao.save(line);
         }
-        throw new IllegalArgumentException(ALREADY_IN_LINE_ERROR_MESSAGE);
+        throw new IllegalStateException(ALREADY_IN_LINE_ERROR_MESSAGE);
     }
 
     public List<Line> findAll() {

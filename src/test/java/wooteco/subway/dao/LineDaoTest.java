@@ -2,6 +2,8 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.NoSuchElementException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,7 +58,7 @@ class LineDaoTest {
         lineDao.update(lineDao.findByName("신분당선").getId(), line2);
 
         assertThatThrownBy(() -> lineDao.findByName("신분당선"))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(NoSuchElementException.class)
             .hasMessage("해당 아이디의 노선이 없습니다.");
 
         assertThat(lineDao.findByName("분당선").getName())
@@ -68,8 +70,8 @@ class LineDaoTest {
     void delete() {
         Line line = new Line("신분당선", "red");
 
-        lineDao.save(line);
-        lineDao.delete(1L);
+        Line savedLine = lineDao.save(line);
+        lineDao.delete(savedLine.getId());
 
         assertThat(lineDao.findAll()).hasSize(0);
     }

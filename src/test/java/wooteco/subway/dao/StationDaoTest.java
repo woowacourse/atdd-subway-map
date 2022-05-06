@@ -52,8 +52,8 @@ class StationDaoTest {
     void delete() {
         Station station = new Station("강남역");
 
-        stationDao.save(station);
-        stationDao.delete(1L);
+        Station savedStation = stationDao.save(station);
+        stationDao.delete(savedStation.getId());
 
         List<Station> stations = stationDao.findAll();
 

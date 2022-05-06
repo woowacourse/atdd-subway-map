@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -40,7 +41,7 @@ public class StationDao {
                 rs.getString("name"))
             , name);
         if (stations.isEmpty()) {
-            throw new IllegalArgumentException(NO_ID_STATION_ERROR_MESSAGE);
+            throw new NoSuchElementException(NO_ID_STATION_ERROR_MESSAGE);
         }
         return stations.get(0);
     }

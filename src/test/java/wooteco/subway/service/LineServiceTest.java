@@ -1,15 +1,16 @@
 package wooteco.subway.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
@@ -34,8 +35,8 @@ class LineServiceTest {
         lineService.save(line);
 
         assertThatThrownBy(() -> lineService.save(line))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 해당 이름의 노선이 있습니다.");
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("이미 해당 이름의 노선이 있습니다.");
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -47,7 +48,7 @@ class LineServiceTest {
         lineService.save(line2);
 
         assertThat(lineService.findAll())
-                .hasSize(2);
+            .hasSize(2);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -62,7 +63,7 @@ class LineServiceTest {
         List<Line> lines = lineService.findAll();
 
         assertThat(lines.get(0).getName())
-                .isEqualTo("분당선");
+            .isEqualTo("분당선");
     }
 
     @DisplayName("지하철 노선을 삭제한다.")

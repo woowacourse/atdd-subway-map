@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -41,7 +42,7 @@ public class LineDao {
                 rs.getString("color")),
             name);
         if (lines.isEmpty()) {
-            throw new IllegalArgumentException(NO_ID_LINE_ERROR_MESSAGE);
+            throw new NoSuchElementException(NO_ID_LINE_ERROR_MESSAGE);
         }
         return lines.get(0);
     }
