@@ -42,7 +42,7 @@ class JdbcSectionDaoTest {
 
         @Test
         void isTrue() {
-            Section section = new Section(null, 1L, upStationId, downStationId, 1);
+            Section section = new Section(null, 1L, downStationId, upStationId, 1);
             jdbcSectionDao.save(section);
 
             assertThat(jdbcSectionDao.existByUpStationIdAndDownStationId(upStationId, downStationId)).isTrue();

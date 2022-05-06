@@ -40,7 +40,8 @@ public class Section {
     }
 
     public boolean isSameUpStationAndDownStation(final long upStationId, final long downStationId) {
-        return this.upStationId == upStationId && this.downStationId == downStationId;
+        return (this.upStationId == upStationId && this.downStationId == downStationId) ||
+                (this.upStationId == downStationId && this.downStationId == upStationId);
     }
 
     public Long getId() {

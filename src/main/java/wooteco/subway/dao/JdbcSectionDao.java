@@ -37,7 +37,8 @@ public class JdbcSectionDao implements SectionDao {
 
     @Override
     public boolean existByUpStationIdAndDownStationId(final long upStationId, final long downStationId) {
-        final String sql = "select exists (select * from SECTION where up_station_id = ? and down_station_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, upStationId, downStationId);
+        final String sql = "select exists (select * from SECTION "
+                + "where (up_station_id = ? and down_station_id = ?) or (down_station_id = ? and up_station_id = ?))";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, upStationId, downStationId, upStationId, downStationId);
     }
 }
