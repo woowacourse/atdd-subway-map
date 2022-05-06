@@ -40,15 +40,15 @@ public class JdbcLineDao implements LineDao {
     }
 
     private void checkDuplicateName(final Line line) {
-        if (isExistSameNameLine(line)) {
+        if (existsSameNameLine(line)) {
             throw new LineDuplicateException("이미 존재하는 노선입니다.");
         }
     }
 
-    private boolean isExistSameNameLine(final Line line) {
-        final String sql = "SELECT count(*) FROM line WHERE name = :name";
+    private boolean existsSameNameLine(final Line line) {
+        final String sql = "SELECT EXISTS (SELECT * FROM line WHERE name = :name)";
         final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
-        return namedParameterJdbcTemplate.queryForObject(sql, parameters, Integer.class) > 0;
+        return Boolean.TRUE.equals(namedParameterJdbcTemplate.queryForObject(sql, parameters, Boolean.class));
     }
 
     @Override

@@ -40,15 +40,15 @@ public class JdbcStationDao implements StationDao {
     }
 
     private void checkDuplicateName(final Station station) {
-        if (isExistSameName(station)) {
+        if (existsSameNameStation(station)) {
             throw new StationDuplicateException("이미 존재하는 지하철역 이름입니다.");
         }
     }
 
-    private boolean isExistSameName(final Station station) {
-        final String sql = "SELECT count(*) FROM station WHERE name = :name";
+    private boolean existsSameNameStation(final Station station) {
+        final String sql = "SELECT EXISTS (SELECT * FROM station WHERE name = :name)";
         final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
-        return namedParameterJdbcTemplate.queryForObject(sql, parameters, Integer.class) > 0;
+        return Boolean.TRUE.equals(namedParameterJdbcTemplate.queryForObject(sql, parameters, Boolean.class));
     }
 
     @Override
