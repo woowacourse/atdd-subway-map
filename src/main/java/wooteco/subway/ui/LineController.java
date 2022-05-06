@@ -55,9 +55,4 @@ public class LineController {
         lineService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Void> error() {
-        return ResponseEntity.badRequest().build();
-    }
 }
