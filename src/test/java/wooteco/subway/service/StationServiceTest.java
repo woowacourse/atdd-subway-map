@@ -1,12 +1,5 @@
 package wooteco.subway.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.BDDMockito.given;
-
-import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,6 +9,14 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.BDDMockito.given;
 
 @SpringBootTest
 class StationServiceTest {
@@ -66,20 +67,8 @@ class StationServiceTest {
     }
 
     @Test
-    @DisplayName("존재하는 지하철 역을 삭제할 수 있다.")
+    @DisplayName("지하철 역을 삭제할 수 있다.")
     void delete() {
-        given(stationDao.delete(1L)).willReturn(1);
-
         assertDoesNotThrow(() -> stationService.delete(1L));
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 지하철 역은 삭제할 수 없다.")
-    void deleteNotFound() {
-        given(stationDao.delete(1L)).willReturn(0);
-
-        assertThatThrownBy(() -> stationService.delete(1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 지하철역입니다.");
     }
 }
