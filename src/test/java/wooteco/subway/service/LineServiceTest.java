@@ -5,10 +5,12 @@ import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.util.List;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -82,5 +84,17 @@ class LineServiceTest {
 
         // when & then
         assertDoesNotThrow(() -> lineService.deleteById(savedId));
+    }
+    
+    @DisplayName("존재하지 않는 id로 조회하면 예외가 발생한다.")
+    @Test
+    public void findByNotExistId() {
+        // given
+        final LineRequest request = new LineRequest("신분당선", "bg-red-600");
+        final Long savedId = lineService.save(request);
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> lineService.findById(savedId + 1))
+                .isInstanceOf(EmptyResultDataAccessException.class);
     }
 }
