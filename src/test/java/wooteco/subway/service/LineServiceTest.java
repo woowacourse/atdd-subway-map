@@ -112,6 +112,24 @@ class LineServiceTest {
     }
 
     @Test
+    @DisplayName("업데이트하려는 이름이 중복되면 예외를 던진다.")
+    void UpdateById_DuplicateName_ExceptionThrown() {
+        // given
+        final String name = "1호선";
+        final String color = "bg-blue-600";
+
+        fakeLineDao.save(new Line(name, "bg-red-600"));
+        final Line line = fakeLineDao.save(new Line("5호선", color)).orElseThrow();
+
+        final LineRequest request = new LineRequest(name, color, null, null, 0);
+
+        // then
+        assertThatThrownBy(() -> lineService.updateById(line.getId(), request))
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessage("중복된 이름의 노선이 존재합니다.");
+    }
+
+    @Test
     @DisplayName("id에 해당하는 노선을 삭제한다.")
     void deleteById() {
         // given

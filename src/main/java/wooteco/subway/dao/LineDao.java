@@ -12,7 +12,7 @@ public interface LineDao {
 
     Optional<Line> findById(Long id);
 
-    Line updateById(Long id, Line line);
+    Optional<Line> updateById(Long id, Line line);
 
     Integer deleteById(Long id);
 }

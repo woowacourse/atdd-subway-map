@@ -10,8 +10,8 @@ import wooteco.subway.domain.Line;
 
 public class FakeLineDao implements LineDao {
 
-    private Long seq = 0L;
     private final List<Line> lines = new ArrayList<>();
+    private Long seq = 0L;
 
     @Override
     public Optional<Line> save(final Line line) {
@@ -49,10 +49,17 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public Line updateById(final Long id, final Line line) {
+    public Optional<Line> updateById(final Long id, final Line line) {
+        final boolean existSameName = lines.stream()
+                .filter(it -> !it.isSameId(id))
+                .anyMatch(it -> it.isSameName(line));
+        if (existSameName) {
+            return Optional.empty();
+        }
+
         final Line persistLine = findById(id).orElseThrow();
         persistLine.update(line);
-        return persistLine;
+        return Optional.of(persistLine);
     }
 
     @Override

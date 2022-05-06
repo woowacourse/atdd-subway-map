@@ -77,28 +77,10 @@ public class LineDaoTest extends DaoTest {
 
         // when
         final Line line = new Line("5호선", "bg-green-600");
-        final Line updatedLine = lineDao.updateById(persistLine.getId(), line);
+        final Line updatedLine = lineDao.updateById(persistLine.getId(), line).orElseThrow();
 
         // then
         assertThat(updatedLine).isEqualTo(line);
-    }
-
-    @Test
-    @DisplayName("업데이트하려는 노선 이름이 중복되면 에외가 발생한다.")
-    void updateById_duplicateName() {
-        // given
-        final String name = "5호선";
-
-        lineDao.save(new Line(name, "bg-red-600"));
-        final Line persistLine = lineDao.save(new Line("7호선", "bg-red-600")).orElseThrow();
-
-        // when
-        final Line line = new Line(name, "bg-green-600");
-
-        // then
-        assertThatThrownBy(() -> lineDao.updateById(persistLine.getId(), line))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("중복된 이름의 노선이 존재합니다.");
     }
 
     @Test
