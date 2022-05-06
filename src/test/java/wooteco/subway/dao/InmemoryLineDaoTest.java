@@ -67,4 +67,18 @@ class InmemoryLineDaoTest {
         lineDao.delete(line.getId());
         assertThat(lineDao.findById(line.getId())).isNull();
     }
+
+    @Test
+    @DisplayName("id를 통해 Line이 존재하는 지 확인한다.")
+    void existById() {
+        Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
+        assertThat(lineDao.existById(line.getId())).isTrue();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 id를 통해 Line이 존재하는 지 확인한다.")
+    void existByInvalidId() {
+        Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
+        assertThat(lineDao.existById(line.getId() + 1)).isFalse();
+    }
 }
