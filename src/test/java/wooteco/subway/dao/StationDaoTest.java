@@ -2,7 +2,6 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static wooteco.subway.dao.StationDao.DUPLICATE_EXCEPTION_MESSAGE;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,16 +29,6 @@ class StationDaoTest {
 
         Station station = stationDao.insert(new Station(name));
         assertThat(station.getName()).isEqualTo(name);
-    }
-
-    @Test
-    void saveDuplicate() {
-        String name = "강남역";
-        stationDao.insert(new Station(name));
-
-        assertThatThrownBy(() -> stationDao.insert(new Station(name)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(DUPLICATE_EXCEPTION_MESSAGE);
     }
 
     @Test

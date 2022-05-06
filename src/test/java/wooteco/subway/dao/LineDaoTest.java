@@ -2,8 +2,6 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static wooteco.subway.dao.LineDao.COLOR_DUPLICATE_EXCEPTION_MESSAGE;
-import static wooteco.subway.dao.LineDao.NAME_DUPLICATE_EXCEPTION_MESSAGE;
 
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -33,28 +31,6 @@ class LineDaoTest {
         Line line = lineDao.insert(new Line(name, color));
 
         assertThat(line.getName()).isEqualTo(name);
-    }
-
-    @Test
-    void saveDuplicateName() {
-        String name = "신분당선";
-        String color = "bg-red-600";
-        lineDao.insert(new Line(name, color));
-
-        assertThatThrownBy(() -> lineDao.insert(new Line(name, "blue")))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(NAME_DUPLICATE_EXCEPTION_MESSAGE);
-    }
-
-    @Test
-    void saveDuplicateColor() {
-        String name = "신분당선";
-        String color = "bg-red-600";
-        lineDao.insert(new Line(name, color));
-
-        assertThatThrownBy(() -> lineDao.insert(new Line("2호선", color)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(COLOR_DUPLICATE_EXCEPTION_MESSAGE);
     }
 
     @Test

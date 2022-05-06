@@ -16,14 +16,6 @@ public class Line {
         this.color = color;
     }
 
-    public boolean isSameName(String name) {
-        return this.name.equals(name);
-    }
-
-    public boolean isSameColor(String color) {
-        return this.color.equals(color);
-    }
-
     public Long getId() {
         return id;
     }

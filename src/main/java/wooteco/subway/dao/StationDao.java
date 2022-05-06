@@ -11,8 +11,6 @@ import wooteco.subway.domain.Station;
 
 @Repository
 public class StationDao {
-    protected static final String DUPLICATE_EXCEPTION_MESSAGE = "이름이 중복된 역은 만들 수 없습니다.";
-
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Station> rowMapper = (rs, rowNum) ->
@@ -30,7 +28,6 @@ public class StationDao {
 
     public Station insert(Station station) {
         String name = station.getName();
-        validateDuplicateName(name);
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", name);
 
@@ -38,13 +35,9 @@ public class StationDao {
         return new Station(id, name);
     }
 
-    private void validateDuplicateName(String stationName) {
-        List<Station> stations = findAll();
-        boolean isDuplicate = stations.stream()
-                .anyMatch(station -> station.isSameName(stationName));
-        if (isDuplicate) {
-            throw new IllegalArgumentException(DUPLICATE_EXCEPTION_MESSAGE);
-        }
+    public List<String> findNames() {
+        String sql = "SELECT name FROM STATION";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("name"));
     }
 
     public List<Station> findAll() {

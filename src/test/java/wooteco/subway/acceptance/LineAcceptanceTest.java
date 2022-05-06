@@ -58,8 +58,43 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // when
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "신분당선");
+        params2.put("color", "bg-red-400");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void createLineWithDuplicateColor() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "신분당선");
+        params1.put("color", "bg-red-600");
+
+        RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "분당선");
+        params2.put("color", "bg-red-600");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
