@@ -16,12 +16,12 @@ import wooteco.subway.repository.entity.LineEntity;
 class JdbcLineDaoTest {
 
     @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
-    private LineDao lineDao;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private static LineDao lineDao;
 
     @BeforeEach
     void setUp() {
-        lineDao = new JdbcLineDao(jdbcTemplate);
+        lineDao = new JdbcLineDao(namedParameterJdbcTemplate);
     }
 
     @DisplayName("노선을 저장하고 id로 노선을 찾는다.")
