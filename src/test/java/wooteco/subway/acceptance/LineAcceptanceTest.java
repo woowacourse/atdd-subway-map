@@ -3,6 +3,7 @@ package wooteco.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -20,13 +21,39 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    @BeforeEach
+    void createStations(){
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "강남역");
+        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "역삼역");
+        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
     @DisplayName("노선을 생성한다.")
     @Test
     void createLine() {
         // given
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", "1호선");
         params.put("color", "red");
+        params.put("upStationId", 1L);
+        params.put("downStationId", 2L);
+        params.put("distance", 10);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -46,9 +73,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", "1호선");
         params.put("color", "red");
+        params.put("upStationId", 1L);
+        params.put("downStationId", 2L);
+        params.put("distance", 10);
 
         RestAssured.given().log().all()
                 .body(params)
@@ -76,9 +106,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Map<String, String> params1 = new HashMap<>();
+        Map<String, Object> params1 = new HashMap<>();
         params1.put("name", "1호선");
         params1.put("color", "red");
+        params1.put("upStationId", 1L);
+        params1.put("downStationId", 2L);
+        params1.put("distance", 10);
 
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
@@ -88,9 +121,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        Map<String, String> params2 = new HashMap<>();
+        Map<String, Object> params2 = new HashMap<>();
         params2.put("name", "2호선");
         params2.put("color", "blue");
+        params2.put("upStationId", 1L);
+        params2.put("downStationId", 2L);
+        params2.put("distance", 10);
 
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(params2)
@@ -122,9 +158,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", "1호선");
         params.put("color", "red");
+        params.put("upStationId", 1L);
+        params.put("downStationId", 2L);
+        params.put("distance", 10);
 
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
@@ -150,9 +189,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void searchLine() {
         // given
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", "1호선");
         params.put("color", "red");
+        params.put("upStationId", 1L);
+        params.put("downStationId", 2L);
+        params.put("distance", 10);
 
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
@@ -181,9 +223,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void editLine() {
         // given
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", "1호선");
         params.put("color", "red");
+        params.put("upStationId", 1L);
+        params.put("downStationId", 2L);
+        params.put("distance", 10);
 
         RestAssured.given().log().all()
                 .body(params)
