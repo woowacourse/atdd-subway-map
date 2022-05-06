@@ -80,6 +80,5 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] given when then 에서 // when then 으로 붙여쓰기
 - [x] 사이즈가 0이어도 괜찮겠지만 해당 라인이름으로 검색시 조회가 되지않도록 하는게 더 나을 듯
 - [x] findAll()이 when이고 결과를 then에서 검증
-- [ ] 에러 메세지도 같이 던져주기
-    - [ ] 각각 다른 에러마다 처리로직 분리(advice로?)
+- [x] 에러 메세지도 같이 던져주기
 - [ ] SpringBootTest 사용 및 JdbcTest와 차이 공부
