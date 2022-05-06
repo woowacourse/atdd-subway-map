@@ -12,9 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import wooteco.subway.controller.dto.station.StationResponse;
@@ -22,11 +20,18 @@ import wooteco.subway.controller.dto.station.StationResponse;
 @DisplayName("지하철역 관련 기능")
 class StationAcceptanceTest extends AcceptanceTest {
 
+    private static final String PREFIX_URL = "/stations";
+
+    private final AcceptanceHandler acceptanceHandler = new AcceptanceHandler(PREFIX_URL);
+
     @DisplayName("지하철 역을 생성한다.")
     @Test
     void createStation() {
-        ExtractableResponse<Response> response = saveStation(Map.of("name", "광교역"));
+        // given
+        // when
+        ExtractableResponse<Response> response = acceptanceHandler.save(Map.of("name", "광교역"));
 
+        // then
         assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             assertThat(response.header("Location")).isNotBlank();
@@ -37,21 +42,27 @@ class StationAcceptanceTest extends AcceptanceTest {
     @ParameterizedTest
     @ValueSource(strings = {"강남역", "선릉역"})
     void createStationWithDuplicateName(String name) {
-        saveStation(Map.of("name", name));
+        // given
+        acceptanceHandler.save(Map.of("name", name));
 
-        ExtractableResponse<Response> response = saveStation(Map.of("name", name));
+        // when
+        ExtractableResponse<Response> response = acceptanceHandler.save(Map.of("name", name));
 
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 역 목록을 조회한다.")
     @Test
     void getStations() {
-        Long createdId1 = extractId(saveStation(Map.of("name", "강남역")));
-        Long createdId2 = extractId(saveStation(Map.of("name", "선릉역")));
+        // given
+        Long createdId1 = extractId(acceptanceHandler.save(Map.of("name", "강남역")));
+        Long createdId2 = extractId(acceptanceHandler.save(Map.of("name", "선릉역")));
 
-        ExtractableResponse<Response> response = findStations();
+        // when
+        ExtractableResponse<Response> response = acceptanceHandler.findAll();
 
+        // then
         assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             assertThat(extractIds(response)).containsAll(List.of(createdId1, createdId2));
@@ -61,38 +72,14 @@ class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 역을 제거한다.")
     @Test
     void deleteStation() {
-        Long createdId = extractId(saveStation(Map.of("name", "강남역")));
+        // given
+        Long createdId = extractId(acceptanceHandler.save(Map.of("name", "강남역")));
 
-        ExtractableResponse<Response> response = removeStation(createdId);
+        // when
+        ExtractableResponse<Response> response = acceptanceHandler.remove(createdId);
 
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private ExtractableResponse<Response> saveStation(Map<String, String> params) {
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> findStations() {
-        return RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> removeStation(Long id) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete("/stations/" + id)
-                .then().log().all()
-                .extract();
     }
 
     private Long extractId(ExtractableResponse<Response> response) {
