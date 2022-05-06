@@ -159,9 +159,17 @@ class LineJdbcDaoTest {
         Long savedId = dao.save(new Line("line", "color"));
 
         // when
-        dao.deleteById(savedId);
+        Long deletedId = dao.deleteById(savedId);
 
         // then
-        assertThat(dao.findAll()).isEmpty();
+        assertThat(deletedId).isEqualTo(savedId);
+    }
+
+    @DisplayName("존재하지 않는 id로 제거한다")
+    @Test
+    void deleteNonExistId() {
+        Long deletedId = dao.deleteById(1L);
+
+        assertThat(deletedId).isEqualTo(LineJdbcDao.NOTHING_HAPPENED);
     }
 }

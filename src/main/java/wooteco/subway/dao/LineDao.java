@@ -12,5 +12,5 @@ public interface LineDao {
 
     Long update(Long id, String name, String color);
 
-    void deleteById(Long id);
+    Long deleteById(Long id);
 }

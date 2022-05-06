@@ -16,6 +16,8 @@ import wooteco.subway.exception.NoSuchLineException;
 @Repository
 public class LineJdbcDao implements LineDao {
 
+    public static final long NOTHING_HAPPENED = 0L;
+
     private final JdbcTemplate jdbcTemplate;
 
     public LineJdbcDao(final JdbcTemplate jdbcTemplate) {
@@ -87,9 +89,18 @@ public class LineJdbcDao implements LineDao {
     }
 
     @Override
-    public void deleteById(final Long id) {
+    public Long deleteById(final Long id) {
         final String sql = "DELETE FROM LINE WHERE id = (?)";
 
-        jdbcTemplate.update(sql, id);
+        int affectedRow = jdbcTemplate.update(sql, id);
+
+        if (isDeleted(affectedRow)) {
+            return id;
+        }
+        return NOTHING_HAPPENED;
+    }
+
+    private boolean isDeleted(final int affectedRow) {
+        return affectedRow == 1;
     }
 }
