@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -20,6 +21,12 @@ public class JdbcLineDao implements LineDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
+    private final RowMapper<Line> lineRowMapper =
+            (resultSet, rowNum) -> new Line(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("color")
+            );
 
     public JdbcLineDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -38,12 +45,7 @@ public class JdbcLineDao implements LineDao {
     @Override
     public List<Line> findAll() {
         String query = "SELECT id, name, color from Line";
-        return jdbcTemplate.query(query,
-                (resultSet, rowNum) -> new Line(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("color")
-                ));
+        return jdbcTemplate.query(query, lineRowMapper);
     }
 
     @Override
@@ -51,12 +53,7 @@ public class JdbcLineDao implements LineDao {
         String query = "SELECT id, name, color from Line WHERE id=(:id)";
         try {
             SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-            return jdbcTemplate.queryForObject(query, parameters,
-                    (resultSet, rowNum) -> new Line(
-                            resultSet.getLong("id"),
-                            resultSet.getString("name"),
-                            resultSet.getString("color")
-                    ));
+            return jdbcTemplate.queryForObject(query, parameters, lineRowMapper);
         } catch (EmptyResultDataAccessException e) {
             throw new NoSuchElementException("해당 id에 맞는 지하철 노선이 없습니다.");
         }
