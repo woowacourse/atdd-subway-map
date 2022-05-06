@@ -1,9 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
@@ -13,8 +11,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.dto.response.StationResponse;
+import wooteco.subway.test_utils.HttpMethod;
+import wooteco.subway.test_utils.HttpRequestMessage;
 
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayName("인수테스트 - /stations")
@@ -26,38 +25,22 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 지하철역을_생성한다() {
-            Map<String, String> params = new HashMap<>() {{
-                put("name", "강남역");
-            }};
+            Map<String, String> params = jsonStationOf("강남역");
 
-            ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .body(params)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .when()
-                    .post("/stations")
-                    .then().log().all()
-                    .extract();
+            ExtractableResponse<Response> response = HttpRequestMessage.ofJsonBody(params)
+                    .send(HttpMethod.POST, "/stations");
 
-            assertAll(() -> {
-                assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-                assertThat(response.header("Location")).isNotBlank();
-            });
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            assertThat(response.header("Location")).isNotBlank();
         }
 
         @Test
         void 중복되는_이름의_지하철역_생성_시도시_예외발생() {
-            Map<String, String> params = new HashMap<>() {{
-                put("name", "강남역");
-            }};
+            Map<String, String> params = jsonStationOf("강남역");
             postStation(params);
 
-            ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .body(params)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .when()
-                    .post("/stations")
-                    .then().log().all()
-                    .extract();
+            ExtractableResponse<Response> response = HttpRequestMessage.ofJsonBody(params)
+                    .send(HttpMethod.POST, "/stations");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
@@ -69,11 +52,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
         postStation("강남역");
         postStation("역삼역");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = HttpRequestMessage.of()
+                .send(HttpMethod.GET, "/stations");
+
         List<StationResponse> responseBody = response.jsonPath()
                 .getList(".", StationResponse.class);
 
@@ -89,11 +70,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         void 지하철역을_제거한다() {
             postStation("강남역");
 
-            ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .when()
-                    .delete("/stations/1")
-                    .then().log().all()
-                    .extract();
+            ExtractableResponse<Response> response = HttpRequestMessage.of()
+                    .send(HttpMethod.DELETE, "/stations/1");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         }
@@ -101,26 +79,26 @@ public class StationAcceptanceTest extends AcceptanceTest {
         @DisplayName("존재하지 않는 id로 지하철역을 제거하려는 경우 예외가 발생한다.")
         @Test
         void deleteNonExistingStation() {
-            ExtractableResponse<Response> response = RestAssured.given().log().all()
-                    .when()
-                    .delete("/stations/1")
-                    .then().log().all()
-                    .extract();
+            ExtractableResponse<Response> response = HttpRequestMessage.of()
+                    .send(HttpMethod.DELETE, "/stations/999");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
     }
 
-    private void postStation(String name) {
-        postStation(new HashMap<>() {{
+
+    private HashMap<String, String> jsonStationOf(String name) {
+        return new HashMap<>() {{
             put("name", name);
-        }});
+        }};
+    }
+
+    private void postStation(String name) {
+        postStation(jsonStationOf(name));
     }
 
     private void postStation(Map<String, String> params) {
-        RestAssured.given()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .post("/stations");
+        HttpRequestMessage.ofJsonBody(params)
+                .send(HttpMethod.POST, "/stations");
     }
 }
