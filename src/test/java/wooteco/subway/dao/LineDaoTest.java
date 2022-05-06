@@ -26,6 +26,22 @@ public class LineDaoTest extends DaoTest {
     }
 
     @Test
+    @DisplayName("저장하려는 노선 이름이 중복이면 예외를 던진다.")
+    void Save_DuplicateName_ExceptionThrown() {
+        // given
+        final String name = "7호선";
+
+        lineDao.save(new Line(name, "bg-red-600")).orElseThrow();
+
+        // when
+        final Line line = new Line(name, "bg-blue-600");
+
+        // then
+        final Optional<Line> possibleLine = lineDao.save(line);
+        assertThat(possibleLine).isEmpty();
+    }
+
+    @Test
     @DisplayName("모든 노선을 조회한다.")
     void findAll() {
         // given
