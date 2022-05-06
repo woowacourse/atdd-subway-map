@@ -30,7 +30,7 @@ class JdbcLineDaoTest {
         Line line = new Line("2호선", "bg-green-600");
         LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
 
-        LineEntity lineEntity = lineDao.findById(savedLineEntity.getId()).get();
+        LineEntity lineEntity = lineDao.findById(savedLineEntity.getId()).orElseThrow();
 
         assertAll(
                 () -> assertThat(lineEntity.getName()).isEqualTo("2호선"),
@@ -55,7 +55,7 @@ class JdbcLineDaoTest {
         Line line = new Line("2호선", "bg-green-600");
         LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
 
-        LineEntity lineEntity = lineDao.findByName(savedLineEntity.getName()).get();
+        LineEntity lineEntity = lineDao.findByName(savedLineEntity.getName()).orElseThrow();
 
         assertAll(
                 () -> assertThat(lineEntity.getId()).isEqualTo(savedLineEntity.getId()),
@@ -82,7 +82,7 @@ class JdbcLineDaoTest {
         LineEntity newLineEntity = new LineEntity(savedLineEntity.getId(), "신분당선", "bg-red-600");
 
         lineDao.update(newLineEntity);
-        LineEntity updatedLineEntity = lineDao.findById(savedLineEntity.getId()).get();
+        LineEntity updatedLineEntity = lineDao.findById(savedLineEntity.getId()).orElseThrow();
 
         assertAll(
                 () -> assertThat(updatedLineEntity.getName()).isEqualTo(newLineEntity.getName()),

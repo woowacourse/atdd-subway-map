@@ -1,6 +1,5 @@
 package wooteco.subway.controller;
 
-import java.util.NoSuchElementException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -29,7 +28,7 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler(NoSuchLineException.class)
-    public ResponseEntity<String> noSuchElementError(final NoSuchElementException e) {
+    public ResponseEntity<String> noSuchElementError() {
         return ResponseEntity.notFound().build();
     }
 }

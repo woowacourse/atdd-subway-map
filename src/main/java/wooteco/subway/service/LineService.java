@@ -32,7 +32,7 @@ public class LineService {
     }
 
     public Line searchById(final Long id) {
-        LineEntity lineEntity = lineDao.findById(id).orElseThrow(() -> new NoSuchLineException());
+        LineEntity lineEntity = lineDao.findById(id).orElseThrow(NoSuchLineException::new);
         return lineEntity.generateLine();
     }
 

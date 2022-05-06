@@ -29,7 +29,7 @@ class JdbcStationDaoTest {
         Station station = new Station("잠실역");
         StationEntity savedStationEntity = stationDao.save(new StationEntity(station));
 
-        StationEntity stationEntity = stationDao.findById(savedStationEntity.getId()).get();
+        StationEntity stationEntity = stationDao.findById(savedStationEntity.getId()).orElseThrow();
 
         assertThat(stationEntity.getName()).isEqualTo("잠실역");
     }
@@ -51,7 +51,7 @@ class JdbcStationDaoTest {
         Station station = new Station("잠실역");
         StationEntity savedStationEntity = stationDao.save(new StationEntity(station));
 
-        StationEntity stationEntity = stationDao.findByName(savedStationEntity.getName()).get();
+        StationEntity stationEntity = stationDao.findByName(savedStationEntity.getName()).orElseThrow();
 
         assertThat(stationEntity.getName()).isEqualTo(station.getName());
     }

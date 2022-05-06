@@ -9,7 +9,7 @@ import wooteco.subway.repository.entity.StationEntity;
 public class MockStationDao implements StationDao {
 
     private static Long seq = 0L;
-    private static List<StationEntity> store = new ArrayList<>();
+    private static final List<StationEntity> store = new ArrayList<>();
 
     public static void removeAll() {
         store.clear();
@@ -38,6 +38,6 @@ public class MockStationDao implements StationDao {
     }
 
     public void deleteById(final Long id) {
-        findById(id).ifPresent(stationEntity -> store.remove(stationEntity));
+        findById(id).ifPresent(store::remove);
     }
 }
