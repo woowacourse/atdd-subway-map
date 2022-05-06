@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.BlankArgumentException;
 import wooteco.subway.exception.DuplicateException;
-import wooteco.subway.exception.NotExistException;
+import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.repository.StationRepository;
 
 @SpringBootTest
@@ -66,6 +66,6 @@ class StationServiceTest {
     @Test
     void deleteNotExistStation() {
         assertThatThrownBy(() -> stationService.deleteById(50L))
-            .isInstanceOf(NotExistException.class);
+            .isInstanceOf(NotFoundException.class);
     }
 }

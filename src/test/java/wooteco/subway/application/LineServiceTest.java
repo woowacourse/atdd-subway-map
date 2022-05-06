@@ -14,17 +14,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dto.StationResponse;
-import wooteco.subway.repository.SectionRepository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.SectionResponse;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.BlankArgumentException;
 import wooteco.subway.exception.DuplicateException;
-import wooteco.subway.exception.NotExistException;
+import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.repository.LineRepository;
+import wooteco.subway.repository.SectionRepository;
 
 @SpringBootTest
 @Transactional
@@ -38,12 +36,6 @@ public class LineServiceTest {
 
     @Autowired
     private LineRepository lineRepository;
-
-    @Autowired
-    private SectionRepository sectionRepository;
-
-    @Autowired
-    private SectionDao sectionDao;
 
     @Autowired
     private LineDao lineDao;
@@ -94,11 +86,20 @@ public class LineServiceTest {
             .isInstanceOf(DuplicateException.class);
     }
 
+    @DisplayName("존재하지 않는 역으로 노선을 등록할 수 없다.")
+    @Test
+    void saveWithNotExistStation() {
+        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+
+        assertThatThrownBy(() -> lineService.save(request))
+            .isInstanceOf(NotFoundException.class);
+    }
+
     @DisplayName("존재하지 않는 지하철 노선 조회시 예외를 반환한다")
     @Test
     void showNotExistLine() {
         assertThatThrownBy(() -> lineService.findById(50L))
-            .isInstanceOf(NotExistException.class);
+            .isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("지하철 노선 빈 이름으로 수정")
@@ -137,14 +138,14 @@ public class LineServiceTest {
     @Test
     void updateNotExistLine() {
         assertThatThrownBy(() -> lineService.update(50L, "1호선", "bg-red-600"))
-            .isInstanceOf(NotExistException.class);
+            .isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 삭제 시도시 예외 반환")
     @Test
     void deleteNotExistLine() {
         assertThatThrownBy(() -> lineService.deleteById(50L))
-            .isInstanceOf(NotExistException.class);
+            .isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("지하철 노선을 삭제 시도")

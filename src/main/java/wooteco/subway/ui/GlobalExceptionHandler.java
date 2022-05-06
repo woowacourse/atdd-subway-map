@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.exception.BlankArgumentException;
 import wooteco.subway.exception.DuplicateException;
-import wooteco.subway.exception.NotExistException;
+import wooteco.subway.exception.NotFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(NotExistException.class)
+    @ExceptionHandler(NotFoundException.class)
     private ResponseEntity<Void> handleExceptionToNotFound() {
         return ResponseEntity.notFound().build();
     }
