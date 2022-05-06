@@ -8,6 +8,7 @@ import wooteco.subway.dao.JdbcLineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.exception.BadRequestException;
 import wooteco.subway.exception.NotFoundException;
 
@@ -42,9 +43,9 @@ public class LineService {
     }
 
     @Transactional
-    public void updateById(Long id, String name, String color) {
-        validateDuplicateNameAndColor(name, color);
-        jdbcLineDao.modifyById(id, new Line(name, color));
+    public void updateById(Long id, LineUpdateRequest request) {
+        validateDuplicateNameAndColor(request.getName(), request.getColor());
+        jdbcLineDao.modifyById(id, new Line(request.getName(), request.getColor()));
     }
 
     @Transactional

@@ -42,7 +42,7 @@ public class LineController {
 
     @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest request) {
-        lineService.updateById(id, request.getName(), request.getColor());
+        lineService.updateById(id, request);
         return ResponseEntity.ok().build();
     }
 

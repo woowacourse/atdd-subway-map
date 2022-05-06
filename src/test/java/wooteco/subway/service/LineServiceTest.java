@@ -16,6 +16,7 @@ import wooteco.subway.dao.JdbcLineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineUpdateRequest;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
@@ -75,7 +76,7 @@ class LineServiceTest {
     @DisplayName("노선을 수정한다.")
     void update() {
         // given & when
-        lineService.updateById(1L, "2호선", "blue");
+        lineService.updateById(1L, new LineUpdateRequest("2호선", "blue"));
 
         // then
         then(jdbcLineDao).should().modifyById(1L, new Line("2호선", "blue"));
