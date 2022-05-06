@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
@@ -41,23 +42,22 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public Line findById(final Long id) {
+    public Optional<Line> findById(final Long id) {
         return lines.stream()
                 .filter(it -> it.isSameId(id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID에 맞는 노선을 찾지 못했습니다."));
+                .findFirst();
     }
 
     @Override
     public Line updateById(final Long id, final Line line) {
-        final Line persistLine = findById(id);
+        final Line persistLine = findById(id).orElseThrow();
         persistLine.update(line);
         return persistLine;
     }
 
     @Override
     public Integer deleteById(final Long id) {
-        final Line line = findById(id);
+        final Line line = findById(id).orElseThrow();
         final boolean isDeleted = lines.remove(line);
         if (isDeleted) {
             return 1;

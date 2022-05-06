@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -14,7 +15,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.NotFoundException;
 
 @Repository
 public class JdbcLineDao implements LineDao {
@@ -61,12 +61,13 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Line findById(final Long id) {
+    public Optional<Line> findById(final Long id) {
         try {
             final String sql = "SELECT * FROM line WHERE id = ?";
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+            final Line line = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.of(line);
         } catch (final EmptyResultDataAccessException e) {
-            throw new NotFoundException("해당 ID에 맞는 노선을 찾지 못했습니다.");
+            return Optional.empty();
         }
     }
 

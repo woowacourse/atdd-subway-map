@@ -7,6 +7,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.NotFoundException;
 
 @Service
 public class LineService {
@@ -31,7 +32,8 @@ public class LineService {
     }
 
     public LineResponse findById(final Long id) {
-        final Line line = lineDao.findById(id);
+        final Line line = lineDao.findById(id)
+                .orElseThrow(() -> new NotFoundException("해당 ID에 맞는 노선을 찾지 못했습니다."));
         return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 

@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.NotFoundException;
 
 public class LineDaoTest extends DaoTest {
 
@@ -52,18 +52,21 @@ public class LineDaoTest extends DaoTest {
         final Line persistLine = lineDao.save(line7);
 
         // when
-        final Line actual = lineDao.findById(persistLine.getId());
+        final Optional<Line> actual = lineDao.findById(persistLine.getId());
 
         // then
-        assertThat(actual).isEqualTo(persistLine);
+        assertThat(actual.isPresent()).isTrue();
+        assertThat(actual.get()).isEqualTo(persistLine);
     }
 
     @Test
-    @DisplayName("존재하지 않은 id로 노선을 조회하면 예외가 발생한다.")
-    void findById_invalidId() {
-        assertThatThrownBy(() -> lineDao.findById(1L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("해당 ID에 맞는 노선을 찾지 못했습니다.");
+    @DisplayName("존재하지 않은 id로 노선을 조회하면 Empty Optional을 반환한다.")
+    void FindById_InvalidId_EmptyOptional() {
+        // when
+        final Optional<Line> possibleLine = lineDao.findById(1L);
+
+        // then
+        assertThat(possibleLine.isEmpty()).isTrue();
     }
 
     @Test

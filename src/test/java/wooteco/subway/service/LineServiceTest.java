@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.NotFoundException;
 
 class LineServiceTest {
 
@@ -66,6 +68,14 @@ class LineServiceTest {
     }
 
     @Test
+    @DisplayName("id에 해당하는 노선이 존재하지 않으면 예외를 던진다.")
+    void FindById_NotExistId_ExceptionThrown() {
+        assertThatThrownBy(() -> lineService.findById(999L))
+                        .isInstanceOf(NotFoundException.class)
+                        .hasMessage("해당 ID에 맞는 노선을 찾지 못했습니다.");
+    }
+
+    @Test
     @DisplayName("id에 해당하는 노선 정보를 수정한다.")
     void updateById() {
         // given
@@ -79,7 +89,7 @@ class LineServiceTest {
         lineService.updateById(savedLine.getId(), request);
 
         // then
-        final Line updatedLine = fakeLineDao.findById(savedLine.getId());
+        final Line updatedLine = fakeLineDao.findById(savedLine.getId()).orElseThrow();
         assertThat(updatedLine.getName()).isEqualTo(name);
         assertThat(updatedLine.getColor()).isEqualTo(color);
     }
