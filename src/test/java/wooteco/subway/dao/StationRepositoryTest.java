@@ -1,23 +1,33 @@
 package wooteco.subway.dao;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
 
+import javax.sql.DataSource;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Transactional
-@SpringBootTest
+@JdbcTest
 class StationRepositoryTest {
 
     @Autowired
-    StationRepository stationRepository;
+    private DataSource dataSource;
+
+    private StationRepository stationRepository;
+
+    @BeforeEach
+    void setUp(){
+        stationRepository = new StationRepositoryImpl(dataSource);
+    }
 
     @DisplayName("역을 저장한다.")
     @Test

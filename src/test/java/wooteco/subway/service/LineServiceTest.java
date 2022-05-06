@@ -1,16 +1,20 @@
 package wooteco.subway.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineRepository;
+import wooteco.subway.dao.LineRepositoryImpl;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
+import javax.sql.DataSource;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,14 +22,20 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Transactional
-@SpringBootTest
+@JdbcTest
 public class LineServiceTest {
 
     @Autowired
-    private LineService lineService;
+    private DataSource dataSource;
 
-    @Autowired
+    private LineService lineService;
     private LineRepository lineRepository;
+
+    @BeforeEach
+    void setUp(){
+        lineRepository = new LineRepositoryImpl(dataSource);
+        lineService = new LineService(lineRepository);
+    }
 
     @DisplayName("노선을 생성한다.")
     @Test

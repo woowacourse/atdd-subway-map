@@ -1,30 +1,42 @@
 package wooteco.subway.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.LineRepository;
+import wooteco.subway.dao.LineRepositoryImpl;
 import wooteco.subway.dao.StationRepository;
+import wooteco.subway.dao.StationRepositoryImpl;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
+import javax.sql.DataSource;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
-@SpringBootTest
+@JdbcTest
 class StationServiceTest {
 
     @Autowired
-    StationService stationService;
+    private DataSource dataSource;
 
-    @Autowired
-    StationRepository stationRepository;
+    private StationService stationService;
+    private StationRepository stationRepository;
+
+    @BeforeEach
+    void setUp(){
+        stationRepository = new StationRepositoryImpl(dataSource);
+        stationService = new StationService(stationRepository);
+    }
 
     @DisplayName("역 요청을 받아 저장한다.")
     @Test
