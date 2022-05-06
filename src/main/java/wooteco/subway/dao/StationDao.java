@@ -19,8 +19,8 @@ public class StationDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public StationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
-        this.jdbcTemplate = jdbcTemplate;
+    public StationDao(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("STATION")
                 .usingGeneratedKeyColumns("id");
@@ -47,7 +47,7 @@ public class StationDao {
         final String sql = "DELETE FROM STATION WHERE id=?";
         int count = jdbcTemplate.update(sql, id);
         if (count == 0) {
-            throw new EmptyResultDataAccessException(STATION_NOT_FOUND,1);
+            throw new EmptyResultDataAccessException(STATION_NOT_FOUND, 1);
         }
     }
 
