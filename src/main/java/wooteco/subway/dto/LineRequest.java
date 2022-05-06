@@ -4,7 +4,7 @@ public class LineRequest {
     private String name;
     private String color;
 
-    public LineRequest() {
+    private LineRequest() {
     }
 
     public LineRequest(String name, String color) {
