@@ -39,6 +39,10 @@ public class Section {
         this(id, section.lineId, section.upStationId, section.downStationId, section.distance);
     }
 
+    public boolean isSameUpStationAndDownStation(final long upStationId, final long downStationId) {
+        return this.upStationId == upStationId && this.downStationId == downStationId;
+    }
+
     public Long getId() {
         return id;
     }
