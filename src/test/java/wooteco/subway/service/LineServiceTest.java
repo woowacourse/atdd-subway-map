@@ -14,7 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wooteco.subway.dao.JdbcLineDao;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -28,13 +28,13 @@ class LineServiceTest {
     private LineService lineService;
 
     @Mock
-    private JdbcLineDao jdbcLineDao;
+    private LineDao lineDao;
 
     @Test
     @DisplayName("노선을 생성한다.")
     void create() {
         // given
-        given(jdbcLineDao.save(any(Line.class))).willReturn(new Line(1L, "1호선", "blue"));
+        given(lineDao.save(any(Line.class))).willReturn(new Line(1L, "1호선", "blue"));
 
         // when
         LineResponse lineResponse = lineService.create(new LineRequest("1호선", "blue"));
@@ -49,7 +49,7 @@ class LineServiceTest {
     @DisplayName("노선을 조회한다.")
     void findById() {
         // given
-        given(jdbcLineDao.findById(1L)).willReturn(Optional.of(new Line(1L, "1호선", "blue")));
+        given(lineDao.findById(1L)).willReturn(Optional.of(new Line(1L, "1호선", "blue")));
 
         // when
         LineResponse lineResponse = lineService.showById(1L);
@@ -64,7 +64,7 @@ class LineServiceTest {
     @DisplayName("존재하지 않는 노선을 조회할 경우 예외를 발생한다.")
     void notFindById() {
         // given
-        given(jdbcLineDao.findById(1L)).willThrow(new NotFoundException("조회하려는 id가 존재하지 않습니다."));
+        given(lineDao.findById(1L)).willThrow(new NotFoundException("조회하려는 id가 존재하지 않습니다."));
 
         // when && then
         assertThatThrownBy(() -> lineService.showById(1L))
@@ -78,7 +78,7 @@ class LineServiceTest {
         // given
         Line line1 = new Line(1L, "1호선", "blue");
         Line line2 = new Line(2L, "2호선", "green");
-        given(jdbcLineDao.findAll()).willReturn(List.of(line1, line2));
+        given(lineDao.findAll()).willReturn(List.of(line1, line2));
 
         // when
         List<LineResponse> lineResponses = lineService.showAll();
@@ -92,20 +92,20 @@ class LineServiceTest {
     void update() {
         // given
         Line line = new Line(1L, "1호선", "blue");
-        given(jdbcLineDao.findById(1L)).willReturn(Optional.of(line));
+        given(lineDao.findById(1L)).willReturn(Optional.of(line));
 
         // when
         lineService.updateById(1L, new LineUpdateRequest("2호선", "green"));
 
         // then
-        then(jdbcLineDao).should(times(1)).modifyById(1L, line);
+        then(lineDao).should(times(1)).modifyById(1L, line);
     }
 
     @Test
     @DisplayName("존재하지 않는 노선을 수정할 경우 예외를 발생한다.")
     void notUpdateById() {
         // given
-        given(jdbcLineDao.findById(1L)).willThrow(new NotFoundException("조회하려는 id가 존재하지 않습니다."));
+        given(lineDao.findById(1L)).willThrow(new NotFoundException("조회하려는 id가 존재하지 않습니다."));
 
         // when
         assertThatThrownBy(() -> lineService.updateById(1L, new LineUpdateRequest("2호선", "blue")))
@@ -113,7 +113,7 @@ class LineServiceTest {
             .hasMessage("조회하려는 id가 존재하지 않습니다.");
 
         // then
-        then(jdbcLineDao).should(times(0)).modifyById(1L, new Line("2호선", "blue"));
+        then(lineDao).should(times(0)).modifyById(1L, new Line("2호선", "blue"));
     }
 
     @Test
@@ -123,6 +123,6 @@ class LineServiceTest {
         lineService.removeById(1L);
 
         // then
-        then(jdbcLineDao).should().deleteById(1L);
+        then(lineDao).should().deleteById(1L);
     }
 }

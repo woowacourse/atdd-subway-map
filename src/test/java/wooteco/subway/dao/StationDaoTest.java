@@ -10,17 +10,17 @@ import org.springframework.context.annotation.Import;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
-@Import(JdbcStationDao.class)
-public class JdbcStationDaoTest {
+@Import(StationDao.class)
+public class StationDaoTest {
 
     @Autowired
-    private JdbcStationDao jdbcStationDao;
+    private StationDao stationDao;
 
     @Test
     @DisplayName("지하철 역 저장")
     void save() {
         Station station = new Station("호호역");
-        Station savedStation = jdbcStationDao.save(station);
+        Station savedStation = stationDao.save(station);
 
         assertThat(savedStation.getId()).isNotNull();
         assertThat(savedStation.getName()).isEqualTo(station.getName());
@@ -30,8 +30,8 @@ public class JdbcStationDaoTest {
     @DisplayName("지하철 역 이름 중복 여부 조회")
     void duplicateName() {
         Station station = new Station("호호역");
-        jdbcStationDao.save(station);
-        assertThat(jdbcStationDao.existByName("호호역")).isTrue();
+        stationDao.save(station);
+        assertThat(stationDao.existByName("호호역")).isTrue();
     }
 
     @Test
@@ -39,10 +39,10 @@ public class JdbcStationDaoTest {
     void findAll() {
         Station station1 = new Station("호호역");
         Station station2 = new Station("수달역");
-        jdbcStationDao.save(station1);
-        jdbcStationDao.save(station2);
+        stationDao.save(station1);
+        stationDao.save(station2);
 
-        List<Station> stations = jdbcStationDao.findAll();
+        List<Station> stations = stationDao.findAll();
 
         assertThat(stations).hasSize(2);
     }
@@ -51,11 +51,11 @@ public class JdbcStationDaoTest {
     @DisplayName("id로 지하철 역을 삭제")
     void deleteById() {
         Station station1 = new Station("호호역");
-        Station savedStation = jdbcStationDao.save(station1);
+        Station savedStation = stationDao.save(station1);
 
-        jdbcStationDao.deleteById(savedStation.getId());
+        stationDao.deleteById(savedStation.getId());
 
-        assertThat(jdbcStationDao.findAll()).hasSize(0);
+        assertThat(stationDao.findAll()).hasSize(0);
     }
 
 }

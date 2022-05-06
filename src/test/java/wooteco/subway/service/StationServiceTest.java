@@ -11,7 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wooteco.subway.dao.JdbcStationDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
@@ -23,13 +23,13 @@ class StationServiceTest {
     private StationService stationService;
 
     @Mock
-    private JdbcStationDao jdbcStationDao;
+    private StationDao stationDao;
 
     @Test
     @DisplayName("역을 생성한다.")
     void create() {
         // given
-        given(jdbcStationDao.save(any(Station.class))).willReturn(new Station(1L, "선릉역"));
+        given(stationDao.save(any(Station.class))).willReturn(new Station(1L, "선릉역"));
 
         // when
         StationResponse StationResponse = stationService.create(new StationRequest("선릉역"));
@@ -45,7 +45,7 @@ class StationServiceTest {
         // given
         Station Station1 = new Station(1L, "선릉역");
         Station Station2 = new Station(2L, "잠실역");
-        given(jdbcStationDao.findAll()).willReturn(List.of(Station1, Station2));
+        given(stationDao.findAll()).willReturn(List.of(Station1, Station2));
 
         // when
         List<StationResponse> StationResponses = stationService.showAll();
@@ -61,6 +61,6 @@ class StationServiceTest {
         stationService.removeById(1L);
 
         // then
-        then(jdbcStationDao).should().deleteById(1L);
+        then(stationDao).should().deleteById(1L);
     }
 }

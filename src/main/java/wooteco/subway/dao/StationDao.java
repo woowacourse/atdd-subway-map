@@ -1,45 +1,52 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
+@Repository
 public class StationDao {
 
-    private static Long sequence = 0L;
-    private static final List<Station> stations = new ArrayList<>();
+    private static final RowMapper<Station> mapper = (rs, rowNum) ->
+        new Station(
+            rs.getLong("id"),
+            rs.getString("name")
+        );
 
-    public static Station save(Station station) {
-        validateDuplication(station);
-        Station persistStation = createUniqueId(station);
-        stations.add(persistStation);
-        return persistStation;
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
+
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+            .withTableName("station")
+            .usingGeneratedKeyColumns("id");
     }
 
-    public static List<Station> findAll() {
-        return stations;
+    public Station save(Station station) {
+        SqlParameterSource parameters = new MapSqlParameterSource("name", station.getName());
+        long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        return new Station(id, station.getName());
     }
 
-    public static void deleteAll() {
-        stations.clear();
+    public List<Station> findAll() {
+        String sql = "select * from station";
+        return jdbcTemplate.query(sql, mapper);
     }
 
-    public static void deleteById(Long id) {
-        stations.removeIf(value -> value.getId().equals(id));
+    public void deleteById(Long id) {
+        String sql = "delete from station where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
-    private static void validateDuplication(Station station) {
-        if (stations.contains(station)) {
-            throw new IllegalArgumentException("이미 존재하는 역입니다.");
-        }
-    }
-
-    private static Station createUniqueId(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++sequence);
-        return station;
+    public boolean existByName(String name) {
+        String sql = "select count(*) from station where name = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, name);
+        return count != 0;
     }
 }

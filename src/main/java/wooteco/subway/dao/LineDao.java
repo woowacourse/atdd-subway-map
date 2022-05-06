@@ -1,64 +1,67 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
-import org.springframework.util.ReflectionUtils;
+import java.util.Optional;
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
+@Repository
 public class LineDao {
 
-    private static Long sequence = 0L;
-    private static final List<Line> lines = new ArrayList<>();
+    private static final RowMapper<Line> mapper = (rs, rowNum) ->
+        new Line(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("color")
+        );
 
-    public static Line save(Line line) {
-        validateDuplication(line);
-        Line persistedLine = createUniqueId(line);
-        lines.add(persistedLine);
-        return persistedLine;
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
+
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+            .withTableName("line")
+            .usingGeneratedKeyColumns("id");
     }
 
-    public static Line findById(Long id) {
-        return lines.stream()
-            .filter(value -> value.getId().equals(id))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("조회하려는 id가 없습니다."));
+    public Line save(Line line) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+            .addValue("name", line.getName())
+            .addValue("color", line.getColor());
+        long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        return new Line(id, line.getName(), line.getColor());
     }
 
-    public static List<Line> findAll() {
-        return List.copyOf(lines);
+    public Optional<Line> findById(Long id) {
+        String sql = "select *  from line where id = ?";
+        return Optional.ofNullable(DataAccessUtils.singleResult(jdbcTemplate.query(sql, mapper, id)));
     }
 
-    public static void modify(Long id, String name, String color) {
-        if (isDuplicate(name, color)) {
-            throw new IllegalArgumentException("노선의 이름과 색깔은 중복될 수 없습니다.");
-        }
-        findById(id).update(name, color);
+    public List<Line> findAll() {
+        String sql = "select * from line";
+        return jdbcTemplate.query(sql, mapper);
     }
 
-    public static void deleteById(Long id) {
-        lines.removeIf(value -> value.getId().equals(id));
+    public void modifyById(Long id, Line line) {
+        String sql = "update line set name = ?, color = ? where id = ?";
+        jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
-    public static void deleteAll() {
-        lines.clear();
+    public void deleteById(Long id) {
+        String sql = "delete from line where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
-    private static void validateDuplication(Line line) {
-        if (isDuplicate(line.getName(), line.getColor())) {
-            throw new IllegalArgumentException("노선의 이름은 중복될 수 없습니다.");
-        }
-    }
-
-    private static boolean isDuplicate(String name, String color) {
-        return lines.stream()
-            .anyMatch(value -> value.getName().equals(name) || value.getColor().equals(color));
-    }
-
-    private static Line createUniqueId(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++sequence);
-        return line;
+    public boolean existByNameAndColor(String name, String color) {
+        String sql = "select count(*) from line where name = ? and color = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, name, color);
+        return count != 0;
     }
 }
