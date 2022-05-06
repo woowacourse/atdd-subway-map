@@ -34,12 +34,12 @@ public class LineController {
     }
 
     @GetMapping("/lines")
-    public ResponseEntity<List<LineResponse>> findAllLine() {
+    public List<LineResponse> findAllLine() {
         final List<Line> lines = lineService.findAll();
         final List<LineResponse> lineResponses = lines.stream()
             .map(LineResponse::new)
             .collect(Collectors.toList());
-        return ResponseEntity.ok(lineResponses);
+        return lineResponses;
     }
 
     @GetMapping("/lines/{id}")
