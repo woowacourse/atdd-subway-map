@@ -34,7 +34,8 @@ public class StationController {
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         StationResponse stationResponse = ControllerDtoAssembler.stationResponse(
                 stationService.create(stationRequest.getName()));
-        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
+        URI redirectUri = URI.create("/stations/" + stationResponse.getId());
+        return ResponseEntity.created(redirectUri).body(stationResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -42,7 +43,7 @@ public class StationController {
         List<StationResponse> stationResponses = stationService.findAll().stream()
                 .map(ControllerDtoAssembler::stationResponse)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationResponses);
+        return ResponseEntity.ok(stationResponses);
     }
 
     @DeleteMapping("/{stationId}")

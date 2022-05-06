@@ -35,20 +35,23 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse lineResponse = ControllerDtoAssembler.lineResponse(
                 lineService.create(lineRequest.getName(), lineRequest.getColor()));
-        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
+        URI redirectUri = URI.create("/lines/" + lineResponse.getId());
+        return ResponseEntity.created(redirectUri).body(lineResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> lineResponses = lineService.findAll().stream()
+        List<LineResponse> lineResponses = lineService.findAll()
+                .stream()
                 .map(ControllerDtoAssembler::lineResponse)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(lineResponses);
+        return ResponseEntity.ok(lineResponses);
     }
 
     @GetMapping("/{lineId}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long lineId) {
-        return ResponseEntity.ok(ControllerDtoAssembler.lineResponse(lineService.findOne(lineId)));
+        LineResponse lineResponse = ControllerDtoAssembler.lineResponse(lineService.findOne(lineId));
+        return ResponseEntity.ok(lineResponse);
     }
 
     @PutMapping("/{lineId}")
