@@ -1,10 +1,11 @@
 package wooteco.subway.dto;
 
 public class LineRequest {
-    private String name;
-    private String color;
+    private final String name;
+    private final String color;
 
     public LineRequest() {
+        this(null, null);
     }
 
     public LineRequest(String name, String color) {
