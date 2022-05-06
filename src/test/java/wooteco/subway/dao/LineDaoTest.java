@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Line;
 
 import java.util.NoSuchElementException;
@@ -15,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
+@Sql("classpath:line.sql")
 public class LineDaoTest {
 
     @Autowired
@@ -25,14 +27,6 @@ public class LineDaoTest {
     @BeforeEach
     void setUp() {
         lineDao = new LineDao(jdbcTemplate);
-        jdbcTemplate.execute("DROP TABLE Line IF EXISTS");
-        jdbcTemplate.execute(
-                "create table Line(" +
-                        "id bigint auto_increment not null," +
-                        "name varchar(255) not null unique," +
-                        "color varchar(20) not null," +
-                        "primary key(id))"
-        );
 
         lineDao.save(new Line("신분당선", "bg-red-600"));
         lineDao.save(new Line("짱분당선", "bg-blue-600"));

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Station;
 
 import java.util.NoSuchElementException;
@@ -14,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
+@Sql("classpath:station.sql")
 public class StationDaoTest {
 
     @Autowired
@@ -24,12 +26,6 @@ public class StationDaoTest {
     @BeforeEach
     void setUp() {
         stationDao = new StationDao(jdbcTemplate);
-        jdbcTemplate.execute("DROP TABLE Station IF EXISTS");
-        jdbcTemplate.execute("create table Station(" +
-                "id bigint auto_increment not null," +
-                "name varchar(255) not null unique," +
-                "primary key(id))"
-        );
     }
 
     @Test
