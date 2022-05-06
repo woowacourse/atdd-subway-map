@@ -21,20 +21,9 @@ public class LineService {
     }
 
     public Long save(LineRequest request) {
-        validateDuplicateName(request.getName());
         Line line = new Line(request.getName(), request.getColor());
 
         return lineDao.save(line);
-    }
-
-    private void validateDuplicateName(String name) {
-        final boolean isExist = lineDao.findAll()
-                .stream()
-                .anyMatch(line -> line.getName().equals(name));
-
-        if (isExist) {
-            throw new IllegalArgumentException("중복된 지하철 노선이 존재합니다.");
-        }
     }
 
     public LineResponse findById(Long id) {

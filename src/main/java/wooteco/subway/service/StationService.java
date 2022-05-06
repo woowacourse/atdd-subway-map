@@ -21,22 +21,11 @@ public class StationService {
     }
 
     public StationResponse save(StationRequest request) {
-        validateDuplicateName(request.getName());
         final Station station = new Station(request.getName());
 
         final Long savedId = stationDao.save(station);
 
         return new StationResponse(savedId, station.getName());
-    }
-
-    private void validateDuplicateName(String name) {
-        final boolean isExist = stationDao.findAll()
-                .stream()
-                .anyMatch(station -> station.getName().equals(name));
-
-        if (isExist) {
-            throw new IllegalArgumentException("중복된 지하철 역이 존재합니다.");
-        }
     }
 
     public List<StationResponse> findAll() {
