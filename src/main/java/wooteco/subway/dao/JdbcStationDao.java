@@ -26,7 +26,7 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public long save(Station station) {
+    public long save(final Station station) {
         final String sql = "insert into STATION (name) values (?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -40,7 +40,13 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public boolean existStationByName(String name) {
+    public boolean existStationById(final Long id) {
+        final String sql = "select exists (select * from STATION where id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    @Override
+    public boolean existStationByName(final String name) {
         final String sql = "select exists (select * from STATION where name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
@@ -52,8 +58,8 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public int delete(Long id) {
+    public void delete(final Long id) {
         final String sql = "delete from STATION where id = ?";
-        return jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, id);
     }
 }

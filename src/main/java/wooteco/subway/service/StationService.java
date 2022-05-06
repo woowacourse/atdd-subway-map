@@ -14,7 +14,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public long save(Station station) {
+    public long save(final Station station) {
         validateName(station);
         return stationDao.save(station);
     }
@@ -23,16 +23,20 @@ public class StationService {
         return stationDao.findAll();
     }
 
-    public void delete(Long id) {
-        int deletedRow = stationDao.delete(id);
-        if (deletedRow == 0) {
-            throw new IllegalArgumentException("존재하지 않는 지하철역입니다.");
+    public void delete(final Long id) {
+        validateExistedLine(id);
+        stationDao.delete(id);
+    }
+
+    private void validateName(final Station station) {
+        if (stationDao.existStationByName(station.getName())) {
+            throw new IllegalArgumentException("지하철역 이름이 중복됩니다.");
         }
     }
 
-    private void validateName(Station station) {
-        if (stationDao.existStationByName(station.getName())) {
-            throw new IllegalArgumentException("지하철역 이름이 중복됩니다.");
+    private void validateExistedLine(final Long id) {
+        if (!stationDao.existStationById(id)) {
+            throw new IllegalArgumentException("존재하지 않는 지하철역입니다.");
         }
     }
 }

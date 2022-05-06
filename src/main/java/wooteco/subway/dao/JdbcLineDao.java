@@ -28,7 +28,7 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public long save(Line line) {
+    public long save(final Line line) {
         final String sql = "insert into LINE (name, color) values (?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -43,13 +43,19 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public boolean existLineByName(String name) {
+    public boolean existLineById(final Long id) {
+        final String sql = "select exists (select * from LINE where id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    @Override
+    public boolean existLineByName(final String name) {
         final String sql = "select exists (select * from LINE where name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
     @Override
-    public boolean existLineByColor(String color) {
+    public boolean existLineByColor(final String color) {
         final String sql = "select exists (select * from LINE where color = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, color);
     }
@@ -61,20 +67,20 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> find(Long id) {
+    public Optional<Line> find(final Long id) {
         final String sql = "select id, name, color from LINE where id = ?";
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id));
     }
 
     @Override
-    public int update(long id, Line line) {
+    public void update(final long id, final Line line) {
         final String sql = "update LINE set name = ?, color = ? where id = ?";
-        return jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
+        jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
     @Override
-    public int delete(Long id) {
+    public void delete(final Long id) {
         final String sql = "delete from LINE where id = ?";
-        return jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, id);
     }
 }

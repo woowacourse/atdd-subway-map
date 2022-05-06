@@ -10,21 +10,26 @@ import wooteco.subway.domain.Line;
 
 public class LineMockDao implements LineDao {
 
-    private static final int TRUE = 1;
-    private static final int FALSE = 0;
-
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
 
     @Override
-    public long save(Line line) {
+    public long save(final Line line) {
         Line persistLine = createNewObject(line);
         lines.add(persistLine);
         return persistLine.getId();
     }
 
     @Override
-    public boolean existLineByName(String name) {
+    public boolean existLineById(final Long id) {
+        List<Long> lineNames = lines.stream()
+                .map(Line::getId)
+                .collect(Collectors.toList());
+        return lineNames.contains(id);
+    }
+
+    @Override
+    public boolean existLineByName(final String name) {
         List<String> lineNames = lines.stream()
                 .map(Line::getName)
                 .collect(Collectors.toList());
@@ -32,7 +37,7 @@ public class LineMockDao implements LineDao {
     }
 
     @Override
-    public boolean existLineByColor(String color) {
+    public boolean existLineByColor(final String color) {
         List<String> lineColors = lines.stream()
                 .map(Line::getColor)
                 .collect(Collectors.toList());
@@ -45,35 +50,28 @@ public class LineMockDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> find(Long id) {
+    public Optional<Line> find(final Long id) {
         return lines.stream()
                 .filter(line -> line.getId().equals(id))
                 .findFirst();
     }
 
     @Override
-    public int update(long id, Line line) {
-        if (delete(id) == TRUE) {
-            lines.add(line);
-            return TRUE;
-        }
-        return FALSE;
+    public void update(final long id, final Line line) {
+        delete(id);
+        lines.add(line);
     }
 
     @Override
-    public int delete(Long id) {
-        boolean isRemoving = lines.removeIf(line -> line.getId().equals(id));
-        if (!isRemoving) {
-            return FALSE;
-        }
-        return TRUE;
+    public void delete(final Long id) {
+        lines.removeIf(line -> line.getId().equals(id));
     }
 
     public void clear() {
         lines.clear();
     }
 
-    private Line createNewObject(Line line) {
+    private Line createNewObject(final Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);

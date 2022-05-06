@@ -9,21 +9,26 @@ import wooteco.subway.domain.Station;
 
 public class StationMockDao implements StationDao {
 
-    private static final int TRUE = 1;
-    private static final int FALSE = 0;
-
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
     @Override
-    public long save(Station station) {
+    public long save(final Station station) {
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation.getId();
     }
 
     @Override
-    public boolean existStationByName(String name) {
+    public boolean existStationById(final Long id) {
+        List<Long> stationNames = stations.stream()
+                .map(Station::getId)
+                .collect(Collectors.toList());
+        return stationNames.contains(id);
+    }
+
+    @Override
+    public boolean existStationByName(final String name) {
         List<String> stationNames = stations.stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());
@@ -36,19 +41,15 @@ public class StationMockDao implements StationDao {
     }
 
     @Override
-    public int delete(Long id) {
-        boolean isRemoving = stations.removeIf(station -> station.getId().equals(id));
-        if (!isRemoving) {
-            return FALSE;
-        }
-        return TRUE;
+    public void delete(final Long id) {
+        stations.removeIf(station -> station.getId().equals(id));
     }
 
     public void clear() {
         stations.clear();
     }
 
-    private Station createNewObject(Station station) {
+    private Station createNewObject(final Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);

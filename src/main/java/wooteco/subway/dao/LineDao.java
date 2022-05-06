@@ -8,6 +8,8 @@ public interface LineDao {
 
     long save(Line line);
 
+    boolean existLineById(Long id);
+
     boolean existLineByName(String name);
 
     boolean existLineByColor(String color);
@@ -16,7 +18,7 @@ public interface LineDao {
 
     Optional<Line> find(Long id);
 
-    int update(long id, Line line);
+    void update(long id, Line line);
 
-    int delete(Long id);
+    void delete(Long id);
 }

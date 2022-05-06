@@ -60,6 +60,9 @@ class StationDaoTest {
     void delete() {
         long stationId = stationDao.save(STATION);
 
-        assertThat(stationDao.delete(stationId)).isEqualTo(1);
+        stationDao.delete(stationId);
+
+        Integer count = jdbcTemplate.queryForObject("select count(*) from STATION", Integer.class);
+        assertThat(count).isEqualTo(0);
     }
 }

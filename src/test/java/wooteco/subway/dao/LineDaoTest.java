@@ -90,6 +90,9 @@ class LineDaoTest {
     void delete() {
         long lineId = lineDao.save(LINE);
 
-        assertThat(lineDao.delete(lineId)).isEqualTo(1);
+        lineDao.delete(lineId);
+
+        Integer count = jdbcTemplate.queryForObject("select count(*) from LINE", Integer.class);
+        assertThat(count).isEqualTo(0);
     }
 }

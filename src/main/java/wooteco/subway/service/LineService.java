@@ -10,11 +10,11 @@ public class LineService {
 
     private final LineDao lineDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(final LineDao lineDao) {
         this.lineDao = lineDao;
     }
 
-    public long save(Line line) {
+    public long save(final Line line) {
         validateLine(line);
         return lineDao.save(line);
     }
@@ -23,41 +23,41 @@ public class LineService {
         return lineDao.findAll();
     }
 
-    public Line find(Long id) {
+    public Line find(final Long id) {
         return lineDao.find(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 노선입니다."));
     }
 
-    public void update(long id, Line line) {
+    public void update(final long id, final Line line) {
         validateLine(line);
-        int updatedRow = lineDao.update(id, line);
-        validateAffectedRow(updatedRow);
+        validateExistedLine(id);
+        lineDao.update(id, line);
     }
 
-    public void delete(Long id) {
-        int deletedRow = lineDao.delete(id);
-        validateAffectedRow(deletedRow);
+    public void delete(final Long id) {
+        validateExistedLine(id);
+        lineDao.delete(id);
     }
 
-    private void validateLine(Line line) {
+    private void validateLine(final Line line) {
         validateName(line);
         validateColor(line);
     }
 
-    private void validateName(Line line) {
+    private void validateName(final Line line) {
         if (lineDao.existLineByName(line.getName())) {
             throw new IllegalArgumentException("지하철 노선 이름이 중복됩니다.");
         }
     }
 
-    private void validateColor(Line line) {
+    private void validateColor(final Line line) {
         if (lineDao.existLineByColor(line.getColor())) {
             throw new IllegalArgumentException("지하철 노선 색상이 중복됩니다.");
         }
     }
 
-    private void validateAffectedRow(int affectedRow) {
-        if (affectedRow == 0) {
+    private void validateExistedLine(final Long id) {
+        if (!lineDao.existLineById(id)) {
             throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
         }
     }
