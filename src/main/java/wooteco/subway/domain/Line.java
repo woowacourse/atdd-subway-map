@@ -8,7 +8,7 @@ public class Line {
     private String color;
     private List<Station> stations;
 
-    public Line() {
+    private Line() {
     }
 
     public Line(String name, String color) {
@@ -17,15 +17,12 @@ public class Line {
     }
 
     public Line(Long id, String name, String color) {
+        this(name, color);
         this.id = id;
-        this.name = name;
-        this.color = color;
     }
 
     public Line(Long id, String name, String color, List<Station> stations) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
+        this(id, name, color);
         this.stations = stations;
     }
 
