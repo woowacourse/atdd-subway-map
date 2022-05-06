@@ -32,14 +32,8 @@ class LineJdbcDaoTest {
     @DisplayName("새로운 노선을 저장한다")
     @Test
     void saveLine() {
-        // given
-        Line line = new Line("line", "color");
-
-        // when
-        Long savedId = dao.save(line);
-
-        // then
-        assertThat(dao.findById(savedId).get()).isEqualTo(line);
+        Line savedLine = dao.save(new Line("line", "color"));
+        assertThat(savedLine).isNotNull();
     }
 
     @DisplayName("같은 이름의 노선이 있는 경우 예외를 던진다")
@@ -85,15 +79,13 @@ class LineJdbcDaoTest {
     @Test
     void findById() {
         // given
-        dao.save(new Line("line1", "color1"));
-        Line line = new Line("line2", "color2");
-        Long savedId = dao.save(line);
+        Line savedLine = dao.save(new Line("line2", "color2"));
 
         // when
-        Line findLine = dao.findById(savedId).get();
+        Line findLine = dao.findById(savedLine.getId()).get();
 
         // then
-        assertThat(findLine).isEqualTo(line);
+        assertThat(findLine).isEqualTo(savedLine);
     }
 
     @DisplayName("존재하지 않는 id로 노선을 조회하면 빈 값을 반환한다")
@@ -106,11 +98,11 @@ class LineJdbcDaoTest {
     @DisplayName("노선 정보를 수정한다")
     @Test
     void update() {
-        Long savedId = dao.save(new Line("line", "color"));
+        Line savedLine = dao.save(new Line("line", "color"));
 
-        Long updateId = dao.update(savedId, "changedName", "changedColor");
+        dao.update(savedLine.getId(), "changedName", "changedColor");
 
-        Line findLine = dao.findById(updateId).get();
+        Line findLine = dao.findById(savedLine.getId()).get();
         assertThat(findLine).isEqualTo(new Line("changedName", "changedColor"));
     }
 
@@ -120,12 +112,10 @@ class LineJdbcDaoTest {
         // given
         String name = "line";
         dao.save(new Line(name, "color"));
-
-        Line duplicateName = new Line("test", "test");
-        Long savedId = dao.save(duplicateName);
+        Line savedLine = dao.save(new Line("test", "test"));
 
         //when, then
-        assertThatThrownBy(() -> dao.update(savedId, name, "changedColor"))
+        assertThatThrownBy(() -> dao.update(savedLine.getId(), name, "changedColor"))
                 .isInstanceOf(DuplicateLineException.class);
     }
 
@@ -135,12 +125,10 @@ class LineJdbcDaoTest {
         // given
         String color = "red";
         dao.save(new Line("line", color));
-
-        Line toBeUpdate = new Line("duplicateColorLine", "test");
-        Long savedId = dao.save(toBeUpdate);
+        Line savedLine = dao.save(new Line("duplicateColorLine", "test"));
 
         //when, then
-        assertThatThrownBy(() -> dao.update(savedId, "duplicateColorLine", color))
+        assertThatThrownBy(() -> dao.update(savedLine.getId(), "duplicateColorLine", color))
                 .isInstanceOf(DuplicateLineException.class);
     }
 
@@ -155,13 +143,13 @@ class LineJdbcDaoTest {
     @Test
     void deleteById() {
         // given
-        Long savedId = dao.save(new Line("line", "color"));
+        Line savedLine = dao.save(new Line("line", "color"));
 
         // when
-        Long deletedId = dao.deleteById(savedId);
+        Long deletedId = dao.deleteById(savedLine.getId());
 
         // then
-        assertThat(deletedId).isEqualTo(savedId);
+        assertThat(deletedId).isEqualTo(savedLine.getId());
     }
 
     @DisplayName("존재하지 않는 id로 제거한다")

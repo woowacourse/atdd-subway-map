@@ -3,9 +3,10 @@ package wooteco.subway.dao;
 import java.util.List;
 import java.util.Optional;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.DuplicateLineException;
 
 public interface LineDao {
-    Long save(Line line);
+    Line save(Line line) throws DuplicateLineException;
 
     List<Line> findAll();
 

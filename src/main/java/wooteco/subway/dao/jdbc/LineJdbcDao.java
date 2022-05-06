@@ -26,7 +26,7 @@ public class LineJdbcDao implements LineDao {
     }
 
     @Override
-    public Long save(final Line line) {
+    public Line save(final Line line) throws DuplicateLineException {
         final String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -41,7 +41,7 @@ public class LineJdbcDao implements LineDao {
             throw new DuplicateLineException();
         }
 
-        return keyHolder.getKey().longValue();
+        return new Line(keyHolder.getKey().longValue(), line.getName(), line.getColor());
     }
 
     @Override

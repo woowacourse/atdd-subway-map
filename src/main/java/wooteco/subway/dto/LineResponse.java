@@ -13,10 +13,6 @@ public class LineResponse {
         this.color = color;
     }
 
-    public static LineResponse of(Long id, String name, String color) {
-        return new LineResponse(id, name, color);
-    }
-
     public static LineResponse from(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor());
     }

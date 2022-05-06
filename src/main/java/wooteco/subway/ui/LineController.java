@@ -35,10 +35,8 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = lineRequest.toLine();
-        Long id = lineDao.save(line);
-        LineResponse lineResponse = LineResponse.of(id, line.getName(), line.getColor());
-        return ResponseEntity.created(URI.create(LINES_API_URI + "/" + id)).body(lineResponse);
+        LineResponse lineResponse = LineResponse.from(lineDao.save(lineRequest.toLine()));
+        return ResponseEntity.created(URI.create(LINES_API_URI + "/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping
@@ -52,9 +50,8 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line line = lineDao.findById(id)
-                .orElseThrow(NoSuchLineException::new);
-        LineResponse lineResponse = LineResponse.of(id, line.getName(), line.getColor());
+        LineResponse lineResponse = LineResponse.from(lineDao.findById(id)
+                .orElseThrow(NoSuchLineException::new));
         return ResponseEntity.ok().body(lineResponse);
     }
 
