@@ -33,14 +33,14 @@ class SpringLineServiceTest {
 
         @Test
         @DisplayName("노선 이름이 중복되지 않으면 저장할 수 있다.")
-        void save_Success_If_Not_Exists() {
+        void saveSuccessIfNotExists() {
             assertThatCode(() -> lineService.save(LINE_FIXTURE))
                     .doesNotThrowAnyException();
         }
 
         @Test
         @DisplayName("노선 이름이 중복되면 예외가 발생한다.")
-        void save_Fail_If_Exists() {
+        void saveFailIfExists() {
             lineService.save(LINE_FIXTURE);
             assertThatThrownBy(() -> lineService.save(LINE_FIXTURE))
                     .isInstanceOf(DuplicateKeyException.class);

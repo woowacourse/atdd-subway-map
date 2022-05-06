@@ -33,14 +33,14 @@ class SpringStationServiceTest {
 
         @Test
         @DisplayName("역 이름이 중복되지 않으면 저장할 수 있다.")
-        void save_Success_If_Not_Exists() {
+        void saveSuccessIfNotExists() {
             assertThatCode(() -> stationService.save(STATION_FIXTURE))
                     .doesNotThrowAnyException();
         }
 
         @Test
         @DisplayName("역 이름이 중복되면 예외가 발생한다.")
-        void save_Fail_If_Exists() {
+        void saveFailIfExists() {
             stationService.save(STATION_FIXTURE);
             assertThatThrownBy(() -> stationService.save(STATION_FIXTURE))
                     .isInstanceOf(DuplicateKeyException.class);
