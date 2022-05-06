@@ -134,10 +134,24 @@ Dao에서는 Optional로 반환하고 서비스에서 예외처리를 하는 것
   * id는 auto_increment를 사용하기 때문에 id 값을 얻으려면 DB에 한번 저장이 되어야함. 그 전까지는 null
   * DB 스키마로 name과 color를 unique 속성으로 제한했기 때문에 같은 name과 color를 가진 두 개의 데이터는 존재할 수 없음
 
+<br>
+
 * 존재하지 않는 id를 삭제 시도 하면 어떻게 되나요?
   * 원래 존재하지 않는 id로 삭제 시도를 할 경우 예외를 던지도록 설계했었음.
   * JDBC로 DELETE문을 실행했을 때, 존재하지 않는 id라면 예외가 던져지지 않고 affected row가 0으로 반환됨.
   * 사용자 입장에서 생각해봤을때, 삭제가 일어나지 않으면 문제이지만, 없는 id로 삭제 요청을 보내면 삭제가 되든 안되든 별로 중요하지 않음. 원래 존재하지 않았으니까.
+
+<br>
+* 현재 IllegalArgumentException, NoSuchElementException 예외만 처리해주고 있는데 다른 예외가 발생하면 어떻게 되나요?
+
+ExceptionHandler에 등록되지 않은 에러가 발생하면 [BasicErrorController](https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/autoconfigure/web/servlet/error/BasicErrorController.html) 가 동작한다.
+
+브라우저에서 요청하면 `errorHtml()` 메서드가 호출되어 Html 응답이 반환되고, postman이나 Curl같은 브라우저가 아닌 곳에서 요청을 하면 `error()` 메서드가 호출되어 JSON으로 응답을 받는다.
+현재 의미있는 에러 메시지를 줄만한 에러는  IllegalArgumentException과 NoSuchElementException 밖에 없다고 생각함.
+
+ExceptionHandler에 Exception 클래스를 등록해서 모든 예외를 핸들링하도록 처리할 수는 있으나 스프링이 기본 제공하는 에러 핸들링보다 나을 것이 없을 것 같다는 생각이 든다.
+
+
 
 # 제약사항
 
