@@ -24,35 +24,35 @@ import wooteco.subway.service.StationService;
 @RequestMapping("/stations")
 public class StationController {
 
-	private final StationService stationService;
+    private final StationService stationService;
 
-	public StationController(StationService stationService) {
-		this.stationService = stationService;
-	}
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
+    }
 
-	@PostMapping
-	public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-		StationResponse stationResponse = ControllerDtoAssembler.stationResponse(
-				stationService.create(stationRequest.getName()));
-		return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
-	}
+    @PostMapping
+    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
+        StationResponse stationResponse = ControllerDtoAssembler.stationResponse(
+                stationService.create(stationRequest.getName()));
+        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
+    }
 
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<StationResponse>> showStations() {
-		List<StationResponse> stationResponses = stationService.listStations().stream()
-			.map(ControllerDtoAssembler::stationResponse)
-			.collect(Collectors.toList());
-		return ResponseEntity.ok().body(stationResponses);
-	}
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<StationResponse>> showStations() {
+        List<StationResponse> stationResponses = stationService.listStations().stream()
+                .map(ControllerDtoAssembler::stationResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok().body(stationResponses);
+    }
 
-	@DeleteMapping("/{stationId}")
-	public ResponseEntity<Void> deleteStation(@PathVariable Long stationId) {
-		stationService.remove(stationId);
-		return ResponseEntity.noContent().build();
-	}
+    @DeleteMapping("/{stationId}")
+    public ResponseEntity<Void> deleteStation(@PathVariable Long stationId) {
+        stationService.remove(stationId);
+        return ResponseEntity.noContent().build();
+    }
 
-	@ExceptionHandler
-	public ResponseEntity<String> handle(IllegalArgumentException exception) {
-		return ResponseEntity.badRequest().body(exception.getMessage());
-	}
+    @ExceptionHandler
+    public ResponseEntity<String> handle(IllegalArgumentException exception) {
+        return ResponseEntity.badRequest().body(exception.getMessage());
+    }
 }

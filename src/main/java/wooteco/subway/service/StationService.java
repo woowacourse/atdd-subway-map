@@ -13,33 +13,33 @@ import wooteco.subway.service.dto.station.StationResponseDto;
 @Service
 public class StationService {
 
-	private final StationDao stationDao;
+    private final StationDao stationDao;
 
-	public StationService(StationDao stationDao) {
-		this.stationDao = stationDao;
-	}
+    public StationService(StationDao stationDao) {
+        this.stationDao = stationDao;
+    }
 
-	public StationResponseDto create(String name) {
-		validateNameNotDuplicated(name);
-		Long stationId = stationDao.save(new Station(name));
-		Station station = stationDao.findById(stationId);
-		return ServiceDtoAssembler.stationResponseDto(station);
-	}
+    public StationResponseDto create(String name) {
+        validateNameNotDuplicated(name);
+        Long stationId = stationDao.save(new Station(name));
+        Station station = stationDao.findById(stationId);
+        return ServiceDtoAssembler.stationResponseDto(station);
+    }
 
-	private void validateNameNotDuplicated(String name) {
-		if (stationDao.existsByName(name)) {
-			throw new IllegalArgumentException("해당 이름의 지하철 역이 이미 존재합니다.");
-		}
-	}
+    private void validateNameNotDuplicated(String name) {
+        if (stationDao.existsByName(name)) {
+            throw new IllegalArgumentException("해당 이름의 지하철 역이 이미 존재합니다.");
+        }
+    }
 
-	public List<StationResponseDto> listStations() {
-		return stationDao.findAll()
-			.stream()
-			.map(ServiceDtoAssembler::stationResponseDto)
-			.collect(Collectors.toUnmodifiableList());
-	}
+    public List<StationResponseDto> listStations() {
+        return stationDao.findAll()
+                .stream()
+                .map(ServiceDtoAssembler::stationResponseDto)
+                .collect(Collectors.toUnmodifiableList());
+    }
 
-	public void remove(Long id) {
-		stationDao.remove(id);
-	}
+    public void remove(Long id) {
+        stationDao.remove(id);
+    }
 }

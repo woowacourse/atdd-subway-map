@@ -14,49 +14,49 @@ import wooteco.subway.service.dto.line.LineResponseDto;
 @Service
 public class LineService {
 
-	private final LineDao lineDao;
+    private final LineDao lineDao;
 
-	public LineService(LineDao lineDao) {
-		this.lineDao = lineDao;
-	}
+    public LineService(LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
 
-	public LineResponseDto create(String name, String color) {
-		validateNameNotDuplicated(name);
-		validateColorNotDuplicated(color);
-		Long lineId = lineDao.save(new Line(name, color));
-		Line line = lineDao.findById(lineId);
-		return ServiceDtoAssembler.lineResponseDto(line);
-	}
+    public LineResponseDto create(String name, String color) {
+        validateNameNotDuplicated(name);
+        validateColorNotDuplicated(color);
+        Long lineId = lineDao.save(new Line(name, color));
+        Line line = lineDao.findById(lineId);
+        return ServiceDtoAssembler.lineResponseDto(line);
+    }
 
-	private void validateNameNotDuplicated(String name) {
-		if (lineDao.existsByName(name)) {
-			throw new IllegalArgumentException("해당 이름의 지하철 노선이 이미 존재합니다");
-		}
-	}
+    private void validateNameNotDuplicated(String name) {
+        if (lineDao.existsByName(name)) {
+            throw new IllegalArgumentException("해당 이름의 지하철 노선이 이미 존재합니다");
+        }
+    }
 
-	private void validateColorNotDuplicated(String color) {
-		if (lineDao.existsByColor(color)) {
-			throw new IllegalArgumentException("해당 색상의 지하철 노선이 이미 존재합니다");
-		}
-	}
+    private void validateColorNotDuplicated(String color) {
+        if (lineDao.existsByColor(color)) {
+            throw new IllegalArgumentException("해당 색상의 지하철 노선이 이미 존재합니다");
+        }
+    }
 
-	public List<LineResponseDto> listLines() {
-		return lineDao.findAll()
-			.stream()
-			.map(ServiceDtoAssembler::lineResponseDto)
-			.collect(Collectors.toUnmodifiableList());
-	}
+    public List<LineResponseDto> listLines() {
+        return lineDao.findAll()
+                .stream()
+                .map(ServiceDtoAssembler::lineResponseDto)
+                .collect(Collectors.toUnmodifiableList());
+    }
 
-	public LineResponseDto findOne(Long id) {
-		return ServiceDtoAssembler.lineResponseDto(lineDao.findById(id));
-	}
+    public LineResponseDto findOne(Long id) {
+        return ServiceDtoAssembler.lineResponseDto(lineDao.findById(id));
+    }
 
-	public void update(Long id, LineRequestDto lineRequestDto) {
-		lineDao.update(id, lineRequestDto.getName(), lineRequestDto.getColor());
+    public void update(Long id, LineRequestDto lineRequestDto) {
+        lineDao.update(id, lineRequestDto.getName(), lineRequestDto.getColor());
 
-	}
+    }
 
-	public void remove(Long id) {
-		lineDao.remove(id);
-	}
+    public void remove(Long id) {
+        lineDao.remove(id);
+    }
 }

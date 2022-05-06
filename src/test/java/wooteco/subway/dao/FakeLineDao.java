@@ -8,8 +8,8 @@ import wooteco.subway.domain.Line;
 
 public class FakeLineDao implements LineDao {
 
-    private Long seq = 0L;
     private final List<Line> lines = new ArrayList<>();
+    private Long seq = 0L;
 
     @Override
     public Long save(Line line) {

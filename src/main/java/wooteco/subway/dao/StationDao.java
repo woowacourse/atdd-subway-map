@@ -6,13 +6,13 @@ import wooteco.subway.domain.Station;
 
 public interface StationDao {
 
-	Long save(Station station);
+    Long save(Station station);
 
-	List<Station> findAll();
+    List<Station> findAll();
 
-	Station findById(Long id);
+    Station findById(Long id);
 
-	Boolean existsByName(String name);
+    Boolean existsByName(String name);
 
-	void remove(Long id);
+    void remove(Long id);
 }
