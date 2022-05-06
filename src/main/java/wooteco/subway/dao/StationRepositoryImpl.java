@@ -16,12 +16,8 @@ import java.util.List;
 @Repository
 public class StationRepositoryImpl implements StationRepository {
 
-    private static final Long seq = 0L;
-    private static final List<Station> stations = new ArrayList<>();
-
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-
 
     public StationRepositoryImpl(DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
