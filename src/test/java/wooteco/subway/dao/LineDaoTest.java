@@ -69,8 +69,8 @@ class LineDaoTest {
         lineDao.save(line1);
 
         //then
-        assertThat(lineDao.findAll())
-                .hasSize(2);
+        assertThat(lines)
+                .containsOnly(line, line2);
     }
 
     @DisplayName("지하철 노선을 수정한다.")

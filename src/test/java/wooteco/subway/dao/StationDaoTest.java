@@ -31,8 +31,8 @@ class StationDaoTest {
 
         //when
         Long id = stationDao.save(station);
-        assertThat(stationDao.findById(id).getName())
-                .isEqualTo("강남역");//then
+        assertThat(stationDao.findById(id))
+                .isEqualTo(station);
     }
 
     @DisplayName("해당 이름의 지하철역이 있는지 확인한다.")
@@ -70,7 +70,7 @@ class StationDaoTest {
 
         //when
         assertThat(stationDao.findAll())
-                .hasSize(2);//then
+                .containsOnly(station, station1);
     }
 
     @DisplayName("지하철역을 삭제한다.")
