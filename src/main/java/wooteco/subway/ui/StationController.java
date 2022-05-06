@@ -37,7 +37,7 @@ public class StationController {
             throw new IllegalArgumentException(
                     StringFormat.errorMessage(stationRequest.getName(), STATION_DUPLICATION_EXCEPTION_MESSAGE));
         }
-        Station station = new Station(stationRequest.getName());
+        Station station = stationRequest.toEntity();
         Station newStation = stationDao.save(station);
         StationResponse stationResponse = StationResponse.of(newStation);
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);

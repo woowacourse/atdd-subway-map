@@ -38,7 +38,7 @@ public class LineController {
             throw new IllegalArgumentException(
                     StringFormat.errorMessage(lineRequest.getName(), LINE_DUPLICATION_EXCEPTION_MESSAGE));
         }
-        Line newLine = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        Line newLine = lineDao.save(lineRequest.toEntity());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(LineResponse.of(newLine));
     }
 
@@ -76,7 +76,7 @@ public class LineController {
             throw new IllegalArgumentException(
                     StringFormat.errorMessage(lineRequest.getName(), LINE_DUPLICATION_EXCEPTION_MESSAGE));
         }
-        lineDao.update(findLine, new Line(id, lineRequest.getName(), lineRequest.getColor()));
+        lineDao.update(findLine.getId(), lineRequest.toEntity());
 
         return ResponseEntity.ok().build();
     }

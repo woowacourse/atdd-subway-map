@@ -112,7 +112,7 @@ public class LineDaoTest {
         Line savedLine = lineDao.save(line);
         Line newLine = new Line(savedLine.getId(), "test2", "BROWN");
 
-        lineDao.update(savedLine, newLine);
+        lineDao.update(savedLine.getId(), newLine);
 
         Line result = lineDao.findById(savedLine.getId()).get();
         assertAll(
