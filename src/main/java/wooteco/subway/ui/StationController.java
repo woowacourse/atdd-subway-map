@@ -1,7 +1,5 @@
 package wooteco.subway.ui;
 
-import static wooteco.subway.ui.StationController.STATIONS_API_URI;
-
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,10 +17,8 @@ import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 @RestController
-@RequestMapping(STATIONS_API_URI)
+@RequestMapping("/stations")
 public class StationController {
-
-    public static final String STATIONS_API_URI = "/stations";
 
     private final StationDao stationDao;
 
@@ -35,7 +31,7 @@ public class StationController {
         Station station = new Station(stationRequest.getName());
         Long id = stationDao.save(station);
         StationResponse stationResponse = new StationResponse(id, station.getName());
-        return ResponseEntity.created(URI.create(STATIONS_API_URI + "/" + id)).body(stationResponse);
+        return ResponseEntity.created(URI.create("/stations/" + id)).body(stationResponse);
     }
 
     @GetMapping
