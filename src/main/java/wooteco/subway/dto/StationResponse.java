@@ -6,10 +6,6 @@ public class StationResponse {
     private final Long id;
     private final String name;
 
-    // public StationResponse() {
-    //     this(null, null);
-    // }
-
     public StationResponse(Station station) {
         this(station.getId(), station.getName());
     }
