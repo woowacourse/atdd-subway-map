@@ -29,6 +29,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    private ExtractableResponse<Response> deleteSection(final Long lineId, final Long stationId) {
+        return RestAssured.given().log().all()
+                .param("stationId", stationId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
     @Test
     @DisplayName("구간을 추가한다.")
     void saveSection() {
@@ -49,6 +59,32 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = postSections(lineId, sectionSaveRequest);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("구간을 삭제한다.")
+    void removeSection() {
+        // given
+        Long stationId1 = postStations(new StationRequest("강남역"))
+                .as(StationResponse.class)
+                .getId();
+        Long stationId2 = postStations(new StationRequest("역삼역"))
+                .as(StationResponse.class)
+                .getId();
+        Long stationId3 = postStations(new StationRequest("선릉역"))
+                .as(StationResponse.class)
+                .getId();
+
+        Long lineId = postLines(new LineRequest("신분당선", "bg-red-600", stationId1, stationId2, 10))
+                .as(LineResponse.class)
+                .getId();
+        postSections(lineId, new SectionSaveRequest(stationId2, stationId3, 10));
+
+        // when
+        ExtractableResponse<Response> response = deleteSection(lineId, stationId2);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
