@@ -8,6 +8,8 @@ import java.util.Objects;
 import org.springframework.util.ReflectionUtils;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.RowDuplicatedException;
+import wooteco.subway.exception.RowNotFoundException;
 
 public class MemoryLineDao implements LineDao {
 
@@ -26,7 +28,7 @@ public class MemoryLineDao implements LineDao {
         boolean isDuplicated = lines.stream()
             .anyMatch(station -> station.hasSameNameWith(otherLine));
         if (isDuplicated) {
-            throw new IllegalStateException("이미 존재하는 노선 이름입니다.");
+            throw new RowDuplicatedException("이미 존재하는 노선 이름입니다.");
         }
     }
 
@@ -47,14 +49,14 @@ public class MemoryLineDao implements LineDao {
         return lines.stream()
             .filter(line -> Objects.equals(line.getId(), id))
             .findAny()
-            .orElseThrow(() -> new IllegalStateException("조회하고자 하는 노선이 존재하지 않습니다."));
+            .orElseThrow(() -> new RowNotFoundException("조회하고자 하는 노선이 존재하지 않습니다."));
     }
 
     @Override
     public void update(Line line) {
         final boolean isRemoved = lines.removeIf(it -> Objects.equals(it.getId(), line.getId()));
         if (!isRemoved) {
-            throw new IllegalStateException("수정하고자 하는 노선이 존재하지 않습니다.");
+            throw new RowNotFoundException("수정하고자 하는 노선이 존재하지 않습니다.");
         }
         lines.add(line);
     }
@@ -63,7 +65,7 @@ public class MemoryLineDao implements LineDao {
     public void delete(Long id) {
         final boolean isRemoved = lines.removeIf(it -> Objects.equals(it.getId(), id));
         if (!isRemoved) {
-            throw new IllegalStateException("삭제하고자 하는 노선이 존재하지 않습니다.");
+            throw new RowNotFoundException("삭제하고자 하는 노선이 존재하지 않습니다.");
         }
     }
 }

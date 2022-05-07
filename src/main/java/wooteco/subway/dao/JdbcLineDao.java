@@ -16,6 +16,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.RowDuplicatedException;
+import wooteco.subway.exception.RowNotFoundException;
 
 @Repository
 public class JdbcLineDao implements LineDao {
@@ -43,7 +45,7 @@ public class JdbcLineDao implements LineDao {
             final Long id = jdbcInsert.executeAndReturnKey(param).longValue();
             return createNewObject(line, id);
         } catch (DuplicateKeyException ignored) {
-            throw new IllegalStateException("이미 존재하는 노선 이름입니다.");
+            throw new RowDuplicatedException("이미 존재하는 노선 이름입니다.");
         }
     }
 
@@ -66,7 +68,7 @@ public class JdbcLineDao implements LineDao {
         try {
             return jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalStateException("조회하고자 하는 노선이 존재하지 않습니다.");
+            throw new RowNotFoundException("조회하고자 하는 노선이 존재하지 않습니다.");
         }
     }
 
@@ -79,7 +81,7 @@ public class JdbcLineDao implements LineDao {
 
     private void validateUpdated(int updatedCount) {
         if (updatedCount == 0) {
-            throw new IllegalStateException("수정하고자 하는 노선이 존재하지 않습니다.");
+            throw new RowNotFoundException("수정하고자 하는 노선이 존재하지 않습니다.");
         }
     }
 
@@ -92,7 +94,7 @@ public class JdbcLineDao implements LineDao {
 
     private void validateDeleted(int deletedCount) {
         if (deletedCount == 0) {
-            throw new IllegalStateException("삭제하고자 하는 노선이 존재하지 않습니다.");
+            throw new RowNotFoundException("삭제하고자 하는 노선이 존재하지 않습니다.");
         }
     }
 }

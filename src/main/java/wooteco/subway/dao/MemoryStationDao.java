@@ -7,6 +7,8 @@ import java.util.List;
 import org.springframework.util.ReflectionUtils;
 
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.RowDuplicatedException;
+import wooteco.subway.exception.RowNotFoundException;
 
 public class MemoryStationDao implements StationDao {
     private Long seq = 0L;
@@ -24,7 +26,7 @@ public class MemoryStationDao implements StationDao {
         boolean isDuplicated = stations.stream()
             .anyMatch(station -> station.hasSameNameWith(otherStation));
         if (isDuplicated) {
-            throw new IllegalStateException("이미 존재하는 역 이름입니다.");
+            throw new RowDuplicatedException("이미 존재하는 역 이름입니다.");
         }
     }
 
@@ -48,7 +50,7 @@ public class MemoryStationDao implements StationDao {
 
     private void validateRemoved(boolean isRemoved) {
         if (!isRemoved) {
-            throw new IllegalStateException("삭제하고자 하는 역이 존재하지 않습니다.");
+            throw new RowNotFoundException("삭제하고자 하는 역이 존재하지 않습니다.");
         }
     }
 }

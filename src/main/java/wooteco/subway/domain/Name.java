@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.InvalidRequestException;
+
 public class Name {
 
     private final String value;
@@ -11,7 +13,7 @@ public class Name {
 
     private void validatePresent(String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("이름은 필수 입력값입니다.");
+            throw new InvalidRequestException("이름은 필수 입력값입니다.");
         }
     }
 
