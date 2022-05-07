@@ -1,7 +1,5 @@
 package wooteco.subway.ui;
 
-import static java.util.stream.Collectors.toList;
-
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -17,38 +15,35 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.service.LineService;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
 
     private final LineDao lineDao;
+    private final LineService lineService;
 
-    public LineController(LineDao lineDao) {
+    public LineController(LineDao lineDao, LineService lineService) {
         this.lineDao = lineDao;
+        this.lineService = lineService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = lineDao.save(line);
-        LineResponse lineResponse = new LineResponse(newLine);
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        LineResponse lineResponse = lineService.save(lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineDao.findAll();
-        List<LineResponse> lineResponses = lines.stream()
-                .map(LineResponse::new)
-                .collect(toList());
+        List<LineResponse> lineResponses = lineService.findAll();
         return ResponseEntity.ok(lineResponses);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        Line line = lineDao.findById(id);
-        LineResponse lineResponse = new LineResponse(line);
+        LineResponse lineResponse = lineService.findById(id);
         return ResponseEntity.ok(lineResponse);
     }
 

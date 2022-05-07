@@ -2,6 +2,8 @@ package wooteco.subway.dao;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -29,7 +31,7 @@ public class JdbcLineDao implements LineDao {
     public Line save(Line line) {
         Long id = insertActor.executeAndReturnKey(
                 Map.of("name", line.getName(), "color", line.getColor())).longValue();
-        return findById(id);
+        return findById(id).get();
     }
 
     @Override
@@ -45,9 +47,14 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String sql = "select * from LINE where id = :id";
-        return jdbcTemplate.queryForObject(sql, Map.of("id", id), generateMapper());
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, Map.of("id", id), generateMapper()));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+
     }
 
     private RowMapper<Line> generateMapper() {

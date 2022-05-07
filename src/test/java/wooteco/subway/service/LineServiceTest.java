@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,5 +50,39 @@ class LineServiceTest {
 
         assertThatThrownBy(() -> lineService.save(lineRequest))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("노선을 조회한다.")
+    @Test
+    void 노선_조회() {
+        String name = "2호선";
+        String color = "bg-green-600";
+        LineRequest lineRequest = new LineRequest(name, color);
+        LineResponse lineResponse = lineService.save(lineRequest);
+
+        LineResponse findResponse = lineService.findById(lineResponse.getId());
+
+        assertAll(
+                () -> assertThat(findResponse.getName()).isEqualTo(name),
+                () -> assertThat(findResponse.getColor()).isEqualTo(color)
+        );
+    }
+
+    @DisplayName("존재하지 않는 노선을 조회할 경우 예외를 발생시킨다.")
+    @Test
+    void 존재하지_않는_노선_조회_예외발생() {
+        assertThatThrownBy(() -> lineService.findById(0L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("다수의 노선을 조회한다.")
+    @Test
+    void 다수_노선_조회() {
+        lineService.save(new LineRequest("2호선", "bg-green-600"));
+        lineService.save(new LineRequest("수인분당선", "bg-yellow-600"));
+
+        List<LineResponse> lines = lineService.findAll();
+
+        assertThat(lines.size()).isEqualTo(2);
     }
 }
