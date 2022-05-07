@@ -18,7 +18,7 @@ import wooteco.subway.dto.StationResponse;
 
 class LineAcceptanceTest extends AcceptanceTest {
 
-    private ExtractableResponse<Response> postLines(final LineRequest lineRequest) {
+    public static ExtractableResponse<Response> postLines(final LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
