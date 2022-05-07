@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
@@ -35,15 +36,31 @@ public class LineService {
         return new LineResponse(line);
     }
 
-    private Line getLine(Long id) {
-        return lineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(id + " 의 노선은 존재하지 않습니다."));
-    }
-
     public List<LineResponse> findAll() {
         return lineDao.findAll()
                 .stream()
                 .map(LineResponse::new)
                 .collect(toList());
+    }
+
+    @Transactional
+    public LineResponse update(Long id, LineRequest lineRequest) {
+        Optional<Line> line = lineDao.findById(id);
+        if (!line.isPresent()) {
+            return new LineResponse(lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor())));
+        }
+
+        lineDao.update(id, new Line(lineRequest.getName(), lineRequest.getColor()));
+        return new LineResponse(getLine(id));
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        lineDao.deleteById(id);
+    }
+
+    private Line getLine(Long id) {
+        return lineDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(id + " 의 노선은 존재하지 않습니다."));
     }
 }

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,7 +12,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
 
@@ -60,11 +60,12 @@ public class JdbcLineDaoTest {
                 .isInstanceOf(DuplicateKeyException.class);
     }
 
-    @DisplayName("존재하지 않는 노선을 조회할 경우 예외가 발생한다.")
+    @DisplayName("존재하지 않는 노선을 조회할 경우 비어있는 Optional 을 반환한다.")
     @Test
     void 노선_조회_예외발생() {
-        assertThatThrownBy(() -> lineDao.findById(0L))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+        Optional<Line> line = lineDao.findById(0L);
+
+        assertThat(line).isEmpty();
     }
 
     @DisplayName("노선을 수정한다.")

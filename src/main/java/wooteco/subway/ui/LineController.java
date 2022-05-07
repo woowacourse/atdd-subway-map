@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
@@ -21,11 +19,9 @@ import wooteco.subway.service.LineService;
 @RequestMapping("/lines")
 public class LineController {
 
-    private final LineDao lineDao;
     private final LineService lineService;
 
-    public LineController(LineDao lineDao, LineService lineService) {
-        this.lineDao = lineDao;
+    public LineController(LineService lineService) {
         this.lineService = lineService;
     }
 
@@ -49,13 +45,13 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineDao.update(id, new Line(lineRequest.getName(), lineRequest.getColor()));
+        lineService.update(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        lineDao.deleteById(id);
+        lineService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

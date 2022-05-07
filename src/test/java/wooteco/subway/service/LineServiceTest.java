@@ -85,4 +85,45 @@ class LineServiceTest {
 
         assertThat(lines.size()).isEqualTo(2);
     }
+
+    @DisplayName("존재하는 노선을 수정한다.")
+    @Test
+    void 노선_수정() {
+        String name = "2호선";
+        String color = "bg-green-600";
+        LineResponse lineResponse = lineService.save(new LineRequest(name, color));
+
+        String updateColor = "bg-blue-600";
+        LineRequest updateRequest = new LineRequest(name, updateColor);
+        LineResponse updatedResponse = lineService.update(lineResponse.getId(), updateRequest);
+
+        assertAll(
+                () -> assertThat(updatedResponse.getName()).isEqualTo(name),
+                () -> assertThat(updatedResponse.getColor()).isEqualTo(updateColor)
+        );
+    }
+
+    @DisplayName("존재하지 않는 노선을 수정하는 경우 새롭게 생성한다.")
+    @Test
+    void 존재하지_않는_노선_수정() {
+        String name = "2호선";
+        String updateColor = "bg-blue-600";
+        LineRequest updateRequest = new LineRequest(name, updateColor);
+        LineResponse lineResponse = lineService.update(0L, updateRequest);
+
+        assertAll(
+                () -> assertThat(lineResponse.getName()).isEqualTo(name),
+                () -> assertThat(lineResponse.getColor()).isEqualTo(updateColor)
+        );
+    }
+
+    @DisplayName("노선을 삭제한다.")
+    @Test
+    void 노선_삭제() {
+        LineResponse lineResponse = lineService.save(new LineRequest("2호선", "bg-green-600"));
+
+        lineService.deleteById(lineResponse.getId());
+
+        assertThat(lineService.findAll().size()).isEqualTo(0);
+    }
 }
