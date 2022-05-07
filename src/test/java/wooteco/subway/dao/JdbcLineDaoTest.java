@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
@@ -34,6 +36,17 @@ public class JdbcLineDaoTest {
                 () -> assertThat(savedLine.getName()).isEqualTo(line.getName()),
                 () -> assertThat(savedLine.getColor()).isEqualTo(line.getColor())
         );
+    }
+
+    @DisplayName("노선 이름으로 노선 유무를 반환한다.")
+    @ParameterizedTest
+    @CsvSource({"2호선,true", "3호선,false"})
+    void 노선_이름_유무(String name, boolean expected) {
+        lineDao.save(new Line("2호선", "bg-green-600"));
+
+        boolean result = lineDao.existsByName(name);
+
+        assertThat(result).isEqualTo(expected);
     }
 
     @DisplayName("중복된 노선을 저장할 경우 예외가 발생한다.")
