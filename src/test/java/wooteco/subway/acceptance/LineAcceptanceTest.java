@@ -38,7 +38,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성하면 에러를 응답한다.")
     @Test
-    void createStationWithDuplicateName() {
+    void createLineWithDuplicateName() {
         // given
         postMethodRequest(분당선_인자, LINE_URL);
 
@@ -100,7 +100,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
-    void deleteStation() {
+    void deleteLine() {
         // given
         ExtractableResponse<Response> createResponse = postMethodRequest(분당선_인자, LINE_URL);
 
@@ -118,6 +118,48 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //when
         String url = LINE_URL + "/100";
         ExtractableResponse<Response> response = getMethodRequest(url);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("기존에 존재하지 않는 지하철 노선 ID로 지하철 노선을 수정하면 에러를 응답한다.")
+    @Test
+    void updateLineWithNonExistId() {
+        //given
+        postMethodRequest(분당선_인자, LINE_URL);
+
+        //when
+        String url = LINE_URL + "/" + 100;
+        ExtractableResponse<Response> response = putMethodRequest(경의중앙선_인자, url);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 수정하면 에러를 응답한다.")
+    @Test
+    void updateLineWithDuplicatedName() {
+        //given
+        ExtractableResponse<Response> createResponse = postMethodRequest(분당선_인자, LINE_URL);
+
+        //when
+        String url = LINE_URL + "/" + createResponse.header("Location").split("/")[2];
+        ExtractableResponse<Response> response = putMethodRequest(분당선_인자, url);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("기존에 존재하지 않는 지하철 노선 ID로 지하철 노선을 제거하면 에러를 응답한다.")
+    @Test
+    void deleteLineWithNonExistId() {
+        //given
+        postMethodRequest(분당선_인자, LINE_URL);
+
+        //when
+        String url = LINE_URL + "/" + 100;
+        ExtractableResponse<Response> response = deleteMethodRequest(url);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
