@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -31,8 +32,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createPostStationResponse(params);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.header("Location")).isNotBlank(),
+                () -> assertThat(response.body().jsonPath().get("name").toString()).isEqualTo("낙성대역")
+        );
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 생성시 예외가 발생한다.")
@@ -63,12 +67,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse1 = createPostStationResponse(params1);
         ExtractableResponse<Response> createResponse2 = createPostStationResponse(params2);
         ExtractableResponse<Response> response = createGetStationResponse();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = postIds(createResponse1, createResponse2);
         List<Long> resultLineIds = responseIds(response);
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(resultLineIds).containsAll(expectedLineIds),
+                () -> assertThat(response.body().jsonPath().get("name").toString()).contains("선릉역"),
+                () -> assertThat(response.body().jsonPath().get("name").toString()).contains("잠실역")
+        );
     }
 
     @DisplayName("지하철역을 제거한다.")

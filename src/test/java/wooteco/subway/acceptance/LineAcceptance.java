@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("노선 관련 기능")
 public class LineAcceptance extends AcceptanceTest {
@@ -32,8 +33,12 @@ public class LineAcceptance extends AcceptanceTest {
         ExtractableResponse<Response> response = createPostLineResponse(request);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.header("Location")).isNotBlank(),
+                () -> assertThat(response.body().jsonPath().get("name").toString()).isEqualTo("1호선"),
+                () -> assertThat(response.body().jsonPath().get("color").toString()).isEqualTo("blue")
+        );
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 생성시 예외가 발생한다.")
@@ -87,12 +92,14 @@ public class LineAcceptance extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = createGetLinesResponse();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = postIds(createResponse1, createResponse2);
         List<Long> resultLineIds = responseIds(response);
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(resultLineIds).containsAll(expectedLineIds)
+        );
     }
 
     @DisplayName("노선을 업데이트한다.")
