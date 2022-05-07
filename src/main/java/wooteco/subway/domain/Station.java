@@ -3,10 +3,15 @@ package wooteco.subway.domain;
 import java.util.Objects;
 
 public class Station {
-    private Long id;
-    private String name;
+
+    private static final  long EMPTY_ID = 0;
+    private static final String EMPTY_NAME = "";
+
+    private final Long id;
+    private final String name;
 
     public Station() {
+        this(EMPTY_ID, EMPTY_NAME);
     }
 
     public Station(Long id, String name) {
@@ -15,7 +20,7 @@ public class Station {
     }
 
     public Station(String name) {
-        this.name = name;
+        this(EMPTY_ID, name);
     }
 
     public boolean isSameId(final long id) {
