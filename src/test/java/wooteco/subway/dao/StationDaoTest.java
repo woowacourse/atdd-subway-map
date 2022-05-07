@@ -28,9 +28,6 @@ class StationDaoTest {
     private static final Station STATION_FIXTURE3 = new Station(3L, "역삼역");
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
@@ -40,7 +37,7 @@ class StationDaoTest {
 
     @BeforeEach
     void setup() {
-        stationDao = new StationDao(namedParameterJdbcTemplate, dataSource, jdbcTemplate);
+        stationDao = new StationDao(namedParameterJdbcTemplate, dataSource);
     }
 
     @Nested
