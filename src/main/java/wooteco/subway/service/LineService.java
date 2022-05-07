@@ -22,9 +22,9 @@ public class LineService {
 
     public LineResponse create(final LineRequest request) {
         final Line line = new Line(request.getName(), request.getColor());
-        final Line newLine = lineDao.save(line)
+        final Line savedStation = lineDao.insert(line)
                 .orElseThrow(() -> new IllegalArgumentException("중복된 이름의 노선은 저장할 수 없습니다."));
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        return new LineResponse(savedStation.getId(), savedStation.getName(), savedStation.getColor());
     }
 
     @Transactional(readOnly = true)

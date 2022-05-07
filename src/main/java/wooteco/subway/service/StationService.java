@@ -21,7 +21,7 @@ public class StationService {
 
     public StationResponse create(final StationRequest request) {
         final Station station = new Station(request.getName());
-        final Station savedStation = stationDao.save(station)
+        final Station savedStation = stationDao.insert(station)
                 .orElseThrow(() -> new IllegalArgumentException("중복된 이름의 역은 저장할 수 없습니다."));
         return new StationResponse(savedStation.getId(), savedStation.getName());
     }

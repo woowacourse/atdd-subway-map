@@ -29,7 +29,7 @@ class StationServiceTest extends ServiceTest {
         final StationRequest request = new StationRequest(name);
         final Station expected = new Station(name);
 
-        given(stationDao.save(expected))
+        given(stationDao.insert(expected))
                 .willReturn(Optional.of(expected));
 
         // when
@@ -47,7 +47,7 @@ class StationServiceTest extends ServiceTest {
 
         final StationRequest request = new StationRequest(name);
 
-        given(stationDao.save(any(Station.class)))
+        given(stationDao.insert(any(Station.class)))
                 .willReturn(Optional.empty());
 
         // then

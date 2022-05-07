@@ -33,7 +33,7 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Optional<Station> save(final Station station) {
+    public Optional<Station> insert(final Station station) {
         try {
             final SqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
             final long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();

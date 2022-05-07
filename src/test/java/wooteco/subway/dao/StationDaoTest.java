@@ -18,7 +18,7 @@ class StationDaoTest extends DaoTest {
         final Station station = new Station(name);
 
         // when
-        final Station savedStation = stationDao.save(station).orElseThrow();
+        final Station savedStation = stationDao.insert(station).orElseThrow();
 
         // then
         assertThat(savedStation.getName()).isEqualTo(name);
@@ -28,8 +28,8 @@ class StationDaoTest extends DaoTest {
     @DisplayName("모든 역 조회하기")
     void FindAll() {
         // given
-        stationDao.save(new Station("선릉"));
-        stationDao.save(new Station("노원"));
+        stationDao.insert(new Station("선릉"));
+        stationDao.insert(new Station("노원"));
 
         // when
         final List<Station> stations = stationDao.findAll();
@@ -42,7 +42,7 @@ class StationDaoTest extends DaoTest {
     @DisplayName("id에 해당하는 역 삭제하기")
     void DeleteById() {
         // given
-        final Station station = stationDao.save(new Station("선릉")).orElseThrow();
+        final Station station = stationDao.insert(new Station("선릉")).orElseThrow();
 
         // when
         final Integer affectedRows = stationDao.deleteById(station.getId());

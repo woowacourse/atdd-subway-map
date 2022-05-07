@@ -18,7 +18,7 @@ public class LineDaoTest extends DaoTest {
         final Line line = new Line("7호선", "bg-red-600");
 
         // when
-        final Line savedLine = lineDao.save(line).orElseThrow();
+        final Line savedLine = lineDao.insert(line).orElseThrow();
 
         // then
         assertThat(savedLine.getName()).isEqualTo(line.getName());
@@ -31,13 +31,13 @@ public class LineDaoTest extends DaoTest {
         // given
         final String name = "7호선";
 
-        lineDao.save(new Line(name, "bg-red-600")).orElseThrow();
+        lineDao.insert(new Line(name, "bg-red-600")).orElseThrow();
 
         // when
         final Line line = new Line(name, "bg-blue-600");
 
         // then
-        final Optional<Line> possibleLine = lineDao.save(line);
+        final Optional<Line> possibleLine = lineDao.insert(line);
         assertThat(possibleLine).isEmpty();
     }
 
@@ -46,12 +46,12 @@ public class LineDaoTest extends DaoTest {
     void FindAll() {
         // given
         final Line line7 = new Line("7호선", "bg-red-600");
-        lineDao.save(line7);
+        lineDao.insert(line7);
 
         final String line5Name = "5호선";
         final String line5Color = "bg-green-600";
         final Line line5 = new Line(line5Name, line5Color);
-        lineDao.save(line5);
+        lineDao.insert(line5);
 
         // when
         final List<Line> lines = lineDao.findAll();
@@ -65,7 +65,7 @@ public class LineDaoTest extends DaoTest {
     void FindById() {
         // given
         final Line line7 = new Line("7호선", "bg-red-600");
-        final Line persistLine = lineDao.save(line7).orElseThrow();
+        final Line persistLine = lineDao.insert(line7).orElseThrow();
 
         // when
         final Optional<Line> actual = lineDao.findById(persistLine.getId());
@@ -89,7 +89,7 @@ public class LineDaoTest extends DaoTest {
     @DisplayName("id를 통해 해당하는 노선을 업데이트한다.")
     void UpdateById() {
         // given
-        final Line persistLine = lineDao.save(new Line("7호선", "bg-red-600")).orElseThrow();
+        final Line persistLine = lineDao.insert(new Line("7호선", "bg-red-600")).orElseThrow();
 
         // when
         final Line line = new Line("5호선", "bg-green-600");
@@ -118,7 +118,7 @@ public class LineDaoTest extends DaoTest {
     @DisplayName("id를 통해 해당하는 노선을 삭제한다.")
     void DeleteById() {
         // given
-        final Line persistLine = lineDao.save(new Line("7호선", "bg-red-600")).orElseThrow();
+        final Line persistLine = lineDao.insert(new Line("7호선", "bg-red-600")).orElseThrow();
 
         // when
         final Long id = persistLine.getId();

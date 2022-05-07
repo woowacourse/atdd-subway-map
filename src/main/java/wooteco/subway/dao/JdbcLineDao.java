@@ -35,7 +35,7 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> save(final Line line) {
+    public Optional<Line> insert(final Line line) {
         try {
             final SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
             final long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
@@ -63,7 +63,7 @@ public class JdbcLineDao implements LineDao {
         try {
             final String sql = "SELECT * FROM line WHERE id = ?";
             final Line line = jdbcTemplate.queryForObject(sql, rowMapper, id);
-            return Optional.of(line);
+            return Optional.ofNullable(line);
         } catch (final EmptyResultDataAccessException e) {
             return Optional.empty();
         }

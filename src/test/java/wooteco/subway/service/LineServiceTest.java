@@ -31,7 +31,7 @@ class LineServiceTest extends ServiceTest {
         final LineRequest request = new LineRequest(name, color, null, null, 0);
         final Line expected = new Line(name, color);
 
-        given(lineDao.save(expected))
+        given(lineDao.insert(expected))
                 .willReturn(Optional.of(expected));
 
         // when
@@ -48,7 +48,7 @@ class LineServiceTest extends ServiceTest {
         // given
         final LineRequest request = new LineRequest("7호선", "bg-red-600", null, null, 0);
 
-        given(lineDao.save(any(Line.class)))
+        given(lineDao.insert(any(Line.class)))
                 .willReturn(Optional.empty());
 
         // then
