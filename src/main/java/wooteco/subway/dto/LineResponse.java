@@ -29,6 +29,10 @@ public class LineResponse {
         this(line.getId(), line.getName(), line.getColor());
     }
 
+    public LineResponse(Line line, List<StationResponse> stationResponses) {
+        this(line.getId(), line.getName(), line.getColor(), stationResponses);
+    }
+
     public Long getId() {
         return id;
     }

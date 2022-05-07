@@ -40,4 +40,4 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 
 
 ## 기능목록
-- [ ] 노선 추가시 upStationId(상행 종점), downStationId(하행 종점), distance(두 종점사이 거리)를 추가로 받음
+- [x] 노선 추가시 upStationId(상행 종점), downStationId(하행 종점), distance(두 종점사이 거리)를 추가로 받음

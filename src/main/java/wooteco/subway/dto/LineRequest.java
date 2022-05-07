@@ -4,6 +4,7 @@ import javax.validation.constraints.NotBlank;
 import wooteco.subway.domain.Line;
 
 public class LineRequest {
+    private static final int TRASH_DISTANCE = -1;
     @NotBlank
     private String name;
     @NotBlank
@@ -15,17 +16,20 @@ public class LineRequest {
     public LineRequest() {
     }
 
-    public LineRequest(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
-
-    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+    private LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public static LineRequest of(String name, String color) {
+        return new LineRequest(name, color, null, null, TRASH_DISTANCE);
+    }
+
+    public static LineRequest of(String name, String color, Long upStationId, Long downStationId, int distance) {
+        return new LineRequest(name, color, upStationId, downStationId, distance);
     }
 
     public Line toEntity() {
