@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
+
 public class Line {
 
     private final Long id;
@@ -29,16 +31,15 @@ public class Line {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Line)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         Line line = (Line) o;
-        return name.equals(line.name);
+        return Objects.equals(name, line.name);
     }
 
     @Override
     public int hashCode() {
-        return name != null ? name.hashCode() : 0;
+        return Objects.hash(name);
     }
 }
