@@ -10,7 +10,6 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
-import wooteco.subway.domain.Stations;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
@@ -54,7 +53,7 @@ public class LineService {
         return LineResponse.of(lineDao.findById(lineId), findStationsByLineId(lineId));
     }
 
-    private Stations findStationsByLineId(final long lineId) {
+    private List<Station> findStationsByLineId(final long lineId) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         return sections.calculateSortedStations();
     }

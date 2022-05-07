@@ -32,10 +32,10 @@ class SectionsTest {
                 new Section(2L, 1L, station2, station3, 2)));
 
         // when
-        Stations stations = sections.calculateSortedStations();
+        List<Station> stations = sections.calculateSortedStations();
 
         // then
-        assertThat(stations).isEqualTo(new Stations(List.of(station1, station2, station3, station4)));
+        assertThat(stations).contains(station1, station2, station3, station4);
     }
 
     @Test

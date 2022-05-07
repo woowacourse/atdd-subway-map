@@ -22,9 +22,9 @@ public class Sections {
         }
     }
 
-    public Stations calculateSortedStations() {
+    public List<Station> calculateSortedStations() {
         Section section = calculateFirstSection(findAnySection());
-        return new Stations(createSortedStations(section));
+        return createSortedStations(section);
     }
 
     private Section findAnySection() {
