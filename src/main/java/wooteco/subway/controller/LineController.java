@@ -1,6 +1,5 @@
 package wooteco.subway.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,34 +31,24 @@ public class LineController {
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
         LineResponse lineInfos = new LineResponse(line);
-        return new ResponseEntity<>(
-                lineInfos,
-                HttpStatus.OK
-        );
+        return ResponseEntity.ok(lineInfos);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         List<LineResponse> lineResponses = lineService.findAll();
-        return new ResponseEntity<>(
-                lineResponses,
-                HttpStatus.OK
-        );
+        return ResponseEntity.ok(lineResponses);
     }
 
     @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.updateById(id, lineRequest.getName(), lineRequest.getColor());
-        return new ResponseEntity<>(
-                HttpStatus.OK
-        );
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteById(id);
-        return new ResponseEntity<>(
-                HttpStatus.NO_CONTENT
-        );
+        return ResponseEntity.noContent().build();
     }
 }

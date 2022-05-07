@@ -1,6 +1,5 @@
 package wooteco.subway.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,17 +34,12 @@ public class StationController {
         List<StationResponse> stationResponses = stations.stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());
-        return new ResponseEntity<>(
-                stationResponses,
-                HttpStatus.OK
-        );
+        return ResponseEntity.ok(stationResponses);
     }
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.deleteStation(id);
-        return new ResponseEntity<>(
-                HttpStatus.NO_CONTENT
-        );
+        return ResponseEntity.noContent().build();
     }
 }
