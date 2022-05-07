@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,17 +38,16 @@ class JdbcLineDaoTest {
     void findAll() {
         jdbcLineDao.save(new Line("분당선", "bg-green-600"));
         List<Line> lines = jdbcLineDao.findAll();
-        assertThat(lines.size()).isEqualTo(2);
+
+        assertThat(lines).containsExactly(new Line("신분당선", "bg-red-600"), new Line("분당선", "bg-green-600"));
     }
 
     @DisplayName("단일 지하철 노선을 조회한다.")
     @Test
     void findById() {
         Line line = jdbcLineDao.findById(id);
-        assertAll(
-                () -> line.getName().equals("신분당선"),
-                () -> line.getColor().equals("bg-red-600")
-        );
+
+        assertThat(line).isEqualTo(new Line("신분당선", "bg-red-600"));
     }
 
     @DisplayName("지하철 노선을 수정한다.")

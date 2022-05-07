@@ -3,7 +3,6 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,11 +38,8 @@ class JdbcStationDaoTest {
         jdbcStationDao.save(new Station("양제역"));
 
         List<Station> actual = jdbcStationDao.findAll();
-        List<String> actualNames = actual.stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
 
-        assertThat(actualNames).containsExactly("강남역", "양제역");
+        assertThat(actual).containsExactly(new Station("강남역"), new Station("양제역"));
     }
 
     @DisplayName("지하철역을 삭제한다.")

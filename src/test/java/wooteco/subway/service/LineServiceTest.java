@@ -75,7 +75,7 @@ class LineServiceTest {
     void getLine() {
         doReturn(new Line(1L, "신분당선", "bg-red-600"))
                 .when(jdbcLineDao)
-                .findById(1L);
+                .findById(anyLong());
 
         LineResponse lineResponse = lineService.getLine(1L);
 
@@ -114,7 +114,7 @@ class LineServiceTest {
     void deleteLine() {
         doReturn(true)
                 .when(jdbcLineDao)
-                .deleteById(1L);
+                .deleteById(anyLong());
 
         boolean isDeleted = lineService.deleteLine(1L);
         assertThat(isDeleted).isTrue();
@@ -125,7 +125,7 @@ class LineServiceTest {
     void deleteNotExistLine() {
         doThrow(new IllegalArgumentException("존재하지 않은 지하철 노선입니다."))
                 .when(jdbcLineDao)
-                .deleteById(1L);
+                .deleteById(anyLong());
 
         assertThatThrownBy(() -> lineService.deleteLine(1L))
                 .isInstanceOf(IllegalArgumentException.class)

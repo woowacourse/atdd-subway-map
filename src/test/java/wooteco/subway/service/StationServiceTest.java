@@ -71,7 +71,7 @@ public class StationServiceTest {
     @Test
     void deleteStation() {
         doReturn(true)
-                .when(jdbcStationDao).deleteById(1L);
+                .when(jdbcStationDao).deleteById(anyLong());
 
         assertThat(stationService.deleteStation(1L)).isTrue();
     }
