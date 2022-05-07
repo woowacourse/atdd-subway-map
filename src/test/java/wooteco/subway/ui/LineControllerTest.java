@@ -18,6 +18,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import wooteco.subway.dto.ExceptionResponse;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
 
@@ -60,8 +61,8 @@ class LineControllerTest {
     void createStationWithDuplicateName() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        params.put("name", "2호선");
+        params.put("color", "bg-green-600");
         RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -81,7 +82,7 @@ class LineControllerTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message")).isEqualTo("이미 중복된 이름이 존재합니다.");
     }
 
     @DisplayName("노선을 조회한다.")
@@ -89,8 +90,8 @@ class LineControllerTest {
     void getLine() {
         /// given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        params.put("name", "1호선");
+        params.put("color", "bg-blue-600");
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -116,8 +117,8 @@ class LineControllerTest {
     void getStations() {
         /// given
         Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "신분당선");
-        params1.put("color", "bg-red-600");
+        params1.put("name", "4호선");
+        params1.put("color", "bg-skyblue-600");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -127,8 +128,8 @@ class LineControllerTest {
                 .extract();
 
         Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "분당선");
-        params2.put("color", "bg-green-600");
+        params2.put("name", "3호선");
+        params2.put("color", "bg-orange-600");
 
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(params2)
@@ -161,8 +162,8 @@ class LineControllerTest {
     void deleteStation() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        params.put("name", "5호선");
+        params.put("color", "bg-purple-600");
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -188,8 +189,8 @@ class LineControllerTest {
     void change_name_success() {
         /// given
         Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "신분당선");
-        params1.put("color", "bg-red-600");
+        params1.put("name", "7호선");
+        params1.put("color", "bg-green-1300");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -212,7 +213,7 @@ class LineControllerTest {
         // when
         String uri = createResponse1.header("Location");
         Map<String, String> params3 = new HashMap<>();
-        params3.put("name", "2호선");
+        params3.put("name", "경의중앙선");
         params3.put("color", "bg-green-500");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params3)
@@ -231,7 +232,7 @@ class LineControllerTest {
     void change_name_no_id() {
         /// given
         Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "신분당선");
+        params1.put("name", "6호선");
         params1.put("color", "bg-red-600");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
@@ -242,7 +243,7 @@ class LineControllerTest {
                 .extract();
 
         Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "분당선");
+        params2.put("name", "8호선");
         params2.put("color", "bg-green-600");
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(params2)
@@ -255,7 +256,7 @@ class LineControllerTest {
         // when
         String uri = "/lines/1000";
         Map<String, String> params3 = new HashMap<>();
-        params3.put("name", "2호선");
+        params3.put("name", "경춘선");
         params3.put("color", "bg-green-500");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params3)
@@ -266,7 +267,7 @@ class LineControllerTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.jsonPath().getString("message")).isEqualTo("존재하지 않는 id입니다.");
     }
 
     @DisplayName("이미 저장된 이름으로 이름을 바꾼다.")
@@ -274,7 +275,7 @@ class LineControllerTest {
     void change_name_name_duplicate() {
         /// given
         Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "신분당선");
+        params1.put("name", "우이신설선");
         params1.put("color", "bg-red-600");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
@@ -285,7 +286,7 @@ class LineControllerTest {
                 .extract();
 
         Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "분당선");
+        params2.put("name", "의정부경전철선");
         params2.put("color", "bg-green-600");
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(params2)
@@ -298,7 +299,7 @@ class LineControllerTest {
         // when
         String uri = createResponse1.header("Location");
         Map<String, String> params3 = new HashMap<>();
-        params3.put("name", "분당선");
+        params3.put("name", "의정부경전철선");
         params3.put("color", "bg-green-500");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params3)
@@ -309,6 +310,6 @@ class LineControllerTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message")).isEqualTo("이미 중복된 이름이 존재합니다.");
     }
 }

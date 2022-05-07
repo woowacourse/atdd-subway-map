@@ -52,14 +52,4 @@ public class StationController {
         stationDao.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler({IllegalArgumentException.class, DuplicateKeyException.class})
-    public ResponseEntity<StationResponse> handleBadRequest() {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler({EmptyResultDataAccessException.class})
-    public ResponseEntity<StationResponse> handleNoContent() {
-        return ResponseEntity.noContent().build();
-    }
 }
