@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.domain.Line;
@@ -91,7 +89,6 @@ public class LineDaoTest {
         final Line 짱구선 = lineDao.save(new Line("짱구선", "white"));
         lineDao.deleteById(짱구선.getId());
 
-        assertThatThrownBy(() -> lineDao.findById(짱구선.getId()))
-            .isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(lineDao.findById(짱구선.getId())).isEmpty();
     }
 }

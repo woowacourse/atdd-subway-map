@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -44,12 +45,20 @@ public class StationDao {
 
     public Optional<Station> findById(final Long id) {
         final String sql = "select id, name from Station where id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), id));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public Optional<Station> findByName(final String name) {
         final String sql = "select id, name from Station where name = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), name));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), name));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     private static RowMapper<Station> rowMapper() {

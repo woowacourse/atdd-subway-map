@@ -1,38 +1,34 @@
 package wooteco.subway.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Transactional;
+
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선을 등록한다.")
-    @Transactional
     @Test
     void createLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", null, null, 0);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -46,15 +42,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("기존에 존재하는 노선 이름을 생성한다.")
-    @Transactional
     @Test
     void createLineWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "빨간색");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", null, null, 0);
+
         RestAssured.given().log().all()
-                .body(params)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -63,7 +57,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -76,26 +70,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("노선들을 조회한다.")
-    @Transactional
     @Test
     void getLines() {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "신분당선");
-        params1.put("color", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", null, null, 0);
+
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(params1)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
                 .extract();
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "다른분당선");
-        params2.put("color", "bg-blue-600");
+        LineRequest lineRequest2 = new LineRequest("다른분당선", "bg-red-600", null, null, 0);
+
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(params2)
+                .body(lineRequest2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -123,15 +114,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("특정 노선을 조회한다.")
-    @Transactional
     @Test
     void getLine() {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "신분당선");
-        params1.put("color", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", null, null, 0);
+
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(params1)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -152,14 +141,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("특정 노선을 업데이트한다")
-    @Transactional
     @Test
     public void updateLine() {
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "신분당선");
-        params1.put("color", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", null, null, 0);
+
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params1)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -168,11 +155,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         String uri = createResponse.header("Location");
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "인간분당선");
-        params2.put("color", "bg-red-600");
+        LineRequest lineRequest2 = new LineRequest("인간분당선", "bg-red-600", null, null, 0);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params2)
+                .body(lineRequest2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put(uri)
@@ -183,15 +168,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("노선을 삭제한다.")
-    @Transactional
     @Test
     void deleteLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "무지개색");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", null, null, 0);
+
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
