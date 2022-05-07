@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Station;
@@ -23,6 +24,38 @@ class StationDaoTest extends DaoTest {
 
         // then
         assertThat(savedStation.getName()).isEqualTo(name);
+    }
+
+    @Test
+    @DisplayName("id에 해당하는 노선을 조회한다.")
+    void FindById() {
+        // given
+        final String name = "선릉";
+        final Long id = stationDao.insert(new Station(name))
+                .orElseThrow()
+                .getId();
+
+        final Station expected = new Station(id, name);
+
+        // when
+        final Optional<Station> actual = stationDao.findById(id);
+
+        // then
+        assertThat(actual).isPresent()
+                .contains(expected);
+    }
+
+    @Test
+    @DisplayName("id에 해당하는 노선이 존재하지 않으면 빈 Optional 을 반환한다.")
+    void FindById_NotExistId_EmptyOptionalReturned() {
+        // given
+        final Long id = 999L;
+
+        // when
+        final Optional<Station> actual = stationDao.findById(id);
+
+        // then
+        assertThat(actual).isEmpty();
     }
 
     @Test

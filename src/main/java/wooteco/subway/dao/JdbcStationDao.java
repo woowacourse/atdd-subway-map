@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -49,6 +50,17 @@ public class JdbcStationDao implements StationDao {
         Objects.requireNonNull(field).setAccessible(true);
         ReflectionUtils.setField(field, station, id);
         return station;
+    }
+
+    @Override
+    public Optional<Station> findById(final Long id) {
+        try {
+            final String sql = "SELECT * FROM station WHERE id = ?";
+            final Station station = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(station);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
