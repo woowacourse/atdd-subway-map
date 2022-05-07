@@ -75,12 +75,29 @@ public class Sections {
 
     public void addSection(final Section section) {
         if (hasNotUpStationOrDownStation(section)) {
-            throw new IllegalStateException("구간 추가는 상행역 하행역 중 하나를 포함해야합니다.");
+            throw new IllegalStateException("구간 추가는 기존의 상행역 하행역 중 하나를 포함해야합니다.");
+        }
+        if (existUpStationToDownStation(section)) {
+            throw new IllegalStateException("이미 상행에서 하행으로 갈 수 있는 구간이 존재합니다.");
         }
     }
 
     private boolean hasNotUpStationOrDownStation(final Section section) {
         return sections.stream()
                 .noneMatch(section::isUpSectionOrDownSection);
+    }
+
+    private boolean existUpStationToDownStation(final Section section) {
+        return hasUpStation(section) && hasDownStation(section);
+    }
+
+    private boolean hasUpStation(final Section section) {
+        return sections.stream()
+                .anyMatch(section::equalsUpStation);
+    }
+
+    private boolean hasDownStation(final Section section) {
+        return sections.stream()
+                .anyMatch(section::equalsDownStation);
     }
 }

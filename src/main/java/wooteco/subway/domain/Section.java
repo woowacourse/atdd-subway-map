@@ -55,7 +55,19 @@ public class Section {
     }
 
     public boolean isUpSectionOrDownSection(final Section section) {
-        return isUpSection(section) || isDownSection(section);
+        return containsStation(section.upStation) || containsStation(section.downStation);
+    }
+
+    private boolean containsStation(final Station station) {
+        return this.upStation.equals(station) || this.downStation.equals(station);
+    }
+
+    public boolean equalsUpStation(final Section section) {
+        return upStation.equals(section.upStation);
+    }
+
+    public boolean equalsDownStation(final Section section) {
+        return downStation.equals(section.downStation);
     }
 
     public Long getId() {

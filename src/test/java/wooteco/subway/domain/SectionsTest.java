@@ -50,6 +50,22 @@ class SectionsTest {
         // when & then
         assertThatThrownBy(() -> sections.addSection(new Section(1L, station3, station4, 2)))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("구간 추가는 상행역 하행역 중 하나를 포함해야합니다.");
+                .hasMessage("구간 추가는 기존의 상행역 하행역 중 하나를 포함해야합니다.");
+    }
+
+    @Test
+    @DisplayName("이미 상행에서 하행으로 갈 수 있는 Section이면 예외 발생")
+    void addSectionExceptionByExistSection() {
+        // given
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Station station3 = new Station(3L, "오카라");
+        Sections sections = new Sections(List.of(new Section(1L, 1L, station1, station2, 2),
+                new Section(2L, 1L, station2, station3, 3)));
+
+        // when & then
+        assertThatThrownBy(() -> sections.addSection(new Section(1L, station1, station3, 3)))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("이미 상행에서 하행으로 갈 수 있는 구간이 존재합니다.");
     }
 }
