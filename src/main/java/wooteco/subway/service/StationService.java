@@ -4,6 +4,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.DuplicateNameException;
 
 @Service
 public class StationService {
@@ -30,13 +32,13 @@ public class StationService {
 
     private void validateDuplicateName(final Station station) {
         if (stationDao.existByName(station.getName())) {
-            throw new IllegalArgumentException("이미 존재하는 지하철 역입니다.");
+            throw new DuplicateNameException("이미 존재하는 지하철 역입니다.");
         }
     }
 
     private void validateExist(final Long id) {
         if (!stationDao.existById(id)) {
-            throw new IllegalArgumentException("삭제하려는 지하철 역 ID가 존재하지 않습니다.");
+            throw new DataNotFoundException("삭제하려는 지하철 역 ID가 존재하지 않습니다.");
         }
     }
 }

@@ -1,13 +1,13 @@
 package wooteco.subway.domain;
 
-import java.util.Objects;
+import wooteco.subway.exception.Validator;
 
 public class Station {
     private Long id;
     private String name;
 
     public Station(final Long id, final String name) {
-        Objects.requireNonNull(name);
+        Validator.requireNonNull(name);
         this.id = id;
         this.name = name;
     }

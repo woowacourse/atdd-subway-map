@@ -17,6 +17,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.DuplicateNameException;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
@@ -53,7 +55,7 @@ class LineServiceTest {
         given(lineDao.existByName("신분당선")).willReturn(true);
 
         assertThatThrownBy(() -> lineService.createLine(line))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DuplicateNameException.class)
                 .hasMessage("이미 존재하는 노선입니다.");
     }
 
@@ -99,7 +101,7 @@ class LineServiceTest {
 
         assertThatThrownBy(() ->
                 lineService.update(1L, new Line("분당선", "bg-yellow-600")))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DataNotFoundException.class)
                 .hasMessage("존재하지 않는 노선 ID입니다.");
     }
 
@@ -119,7 +121,7 @@ class LineServiceTest {
         given(lineDao.existById(1L)).willReturn(false);
 
         assertThatThrownBy(() -> lineService.delete(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DataNotFoundException.class)
                 .hasMessage("대상 노선 ID가 존재하지 않습니다.");
     }
 }

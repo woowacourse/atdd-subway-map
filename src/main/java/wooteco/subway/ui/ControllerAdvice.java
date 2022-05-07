@@ -3,22 +3,19 @@ package wooteco.subway.ui;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import wooteco.subway.exception.ClientRuntimeException;
+import wooteco.subway.exception.DataNotFoundException;
 
 @RestControllerAdvice
 public class ControllerAdvice {
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(final Exception e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<String> handleNullPointerException() {
-        return ResponseEntity.badRequest().body("정상적인 입력이 아닙니다.");
+    @ExceptionHandler(ClientRuntimeException.class)
+    public ResponseEntity<String> handleDataNotFoundException(final ClientRuntimeException e) {
+        return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleServerException(final Exception e) {
-        return ResponseEntity.internalServerError().body(e.getMessage());
+        return ResponseEntity.internalServerError().body("서버에 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
     }
 }

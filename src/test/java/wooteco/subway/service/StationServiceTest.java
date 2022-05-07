@@ -16,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.DuplicateNameException;
 
 @ExtendWith(MockitoExtension.class)
 class StationServiceTest {
@@ -49,7 +51,7 @@ class StationServiceTest {
         given(stationDao.existByName("선릉역")).willReturn(true);
 
         assertThatThrownBy(() -> stationService.createStation(station))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DuplicateNameException.class)
                 .hasMessage("이미 존재하는 지하철 역입니다.");
     }
 
@@ -91,7 +93,7 @@ class StationServiceTest {
         stationService.createStation(station);
 
         assertThatThrownBy(() -> stationService.delete(id))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DataNotFoundException.class)
                 .hasMessage("삭제하려는 지하철 역 ID가 존재하지 않습니다.");
     }
 }

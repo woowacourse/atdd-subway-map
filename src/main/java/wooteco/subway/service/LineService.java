@@ -4,6 +4,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.DuplicateNameException;
 
 @Service
 public class LineService {
@@ -25,7 +27,7 @@ public class LineService {
 
     public Line getLineById(final Long id) {
         return lineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선 ID입니다."));
+                .orElseThrow(() -> new DataNotFoundException("존재하지 않는 노선 ID입니다."));
     }
 
     public void update(final Long id, final Line newLine) {
@@ -43,13 +45,13 @@ public class LineService {
 
     private void validateDuplicateName(final Line line) {
         if (lineDao.existByName(line.getName())) {
-            throw new IllegalArgumentException("이미 존재하는 노선입니다.");
+            throw new DuplicateNameException("이미 존재하는 노선입니다.");
         }
     }
 
     private void validateExist(final Long id) {
         if (!lineDao.existById(id)) {
-            throw new IllegalArgumentException("대상 노선 ID가 존재하지 않습니다.");
+            throw new DataNotFoundException("대상 노선 ID가 존재하지 않습니다.");
         }
     }
 }
