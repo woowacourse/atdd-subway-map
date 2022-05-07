@@ -1,10 +1,14 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 
 @Service
 public class LineService {
@@ -16,22 +20,25 @@ public class LineService {
     }
 
     @Transactional
-    public long save(final Line line) {
+    public long save(final LineRequest lineRequest) {
+        Line line = convertLine(lineRequest);
         validateLine(line);
         return lineDao.save(line);
     }
 
-    public List<Line> findAll() {
-        return lineDao.findAll();
+    public List<LineResponse> findAll() {
+        return convertLineResponses(lineDao.findAll());
     }
 
-    public Line find(final Long id) {
+    public LineResponse find(final Long id) {
         return lineDao.find(id)
+                .map(LineResponse::of)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 노선입니다."));
     }
 
     @Transactional
-    public void update(final long id, final Line line) {
+    public void update(final long id, final LineRequest lineRequest) {
+        Line line = convertLine(lineRequest);
         validateLine(line);
         validateExistedLine(id);
         lineDao.update(id, line);
@@ -64,5 +71,15 @@ public class LineService {
         if (!lineDao.existLineById(id)) {
             throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
         }
+    }
+
+    private Line convertLine(final LineRequest lineRequest) {
+        return new Line(lineRequest.getName(), lineRequest.getColor());
+    }
+
+    private List<LineResponse> convertLineResponses(final List<Line> lines) {
+        return lines.stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
     }
 }

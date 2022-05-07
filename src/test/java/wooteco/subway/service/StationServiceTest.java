@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.StationRequest;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ import java.util.List;
 class StationServiceTest {
 
     private static final Station STATION = new Station("강남역");
+    private static final StationRequest STATION_REQUEST = new StationRequest("강남역");
 
     @Mock
     private StationDao stationDao;
@@ -33,28 +35,28 @@ class StationServiceTest {
     @Test
     void save() {
         // when
-        stationService.save(STATION);
+        stationService.save(STATION_REQUEST);
 
         // mocking
         given(stationDao.findAll())
                 .willReturn(List.of(STATION));
 
         // then
-        assertThat(stationService.findAll()).hasSize(1);
+        assertThat(stationService.findAll().get(0).getName()).isEqualTo("강남역");
     }
 
     @DisplayName("중복된 지하철역을 생성할 경우 예외를 발생시킨다.")
     @Test
     void saveDuplicatedName() {
         // given
-        stationService.save(STATION);
+        stationService.save(STATION_REQUEST);
 
         // mocking
         given(stationDao.existStationByName(any()))
                 .willThrow(new IllegalArgumentException("지하철역 이름이 중복됩니다."));
 
         // when & then
-        assertThatThrownBy(() -> stationService.save(STATION))
+        assertThatThrownBy(() -> stationService.save(STATION_REQUEST))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지하철역 이름이 중복됩니다.");
     }
@@ -63,21 +65,21 @@ class StationServiceTest {
     @Test
     void findAll() {
         // given
-        stationService.save(STATION);
+        stationService.save(STATION_REQUEST);
 
         // mocking
         given(stationDao.findAll())
                 .willReturn(List.of(STATION));
 
         // when & then
-        assertThat(stationService.findAll()).containsExactly(STATION);
+        assertThat(stationService.findAll()).hasSize(1);
     }
 
     @DisplayName("지하철역을 삭제한다.")
     @Test
     void delete() {
         // given
-        long stationId = stationService.save(STATION);
+        long stationId = stationService.save(STATION_REQUEST);
 
         // mocking
         given(stationDao.existStationById(any()))
