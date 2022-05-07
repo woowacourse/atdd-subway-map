@@ -28,8 +28,7 @@ public class StationDao {
                     resultSet.getLong("id"),
                     resultSet.getString("name")
             );
-
-
+    
     public Station insert(String name) {
         Long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name", name)).longValue();
         return new Station(id, name);
