@@ -1,8 +1,8 @@
 package wooteco.subway.domain;
 
 import java.util.Objects;
-import wooteco.subway.exception.ColorEmptyException;
-import wooteco.subway.exception.LineEmptyException;
+import wooteco.subway.exception.LineNameEmptyException;
+import wooteco.subway.exception.StationColorEmptyException;
 
 public class Line {
 
@@ -24,13 +24,13 @@ public class Line {
 
     private void validateName(final String name) {
         if (name.isBlank()) {
-            throw new LineEmptyException();
+            throw new LineNameEmptyException();
         }
     }
 
     private void validateColor(final String color) {
         if (color.isBlank()) {
-            throw new ColorEmptyException();
+            throw new StationColorEmptyException();
         }
     }
 

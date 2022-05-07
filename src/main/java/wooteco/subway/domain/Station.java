@@ -1,7 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.Objects;
-import wooteco.subway.exception.StationEmptyException;
+import wooteco.subway.exception.StationNameEmptyException;
 
 public class Station {
 
@@ -20,7 +20,7 @@ public class Station {
 
     private void validateName(final String name) {
         if (name.isBlank()) {
-            throw new StationEmptyException();
+            throw new StationNameEmptyException();
         }
     }
 
