@@ -1,5 +1,6 @@
 package wooteco.subway.controller;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,8 +22,13 @@ public class SubwayControllerAdvice {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleInvalidArgument() {
+    public ResponseEntity<String> handleInvalidArgument(Exception e) {
         return new ResponseEntity<>("이름이나 색깔이 공백입니다.", HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<String> handleEmptyResultData(Exception e) {
+        return new ResponseEntity<>("해당 데이터를 조회 할 수 없습니다.", HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
