@@ -24,7 +24,7 @@ public class StationDaoImpl implements StationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    private static final RowMapper<Station> actorRowMapper = (resultSet, rowNum) -> new Station(
+    private static final RowMapper<Station> ACTOR_ROW_MAPPER = (resultSet, rowNum) -> new Station(
             resultSet.getLong("id"),
             resultSet.getString("name")
     );
@@ -39,7 +39,7 @@ public class StationDaoImpl implements StationDao {
     @Override
     public List<Station> findAll() {
         String sql = "select * from station";
-        return namedParameterJdbcTemplate.query(sql, actorRowMapper);
+        return namedParameterJdbcTemplate.query(sql, ACTOR_ROW_MAPPER);
     }
 
     @Override

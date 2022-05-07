@@ -24,7 +24,7 @@ public class LineDaoImpl implements LineDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    private static final RowMapper<Line> actorRowMapper = (resultSet, rowNum) -> new Line(
+    private static final RowMapper<Line> ACTOR_ROW_MAPPER = (resultSet, rowNum) -> new Line(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("color")
@@ -40,7 +40,7 @@ public class LineDaoImpl implements LineDao {
     @Override
     public List<Line> findAll() {
         String sql = "select * from line";
-        return namedParameterJdbcTemplate.query(sql, actorRowMapper);
+        return namedParameterJdbcTemplate.query(sql, ACTOR_ROW_MAPPER);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class LineDaoImpl implements LineDao {
     public Line findById(Long id) {
         String sql = "select * from line where id = :id";
         SqlParameterSource namedParameter = new MapSqlParameterSource("id", id);
-        return namedParameterJdbcTemplate.queryForObject(sql, namedParameter, actorRowMapper);
+        return namedParameterJdbcTemplate.queryForObject(sql, namedParameter, ACTOR_ROW_MAPPER);
     }
 
     @Override
