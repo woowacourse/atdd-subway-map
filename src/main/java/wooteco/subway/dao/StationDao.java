@@ -45,4 +45,10 @@ public class StationDao {
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         jdbcTemplate.update(sql, parameters);
     }
+
+    public Station findById(Long id) {
+        String sql = "SELECT * FROM STATION WHERE id = :id";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        return jdbcTemplate.queryForObject(sql, parameters, stationMapper);
+    }
 }

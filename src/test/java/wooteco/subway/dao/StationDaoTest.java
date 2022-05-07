@@ -67,4 +67,15 @@ class StationDaoTest {
 
         assertThat(stationDao.findAll()).isEmpty();
     }
+
+    @DisplayName("특정 id를 가지는 기차역을 반환한다")
+    @Test
+    void findById() {
+        Station station = new Station("강남역");
+        Station persistStation = stationDao.save(station);
+
+        Station lookUpStation = stationDao.findById(persistStation.getId());
+
+        assertThat(lookUpStation).isEqualTo(persistStation);
+    }
 }
