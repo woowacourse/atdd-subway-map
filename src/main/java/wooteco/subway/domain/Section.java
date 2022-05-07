@@ -65,6 +65,18 @@ public class Section {
         return new Section(upStation, shorterSection.upStation, distance - shorterSection.distance);
     }
 
+    public Section mergeSectionByCut(Section downSection) {
+        return new Section(upStation, downSection.downStation, distance + downSection.distance);
+    }
+
+    public boolean hasSameUpStationByStation(Station station) {
+        return upStation.isSameName(station);
+    }
+
+    public boolean hasSameDownStationByStation(Station station) {
+        return downStation.isSameName(station);
+    }
+
     public Long getId() {
         return id;
     }
