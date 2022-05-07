@@ -23,11 +23,6 @@ public class LineDaoTest {
         this.lineDao = lineDao;
     }
 
-    @BeforeEach
-    void set() {
-        lineDao.save("2호선", "green");
-    }
-
     @AfterEach
     void reset() {
         lineDao.deleteAll();
@@ -50,6 +45,7 @@ public class LineDaoTest {
     @Test
     @DisplayName("중복된 노선을 저장할 경우 예외를 발생시킨다.")
     void save_duplicate() {
+        lineDao.save("2호선", "green");
         String name = "2호선";
         String color = "green";
 
@@ -61,6 +57,7 @@ public class LineDaoTest {
     @Test
     @DisplayName("모든 노선을 조회한다")
     void findAll() {
+        lineDao.save("2호선", "green");
         lineDao.save("1호선", "blue");
 
         List<Line> lines = lineDao.findAll();
@@ -71,6 +68,7 @@ public class LineDaoTest {
     @Test
     @DisplayName("입력된 id의 노선을 삭제한다")
     void deleteById() {
+        lineDao.save("2호선", "green");
         lineDao.deleteById(1L);
 
         assertThat(lineDao.findAll()).hasSize(0);
@@ -79,6 +77,7 @@ public class LineDaoTest {
     @Test
     @DisplayName("입력된 id의 노선을 수정한다.")
     void update() {
+        lineDao.save("2호선", "green");
         Line expected = new Line(1L, "분당선", "green");
 
         lineDao.update(expected);

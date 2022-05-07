@@ -23,11 +23,6 @@ public class StationDaoTest {
         this.stationDao = stationDao;
     }
 
-    @BeforeEach
-    void set() {
-        stationDao.save("선릉역");
-    }
-
     @AfterEach
     void reset() {
         stationDao.deleteAll();
@@ -47,6 +42,8 @@ public class StationDaoTest {
     @Test
     @DisplayName("중복된 역을 저장할 경우 예외를 발생시킨다.")
     void save_duplicate() {
+        stationDao.save("선릉역");
+
         String expected = "선릉역";
 
         assertThatThrownBy(() -> stationDao.save(expected))
@@ -57,6 +54,7 @@ public class StationDaoTest {
     @Test
     @DisplayName("모든 지하철 역을 조회한다")
     void findAll() {
+        stationDao.save("선릉역");
         stationDao.save("잠실역");
 
         List<Station> stations = stationDao.findAll();
@@ -67,10 +65,10 @@ public class StationDaoTest {
     @Test
     @DisplayName("입력된 id의 지하철 역을 삭제한다")
     void deleteById() {
+        stationDao.save("선릉역");
+
         stationDao.deleteById(1L);
 
         assertThat(stationDao.findAll()).hasSize(0);
     }
 }
-
-
