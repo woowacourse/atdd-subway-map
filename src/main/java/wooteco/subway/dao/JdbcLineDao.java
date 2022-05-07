@@ -12,6 +12,8 @@ import wooteco.subway.domain.Line;
 
 @Repository
 public class JdbcLineDao {
+
+    public static final int LINE_EXIST_VALUE = 1;
     public static final int FUNCTION_SUCCESS = 1;
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Line> rowMapper = (rs, rowNum) ->
@@ -41,7 +43,6 @@ public class JdbcLineDao {
         return keyHolder.getKey().longValue();
     }
 
-
     public List<Line> findAll() {
         String sql = "select * from line";
         return jdbcTemplate.query(sql, rowMapper);
@@ -62,8 +63,8 @@ public class JdbcLineDao {
         return jdbcTemplate.update(sql, id) == FUNCTION_SUCCESS;
     }
 
-    public int isExistLine(String name) {
+    public boolean isExistLine(String name) {
         String sql = "select EXISTS (select name from line where name = ?) as success";
-        return jdbcTemplate.queryForObject(sql, Integer.class, name);
+        return jdbcTemplate.queryForObject(sql, Integer.class, name) == 1;
     }
 }

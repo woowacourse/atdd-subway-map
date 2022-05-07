@@ -12,7 +12,6 @@ import wooteco.subway.dto.LineResponse;
 public class LineService {
 
     private static final String LINE_DUPLICATION = "이미 등록된 지하철 노선입니다.";
-    public static final int LINE_EXIST_VALUE = 1;
     private final JdbcLineDao jdbcLineDao;
 
     public LineService(JdbcLineDao jdbcLineDao) {
@@ -28,8 +27,7 @@ public class LineService {
     }
 
     private void validateDuplication(String name) {
-        int existFlag = jdbcLineDao.isExistLine(name);
-        if (existFlag == LINE_EXIST_VALUE) {
+        if (jdbcLineDao.isExistLine(name)) {
             throw new IllegalArgumentException(LINE_DUPLICATION);
         }
     }

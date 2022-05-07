@@ -13,6 +13,7 @@ import wooteco.subway.domain.Station;
 @Repository
 public class JdbcStationDao {
 
+    public static final int STATION_EXIST_VALUE = 1;
     private static final int DELETE_SUCCESS = 1;
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Station> rowMapper = (rs, rowNum) ->
@@ -49,8 +50,8 @@ public class JdbcStationDao {
         return jdbcTemplate.update(sql, id) == DELETE_SUCCESS;
     }
 
-    public int isExistStation(String name) {
+    public boolean isExistStation(String name) {
         String sql = "select EXISTS (select name from station where name = ?) as success";
-        return jdbcTemplate.queryForObject(sql, Integer.class, name);
+        return jdbcTemplate.queryForObject(sql, Integer.class, name) == STATION_EXIST_VALUE;
     }
 }
