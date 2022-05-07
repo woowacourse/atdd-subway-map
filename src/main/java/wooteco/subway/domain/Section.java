@@ -53,14 +53,4 @@ public class Section {
     public int hashCode() {
         return Objects.hash(up, down, distance);
     }
-
-    public Relation calculateRelation(Section section) {
-        if (this.up.equals(section.up) || this.down.equals(section.down)) {
-            return Relation.DIVIDE;
-        }
-        if (this.up.equals(section.down) || this.down.equals(section.up)) {
-            return Relation.EXTEND;
-        }
-        return Relation.NONE;
-    }
 }

@@ -27,10 +27,20 @@ public class Sections {
         return sections.getLast().getDown();
     }
 
-    public void add(Section newSection) {
-        Relation relation = calculateRelation(newSection);
+    public void add(Section section) {
+        Relation relation = calculateRelation(section);
         if (relation.equals(Relation.NONE) || relation.equals(Relation.INCLUDE)) {
             throw new IllegalArgumentException("해당 노선은 추가할 수 없습니다.");
+        }
+        if (relation.equals(Relation.EXTEND)) {
+            if (findUpperTerminal().equals(section.getDown())) {
+                sections.addFirst(section);
+                return;
+            }
+            if (findBottomTerminal().equals(section.getUp())) {
+                sections.addLast(section);
+                return;
+            }
         }
     }
 

@@ -2,8 +2,10 @@ package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.LinkedList;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -63,7 +65,7 @@ class SectionsTest {
 
         assertThat(sections.calculateRelation(target)).isEqualTo(Relation.DIVIDE);
     }
-    
+
     @DisplayName("구간의 두 역이 이미 존재하면 포함 관계")
     @Test
     void 두_역이_이미_존재_INCLUDE() {
@@ -107,6 +109,38 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.add(target))
                 .isInstanceOf(IllegalArgumentException.class);
 
+    }
+
+    @DisplayName("상행으로 구간 연장")
+    @Test
+    void 구간_추가_상행_연장() {
+        Section section = new Section(new Station("합정역"), new Station("홍대입구역"), 1);
+        Sections sections = new Sections(section);
+
+        Section target = new Section(new Station("당산역"), new Station("합정역"), 1);
+        sections.add(target);
+        List<Section> result = sections.getSections();
+
+        assertAll(
+                () -> assertThat(result.get(0)).isEqualTo(target),
+                () -> assertThat(result.get(1)).isEqualTo(section)
+        );
+    }
+
+    @DisplayName("하행으로 구간 연장")
+    @Test
+    void 구간_추가_하행_연장() {
+        Section section = new Section(new Station("당산역"), new Station("합정역"), 1);
+        Sections sections = new Sections(section);
+
+        Section target = new Section(new Station("합정역"), new Station("신촌역"), 1);
+        sections.add(target);
+        List<Section> result = sections.getSections();
+
+        assertAll(
+                () -> assertThat(result.get(0)).isEqualTo(section),
+                () -> assertThat(result.get(1)).isEqualTo(target)
+        );
     }
 
 }
