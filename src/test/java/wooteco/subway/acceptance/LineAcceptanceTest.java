@@ -112,12 +112,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        final LineResponse lineResponse = actual.body().as(LineResponse.class);
-        assertAll(() -> {
-            assertThat(lineResponse.getId()).isEqualTo(id);
-            assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName());
-            assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor());
-        });
+        final LineResponse actualResponse = actual.body().as(LineResponse.class);
+        assertThat(actualResponse.getId()).isEqualTo(id);
+        assertThat(actualResponse.getName()).isEqualTo(actualResponse.getName());
+        assertThat(actualResponse.getColor()).isEqualTo(actualResponse.getColor());
+
+        final List<StationResponse> stations = actualResponse.getStations();
+        assertThat(stations).hasSize(2);
+
+        final StationResponse upStationResponse = stations.get(0);
+        assertThat(upStationResponse.getName()).isEqualTo(upStationName);
+
+        final StationResponse downStationResponse = stations.get(1);
+        assertThat(downStationResponse.getName()).isEqualTo(downStationName);
     }
 
     @Test
