@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ import wooteco.subway.dto.line.LineResponse;
 import wooteco.subway.dto.station.StationResponse;
 import wooteco.subway.exception.line.DuplicateLineException;
 import wooteco.subway.exception.line.NoSuchLineException;
+import wooteco.subway.exception.station.NoSuchStationException;
 
 class LineServiceTest extends ServiceTest {
 
@@ -38,7 +40,7 @@ class LineServiceTest extends ServiceTest {
         final Station downStation = new Station(2L, "삼성역");
 
         final LineRequest request = new LineRequest(name, color, upStation.getId(), downStation.getId(), 10);
-        
+
         final Line expected = new Line(1L, name, color);
         given(lineDao.insert(any(Line.class)))
                 .willReturn(Optional.of(expected));
@@ -108,10 +110,17 @@ class LineServiceTest extends ServiceTest {
         final String name = "7호선";
         final String color = "bg-red-600";
 
-        final Line expected = new Line(name, color);
+        final Line expected = new Line(id, name, color);
 
-        given(lineDao.findById(id))
+        given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(expected));
+
+        final List<Station> expectedStations = List.of(
+                new Station(1L, "선릉역"),
+                new Station(2L, "삼성역")
+        );
+        given(stationDao.findAllByLineId(any(Long.class)))
+                .willReturn(expectedStations);
 
         // when
         final LineResponse actual = lineService.findById(id);
@@ -119,6 +128,15 @@ class LineServiceTest extends ServiceTest {
         // then
         assertThat(actual.getName()).isEqualTo(expected.getName());
         assertThat(actual.getColor()).isEqualTo(expected.getColor());
+
+        final List<String> actualStationNames = actual.getStations()
+                .stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        final List<String> expectedStationNames = expectedStations.stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        assertThat(actualStationNames).isEqualTo(expectedStationNames);
     }
 
     @Test
@@ -132,6 +150,22 @@ class LineServiceTest extends ServiceTest {
         // when
         assertThatThrownBy(() -> lineService.findById(id))
                 .isInstanceOf(NoSuchLineException.class);
+    }
+
+    @Test
+    @DisplayName("노선에 해당하는 역이 존재하지 않으면 예외를 던진다.")
+    void FindById_EmptyStations_ExceptionThrown() {
+        // given
+        final Line line = new Line(1L, "5호선", "bg-violet-600");
+        given(lineDao.findById(any(Long.class)))
+                .willReturn(Optional.of(line));
+
+        given(stationDao.findAllByLineId(any(Long.class)))
+                .willReturn(Collections.emptyList());
+
+        // then
+        assertThatThrownBy(() -> lineService.findById(line.getId()))
+                .isInstanceOf(NoSuchStationException.class);
     }
 
     @Test

@@ -63,7 +63,11 @@ public class LineService {
     public LineResponse findById(final Long id) {
         final Line line = lineDao.findById(id)
                 .orElseThrow(NoSuchLineException::new);
-        return LineResponse.from(line);
+        final List<Station> stations = stationDao.findAllByLineId(line.getId());
+        if (stations.isEmpty()) {
+            throw new NoSuchStationException();
+        }
+        return LineResponse.of(line, stations);
     }
 
     public void updateById(final Long id, final LineRequest request) {
