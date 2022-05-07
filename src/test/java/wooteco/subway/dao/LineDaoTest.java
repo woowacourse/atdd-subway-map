@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.exception.LineDuplicateException;
 import wooteco.subway.exception.NoLineFoundException;
 
 @DisplayName("Line Dao를 통해서")
@@ -59,7 +60,8 @@ class LineDaoTest {
         void save_Fail_If_Exists() {
             lineDao.save(LINE_FIXTURE);
             assertThatThrownBy(() -> lineDao.save(LINE_FIXTURE))
-                    .isInstanceOf(DuplicateKeyException.class);
+                    .isInstanceOf(LineDuplicateException.class)
+                    .hasMessageContaining("이미 존재하는 노선입니다. Line{name='line1', color='color'}");
         }
     }
 

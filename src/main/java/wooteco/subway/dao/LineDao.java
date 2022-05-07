@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -12,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.exception.LineDuplicateException;
 import wooteco.subway.exception.NoLineFoundException;
 
 @Repository
@@ -33,7 +35,12 @@ public class LineDao {
         final Map<String, Object> params = new HashMap<>();
         params.put("name", line.getName());
         params.put("color", line.getColor());
-        final Long id = simpleInsert.executeAndReturnKey(params).longValue();
+        Long id;
+        try {
+            id = simpleInsert.executeAndReturnKey(params).longValue();
+        } catch (DuplicateKeyException e) {
+            throw new LineDuplicateException(line.toString());
+        }
         return new Line(id, line.getName(), line.getColor());
     }
 

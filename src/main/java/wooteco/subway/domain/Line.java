@@ -49,4 +49,12 @@ public class Line {
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                '}';
+    }
 }
