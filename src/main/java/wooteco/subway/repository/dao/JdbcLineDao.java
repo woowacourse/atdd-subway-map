@@ -31,7 +31,7 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public LineEntity save(final LineEntity lineEntity) {
-        final String sql = "insert into LINE(name, color) values(:name, :color)";
+        final String sql = "INSERT INTO LINE(name, color) VALUES(:name, :color)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         final SqlParameterSource source = new BeanPropertySqlParameterSource(lineEntity);
         jdbcTemplate.update(sql, source, keyHolder);
@@ -44,13 +44,13 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public List<LineEntity> findAll() {
-        final String sql = "select id, name, color from LINE";
+        final String sql = "SELECT id, name, color FROM LINE";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
     public Optional<LineEntity> findByName(final String name) {
-        final String sql = "select id, name, color from LINE where name = :name";
+        final String sql = "SELECT id, name, color FROM LINE WHERE name = :name";
         final Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         final SqlParameterSource source = new MapSqlParameterSource(params);
@@ -64,7 +64,7 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public Optional<LineEntity> findById(final Long id) {
-        final String sql = "select id, name, color from LINE where id = :id";
+        final String sql = "SELECT id, name, color FROM LINE WHERE id = :id";
         final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
         final SqlParameterSource source = new MapSqlParameterSource(params);
@@ -78,7 +78,7 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public void deleteById(final Long id) {
-        final String sql = "delete from LINE where id = :id";
+        final String sql = "DELETE FROM LINE WHERE id = :id";
         final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
         final SqlParameterSource source = new MapSqlParameterSource(params);
@@ -87,10 +87,10 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public void update(final LineEntity newLineEntity) {
-        final String sql = "update LINE set "
+        final String sql = "UPDATE LINE SET "
                 + "name = :name, "
                 + "color = :color "
-                + "where id = :id";
+                + "WHERE id = :id";
         final SqlParameterSource source = new BeanPropertySqlParameterSource(newLineEntity);
         jdbcTemplate.update(sql, source);
     }

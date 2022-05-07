@@ -30,7 +30,7 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public StationEntity save(final StationEntity stationEntity) {
-        final String sql = "insert into STATION(name) values(:name)";
+        final String sql = "INSERT INTO STATION(name) VALUES(:name)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         final SqlParameterSource source = new BeanPropertySqlParameterSource(stationEntity);
         jdbcTemplate.update(sql, source, keyHolder);
@@ -43,13 +43,13 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public List<StationEntity> findAll() {
-        final String sql = "select id, name from STATION";
+        final String sql = "SELECT id, name FROM STATION";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
     public Optional<StationEntity> findByName(final String name) {
-        final String sql = "select id, name from STATION where name = :name";
+        final String sql = "SELECT id, name FROM STATION WHERE name = :name";
         final Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         final SqlParameterSource source = new MapSqlParameterSource(params);
@@ -63,7 +63,7 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public Optional<StationEntity> findById(final Long id) {
-        final String sql = "select id, name from STATION where id = :id";
+        final String sql = "SELECT id, name FROM STATION WHERE id = :id";
         final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
         final SqlParameterSource source = new MapSqlParameterSource(params);
@@ -77,7 +77,7 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public void deleteById(final Long id) {
-        final String sql = "delete from STATION where id = :id";
+        final String sql = "DELETE FROM STATION WHERE id = :id";
         final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
         final SqlParameterSource source = new MapSqlParameterSource(params);
