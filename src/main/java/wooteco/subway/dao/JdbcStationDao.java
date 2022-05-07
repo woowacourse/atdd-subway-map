@@ -15,13 +15,10 @@ public class JdbcStationDao implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertActor;
-    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> {
-        Station station = new Station(
-            resultSet.getLong("id"),
-            resultSet.getString("name")
-        );
-        return station;
-    };
+    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
+        resultSet.getLong("id"),
+        resultSet.getString("name")
+    );
 
     public JdbcStationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -38,25 +35,25 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public List<Station> findAll() {
-        String sql = "select * from STATION";
+        String sql = "SELECT * FROM STATION";
         return jdbcTemplate.query(sql, stationRowMapper);
     }
 
     @Override
     public void deleteById(Long stationId) {
-        String sql = "delete from STATION where id = (?)";
+        String sql = "DELETE FROM STATION WHERE id = (?)";
         jdbcTemplate.update(sql, stationId);
     }
 
     @Override
     public Station findById(Long stationId) {
-        String sql = "select * from STATION where id = (?)";
+        String sql = "SELECT * FROM STATION WHERE id = (?)";
         return jdbcTemplate.queryForObject(sql, stationRowMapper, stationId);
     }
 
     @Override
     public boolean existByName(Station station) {
-        String sql = "select exists (select * from STATION where name = (?))";
+        String sql = "SELECT EXISTS (SELECT * FROM STATION WHERE name = (?))";
         return jdbcTemplate.queryForObject(sql, Boolean.class, station.getName());
     }
 }
