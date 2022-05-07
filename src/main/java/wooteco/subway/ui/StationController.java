@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.service.StationService;
+import wooteco.subway.service.CommonStationService;
 
 @RestController
 public class StationController {
 
-    private final StationService stationService;
+    private final CommonStationService stationService;
 
-    public StationController(final StationService stationService) {
+    public StationController(final CommonStationService stationService) {
         this.stationService = stationService;
     }
 

@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
@@ -26,7 +25,7 @@ class SpringStationServiceTest {
     private static final StationRequest STATION_FIXTURE3 = new StationRequest("역삼역");
 
     @Autowired
-    private StationService stationService;
+    private CommonStationService stationService;
 
     @Nested
     @DisplayName("새로운 역을 저장할 때")

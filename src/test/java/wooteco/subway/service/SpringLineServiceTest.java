@@ -26,7 +26,7 @@ class SpringLineServiceTest {
     private static final LineRequest LINE_FIXTURE3 = new LineRequest("4호선", "bg-color-800");
 
     @Autowired
-    private LineService lineService;
+    private CommonLineService lineService;
 
     @Nested
     @DisplayName("새로운 노선을 저장할 때")
