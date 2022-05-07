@@ -1,7 +1,5 @@
 package wooteco.subway.domain;
 
-import java.util.List;
-
 public class Section {
 
 	private static final long TEMPORARY_ID = 0L;
@@ -29,12 +27,24 @@ public class Section {
 		}
 	}
 
-	public List<Station> getStations() {
-		return List.of(upStation, downStation);
+	public boolean isUpStation(Station station) {
+		return this.upStation.equals(station);
+	}
+
+	public boolean isDownStation(Station station) {
+		return this.downStation.equals(station);
 	}
 
 	public Long getId() {
 		return id;
+	}
+
+	public Station getUpStation() {
+		return upStation;
+	}
+
+	public Station getDownStation() {
+		return downStation;
 	}
 
 	public Long getUpStationId() {

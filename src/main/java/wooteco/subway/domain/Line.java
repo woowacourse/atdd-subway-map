@@ -52,7 +52,7 @@ public class Line {
 	}
 
 	public List<Station> listOrderedStations() {
-		return sections.getStations();
+		return sections.sortStations();
 	}
 
 	public List<Section> getSections() {
