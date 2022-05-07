@@ -7,13 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.Stations;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.exception.NotFoundException;
 
 @Service
@@ -59,9 +59,9 @@ public class LineService {
     }
 
     @Transactional
-    public void update(final Line line) {
-        checkExistLine(line.getId());
-        lineDao.update(line);
+    public void update(final long lineId, final LineUpdateRequest request) {
+        checkExistLine(lineId);
+        lineDao.update(request.toLineWithId(lineId));
     }
 
     @Transactional

@@ -12,6 +12,7 @@ import wooteco.subway.dao.InmemoryStationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.exception.NotFoundException;
 
 class LineServiceTest {
@@ -50,7 +51,7 @@ class LineServiceTest {
     @Test
     @DisplayName("존재하지 않는 id로 update하려할 경우 예외가 발생한다.")
     void updateExceptionByNotFoundLine() {
-        assertThatThrownBy(() -> lineService.update(new Line(1L, "신분당선", "bg-green-600")))
+        assertThatThrownBy(() -> lineService.update(1L, new LineUpdateRequest("신분당선", "bg-green-600")))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 Line입니다.");
     }
