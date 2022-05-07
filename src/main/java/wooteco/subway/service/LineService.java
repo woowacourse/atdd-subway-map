@@ -24,10 +24,14 @@ public class LineService {
     @Transactional
     public LineResponse insertLine(LineRequest lineRequest) {
         Line line = lineRequest.toEntity();
-        validateDuplicateName(line);
-        validateDuplicateColor(line);
+        validateRequest(line);
         Line newLine = lineDao.insert(line);
         return new LineResponse(newLine);
+    }
+
+    private void validateRequest(Line line) {
+        validateDuplicateName(line);
+        validateDuplicateColor(line);
     }
 
     private void validateDuplicateName(Line line) {
@@ -58,6 +62,7 @@ public class LineService {
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
+        validateRequest(new Line(lineRequest.getName(), lineRequest.getColor()));
         lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
     }
 
