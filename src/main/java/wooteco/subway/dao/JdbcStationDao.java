@@ -22,12 +22,6 @@ public class JdbcStationDao implements StationDao {
     private static final String COLUMN_ID = "id";
 
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Station> rowMapper = (resultSet, rowNumber) -> {
-        Station station = new Station(
-                resultSet.getString(COLUMN_NAME)
-        );
-        return setId(station, resultSet.getLong(COLUMN_ID));
-    };
 
     public JdbcStationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -50,17 +44,25 @@ public class JdbcStationDao implements StationDao {
         }
     }
 
+    @Override
+    public List<Station> findAll() {
+        String sql = "SELECT * FROM station";
+        return jdbcTemplate.query(sql, getRowMapper());
+    }
+
+    private RowMapper<Station> getRowMapper() {
+        return (resultSet, rowNumber) -> {
+            String name = resultSet.getString(COLUMN_NAME);
+            long id = resultSet.getLong(COLUMN_ID);
+            return setId(new Station(name), id);
+        };
+    }
+
     private Station setId(Station station, long id) {
         Field field = ReflectionUtils.findField(Station.class, COLUMN_ID);
         Objects.requireNonNull(field).setAccessible(true);
         ReflectionUtils.setField(field, station, id);
         return station;
-    }
-
-    @Override
-    public List<Station> findAll() {
-        String sql = "SELECT * FROM station";
-        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override

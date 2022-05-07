@@ -26,23 +26,8 @@ public class JdbcLineDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<Line> rowMapper = (resultSet, rowNumber) -> {
-        Line line = new Line(
-                resultSet.getString(COLUMN_NAME),
-                resultSet.getString(COLUMN_COLOR)
-        );
-        return setId(line, resultSet.getLong(COLUMN_ID));
-    };
-
     public JdbcLineDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-    }
-
-    private Line setId(Line line, long id) {
-        Field field = ReflectionUtils.findField(Line.class, COLUMN_ID);
-        Objects.requireNonNull(field).setAccessible(true);
-        ReflectionUtils.setField(field, line, id);
-        return line;
     }
 
     @Override
@@ -67,14 +52,30 @@ public class JdbcLineDao implements LineDao {
     @Override
     public List<Line> findAll() {
         final String sql = "SELECT * FROM line";
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, getRowMapper());
+    }
+
+    private RowMapper<Line> getRowMapper() {
+        return (resultSet, rowNumber) -> {
+            String name = resultSet.getString(COLUMN_NAME);
+            String color = resultSet.getString(COLUMN_COLOR);
+            long id = resultSet.getLong(COLUMN_ID);
+            return setId(new Line(name, color), id);
+        };
+    }
+
+    private Line setId(Line line, long id) {
+        Field field = ReflectionUtils.findField(Line.class, COLUMN_ID);
+        Objects.requireNonNull(field).setAccessible(true);
+        ReflectionUtils.setField(field, line, id);
+        return line;
     }
 
     @Override
     public Line findById(Long id) {
         try {
             final String sql = "SELECT * FROM line WHERE id = ?";
-            return jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return jdbcTemplate.queryForObject(sql, getRowMapper(), id);
         } catch (EmptyResultDataAccessException exception) {
             throw new NotFoundException(ExceptionMessage.NOT_FOUND_LINE_BY_ID.getContent());
         }
