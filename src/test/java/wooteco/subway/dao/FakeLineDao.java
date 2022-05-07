@@ -41,13 +41,11 @@ public class FakeLineDao implements LineDao {
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 id입니다."));
     }
 
-    public Line update(Long id, Line updateLine) {
+    public void update(Long id, Line updateLine) {
         lines.remove(findById(id));
 
         Line line = new Line(id, updateLine.getName(), updateLine.getColor());
         lines.add(line);
-
-        return line;
     }
 
     public void deleteById(Long id) {
