@@ -16,12 +16,13 @@
         - 컨트롤러의 역할의 변화
     - [ ] `@ExceptionHandler` 예외 처리
         - 만약, Exception이 발생한다면?
-- [ ] `LineAcceptanceTest`
-    - [ ] 중복된 코드 Fixture 객체 or 메서드 분리
-    - [ ] `Stream`과 `람다` 활용
-    - [ ] 존재하지 않는 노선 제거에 대한 테스트
-- [ ] 테스트 DisplayName에 행위뿐만이 아닌 검증하려는 결과도 표현
+- [x] `LineAcceptanceTest`
+    - [x] 중복된 코드 Fixture 객체 or 메서드 분리
+    - [x] `Stream`과 `람다` 활용
+    - [x] 존재하지 않는 노선 제거에 대한 테스트
+- [x] 테스트 DisplayName에 행위뿐만이 아닌 검증하려는 결과도 표현
     - 기존 방식과의 차이는?
+    - 적용해보니 기존의 방식은 테스트하는 메서드의 행위만을 표현했다면 변경한 방식은 그 행위를 통해 받을 수 있는 결과까지 표현할 수 있음.
 - [ ] `RestAssured`는 어떤 기능을 제공하는 라이브러리일까?
 - [ ] `LineDaoTest`
     - [ ] `assertAll` 검증 함수 학습 및 적용
