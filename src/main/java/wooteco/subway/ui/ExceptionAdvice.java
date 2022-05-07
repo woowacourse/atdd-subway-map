@@ -4,12 +4,10 @@ import java.time.LocalDateTime;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.dto.ErrorResponse;
-import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.exception.SubwayMapException;
 
 @ControllerAdvice(assignableTypes = {StationController.class, LineController.class})
@@ -20,11 +18,6 @@ public class ExceptionAdvice {
     @ExceptionHandler(value = {IllegalArgumentException.class})
     public ResponseEntity<ErrorResponse> handleException(final Exception e) {
         return ResponseEntity.badRequest().body(ErrorResponse.from(e));
-    }
-
-    @ExceptionHandler(value = {NotFoundException.class})
-    public ResponseEntity<ErrorResponse> handleNotFoundException(final Exception e) {
-        return new ResponseEntity<>(ErrorResponse.from(e), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = {SubwayMapException.class})

@@ -88,7 +88,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(actual.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("존재하지 않는 역을 제거하면 BadRequest 를 반환한다.")
+    @DisplayName("존재하지 않는 역을 제거하면 404를 반환한다.")
     @Test
     void DeleteStation_NotExistId_BadRequest() {
         // when
@@ -99,6 +99,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(actual.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }

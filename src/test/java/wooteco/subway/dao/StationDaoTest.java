@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.station.NoSuchStationException;
 
 class StationDaoTest extends DaoTest {
 
@@ -55,7 +56,6 @@ class StationDaoTest extends DaoTest {
     @DisplayName("존재하지 않는 id의 역을 삭제하면 예외가 발생한다.")
     void DeleteById_InvalidId_ExceptionThrown() {
         assertThatThrownBy(() -> stationDao.deleteById(999L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("id가 일치하는 역이 존재하지 않습니다.");
+                .isInstanceOf(NoSuchStationException.class);
     }
 }
