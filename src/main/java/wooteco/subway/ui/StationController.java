@@ -48,9 +48,4 @@ public class StationController {
         stationDao.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler
-    public ResponseEntity<String> handleException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
 }

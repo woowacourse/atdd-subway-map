@@ -62,9 +62,4 @@ public class LineController {
         lineDao.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler
-    public ResponseEntity<String> handleException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
 }
