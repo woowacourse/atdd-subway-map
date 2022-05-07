@@ -11,6 +11,8 @@ import wooteco.subway.exception.line.LineNotFoundException;
 @Service
 public class LineService {
 
+    private static final int NONE = 0;
+
     private final LineDao lineDao;
 
     public LineService(LineDao lineDao) {
@@ -29,8 +31,8 @@ public class LineService {
     }
 
     public void deleteById(Long id) {
-        int executionResult = lineDao.deleteById(id);
-        if (executionResult == 0) {
+        int executedRows = lineDao.deleteById(id);
+        if (executedRows == NONE) {
             throw new LineNotFoundException();
         }
     }
@@ -44,8 +46,8 @@ public class LineService {
     }
 
     public void update(Line updatingLine) {
-        int executionResult = lineDao.update(updatingLine);
-        if (executionResult == 0) {
+        int executedRows = lineDao.update(updatingLine);
+        if (executedRows == NONE) {
             throw new LineNotFoundException();
         }
     }

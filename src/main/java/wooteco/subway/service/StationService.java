@@ -10,6 +10,8 @@ import wooteco.subway.exception.station.StationNotFoundException;
 @Service
 public class StationService {
 
+    private static final int NONE = 0;
+
     private final StationDao stationDao;
 
     public StationService(StationDao stationDao) {
@@ -24,8 +26,8 @@ public class StationService {
     }
 
     public void deleteById(long id) {
-        int executionResult = stationDao.deleteById(id);
-        if (executionResult == 0) {
+        int executedRows = stationDao.deleteById(id);
+        if (executedRows == NONE) {
             throw new StationNotFoundException();
         }
     }
