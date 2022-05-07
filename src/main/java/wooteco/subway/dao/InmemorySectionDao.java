@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
 
 public class InmemorySectionDao implements SectionDao {
 
@@ -49,12 +48,5 @@ public class InmemorySectionDao implements SectionDao {
                 .stream()
                 .filter(section -> section.getLineId() == lineId)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public boolean existByUpStationAndDownStation(final Station upStation, final Station downStation) {
-        return sections.values()
-                .stream()
-                .anyMatch(section -> section.isSameUpStationAndDownStation(upStation, downStation));
     }
 }

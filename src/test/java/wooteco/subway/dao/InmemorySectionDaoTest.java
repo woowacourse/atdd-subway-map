@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
@@ -37,27 +36,6 @@ class InmemorySectionDaoTest {
 
         // then
         assertThat(savedSection.getId()).isNotNull();
-    }
-
-    @Nested
-    @DisplayName("이미 존재하는 upStation, downStation 인지 확인할 수 있다.")
-    class ExistByUpStationAndDownStation {
-
-        private final Station upStation = new Station(1L, "오리");
-        private final Station downStation = new Station(2L, "배카라");
-
-        @Test
-        void isTrue() {
-            Section section = new Section(null, 1L, upStation, downStation, 1);
-            sectionDao.save(section);
-
-            assertThat(sectionDao.existByUpStationAndDownStation(upStation, downStation)).isTrue();
-        }
-
-        @Test
-        void isFalse() {
-            assertThat(sectionDao.existByUpStationAndDownStation(upStation, downStation)).isFalse();
-        }
     }
 
     @Test

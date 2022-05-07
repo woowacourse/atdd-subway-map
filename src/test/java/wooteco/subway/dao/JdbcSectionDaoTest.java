@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -45,32 +44,6 @@ class JdbcSectionDaoTest {
 
         // then
         assertThat(savedSection.getId()).isNotNull();
-    }
-
-    @Nested
-    @DisplayName("이미 존재하는 upStation, downStation 인지 확인할 수 있다.")
-    class ExistByUpStationAndDownStation {
-
-        @Test
-        void isTrue() {
-            // given
-            Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
-            Station upStation = stationDao.save(new Station("오리"));
-            Station downStation = stationDao.save(new Station("배카라"));
-            Section section = new Section(null, line.getId(), upStation, downStation, 1);
-            sectionDao.save(section);
-
-            // when & then
-            assertThat(sectionDao.existByUpStationAndDownStation(upStation, downStation)).isTrue();
-        }
-
-        @Test
-        void isFalse() {
-            Station upStation = stationDao.save(new Station("오리"));
-            Station downStation = stationDao.save(new Station("배카라"));
-
-            assertThat(sectionDao.existByUpStationAndDownStation(upStation, downStation)).isFalse();
-        }
     }
 
     @Test
