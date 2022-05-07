@@ -1,4 +1,4 @@
-package wooteco.subway.dto;
+package wooteco.subway.dto.line;
 
 import wooteco.subway.domain.Line;
 
