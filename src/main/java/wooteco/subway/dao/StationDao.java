@@ -1,7 +1,5 @@
 package wooteco.subway.dao;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -9,7 +7,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.exception.NotFoundException;
 
 import javax.sql.DataSource;
@@ -30,12 +27,8 @@ public class StationDao {
 
     public Station save(Station station) {
         final SqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
-        try {
-            final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-            return new Station(id, station.getName());
-        } catch (DuplicateKeyException e) {
-            throw new DuplicateNameException("중복된 역 이름이 있습니다.");
-        }
+        final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        return new Station(id, station.getName());
     }
 
     private RowMapper<Station> rowMapper() {
