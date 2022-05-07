@@ -1,8 +1,8 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.line.LineNotFoundException;
 
 @JdbcTest
 @Sql("classpath:lineDao.sql")
@@ -39,16 +40,30 @@ class LineDaoImplTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @DisplayName("id에 해당하는 노선의 정보를 가져온다.")
+    @Test
+    void findById() {
+        Line actual = lineDao.findById(line.getId());
+
+        assertThat(actual).isEqualTo(new Line(line.getId(), "신분당선", "red"));
+    }
+
+    @DisplayName("id에 해당하는 노선이 존재하지 않으면 예외를 발생시킨다.")
+    @Test
+    void findById_exception() {
+        assertThatThrownBy(() -> lineDao.findById(-1L))
+                .isInstanceOf(LineNotFoundException.class);
+    }
+
     @DisplayName("id에 해당하는 노선의 정보를 바꾼다.")
     @Test
     void update() {
         Line updatingLine = new Line("7호선", "darkGreen");
         lineDao.update(line.getId(), updatingLine);
 
-        Optional<Line> updated = lineDao.findById(line.getId());
+        Line updated = lineDao.findById(line.getId());
 
-        assertThat(updated.isPresent()).isTrue();
-        assertThat(updated.get()).isEqualTo(new Line(line.getId(), "7호선", "darkGreen"));
+        assertThat(updated).isEqualTo(new Line(line.getId(), "7호선", "darkGreen"));
     }
 
     @DisplayName("id에 해당하는 노선을 제거한다.")

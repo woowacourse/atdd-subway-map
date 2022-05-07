@@ -1,7 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.Optional;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
@@ -36,20 +36,16 @@ public class LineService {
     }
 
     public Line findLineById(Long id) {
-        Optional<Line> line = lineDao.findById(id);
-        validateNull(line);
-        return line.get();
+        try {
+            return lineDao.findById(id);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new LineNotFoundException();
+        }
     }
 
     public void update(Long id, Line updatingLine) {
         int executionResult = lineDao.update(id, updatingLine);
         if (executionResult == 0) {
-            throw new LineNotFoundException();
-        }
-    }
-
-    private void validateNull(Optional<Line> line) {
-        if (line.isEmpty()) {
             throw new LineNotFoundException();
         }
     }

@@ -58,7 +58,7 @@ class LineServiceTest {
     @DisplayName("존재하지 않는 노선을 반환하려하면 예외를 발생시킨다.")
     @Test
     void findLineById_exception() {
-        assertThatThrownBy(() -> lineService.findLineById(2L))
+        assertThatThrownBy(() -> lineService.findLineById(-1L))
                 .isInstanceOf(LineNotFoundException.class);
     }
 
