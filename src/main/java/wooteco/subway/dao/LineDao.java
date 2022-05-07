@@ -13,7 +13,7 @@ import wooteco.subway.domain.Line;
 
 @Repository
 public class LineDao {
-    private static final RowMapper<Line> lineMapper = (resultSet, rowNum) -> new Line(
+    private static final RowMapper<Line> LINE_MAPPER = (resultSet, rowNum) -> new Line(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("color")
@@ -38,13 +38,13 @@ public class LineDao {
 
     public List<Line> findAll() {
         String sql = "SELECT * FROM LINE";
-        return jdbcTemplate.query(sql, lineMapper);
+        return jdbcTemplate.query(sql, LINE_MAPPER);
     }
 
     public Line findById(Long id) {
         String sql = "SELECT * FROM LINE WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.queryForObject(sql, parameters, lineMapper);
+        return jdbcTemplate.queryForObject(sql, parameters, LINE_MAPPER);
     }
 
     public void updateById(Line line) {
