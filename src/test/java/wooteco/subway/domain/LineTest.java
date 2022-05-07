@@ -17,7 +17,7 @@ class LineTest {
 	@DisplayName("이름이 같은지 확인한다.")
 	@Test
 	void isSameName() {
-		Line line = new Line("신분당선", "bh-red-600");
+		Line line = new Line(1L,"신분당선", "bh-red-600");
 		assertThat(line.isSameName("신분당선")).isTrue();
 	}
 }

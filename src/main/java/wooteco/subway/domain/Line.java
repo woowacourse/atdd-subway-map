@@ -12,16 +12,12 @@ public class Line {
 	private final String color;
 	private final Sections sections;
 
-	public Line(String name, String color) {
-		this(TEMPORARY_ID, name, color);
+	public Line(Long id, String name, String color) {
+		this(id, name, color, new LinkedList<>());
 	}
 
 	public Line(String name, String color, List<Section> sections) {
 		this(TEMPORARY_ID, name, color, sections);
-	}
-
-	public Line(Long id, String name, String color) {
-		this(id, name, color, new LinkedList<>());
 	}
 
 	public Line(Long id, String name, String color, List<Section> sections) {

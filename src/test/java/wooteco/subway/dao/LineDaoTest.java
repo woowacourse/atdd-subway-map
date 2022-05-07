@@ -36,7 +36,7 @@ class LineDaoTest {
 	@DisplayName("지하철 노선을 저장한다.")
 	@Test
 	void save() {
-		Long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
+		Long lineId = lineDao.save(new Line(0L, "신분당선", "bg-red-600"));
 		assertThat(lineId).isGreaterThan(0);
 	}
 
@@ -44,9 +44,9 @@ class LineDaoTest {
 	@Test
 	void findAll() {
 		List<Line> lines = List.of(
-			new Line("신분당선", "bg-red-600"),
-			new Line("1호선", "bg-red-600"),
-			new Line("2호선", "bg-red-600")
+			new Line(0L, "신분당선", "bg-red-600"),
+			new Line(0L, "1호선", "bg-red-600"),
+			new Line(0L, "2호선", "bg-red-600")
 		);
 		lines.forEach(lineDao::save);
 		List<Line> foundLines = lineDao.findAll();
@@ -56,7 +56,7 @@ class LineDaoTest {
 	@DisplayName("지하철 노선을 조회한다.")
 	@Test
 	void findById() {
-		Long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
+		Long lineId = lineDao.save(new Line(0L, "신분당선", "bg-red-600"));
 		Line foundLine = lineDao.findById(lineId);
 		assertThat(foundLine.getId()).isEqualTo(lineId);
 	}
@@ -72,7 +72,7 @@ class LineDaoTest {
 	@DisplayName("지하철 노선 정보를 수정한다.")
 	@Test
 	void update() {
-		Long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
+		Long lineId = lineDao.save(new Line(0L, "신분당선", "bg-red-600"));
 		lineDao.update(new Line(lineId, "분당선", "bg-blue-600"));
 		Line updatedLine = lineDao.findById(lineId);
 
@@ -92,7 +92,7 @@ class LineDaoTest {
 	@DisplayName("지하철 노선을 삭제한다.")
 	@Test
 	void remove() {
-		Long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
+		Long lineId = lineDao.save(new Line(0L, "신분당선", "bg-red-600"));
 		lineDao.remove(lineId);
 
 		assertThat(lineDao.findAll()).isEmpty();
@@ -109,7 +109,7 @@ class LineDaoTest {
 	@DisplayName("해당 이름의 노선이 존재하면 true를 반환한다.")
 	@Test
 	void existsByNameTrue() {
-		lineDao.save(new Line("신분당선", "bg-red-600"));
+		lineDao.save(new Line(0L, "신분당선", "bg-red-600"));
 		assertThat(lineDao.existsByName("신분당선")).isTrue();
 	}
 

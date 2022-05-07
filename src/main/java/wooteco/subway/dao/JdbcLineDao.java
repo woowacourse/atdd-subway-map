@@ -21,6 +21,7 @@ import wooteco.subway.domain.Line;
 public class JdbcLineDao implements LineDao {
 
 	private static final String NO_SUCH_ID_ERROR = "해당 id에 맞는 지하철 노선이 없습니다.";
+
 	private final SimpleJdbcInsert insertActor;
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 	private final SectionDao sectionDao;
