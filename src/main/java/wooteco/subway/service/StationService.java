@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DataDuplicationException;
 import wooteco.subway.exception.DataNotExistException;
 
 @Service
@@ -23,7 +24,7 @@ public class StationService {
     public Station createStation(Station station) {
         Optional<Station> foundStation = stationDao.findByName(station.getName());
         if (foundStation.isPresent()) {
-            throw new IllegalArgumentException("이미 등록된 역입니다.");
+            throw new DataDuplicationException("이미 등록된 역입니다.");
         }
         return stationDao.save(station);
     }

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.DataDuplicationException;
 import wooteco.subway.exception.DataNotExistException;
 
 class LineServiceTest {
@@ -47,7 +48,7 @@ class LineServiceTest {
 
         //then
         assertThatThrownBy(() -> lineService.createLine(line))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(DataDuplicationException.class)
             .hasMessageContaining("이미 등록된 노선입니다.");
     }
 
@@ -125,7 +126,7 @@ class LineServiceTest {
 
         //then
         assertThatThrownBy(() -> lineService.update(duplicatedLine))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(DataDuplicationException.class)
             .hasMessage("이미 등록된 노선입니다.");
     }
 
