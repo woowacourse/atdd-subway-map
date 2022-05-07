@@ -1,6 +1,6 @@
 package wooteco.subway.exception;
 
-public class NotFoundStationException extends RuntimeException {
+public class NotFoundStationException extends SubwayNotFoundException {
 
     private static final String NOT_FOUND_MESSAGE = "요청한 지하철역이 존재하지 않습니다";
 
