@@ -60,13 +60,13 @@ public class LineDao {
         return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
 
-    public void updateLineById(Long id, String name, String color) {
+    public int updateLineById(Long id, String name, String color) {
         final String sql = "UPDATE line SET name=?, color=? WHERE id=?";
-        jdbcTemplate.update(sql, name, color, id);
+        return jdbcTemplate.update(sql, name, color, id);
     }
 
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         final String sql = "DELETE FROM line WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 }

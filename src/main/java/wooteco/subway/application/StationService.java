@@ -27,8 +27,8 @@ public class StationService {
     }
 
     @Transactional
-    public void deleteStation(Long id) {
-        stationDao.deleteById(id);
+    public int deleteStation(Long id) {
+        return stationDao.deleteById(id);
     }
 
     private void checkExistsName(String name) {

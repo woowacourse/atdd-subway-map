@@ -33,16 +33,16 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLine(Long id, String name, String color) {
+    public int updateLine(Long id, String name, String color) {
         checkExistsId(id);
         checkExistsName(name);
-        lineDao.updateLineById(id, name, color);
+        return lineDao.updateLineById(id, name, color);
     }
 
     @Transactional
-    public void deleteLine(Long id) {
+    public int deleteLine(Long id) {
         checkExistsId(id);
-        lineDao.deleteById(id);
+        return lineDao.deleteById(id);
     }
 
     private void checkExistsName(String name) {

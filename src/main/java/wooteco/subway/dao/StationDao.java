@@ -45,8 +45,8 @@ public class StationDao {
         return !numOfStation.equals(0);
     }
 
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         final String sql = "DELETE FROM station where id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 }
