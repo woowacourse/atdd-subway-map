@@ -1,40 +1,46 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
+
 public class Section {
     private Long id;
     private Long lineId;
-    private Station upStation;
-    private Station downStation;
+    private Long upStationId;
+    private Long downStationId;
     private int distance;
 
     private Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
-        validateSection(upStation, downStation);
-        this.upStation = upStation;
-        this.downStation = downStation;
+    public Section(Long upStationId, Long downStationId, int distance) {
+        validateSection(upStationId, downStationId);
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
         this.distance = distance;
     }
 
-    public Section(Long id, Long lineId, Station upStation, Station downStation, int distance) {
-        this(upStation, downStation, distance);
-        this.id = id;
+    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
+        this(upStationId, downStationId, distance);
         this.lineId = lineId;
     }
 
-    private void validateSection(Station upStation, Station downStation) {
-        if (upStation.isSameName(downStation)) {
+    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+        this(lineId, upStationId, downStationId, distance);
+        this.id = id;
+    }
+
+    private void validateSection(Long upStationId, Long downStationId) {
+        if (Objects.equals(upStationId, downStationId)) {
             throw new IllegalArgumentException("상행역과 하행역은 같을 수 없습니다.");
         }
     }
 
     public boolean hasSameUpStation(Section section) {
-        return upStation.isSameName(section.upStation);
+        return Objects.equals(upStationId, section.upStationId);
     }
 
     public boolean hasSameDownStation(Section section) {
-        return downStation.isSameName(section.downStation);
+        return Objects.equals(downStationId, section.downStationId);
     }
 
     public boolean isLongerThan(Section section) {
@@ -42,39 +48,41 @@ public class Section {
     }
 
     public boolean hasSameUpStationWithOtherDownStation(Section section) {
-        return upStation.isSameName(section.downStation);
+        return Objects.equals(upStationId, section.downStationId);
     }
 
     public boolean hasSameDownStationWithOtherUpStation(Section section) {
-        return downStation.isSameName(section.upStation);
+        return Objects.equals(downStationId, section.upStationId);
     }
 
     public boolean isSameStations(Section section) {
-        return upStation.isSameName(section.upStation) && downStation.isSameName(section.downStation);
+        return Objects.equals(upStationId, section.upStationId) &&
+                Objects.equals(downStationId, section.downStationId);
     }
 
     public boolean isNotSameAnyStation(Section section) {
-        return !upStation.isSameName(section.upStation) && !downStation.isSameName(section.downStation);
+        return !(Objects.equals(upStationId, section.upStationId)) &&
+                !(Objects.equals(downStationId, section.downStationId));
     }
 
     public Section splitSectionBySameUpStation(Section shorterSection) {
-        return new Section(shorterSection.downStation, downStation, distance - shorterSection.distance);
+        return new Section(shorterSection.downStationId, downStationId, distance - shorterSection.distance);
     }
 
     public Section splitSectionBySameDownStation(Section shorterSection) {
-        return new Section(upStation, shorterSection.upStation, distance - shorterSection.distance);
+        return new Section(upStationId, shorterSection.upStationId, distance - shorterSection.distance);
     }
 
     public Section mergeSectionByCut(Section downSection) {
-        return new Section(upStation, downSection.downStation, distance + downSection.distance);
+        return new Section(upStationId, downSection.downStationId, distance + downSection.distance);
     }
 
     public boolean hasSameUpStationByStation(Station station) {
-        return upStation.isSameName(station);
+        return station.isSameStation(upStationId);
     }
 
     public boolean hasSameDownStationByStation(Station station) {
-        return downStation.isSameName(station);
+        return station.isSameStation(downStationId);
     }
 
     public Long getId() {
@@ -85,12 +93,12 @@ public class Section {
         return lineId;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public Long getUpStationId() {
+        return upStationId;
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public Long getDownStationId() {
+        return downStationId;
     }
 
     public int getDistance() {
