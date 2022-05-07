@@ -35,12 +35,6 @@ public class LineController {
 		this.stationService = stationService;
 	}
 
-	public ResponseEntity<LineResponse> createLine2(@RequestBody LineRequest lineRequest) {
-		Line line = lineService.create(lineRequest.getName(), lineRequest.getColor());
-		return ResponseEntity.created(URI.create("/lines/" + line.getId()))
-			.body(LineResponse.from(line));
-	}
-
 	@PostMapping
 	public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
 		Station upStation = stationService.findOne(lineRequest.getUpStationId());

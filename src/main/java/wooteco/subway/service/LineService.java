@@ -22,13 +22,6 @@ public class LineService {
 	}
 
 	@Transactional
-	public Line create(String name, String color) {
-		validateNameNotDuplicated(name);
-		Long lineId = lineDao.save(new Line(name, color));
-		return lineDao.findById(lineId);
-	}
-
-	@Transactional
 	public Line create(String name, String color, Section section) {
 		validateNameNotDuplicated(name);
 		Long lineId = lineDao.save(new Line(name, color, List.of(section)));
