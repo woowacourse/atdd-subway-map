@@ -1,7 +1,15 @@
 package wooteco.subway.dto;
 
+import org.springframework.lang.NonNull;
+
+import javax.validation.constraints.NotEmpty;
+
 public class LineRequest {
+
+    //TODO: ControllerTest에서 검증해보기!
+    @NotEmpty
     private String name;
+    @NotEmpty
     private String color;
 
     public LineRequest() {

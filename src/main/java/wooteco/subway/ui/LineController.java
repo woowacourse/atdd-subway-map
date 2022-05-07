@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,8 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
 
+import javax.validation.Valid;
+
 @RestController
 public class LineController {
 
@@ -26,7 +29,7 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@Valid  @RequestBody LineRequest lineRequest) {
         LineResponse lineResponse = lineService.create(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
                 .body(lineResponse);
@@ -43,7 +46,7 @@ public class LineController {
     }
 
     @PutMapping("/lines/{id}")
-    public void updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public void updateLine(@PathVariable Long id,@Valid @RequestBody LineRequest lineRequest) {
         lineService.update(id, lineRequest);
     }
 
