@@ -50,7 +50,7 @@ public class StationDaoImpl implements StationDao {
     }
 
     @Override
-    public boolean exists(Station station) {
+    public boolean existsByName(Station station) {
         String sql = "select exists (select name from station where name = :name)";
         SqlParameterSource namedParameters = new BeanPropertySqlParameterSource(station);
         return Boolean.TRUE.equals(namedParameterJdbcTemplate.queryForObject(sql, namedParameters, Boolean.class));

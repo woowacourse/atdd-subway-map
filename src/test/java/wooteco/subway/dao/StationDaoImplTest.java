@@ -35,7 +35,7 @@ class StationDaoImplTest {
     void exists(String name, boolean expected) {
         Station newStation = new Station(name);
 
-        boolean actual = stationDao.exists(newStation);
+        boolean actual = stationDao.existsByName(newStation);
 
         assertThat(actual).isEqualTo(expected);
     }

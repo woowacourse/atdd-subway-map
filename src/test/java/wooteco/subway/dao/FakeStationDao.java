@@ -33,7 +33,7 @@ public class FakeStationDao implements StationDao {
     }
 
     @Override
-    public boolean exists(Station station) {
+    public boolean existsByName(Station station) {
         return stations.values()
                 .stream()
                 .anyMatch(it -> it.hasSameName(station));

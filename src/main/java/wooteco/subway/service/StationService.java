@@ -19,7 +19,7 @@ public class StationService {
     }
 
     public Station save(Station station) {
-        if (stationDao.exists(station)) {
+        if (stationDao.existsByName(station)) {
             throw new DuplicatedStationException();
         }
         return stationDao.save(station);
