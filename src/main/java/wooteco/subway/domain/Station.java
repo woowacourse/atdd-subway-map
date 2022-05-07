@@ -18,10 +18,6 @@ public class Station {
         this.name = name;
     }
 
-    public boolean isSameName(Station station) {
-        return this.name.equals(station.name);
-    }
-
     private void validateNameNotEmpty(String name) {
         if (name.isBlank()) {
             throw new IllegalArgumentException("이름은 비워둘 수 없습니다.");
