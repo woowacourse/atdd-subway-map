@@ -12,6 +12,11 @@ import wooteco.subway.exception.dto.ErrorResponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> notFoundException(final Exception e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
+    }
+
     @ExceptionHandler(EmptyArgumentException.class)
     public ResponseEntity<ErrorResponse> emptyArgumentException(final Exception e) {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));

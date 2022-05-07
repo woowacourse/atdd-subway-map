@@ -42,14 +42,14 @@ public class LineDao {
         return jdbcTemplate.queryForObject(sql, rowMapper(), id);
     }
 
-    public void update(final Long id, final String name, final String color) {
+    public int update(final Long id, final String name, final String color) {
         final String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
-        jdbcTemplate.update(sql, name, color, id);
+        return jdbcTemplate.update(sql, name, color, id);
     }
 
-    public void delete(final Long id) {
+    public int delete(final Long id) {
         final String sql = "DELETE FROM LINE WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 
     private RowMapper<Line> rowMapper() {

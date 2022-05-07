@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -18,6 +19,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.StationNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 class StationServiceTest {
@@ -72,15 +74,24 @@ class StationServiceTest {
     void deleteStation() {
         // given
         final long id = 1L;
-        final Station station = new Station(id, "신대방역");
 
         // mocking
-        given(stationDao.find(id)).willReturn(station);
+        given(stationDao.delete(id)).willReturn(1);
 
         // when
         stationService.deleteStation(id);
 
         // then
         verify(stationDao).delete(id);
+    }
+
+    @Test
+    @DisplayName("존재하지않는 id로 지하철역을 삭제하면, 예외가 발생한다.")
+    void deleteNotFoundException() {
+        final long id = 0L;
+
+        assertThatThrownBy(() -> stationService.deleteStation(id))
+                .isInstanceOf(StationNotFoundException.class)
+                .hasMessage("존재하지 않는 지하철역 입니다.");
     }
 }

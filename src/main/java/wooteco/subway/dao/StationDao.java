@@ -41,9 +41,9 @@ public class StationDao {
         return jdbcTemplate.query(sql, rowMapper());
     }
 
-    public void delete(final Long id) {
+    public int delete(final Long id) {
         final String sql = "DELETE FROM STATION WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 
     private RowMapper<Station> rowMapper() {

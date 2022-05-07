@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -17,6 +18,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.LineNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
@@ -101,8 +103,7 @@ class LineServiceTest {
         final String name = "2호선";
         final String color = "bg-red-600";
 
-        // mocking
-        given(lineDao.find(id)).willReturn(new Line(id, name, color));
+        given(lineDao.update(id, name, color)).willReturn(1);
 
         // when
         lineService.updateLine(id, new LineRequest(name, color));
@@ -112,20 +113,40 @@ class LineServiceTest {
     }
 
     @Test
+    @DisplayName("존재하지않는 id로 노선을 업데이트하면, 예외가 발생한다.")
+    void updateNotFoundException() {
+        final long id = 0L;
+        final String name = "2호선";
+        final String color = "bg-red-600";
+
+        assertThatThrownBy(() -> lineService.updateLine(id, new LineRequest(name, color)))
+                .isInstanceOf(LineNotFoundException.class)
+                .hasMessage("존재하지 않는 지하철 노선입니다.");
+    }
+
+    @Test
     @DisplayName("노선을 삭제한다.")
     void deleteLine() {
         // given
         long id = 1L;
-        final String name = "2호선";
-        final String color = "bg-red-600";
 
         // mocking
-        given(lineDao.find(id)).willReturn(new Line(id, name, color));
+        given(lineDao.delete(id)).willReturn(1);
 
         // when
         lineService.deleteLine(id);
 
         // then
         verify(lineDao).delete(id);
+    }
+
+    @Test
+    @DisplayName("존재하지않는 id로 노선을 삭제하면, 예외가 발생한다.")
+    void deleteNotFoundException() {
+        final long id = 0L;
+
+        assertThatThrownBy(() -> lineService.deleteLine(id))
+                .isInstanceOf(LineNotFoundException.class)
+                .hasMessage("존재하지 않는 지하철 노선입니다.");
     }
 }

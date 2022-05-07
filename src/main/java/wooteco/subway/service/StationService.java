@@ -7,9 +7,12 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.StationNotFoundException;
 
 @Service
 public class StationService {
+
+    private static final int NOT_FOUND = 0;
 
     private final StationDao stationDao;
 
@@ -31,7 +34,8 @@ public class StationService {
     }
 
     public void deleteStation(final Long id) {
-        stationDao.find(id);
-        stationDao.delete(id);
+        if (stationDao.delete(id) == NOT_FOUND) {
+            throw new StationNotFoundException();
+        }
     }
 }

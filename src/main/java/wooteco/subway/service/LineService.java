@@ -7,9 +7,12 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.LineNotFoundException;
 
 @Service
 public class LineService {
+
+    private static final int NOT_FOUND = 0;
 
     private final LineDao lineDao;
 
@@ -36,12 +39,14 @@ public class LineService {
     }
 
     public void updateLine(final long id, final LineRequest request) {
-        lineDao.find(id);
-        lineDao.update(id, request.getName(), request.getColor());
+        if (lineDao.update(id, request.getName(), request.getColor()) == NOT_FOUND) {
+            throw new LineNotFoundException();
+        }
     }
 
     public void deleteLine(final long id) {
-        lineDao.find(id);
-        lineDao.delete(id);
+        if (lineDao.delete(id) == NOT_FOUND) {
+            throw new LineNotFoundException();
+        }
     }
 }
