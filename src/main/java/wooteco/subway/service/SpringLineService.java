@@ -7,7 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineRepository;
 import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.LineColorDuplicateException;
 import wooteco.subway.exception.LineDeleteFailureException;
+import wooteco.subway.exception.LineNameDuplicateException;
 import wooteco.subway.exception.LineUpdateFailureException;
 import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.service.dto.LineServiceRequest;
@@ -24,11 +26,29 @@ public class SpringLineService implements LineService {
     @Transactional
     @Override
     public Line save(LineServiceRequest lineServiceRequest) {
-        LineEntity lineEntity = new LineEntity(lineServiceRequest.getName(), lineServiceRequest.getColor());
+        validate(lineServiceRequest);
 
+        LineEntity lineEntity = new LineEntity(lineServiceRequest.getName(), lineServiceRequest.getColor());
         final LineEntity saved = lineRepository.save(lineEntity);
 
         return new Line(saved.getId(), saved.getName(), saved.getColor());
+    }
+
+    private void validate(LineServiceRequest lineServiceRequest) {
+        validateDuplicateName(lineServiceRequest);
+        validateDuplicateColor(lineServiceRequest);
+    }
+
+    private void validateDuplicateName(LineServiceRequest lineServiceRequest) {
+        if (lineRepository.existsByName(lineServiceRequest.getName())) {
+            throw new LineNameDuplicateException(lineServiceRequest.getName());
+        }
+    }
+
+    private void validateDuplicateColor(LineServiceRequest lineServiceRequest) {
+        if (lineRepository.existsByColor(lineServiceRequest.getColor())) {
+            throw new LineColorDuplicateException(lineServiceRequest.getColor());
+        }
     }
 
     @Transactional(readOnly = true)
