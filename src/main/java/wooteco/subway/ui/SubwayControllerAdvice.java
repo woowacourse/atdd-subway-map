@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import wooteco.subway.dto.ErrorResponse;
+import wooteco.subway.ui.dto.ErrorResponse;
 
 @ControllerAdvice
 public class SubwayControllerAdvice {

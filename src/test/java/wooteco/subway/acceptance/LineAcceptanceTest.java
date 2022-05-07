@@ -15,7 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.service.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 인수테스트")
 public class LineAcceptanceTest extends AcceptanceTest {
