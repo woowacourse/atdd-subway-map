@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.request.LineRequest;
@@ -34,6 +35,7 @@ public class LineService {
         return toLineResponse(line);
     }
 
+    @Transactional
     public LineResponse save(LineRequest lineRequest) {
         validateUniqueName(lineRequest.getName());
 
@@ -41,6 +43,7 @@ public class LineService {
         return toLineResponse(lineDao.save(line));
     }
 
+    @Transactional
     public void update(Long id, LineRequest lineRequest) {
         validateExistingStation(id);
         validateUniqueName(lineRequest.getName());
@@ -49,6 +52,7 @@ public class LineService {
         lineDao.update(line);
     }
 
+    @Transactional
     public void delete(Long id) {
         validateExistingStation(id);
         lineDao.deleteById(id);

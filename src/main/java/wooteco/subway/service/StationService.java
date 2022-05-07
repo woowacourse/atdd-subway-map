@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.StationRequest;
 import wooteco.subway.dto.response.StationResponse;
@@ -30,6 +31,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public StationResponse save(StationRequest stationRequest) {
         String stationName = stationRequest.getName();
         validateUniqueName(stationName);
@@ -38,6 +40,7 @@ public class StationService {
         return new StationResponse(savedStation.getId(), savedStation.getName());
     }
 
+    @Transactional
     public void delete(Long id) {
         validateExistingStation(id);
         stationDao.deleteById(id);
