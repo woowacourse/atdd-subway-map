@@ -1,36 +1,29 @@
 package wooteco.subway.dao;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+
 import wooteco.subway.domain.Line;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-
-@Component
+@Repository
 public class LineDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("color")
-    );
 
-    public LineDao(JdbcTemplate jdbcTemplate) {
+    public LineDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Line save(Line line) {
-        if (isContains(line)) {
-            throw new IllegalStateException("노선 이름은 중복될 수 없습니다.");
-        }
+    public Line save(final Line line) {
         final String sql = "insert into Line(name, color) values (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -49,42 +42,34 @@ public class LineDao {
 
     public List<Line> findAll() {
         final String sql = "select id, name, color from Line";
-        return jdbcTemplate.query(sql, lineRowMapper);
+        return jdbcTemplate.query(sql, rowMapper());
     }
 
-    private boolean isContains(Line line) {
-        final String sql = "select count(*) from Line where name = ? or color = ?";
-        final int count = jdbcTemplate.queryForObject(sql, Integer.class, line.getName(), line.getColor());
-        return count > 0;
-    }
-
-    public Line findById(Long id) {
+    public Optional<Line> findById(final Long id) {
         final String sql = "select id, name, color from Line where id = ?";
-        if (!isExist(id)) {
-            throw new NoSuchElementException("해당하는 노선이 존재하지 않습니다.");
-        }
-        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), id));
     }
 
-    private boolean isExist(Long id) {
-        final String sql = "select count(*) from Line where id = ?";
-        final int count = jdbcTemplate.queryForObject(sql, Integer.class, id);
-        return count > 0;
+    public Optional<Line> findByName(final String name) {
+        final String sql = "select id, name, color from Line where name = ?";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), name));
     }
 
-    public void update(Long id, Line line) {
+    private RowMapper<Line> rowMapper() {
+        return (resultSet, rowNum) -> new Line(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("color")
+        );
+    }
+
+    public void update(final Long id, final Line line) {
         final String sql = "update Line set name = ?, color = ? where id = ?";
-        if (!isExist(id)) {
-            throw new NoSuchElementException("해당하는 노선이 존재하지 않습니다.");
-        }
         jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         final String sql = "delete from Line where id = ?";
-        if (!isExist(id)) {
-            throw new NoSuchElementException("해당하는 노선이 존재하지 않습니다.");
-        }
         jdbcTemplate.update(sql, id);
     }
 }
