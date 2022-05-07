@@ -82,6 +82,10 @@ public class Section {
         return new Section(id, lineId, this.upStation, section.upStation, this.distance - section.distance);
     }
 
+    public Section createExtensionSection(final Section section) {
+        return new Section(id, lineId, this.upStation, section.downStation, this.distance + section.distance);
+    }
+
     public Long getId() {
         return id;
     }

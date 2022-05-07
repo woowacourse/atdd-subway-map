@@ -134,4 +134,25 @@ class SectionTest {
                 () -> assertThat(updatedSection).isEqualTo(section)
         );
     }
+
+    @Test
+    @DisplayName("연장된 Section을 만들어 반환할 수 있따.")
+    void createExtensionSection() {
+        // given
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Station station3 = new Station(3L, "오카라");
+        Section section = new Section(1L, 1L, station1, station2, 10);
+        Section middleSection = new Section(2L, 1L, station2, station3, 3);
+
+        // when
+        Section updatedSection = section.createExtensionSection(middleSection);
+
+        assertAll(
+                () -> assertThat(updatedSection.getUpStation()).isEqualTo(station1),
+                () -> assertThat(updatedSection.getDownStation()).isEqualTo(station3),
+                () -> assertThat(updatedSection.getDistance()).isEqualTo(13),
+                () -> assertThat(updatedSection).isEqualTo(section)
+        );
+    }
 }
