@@ -11,10 +11,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.exception.LineDuplicateException;
+import wooteco.subway.exception.NoLineFoundException;
 
 @SpringBootTest
 @Transactional
@@ -43,7 +44,8 @@ class SpringLineServiceTest {
         void save_Fail_If_Exists() {
             lineService.save(LINE_FIXTURE);
             assertThatThrownBy(() -> lineService.save(LINE_FIXTURE))
-                    .isInstanceOf(DuplicateKeyException.class);
+                    .isInstanceOf(LineDuplicateException.class)
+                    .hasMessageContaining("이미 존재하는 노선입니다. Line{name='2호선', color='bg-color-600'}");
         }
     }
 
@@ -67,32 +69,60 @@ class SpringLineServiceTest {
         assertThat(line).isEqualTo(found);
     }
 
-    @Test
-    @DisplayName("아이디로 지하철노선을 삭제할 수 있다")
-    void deleteById() {
-        final Line line = lineService.save(LINE_FIXTURE);
-        final List<Line> lines = lineService.findAll();
-        lineService.deleteById(line.getId());
-        final List<Line> afterDelete = lineService.findAll();
+    @Nested
+    @DisplayName("아이디로 지하철노선을 삭제할 때")
+    class DeleteLineTest {
 
-        assertThat(lines).isNotEmpty();
-        assertThat(afterDelete).isEmpty();
+        @Test
+        @DisplayName("아이디가 존재하면 아이디로 지하철노선을 삭제할 수 있다.")
+        void deleteById() {
+            final Line line = lineService.save(LINE_FIXTURE);
+            final List<Line> lines = lineService.findAll();
+            lineService.deleteById(line.getId());
+            final List<Line> afterDelete = lineService.findAll();
+
+            assertThat(lines).isNotEmpty();
+            assertThat(afterDelete).isEmpty();
+        }
+
+        @Test
+        @DisplayName("아이디가 존재하지 않는다면 예외를 던진다.")
+        void delete_By_Id_Fail() {
+            assertThatThrownBy(() -> lineService.deleteById(1L))
+                    .isInstanceOf(NoLineFoundException.class)
+                    .hasMessageContaining("요청한 노선이 존재하지 않습니다. id=1");
+        }
     }
 
-    @Test
-    @DisplayName("노선 이름과 색상을 변경할 수 있다")
-    void update() {
-        final Line line = lineService.save(LINE_FIXTURE);
-        final Long id = line.getId();
-        final LineRequest lineRequest = new LineRequest("22호선", "bg-color-777");
+    @Nested
+    @DisplayName("노선 이름과 색상을 변경하려할 때")
+    class UpdateLineTest {
 
-        lineService.update(id, lineRequest);
-        final Line updated = lineService.findById(id);
+        @Test
+        @DisplayName("노선이 존재하면 노선 이름과 색상을 변경할 수 있다")
+        void update_Line_Success() {
+            final Line line = lineService.save(LINE_FIXTURE);
+            final Long id = line.getId();
+            final LineRequest lineRequest = new LineRequest("22호선", "bg-color-777");
 
-        assertAll(
-                () -> assertThat(updated.getId()).isEqualTo(id),
-                () -> assertThat(updated.getName()).isEqualTo("22호선"),
-                () -> assertThat(updated.getColor()).isEqualTo("bg-color-777")
-        );
+            lineService.update(id, lineRequest);
+            final Line updated = lineService.findById(id);
+
+            assertAll(
+                    () -> assertThat(updated.getId()).isEqualTo(id),
+                    () -> assertThat(updated.getName()).isEqualTo("22호선"),
+                    () -> assertThat(updated.getColor()).isEqualTo("bg-color-777")
+            );
+        }
+
+        @Test
+        @DisplayName("노선이 존재하지 않으면 예외를 던진다.")
+        void update_Line_Fail() {
+            assertThatThrownBy(() -> lineService.update(1L, new LineRequest("a", "b")))
+                    .isInstanceOf(NoLineFoundException.class)
+                    .hasMessageContaining("요청한 노선이 존재하지 않습니다. id=1 LineRequest{name='a', color='b'}");
+
+        }
     }
+
 }
