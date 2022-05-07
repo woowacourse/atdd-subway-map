@@ -34,6 +34,24 @@ public class StationAcceptanceTest extends AcceptanceTest {
         }
 
         @Test
+        void 이름_정보가_담기지_않은_경우_400_BAD_REQUEST() {
+            Map<String, String> emptyParams = new HashMap<>();
+
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", emptyParams);
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @Test
+        void 이름_정보가_공백으로_구성된_경우_400_BAD_REQUEST() {
+            Map<String, String> blankParams = jsonStationOf("  ");
+
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", blankParams);
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @Test
         void 중복되는_이름의_지하철역_생성_시도시_400_BAD_REQUEST() {
             Map<String, String> params = jsonStationOf("강남역");
             postStation(params);
@@ -79,7 +97,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
         }
     }
-
 
     private HashMap<String, String> jsonStationOf(String name) {
         return new HashMap<>() {{
