@@ -1,23 +1,20 @@
 package wooteco.subway.domain;
 
+
 public class Line {
 
     private final Long id;
-    private final String name;
-    private final String color;
+    private final Name name;
+    private final Color color;
 
-    public Line(Long id, String name, String color) {
-        validateNotNull(name, "name");
-        validateNotNull(color, "color");
+    public Line(Long id, Name name, Color color) {
         this.id = id;
         this.name = name;
         this.color = color;
     }
 
-    private void validateNotNull(String input, String param) {
-        if (input == null || input.isBlank()) {
-            throw new IllegalArgumentException(String.format("%s은 필수 입력값입니다.", param));
-        }
+    public Line(Long id, String name, String color) {
+        this(id, new Name(name), new Color(color));
     }
 
     public Line(String name, String color) {
@@ -33,10 +30,10 @@ public class Line {
     }
 
     public String getName() {
-        return name;
+        return name.getValue();
     }
 
     public String getColor() {
-        return color;
+        return color.getValue();
     }
 }
