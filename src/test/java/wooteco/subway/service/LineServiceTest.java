@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
 
@@ -34,8 +35,8 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 생성")
     void saveLine() {
-        LineResponse lineResponse = lineService.createLine(new LineRequest("2호선", "테스트색20"));
-        assertThat(lineResponse.getName()).isEqualTo("2호선");
+        Line line = lineService.createLine(new LineRequest("2호선", "테스트색20"));
+        assertThat(line.getName()).isEqualTo("2호선");
     }
 
     @Test
@@ -53,7 +54,7 @@ class LineServiceTest {
     void findLine() {
         var lineRequest = new LineRequest("1호선", "blue");
         var lineResponse = lineService.createLine(lineRequest);
-        var findLineResponse = lineService.findLineInfos(lineResponse.getId());
+        var findLineResponse = lineService.findById(lineResponse.getId());
 
         assertAll(
                 () -> assertThat(findLineResponse.getId()).isEqualTo(lineResponse.getId()),
@@ -65,7 +66,7 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 조회 실패")
     void findLineFail() {
-        assertThatThrownBy(() -> lineService.findLineInfos(-1L))
+        assertThatThrownBy(() -> lineService.findById(-1L))
                 .isInstanceOf(NoSuchElementException.class);
     }
 
@@ -97,7 +98,7 @@ class LineServiceTest {
 
         //when
         lineService.updateById(lineResponse.getId(), "2호선", "green");
-        var lineInfos = lineService.findLineInfos(lineResponse.getId());
+        var lineInfos = lineService.findById(lineResponse.getId());
 
         //then
         assertThat(lineInfos.getName()).isEqualTo("2호선");

@@ -3,7 +3,6 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.station.StationResponse;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -17,10 +16,10 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public StationResponse createStation(String name) {
+    public Station createStation(String name) {
         validateExistName(name);
-        Station newStation = stationDao.save(new Station(name));
-        return new StationResponse(newStation.getId(), newStation.getName());
+        Station station = stationDao.save(new Station(name));
+        return station;
     }
 
     public void deleteStation(Long id) {
@@ -34,7 +33,7 @@ public class StationService {
 
     private void validateExistName(String name) {
         boolean hasName = stationDao.findAll().stream()
-                .anyMatch(it -> it.getName().equals(name));
+                .anyMatch(it -> it.isName(name));
         if (hasName) {
             throw new IllegalArgumentException("[ERROR] 중복된 이름이 존재합니다.");
         }

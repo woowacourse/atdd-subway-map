@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.domain.Line;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
 import wooteco.subway.service.LineService;
@@ -22,13 +23,15 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createStation(@RequestBody LineRequest lineRequest) {
-        LineResponse lineResponse = lineService.createLine(lineRequest);
+        Line line = lineService.createLine(lineRequest);
+        LineResponse lineResponse = new LineResponse(line);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        LineResponse lineInfos = lineService.findLineInfos(id);
+        Line line = lineService.findById(id);
+        LineResponse lineInfos = new LineResponse(line);
         return new ResponseEntity<>(
                 lineInfos,
                 HttpStatus.OK

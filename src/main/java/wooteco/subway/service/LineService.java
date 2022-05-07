@@ -20,14 +20,19 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public LineResponse findLineInfos(Long id) {
+    public Line createLine(LineRequest lineRequest) {
+        validateDuplicate(lineRequest.getName(), lineRequest.getColor());
+
+        return lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+    }
+
+    public Line findById(Long id) {
         findAll().stream()
                 .filter(it -> it.getId().equals(id))
                 .findAny()
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당 노선이 존재하지 않습니다."));
 
-        Line line = lineDao.findById(id);
-        return new LineResponse(line);
+        return lineDao.findById(id);
     }
 
     @Transactional(readOnly = true)
@@ -37,12 +42,6 @@ public class LineService {
         return allLines.stream()
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
-    }
-
-    public LineResponse createLine(LineRequest lineRequest) {
-        validateDuplicate(lineRequest.getName(), lineRequest.getColor());
-        Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-        return new LineResponse(line);
     }
 
     private void validateDuplicate(String name, String color) {
@@ -58,7 +57,7 @@ public class LineService {
 
     private boolean isDuplicatedName(String name) {
         return lineDao.findAll().stream()
-                .anyMatch(it -> it.getName().equals(name));
+                .anyMatch(it -> it.isName(name));
     }
 
     private void validateDuplicateColor(String color) {
@@ -69,7 +68,7 @@ public class LineService {
 
     private boolean isDuplicatedColor(String color) {
         return lineDao.findAll().stream()
-                .anyMatch(it -> it.getColor().equals(color));
+                .anyMatch(it -> it.isColor(color));
     }
 
     public void updateById(Long id, String name, String color) {

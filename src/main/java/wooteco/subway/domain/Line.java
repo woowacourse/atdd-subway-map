@@ -19,6 +19,14 @@ public class Line {
         this.color = color;
     }
 
+    public boolean isName(String name) {
+        return this.name.equals(name);
+    }
+
+    public boolean isColor(String color) {
+        return this.color.equals(color);
+    }
+
     public Long getId() {
         return id;
     }
