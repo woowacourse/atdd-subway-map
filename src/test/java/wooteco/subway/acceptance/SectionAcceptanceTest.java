@@ -1,6 +1,5 @@
 package wooteco.subway.acceptance;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;

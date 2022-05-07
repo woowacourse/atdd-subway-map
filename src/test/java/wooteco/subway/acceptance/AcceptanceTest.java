@@ -4,13 +4,11 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Map;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
-import wooteco.subway.dto.StationRequest;
 import wooteco.subway.repository.LineRepository;
 import wooteco.subway.repository.SectionRepository;
 import wooteco.subway.repository.StationRepository;
@@ -49,7 +47,8 @@ public class AcceptanceTest {
     }
 
     protected ExtractableResponse<Response> requestCreateLine(String name, String color,
-                                                              Long upStationId, Long downStationId, int distance) {
+                                                              Long upStationId, Long downStationId,
+                                                              int distance) {
         Map<String, String> params = Map.of(
             "name", name,
             "color", color,

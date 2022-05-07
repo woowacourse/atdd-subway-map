@@ -14,7 +14,8 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.SectionEdge;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.dto.AddSectionRequest;
+import wooteco.subway.dto.DeleteSectionRequest;
 import wooteco.subway.exception.DuplicateSectionException;
 import wooteco.subway.exception.NotDeletableSectionException;
 import wooteco.subway.exception.NotFoundLineException;
@@ -47,7 +48,7 @@ public class SectionServiceTest {
         Station downStation = stationRepository.save(new Station("역삼역"));
 
         assertThatThrownBy(() -> sectionService
-            .addSection(1L, new SectionRequest(upStation.getId(), downStation.getId(), 10))
+            .addSection(1L, new AddSectionRequest(upStation.getId(), downStation.getId(), 10))
         ).isInstanceOf(NotFoundLineException.class);
     }
 
@@ -57,7 +58,7 @@ public class SectionServiceTest {
         Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
 
         assertThatThrownBy(() -> sectionService
-            .addSection(line.getId(), new SectionRequest(1L, 2L, 10))
+            .addSection(line.getId(), new AddSectionRequest(1L, 2L, 10))
         ).isInstanceOf(NotFoundStationException.class);
     }
 
@@ -72,7 +73,8 @@ public class SectionServiceTest {
             .save(new Section(line.getId(), upStation.getId(), downStation.getId(), 10));
 
         Section section2 = sectionService
-            .addSection(line.getId(), new SectionRequest(newStation.getId(), upStation.getId(), 8));
+            .addSection(line.getId(),
+                new AddSectionRequest(newStation.getId(), upStation.getId(), 8));
 
         List<Section> sections = sectionRepository.findAllByLineId(line.getId());
         assertThat(sections).containsExactlyInAnyOrder(section1, section2);
@@ -90,7 +92,7 @@ public class SectionServiceTest {
 
         Section newSection = sectionService
             .addSection(line.getId(),
-                new SectionRequest(downStation.getId(), newStation.getId(), 8));
+                new AddSectionRequest(downStation.getId(), newStation.getId(), 8));
 
         List<Section> sections = sectionRepository.findAllByLineId(line.getId());
         assertThat(sections).containsExactlyInAnyOrder(section, newSection);
@@ -106,7 +108,7 @@ public class SectionServiceTest {
             .save(new Section(line.getId(), upStation.getId(), downStation.getId(), 10));
 
         assertThatThrownBy(() -> sectionService.addSection(line.getId(),
-            new SectionRequest(upStation.getId(), downStation.getId(), 8))
+            new AddSectionRequest(upStation.getId(), downStation.getId(), 8))
         ).isInstanceOf(DuplicateSectionException.class);
 
         List<Section> sections = sectionRepository.findAllByLineId(line.getId());
@@ -124,7 +126,8 @@ public class SectionServiceTest {
             .save(new Section(line.getId(), upStation.getId(), downStation.getId(), 10));
 
         sectionService
-            .addSection(line.getId(), new SectionRequest(upStation.getId(), newStation.getId(), 8));
+            .addSection(line.getId(),
+                new AddSectionRequest(upStation.getId(), newStation.getId(), 8));
 
         List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
             .map(Section::getEdge)
@@ -146,7 +149,7 @@ public class SectionServiceTest {
 
         sectionService
             .addSection(line.getId(),
-                new SectionRequest(newStation.getId(), downStation.getId(), 8));
+                new AddSectionRequest(newStation.getId(), downStation.getId(), 8));
 
         List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
             .map(Section::getEdge)
@@ -167,8 +170,8 @@ public class SectionServiceTest {
             .save(new Section(line.getId(), upStation.getId(), downStation.getId(), 10));
 
         assertThatThrownBy(() -> sectionService.addSection(line.getId(),
-            new SectionRequest(newStation.getId(), downStation.getId(), 10)))
-        .isInstanceOf(NotSplittableSectionException.class);
+            new AddSectionRequest(newStation.getId(), downStation.getId(), 10)))
+            .isInstanceOf(NotSplittableSectionException.class);
 
         List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
             .map(Section::getEdge)
@@ -189,8 +192,8 @@ public class SectionServiceTest {
             .save(new Section(line.getId(), upStation.getId(), downStation.getId(), 10));
 
         assertThatThrownBy(() -> sectionService.addSection(line.getId(),
-            new SectionRequest(notFoundStation1.getId(), notFoundStation2.getId(), 3)))
-        .isInstanceOf(NotSplittableSectionException.class);
+            new AddSectionRequest(notFoundStation1.getId(), notFoundStation2.getId(), 3)))
+            .isInstanceOf(NotSplittableSectionException.class);
 
         List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
             .map(Section::getEdge)
@@ -204,7 +207,8 @@ public class SectionServiceTest {
     void deleteSectionToNotFoundLine() {
         Station upStation = stationRepository.save(new Station("강남역"));
 
-        assertThatThrownBy(() -> sectionService.deleteSection(1L, upStation.getId())
+        assertThatThrownBy(
+            () -> sectionService.deleteSection(1L, new DeleteSectionRequest(upStation.getId()))
         ).isInstanceOf(NotFoundLineException.class);
     }
 
@@ -213,7 +217,8 @@ public class SectionServiceTest {
     void deleteSectionWithNotFoundUpAndDownStation() {
         Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
 
-        assertThatThrownBy(() -> sectionService.deleteSection(line.getId(), 1L)
+        assertThatThrownBy(
+            () -> sectionService.deleteSection(line.getId(), new DeleteSectionRequest(1L))
         ).isInstanceOf(NotFoundStationException.class);
     }
 
@@ -227,7 +232,8 @@ public class SectionServiceTest {
         sectionRepository
             .save(new Section(line.getId(), upStation.getId(), downStation.getId(), 10));
 
-        assertThatThrownBy(() -> sectionService.deleteSection(line.getId(), notFoundStation.getId()))
+        assertThatThrownBy(() -> sectionService
+            .deleteSection(line.getId(), new DeleteSectionRequest(notFoundStation.getId())))
             .isInstanceOf(NotDeletableSectionException.class);
 
         List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
@@ -246,7 +252,8 @@ public class SectionServiceTest {
         sectionRepository
             .save(new Section(line.getId(), upStation.getId(), downStation.getId(), 10));
 
-        assertThatThrownBy(() -> sectionService.deleteSection(line.getId(), upStation.getId()))
+        assertThatThrownBy(() -> sectionService
+            .deleteSection(line.getId(), new DeleteSectionRequest(upStation.getId())))
             .isInstanceOf(NotDeletableSectionException.class);
 
         List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
@@ -268,7 +275,7 @@ public class SectionServiceTest {
         sectionRepository
             .save(new Section(line.getId(), station2.getId(), station3.getId(), 5));
 
-        sectionService.deleteSection(line.getId(), station1.getId());
+        sectionService.deleteSection(line.getId(), new DeleteSectionRequest(station1.getId()));
 
         List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
             .map(Section::getEdge)
@@ -289,7 +296,7 @@ public class SectionServiceTest {
         sectionRepository
             .save(new Section(line.getId(), station2.getId(), station3.getId(), 5));
 
-        sectionService.deleteSection(line.getId(), station3.getId());
+        sectionService.deleteSection(line.getId(), new DeleteSectionRequest(station3.getId()));
 
         List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
             .map(Section::getEdge)
@@ -310,7 +317,7 @@ public class SectionServiceTest {
         sectionRepository
             .save(new Section(line.getId(), station2.getId(), station3.getId(), 5));
 
-        sectionService.deleteSection(line.getId(), station2.getId());
+        sectionService.deleteSection(line.getId(), new DeleteSectionRequest(station2.getId()));
 
         List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
             .map(Section::getEdge)

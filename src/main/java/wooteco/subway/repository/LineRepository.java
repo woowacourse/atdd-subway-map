@@ -1,7 +1,6 @@
 package wooteco.subway.repository;
 
 import java.sql.PreparedStatement;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;

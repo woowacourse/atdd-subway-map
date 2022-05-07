@@ -5,19 +5,20 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.application.LineService;
 import wooteco.subway.application.SectionService;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.AddSectionRequest;
+import wooteco.subway.dto.DeleteSectionRequest;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.SectionRequest;
 
 @RestController
 @RequestMapping("/lines")
@@ -66,14 +67,15 @@ public class LineController {
 
     @PostMapping("/{id}/sections")
     public ResponseEntity<Void> addSection(@PathVariable Long id,
-                                           @RequestBody SectionRequest request) {
+                                           @RequestBody AddSectionRequest request) {
         sectionService.addSection(id, request);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}/sections")
-    public ResponseEntity<Void> deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
-        sectionService.deleteSection(id, stationId);
+    public ResponseEntity<Void> deleteSection(@PathVariable Long id,
+                                              @ModelAttribute DeleteSectionRequest request) {
+        sectionService.deleteSection(id, request);
         return ResponseEntity.ok().build();
     }
 }

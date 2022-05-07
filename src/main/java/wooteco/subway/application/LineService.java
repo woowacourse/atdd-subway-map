@@ -41,7 +41,8 @@ public class LineService {
         Station upStation = stationService.findById(request.getUpStationId());
         Station downStation = stationService.findById(request.getDownStationId());
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        sectionRepository.save(new Section(line.getId(), upStation.getId(), downStation.getId(), request.getDistance()));
+        sectionRepository.save(new Section(line.getId(), upStation.getId(), downStation.getId(),
+            request.getDistance()));
         return line;
     }
 

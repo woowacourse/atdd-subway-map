@@ -105,7 +105,8 @@ public class SectionRepository {
 
     public int findCountByLineId(Long lineId) {
         return jdbcTemplate
-            .queryForObject("SELECT COUNT(*) FROM SECTION WHERE line_id = ?", Integer.class, lineId);
+            .queryForObject("SELECT COUNT(*) FROM SECTION WHERE line_id = ?", Integer.class,
+                lineId);
     }
 
     public void deleteByLineIdAndStationId(Long lineId, Long stationId) {
