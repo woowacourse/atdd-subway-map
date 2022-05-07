@@ -128,7 +128,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         }
     }
 
-
     @DisplayName("PUT /lines/:id - 지하철 노선 수정 테스트")
     @Nested
     class UpdateLineTest extends AcceptanceTest {
