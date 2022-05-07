@@ -26,13 +26,13 @@ public class LineService {
 
         final Line savedLine = lineDao.save(line);
 
-        return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor());
+        return new LineResponse(savedLine);
     }
 
     public LineResponse findById(Long id) {
         final Line line = lineDao.findById(id);
 
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        return new LineResponse(line);
     }
 
     public List<LineResponse> findAll() {
