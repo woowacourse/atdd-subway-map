@@ -1,5 +1,6 @@
 package wooteco.subway.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class LineResponse {
     }
 
     public LineResponse(Long id, String name, String color) {
-        this(id, name, color, new ArrayList<>());
+        this(id, name, color, List.of());
     }
 
     public Long getId() {
