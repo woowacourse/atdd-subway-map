@@ -23,14 +23,14 @@ public class StationService {
         final Station station = new Station(request.getName());
         final Station savedStation = stationDao.insert(station)
                 .orElseThrow(() -> new IllegalArgumentException("중복된 이름의 역은 저장할 수 없습니다."));
-        return new StationResponse(savedStation.getId(), savedStation.getName());
+        return StationResponse.from(savedStation);
     }
 
     @Transactional(readOnly = true)
     public List<StationResponse> findAll() {
         return stationDao.findAll()
                 .stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .map(StationResponse::from)
                 .collect(Collectors.toList());
     }
 
