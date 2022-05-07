@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import wooteco.subway.ui.dto.ExceptionResponse;
 import wooteco.subway.ui.dto.StationRequest;
 import wooteco.subway.ui.dto.StationResponse;
 
@@ -47,12 +48,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // when
         final ExtractableResponse<Response> duplicateCreateResponse = post(STATIONS_URI, toJson(GANGNAM_REQUEST));
+        final ExceptionResponse exceptionResponse = duplicateCreateResponse.as(ExceptionResponse.class);
+        final String expectedMessage = "이미 존재하는 지하철역입니다. : " + GANGNAM_REQUEST.getName();
 
         // then
         assertAll(
                 () -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(duplicateCreateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
-
+                () -> assertThat(duplicateCreateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(exceptionResponse.getMessage()).isEqualTo(expectedMessage)
         );
     }
 
