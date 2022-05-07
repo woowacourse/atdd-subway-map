@@ -78,13 +78,16 @@ public class SectionRepository {
         }
     }
 
+    public int findCountByLineId(Long lineId) {
+        return jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM SECTION WHERE line_id = ?", Integer.class, lineId);
+    }
+
     public boolean existByLineIdAndStationId(Long lineId, Long stationId) {
         String sql = "SELECT EXISTS "
-            + "(SELECT id FROM SECTION "
-            + "WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?) LIMIT 1 ) "
-            + "AS `exists`";
-        return jdbcTemplate.queryForObject(sql, Boolean.class,
-            lineId, stationId, stationId);
+            + "(SELECT id FROM SECTION WHERE line_id = ? AND "
+            + "(up_station_id = ? OR down_station_id = ?))";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId, stationId);
     }
 
     public Section update(Section section) {
@@ -101,18 +104,6 @@ public class SectionRepository {
 
     public void deleteByLineId(Long lineId) {
         jdbcTemplate.update("DELETE FROM SECTION WHERE line_id = ?", lineId);
-    }
-
-    public int findCountByLineId(Long lineId) {
-        return jdbcTemplate
-            .queryForObject("SELECT COUNT(*) FROM SECTION WHERE line_id = ?", Integer.class,
-                lineId);
-    }
-
-    public void deleteByLineIdAndStationId(Long lineId, Long stationId) {
-        jdbcTemplate.update(
-            "DELETE FROM SECTION WHERE line_id =? AND (up_station_id = ? OR down_station_id = ?)",
-            lineId, stationId, stationId);
     }
 
     public void deleteById(Long id) {

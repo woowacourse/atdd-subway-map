@@ -52,13 +52,13 @@ public class LineRepository {
     }
 
     public boolean existById(Long id) {
-        return findById(id).isPresent();
+        return jdbcTemplate.queryForObject(
+            "SELECT EXISTS (SELECT id FROM LINE WHERE id = ?)", Boolean.class, id);
     }
 
     public boolean existByName(String name) {
         return jdbcTemplate.queryForObject(
-            "SELECT EXISTS (SELECT id FROM LINE WHERE name = ? LIMIT 1 ) AS `exists`",
-            Boolean.class, name);
+            "SELECT EXISTS (SELECT id FROM LINE WHERE name = ?)", Boolean.class, name);
     }
 
     public Line update(Line line) {

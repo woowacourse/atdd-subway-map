@@ -50,13 +50,13 @@ public class StationRepository {
     }
 
     public boolean existById(Long id) {
-        return findById(id).isPresent();
+        return jdbcTemplate.queryForObject(
+            "SELECT EXISTS (SELECT id FROM STATION WHERE id = ?)", Boolean.class, id);
     }
 
     public boolean existByName(String name) {
         return jdbcTemplate.queryForObject(
-            "SELECT EXISTS (SELECT id FROM STATION WHERE name = ? LIMIT 1 ) AS `exists`",
-            Boolean.class, name);
+            "SELECT EXISTS (SELECT id FROM STATION WHERE name = ?)", Boolean.class, name);
     }
 
     public void deleteById(Long id) {
