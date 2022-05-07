@@ -14,10 +14,13 @@ public class FakeLineDao implements LineDao {
 
     public Line save(Line line) {
         boolean existName = lines.stream()
-                .anyMatch(line::isSameName);
+                .map(Line::getName)
+                .anyMatch(line::equals);
+
         if (existName) {
             throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
         }
+
         Line persistLine = createNewObject(line);
         lines.add(persistLine);
         return persistLine;
