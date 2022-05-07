@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
+import wooteco.subway.dto.station.StationRequest;
+import wooteco.subway.dto.station.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -37,6 +39,41 @@ public class LineAcceptanceTest extends AcceptanceTest {
             assertThat(actualResponse.getId()).isNotNull();
             assertThat(actualResponse.getName()).isEqualTo(lineOneRequest.getName());
             assertThat(actualResponse.getColor()).isEqualTo(lineOneRequest.getColor());
+        });
+    }
+
+    @Test
+    @DisplayName("지하철 노선과 구간을 생성한다.")
+    void CreateLine_WithSection_Success() {
+        // when
+        final String upStationName = "선릉역";
+        final String downStationName = "삼성역";
+
+        final long upStationId = createAndGetStationId(new StationRequest(upStationName));
+        final long downStationId = createAndGetStationId(new StationRequest(downStationName));
+
+        final LineRequest request = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 10);
+        final ExtractableResponse<Response> actual = createLine(request);
+
+        final long lineId = extractId(actual);
+
+        // then
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(actual.header(LOCATION)).isEqualTo(LINE_PATH_PREFIX + SLASH + lineId);
+
+        final LineResponse actualResponse = actual.body().as(LineResponse.class);
+        final List<StationResponse> stations = actualResponse.getStations();
+        final StationResponse upStationResponse = stations.get(0);
+        final StationResponse downStationResponse = stations.get(1);
+
+        assertAll(() -> {
+            assertThat(actualResponse.getId()).isNotNull();
+            assertThat(actualResponse.getName()).isEqualTo(lineOneRequest.getName());
+            assertThat(actualResponse.getColor()).isEqualTo(lineOneRequest.getColor());
+
+            assertThat(stations).hasSize(2);
+            assertThat(upStationResponse.getName()).isEqualTo(upStationName);
+            assertThat(downStationResponse.getName()).isEqualTo(downStationName);
         });
     }
 

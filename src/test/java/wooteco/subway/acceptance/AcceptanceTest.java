@@ -38,7 +38,7 @@ public class AcceptanceTest {
         jdbcTemplate.execute("DELETE FROM line;");
     }
 
-    protected long createAndGetLineId(StationRequest request) {
+    protected long createAndGetStationId(StationRequest request) {
         final ExtractableResponse<Response> response = createStation(request);
         return extractId(response);
     }
