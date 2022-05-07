@@ -82,13 +82,13 @@ public class SubwayService {
     public List<LineResponse> getLines() {
         return lineDao.findAll()
                 .stream()
-                .map(LineResponse::new)
+                .map(this::makeLineResponse)
                 .collect(Collectors.toList());
     }
 
     public LineResponse getLine(Long id) {
         Line line = lineDao.findById(id);
-        return new LineResponse(line);
+        return makeLineResponse(line);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
