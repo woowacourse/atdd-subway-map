@@ -6,9 +6,6 @@ public class Station {
     private Long id;
     private String name;
 
-    public Station() {
-    }
-
     public Station(String name) {
         this(null, name);
     }
