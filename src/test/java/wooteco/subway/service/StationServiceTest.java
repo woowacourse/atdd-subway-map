@@ -25,8 +25,20 @@ class StationServiceTest {
     }
 
     @Test
-    @DisplayName("지하철역 추가, 조회, 삭제 테스트")
-    void StationCRDTest() {
+    @DisplayName("지하철역 추가 테스트")
+    void StationCreateTest() {
+        stationService.save(new StationRequest("station1"));
+        stationService.save(new StationRequest("station2"));
+        stationService.save(new StationRequest("station3"));
+
+        assertThat(stationService.findAll()).hasSize(3)
+            .extracting("name")
+            .containsExactly("station1", "station2", "station3");
+    }
+
+    @Test
+    @DisplayName("지하철역 조회 테스트")
+    void StationReadTest() {
         stationService.save(new StationRequest("station1"));
         stationService.save(new StationRequest("station2"));
         stationService.save(new StationRequest("station3"));
@@ -36,12 +48,18 @@ class StationServiceTest {
         assertThat(stations).hasSize(3)
             .extracting("name")
             .containsExactly("station1", "station2", "station3");
+    }
 
-        stationService.delete(stations.get(0).getId());
-        stationService.delete(stations.get(1).getId());
-        stationService.delete(stations.get(2).getId());
+    @Test
+    @DisplayName("지하철역 삭제 테스트")
+    void StationDeleteTest() {
+        stationService.save(new StationRequest("station1"));
+        Long deleteId = stationService.save(new StationRequest("station2")).getId();
+        stationService.save(new StationRequest("station3"));
 
-        assertThat(stationService.findAll()).hasSize(0);
+        stationService.delete(deleteId);
+
+        assertThat(stationService.findAll()).hasSize(2);
     }
 
     @Test

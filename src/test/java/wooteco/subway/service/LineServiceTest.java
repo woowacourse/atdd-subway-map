@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +27,45 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("지하철 노선 추가, 조회, 삭제 테스트")
-    void LineCRDTest() {
-        lineService.save(new LineRequest("line1", "red", null, null, 0));
+    @DisplayName("지하철 노선 추가 테스트")
+    void LineCreateTest() {
+        LineResponse lineResponse = lineService.save(
+            new LineRequest("신분당선", "red", null, null, 0));
+
+        assertThat(lineService.findById(lineResponse.getId()))
+            .extracting("name", "color")
+            .containsExactly("신분당선", "red");
+    }
+
+    @Test
+    @DisplayName("지하철 노선 단건 조회 테스트")
+    void LineReadOneTest() {
+        LineResponse lineResponse = lineService.save(
+            new LineRequest("신분당선", "red", null, null, 0));
+
+        LineResponse result = lineService.findById(lineResponse.getId());
+
+        assertThat(result)
+            .extracting("name", "color")
+            .containsExactly("신분당선", "red");
+    }
+
+    @Test
+    @DisplayName("지하철 노선 삭제 테스트")
+    void LineDeleteTest() {
+        Long deleteId = lineService.save(
+            new LineRequest("1호선", "blue", null, null, 0)).getId();
+
+        lineService.delete(deleteId);
+
+        assertThatThrownBy(() -> lineService.findById(deleteId))
+            .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    @DisplayName("지하철 노선 전체 조회 테스트")
+    void findAllTest() {
+        lineService.save(new LineRequest("line1", "green", null, null, 0));
         lineService.save(new LineRequest("line2", "yellow", null, null, 0));
         lineService.save(new LineRequest("line3", "blue", null, null, 0));
 
@@ -36,14 +73,10 @@ class LineServiceTest {
 
         assertThat(lines).hasSize(3)
             .extracting("name", "color")
-            .containsExactly(tuple("line1", "red"), tuple("line2", "yellow"),
+            .containsExactly(
+                tuple("line1", "green"),
+                tuple("line2", "yellow"),
                 tuple("line3", "blue"));
-
-        lineService.delete(lines.get(0).getId());
-        lineService.delete(lines.get(1).getId());
-        lineService.delete(lines.get(2).getId());
-
-        assertThat(lineService.findAll()).hasSize(0);
     }
 
     @Test

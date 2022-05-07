@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
@@ -23,18 +22,34 @@ class JdbcStationDaoTest {
     }
 
     @Test
-    @DisplayName("지하철 역을 생성, 조회, 삭제한다.")
-    void StationCRDTest() {
+    @DisplayName("지하철 역을 생성한다.")
+    void StationCreateTest() {
         Long stationId = stationDao.save(new Station("선릉역"));
 
-        List<Station> stations1 = stationDao.findAll();
-        assertThat(stations1).hasSize(1)
+        assertThat(stationDao.findAll()).hasSize(1)
             .extracting("name")
             .containsExactly("선릉역");
+    }
+
+    @Test
+    @DisplayName("지하철 역을 조회한다.")
+    void StationReadTest() {
+        Long stationId = stationDao.save(new Station("잠실역"));
+
+        List<Station> stations1 = stationDao.findAll();
+
+        assertThat(stations1).hasSize(1)
+            .extracting("name")
+            .containsExactly("잠실역");
+    }
+
+    @Test
+    @DisplayName("지하철 역을 삭제한다.")
+    void StationDeleteTest() {
+        Long stationId = stationDao.save(new Station("선릉역"));
 
         stationDao.deleteById(stationId);
 
-        List<Station> stations2 = stationDao.findAll();
-        assertThat(stations2).hasSize(0);
+        assertThat(stationDao.findAll()).isEmpty();
     }
 }

@@ -5,14 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Line;
 
 @JdbcTest
@@ -26,18 +25,36 @@ class JdbcLineDaoTest {
     }
 
     @Test
-    @DisplayName("지하철 노선을 생성, 조회, 삭제한다.")
-    void LineCRDTest() {
+    @DisplayName("지하철 노선을 생성한다.")
+    void LineCreateTest() {
         Long lineId = lineDao.save(new Line("신분당선", "red"));
+
+        assertThat(lineDao.findById(lineId))
+            .extracting("name", "color")
+            .containsExactly("신분당선", "red");
+    }
+
+    @Test
+    @DisplayName("지하철 노선을 단건 조회한다.")
+    void LineReadTest() {
+        Long lineId = lineDao.save(new Line("1호선", "dark-blue"));
+
         Line line = lineDao.findById(lineId);
 
         assertThat(line)
             .extracting("name", "color")
-            .containsExactly("신분당선", "red");
+            .containsExactly("1호선", "dark-blue");
+    }
+
+    @Test
+    @DisplayName("지하철 노선을 삭제한다.")
+    void LineDeleteTest() {
+        Long lineId = lineDao.save(new Line("신분당선", "red"));
 
         lineDao.deleteById(lineId);
+
         assertThatThrownBy(() -> lineDao.findById(lineId))
-            .isInstanceOf(DataAccessException.class);
+            .isInstanceOf(NoSuchElementException.class);
     }
 
     @Test
@@ -54,7 +71,7 @@ class JdbcLineDaoTest {
     }
 
     @Test
-    @DisplayName("지하철 노선을 업데이트 한다.")
+    @DisplayName("지하철 노선을 업데이트한다.")
     void update() {
         Long lineId = lineDao.save(new Line("신분당선", "red"));
 
