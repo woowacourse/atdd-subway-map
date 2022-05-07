@@ -104,4 +104,18 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(lineId, section.lineId) && Objects.equals(upStationId, section.upStationId)
+                && Objects.equals(downStationId, section.downStationId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(lineId, upStationId, downStationId);
+    }
 }
