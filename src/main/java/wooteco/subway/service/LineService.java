@@ -14,6 +14,7 @@ import wooteco.subway.exception.DataNotExistException;
 public class LineService {
 
     private static final int ROW_SIZE_WHEN_NOT_DELETED = 0;
+
     private final LineDao lineDao;
 
     public LineService(LineDao lineDao) {
@@ -33,8 +34,8 @@ public class LineService {
     }
 
     public Line findById(Long id) {
-        Optional<Line> foundLine = lineDao.findById(id);
-        return foundLine.orElseThrow(() -> new DataNotExistException("존재하지 않는 노선입니다."));
+        return lineDao.findById(id)
+            .orElseThrow(() -> new DataNotExistException("존재하지 않는 노선입니다."));
     }
 
     public void update(Line line) {
