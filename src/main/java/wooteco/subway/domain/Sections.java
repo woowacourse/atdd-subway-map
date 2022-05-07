@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public class Sections {
 
@@ -80,6 +81,11 @@ public class Sections {
         if (existUpStationToDownStation(section)) {
             throw new IllegalStateException("이미 상행에서 하행으로 갈 수 있는 구간이 존재합니다.");
         }
+        if (isTopStation(section)) {
+            sections.add(section);
+            return;
+        }
+        throw new RuntimeException();
     }
 
     private boolean hasNotUpStationOrDownStation(final Section section) {
@@ -99,5 +105,26 @@ public class Sections {
     private boolean hasDownStation(final Section section) {
         return sections.stream()
                 .anyMatch(section::equalsDownStation);
+    }
+
+    private boolean isTopStation(final Section section) {
+        return calculateFirstSection(section).equals(section);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Sections sections1 = (Sections) o;
+        return Objects.equals(sections, sections1.sections);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sections);
     }
 }
