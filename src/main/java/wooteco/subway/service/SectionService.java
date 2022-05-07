@@ -40,4 +40,15 @@ public class SectionService {
         Station downStation = stationDao.findById(sectionSaveRequest.getDownStationId());
         return new Section(line.getId(), upStation, downStation, sectionSaveRequest.getDistance());
     }
+
+    @Transactional
+    public void delete(final long lineId, final long stationId) {
+        Station station = stationDao.findById(stationId);
+        Line line = lineDao.findById(lineId);
+        Sections sections = new Sections(sectionDao.findAllByLineId(line.getId()));
+
+        Section section = sections.removeSection(station);
+        sectionDao.delete(section.getId());
+        sectionDao.updateSections(sections.getSections());
+    }
 }
