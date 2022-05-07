@@ -2,9 +2,7 @@ package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -14,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.domain.Station;
@@ -22,12 +21,8 @@ import wooteco.subway.dto.StationResponse;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    public static ObjectMapper om = new ObjectMapper();
-
-    static {
-        om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        om.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-    }
+    @Autowired
+    private ObjectMapper om;
 
     @DisplayName("지하철역을 생성한다.")
     @Test
