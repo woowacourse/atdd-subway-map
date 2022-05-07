@@ -142,6 +142,20 @@ class LineControllerTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("지하철 노선을 수정할 때 id에 맞는 노선이 없으면 404 상태코드로 응답한다.")
+    @Test
+    void updateLineResponse404() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(new Line("다른분당선", "blue"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + 1)
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void deleteLine() {
