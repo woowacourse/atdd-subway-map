@@ -3,6 +3,7 @@ package wooteco.subway.dto;
 import wooteco.subway.domain.Station;
 
 public class StationResponse {
+
     private Long id;
     private String name;
 

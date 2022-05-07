@@ -4,7 +4,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.exception.ClientRuntimeException;
-import wooteco.subway.exception.DataNotFoundException;
 
 @RestControllerAdvice
 public class ControllerAdvice {

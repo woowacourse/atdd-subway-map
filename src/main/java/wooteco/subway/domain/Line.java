@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import wooteco.subway.exception.Validator;
 
 public class Line {
+
     private Long id;
     private String name;
     private String color;
