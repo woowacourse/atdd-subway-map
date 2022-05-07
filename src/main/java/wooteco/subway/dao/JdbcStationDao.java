@@ -52,7 +52,7 @@ public class JdbcStationDao {
     }
 
     public boolean existByName(String name) {
-        String sql = "select count(*) from station where name = (?)";
+        String sql = "select exists( select * from station where name = (?))";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, name);
         return count != 0;
     }
