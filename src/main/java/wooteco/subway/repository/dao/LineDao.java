@@ -12,6 +12,8 @@ public interface LineDao {
 
     Optional<LineEntity> findByName(final String name);
 
+    Boolean existByNameExcludeId(final Long id, final String name);
+
     Optional<LineEntity> findById(final Long id);
 
     void deleteById(final Long id);

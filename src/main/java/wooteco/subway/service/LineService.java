@@ -29,6 +29,12 @@ public class LineService {
         return new Line(savedLineEntity.getId(), savedLineEntity.getName(), savedLineEntity.getColor());
     }
 
+    private void validateDuplicateName(final String name) {
+        if (lineDao.findByName(name).isPresent()) {
+            throw new DuplicateNameException("[ERROR] 이미 존재하는 노선 이름입니다.");
+        }
+    }
+
     @Transactional(isolation = Isolation.READ_COMMITTED, readOnly = true)
     public Line searchById(final Long id) {
         LineEntity lineEntity = lineDao.findById(id)
@@ -49,7 +55,7 @@ public class LineService {
         final Optional<LineEntity> lineEntityToBeModified = lineDao.findById(id);
         lineEntityToBeModified.ifPresentOrElse(
                 lineEntity -> {
-                    validateDuplicateName(name);
+                    validateDuplicateNameForUpdate(id, name);
                     Line newLine = new Line(id, name, color);
                     lineDao.update(new LineEntity(newLine));
                 },
@@ -59,8 +65,8 @@ public class LineService {
         );
     }
 
-    private void validateDuplicateName(final String name) {
-        if (lineDao.findByName(name).isPresent()) {
+    private void validateDuplicateNameForUpdate(final Long id, final String name) {
+        if (lineDao.existByNameExcludeId(id, name)) {
             throw new DuplicateNameException("[ERROR] 이미 존재하는 노선 이름입니다.");
         }
     }

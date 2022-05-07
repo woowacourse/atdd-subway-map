@@ -94,4 +94,17 @@ public class JdbcLineDao implements LineDao {
         final SqlParameterSource source = new BeanPropertySqlParameterSource(newLineEntity);
         jdbcTemplate.update(sql, source);
     }
+
+    @Override
+    public Boolean existByNameExcludeId(final Long id, final String name) {
+        final String sql = "SELECT COUNT(id) AS same_name_count FROM LINE WHERE name = :name AND id != :id";
+        final Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("id", id);
+        final SqlParameterSource source = new MapSqlParameterSource(params);
+
+        final Integer count = jdbcTemplate.queryForObject(sql, source,
+                (resultSet, rowNumber) -> resultSet.getInt("same_name_count"));
+        return count != 0;
+    }
 }
