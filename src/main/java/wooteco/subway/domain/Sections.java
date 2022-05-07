@@ -7,6 +7,8 @@ import java.util.Objects;
 
 public class Sections {
 
+    private static final int LIMIT_REMOVE_SIZE = 1;
+
     private final List<Section> sections;
 
     public Sections(final List<Section> sections) {
@@ -170,6 +172,9 @@ public class Sections {
     public void removeSection(final Section section) {
         if (!sections.contains(section)) {
             throw new IllegalStateException("해당 구간이 포함되어있지 않습니다.");
+        }
+        if (sections.size() == LIMIT_REMOVE_SIZE) {
+            throw new IllegalStateException("구간이 하나뿐이어서 제거할 수 없습니다.");
         }
     }
 

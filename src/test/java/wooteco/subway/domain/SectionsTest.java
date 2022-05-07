@@ -197,4 +197,19 @@ class SectionsTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("해당 구간이 포함되어있지 않습니다.");
     }
+
+    @Test
+    @DisplayName("구간 제거 시 Section이 하나뿐이면 예외 발생")
+    void removeSectionExceptionByLimitSize() {
+        // given
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Section section = new Section(1L, 1L, station1, station2, 2);
+        Sections sections = new Sections(List.of(section));
+
+        // when & then
+        assertThatThrownBy(() -> sections.removeSection(section))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("구간이 하나뿐이어서 제거할 수 없습니다.");
+    }
 }
