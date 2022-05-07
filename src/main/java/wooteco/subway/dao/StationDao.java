@@ -49,4 +49,9 @@ public class StationDao {
         String sql = "select id, name from station where id = ?";
         return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
     }
+
+    public boolean isValidId(Long id) {
+        String sql = "select count(*) from station where id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, id) > 0;
+    }
 }

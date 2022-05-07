@@ -49,7 +49,7 @@ class StationDaoTest {
     void deleteById_exist() {
         Station station = stationDao.save(new Station("testName"));
         stationDao.deleteById(station.getId());
-        assertThat(stationDao.findAll().isEmpty()).isTrue();
+        assertThat(stationDao.findAll().size()).isEqualTo(0);
     }
 
     @DisplayName("존재하는 역 id가 없으면 삭제되지 않는지 테스트")
@@ -57,10 +57,10 @@ class StationDaoTest {
     void deleteById_not_exist() {
         Station station = stationDao.save(new Station("testName"));
         stationDao.deleteById(-1L);
-        assertThat(stationDao.findAll().isEmpty()).isFalse();
+        assertThat(stationDao.findAll().size()).isEqualTo(1);
     }
 
-    @DisplayName("존재하는 역 id가 있으면 Optional이 비지 않았는지 테스트")
+    @DisplayName("존재하는 역 id가 있으면 null이 아닌지 테스트")
     @Test
     void findById_exist() {
         Station station = stationDao.save(new Station("testName"));
@@ -68,7 +68,7 @@ class StationDaoTest {
         assertThat(result).isNotNull();
     }
 
-    @DisplayName("존재하는 역 id가 없으면 Optional이 비었는지 테스트")
+    @DisplayName("존재하는 역 id가 없으면 예외가 발생하는지 테스트")
     @Test
     void findById_not_exist() {
         Station station = stationDao.save(new Station("testName"));

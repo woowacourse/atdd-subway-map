@@ -59,4 +59,9 @@ public class LineDao {
         String sql = "update line set name = (?) where id = (?)";
         jdbcTemplate.update(sql, newName, id);
     }
+
+    public boolean isValidId(Long id) {
+        String sql = "select count(*) from line where id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, id) > 0;
+    }
 }

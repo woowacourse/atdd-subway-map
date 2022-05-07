@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.AfterEach;
@@ -43,7 +44,7 @@ class LineDaoTest {
     void deleteById_exist() {
         Line line = lineDao.save(new Line("testName", "black"));
         lineDao.deleteById(line.getId());
-        assertThat(lineDao.findAll().isEmpty()).isTrue();
+        assertThat(lineDao.findAll().size()).isEqualTo(0);
     }
 
     @DisplayName("존재하는 노선 id가 없으면 삭제되지 않는지 테스트")
@@ -51,10 +52,10 @@ class LineDaoTest {
     void deleteById_not_exist() {
         Line line = lineDao.save(new Line("testName", "black"));
         lineDao.deleteById(-1L);
-        assertThat(lineDao.findAll().isEmpty()).isFalse();
+        assertThat(lineDao.findAll().size()).isEqualTo(1);
     }
 
-    @DisplayName("존재하는 노선 id가 있으면 Optional이 비지 않았는지 테스트")
+    @DisplayName("존재하는 노선 id가 있으면 null이 아닌지 테스트")
     @Test
     void findById_exist() {
         Line line = lineDao.save(new Line("testName", "black"));
@@ -62,18 +63,12 @@ class LineDaoTest {
         assertThat(result).isNotNull();
     }
 
-    @DisplayName("존재하는 노선 id가 없으면 Optional이 비었는지 테스트")
+    @DisplayName("존재하는 노선 id가 없으면 예외가 발생하는지 테스트")
     @Test
     void findById_not_exist() {
         Line line = lineDao.save(new Line("testName", "black"));
         assertThatThrownBy(() -> lineDao.findById(-1L))
                 .isInstanceOf(EmptyResultDataAccessException.class);
-    }
-
-    @DisplayName("id가 없는 노선의 이름을 바꿀때 예외가 발생하는지 테스트")
-    @Test
-    void changeLineName_no_id() {
-        lineDao.changeLineName(-1L, "testName2");
     }
 
     @DisplayName("바뀐 이름이 중복될 때 예외가 발생하는지 테스트")
