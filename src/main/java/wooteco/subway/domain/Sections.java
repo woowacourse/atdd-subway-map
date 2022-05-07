@@ -167,6 +167,10 @@ public class Sections {
                 .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
     }
 
+    public List<Section> getSections() {
+        return List.copyOf(sections);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
