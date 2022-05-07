@@ -5,28 +5,58 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
 import wooteco.subway.exception.line.DuplicateLineException;
 import wooteco.subway.exception.line.NoSuchLineException;
+import wooteco.subway.exception.station.NoSuchStationException;
 
 @Service
 @Transactional
 public class LineService {
 
     private final LineDao lineDao;
+    private final StationDao stationDao;
+    private final SectionDao sectionDao;
 
-    public LineService(final LineDao lineDao) {
+    public LineService(final LineDao lineDao, final StationDao stationDao, final SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
     }
 
     public LineResponse create(final LineRequest request) {
         final Line line = new Line(request.getName(), request.getColor());
-        final Line savedStation = lineDao.insert(line)
+        final Line savedLine = lineDao.insert(line)
                 .orElseThrow(DuplicateLineException::new);
-        return LineResponse.from(savedStation);
+        return LineResponse.from(savedLine);
     }
+
+    public LineResponse create2(final LineRequest request) {
+        final Line line = new Line(request.getName(), request.getColor());
+        final Line savedLine = lineDao.insert(line)
+                .orElseThrow(DuplicateLineException::new);
+
+        final Station upStation = stationDao.findById(request.getUpStationId())
+                .orElseThrow(NoSuchStationException::new);
+        final Station downStation = stationDao.findById(request.getDownStationId())
+                .orElseThrow(NoSuchStationException::new);
+
+        final Section section = new Section(
+                savedLine.getId(),
+                upStation.getId(),
+                downStation.getId(),
+                request.getDistance());
+        sectionDao.insert(section);
+
+        return LineResponse.of(savedLine, List.of(upStation, downStation));
+    }
+
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAll() {

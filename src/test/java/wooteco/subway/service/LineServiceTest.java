@@ -8,12 +8,17 @@ import static org.mockito.BDDMockito.given;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
+import wooteco.subway.dto.station.StationResponse;
 import wooteco.subway.exception.line.DuplicateLineException;
 import wooteco.subway.exception.line.NoSuchLineException;
 
@@ -44,6 +49,46 @@ class LineServiceTest extends ServiceTest {
     }
 
     @Test
+    @DisplayName("노선과 구간을 생성한다.")
+    void Create_WithSection_Success() {
+        // given
+        final String name = "7호선";
+        final String color = "bg-red-600";
+
+        final Station upStation = new Station(1L, "선릉역");
+        final Station downStation = new Station(2L, "삼성역");
+
+        final LineRequest request = new LineRequest(name, color, upStation.getId(), downStation.getId(), 10);
+        
+        final Line expected = new Line(1L, name, color);
+        given(lineDao.insert(any(Line.class)))
+                .willReturn(Optional.of(expected));
+
+        given(stationDao.findById(any(Long.class)))
+                .willReturn(Optional.of(upStation))
+                .willReturn(Optional.of(downStation));
+
+        given(sectionDao.insert(any(Section.class)))
+                .willReturn(any(Long.class));
+
+        // when
+        final LineResponse actual = lineService.create2(request);
+
+        // then
+        assertThat(actual.getName()).isEqualTo(expected.getName());
+        assertThat(actual.getColor()).isEqualTo(expected.getColor());
+
+        final List<String> expectedStationNames = Stream.of(upStation, downStation)
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        final List<String> actualStationNames = actual.getStations()
+                .stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertThat(actualStationNames).isEqualTo(expectedStationNames);
+    }
+
+    @Test
     @DisplayName("저장하려는 노선의 이름이 중복되면 예외를 던진다.")
     void Create_DuplicateName_ExceptionThrown() {
         // given
@@ -53,7 +98,7 @@ class LineServiceTest extends ServiceTest {
                 .willReturn(Optional.empty());
 
         // then
-        assertThatThrownBy(() -> lineService.create(request))
+        assertThatThrownBy(() -> lineService.create2(request))
                 .isInstanceOf(DuplicateLineException.class);
     }
 

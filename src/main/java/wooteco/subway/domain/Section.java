@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
+
 public class Section {
 
     private static final int MIN_DISTANCE = 1;
@@ -12,9 +14,9 @@ public class Section {
 
     public Section(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
         validate(upStationId, downStationId, distance);
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.lineId = Objects.requireNonNull(lineId);
+        this.upStationId = Objects.requireNonNull(upStationId);
+        this.downStationId = Objects.requireNonNull(downStationId);
         this.distance = distance;
     }
 
