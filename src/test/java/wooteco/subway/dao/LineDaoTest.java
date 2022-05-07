@@ -42,11 +42,20 @@ public class LineDaoTest {
         Line test = new Line("test", "GREEN");
         lineDao.save(test);
         Line result = lineDao.findByName("test").orElse(null);
-        Optional<Line> result2 = lineDao.findByName("test2");
 
         assertThat(result.getName()).isEqualTo("test");
         assertThat(result.getColor()).isEqualTo("GREEN");
-        assertThat(result2).isEmpty();
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선 이름을 이용해 지하철 노선을 조회하면 Empty를 반환한다.")
+    @Test
+    void findByName_empty() {
+        Line test = new Line("test", "GREEN");
+        lineDao.save(test);
+
+        Optional<Line> result = lineDao.findByName("test2");
+
+        assertThat(result).isEmpty();
     }
 
     @DisplayName("저장된 모든 지하철 노선을 조회한다.")
@@ -73,10 +82,19 @@ public class LineDaoTest {
     void findById() {
         lineDao.save(new Line("test1", "GREEN"));
         Line line = lineDao.findById(1L).get();
-        Optional<Line> lineEmpty = lineDao.findById(1000L);
+
         assertThat(line.getId()).isEqualTo(1);
         assertThat(line.getName()).isEqualTo("test1");
         assertThat(line.getColor()).isEqualTo("GREEN");
+    }
+
+    @DisplayName("존재하지 않는 id를 이용해 지하철 노선을 조회면 Empty를 반환한다.")
+    @Test
+    void findById_empty() {
+        lineDao.save(new Line("test1", "GREEN"));
+
+        Optional<Line> lineEmpty = lineDao.findById(1000L);
+
         assertThat(lineEmpty).isEmpty();
     }
 
