@@ -4,17 +4,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
 
 @Service
 public class SubwayService {
 
     private LineDao lineDao;
+    private StationDao stationDao;
 
-    public SubwayService(LineDao lineDao) {
+    public SubwayService(LineDao lineDao, StationDao stationDao) {
         this.lineDao = lineDao;
+        this.stationDao = stationDao;
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
@@ -42,5 +48,22 @@ public class SubwayService {
 
     public void deleteLine(Long id) {
         lineDao.deleteById(id);
+    }
+
+    public StationResponse saveStation(StationRequest stationRequest) {
+        Station station = stationRequest.toEntity();
+        Station newStation = stationDao.save(station);
+        return new StationResponse(newStation);
+    }
+
+    public List<StationResponse> getStations() {
+        return stationDao.findAll()
+                .stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteStation(Long id) {
+        stationDao.deleteById(id);
     }
 }
