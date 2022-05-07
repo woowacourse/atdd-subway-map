@@ -48,10 +48,6 @@ public class StationController {
         return stations.stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
-        /*List<StationResponse> stationResponses = stations.stream()
-                .map(StationResponse::new)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationResponses);*/
     }
 
     @DeleteMapping("/{id}")
