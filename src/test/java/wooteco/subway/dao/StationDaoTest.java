@@ -48,7 +48,7 @@ class StationDaoTest {
         void 존재하는_데이터의_id인_경우_해당_데이터가_담긴_Optional_반환() {
             Station actual = dao.findById(1L).get();
 
-            Station expected =  new Station(1L, "이미 존재하는 역 이름");
+            Station expected = new Station(1L, "이미 존재하는 역 이름");
 
             assertThat(actual).isEqualTo(expected);
         }
@@ -69,7 +69,7 @@ class StationDaoTest {
         void 저장된_name인_경우_해당_데이터가_담긴_Optional_반환() {
             Station actual = dao.findByName("이미 존재하는 역 이름").get();
 
-            Station expected =  new Station(1L, "이미 존재하는 역 이름");
+            Station expected = new Station(1L, "이미 존재하는 역 이름");
 
             assertThat(actual).isEqualTo(expected);
         }

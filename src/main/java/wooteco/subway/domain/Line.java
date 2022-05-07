@@ -53,14 +53,12 @@ public class Line {
             return false;
         }
         Line line = (Line) o;
-        return Objects.equals(id, line.id)
-                && Objects.equals(name, line.name)
-                && Objects.equals(color, line.color);
+        return Objects.equals(id, line.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color);
+        return Objects.hash(id);
     }
 
     @Override
