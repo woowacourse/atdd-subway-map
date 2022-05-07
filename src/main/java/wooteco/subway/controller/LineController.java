@@ -2,7 +2,6 @@ package wooteco.subway.controller;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,9 +12,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.service.LineService;
 
 @RestController
@@ -30,29 +29,24 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
-        Line line = lineService.save(lineRequest.toLine());
-        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(LineResponse.from(line));
+        LineResponse response = lineService.save(lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> lineResponses = lineService.findAll()
-                .stream()
-                .map(LineResponse::from)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok().body(lineResponses);
+        return ResponseEntity.ok().body(lineService.findAll());
     }
 
     @GetMapping("/{lineId}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long lineId) {
-        Line line = lineService.findById(lineId);
-        return ResponseEntity.ok().body(LineResponse.from(line));
+        LineResponse response = lineService.findById(lineId);
+        return ResponseEntity.ok().body(response);
     }
 
     @PutMapping("/{lineId}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long lineId, @RequestBody @Valid LineRequest lineRequest) {
-        lineService.update(lineRequest.toLineWithId(lineId));
+    public ResponseEntity<Void> updateLine(@PathVariable Long lineId, @RequestBody @Valid LineUpdateRequest lineUpdateRequest) {
+        lineService.update(lineUpdateRequest.toLineWithId(lineId));
         return ResponseEntity.ok().build();
     }
 

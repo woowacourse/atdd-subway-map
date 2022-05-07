@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
 
@@ -49,11 +48,8 @@ public class InmemoryStationDao implements StationDao {
     }
 
     @Override
-    public Optional<Station> findById(final Long id) {
-        if (stations.containsKey(id)) {
-            return Optional.of(stations.get(id));
-        }
-        return Optional.empty();
+    public Station findById(final Long id) {
+        return stations.get(id);
     }
 
     @Override
@@ -61,6 +57,11 @@ public class InmemoryStationDao implements StationDao {
         return stations.values()
                 .stream()
                 .anyMatch(station -> station.isSameName(name));
+    }
+
+    @Override
+    public boolean existById(final Long id) {
+        return stations.containsKey(id);
     }
 
     @Override

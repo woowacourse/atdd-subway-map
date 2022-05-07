@@ -20,18 +20,17 @@ class InmemoryLineDaoTest {
     @DisplayName("Line을 등록할 수 있다.")
     void save() {
         Line line = new Line("신분당선", "bg-red-600");
-        Line savedLine = inmemoryLineDao.save(line);
 
-        assertThat(savedLine.getId()).isNotNull();
+        assertThat(inmemoryLineDao.save(line)).isNotNull();
     }
 
     @Test
     @DisplayName("Line을 id로 조회할 수 있다.")
     void findById() {
-        Line line = inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));
-        Line findLine = inmemoryLineDao.findById(line.getId());
+        long id = inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));
+        Line findLine = inmemoryLineDao.findById(id);
 
-        assertThat(findLine).isEqualTo(line);
+        assertThat(findLine.getId()).isEqualTo(id);
     }
 
     @Test
@@ -54,16 +53,16 @@ class InmemoryLineDaoTest {
     @Test
     @DisplayName("id에 해당하는 Line이 존재하는지 확인할 수 있다.")
     void existById() {
-        Line line = inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));
+        long id = inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));
 
-        assertThat(inmemoryLineDao.existById(line.getId())).isNotNull();
+        assertThat(inmemoryLineDao.existById(id)).isNotNull();
     }
 
     @Test
     @DisplayName("Line을 수정할 수 있다.")
     void update() {
-        Line line = inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));
-        int result = inmemoryLineDao.update(new Line(line.getId(), "분당선", line.getColor()));
+        long id = inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));
+        int result = inmemoryLineDao.update(new Line(id, "분당선", "bg-red-600"));
 
         assertThat(result).isEqualTo(1);
     }
@@ -71,8 +70,8 @@ class InmemoryLineDaoTest {
     @Test
     @DisplayName("Line을 삭제할 수 있다.")
     void delete() {
-        Line line = inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));
-        int result = inmemoryLineDao.delete(line.getId());
+        long id = inmemoryLineDao.save(new Line("신분당선", "bg-red-600"));
+        int result = inmemoryLineDao.delete(id);
 
         assertThat(result).isEqualTo(1);
     }

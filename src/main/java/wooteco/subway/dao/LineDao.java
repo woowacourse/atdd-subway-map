@@ -5,7 +5,7 @@ import wooteco.subway.domain.Line;
 
 public interface LineDao {
 
-    Line save(Line line);
+    long save(Line line);
 
     Line findById(Long id);
 

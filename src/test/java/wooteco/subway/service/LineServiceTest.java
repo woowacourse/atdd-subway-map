@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.AfterEach;
@@ -9,6 +10,8 @@ import wooteco.subway.dao.InmemoryLineDao;
 import wooteco.subway.dao.InmemorySectionDao;
 import wooteco.subway.dao.InmemoryStationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.exception.NotFoundException;
 
 class LineServiceTest {
@@ -16,7 +19,7 @@ class LineServiceTest {
     private final InmemoryLineDao lineDao = InmemoryLineDao.getInstance();
     private final InmemorySectionDao sectionDao = InmemorySectionDao.getInstance();
     private final InmemoryStationDao stationDao = InmemoryStationDao.getInstance();
-    private final LineService lineService = new LineService(lineDao, sectionDao, new StationService(stationDao));
+    private final LineService lineService = new LineService(lineDao, stationDao, sectionDao);
 
     @AfterEach
     void afterEach() {
@@ -29,9 +32,19 @@ class LineServiceTest {
     @DisplayName("이미 존재하는 노선의 이름이 있을 때 예외가 발생한다.")
     void saveExceptionByExistName() {
         lineDao.save(new Line("신분당선", "bg-red-600"));
-        assertThatThrownBy(() -> lineService.save(new Line("신분당선", "bg-green-600")))
+        assertThatThrownBy(() -> lineService.save(new LineRequest("신분당선", "bg-green-600", 1L, 2L, 2)))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("이미 존재하는 노선 이름입니다.");
+    }
+
+    @Test
+    @DisplayName("정상적으로 원하는 LineRequest를 저장하여 반환할 수 있다.")
+    void save() {
+        Station upStation = stationDao.save(new Station("오리"));
+        Station downStation = stationDao.save(new Station("배카라"));
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 1);
+
+        assertThat(lineService.save(lineRequest)).isNotNull();
     }
 
     @Test

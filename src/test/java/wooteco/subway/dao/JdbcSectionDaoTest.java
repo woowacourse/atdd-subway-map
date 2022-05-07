@@ -34,10 +34,10 @@ class JdbcSectionDaoTest {
     @DisplayName("Section 을 저장할 수 있다.")
     void save() {
         // given
-        Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
+        long id = lineDao.save(new Line("신분당선", "bg-red-600"));
         Station upStation = stationDao.save(new Station("오리"));
         Station downStation = stationDao.save(new Station("배카라"));
-        Section section = new Section(null, line.getId(), upStation, downStation, 1);
+        Section section = new Section(null, id, upStation, downStation, 1);
 
         // when
         Section savedSection = sectionDao.save(section);
@@ -49,14 +49,14 @@ class JdbcSectionDaoTest {
     @Test
     @DisplayName("Line Id에 해당하는 Section을 조회할 수 있다.")
     void findAllByLineId() {
-        Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
+        long id = lineDao.save(new Line("신분당선", "bg-red-600"));
         Station station1 = stationDao.save(new Station("오리"));
         Station station2 = stationDao.save(new Station("배카라"));
         Station station3 = stationDao.save(new Station("오카라"));
 
-        List<Section> expected = List.of(sectionDao.save(new Section(null, line.getId(), station1, station2, 1)),
-                sectionDao.save(new Section(null, line.getId(), station2, station3, 1)));
+        List<Section> expected = List.of(sectionDao.save(new Section(null, id, station1, station2, 1)),
+                sectionDao.save(new Section(null, id, station2, station3, 1)));
 
-        assertThat(sectionDao.findAllByLineId(line.getId())).isEqualTo(expected);
+        assertThat(sectionDao.findAllByLineId(id)).isEqualTo(expected);
     }
 }

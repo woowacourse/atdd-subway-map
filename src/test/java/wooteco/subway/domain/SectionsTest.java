@@ -31,9 +31,9 @@ class SectionsTest {
                 new Section(2L, 1L, station2, station3, 2)));
 
         // when
-        List<Station> stations = sections.calculateSortedStations();
+        Stations stations = sections.calculateSortedStations();
 
         // then
-        assertThat(stations).containsExactly(station1, station2, station3, station4);
+        assertThat(stations).isEqualTo(new Stations(List.of(station1, station2, station3, station4)));
     }
 }

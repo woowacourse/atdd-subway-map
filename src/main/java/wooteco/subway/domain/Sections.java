@@ -19,9 +19,9 @@ public class Sections {
         }
     }
 
-    public List<Station> calculateSortedStations() {
+    public Stations calculateSortedStations() {
         Section section = calculateFirstSection(findAnySection());
-        return createSortedStations(section);
+        return new Stations(createSortedStations(section));
     }
 
     private Section findAnySection() {
