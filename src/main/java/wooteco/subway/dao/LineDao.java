@@ -13,7 +13,7 @@ public interface LineDao {
 
     Line findById(Long id);
 
-    boolean exists(Line line);
+    boolean existsByNameOrColor(Line line);
 
     int update(Line updatingLine);
 }

@@ -36,7 +36,7 @@ class LineDaoImplTest {
     @ParameterizedTest
     @CsvSource({"2호선, red, true", "신분당선, blue, true", "신분당선, red, true", "2호선, blue, false"})
     void exists(String name, String color, boolean expected) {
-        boolean actual = lineDao.exists(new Line(name, color));
+        boolean actual = lineDao.existsByNameOrColor(new Line(name, color));
 
         assertThat(actual).isEqualTo(expected);
     }

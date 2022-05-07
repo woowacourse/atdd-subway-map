@@ -58,7 +58,7 @@ public class LineDaoImpl implements LineDao {
     }
 
     @Override
-    public boolean exists(Line line) {
+    public boolean existsByNameOrColor(Line line) {
         String sql = "select exists (select name from line where name = :name or color = :color)";
         SqlParameterSource namedParameters = new BeanPropertySqlParameterSource(line);
         return Boolean.TRUE.equals(namedParameterJdbcTemplate.queryForObject(sql, namedParameters, Boolean.class));

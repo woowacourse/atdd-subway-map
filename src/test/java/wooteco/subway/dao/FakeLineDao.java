@@ -43,7 +43,7 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public boolean exists(Line line) {
+    public boolean existsByNameOrColor(Line line) {
         return lines.values()
                 .stream()
                 .anyMatch(it -> it.getName().equals(line.getName()) || it.getColor().equals(line.getColor()));

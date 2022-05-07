@@ -20,7 +20,7 @@ public class LineService {
     }
 
     public Line save(Line line) {
-        if (lineDao.exists(line)) {
+        if (lineDao.existsByNameOrColor(line)) {
             throw new DuplicatedLineException();
         }
         return lineDao.save(line);
