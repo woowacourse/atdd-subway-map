@@ -92,4 +92,46 @@ class SectionTest {
 
         assertThat(section.isEqualsOrLargerDistance(compareSection)).isEqualTo(expected);
     }
+
+    @Test
+    @DisplayName("가운데 있는 Section으로 하행 새로운 Section을 만들어 반환할 수 있다.")
+    void createMiddleSectionByDownStationSection() {
+        // given
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Station station3 = new Station(3L, "오카라");
+        Section section = new Section(1L, 1L, station1, station3, 10);
+        Section middleSection = new Section(2L, 1L, station1, station2, 3);
+
+        // when
+        Section updatedSection = section.createMiddleSectionByDownStationSection(middleSection);
+
+        assertAll(
+                () -> assertThat(updatedSection.getUpStation()).isEqualTo(station2),
+                () -> assertThat(updatedSection.getDownStation()).isEqualTo(station3),
+                () -> assertThat(updatedSection.getDistance()).isEqualTo(7),
+                () -> assertThat(updatedSection).isEqualTo(section)
+        );
+    }
+
+    @Test
+    @DisplayName("가운데 있는 Section으로 상행 새로운 Section을 만들어 반환할 수 있다.")
+    void createMiddleSectionByUpStationSection() {
+        // given
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Station station3 = new Station(3L, "오카라");
+        Section section = new Section(1L, 1L, station1, station3, 10);
+        Section middleSection = new Section(2L, 1L, station2, station3, 3);
+
+        // when
+        Section updatedSection = section.createMiddleSectionByUpStationSection(middleSection);
+
+        assertAll(
+                () -> assertThat(updatedSection.getUpStation()).isEqualTo(station1),
+                () -> assertThat(updatedSection.getDownStation()).isEqualTo(station2),
+                () -> assertThat(updatedSection.getDistance()).isEqualTo(7),
+                () -> assertThat(updatedSection).isEqualTo(section)
+        );
+    }
 }

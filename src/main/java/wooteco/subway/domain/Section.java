@@ -74,6 +74,14 @@ public class Section {
         return this.distance <= section.distance;
     }
 
+    public Section createMiddleSectionByDownStationSection(final Section section) {
+        return new Section(id, lineId, section.downStation, this.downStation, this.distance - section.distance);
+    }
+
+    public Section createMiddleSectionByUpStationSection(final Section section) {
+        return new Section(id, lineId, this.upStation, section.upStation, this.distance - section.distance);
+    }
+
     public Long getId() {
         return id;
     }
