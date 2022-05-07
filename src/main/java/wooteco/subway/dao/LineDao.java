@@ -8,6 +8,7 @@ import wooteco.subway.domain.Line;
 
 public class LineDao {
     private static final String LINE_VALIDATION = "이미 등록된 노선입니다.";
+    private static final String LINE_NOT_EXIST = "해당 지하철 노선이 존재하지 않습니다.";
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
 
@@ -34,7 +35,7 @@ public class LineDao {
         return lines.stream()
                 .filter(line -> line.isSameId(id))
                 .findAny()
-                .orElseThrow();
+                .orElseThrow(() -> new IllegalArgumentException(LINE_NOT_EXIST));
     }
 
     public static void updateById(Long id, Line line) {
@@ -45,7 +46,8 @@ public class LineDao {
     }
 
     public static void deleteById(Long id) {
-        lines.removeIf(line -> line.isSameId(id));
+        Line line = findById(id);
+        lines.remove(line);
     }
 
     private static void validateDuplication(Line line) {

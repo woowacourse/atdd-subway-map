@@ -9,6 +9,7 @@ import java.util.List;
 
 public class StationDao {
     private static final String STATION_DUPLICATION  = "이미 등록된 지하철 역입니다.";
+    private static final String STATION_NOT_EXIST = "해당 지하철역은 존재하지 않습니다.";
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
@@ -31,7 +32,12 @@ public class StationDao {
     }
 
     public static void deleteById(Long id) {
-        stations.removeIf(station -> station.isSameId(id));
+        Station station = stations.stream()
+                .filter(value -> value.isSameId(id))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(STATION_NOT_EXIST));
+
+        stations.remove(station);
     }
 
     private static Station createNewObject(Station station) {
