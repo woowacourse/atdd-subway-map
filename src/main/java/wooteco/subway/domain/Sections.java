@@ -85,6 +85,19 @@ public class Sections {
             sections.add(section);
             return;
         }
+        if (hasUpStation(section)) {
+            Section updatedSection = sections.stream()
+                    .filter(section::equalsUpStation)
+                    .findFirst()
+                    .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
+            if (updatedSection.isEqualsOrLargerDistance(section)) {
+                throw new IllegalStateException("기존 길이보다 긴 구간은 중간에 추가될 수 없습니다.");
+            }
+            sections.add(section);
+            sections.removeIf(updatedSection::equals);
+            sections.add(updatedSection.createMiddleSectionByDownStationSection(section));
+            return;
+        }
         throw new RuntimeException();
     }
 
@@ -108,11 +121,11 @@ public class Sections {
     }
 
     private boolean isTopStation(final Section section) {
-        return calculateFirstSection(section).equals(section);
+        return calculateFirstSection(findAnySection()).isUpSection(section);
     }
 
     private boolean isBottomStation(final Section section) {
-        return calculateLastSection(section).equals(section);
+        return calculateLastSection(findAnySection()).isDownSection(section);
     }
 
     private Section calculateLastSection(final Section section) {

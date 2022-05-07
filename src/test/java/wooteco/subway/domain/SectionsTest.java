@@ -108,4 +108,40 @@ class SectionsTest {
         // then
         assertThat(sections).isEqualTo(expectedSections);
     }
+
+    @Test
+    @DisplayName("상행역이 일치하는 역의 사이에 들어갈 수 있다.")
+    void addSectionBetweenEqualsUpStation() {
+        // given
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Station station3 = new Station(3L, "오카라");
+        Section addSection = new Section(1L, 1L, station1, station2, 3);
+        Sections sections = new Sections(List.of(new Section(2L, 1L, station1, station3, 10)));
+
+        Sections expectedSections = new Sections(List.of(addSection,
+                new Section(2L, 1L, station2, station3, 7)));
+
+        // when
+        sections.addSection(addSection);
+
+        // when
+        assertThat(sections).isEqualTo(expectedSections);
+    }
+
+    @Test
+    @DisplayName("상행역과 일치하는 역의 사이에 들어갈 때 더 큰 길이의 Section이면 예외 발생")
+    void addSectionBetweenEqualsUpStationExceptionByLargerDistance() {
+        // given
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Station station3 = new Station(3L, "오카라");
+        Section addSection = new Section(1L, 1L, station1, station2, 3);
+        Sections sections = new Sections(List.of(new Section(2L, 1L, station1, station3, 2)));
+
+        // when & then
+        assertThatThrownBy(() -> sections.addSection(addSection))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("기존 길이보다 긴 구간은 중간에 추가될 수 없습니다.");
+    }
 }
