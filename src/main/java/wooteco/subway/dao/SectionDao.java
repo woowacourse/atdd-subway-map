@@ -13,7 +13,7 @@ import wooteco.subway.domain.Section;
 
 @Repository
 public class SectionDao {
-    private static final RowMapper<Section> SECTION_MAPPER = (resultSet, rowNum) -> Section.of(
+    private static final RowMapper<Section> SECTION_MAPPER = (resultSet, rowNum) -> new Section(
             resultSet.getLong("id"),
             resultSet.getLong("line_id"),
             resultSet.getLong("up_station_id"),

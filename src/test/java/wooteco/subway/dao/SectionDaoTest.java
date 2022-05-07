@@ -34,7 +34,7 @@ public class SectionDaoTest {
     @Test
     @DisplayName("section을 저장하고 id가 추가된 section을 반환한다.")
     void saveSection() {
-        Section section = new Section(lineId, 1L, 2L, 3);
+        Section section = Section.of(lineId, 1L, 2L, 3);
 
         Section persistSection = sectionDao.save(section);
 
@@ -47,9 +47,9 @@ public class SectionDaoTest {
     @Test
     @DisplayName("lineId에 해당되는 모든 section을 반환한다.")
     void findByLineId() {
-        Section section1 = new Section(lineId, 1L, 2L, 3);
-        Section section2 = new Section(lineId, 2L, 3L, 3);
-        Section section3 = new Section(lineId, 3L, 4L, 3);
+        Section section1 = Section.of(lineId, 1L, 2L, 3);
+        Section section2 = Section.of(lineId, 2L, 3L, 3);
+        Section section3 = Section.of(lineId, 3L, 4L, 3);
         sectionDao.save(section1);
         sectionDao.save(section2);
         sectionDao.save(section3);

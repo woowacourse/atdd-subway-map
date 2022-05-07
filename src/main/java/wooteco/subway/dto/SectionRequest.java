@@ -29,6 +29,6 @@ public class SectionRequest {
     }
 
     public Section toEntity(Long lineId) {
-        return new Section(lineId, upStationId, downStationId, distance);
+        return Section.of(lineId, upStationId, downStationId, distance);
     }
 }
