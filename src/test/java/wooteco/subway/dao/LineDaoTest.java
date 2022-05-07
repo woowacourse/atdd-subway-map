@@ -11,9 +11,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineUpdateRequest;
+import wooteco.subway.dto.LineRequest;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
 class LineDaoTest {
 
@@ -76,7 +76,7 @@ class LineDaoTest {
     void update() {
         // given
         Long id = 1L;
-        LineUpdateRequest lineRequest = new LineUpdateRequest("신분당선", "pink");
+        LineRequest lineRequest = new LineRequest("신분당선", "pink");
 
         // when
         lineDao.update(id, lineRequest);

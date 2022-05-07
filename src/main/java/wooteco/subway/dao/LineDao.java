@@ -11,7 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineUpdateRequest;
+import wooteco.subway.dto.LineRequest;
 
 @Repository
 public class LineDao {
@@ -52,7 +52,7 @@ public class LineDao {
         return jdbcTemplate.query(selectSql, eventRowMapper);
     }
 
-    public void update(Long id, LineUpdateRequest lineRequest) {
+    public void update(Long id, LineRequest lineRequest) {
         String updateSql = "update LINE set name=:name, color=:color where id=:id";
         MapSqlParameterSource source = new MapSqlParameterSource();
         source.addValue("id", id);

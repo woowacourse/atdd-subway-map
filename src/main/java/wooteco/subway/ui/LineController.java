@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineDto;
+import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineCreateRequest;
 import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.service.LineService;
 
 @RestController
@@ -31,27 +31,27 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineDto> createLine(@RequestBody LineRequest lineRequest) {
-        Line newLine = lineService.save(lineRequest);
-        LineDto lineResponse = LineDto.from(newLine);
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineCreateRequest lineCreateRequest) {
+        Line newLine = lineService.save(lineCreateRequest);
+        LineResponse lineResponse = LineResponse.from(newLine);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
     @GetMapping
-    public List<LineDto> showLines() {
+    public List<LineResponse> showLines() {
         List<Line> lines = lineService.findAll();
         return lines.stream()
-                .map(LineDto::from)
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public LineDto findLine(@PathVariable Long id) {
-        return LineDto.from(lineService.findById(id));
+    public LineResponse findLine(@PathVariable Long id) {
+        return LineResponse.from(lineService.findById(id));
     }
 
     @PutMapping("/{id}")
-    public void updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest lineRequest) {
+    public void updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.update(id, lineRequest);
     }
 

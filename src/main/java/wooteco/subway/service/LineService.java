@@ -5,8 +5,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineCreateRequest;
 import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineUpdateRequest;
 
 @Service
 public class LineService {
@@ -20,14 +20,14 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line save(LineRequest lineRequest) {
-        validDuplicatedName(lineRequest.getName());
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+    public Line save(LineCreateRequest lineCreateRequest) {
+        validDuplicatedName(lineCreateRequest.getName());
+        Line line = new Line(lineCreateRequest.getName(), lineCreateRequest.getColor());
         Long id = lineDao.save(line);
         return new Line(id, line.getName(), line.getColor());
     }
 
-    public void update(Long id, LineUpdateRequest lineRequest) {
+    public void update(Long id, LineRequest lineRequest) {
         validDuplicatedName(lineRequest.getName());
         lineDao.update(id, lineRequest);
     }

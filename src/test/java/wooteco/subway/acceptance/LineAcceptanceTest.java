@@ -21,7 +21,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import wooteco.subway.dto.LineDto;
+import wooteco.subway.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -110,8 +110,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = List.of(savedId1, savedId2);
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineDto.class).stream()
-                .map(LineDto::getId)
+        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+                .map(LineResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
@@ -224,8 +224,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        return response.jsonPath().getList(".", LineDto.class).stream()
-                .map(LineDto::getId)
+        return response.jsonPath().getList(".", LineResponse.class).stream()
+                .map(LineResponse::getId)
                 .collect(Collectors.toList());
     }
 }
