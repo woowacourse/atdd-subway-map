@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -15,6 +16,9 @@ import java.util.Map;
 public class LineDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+
+    private final RowMapper<Line> rowMapper = (rs, rowNum)
+            -> new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color"));
 
     public LineDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -45,8 +49,7 @@ public class LineDao {
         params.put("name", line.getName());
         params.put("color", line.getColor());
 
-        List<Line> lines = jdbcTemplate.query(sql, params,
-                (rs, rowNum) -> new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color")));
+        List<Line> lines = jdbcTemplate.query(sql, params, rowMapper);
 
         if (lines.size() > 0) {
             throw new IllegalArgumentException("같은 이름의 노선은 등록할 수 없습니다.");
@@ -55,8 +58,7 @@ public class LineDao {
 
     public List<Line> findAll() {
         String sql = "SELECT * FROM line";
-        return jdbcTemplate.query(sql, new MapSqlParameterSource(),
-                (rs, rowNum) -> new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color")));
+        return jdbcTemplate.query(sql, new MapSqlParameterSource(), rowMapper);
     }
 
     public Line findById(Long id) {
@@ -65,8 +67,7 @@ public class LineDao {
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
 
-        List<Line> lines = jdbcTemplate.query(sql, new MapSqlParameterSource(params),
-                (rs, rowNum) -> new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color")));
+        List<Line> lines = jdbcTemplate.query(sql, new MapSqlParameterSource(params), rowMapper);
 
         if (lines.isEmpty()) {
             throw new IllegalArgumentException("존재하지 않는 노선입니다.");

@@ -3,6 +3,8 @@ package wooteco.subway.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -13,6 +15,8 @@ import wooteco.subway.domain.Station;
 @Repository
 public class StationDao {
     private final NamedParameterJdbcTemplate jdbcTemplate;
+
+    private final RowMapper<Station> rowMapper = (rs, rowNum) -> new Station(rs.getLong("id"), rs.getString("name"));
 
     public StationDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -41,8 +45,7 @@ public class StationDao {
         Map<String, Object> params = new HashMap<>();
         params.put("name", station.getName());
 
-        List<Station> stations = jdbcTemplate.query(sql, params,
-                (rs, rowNum) -> new Station(rs.getLong("id"), rs.getString("name")));
+        List<Station> stations = jdbcTemplate.query(sql, params, rowMapper);
 
         if (stations.size() > 0) {
             throw new IllegalArgumentException("같은 이름의 역은 등록할 수 없습니다.");
@@ -51,7 +54,7 @@ public class StationDao {
 
     public List<Station> findAll() {
         String sql = "SELECT * FROM station";
-        return jdbcTemplate.query(sql, new MapSqlParameterSource(), (rs, rowNum) -> new Station(rs.getLong("id"), rs.getString("name")));
+        return jdbcTemplate.query(sql, new MapSqlParameterSource(), rowMapper);
     }
 
     public void deleteById(Long id) {
