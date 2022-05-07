@@ -6,9 +6,9 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.domain.Line;
 
-public class TestLineDaoFactory {
+public class LineFixture {
 
-    public static void setUpLines(NamedParameterJdbcTemplate jdbcTemplate, Line... lines) {
+    public static void setUp(NamedParameterJdbcTemplate jdbcTemplate, Line... lines) {
         List<MapSqlParameterSource> params = new ArrayList<>();
 
         for (Line line : lines) {

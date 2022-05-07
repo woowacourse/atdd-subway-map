@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
@@ -24,7 +23,8 @@ import wooteco.subway.exception.NotFoundException;
 @SuppressWarnings("NonAsciiCharacters")
 @JdbcTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Sql("classpath:dao_test_db.sql")
+@Sql("classpath:schema.sql")
+@Transactional
 class LineDaoTest {
 
     private LineDao dao;
@@ -39,7 +39,7 @@ class LineDaoTest {
 
     @Test
     void findAll_메서드는_모든_데이터를_조회한다() {
-        TestLineDaoFactory.setUpLines(jdbcTemplate, new Line("분당선", "노란색"), new Line("신분당선", "빨간색"),
+        LineFixture.setUp(jdbcTemplate, new Line("분당선", "노란색"), new Line("신분당선", "빨간색"),
             new Line("2호선", "초록색"));
         List<Line> actual = dao.findAll();
 
@@ -58,7 +58,7 @@ class LineDaoTest {
 
         @Test
         void 존재하는_노선의_id가_입력된_경우_성공() {
-            TestLineDaoFactory.setUpLines(jdbcTemplate, new Line("분당선", "노란색"));
+            LineFixture.setUp(jdbcTemplate, new Line("분당선", "노란색"));
             Line actual = dao.findById(1L);
             Line excepted = new Line(1L, "분당선", "노란색");
 
@@ -86,9 +86,21 @@ class LineDaoTest {
         }
 
         @Test
+        void 중복되지_않는_이름인_경우_성공2() {
+            Line expected = new Line(1L, "8호선", "분홍색");
+            assertAll(() -> {
+                Line actual = dao.save(new Line("8호선", "분홍색"));
+                assertThatThrownBy(() -> dao.save(new Line("8호선", "분홍색")))
+                    .isInstanceOf(IllegalArgumentException.class);
+                Line actual3 = dao.save(new Line("9호선", "분홍색"));
+                assertThat(actual3.getId()).isEqualTo(2L);
+            });
+        }
+
+        @Test
         void 중복되는_이름인_경우_예외발생() {
             Line line = new Line("분당선", "노란색");
-            TestLineDaoFactory.setUpLines(jdbcTemplate, line);
+            LineFixture.setUp(jdbcTemplate, line);
 
             assertThatThrownBy(() -> dao.save(line))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -101,7 +113,7 @@ class LineDaoTest {
 
         @Test
         void 유효한_입력값인_경우_성공() {
-            TestLineDaoFactory.setUpLines(jdbcTemplate, new Line("분당선", "노란색"));
+            LineFixture.setUp(jdbcTemplate, new Line("분당선", "노란색"));
             dao.update(new Line(1L, "8호선", "노란색"));
 
             String actual = jdbcTemplate.queryForObject("SELECT name FROM line WHERE id = 1",
@@ -113,7 +125,7 @@ class LineDaoTest {
 
         @Test
         void 중복되는_이름으로_수정하려는_경우_예외발생() {
-            TestLineDaoFactory.setUpLines(jdbcTemplate, new Line("분당선", "노란색"), new Line("2호선", "초록색"));
+            LineFixture.setUp(jdbcTemplate, new Line("분당선", "노란색"), new Line("2호선", "초록색"));
             Line line = new Line(1L, "2호선", "노란색");
 
             assertThatThrownBy(() -> dao.update(line))
@@ -135,7 +147,7 @@ class LineDaoTest {
 
         @Test
         void 존재하는_역의_id가_입력된_경우_성공() {
-            TestLineDaoFactory.setUpLines(jdbcTemplate, new Line("분당선", "노란색"));
+            LineFixture.setUp(jdbcTemplate, new Line("분당선", "노란색"));
             dao.deleteById(1L);
 
             boolean exists = jdbcTemplate.queryForObject(

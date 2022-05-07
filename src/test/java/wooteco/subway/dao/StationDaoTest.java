@@ -20,13 +20,13 @@ import wooteco.subway.domain.Station;
 @SuppressWarnings("NonAsciiCharacters")
 @JdbcTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Sql("classpath:dao_test_db.sql")
+@Sql("classpath:schema.sql")
 class StationDaoTest {
-
-    private StationDao dao;
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
+
+    private StationDao dao;
 
     @BeforeEach
     void setUp() {
@@ -35,7 +35,7 @@ class StationDaoTest {
 
     @Test
     void findAll_메서드는_모든_데이터를_조회한다() {
-        TestStationDaoFactory.setUpStations(jdbcTemplate, "중복되는 역 이름", "선릉역", "잠실역");
+        StationFixture.setUp(jdbcTemplate, "중복되는 역 이름", "선릉역", "잠실역");
         List<Station> actual = dao.findAll();
 
         List<Station> expected = List.of(
@@ -61,7 +61,7 @@ class StationDaoTest {
 
         @Test
         void 중복되는_이름인_경우_예외발생() {
-            TestStationDaoFactory.setUpStations(jdbcTemplate, "중복되는 역 이름");
+            StationFixture.setUp(jdbcTemplate, "중복되는 역 이름");
             Station station = new Station("중복되는 역 이름");
 
             assertThatThrownBy(() -> dao.save(station))
@@ -75,7 +75,7 @@ class StationDaoTest {
 
         @Test
         void 존재하는_역의_id가_입력된_경우_성공() {
-            TestStationDaoFactory.setUpStations(jdbcTemplate, "테스트 역");
+            StationFixture.setUp(jdbcTemplate, "테스트 역");
             dao.deleteById(1L);
 
             boolean exists = jdbcTemplate.queryForObject(

@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
-public class TestStationDaoFactory {
+public class StationFixture {
 
-    public static void setUpStations(NamedParameterJdbcTemplate jdbcTemplate, String... names) {
+    public static void setUp(NamedParameterJdbcTemplate jdbcTemplate, String... names) {
         List<MapSqlParameterSource> params = new ArrayList<>();
 
         for (String name : names) {
