@@ -27,8 +27,8 @@ public class LineService {
         return lineDao.findById(id);
     }
 
-    public void update(Long id, String name, String color) {
-        lineDao.update(id, name, color);
+    public void update(Long id, Line line) {
+        lineDao.update(id, line.getName(), line.getColor());
     }
 
     public void deleteById(Long id) {
