@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dto.LineBasicResponse;
+import wooteco.subway.dto.LineResponse;
 
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayName("/lines에 대한 인수테스트")
@@ -39,8 +39,8 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-            LineBasicResponse actual = response.jsonPath().getObject(".", LineBasicResponse.class);
-            LineBasicResponse expected = new LineBasicResponse(1L, "신분당선", "bg-red-600");
+            LineResponse actual = response.jsonPath().getObject(".", LineResponse.class);
+            LineResponse expected = new LineResponse(1L, "신분당선", "bg-red-600");
             assertAll(() -> {
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
                 assertThat(response.header("Location")).isNotBlank();
@@ -72,11 +72,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 성공시_200_OK() {
         postLine(new HashMap<>() {{
-            put("name", "신분당선");
+            put("name", "신분당선1");
             put("color", "bg-red-600");
         }});
         postLine(new HashMap<>() {{
-            put("name", "분당선");
+            put("name", "분당선2");
             put("color", "bg-green-600");
         }});
 
@@ -86,8 +86,8 @@ class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
 
-        List<LineBasicResponse> responseBody = response.jsonPath()
-            .getList(".", LineBasicResponse.class);
+        List<LineResponse> responseBody = response.jsonPath()
+            .getList(".", LineResponse.class);
         assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             assertThat(responseBody).hasSize(2);
@@ -108,8 +108,8 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-            LineBasicResponse actual = response.jsonPath().getObject(".", LineBasicResponse.class);
-            LineBasicResponse expected = new LineBasicResponse(1L, "신분당선", "bg-red-600");
+            LineResponse actual = response.jsonPath().getObject(".", LineResponse.class);
+            LineResponse expected = new LineResponse(1L, "신분당선", "bg-red-600");
             assertAll(() -> {
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
                 assertThat(actual).isEqualTo(expected);

@@ -11,7 +11,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Sql(scripts = {"classpath:schema.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"classpath:schema-test.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 public class AcceptanceTest {
 
     @LocalServerPort
