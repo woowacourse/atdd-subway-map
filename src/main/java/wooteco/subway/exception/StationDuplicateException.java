@@ -7,4 +7,8 @@ public class StationDuplicateException extends RuntimeException {
     public StationDuplicateException() {
         super(DUPLICATED_MESSAGE);
     }
+
+    public StationDuplicateException(final String inputtedData) {
+        super(DUPLICATED_MESSAGE + " " + inputtedData);
+    }
 }

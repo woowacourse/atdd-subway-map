@@ -14,6 +14,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
+import wooteco.subway.exception.StationDuplicateException;
 
 @DisplayName("SpringStationService 는")
 @SpringBootTest
@@ -43,7 +44,8 @@ class SpringStationServiceTest {
         void save_Fail_If_Exists() {
             stationService.save(STATION_FIXTURE);
             assertThatThrownBy(() -> stationService.save(STATION_FIXTURE))
-                    .isInstanceOf(DuplicateKeyException.class);
+                    .isInstanceOf(StationDuplicateException.class)
+                    .hasMessageContaining("이미 존재하는 지하철역입니다. Station{name='선릉역'}");
         }
     }
 
