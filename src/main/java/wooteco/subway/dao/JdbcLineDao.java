@@ -23,7 +23,7 @@ public class JdbcLineDao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Line> rowMapper = (resultSet, rowNumber) -> new Line(
-            Long.parseLong(resultSet.getString("id")),
+            resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("color")
     );
