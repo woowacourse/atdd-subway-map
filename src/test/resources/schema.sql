@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS Line;
+DROP TABLE IF EXISTS Station;
+
 CREATE TABLE IF NOT EXISTS Line
 (
     id    integer     not null auto_increment,

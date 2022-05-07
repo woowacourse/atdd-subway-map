@@ -29,7 +29,7 @@ class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
         // given
         // when
-        ExtractableResponse<Response> response = acceptanceHandler.save(Map.of("name", "광교역"));
+        ExtractableResponse<Response> response = acceptanceHandler.save(Map.of("name", "강남역"));
 
         // then
         assertAll(() -> {
