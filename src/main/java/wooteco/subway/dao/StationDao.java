@@ -13,4 +13,8 @@ public interface StationDao {
     List<Station> findAll();
 
     void deleteById(Long id);
+
+    boolean existByName(String name);
+
+    boolean existById(Long id);
 }

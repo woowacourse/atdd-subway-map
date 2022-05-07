@@ -21,13 +21,12 @@ public class StationService {
     public StationResponseDTO createStation(String name) {
         validateExistName(name);
         Station station = stationDao.save(new Station(name));
+
         return new StationResponseDTO(station);
     }
 
     private void validateExistName(String name) {
-        boolean hasName = stationDao.findAll().stream()
-                .anyMatch(it -> it.isName(name));
-        if (hasName) {
+        if (stationDao.existByName(name)) {
             throw new IllegalArgumentException("[ERROR] 중복된 이름이 존재합니다.");
         }
     }
@@ -40,13 +39,13 @@ public class StationService {
 
     public void delete(Long id) {
         validateNonFoundId(id);
+
         stationDao.deleteById(id);
     }
 
     private void validateNonFoundId(Long id) {
-        stationDao.findAll().stream()
-                .filter(it -> it.getId().equals(id))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 역 입니다."));
+        if (!stationDao.existById(id)) {
+            throw new NoSuchElementException("[ERROR] 존재하지 않는 역 입니다.");
+        }
     }
 }

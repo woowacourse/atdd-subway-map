@@ -20,28 +20,33 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public LineResponseDTO create(LineRequestDTO lineRequestDTO) {
-        validateDuplicate(lineRequestDTO);
-        Line line = lineDao.save(new Line(lineRequestDTO.getName(), lineRequestDTO.getColor()));
-        return new LineResponseDTO(line);
-    }
-
+    @Transactional(readOnly = true)
     public LineResponseDTO findById(Long id) {
-        findAll().stream()
-                .filter(it -> it.getId().equals(id))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당 노선이 존재하지 않습니다."));
+        validateNonFoundId(id);
 
         return new LineResponseDTO(lineDao.findById(id));
     }
 
+    private void validateNonFoundId(Long id) {
+        if (!lineDao.existById(id)) {
+            throw new NoSuchElementException("[ERROR] 해당 노선이 존재하지 않습니다.");
+        }
+    }
+
     @Transactional(readOnly = true)
     public List<LineResponseDTO> findAll() {
-        var allLines = lineDao.findAll();
+        List<Line> lines = lineDao.findAll();
 
-        return allLines.stream()
+        return lines.stream()
                 .map(LineResponseDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    public LineResponseDTO create(LineRequestDTO lineRequestDTO) {
+        validateDuplicate(lineRequestDTO);
+        Line line = lineDao.save(new Line(lineRequestDTO.getName(), lineRequestDTO.getColor()));
+
+        return new LineResponseDTO(line);
     }
 
     private void validateDuplicate(LineRequestDTO lineRequestDTO) {
@@ -50,25 +55,15 @@ public class LineService {
     }
 
     private void validateDuplicateName(String name) {
-        if (isDuplicatedName(name)) {
+        if (lineDao.existByName(name)) {
             throw new IllegalArgumentException("[ERROR] 중복된 이름이 존재합니다.");
         }
     }
 
-    private boolean isDuplicatedName(String name) {
-        return lineDao.findAll().stream()
-                .anyMatch(it -> it.isName(name));
-    }
-
     private void validateDuplicateColor(String color) {
-        if (isDuplicatedColor(color)) {
+        if (lineDao.existByColor(color)) {
             throw new IllegalArgumentException("[ERROR] 중복된 색이 존재합니다.");
         }
-    }
-
-    private boolean isDuplicatedColor(String color) {
-        return lineDao.findAll().stream()
-                .anyMatch(it -> it.isColor(color));
     }
 
     public void updateById(Long id, LineRequestDTO lineRequestDTO) {
@@ -83,13 +78,6 @@ public class LineService {
         validateNonFoundId(id);
 
         lineDao.deleteById(id);
-    }
-
-    private void validateNonFoundId(Long id) {
-        lineDao.findAll().stream()
-                .filter(it -> it.getId().equals(id))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 노선 입니다."));
     }
 
     private void validateExistName(Long id, String name) {

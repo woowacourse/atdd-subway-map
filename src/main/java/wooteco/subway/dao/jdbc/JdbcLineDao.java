@@ -61,4 +61,25 @@ public class JdbcLineDao implements LineDao {
         String sql = "DELETE FROM line WHERE id=?";
         jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public boolean existById(Long id) {
+        String sql = "SELECT exists (select * FROM line WHERE id=?)";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != 0;
+    }
+
+    @Override
+    public boolean existByName(String name) {
+        String sql = "SELECT exists (select * FROM line WHERE name=?)";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, name);
+        return count != 0;
+    }
+
+    @Override
+    public boolean existByColor(String color) {
+        String sql = "SELECT exists (select * FROM line WHERE color=?)";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, color);
+        return count != 0;
+    }
 }
