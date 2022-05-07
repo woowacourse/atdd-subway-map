@@ -24,14 +24,14 @@ public class LineService {
         final Line line = new Line(request.getName(), request.getColor());
         final Line savedStation = lineDao.insert(line)
                 .orElseThrow(() -> new IllegalArgumentException("중복된 이름의 노선은 저장할 수 없습니다."));
-        return new LineResponse(savedStation.getId(), savedStation.getName(), savedStation.getColor());
+        return LineResponse.from(savedStation);
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         return lineDao.findAll()
                 .stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
@@ -39,7 +39,7 @@ public class LineService {
     public LineResponse findById(final Long id) {
         final Line line = lineDao.findById(id)
                 .orElseThrow(() -> new NotFoundException("해당 ID에 맞는 노선을 찾지 못했습니다."));
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        return LineResponse.from(line);
     }
 
     public void updateById(final Long id, final LineRequest request) {
