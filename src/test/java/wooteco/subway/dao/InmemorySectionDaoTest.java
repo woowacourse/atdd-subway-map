@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
@@ -47,5 +48,16 @@ class InmemorySectionDaoTest {
         sectionDao.save(new Section(lineId, station2, station3, 2));
 
         assertThat(sectionDao.findAllByLineId(lineId)).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("Section을 삭제할 수 있다.")
+    void delete() {
+        long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
+        Station station1 = stationDao.save(new Station("오리"));
+        Station station2 = stationDao.save(new Station("배카라"));
+        long sectionId = sectionDao.save(new Section(lineId, station1, station2, 10));
+
+        assertThat(sectionDao.delete(sectionId)).isEqualTo(1);
     }
 }

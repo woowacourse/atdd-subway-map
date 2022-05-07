@@ -57,4 +57,10 @@ public class InmemorySectionDao implements SectionDao {
                 .collect(Collectors.toMap(Section::getId, section -> section)));
         return sections.size();
     }
+
+    @Override
+    public int delete(final long sectionId) {
+        sections.remove(sectionId);
+        return 1;
+    }
 }

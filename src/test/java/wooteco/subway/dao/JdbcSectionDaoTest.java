@@ -76,4 +76,15 @@ class JdbcSectionDaoTest {
 
         assertThat(sectionDao.updateSections(sections)).isEqualTo(2);
     }
+
+    @Test
+    @DisplayName("Section을 삭제할 수 있다.")
+    void delete() {
+        long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
+        Station station1 = stationDao.save(new Station("오리"));
+        Station station2 = stationDao.save(new Station("배카라"));
+        long sectionId = sectionDao.save(new Section(lineId, station1, station2, 10));
+
+        assertThat(sectionDao.delete(sectionId)).isEqualTo(1);
+    }
 }

@@ -10,4 +10,6 @@ public interface SectionDao {
     List<Section> findAllByLineId(long lineId);
 
     int updateSections(List<Section> sections);
+
+    int delete(long sectionId);
 }
