@@ -17,14 +17,11 @@ public class JdbcLineDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertActor;
-    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> {
-        Line line = new Line(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("color")
-        );
-        return line;
-    };
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
+        resultSet.getLong("id"),
+        resultSet.getString("name"),
+        resultSet.getString("color")
+    );
 
     public JdbcLineDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
