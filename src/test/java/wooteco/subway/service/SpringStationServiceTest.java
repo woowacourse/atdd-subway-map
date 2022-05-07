@@ -6,27 +6,36 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.TestConstructor.AutowireMode;
+import wooteco.subway.dao.StationRepository;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.StationDuplicateException;
 import wooteco.subway.service.dto.StationServiceRequest;
 
-@DisplayName("SpringStationService 는")
-@SpringBootTest
-@Transactional
+@DisplayName("지하철역 서비스")
+@TestConstructor(autowireMode = AutowireMode.ALL)
+@JdbcTest
 class SpringStationServiceTest {
 
     private static final StationServiceRequest STATION_FIXTURE = new StationServiceRequest("선릉역");
     private static final StationServiceRequest STATION_FIXTURE2 = new StationServiceRequest("강남역");
     private static final StationServiceRequest STATION_FIXTURE3 = new StationServiceRequest("역삼역");
 
-    @Autowired
-    private StationService stationService;
+    private final StationService stationService;
+
+    public SpringStationServiceTest(DataSource dataSource, JdbcTemplate jdbcTemplate,
+                                    NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.stationService = new SpringStationService(
+                new StationRepository(jdbcTemplate, dataSource, namedParameterJdbcTemplate));
+    }
 
     @Nested
     @DisplayName("새로운 역을 저장할 때")

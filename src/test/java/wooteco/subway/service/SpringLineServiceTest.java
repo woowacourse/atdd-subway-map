@@ -6,26 +6,36 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.TestConstructor.AutowireMode;
+import wooteco.subway.dao.LineRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.service.dto.LineServiceRequest;
 
-@SpringBootTest
-@Transactional
+@DisplayName("노선 서비스")
+@TestConstructor(autowireMode = AutowireMode.ALL)
+@JdbcTest
 class SpringLineServiceTest {
 
     private static final LineServiceRequest LINE_FIXTURE = new LineServiceRequest("2호선", "bg-color-600");
     private static final LineServiceRequest LINE_FIXTURE2 = new LineServiceRequest("3호선", "bg-color-700");
     private static final LineServiceRequest LINE_FIXTURE3 = new LineServiceRequest("4호선", "bg-color-800");
 
-    @Autowired
-    private LineService lineService;
+    private final LineService lineService;
+
+    public SpringLineServiceTest(JdbcTemplate jdbcTemplate, DataSource dataSource,
+                                 NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.lineService = new SpringLineService(
+                new LineRepository(jdbcTemplate, dataSource, namedParameterJdbcTemplate));
+    }
 
     @Nested
     @DisplayName("새로운 노선을 저장할 때")
