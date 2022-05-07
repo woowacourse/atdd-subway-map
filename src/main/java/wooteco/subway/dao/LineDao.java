@@ -20,9 +20,9 @@ public class LineDao {
 
     public static Line findById(Long id) {
         return lines.stream()
-            .filter(value -> value.getId().equals(id))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("조회하려는 id가 없습니다."));
+                .filter(value -> value.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("조회하려는 id가 없습니다."));
     }
 
     public static List<Line> findAll() {
@@ -52,7 +52,7 @@ public class LineDao {
 
     private static boolean isDuplicate(String name, String color) {
         return lines.stream()
-            .anyMatch(value -> value.getName().equals(name) || value.getColor().equals(color));
+                .anyMatch(value -> value.getName().equals(name) || value.getColor().equals(color));
     }
 
     private static Line createUniqueId(Line line) {
