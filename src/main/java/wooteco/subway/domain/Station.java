@@ -4,10 +4,15 @@ import java.util.Objects;
 
 public class Station {
 
-    private final Name name;
     private Long id;
+    private final Name name;
 
     public Station(final String name) {
+        this.name = new Name(name);
+    }
+
+    public Station(final Long id, final String name) {
+        this.id = id;
         this.name = new Name(name);
     }
 

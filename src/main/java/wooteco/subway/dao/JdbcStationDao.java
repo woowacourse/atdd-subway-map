@@ -20,12 +20,10 @@ public class JdbcStationDao implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<Station> rowMapper = (resultSet, rowNumber) -> {
-        Station station = new Station(
-                resultSet.getString("name")
-        );
-        return setId(station, resultSet.getLong("id"));
-    };
+    private final RowMapper<Station> rowMapper = (resultSet, rowNumber) -> new Station(
+              Long.parseLong(resultSet.getString("id")),
+              resultSet.getString("name")
+      );
 
     public JdbcStationDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;

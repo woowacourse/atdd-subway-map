@@ -21,26 +21,17 @@ public class JdbcLineDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<Line> rowMapper = (resultSet, rowNumber) -> {
-        Line line = new Line(
-                resultSet.getString("name"),
-                resultSet.getString("color")
-        );
-        return setId(line, resultSet.getLong("id"));
-    };
+    private final RowMapper<Line> rowMapper = (resultSet, rowNumber) -> new Line(
+            Long.parseLong(resultSet.getString("id")),
+            resultSet.getString("name"),
+            resultSet.getString("color")
+    );
 
     public JdbcLineDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("LINE")
                 .usingGeneratedKeyColumns("id");
-    }
-
-    private Line setId(final Line line, final long id) {
-        final Field field = ReflectionUtils.findField(Line.class, "id");
-        Objects.requireNonNull(field).setAccessible(true);
-        ReflectionUtils.setField(field, line, id);
-        return line;
     }
 
     @Override
@@ -52,6 +43,13 @@ public class JdbcLineDao implements LineDao {
         } catch (final DuplicateKeyException e) {
             return Optional.empty();
         }
+    }
+
+    private Line setId(final Line line, final long id) {
+        final Field field = ReflectionUtils.findField(Line.class, "id");
+        Objects.requireNonNull(field).setAccessible(true);
+        ReflectionUtils.setField(field, line, id);
+        return line;
     }
 
     @Override

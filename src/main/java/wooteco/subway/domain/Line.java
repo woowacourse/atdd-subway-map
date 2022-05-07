@@ -13,6 +13,12 @@ public class Line {
         this.color = color;
     }
 
+    public Line(final Long id, final String name, final String color) {
+        this.id = id;
+        this.name = new Name(name);
+        this.color = color;
+    }
+
     public void updateName(final String name) {
         this.name = new Name(name);
     }
