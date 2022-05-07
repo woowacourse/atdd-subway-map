@@ -212,4 +212,42 @@ class SectionsTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("구간이 하나뿐이어서 제거할 수 없습니다.");
     }
+
+    @Test
+    @DisplayName("입력된 구간이 최상행이라면 해당 구간만 제거된다.")
+    void removeTopSection() {
+        // given
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Station station3 = new Station(3L, "오카라");
+        Section topSection = new Section(1L, 1L, station1, station2, 3);
+        Section bottomSection = new Section(2L, 1L, station2, station3, 4);
+
+        Sections sections = new Sections(List.of(topSection, bottomSection));
+
+        // when
+        sections.removeSection(topSection);
+
+        // then
+        assertThat(sections).isEqualTo(new Sections(List.of(bottomSection)));
+    }
+
+    @Test
+    @DisplayName("입력된 구간이 최하행이라면 해당 구간만 제거된다.")
+    void removeBottomSection() {
+        // given
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Station station3 = new Station(3L, "오카라");
+        Section topSection = new Section(1L, 1L, station1, station2, 3);
+        Section bottomSection = new Section(2L, 1L, station2, station3, 4);
+
+        Sections sections = new Sections(List.of(topSection, bottomSection));
+
+        // when
+        sections.removeSection(bottomSection);
+
+        // then
+        assertThat(sections).isEqualTo(new Sections(List.of(topSection)));
+    }
 }

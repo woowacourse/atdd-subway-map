@@ -78,7 +78,7 @@ public class Sections {
 
     public void addSection(final Section section) {
         validateAdditionalSection(section);
-        if (isTopStation(section) || isBottomStation(section)) {
+        if (isUpperThanTopSection(section) || isLowerThanBottomSection(section)) {
             sections.add(section);
             return;
         }
@@ -147,11 +147,11 @@ public class Sections {
                 .anyMatch(section::equalsDownStation);
     }
 
-    private boolean isTopStation(final Section section) {
+    private boolean isUpperThanTopSection(final Section section) {
         return calculateFirstSection(findAnySection()).isUpSection(section);
     }
 
-    private boolean isBottomStation(final Section section) {
+    private boolean isLowerThanBottomSection(final Section section) {
         return calculateLastSection(findAnySection()).isDownSection(section);
     }
 
@@ -176,6 +176,17 @@ public class Sections {
         if (sections.size() == LIMIT_REMOVE_SIZE) {
             throw new IllegalStateException("구간이 하나뿐이어서 제거할 수 없습니다.");
         }
+        if (isTopSection(section) || isBottomSection(section)) {
+            sections.removeIf(section::equals);
+        }
+    }
+
+    private boolean isTopSection(final Section section) {
+        return calculateFirstSection(findAnySection()).equals(section);
+    }
+
+    private boolean isBottomSection(final Section section) {
+        return calculateLastSection(findAnySection()).equals(section);
     }
 
     public List<Section> getSections() {
