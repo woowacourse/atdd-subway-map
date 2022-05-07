@@ -58,8 +58,16 @@ public class Section {
         return containsStation(section.upStation) || containsStation(section.downStation);
     }
 
-    private boolean containsStation(final Station station) {
-        return this.upStation.equals(station) || this.downStation.equals(station);
+    public boolean containsStation(final Station station) {
+        return isUpStation(station) || isDownStation(station);
+    }
+
+    public boolean isUpStation(final Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isDownStation(final Station station) {
+        return downStation.equals(station);
     }
 
     public boolean equalsUpStation(final Section section) {
@@ -82,6 +90,7 @@ public class Section {
         return new Section(id, lineId, this.upStation, section.upStation, this.distance - section.distance);
     }
 
+    // TODO : 제거 고려
     public Section createExtensionSection(final Section section) {
         return new Section(id, lineId, this.upStation, section.downStation, this.distance + section.distance);
     }

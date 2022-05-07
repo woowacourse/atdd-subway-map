@@ -79,6 +79,47 @@ class SectionTest {
         assertThat(section.isUpSectionOrDownSection(compareSection)).isTrue();
     }
 
+    @Test
+    @DisplayName("입력된 station을 포함하는지 확인할 수 있다.")
+    void containsStation() {
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Station station3 = new Station(3L, "오카라");
+
+        Section section = new Section(1L, station1, station2, 2);
+
+        assertAll(
+                () -> assertThat(section.containsStation(station1)).isTrue(),
+                () -> assertThat(section.containsStation(station3)).isFalse()
+        );
+    }
+
+    @Test
+    @DisplayName("입력된 station이 upStation과 같은지 확인할 수 있다.")
+    void isUpStation() {
+        Station upStation = new Station(1L, "오리");
+        Station downStation = new Station(2L, "배카라");
+        Section section = new Section(1L, upStation, downStation, 2);
+
+        assertAll(
+                () -> assertThat(section.isUpStation(upStation)).isTrue(),
+                () -> assertThat(section.isUpStation(downStation)).isFalse()
+        );
+    }
+
+    @Test
+    @DisplayName("입력된 station이 downStation과 같은지 확인할 수 있다.")
+    void isDownStation() {
+        Station upStation = new Station(1L, "오리");
+        Station downStation = new Station(2L, "배카라");
+        Section section = new Section(1L, upStation, downStation, 2);
+
+        assertAll(
+                () -> assertThat(section.isDownStation(downStation)).isTrue(),
+                () -> assertThat(section.isDownStation(upStation)).isFalse()
+        );
+    }
+
     @ParameterizedTest
     @CsvSource(value = {"4,false", "5,true", "6,true"})
     @DisplayName("입력된 section의 길이가 크거나 같은 지 확인할 수 있다.")
