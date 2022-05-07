@@ -14,12 +14,17 @@ public class SubwayControllerAdvice {
 
     private static final String UNKNOWN_EXCEPTION_MESSAGE = "확인되지 않은 예외가 발생했습니다. 관리자에게 문의해주세요.";
 
-    @ExceptionHandler({SubwayValidationException.class, SubwayNotFoundException.class, SubwayUnknownException.class})
-    public ResponseEntity<ExceptionResponse> handleSubwayException(Exception e) {
+    @ExceptionHandler(SubwayValidationException.class)
+    public ResponseEntity<ExceptionResponse> validationException(Exception e) {
         return new ResponseEntity<>(ExceptionResponse.from(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(SubwayNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> notFoundException(Exception e) {
+        return new ResponseEntity<>(ExceptionResponse.from(e.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({Exception.class, SubwayUnknownException.class})
     public ResponseEntity<ExceptionResponse> unknownException(Exception e) {
         return new ResponseEntity<>(ExceptionResponse.from(UNKNOWN_EXCEPTION_MESSAGE),
                 HttpStatus.INTERNAL_SERVER_ERROR);
