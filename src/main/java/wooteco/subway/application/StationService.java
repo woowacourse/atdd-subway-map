@@ -24,15 +24,17 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public StationResponse save(StationRequest request) {
+    public Station save(StationRequest request) {
         if (stationRepository.existByName(request.getName())) {
             throw new DuplicateStationNameException(request.getName());
         }
+        return stationRepository.save(new Station(request.getName()));
+    }
 
-        Station station = stationRepository.save(new Station(request.getName()));
-
-        return stationDao.queryById(station.getId())
-            .orElseThrow(() -> new NotFoundStationException(station.getId()));
+    @Transactional(readOnly = true)
+    public Station findById(Long id) {
+        return stationRepository.findById(id)
+            .orElseThrow(() -> new NotFoundStationException(id));
     }
 
     public void deleteById(Long id) {
@@ -40,6 +42,12 @@ public class StationService {
             throw new NotFoundStationException(id);
         }
         stationRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public StationResponse queryById(Long id) {
+        return stationDao.queryById(id)
+            .orElseThrow(() -> new NotFoundStationException(id));
     }
 
     @Transactional(readOnly = true)

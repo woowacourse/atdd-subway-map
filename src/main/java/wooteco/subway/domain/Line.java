@@ -1,7 +1,6 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 import wooteco.subway.exception.BlankArgumentException;
 
 public class Line {
@@ -9,7 +8,6 @@ public class Line {
     private final Long id;
     private final String name;
     private final String color;
-    private final List<Section> sections;
 
     public Line(String name, String color) {
         this(null, name, color);
@@ -22,7 +20,6 @@ public class Line {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.sections = new ArrayList<>();
     }
 
     public Long getId() {
@@ -37,15 +34,34 @@ public class Line {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
-    public void addSection(Section section) {
-        sections.add(section);
-    }
-
     public boolean isSameName(String name) {
         return this.name.equals(name);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Line line = (Line) o;
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name)
+            && Objects.equals(color, line.color);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color);
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", color='" + color + '\'' +
+            '}';
     }
 }

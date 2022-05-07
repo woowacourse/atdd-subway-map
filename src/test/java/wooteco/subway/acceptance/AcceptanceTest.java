@@ -38,13 +38,6 @@ public class AcceptanceTest {
         stationRepository.deleteAll();
     }
 
-    @AfterEach
-    public void tearDown() {
-        sectionRepository.deleteAll();
-        lineRepository.deleteAll();
-        stationRepository.deleteAll();
-    }
-
     protected ExtractableResponse<Response> requestCreateStation(String stationName) {
         return RestAssured.given().log().all()
             .body(Map.of("name", stationName))
@@ -56,13 +49,13 @@ public class AcceptanceTest {
     }
 
     protected ExtractableResponse<Response> requestCreateLine(String name, String color,
-                                                              Long upStationId, Long downStationId) {
+                                                              Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = Map.of(
             "name", name,
             "color", color,
             "upStationId", String.valueOf(upStationId),
             "downStationId", String.valueOf(downStationId),
-            "distance", "10");
+            "distance", String.valueOf(distance));
 
         return RestAssured.given().log().all()
             .body(params)

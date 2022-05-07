@@ -1,6 +1,5 @@
 package wooteco.subway.acceptance;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
@@ -11,45 +10,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.repository.SectionRepository;
-import wooteco.subway.repository.LineRepository;
-import wooteco.subway.repository.StationRepository;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-
-    @Autowired
-    private LineRepository lineRepository;
-
-    @Autowired
-    private StationRepository stationRepository;
-
-    @Autowired
-    private SectionRepository sectionRepository;
-
-    @BeforeEach
-    void beforeEach() {
-        sectionRepository.deleteAll();
-        lineRepository.deleteAll();
-        stationRepository.deleteAll();
-    }
-
-    @AfterEach
-    void afterEach() {
-        sectionRepository.deleteAll();
-        lineRepository.deleteAll();
-        stationRepository.deleteAll();
-    }
 
     @DisplayName("지하철 노선 이름에 빈 문자열을 사용할 수 없다")
     @ParameterizedTest
@@ -59,7 +28,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long downStationId = requestCreateStation("역삼역").jsonPath().getLong("id");
 
         ExtractableResponse<Response> response = requestCreateLine(name, "bg-red-600", upStationId,
-            downStationId);
+            downStationId, 10);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -72,7 +41,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long downStationId = requestCreateStation("역삼역").jsonPath().getLong("id");
 
         ExtractableResponse<Response> response = requestCreateLine("신분당선", color, upStationId,
-            downStationId);
+            downStationId, 10);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -86,7 +55,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long downStationId = requestCreateStation("역삼역").jsonPath().getLong("id");
 
         ExtractableResponse<Response> response = requestCreateLine(name, color, upStationId,
-            downStationId);
+            downStationId, 10);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -105,11 +74,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String color = "bg-red-600";
         long upStationId = requestCreateStation("강남역").jsonPath().getLong("id");
         long downStationId = requestCreateStation("역삼역").jsonPath().getLong("id");
-        requestCreateLine(name, color, upStationId, downStationId);
+        requestCreateLine(name, color, upStationId, downStationId, 10);
 
         // when
         ExtractableResponse<Response> response = requestCreateLine(name, color, upStationId,
-            downStationId);
+            downStationId, 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -118,7 +87,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선은 존재하지 않는 상행 또는 하행 역으로 등록할 수 없다.")
     @Test
     void createLineWithNotExistStation() {
-        ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600", 1L, 2L);
+        ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600", 1L, 2L,
+            10);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
@@ -132,7 +102,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long upStationId = requestCreateStation("강남역").jsonPath().getLong("id");
         long downStationId = requestCreateStation("역삼역").jsonPath().getLong("id");
         ExtractableResponse<Response> createResponse = requestCreateLine(name, color, upStationId,
-            downStationId);
+            downStationId, 10);
         Long createdId = createResponse.jsonPath().getLong("id");
 
         // when
@@ -170,9 +140,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long upStationId = requestCreateStation("강남역").jsonPath().getLong("id");
         long downStationId = requestCreateStation("역삼역").jsonPath().getLong("id");
         ExtractableResponse<Response> createResponse1 = requestCreateLine("신분당선", "bg-red-600",
-            upStationId, downStationId);
+            upStationId, downStationId, 10);
         ExtractableResponse<Response> createResponse2 = requestCreateLine("1호선", "bg-blue-600",
-            upStationId, downStationId);
+            upStationId, downStationId, 10);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -198,7 +168,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long upStationId = requestCreateStation("강남역").jsonPath().getLong("id");
         long downStationId = requestCreateStation("역삼역").jsonPath().getLong("id");
         ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600",
-            upStationId, downStationId);
+            upStationId, downStationId, 10);
         long createdId = response.jsonPath().getLong("id");
 
         // when & then
@@ -219,7 +189,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long upStationId = requestCreateStation("강남역").jsonPath().getLong("id");
         long downStationId = requestCreateStation("역삼역").jsonPath().getLong("id");
         ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600",
-            upStationId, downStationId);
+            upStationId, downStationId, 10);
         long createdId = response.jsonPath().getLong("id");
 
         // when & then
@@ -241,7 +211,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String newName = "1호선";
         String newColor = "bg-blue-600";
         ExtractableResponse<Response> createResponse = requestCreateLine("신분당선", "bg-red-600",
-            upStationId, downStationId);
+            upStationId, downStationId, 10);
         long createdId = createResponse.jsonPath().getLong("id");
 
         // when
@@ -272,8 +242,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long upStationId = requestCreateStation("강남역").jsonPath().getLong("id");
         long downStationId = requestCreateStation("역삼역").jsonPath().getLong("id");
         ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600",
-            upStationId, downStationId);
-        requestCreateLine("1호선", "bg-red-600", upStationId, downStationId);
+            upStationId, downStationId, 10);
+        requestCreateLine("1호선", "bg-red-600", upStationId, downStationId, 10);
 
         long createdId = response.jsonPath().getLong("id");
 
@@ -319,8 +289,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long upStationId = requestCreateStation("강남역").jsonPath().getLong("id");
         long downStationId = requestCreateStation("역삼역").jsonPath().getLong("id");
         ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600",
-            upStationId, downStationId);
-        requestCreateLine("1호선", "bg-red-600", upStationId, downStationId);
+            upStationId, downStationId, 10);
+        requestCreateLine("1호선", "bg-red-600", upStationId, downStationId, 10);
         long createdId = response.jsonPath().getLong("id");
 
         // when

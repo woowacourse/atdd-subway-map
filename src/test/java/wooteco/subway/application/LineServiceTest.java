@@ -45,8 +45,9 @@ public class LineServiceTest {
         LineRequest request = new LineRequest("신분당선", "bg-red-600",
             upStation.getId(), downStation.getId(), 10);
 
-        LineResponse response = lineService.save(request);
+        Line line = lineService.save(request);
 
+        LineResponse response = lineService.queryById(line.getId());
         List<Long> actualIds = response.getStations().stream()
             .map(StationResponse::getId)
             .collect(Collectors.toList());
@@ -116,15 +117,15 @@ public class LineServiceTest {
     void queryLine() {
         Station upStation = stationRepository.save(new Station("강남역"));
         Station downStation = stationRepository.save(new Station("역삼역"));
-        LineResponse response = lineService.save(
+        Line line = lineService.save(
             new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10));
 
-        LineResponse expected = lineService.queryById(response.getId());
+        LineResponse expected = lineService.queryById(line.getId());
         List<Long> expectedStationIds = expected.getStations().stream()
             .map(StationResponse::getId)
             .collect(Collectors.toList());
 
-        assertThat(expected.getId()).isEqualTo(response.getId());
+        assertThat(expected.getId()).isEqualTo(line.getId());
         assertThat(expected.getName()).isEqualTo("신분당선");
         assertThat(expected.getColor()).isEqualTo("bg-red-600");
         assertThat(expectedStationIds)
@@ -136,14 +137,16 @@ public class LineServiceTest {
         Station station1 = stationRepository.save(new Station("강남역"));
         Station station2 = stationRepository.save(new Station("역삼역"));
         Station station3 = stationRepository.save(new Station("선릉역"));
-        LineResponse response1 = lineService.save(
+        Line line1 = lineService.save(
             new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10));
-        LineResponse response2 = lineService.save(
+        Line line2 = lineService.save(
             new LineRequest("1호선", "bg-blue-600", station1.getId(), station3.getId(), 10));
 
-        List<LineResponse> lineResponses = lineService.queryAll();
+        List<Long> lineIds = lineService.queryAll().stream()
+            .map(LineResponse::getId)
+            .collect(Collectors.toList());
 
-        assertThat(lineResponses).containsExactlyInAnyOrder(response1, response2);
+        assertThat(lineIds).containsExactlyInAnyOrder(line1.getId(), line2.getId());
     }
 
     @DisplayName("지하철 노선 빈 이름으로 수정")
@@ -155,10 +158,10 @@ public class LineServiceTest {
         LineRequest request = new LineRequest("신분당선", "bg-red-600",
             upStation.getId(), downStation.getId(), 10);
 
-        LineResponse response = lineService.save(request);
+        Line line = lineService.save(request);
 
         assertThatThrownBy(
-            () -> lineService.update(response.getId(), new LineRequest(name, "bg-red-600")))
+            () -> lineService.update(line.getId(), new LineRequest(name, "bg-red-600")))
             .isInstanceOf(BlankArgumentException.class);
     }
 
@@ -171,10 +174,10 @@ public class LineServiceTest {
         LineRequest request = new LineRequest("신분당선", "bg-red-600",
             upStation.getId(), downStation.getId(), 10);
 
-        LineResponse response = lineService.save(request);
+        Line line = lineService.save(request);
 
         assertThatThrownBy(
-            () -> lineService.update(response.getId(), new LineRequest("신분당선", color)))
+            () -> lineService.update(line.getId(), new LineRequest("신분당선", color)))
             .isInstanceOf(BlankArgumentException.class);
     }
 
@@ -186,11 +189,11 @@ public class LineServiceTest {
         LineRequest request = new LineRequest("신분당선", "bg-red-600",
             upStation.getId(), downStation.getId(), 10);
 
-        LineResponse response = lineService.save(request);
+        Line line = lineService.save(request);
 
-        lineService.update(response.getId(), new LineRequest("1호선", "bg-blue-600"));
+        lineService.update(line.getId(), new LineRequest("1호선", "bg-blue-600"));
 
-        Line expectedLine = lineRepository.findById(response.getId()).orElseThrow();
+        Line expectedLine = lineRepository.findById(line.getId()).orElseThrow();
         assertThat(expectedLine.getName()).isEqualTo("1호선");
         assertThat(expectedLine.getColor()).isEqualTo("bg-blue-600");
     }
@@ -214,11 +217,11 @@ public class LineServiceTest {
     void deleteLine() {
         Station upStation = stationRepository.save(new Station("강남역"));
         Station downStation = stationRepository.save(new Station("역삼역"));
-        LineResponse response = lineService.save(
+        Line line = lineService.save(
             new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10));
 
-        lineService.deleteById(response.getId());
+        lineService.deleteById(line.getId());
 
-        assertThat(lineRepository.findById(response.getId())).isEmpty();
+        assertThat(lineRepository.findById(line.getId())).isEmpty();
     }
 }

@@ -7,11 +7,13 @@ import wooteco.subway.dto.ErrorResponse;
 import wooteco.subway.exception.BlankArgumentException;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.NotSplittableSectionException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({DuplicateException.class, BlankArgumentException.class})
+    @ExceptionHandler({DuplicateException.class, BlankArgumentException.class,
+        NotSplittableSectionException.class})
     private ResponseEntity<ErrorResponse> handleExceptionToBadRequest(Exception e) {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }

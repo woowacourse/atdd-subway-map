@@ -1,7 +1,5 @@
 package wooteco.subway.dto;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -10,9 +8,9 @@ public class LineResponse {
     private final Long id;
     private final String name;
     private final String color;
-    private final List<StationResponse> stations;
+    private final Set<StationResponse> stations;
 
-    public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
+    public LineResponse(Long id, String name, String color, Set<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -31,7 +29,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<StationResponse> getStations() {
+    public Set<StationResponse> getStations() {
         return stations;
     }
 
@@ -46,7 +44,7 @@ public class LineResponse {
         LineResponse that = (LineResponse) o;
         return Objects.equals(id, that.id) && Objects.equals(name, that.name)
             && Objects.equals(color, that.color) && Objects
-            .equals(Set.copyOf(stations), Set.copyOf(that.stations));
+            .equals(stations, that.stations);
     }
 
     @Override

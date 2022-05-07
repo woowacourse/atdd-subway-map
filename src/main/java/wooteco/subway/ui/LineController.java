@@ -12,22 +12,28 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.application.LineService;
+import wooteco.subway.application.SectionService;
+import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
 
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLines(@RequestBody LineRequest lineRequest) {
-        LineResponse response = lineService.save(lineRequest);
+        Line line = lineService.save(lineRequest);
+        LineResponse response = lineService.queryById(line.getId());
         return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 
@@ -46,7 +52,8 @@ public class LineController {
     @PutMapping("/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id,
                                                    @RequestBody LineRequest lineRequest) {
-        LineResponse lineResponse = lineService.update(id, lineRequest);
+        lineService.update(id, lineRequest);
+        LineResponse lineResponse = lineService.queryById(id);
         return ResponseEntity.ok(lineResponse);
     }
 
@@ -54,5 +61,12 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<Void> addSection(@PathVariable Long id,
+                                           @RequestBody SectionRequest request) {
+        sectionService.addSection(id, request);
+        return ResponseEntity.ok().build();
     }
 }

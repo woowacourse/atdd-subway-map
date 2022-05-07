@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.BlankArgumentException;
@@ -31,7 +32,7 @@ class StationServiceTest {
     @Test
     void saveByName() {
         String stationName = "something";
-        StationResponse station = stationService.save(new StationRequest(stationName));
+        Station station = stationService.save(new StationRequest(stationName));
         assertThat(stationRepository.findById(station.getId())).isNotEmpty();
     }
 
@@ -56,7 +57,7 @@ class StationServiceTest {
     @DisplayName("지하철 역 삭제")
     @Test
     void deleteById() {
-        StationResponse station = stationService.save(new StationRequest("강남역"));
+        Station station = stationService.save(new StationRequest("강남역"));
 
         stationService.deleteById(station.getId());
 

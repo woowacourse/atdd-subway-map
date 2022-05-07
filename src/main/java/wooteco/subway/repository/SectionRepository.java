@@ -1,7 +1,11 @@
 package wooteco.subway.repository;
 
 import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -9,6 +13,15 @@ import wooteco.subway.domain.Section;
 
 @Repository
 public class SectionRepository {
+
+    private static final RowMapper<Section> ROW_MAPPER = (rs, rn) -> {
+        long id = rs.getLong("id");
+        long lineId = rs.getLong("line_id");
+        long upStationId = rs.getLong("up_station_id");
+        long downStationId = rs.getLong("down_station_id");
+        int distance = rs.getInt("distance");
+        return new Section(id, lineId, upStationId, downStationId, distance);
+    };
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -32,7 +45,54 @@ public class SectionRepository {
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return new Section(id, section);
+        return new Section(id, section.getLineId(), section.getUpStationId(),
+            section.getDownStationId(),
+            section.getDistance());
+    }
+
+    public List<Section> findAllByLineId(Long lineId) {
+        String sql = "SELECT id, line_id, up_station_id, down_station_id, distance "
+            + "FROM SECTION WHERE line_id = ?";
+        return jdbcTemplate.query(sql, ROW_MAPPER, lineId);
+    }
+
+    public Optional<Section> findByLineIdAndUpStationId(Long lineId, Long upStationId) {
+        try {
+            String sql = "SELECT id, line_id, up_station_id, down_station_id, distance "
+                + "FROM SECTION WHERE line_id = ? AND up_station_id = ?";
+            Section section = jdbcTemplate.queryForObject(sql, ROW_MAPPER, lineId, upStationId);
+            return Optional.of(section);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Section> findByLineIdAndDownStationId(Long lineId, Long downStationId) {
+        try {
+            String sql = "SELECT id, line_id, up_station_id, down_station_id, distance "
+                + "FROM SECTION WHERE line_id = ? AND down_station_id = ?";
+            Section section = jdbcTemplate.queryForObject(sql, ROW_MAPPER, lineId, downStationId);
+            return Optional.of(section);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public boolean existByLineIdAndStationId(Long lineId, Long stationId) {
+        String sql = "SELECT EXISTS "
+            + "(SELECT id FROM SECTION "
+            + "WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?) LIMIT 1 ) "
+            + "AS `exists`";
+        return jdbcTemplate.queryForObject(sql, Boolean.class,
+            lineId, stationId, stationId);
+    }
+
+    public Section update(Section section) {
+        jdbcTemplate.update(
+            "UPDATE SECTION SET line_id = ?, up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?",
+            section.getLineId(), section.getUpStationId(), section.getDownStationId(),
+            section.getDistance(), section.getId());
+        return section;
     }
 
     public void deleteAll() {
