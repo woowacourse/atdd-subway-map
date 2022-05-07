@@ -13,14 +13,18 @@ public class Station {
     private String name;
 
     public Station(Long id, String name) {
-        this(name);
+        validate(name);
         this.id = id;
+        this.name = name;
     }
 
     public Station(String name) {
+        this(null, name);
+    }
+
+    private void validate(String name) {
         validateNameRange(name);
         validateLanguageType(name);
-        this.name = name;
     }
 
     private void validateNameRange(String name) {
