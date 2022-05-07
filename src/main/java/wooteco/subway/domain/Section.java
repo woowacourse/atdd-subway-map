@@ -41,11 +41,6 @@ public class Section {
         this(id, section.lineId, section.upStation, section.downStation, section.distance);
     }
 
-    public boolean isSameUpStationAndDownStation(final Station upStation, final Station downStation) {
-        return (this.upStation.equals(upStation) && this.downStation.equals(downStation)) ||
-                (this.upStation.equals(downStation) && this.downStation.equals(upStation));
-    }
-
     public boolean isUpSection(final Section section) {
         return this.upStation.equals(section.downStation);
     }
