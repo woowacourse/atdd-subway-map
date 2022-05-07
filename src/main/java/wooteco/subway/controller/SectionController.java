@@ -12,7 +12,7 @@ import wooteco.subway.dto.SectionSaveRequest;
 import wooteco.subway.service.SectionService;
 
 @RestController
-@RequestMapping("/lines/{lineId}")
+@RequestMapping("/lines/{lineId}/sections")
 public class SectionController {
 
     private final SectionService sectionService;
@@ -21,13 +21,13 @@ public class SectionController {
         this.sectionService = sectionService;
     }
 
-    @PostMapping("/sections")
+    @PostMapping
     public ResponseEntity<Void> saveSection(@PathVariable long lineId, @RequestBody SectionSaveRequest sectionSaveRequest) {
         sectionService.save(lineId, sectionSaveRequest);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/sections")
+    @DeleteMapping
     public ResponseEntity<Void> deleteSection(@PathVariable long lineId, @RequestParam long stationId) {
         sectionService.delete(lineId, stationId);
         return ResponseEntity.ok().build();
