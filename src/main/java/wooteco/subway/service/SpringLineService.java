@@ -17,7 +17,7 @@ public class SpringLineService implements LineService {
 
     @Override
     public Line save(LineRequest lineRequest) {
-        Line line = new Line(null, lineRequest.getName(), lineRequest.getColor());
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         return lineDao.save(line);
     }
 
