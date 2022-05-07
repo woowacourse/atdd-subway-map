@@ -22,6 +22,7 @@ import wooteco.subway.dto.LineResponse;
 class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
+    @DisplayName("새로운 노선을 생성한다.")
     void createLine() {
         // given
         Map<String, String> params = new HashMap<>();
@@ -43,6 +44,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("현재 등록된 노선 전체를 불러온다.")
     void findAllLine() {
         //given
         Map<String, String> params1 = new HashMap<>();
@@ -88,6 +90,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("등록된 노선들 중 입력된 id값과 일치하는 노선을 반환한다. ")
     void findLindById() {
         //given
         Map<String, String> params = new HashMap<>();
@@ -115,6 +118,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("등록된 노선을 수정한다.")
     void update() {
         //given
         Map<String, String> params = new HashMap<>();
@@ -146,6 +150,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("등록된 노선을 삭제한다.")
     void delete() {
         //given
         Map<String, String> params = new HashMap<>();

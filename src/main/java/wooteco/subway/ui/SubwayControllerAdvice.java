@@ -13,7 +13,6 @@ public class SubwayControllerAdvice {
     public ResponseEntity handleIllegalException(RuntimeException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .build();
-
     }
 
 }
