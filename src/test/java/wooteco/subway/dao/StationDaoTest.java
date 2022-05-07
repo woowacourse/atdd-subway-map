@@ -17,14 +17,14 @@ class StationDaoTest {
 
     private static final Station STATION = new Station("강남역");
     
-    private JdbcStationDao stationDao;
+    private StationDao stationDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        stationDao = new JdbcStationDao(jdbcTemplate);
+        stationDao = new StationDao(jdbcTemplate);
     }
 
     @DisplayName("지하철역을 생성한다.")
