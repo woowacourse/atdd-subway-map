@@ -13,12 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
 
 @SuppressWarnings("NonAsciiCharacters")
 @SpringBootTest
-@Transactional
 @Sql("classpath:dao_test_db.sql")
 class LineDaoTest {
 
