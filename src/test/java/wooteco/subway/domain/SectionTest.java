@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class SectionTest {
@@ -76,5 +77,19 @@ class SectionTest {
         Section compareSection = new Section(1L, station1, station3, 3);
 
         assertThat(section.isUpSectionOrDownSection(compareSection)).isTrue();
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"4,false", "5,true", "6,true"})
+    @DisplayName("입력된 section의 길이가 크거나 같은 지 확인할 수 있다.")
+    void isEqualsOrLargerDistance(final int distance, final boolean expected) {
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Station station3 = new Station(3L, "오카라");
+
+        Section section = new Section(1L, station1, station2, 5);
+        Section compareSection = new Section(1L, station1, station3, distance);
+
+        assertThat(section.isEqualsOrLargerDistance(compareSection)).isEqualTo(expected);
     }
 }

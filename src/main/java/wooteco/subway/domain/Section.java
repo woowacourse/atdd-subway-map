@@ -70,6 +70,10 @@ public class Section {
         return downStation.equals(section.downStation);
     }
 
+    public boolean isEqualsOrLargerDistance(final Section section) {
+        return this.distance <= section.distance;
+    }
+
     public Long getId() {
         return id;
     }
