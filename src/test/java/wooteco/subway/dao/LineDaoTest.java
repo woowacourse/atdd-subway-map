@@ -43,8 +43,9 @@ class LineDaoTest {
     @Test
     void deleteById_exist() {
         Line line = lineDao.save(new Line("testName", "black"));
-        lineDao.deleteById(line.getId());
-        assertThat(lineDao.findAll().isEmpty()).isTrue();
+        Long deleteId = lineDao.deleteById(line.getId());
+        assertThatThrownBy(() -> lineDao.findById(deleteId))
+                .isInstanceOf(EmptyResultDataAccessException.class);
     }
 
     @DisplayName("존재하는 노선 id가 없으면 삭제되지 않는지 테스트")

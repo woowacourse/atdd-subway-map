@@ -48,8 +48,9 @@ class StationDaoTest {
     @Test
     void deleteById_exist() {
         Station station = stationDao.save(new Station("testName"));
-        stationDao.deleteById(station.getId());
-        assertThat(stationDao.findAll().isEmpty()).isTrue();
+        Long deleteId = stationDao.deleteById(station.getId());
+        assertThatThrownBy(() ->stationDao.findById(deleteId))
+                .isInstanceOf(EmptyResultDataAccessException.class);
     }
 
     @DisplayName("존재하는 역 id가 없으면 삭제되지 않는지 테스트")
