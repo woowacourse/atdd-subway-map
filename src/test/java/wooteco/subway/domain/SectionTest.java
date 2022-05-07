@@ -64,4 +64,20 @@ class SectionTest {
                 () -> assertThat(downSection.isDownSection(upSection)).isFalse()
         );
     }
+
+    @Test
+    @DisplayName("입력된 section이 upSection 또는 downSection인지 확인할 수 있다.")
+    void isUpSectionOrDownSection() {
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Station station3 = new Station(3L, "오카라");
+
+        Section upSection = new Section(1L, station1, station2, 2);
+        Section downSection = new Section(1L, station2, station3, 3);
+
+        assertAll(
+                () -> assertThat(upSection.isUpSectionOrDownSection(downSection)).isTrue(),
+                () -> assertThat(downSection.isUpSectionOrDownSection(upSection)).isTrue()
+        );
+    }
 }

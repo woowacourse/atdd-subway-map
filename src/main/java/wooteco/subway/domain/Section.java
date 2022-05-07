@@ -54,6 +54,10 @@ public class Section {
         return this.downStation.equals(section.upStation);
     }
 
+    public boolean isUpSectionOrDownSection(final Section section) {
+        return isUpSection(section) || isDownSection(section);
+    }
+
     public Long getId() {
         return id;
     }
