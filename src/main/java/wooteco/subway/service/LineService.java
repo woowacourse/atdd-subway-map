@@ -20,19 +20,19 @@ public class LineService {
     public LineResponse create(final LineRequest request) {
         Line line = new Line(request.getName(), request.getColor());
         final Line savedLine = lineDao.save(line);
-        return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor());
+        return LineResponse.of(savedLine);
     }
 
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id);
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        return LineResponse.of(line);
     }
 
     public void updateById(final Long id, final LineRequest request) {
