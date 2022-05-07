@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,12 +18,15 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(value = {IllegalArgumentException.class})
     public ResponseEntity<ErrorResponse> handleException(final Exception e) {
-        return ResponseEntity.badRequest().body(ErrorResponse.from(e));
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.from(e));
     }
 
     @ExceptionHandler(value = {SubwayMapException.class})
     public ResponseEntity<ErrorResponse> handleSubWayMapException(final SubwayMapException e) {
-        return ResponseEntity.status(e.getHttpStatus())
+        return ResponseEntity
+                .status(e.getHttpStatus())
                 .body(ErrorResponse.from(e));
     }
 
@@ -30,7 +34,9 @@ public class ExceptionAdvice {
     public ResponseEntity<ErrorResponse> handleUnexpectedException(final Exception e,
                                                                    final HttpServletRequest request) {
         log(e, request);
-        return ResponseEntity.internalServerError().body(ErrorResponse.from("서버가 요청을 처리할 수 없습니다."));
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse.from("서버가 요청을 처리할 수 없습니다."));
     }
 
     private void log(final Exception e, final HttpServletRequest request) {
