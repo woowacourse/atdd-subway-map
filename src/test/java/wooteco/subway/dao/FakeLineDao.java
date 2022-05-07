@@ -9,6 +9,9 @@ import wooteco.subway.domain.Line;
 
 public class FakeLineDao implements LineDao {
 
+    private static final int EXECUTED_COLUMN_COUNT_ONE = 1;
+    private static final int EXECUTED_COLUMN_COUNT_NONE = 0;
+
     private Long seq = 0L;
     private final Map<Long, Line> lines = new HashMap<>();
 
@@ -29,9 +32,9 @@ public class FakeLineDao implements LineDao {
     public int deleteById(Long id) {
         if (lines.containsKey(id)) {
             lines.remove(id);
-            return 1;
+            return EXECUTED_COLUMN_COUNT_ONE;
         }
-        return 0;
+        return EXECUTED_COLUMN_COUNT_NONE;
     }
 
     @Override

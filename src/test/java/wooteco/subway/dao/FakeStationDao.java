@@ -8,6 +8,9 @@ import wooteco.subway.domain.Station;
 
 public class FakeStationDao implements StationDao {
 
+    private static final int EXECUTED_COLUMN_COUNT_ONE = 1;
+    private static final int EXECUTED_COLUMN_COUNT_NONE = 0;
+
     private Long seq = 0L;
     private final Map<Long, Station> stations = new HashMap<>();
 
@@ -27,9 +30,9 @@ public class FakeStationDao implements StationDao {
     public int deleteById(Long id) {
         if (stations.containsKey(id)) {
             stations.remove(id);
-            return 1;
+            return EXECUTED_COLUMN_COUNT_ONE;
         }
-        return 0;
+        return EXECUTED_COLUMN_COUNT_NONE;
     }
 
     @Override
