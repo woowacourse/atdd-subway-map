@@ -3,7 +3,6 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
@@ -13,7 +12,6 @@ import wooteco.subway.exception.BadRequestException;
 import wooteco.subway.exception.NotFoundException;
 
 @Service
-@Transactional(readOnly = true)
 public class LineService {
 
     private final LineDao lineDao;
@@ -22,7 +20,6 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    @Transactional
     public LineResponse create(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         validateDuplicateNameAndColor(line.getName(), line.getColor());
@@ -39,7 +36,6 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    @Transactional
     public void updateById(Long id, LineUpdateRequest request) {
         validateDuplicateNameAndColor(request.getName(), request.getColor());
         Line line = findBy(id);
@@ -47,7 +43,6 @@ public class LineService {
         lineDao.modifyById(id, line);
     }
 
-    @Transactional
     public void removeById(Long id) {
         lineDao.deleteById(id);
     }
