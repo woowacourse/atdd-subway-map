@@ -28,7 +28,7 @@ class LineTest {
     }
 
     @ParameterizedTest(name = "이름 : {0}, 메시지 : {1}")
-    @CsvSource({"12345678910, 노선 이름은 10글자를 초과할 수 없습니다.", "노선, 노선 이름은 3글자 이상이어야 합니다."})
+    @CsvSource({"12345678910," + Line.LINE_RANGE_MAX_ERROR_MESSAGE, "12," + Line.LINE_RANGE_MIN_ERROR_MESSAGE})
     @DisplayName("노선 이름이 3글자 미만 10글자 초과일 경우 예외를 발생한다.")
     void invalidName(String value, String message) {
         assertThatIllegalArgumentException()
@@ -64,7 +64,7 @@ class LineTest {
     }
 
     @ParameterizedTest(name = "이름 : {0}, 메시지 : {1}")
-    @CsvSource({"12345678910, 노선 이름은 10글자를 초과할 수 없습니다.", "노선, 노선 이름은 3글자 이상이어야 합니다."})
+    @CsvSource({"12345678910," + Line.LINE_RANGE_MAX_ERROR_MESSAGE, "12," + Line.LINE_RANGE_MIN_ERROR_MESSAGE})
     @DisplayName("노선 이름이 3글자 미만 10글자 초과일 경우 예외를 발생한다.")
     void invalidUpdateName(String value, String message) {
         Line line = new Line("2호선", "blue");

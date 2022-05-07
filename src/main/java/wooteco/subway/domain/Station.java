@@ -8,12 +8,16 @@ public class Station {
     private static final Pattern pattern = Pattern.compile("^[ㄱ-ㅎ|가-힣|0-9]+");
     private static final int MAX_RANGE = 10;
     private static final int MIN_RANGE = 2;
+    public static final String STATION_RANGE_MIN_ERROR_MESSAGE = "지하철 역 이름은 " + MIN_RANGE + "글자 이상이어야 합니다.";
+    public static final String STATION_RANGE_MAX_ERROR_MESSAGE = "지하철 역 이름은 " + MAX_RANGE + "글자를 초과할 수 없습니다.";
+
 
     private Long id;
     private String name;
 
     public Station(Long id, String name) {
-        validate(name);
+        validateNameRange(name);
+        validateLanguageType(name);
         this.id = id;
         this.name = name;
     }
@@ -22,18 +26,13 @@ public class Station {
         this(null, name);
     }
 
-    private void validate(String name) {
-        validateNameRange(name);
-        validateLanguageType(name);
-    }
-
     private void validateNameRange(String name) {
         if (name.length() >= MAX_RANGE) {
-            throw new IllegalArgumentException("지하철 역 이름은 10글자를 초과할 수 없습니다.");
+            throw new IllegalArgumentException(STATION_RANGE_MAX_ERROR_MESSAGE);
         }
 
         if (name.length() < MIN_RANGE) {
-            throw new IllegalArgumentException("지하철 역 이름은 2글자 이상이어야 합니다.");
+            throw new IllegalArgumentException(STATION_RANGE_MIN_ERROR_MESSAGE);
         }
     }
 

@@ -8,6 +8,8 @@ public class Line {
     private static final Pattern pattern = Pattern.compile("^[ㄱ-ㅎ|가-힣|0-9]+");
     private static final int MAX_RANGE = 10;
     private static final int MIN_RANGE = 3;
+    public static final String LINE_RANGE_MIN_ERROR_MESSAGE = "노선 이름은 " + MIN_RANGE + "글자 이상이어야 합니다.";
+    public static final String LINE_RANGE_MAX_ERROR_MESSAGE = "노선 이름은 " + MAX_RANGE + "글자를 초과할 수 없습니다.";
 
     private Long id;
     private String name;
@@ -44,11 +46,11 @@ public class Line {
 
     private void validateNameRange(String name) {
         if (name.length() >= MAX_RANGE) {
-            throw new IllegalArgumentException("노선 이름은 10글자를 초과할 수 없습니다.");
+            throw new IllegalArgumentException(LINE_RANGE_MAX_ERROR_MESSAGE);
         }
 
         if (name.length() < MIN_RANGE) {
-            throw new IllegalArgumentException("노선 이름은 3글자 이상이어야 합니다.");
+            throw new IllegalArgumentException(LINE_RANGE_MIN_ERROR_MESSAGE);
         }
     }
 
