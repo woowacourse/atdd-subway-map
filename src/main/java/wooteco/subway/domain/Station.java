@@ -1,8 +1,8 @@
 package wooteco.subway.domain;
 
 public class Station {
-    private Long id;
-    private String name;
+    private final Long id;
+    private final String name;
 
     public Station(Long id, String name) {
         validateNotNull(name, "name");
@@ -21,6 +21,7 @@ public class Station {
     }
 
     public Station() {
+        this(null, null);
     }
 
     public boolean hasSameNameWith(Station otherStation) {
