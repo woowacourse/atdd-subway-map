@@ -83,11 +83,11 @@ public class Sections {
             return;
         }
         if (hasEqualsUpStation(section)) {
-            addSectionByBetweenEqualsUpSection(section);
+            addSectionByEqualsUpStation(section);
             return;
         }
         if (hasEqualsDownStation(section)) {
-            addSectionByBetweenEqualsDownSection(section);
+            addSectionByEqualsDownStation(section);
             return;
         }
         throw new RuntimeException("section 추가가 불가능한 상태입니다.");
@@ -102,7 +102,7 @@ public class Sections {
         }
     }
 
-    private void addSectionByBetweenEqualsDownSection(final Section section) {
+    private void addSectionByEqualsDownStation(final Section section) {
         Section updatedSection = sections.stream()
                 .filter(section::equalsDownStation)
                 .findFirst()
@@ -115,7 +115,7 @@ public class Sections {
         sections.add(updatedSection.createMiddleSectionByUpStationSection(section));
     }
 
-    private void addSectionByBetweenEqualsUpSection(final Section section) {
+    private void addSectionByEqualsUpStation(final Section section) {
         Section updatedSection = sections.stream()
                 .filter(section::equalsUpStation)
                 .findFirst()
@@ -170,31 +170,49 @@ public class Sections {
     }
 
     public Section removeSection(final Station station) {
-        if (sections.stream()
-        .noneMatch(section -> section.containsStation(station))) {
+        if (notContainsStation(station)) {
             throw new IllegalStateException("해당 역은 구간에 포함되어있지 않습니다.");
         }
         if (sections.size() == LIMIT_REMOVE_SIZE) {
             throw new IllegalStateException("구간이 하나뿐이어서 제거할 수 없습니다.");
         }
         if (isTopStation(station)) {
-            Section topSection = calculateFirstSection(findAnySection());
-            sections.removeIf(topSection::equals);
-            return topSection;
+            return removeTopSection();
         }
         if (isBottomStation(station)) {
-            Section bottomSection = calculateLastSection(findAnySection());
-            sections.removeIf(bottomSection::equals);
-            return bottomSection;
+            return removeBottomSection();
         }
-        Section removeSection = sections.stream()
-                .filter(section -> section.isUpStation(station))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
-        Section updateSection = sections.stream()
-                .filter(section -> section.isDownStation(station))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
+        return removeIntervalStation(station);
+    }
+
+    private boolean notContainsStation(final Station station) {
+        return sections.stream()
+                .noneMatch(section -> section.containsStation(station));
+    }
+
+    private boolean isTopStation(final Station station) {
+        return calculateFirstSection(findAnySection()).isUpStation(station);
+    }
+
+    private Section removeTopSection() {
+        Section topSection = calculateFirstSection(findAnySection());
+        sections.removeIf(topSection::equals);
+        return topSection;
+    }
+
+    private boolean isBottomStation(final Station station) {
+        return calculateLastSection(findAnySection()).isDownStation(station);
+    }
+
+    private Section removeBottomSection() {
+        Section bottomSection = calculateLastSection(findAnySection());
+        sections.removeIf(bottomSection::equals);
+        return bottomSection;
+    }
+
+    private Section removeIntervalStation(final Station station) {
+        Section removeSection = findSectionByUpStation(station);
+        Section updateSection = findSectionByDownStation(station);
 
         sections.removeIf(removeSection::equals);
         sections.removeIf(updateSection::equals);
@@ -202,12 +220,18 @@ public class Sections {
         return removeSection;
     }
 
-    private boolean isTopStation(final Station station) {
-        return calculateFirstSection(findAnySection()).isUpStation(station);
+    private Section findSectionByUpStation(final Station station) {
+        return sections.stream()
+                .filter(section -> section.isUpStation(station))
+                .findAny()
+                .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
     }
 
-    private boolean isBottomStation(final Station station) {
-        return calculateLastSection(findAnySection()).isDownStation(station);
+    private Section findSectionByDownStation(final Station station) {
+        return sections.stream()
+                .filter(section -> section.isDownStation(station))
+                .findAny()
+                .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
     }
 
     public List<Section> getSections() {
