@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -182,20 +183,18 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("구간 제거 시 Section이 포함되지 않은 경우 예외 발생")
+    @DisplayName("구간 제거 시 Station이 포함되지 않은 경우 예외 발생")
     void removeSectionExceptionByNotFoundException() {
         // given
         Station station1 = new Station(1L, "오리");
         Station station2 = new Station(2L, "배카라");
-        Station station3 = new Station(3L, "오카라");
+        Station removeStation = new Station(3L, "오카라");
         Sections sections = new Sections(List.of(new Section(1L, 1L, station1, station2, 2)));
 
-        Section removeSection = new Section(2L, 1L, station1, station3, 2);
-
         // when & then
-        assertThatThrownBy(() -> sections.removeSection(removeSection))
+        assertThatThrownBy(() -> sections.removeSection(removeStation))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("해당 구간이 포함되어있지 않습니다.");
+                .hasMessage("해당 역은 구간에 포함되어있지 않습니다.");
     }
 
     @Test
@@ -208,7 +207,7 @@ class SectionsTest {
         Sections sections = new Sections(List.of(section));
 
         // when & then
-        assertThatThrownBy(() -> sections.removeSection(section))
+        assertThatThrownBy(() -> sections.removeSection(station2))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("구간이 하나뿐이어서 제거할 수 없습니다.");
     }
@@ -226,10 +225,10 @@ class SectionsTest {
         Sections sections = new Sections(List.of(topSection, bottomSection));
 
         // when
-        sections.removeSection(topSection);
+        Section section = sections.removeSection(station1);
 
         // then
-        assertThat(sections).isEqualTo(new Sections(List.of(bottomSection)));
+        assertThat(section).isEqualTo(topSection);
     }
 
     @Test
@@ -245,9 +244,35 @@ class SectionsTest {
         Sections sections = new Sections(List.of(topSection, bottomSection));
 
         // when
-        sections.removeSection(bottomSection);
+        Section section = sections.removeSection(station3);
 
         // then
-        assertThat(sections).isEqualTo(new Sections(List.of(topSection)));
+        assertThat(section).isEqualTo(bottomSection);
+    }
+
+    @Test
+    @DisplayName("입력된 구간이 중간에 있다면 다른 구간이 해당 구간을 연장한다.")
+    void removeMiddleSection() {
+        // given
+        Station topStation = new Station(1L, "오리");
+        Station middleStation = new Station(2L, "배카라");
+        Station bottomStation = new Station(3L, "오카라");
+        Section topSection = new Section(1L, 1L, topStation, middleStation, 3);
+        Section bottomSection = new Section(2L, 1L, middleStation, bottomStation, 4);
+
+        Sections sections = new Sections(List.of(topSection, bottomSection));
+
+        // when
+        sections.removeSection(middleStation);
+        Section section = sections.getSections().get(0);
+
+        // then
+        assertAll(
+                () -> assertThat(sections.getSections()).hasSize(1),
+                () -> assertThat(section.getUpStation()).isEqualTo(topStation),
+                () -> assertThat(section.getDownStation()).isEqualTo(bottomStation),
+                () -> assertThat(section.getDistance()).isEqualTo(7),
+                () -> assertThat(section.getId()).isEqualTo(topSection.getId())
+        );
     }
 }
