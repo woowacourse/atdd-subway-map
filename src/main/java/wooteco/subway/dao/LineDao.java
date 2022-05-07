@@ -12,9 +12,12 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.exception.NoLineFoundException;
 
 @Repository
 public class LineDao {
+
+    private static final int NO_ROW_AFFECTED = 0;
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;
@@ -57,12 +60,18 @@ public class LineDao {
         params.put("color", lineRequest.getColor());
         params.put("id", id);
         SqlParameterSource parameter = new MapSqlParameterSource(params);
-        namedParameterJdbcTemplate.update(sql, parameter);
+        final int theNumberOfAffectedRow = namedParameterJdbcTemplate.update(sql, parameter);
+        if (theNumberOfAffectedRow == NO_ROW_AFFECTED) {
+            throw new NoLineFoundException("id=" + id + " " + lineRequest);
+        }
     }
 
     public void deleteById(Long id) {
         final String sql = "delete from LINE where id = :id";
-        namedParameterJdbcTemplate.update(sql, Map.of("id", id));
+        final int theNumberOfAffectedRow = namedParameterJdbcTemplate.update(sql, Map.of("id", id));
+        if (theNumberOfAffectedRow == NO_ROW_AFFECTED) {
+            throw new NoLineFoundException("id=" + id);
+        }
     }
 
 }

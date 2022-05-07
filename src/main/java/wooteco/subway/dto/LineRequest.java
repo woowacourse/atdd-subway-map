@@ -41,4 +41,12 @@ public class LineRequest {
     public int getDistance() {
         return distance;
     }
+
+    @Override
+    public String toString() {
+        return "LineRequest{" +
+                "name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                '}';
+    }
 }

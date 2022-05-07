@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.exception.NoLineFoundException;
 
 @DisplayName("Line Dao를 통해서")
 @JdbcTest
@@ -82,32 +83,62 @@ class LineDaoTest {
         assertThat(line).isEqualTo(found);
     }
 
-    @Test
-    @DisplayName("아이디로 지하철노선을 삭제할 수 있다")
-    void deleteById() {
-        final Line line = lineDao.save(LINE_FIXTURE);
-        final List<Line> lines = lineDao.findAll();
-        lineDao.deleteById(line.getId());
-        final List<Line> afterDelete = lineDao.findAll();
+    @Nested
+    @DisplayName("아이디로 지하철노선을 삭제할 때")
+    class DeleteLineTest {
 
-        assertThat(lines).isNotEmpty();
-        assertThat(afterDelete).isEmpty();
+        @Test
+        @DisplayName("아이디가 존재한다면 지하철노선을 삭제할 수 있다.")
+        void deleteById() {
+            final Line line = lineDao.save(LINE_FIXTURE);
+            final List<Line> lines = lineDao.findAll();
+            lineDao.deleteById(line.getId());
+            final List<Line> afterDelete = lineDao.findAll();
+
+            assertThat(lines).isNotEmpty();
+            assertThat(afterDelete).isEmpty();
+        }
+
+        @Test
+        @DisplayName("아이디가 존재하지 않는다면 예외를 던진다.")
+        void delete_By_Id_Fail() {
+            assertThatThrownBy(() -> lineDao.deleteById(1L))
+                    .isInstanceOf(NoLineFoundException.class)
+                    .hasMessageContaining("요청한 노선이 존재하지 않습니다. id=1");
+        }
+
     }
 
-    @Test
-    @DisplayName("노선 이름과 색상을 변경할 수 있다")
-    void update() {
-        final Line line = lineDao.save(LINE_FIXTURE);
-        final Long id = line.getId();
-        final LineRequest lineRequest = new LineRequest("22호선", "bg-color-777");
+    @Nested
+    @DisplayName("노선 이름과 색상을 변경하려할 떄")
+    class UpdateLineTest {
 
-        lineDao.update(id, lineRequest);
-        final Line updated = lineDao.findById(id);
+        @Test
+        @DisplayName("노선이 존재하면 노선 이름과 색상을 변경할 수 있다.")
+        void update_Line_Success() {
+            final Line line = lineDao.save(LINE_FIXTURE);
+            final Long id = line.getId();
+            final LineRequest lineRequest = new LineRequest("22호선", "bg-color-777");
 
-        assertAll(
-                () -> assertThat(updated.getId()).isEqualTo(id),
-                () -> assertThat(updated.getName()).isEqualTo("22호선"),
-                () -> assertThat(updated.getColor()).isEqualTo("bg-color-777")
-        );
+            lineDao.update(id, lineRequest);
+            final Line updated = lineDao.findById(id);
+
+            assertAll(
+                    () -> assertThat(updated.getId()).isEqualTo(id),
+                    () -> assertThat(updated.getName()).isEqualTo("22호선"),
+                    () -> assertThat(updated.getColor()).isEqualTo("bg-color-777")
+            );
+        }
+
+        @Test
+        @DisplayName("노선이 존재하지 않으면 예외를 던진다.")
+        void update_Line_Fail() {
+            assertThatThrownBy(() -> lineDao.update(1L, new LineRequest("a", "b")))
+                    .isInstanceOf(NoLineFoundException.class)
+                    .hasMessageContaining("요청한 노선이 존재하지 않습니다. id=1 LineRequest{name='a', color='b'}");
+
+        }
     }
+
+
 }

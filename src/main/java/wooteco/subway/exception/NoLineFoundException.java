@@ -7,4 +7,8 @@ public class NoLineFoundException extends RuntimeException {
     public NoLineFoundException() {
         super(NOT_FOUND_MESSAGE);
     }
+
+    public NoLineFoundException(String invalidInput) {
+        super(NOT_FOUND_MESSAGE + " " + invalidInput);
+    }
 }
