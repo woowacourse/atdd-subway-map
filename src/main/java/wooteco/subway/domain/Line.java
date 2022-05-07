@@ -5,6 +5,7 @@ public class Line {
     private Long id;
     private String name;
     private String color;
+    private Sections sections;
 
     private Line() {
     }
@@ -22,6 +23,12 @@ public class Line {
         validateColorNotEmpty(color);
         this.name = name;
         this.color = color;
+    }
+
+    public Line(String name, String color, Sections sections) {
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
     }
 
     private void validateNameNotEmpty(String name) {
