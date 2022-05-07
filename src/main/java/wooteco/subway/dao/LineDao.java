@@ -2,7 +2,6 @@ package wooteco.subway.dao;
 
 import java.util.Collections;
 import java.util.List;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
@@ -13,7 +12,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.NotFoundException;
 
 @Repository
 public class LineDao {
@@ -38,54 +36,50 @@ public class LineDao {
 
     public Line findById(Long id) {
         final String sql = "SELECT * FROM line WHERE id = :id";
-
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("id", id);
 
-        try {
-            return jdbcTemplate.queryForObject(sql, paramSource, lineRowMapper);
-        } catch (DataAccessException e) {
-            throw new NotFoundException("해당되는 노선은 존재하지 않습니다.");
-        }
+        return jdbcTemplate.queryForObject(sql, paramSource, lineRowMapper);
     }
 
     public Line save(Line line) {
         final String sql = "INSERT INTO line(name, color) VALUES(:name, :color)";
-
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource paramSource = new BeanPropertySqlParameterSource(line);
-        try {
-            jdbcTemplate.update(sql, paramSource, keyHolder);
-        } catch (DataAccessException e) {
-            throw new IllegalArgumentException("중복되는 이름의 지하철 노선이 존재합니다.");
-        }
+
+        jdbcTemplate.update(sql, paramSource, keyHolder);
         return new Line(keyHolder.getKey().longValue(), line.getName(), line.getColor());
     }
 
     public void update(Line line) {
         final String sql = "UPDATE line SET name = :name, color = :color "
                 + "WHERE id = :id";
-
         SqlParameterSource paramSource = new BeanPropertySqlParameterSource(line);
-        try {
-            validateUpdateResult(jdbcTemplate.update(sql, paramSource));
-        } catch (DataAccessException e) {
-            throw new IllegalArgumentException("중복되는 이름의 지하철 노선이 존재합니다.");
-        }
+
+        jdbcTemplate.update(sql, paramSource);
     }
 
     public void deleteById(Long id) {
         final String sql = "DELETE FROM line WHERE id = :id";
-
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("id", id);
 
-        validateUpdateResult(jdbcTemplate.update(sql, paramSource));
+        jdbcTemplate.update(sql, paramSource);
     }
 
-    private void validateUpdateResult(int effectedRowCount) {
-        if (effectedRowCount == 0) {
-            throw new IllegalArgumentException("해당되는 노선은 존재하지 않습니다.");
-        }
+    public boolean existByName(String name) {
+        final String sql = "SELECT COUNT(*) FROM line WHERE name = :name";
+        MapSqlParameterSource paramSource = new MapSqlParameterSource();
+        paramSource.addValue("name", name);
+
+        return jdbcTemplate.queryForObject(sql, paramSource, Integer.class) != 0;
+    }
+
+    public boolean existById(Long id) {
+        final String sql = "SELECT COUNT(*) FROM line WHERE id = :id";
+        MapSqlParameterSource paramSource = new MapSqlParameterSource();
+        paramSource.addValue("id", id);
+
+        return jdbcTemplate.queryForObject(sql, paramSource, Integer.class) != 0;
     }
 }

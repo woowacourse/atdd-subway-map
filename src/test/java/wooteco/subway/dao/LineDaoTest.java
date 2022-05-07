@@ -23,8 +23,7 @@ import wooteco.subway.exception.NotFoundException;
 @SuppressWarnings("NonAsciiCharacters")
 @JdbcTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Sql("classpath:schema.sql")
-@Transactional
+@Sql("classpath:schema-test.sql")
 class LineDaoTest {
 
     private LineDao dao;
@@ -52,115 +51,55 @@ class LineDaoTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @DisplayName("findById 메서드는 단건의 데이터를 조회한다.")
-    @Nested
-    class FindByIdTest {
+    @Test
+    void findById는_단건의_데이터를_조회한다() {
+        LineFixture.setUp(jdbcTemplate, new Line("분당선", "노란색"));
+        Line actual = dao.findById(1L);
+        Line excepted = new Line(1L, "분당선", "노란색");
 
-        @Test
-        void 존재하는_노선의_id가_입력된_경우_성공() {
-            LineFixture.setUp(jdbcTemplate, new Line("분당선", "노란색"));
-            Line actual = dao.findById(1L);
-            Line excepted = new Line(1L, "분당선", "노란색");
-
-            assertThat(actual).isEqualTo(excepted);
-        }
-
-        @Test
-        void 존재하지_않는_역의_id가_입력된_경우_예외발생() {
-            assertThatThrownBy(() -> dao.findById(99999L))
-                .isInstanceOf(NotFoundException.class);
-        }
+        assertThat(actual).isEqualTo(excepted);
     }
 
-    @DisplayName("save 메서드는 데이터를 저장한다")
-    @Nested
-    class SaveTest {
+    @Test
+    void save_메서드는_데이터를_저장한다() {
+        Line actual = dao.save(new Line("8호선", "분홍색"));
 
-        @Test
-        void 중복되지_않는_이름인_경우_성공() {
-            Line actual = dao.save(new Line("8호선", "분홍색"));
+        Line expected = new Line(1L, "8호선", "분홍색");
 
-            Line expected = new Line(1L, "8호선", "분홍색");
-
-            assertThat(actual).isEqualTo(expected);
-        }
-
-        @Test
-        void 중복되지_않는_이름인_경우_성공2() {
-            Line expected = new Line(1L, "8호선", "분홍색");
-            assertAll(() -> {
-                Line actual = dao.save(new Line("8호선", "분홍색"));
-                assertThatThrownBy(() -> dao.save(new Line("8호선", "분홍색")))
-                    .isInstanceOf(IllegalArgumentException.class);
-                Line actual3 = dao.save(new Line("9호선", "분홍색"));
-                assertThat(actual3.getId()).isEqualTo(2L);
-            });
-        }
-
-        @Test
-        void 중복되는_이름인_경우_예외발생() {
-            Line line = new Line("분당선", "노란색");
-            LineFixture.setUp(jdbcTemplate, line);
-
-            assertThatThrownBy(() -> dao.save(line))
-                .isInstanceOf(IllegalArgumentException.class);
-        }
+        assertThat(actual).isEqualTo(expected);
     }
 
-    @DisplayName("update 메서드는 데이터를 수정한다")
-    @Nested
-    class UpdateTest {
+    @Test
+    void update_메서드는_데이터를_수정한다() {
+        LineFixture.setUp(jdbcTemplate, new Line("분당선", "노란색"));
+        dao.update(new Line(1L, "8호선", "노란색"));
 
-        @Test
-        void 유효한_입력값인_경우_성공() {
-            LineFixture.setUp(jdbcTemplate, new Line("분당선", "노란색"));
-            dao.update(new Line(1L, "8호선", "노란색"));
+        String actual = jdbcTemplate.queryForObject("SELECT name FROM line WHERE id = 1",
+            new EmptySqlParameterSource(), String.class);
+        String expected = "8호선";
 
-            String actual = jdbcTemplate.queryForObject("SELECT name FROM line WHERE id = 1",
-                new EmptySqlParameterSource(), String.class);
-            String expected = "8호선";
-
-            assertThat(actual).isEqualTo(expected);
-        }
-
-        @Test
-        void 중복되는_이름으로_수정하려는_경우_예외발생() {
-            LineFixture.setUp(jdbcTemplate, new Line("분당선", "노란색"), new Line("2호선", "초록색"));
-            Line line = new Line(1L, "2호선", "노란색");
-
-            assertThatThrownBy(() -> dao.update(line))
-                .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @Test
-        void 존재하지_않는_노선을_수정하려는_경우_예외발생() {
-            Line line = new Line(999999999L, "10호선", "노란색");
-
-            assertThatThrownBy(() -> dao.update(line))
-                .isInstanceOf(IllegalArgumentException.class);
-        }
+        assertThat(actual).isEqualTo(expected);
     }
 
-    @DisplayName("deleteById 메서드는 데이터를 삭제한다")
-    @Nested
-    class DeleteByIdTest {
+    @Test
+    void existById_메서드는_해당_id로_존재_하는지_확인() {
+        dao.save(new Line("3호선", "주황색"));
 
-        @Test
-        void 존재하는_역의_id가_입력된_경우_성공() {
-            LineFixture.setUp(jdbcTemplate, new Line("분당선", "노란색"));
-            dao.deleteById(1L);
+        assertThat(dao.existById(1L)).isTrue();
+    }
 
-            boolean exists = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM line WHERE id = 1", new EmptySqlParameterSource(),
-                Integer.class) > 0;
+    @Test
+    void existById_메서드는_해당_Name으로_존재_하는지_확인() {
+        dao.save(new Line("3호선", "주황색"));
 
-            assertThat(exists).isFalse();
-        }
+        assertThat(dao.existByName("3호선")).isTrue();
+    }
 
-        @Test
-        void 존재하지_않는_역의_id가_입력된_경우_예외발생() {
-            assertThatThrownBy(() -> dao.deleteById(99999L))
-                .isInstanceOf(IllegalArgumentException.class);
-        }
+    @Test
+    void delete_메서드는_데이터를_삭제한다() {
+        LineFixture.setUp(jdbcTemplate, new Line("분당선", "노란색"));
+        dao.deleteById(1L);
+
+        assertThat(dao.existById(1L)).isFalse();
     }
 }
