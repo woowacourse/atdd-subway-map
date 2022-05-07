@@ -37,6 +37,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }
 
         @Test
+        void 이름_혹은_색상_정보가_담기지_않은_경우_400_BAD_REQUEST() {
+            Map<String, String> emptyParams = new HashMap<>();
+
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", emptyParams);
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @Test
+        void 이름_혹은_색상_정보가_공백으로_구성된_경우_400_BAD_REQUEST() {
+            Map<String, String> blankParams = jsonLineOf("   ", "  ");
+
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", blankParams);
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @Test
         void 이미_존재하는_노선명_입력시_400_BAD_REQUEST() {
             Map<String, String> params = jsonLineOf("신분당선", "bg-red-600");
             postLine(params);
@@ -114,6 +132,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
             postLine("신분당선", "bg-red-600");
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.PUT, "/lines/2", duplicateLineParams);
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @Test
+        void 이름_혹은_색상_정보가_담기지_않은_경우_400_BAD_REQUEST() {
+            Map<String, String> emptyParams = new HashMap<>();
+
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", emptyParams);
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @Test
+        void 이름_혹은_색상_정보가_공백으로_구성된_경우_400_BAD_REQUEST() {
+            Map<String, String> blankParams = jsonLineOf("   ", "  ");
+
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", blankParams);
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
