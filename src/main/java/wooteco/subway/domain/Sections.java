@@ -75,30 +75,55 @@ public class Sections {
     }
 
     public void addSection(final Section section) {
+        validateAdditionalSection(section);
+        if (isTopStation(section) || isBottomStation(section)) {
+            sections.add(section);
+            return;
+        }
+        if (hasEqualsUpStation(section)) {
+            addSectionByBetweenEqualsUpSection(section);
+            return;
+        }
+        if (hasEqualsDownStation(section)) {
+            addSectionByBetweenEqualsDownSection(section);
+            return;
+        }
+        throw new RuntimeException("section 추가가 불가능한 상태입니다.");
+    }
+
+    private void validateAdditionalSection(final Section section) {
         if (hasNotUpStationOrDownStation(section)) {
             throw new IllegalStateException("구간 추가는 기존의 상행역 하행역 중 하나를 포함해야합니다.");
         }
         if (existUpStationToDownStation(section)) {
             throw new IllegalStateException("이미 상행에서 하행으로 갈 수 있는 구간이 존재합니다.");
         }
-        if (isTopStation(section) || isBottomStation(section)) {
-            sections.add(section);
-            return;
+    }
+
+    private void addSectionByBetweenEqualsDownSection(final Section section) {
+        Section updatedSection = sections.stream()
+                .filter(section::equalsDownStation)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
+        if (updatedSection.isEqualsOrLargerDistance(section)) {
+            throw new IllegalStateException("기존 길이보다 긴 구간은 중간에 추가될 수 없습니다.");
         }
-        if (hasUpStation(section)) {
-            Section updatedSection = sections.stream()
-                    .filter(section::equalsUpStation)
-                    .findFirst()
-                    .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
-            if (updatedSection.isEqualsOrLargerDistance(section)) {
-                throw new IllegalStateException("기존 길이보다 긴 구간은 중간에 추가될 수 없습니다.");
-            }
-            sections.add(section);
-            sections.removeIf(updatedSection::equals);
-            sections.add(updatedSection.createMiddleSectionByDownStationSection(section));
-            return;
+        sections.add(section);
+        sections.removeIf(updatedSection::equals);
+        sections.add(updatedSection.createMiddleSectionByUpStationSection(section));
+    }
+
+    private void addSectionByBetweenEqualsUpSection(final Section section) {
+        Section updatedSection = sections.stream()
+                .filter(section::equalsUpStation)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
+        if (updatedSection.isEqualsOrLargerDistance(section)) {
+            throw new IllegalStateException("기존 길이보다 긴 구간은 중간에 추가될 수 없습니다.");
         }
-        throw new RuntimeException();
+        sections.add(section);
+        sections.removeIf(updatedSection::equals);
+        sections.add(updatedSection.createMiddleSectionByDownStationSection(section));
     }
 
     private boolean hasNotUpStationOrDownStation(final Section section) {
@@ -107,15 +132,15 @@ public class Sections {
     }
 
     private boolean existUpStationToDownStation(final Section section) {
-        return hasUpStation(section) && hasDownStation(section);
+        return hasEqualsUpStation(section) && hasEqualsDownStation(section);
     }
 
-    private boolean hasUpStation(final Section section) {
+    private boolean hasEqualsUpStation(final Section section) {
         return sections.stream()
                 .anyMatch(section::equalsUpStation);
     }
 
-    private boolean hasDownStation(final Section section) {
+    private boolean hasEqualsDownStation(final Section section) {
         return sections.stream()
                 .anyMatch(section::equalsDownStation);
     }
