@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.station.NoSuchStationException;
 
@@ -70,6 +72,37 @@ class StationDaoTest extends DaoTest {
 
         // then
         assertThat(stations).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("노선 id에 해당하는 모든 역을 조회한다.")
+    void FindAllByLineId() {
+        // given
+        final Long lineId = lineDao.insert(new Line("2호선", "bg-green-600"))
+                .orElseThrow()
+                .getId();
+
+        final Station upStation = stationDao.insert(new Station("선릉"))
+                .orElseThrow();
+
+        final Station downStation = stationDao.insert(new Station("노원"))
+                .orElseThrow();
+
+        final List<Station> expected = List.of(upStation, downStation);
+
+        final Section section = new Section(
+                lineId,
+                upStation.getId(),
+                downStation.getId(),
+                10
+        );
+        sectionDao.insert(section);
+
+        // when
+        final List<Station> actual = stationDao.findAllByLineId(lineId);
+
+        // then
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test

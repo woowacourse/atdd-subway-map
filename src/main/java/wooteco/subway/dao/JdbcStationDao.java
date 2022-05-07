@@ -70,6 +70,12 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
+    public List<Station> findAllByLineId(final Long lineId) {
+        final String sql = "SELECT * FROM station WHERE id IN(SELECT st.id FROM section AS se INNER JOIN station AS st ON se.up_station_id = st.id WHERE se.line_id = ?) OR id IN(SELECT st.id FROM section AS se INNER JOIN station AS st ON se.down_station_id = st.id WHERE se.line_id = ?)";
+        return jdbcTemplate.query(sql, rowMapper, lineId, lineId);
+    }
+
+    @Override
     public Integer deleteById(final Long id) {
         final String sql = "DELETE FROM station WHERE id = ?";
         final int affectedRows = jdbcTemplate.update(sql, id);
