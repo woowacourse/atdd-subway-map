@@ -8,6 +8,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.station.StationRequest;
 import wooteco.subway.dto.station.StationResponse;
+import wooteco.subway.exception.station.DuplicateStationException;
 
 @Service
 @Transactional
@@ -22,7 +23,7 @@ public class StationService {
     public StationResponse create(final StationRequest request) {
         final Station station = new Station(request.getName());
         final Station savedStation = stationDao.insert(station)
-                .orElseThrow(() -> new IllegalArgumentException("중복된 이름의 역은 저장할 수 없습니다."));
+                .orElseThrow(DuplicateStationException::new);
         return StationResponse.from(savedStation);
     }
 

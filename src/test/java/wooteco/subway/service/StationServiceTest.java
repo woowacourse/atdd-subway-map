@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.station.StationRequest;
 import wooteco.subway.dto.station.StationResponse;
+import wooteco.subway.exception.station.DuplicateStationException;
 
 class StationServiceTest extends ServiceTest {
 
@@ -52,8 +53,7 @@ class StationServiceTest extends ServiceTest {
 
         // then
         assertThatThrownBy(() -> stationService.create(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("중복된 이름의 역은 저장할 수 없습니다.");
+                .isInstanceOf(DuplicateStationException.class);
     }
 
     @Test
