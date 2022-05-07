@@ -1,7 +1,7 @@
 package wooteco.subway.dao;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
@@ -16,9 +16,6 @@ import wooteco.subway.domain.Station;
 @Repository
 public class StationDao {
 
-    private static final String STATION_NOT_FOUND_EXCEPTION_MESSAGE = "해당되는 역은 존재하지 않습니다.";
-    private static final String NAME_NOT_ALLOWED_EXCEPTION_MESSAGE = "해당 이름의 지하철역을 생성할 수 없습니다.";
-
     private static final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
             new Station(resultSet.getLong("id"),
                     resultSet.getString("name"));
@@ -32,8 +29,27 @@ public class StationDao {
     public List<Station> findAll() {
         final String sql = "SELECT * FROM station";
 
-        List<Station> stations = jdbcTemplate.query(sql, new EmptySqlParameterSource(), stationRowMapper);
-        return Collections.unmodifiableList(stations);
+        return jdbcTemplate.query(sql, new EmptySqlParameterSource(), stationRowMapper);
+    }
+
+    public Optional<Station> findById(Long id) {
+        final String sql = "SELECT * FROM station WHERE id = :id";
+        MapSqlParameterSource paramSource = new MapSqlParameterSource();
+        paramSource.addValue("id", id);
+
+        return jdbcTemplate.query(sql, paramSource, stationRowMapper)
+                .stream()
+                .findFirst();
+    }
+
+    public Optional<Station> findByName(String name) {
+        final String sql = "SELECT * FROM station WHERE name = :name";
+        MapSqlParameterSource paramSource = new MapSqlParameterSource();
+        paramSource.addValue("name", name);
+
+        return jdbcTemplate.query(sql, paramSource, stationRowMapper)
+                .stream()
+                .findFirst();
     }
 
     public Station save(Station station) {
@@ -41,8 +57,7 @@ public class StationDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource paramSource = new BeanPropertySqlParameterSource(station);
 
-        new StatementExecutor<>(() -> jdbcTemplate.update(sql, paramSource, keyHolder))
-                .executeOrThrow(() -> new IllegalArgumentException(NAME_NOT_ALLOWED_EXCEPTION_MESSAGE));
+        jdbcTemplate.update(sql, paramSource, keyHolder);
         Number generatedId = keyHolder.getKey();
         return new Station(generatedId.longValue(), station.getName());
     }
@@ -52,8 +67,6 @@ public class StationDao {
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("id", id);
 
-        new StatementExecutor<>(() -> jdbcTemplate.update(sql, paramSource))
-                .update()
-                .throwOnNonEffected(() -> new IllegalArgumentException(STATION_NOT_FOUND_EXCEPTION_MESSAGE));
+        jdbcTemplate.update(sql, paramSource);
     }
 }

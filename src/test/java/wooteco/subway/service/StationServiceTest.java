@@ -1,4 +1,4 @@
-package wooteco.subway.service2;
+package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -13,19 +13,19 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dto.request.StationRequest;
 import wooteco.subway.dto.response.StationResponse;
-import wooteco.subway.dao2.StationDao2;
+import wooteco.subway.dao.StationDao;
 
 @SuppressWarnings("NonAsciiCharacters")
 @SpringBootTest
 @Transactional
 @Sql("classpath:dao_test_db.sql")
-class StationService2Test {
+class StationServiceTest {
 
     @Autowired
-    private StationService2 service;
+    private StationService service;
 
     @Autowired
-    private StationDao2 stationDao;
+    private StationDao stationDao;
 
     @Test
     void findAll_메서드는_모든_데이터를_id_순서대로_조회() {
@@ -67,9 +67,9 @@ class StationService2Test {
         void 존재하는_데이터의_id가_입력된_경우_삭제성공() {
             service.delete(1L);
 
-            boolean exists = stationDao.checkById(1L);
+            boolean notFound = stationDao.findById(1L).isEmpty();
 
-            assertThat(exists).isFalse();
+            assertThat(notFound).isTrue();
         }
 
         @Test
