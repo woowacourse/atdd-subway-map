@@ -88,4 +88,24 @@ class SectionsTest {
         // then
         assertThat(sections).isEqualTo(expectedSections);
     }
+
+    @Test
+    @DisplayName("입력된 Section의 상행역이 최하행역과 일치할 경우 단순히 추가만 한다.")
+    void addSectionByBottomSection() {
+        // given
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Station station3 = new Station(3L, "오카라");
+        Section section = new Section(1L, 1L, station1, station2, 3);
+        Section addSection = new Section(2L, 1L, station2, station3, 4);
+
+        Sections sections = new Sections(List.of(section));
+        Sections expectedSections = new Sections(List.of(section, addSection));
+
+        // when
+        sections.addSection(addSection);
+
+        // then
+        assertThat(sections).isEqualTo(expectedSections);
+    }
 }

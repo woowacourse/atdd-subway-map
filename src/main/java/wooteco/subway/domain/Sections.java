@@ -81,7 +81,7 @@ public class Sections {
         if (existUpStationToDownStation(section)) {
             throw new IllegalStateException("이미 상행에서 하행으로 갈 수 있는 구간이 존재합니다.");
         }
-        if (isTopStation(section)) {
+        if (isTopStation(section) || isBottomStation(section)) {
             sections.add(section);
             return;
         }
@@ -109,6 +109,24 @@ public class Sections {
 
     private boolean isTopStation(final Section section) {
         return calculateFirstSection(section).equals(section);
+    }
+
+    private boolean isBottomStation(final Section section) {
+        return calculateLastSection(section).equals(section);
+    }
+
+    private Section calculateLastSection(final Section section) {
+        if (!hasDownSection(section)) {
+            return section;
+        }
+        return calculateLastSection(calculateDownSection(section));
+    }
+
+    private Section calculateDownSection(final Section section) {
+        return sections.stream()
+                .filter(section::isDownSection)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
     }
 
     @Override
