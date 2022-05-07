@@ -12,20 +12,20 @@ public class SpringLineService implements LineService {
 
     private final LineDao lineDao;
 
-    public SpringLineService(LineDao lineDao) {
+    public SpringLineService(final LineDao lineDao) {
         this.lineDao = lineDao;
     }
 
     @Override
     @Transactional
-    public Line save(LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+    public Line save(final LineRequest lineRequest) {
+        final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         return lineDao.save(line);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Line findById(Long id) {
+    public Line findById(final Long id) {
         return lineDao.findById(id);
     }
 
@@ -37,13 +37,13 @@ public class SpringLineService implements LineService {
 
     @Override
     @Transactional
-    public void update(Long id, LineRequest lineRequest) {
+    public void update(final Long id, final LineRequest lineRequest) {
         lineDao.update(id, lineRequest);
     }
 
     @Override
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         lineDao.deleteById(id);
     }
 }

@@ -8,7 +8,7 @@ public class LineDuplicateException extends RuntimeException {
         super(DUPLICATED_MESSAGE);
     }
 
-    public LineDuplicateException(String inputtedData) {
+    public LineDuplicateException(final String inputtedData) {
         super(DUPLICATED_MESSAGE + " " + inputtedData);
     }
 }

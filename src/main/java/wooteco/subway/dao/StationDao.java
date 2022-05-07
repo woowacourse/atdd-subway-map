@@ -23,14 +23,14 @@ public class StationDao {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;
 
-    public StationDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate, DataSource dataSource) {
+    public StationDao(final NamedParameterJdbcTemplate namedParameterJdbcTemplate, final DataSource dataSource) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.simpleInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("STATION")
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Station save(Station station) {
+    public Station save(final Station station) {
         final Map<String, Object> params = new HashMap<>();
         params.put("name", station.getName());
         try {
@@ -48,7 +48,7 @@ public class StationDao {
         });
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         final String sql = "delete from STATION where id = :id";
         final int theNumberOfAffectedRow = namedParameterJdbcTemplate.update(sql, Map.of("id", id));
         if (theNumberOfAffectedRow == NO_ROW_AFFECTED) {

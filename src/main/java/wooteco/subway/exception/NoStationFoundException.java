@@ -8,7 +8,7 @@ public class NoStationFoundException extends RuntimeException {
         super(NOT_FOUND_MESSAGE);
     }
 
-    public NoStationFoundException(String inputtedData) {
+    public NoStationFoundException(final String inputtedData) {
         super(NOT_FOUND_MESSAGE + " " + inputtedData);
     }
 }

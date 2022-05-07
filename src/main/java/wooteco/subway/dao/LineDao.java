@@ -24,14 +24,14 @@ public class LineDao {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;
 
-    public LineDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate, DataSource dataSource) {
+    public LineDao(final NamedParameterJdbcTemplate namedParameterJdbcTemplate, final DataSource dataSource) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.simpleInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("LINE")
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Line save(Line line) {
+    public Line save(final Line line) {
         final Map<String, Object> params = new HashMap<>();
         params.put("name", line.getName());
         params.put("color", line.getColor());
@@ -46,33 +46,34 @@ public class LineDao {
     public List<Line> findAll() {
         final String sql = "select id, name, color from LINE";
         return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) -> {
-            return new Line(resultSet.getLong("id"), resultSet.getString("name"), resultSet.getString("color"));
+            return new Line(resultSet.getLong("id"), resultSet.getString("name"),
+                    resultSet.getString("color"));
         });
     }
 
-    public Line findById(Long id) {
+    public Line findById(final Long id) {
         final String sql = "select id, name, color from LINE where id = :id";
-        SqlParameterSource parameter = new MapSqlParameterSource(Map.of("id", id));
+        final SqlParameterSource parameter = new MapSqlParameterSource(Map.of("id", id));
         return namedParameterJdbcTemplate.queryForObject(sql, parameter, (resultSet, rowNum) -> {
             return new Line(resultSet.getLong("id"), resultSet.getString("name"),
                     resultSet.getString("color"));
         });
     }
 
-    public void update(Long id, LineRequest lineRequest) {
+    public void update(final Long id, final LineRequest lineRequest) {
         final String sql = "update LINE set name = :name, color = :color where id = :id";
         final Map<String, Object> params = new HashMap<>();
         params.put("name", lineRequest.getName());
         params.put("color", lineRequest.getColor());
         params.put("id", id);
-        SqlParameterSource parameter = new MapSqlParameterSource(params);
+        final SqlParameterSource parameter = new MapSqlParameterSource(params);
         final int theNumberOfAffectedRow = namedParameterJdbcTemplate.update(sql, parameter);
         if (theNumberOfAffectedRow == NO_ROW_AFFECTED) {
             throw new NoLineFoundException("id=" + id + " " + lineRequest);
         }
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         final String sql = "delete from LINE where id = :id";
         final int theNumberOfAffectedRow = namedParameterJdbcTemplate.update(sql, Map.of("id", id));
         if (theNumberOfAffectedRow == NO_ROW_AFFECTED) {

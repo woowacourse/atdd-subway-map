@@ -6,9 +6,9 @@ import wooteco.subway.dto.StationRequest;
 
 public interface StationService {
 
-    Station save(StationRequest stationRequest);
+    Station save(final StationRequest stationRequest);
 
     List<Station> findAll();
 
-    void deleteById(Long id);
+    void deleteById(final Long id);
 }

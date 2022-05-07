@@ -14,12 +14,12 @@ public class Station {
         this(EMPTY_ID, EMPTY_NAME);
     }
 
-    public Station(Long id, String name) {
+    public Station(final Long id, final String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Station(String name) {
+    public Station(final String name) {
         this(EMPTY_ID, name);
     }
 

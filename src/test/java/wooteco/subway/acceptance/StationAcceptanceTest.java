@@ -24,7 +24,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        ExtractableResponse<Response> response = addStation("강남역");
+        final ExtractableResponse<Response> response = addStation("강남역");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -34,7 +34,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         addStation("강남역");
-        ExtractableResponse<Response> response = addStation("강남역");
+        final ExtractableResponse<Response> response = addStation("강남역");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -42,20 +42,20 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     Stream<DynamicTest> getStations() {
-        ExtractableResponse<Response> createResponse1 = addStation("강남역");
-        ExtractableResponse<Response> createResponse2 = addStation("역삼역");
+        final ExtractableResponse<Response> createResponse1 = addStation("강남역");
+        final ExtractableResponse<Response> createResponse2 = addStation("역삼역");
 
         return Stream.of(
                 DynamicTest.dynamicTest("생성된 지하철역 목록을 불러온다.", () -> {
-                    ExtractableResponse<Response> response = getStations("/stations");
+                    final ExtractableResponse<Response> response = getStations("/stations");
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
                 }),
                 DynamicTest.dynamicTest("생성된 지하철역 목록이 저장한 목록과 일치한지 확인한다.", () -> {
-                    ExtractableResponse<Response> response = getStations("/stations");
-                    List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+                    final ExtractableResponse<Response> response = getStations("/stations");
+                    final List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
                             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                             .collect(Collectors.toList());
-                    List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
+                    final List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
                             .map(StationResponse::getId)
                             .collect(Collectors.toList());
                     assertThat(resultLineIds).containsAll(expectedLineIds);
@@ -66,10 +66,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
-        ExtractableResponse<Response> createResponse = addStation("강남역");
+        final ExtractableResponse<Response> createResponse = addStation("강남역");
 
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final String uri = createResponse.header("Location");
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .delete(uri)
                 .then().log().all()
@@ -79,7 +79,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> addStation(final String name) {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("name", name);
         return RestAssured.given().log().all()
                 .body(params)

@@ -14,14 +14,14 @@ public class SpringStationService implements StationService {
 
     private final StationDao stationDao;
 
-    public SpringStationService(StationDao stationDao) {
+    public SpringStationService(final StationDao stationDao) {
         this.stationDao = stationDao;
     }
 
     @Transactional
     @Override
-    public Station save(StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
+    public Station save(final StationRequest stationRequest) {
+        final Station station = new Station(stationRequest.getName());
         return stationDao.save(station);
     }
 
@@ -35,7 +35,7 @@ public class SpringStationService implements StationService {
 
     @Transactional
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         stationDao.deleteById(id);
     }
 }

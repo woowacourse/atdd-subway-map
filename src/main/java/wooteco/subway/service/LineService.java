@@ -6,13 +6,13 @@ import wooteco.subway.dto.LineRequest;
 
 public interface LineService {
 
-    Line save(LineRequest lineRequest);
+    Line save(final LineRequest lineRequest);
 
-    Line findById(Long id);
+    Line findById(final Long id);
 
     List<Line> findAll();
 
-    void update(Long id, LineRequest lineRequest);
+    void update(final Long id, final LineRequest lineRequest);
 
-    void deleteById(Long id);
+    void deleteById(final Long id);
 }

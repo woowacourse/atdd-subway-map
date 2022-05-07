@@ -6,17 +6,17 @@ public class Line {
     private final String name;
     private final String color;
 
-    public Line(Long id, String name, String color) {
+    public Line(final Long id, final String name, final String color) {
         this.id = id;
         this.name = name;
         this.color = color;
     }
 
-    public Line(String name, String color) {
+    public Line(final String name, final String color) {
         this(null, name, color);
     }
 
-    public boolean isSameId(Long id) {
+    public boolean isSameId(final Long id) {
         return this.id.equals(id);
     }
 

@@ -25,7 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 생성한다.")
     @Test
     void createLine() {
-        ExtractableResponse<Response> response = addLine("신분당선", "bg-red-600");
+        final ExtractableResponse<Response> response = addLine("신분당선", "bg-red-600");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -35,7 +35,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         addLine("강남역", "bg-red-600");
-        ExtractableResponse<Response> response = addLine("강남역", "bg-red-600");
+        final ExtractableResponse<Response> response = addLine("강남역", "bg-red-600");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -43,21 +43,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 조회한다.")
     @TestFactory
     Stream<DynamicTest> getLines() {
-        ExtractableResponse<Response> createResponse1 = addLine("1호선", "bg-red-600");
-        ExtractableResponse<Response> createResponse2 = addLine("2호선", "bg-green-600");
+        final ExtractableResponse<Response> createResponse1 = addLine("1호선", "bg-red-600");
+        final ExtractableResponse<Response> createResponse2 = addLine("2호선", "bg-green-600");
 
         return Stream.of(
                 DynamicTest.dynamicTest("생성된 노선 목록을 불러온다", () -> {
-                    ExtractableResponse<Response> response = getLines("/lines");
+                    final ExtractableResponse<Response> response = getLines("/lines");
 
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
                 }),
                 DynamicTest.dynamicTest("생성된 노선이 저장한 노선과 일치한지 확인한다.", () -> {
-                    ExtractableResponse<Response> response = getLines("/lines");
-                    List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
+                    final ExtractableResponse<Response> response = getLines("/lines");
+                    final List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                             .collect(Collectors.toList());
-                    List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+                    final List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
                             .map(it -> it.getId())
                             .collect(Collectors.toList());
 
@@ -69,10 +69,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 제거한다.")
     @Test
     void deleteLine() {
-        ExtractableResponse<Response> createResponse = addLine("1호선", "bg-red-600");
+        final ExtractableResponse<Response> createResponse = addLine("1호선", "bg-red-600");
 
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final String uri = createResponse.header("Location");
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .delete(uri)
                 .then().log().all()
@@ -84,10 +84,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("특정 노선을 조회한다.")
     @Test
     void getLine() {
-        ExtractableResponse<Response> createResponse = addLine("1호선", "bg-red-600");
+        final ExtractableResponse<Response> createResponse = addLine("1호선", "bg-red-600");
         final LineResponse expected = createResponse.jsonPath().getObject(".", LineResponse.class);
 
-        ExtractableResponse<Response> response = getLines(createResponse.header("Location"));
+        final ExtractableResponse<Response> response = getLines(createResponse.header("Location"));
         final LineResponse actual = response.jsonPath().getObject(".", LineResponse.class);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -97,14 +97,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 갱신한다.")
     @Test
     void updateLine() {
-        ExtractableResponse<Response> createResponse = addLine("1호선", "bg-red-600");
+        final ExtractableResponse<Response> createResponse = addLine("1호선", "bg-red-600");
         final LineResponse expected = createResponse.jsonPath().getObject(".", LineResponse.class);
 
         final String newLineName = "11호선";
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = updateLine(newLineName, "bg-red-600", uri);
+        final String uri = createResponse.header("Location");
+        final ExtractableResponse<Response> response = updateLine(newLineName, "bg-red-600", uri);
 
-        ExtractableResponse<Response> updatedResponse = getLines(uri);
+        final ExtractableResponse<Response> updatedResponse = getLines(uri);
         final LineResponse actual = updatedResponse.jsonPath().getObject(".", LineResponse.class);
 
         assertAll(
@@ -115,7 +115,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> updateLine(final String name, final String color, final String uri) {
-        Map<String, String> newParams = new HashMap<>();
+        final Map<String, String> newParams = new HashMap<>();
         newParams.put("name", name);
         newParams.put("color", "bg-red-600");
         return RestAssured.given().log().all()
@@ -129,7 +129,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> addLine(final String name, final String color) {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
         return RestAssured.given().log().all()

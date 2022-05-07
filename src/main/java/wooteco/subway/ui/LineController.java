@@ -22,45 +22,45 @@ public class LineController {
 
     private final LineService lineService;
 
-    public LineController(LineService lineService) {
+    public LineController(final LineService lineService) {
         this.lineService = lineService;
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line newLine = lineService.save(lineRequest);
-        LineResponse lineResponse = getLineResponse(newLine);
+    public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
+        final Line newLine = lineService.save(lineRequest);
+        final LineResponse lineResponse = getLineResponse(newLine);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineService.findAll();
-        List<LineResponse> lineResponses = lines.stream()
+        final List<Line> lines = lineService.findAll();
+        final List<LineResponse> lineResponses = lines.stream()
                 .map(this::getLineResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line line = lineService.findById(id);
+    public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
+        final Line line = lineService.findById(id);
         return ResponseEntity.ok().body(getLineResponse(line));
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<Void> updateLine(@PathVariable final Long id, @RequestBody final LineRequest lineRequest) {
         lineService.update(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
-    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable final Long id) {
         lineService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
-    private LineResponse getLineResponse(Line it) {
+    private LineResponse getLineResponse(final Line it) {
         return new LineResponse(it.getId(), it.getName(), it.getColor());
     }
 }
