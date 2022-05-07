@@ -1,6 +1,6 @@
-package wooteco.subway.dto.line;
+package wooteco.subway.service.dto.line;
 
-public class LineRequest {
+public class LineRequestDTO {
 
     public static final long DEFAULT_VALUE = 0L;
     private String name;
@@ -9,14 +9,14 @@ public class LineRequest {
     private Long downStationId;
     private int distance;
 
-    public LineRequest() {
+    public LineRequestDTO() {
     }
 
-    public LineRequest(String name, String color) {
+    public LineRequestDTO(String name, String color) {
         this(name, color, DEFAULT_VALUE, DEFAULT_VALUE, 0);
     }
 
-    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public LineRequestDTO(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;

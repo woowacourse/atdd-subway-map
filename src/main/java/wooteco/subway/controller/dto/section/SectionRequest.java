@@ -1,4 +1,4 @@
-package wooteco.subway.dto.section;
+package wooteco.subway.controller.dto.section;
 
 public class SectionRequest {
     private Long upStationId;

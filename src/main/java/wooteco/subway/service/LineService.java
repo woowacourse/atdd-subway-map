@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.line.LineRequest;
-import wooteco.subway.dto.line.LineResponse;
+import wooteco.subway.service.dto.line.LineRequestDTO;
+import wooteco.subway.service.dto.line.LineResponseDTO;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -20,33 +20,33 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line createLine(LineRequest lineRequest) {
-        validateDuplicate(lineRequest.getName(), lineRequest.getColor());
-
-        return lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+    public LineResponseDTO create(LineRequestDTO lineRequestDTO) {
+        validateDuplicate(lineRequestDTO);
+        Line line = lineDao.save(new Line(lineRequestDTO.getName(), lineRequestDTO.getColor()));
+        return new LineResponseDTO(line);
     }
 
-    public Line findById(Long id) {
+    public LineResponseDTO findById(Long id) {
         findAll().stream()
                 .filter(it -> it.getId().equals(id))
                 .findAny()
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당 노선이 존재하지 않습니다."));
 
-        return lineDao.findById(id);
+        return new LineResponseDTO(lineDao.findById(id));
     }
 
     @Transactional(readOnly = true)
-    public List<LineResponse> findAll() {
+    public List<LineResponseDTO> findAll() {
         var allLines = lineDao.findAll();
 
         return allLines.stream()
-                .map(LineResponse::new)
+                .map(LineResponseDTO::new)
                 .collect(Collectors.toList());
     }
 
-    private void validateDuplicate(String name, String color) {
-        validateDuplicateName(name);
-        validateDuplicateColor(color);
+    private void validateDuplicate(LineRequestDTO lineRequestDTO) {
+        validateDuplicateName(lineRequestDTO.getName());
+        validateDuplicateColor(lineRequestDTO.getColor());
     }
 
     private void validateDuplicateName(String name) {
@@ -71,12 +71,12 @@ public class LineService {
                 .anyMatch(it -> it.isColor(color));
     }
 
-    public void updateById(Long id, String name, String color) {
+    public void updateById(Long id, LineRequestDTO lineRequestDTO) {
         validateNonFoundId(id);
-        validateExistName(id, name);
-        validateExistColor(id, color);
+        validateExistName(id, lineRequestDTO.getName());
+        validateExistColor(id, lineRequestDTO.getColor());
 
-        lineDao.update(id, name, color);
+        lineDao.update(id, lineRequestDTO.getName(), lineRequestDTO.getColor());
     }
 
     public void deleteById(Long id) {

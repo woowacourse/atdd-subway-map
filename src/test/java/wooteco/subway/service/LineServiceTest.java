@@ -7,9 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.domain.Line;
-import wooteco.subway.dto.line.LineRequest;
-import wooteco.subway.dto.line.LineResponse;
+import wooteco.subway.service.dto.line.LineRequestDTO;
+import wooteco.subway.service.dto.line.LineResponseDTO;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -35,25 +34,25 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 생성")
     void saveLine() {
-        Line line = lineService.createLine(new LineRequest("2호선", "테스트색20"));
-        assertThat(line.getName()).isEqualTo("2호선");
+        LineResponseDTO lineResponseDTO = lineService.create(new LineRequestDTO("2호선", "테스트색20"));
+        assertThat(lineResponseDTO.getName()).isEqualTo("2호선");
     }
 
     @Test
     @DisplayName("중복 노선 생성시 예외 발생")
     void duplicateLineName() {
-        var lineRequest = new LineRequest("1호선", "테스트색21");
-        lineService.createLine(lineRequest);
+        var lineRequestDTO = new LineRequestDTO("1호선", "테스트색21");
+        lineService.create(lineRequestDTO);
 
-        assertThatThrownBy(() -> lineService.createLine(lineRequest))
+        assertThatThrownBy(() -> lineService.create(lineRequestDTO))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     @DisplayName("노선 조회")
     void findLine() {
-        var lineRequest = new LineRequest("1호선", "blue");
-        var lineResponse = lineService.createLine(lineRequest);
+        var lineRequest = new LineRequestDTO("1호선", "blue");
+        var lineResponse = lineService.create(lineRequest);
         var findLineResponse = lineService.findById(lineResponse.getId());
 
         assertAll(
@@ -74,14 +73,14 @@ class LineServiceTest {
     @DisplayName("노선 목록 조회")
     void findAllLine() {
         //given
-        var lineRequest1 = new LineRequest("1호선", "blue");
-        var lineRequest2 = new LineRequest("2호선", "green");
-        var lineResponse1 = lineService.createLine(lineRequest1);
-        var lineResponse2 = lineService.createLine(lineRequest2);
+        var lineRequest1 = new LineRequestDTO("1호선", "blue");
+        var lineRequest2 = new LineRequestDTO("2호선", "green");
+        var lineResponse1 = lineService.create(lineRequest1);
+        var lineResponse2 = lineService.create(lineRequest2);
 
         //when
         List<Long> ids = lineService.findAll().stream()
-                .map(LineResponse::getId)
+                .map(LineResponseDTO::getId)
                 .collect(Collectors.toList());
 
         //then
@@ -93,11 +92,11 @@ class LineServiceTest {
     @DisplayName("노선 업데이트 성공")
     void updateLine() {
         //given
-        var lineRequest = new LineRequest("1호선", "blue");
-        var lineResponse = lineService.createLine(lineRequest);
+        var lineRequest = new LineRequestDTO("1호선", "blue");
+        var lineResponse = lineService.create(lineRequest);
 
         //when
-        lineService.updateById(lineResponse.getId(), "2호선", "green");
+        lineService.updateById(lineResponse.getId(), new LineRequestDTO("2호선", "green"));
         var lineInfos = lineService.findById(lineResponse.getId());
 
         //then
@@ -108,17 +107,17 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 업데이트 실패")
     void failUpdateLine() {
-        var lineRequest1 = new LineRequest("1호선", "blue");
-        lineService.createLine(lineRequest1);
-        var lineRequest2 = new LineRequest("2호선", "green");
-        var lineResponse2 = lineService.createLine(lineRequest2);
+        var lineRequest1 = new LineRequestDTO("1호선", "blue");
+        lineService.create(lineRequest1);
+        var lineRequest2 = new LineRequestDTO("2호선", "green");
+        var lineResponse2 = lineService.create(lineRequest2);
 
         assertAll(
-                () -> assertThatThrownBy(() -> lineService.updateById(-1L, "3호선", "orange"))
+                () -> assertThatThrownBy(() -> lineService.updateById(-1L, new LineRequestDTO("3호선", "orange")))
                         .isInstanceOf(NoSuchElementException.class),
-                () -> assertThatThrownBy(() -> lineService.updateById(lineResponse2.getId(), "1호선", "black"))
+                () -> assertThatThrownBy(() -> lineService.updateById(lineResponse2.getId(), new LineRequestDTO("1호선", "black")))
                         .isInstanceOf(NoSuchElementException.class),
-                () -> assertThatThrownBy(() -> lineService.updateById(lineResponse2.getId(), "3호선", "blue"))
+                () -> assertThatThrownBy(() -> lineService.updateById(lineResponse2.getId(), new LineRequestDTO("3호선", "blue")))
                         .isInstanceOf(NoSuchElementException.class)
         );
     }
@@ -126,8 +125,8 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 삭제")
     void deleteLine() {
-        var lineRequest = new LineRequest("500호선", "테스트색200");
-        var lineResponse = lineService.createLine(lineRequest);
+        var lineRequest = new LineRequestDTO("500호선", "테스트색200");
+        var lineResponse = lineService.create(lineRequest);
         var id = lineResponse.getId();
 
         lineService.deleteById(id);

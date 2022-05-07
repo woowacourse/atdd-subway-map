@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Station;
+import wooteco.subway.service.dto.station.StationResponseDTO;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -30,9 +30,9 @@ class StationServiceTest {
     @Test
     @DisplayName("지하철 역을 저장할 수 있다.")
     void saveStation() {
-        Station station = stationService.createStation("강남역");
+        StationResponseDTO stationResponseDTO = stationService.createStation("강남역");
 
-        Assertions.assertThat(station.getName()).isEqualTo("강남역");
+        Assertions.assertThat(stationResponseDTO.getName()).isEqualTo("강남역");
     }
 
     @Test
@@ -47,11 +47,11 @@ class StationServiceTest {
     @Test
     @DisplayName("역 삭제 성공")
     void deleteStation() {
-        Station station = stationService.createStation("용문역");
-        Long id = station.getId();
+        StationResponseDTO stationResponseDTO = stationService.createStation("용문역");
+        Long id = stationResponseDTO.getId();
 
-        stationService.deleteStation(id);
-        List<Long> ids = stationService.findAll()
+        stationService.delete(id);
+        List<Long> ids = stationService.showStations()
                 .stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
@@ -62,7 +62,7 @@ class StationServiceTest {
     @Test
     @DisplayName("역 삭제 실패")
     void failDeleteStation() {
-        Assertions.assertThatThrownBy(() -> stationService.deleteStation(1919L))
+        Assertions.assertThatThrownBy(() -> stationService.delete(1919L))
                 .isInstanceOf(NoSuchElementException.class);
     }
 }

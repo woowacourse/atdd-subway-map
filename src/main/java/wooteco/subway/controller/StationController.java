@@ -3,9 +3,9 @@ package wooteco.subway.controller;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.domain.Station;
-import wooteco.subway.dto.station.StationRequest;
-import wooteco.subway.dto.station.StationResponse;
+import wooteco.subway.controller.dto.ControllerDtoAssembler;
+import wooteco.subway.controller.dto.station.StationRequest;
+import wooteco.subway.controller.dto.station.StationResponse;
 import wooteco.subway.service.StationService;
 
 import java.net.URI;
@@ -23,23 +23,21 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = stationService.createStation(stationRequest.getName());
-        StationResponse stationResponse = new StationResponse(station.getId(), station.getName());
+        StationResponse stationResponse = ControllerDtoAssembler.stationResponseByDTO(stationService.createStation(stationRequest.getName()));
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = stationService.findAll();
-        List<StationResponse> stationResponses = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
+        List<StationResponse> stationResponses = stationService.showStations().stream()
+                .map(it -> ControllerDtoAssembler.stationResponseByDTO(it))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(stationResponses);
     }
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        stationService.deleteStation(id);
+        stationService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
