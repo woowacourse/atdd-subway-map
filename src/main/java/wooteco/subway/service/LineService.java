@@ -42,6 +42,7 @@ public class LineService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findLines() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
@@ -49,6 +50,7 @@ public class LineService {
                 .collect(Collectors.toUnmodifiableList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
         Line line = lineDao.findById(id);
         return new LineResponse(line);
