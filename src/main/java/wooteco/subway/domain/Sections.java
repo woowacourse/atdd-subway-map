@@ -72,4 +72,15 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
     }
+
+    public void addSection(final Section section) {
+        if (hasNotUpStationOrDownStation(section)) {
+            throw new IllegalStateException("구간 추가는 상행역 하행역 중 하나를 포함해야합니다.");
+        }
+    }
+
+    private boolean hasNotUpStationOrDownStation(final Section section) {
+        return sections.stream()
+                .noneMatch(section::isUpSectionOrDownSection);
+    }
 }

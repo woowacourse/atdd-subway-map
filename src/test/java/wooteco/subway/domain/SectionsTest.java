@@ -36,4 +36,20 @@ class SectionsTest {
         // then
         assertThat(stations).isEqualTo(new Stations(List.of(station1, station2, station3, station4)));
     }
+
+    @Test
+    @DisplayName("Section을 추가할 때 상행, 하행역을 하나도 포함하지않으면 예외 발생")
+    void addSectionExceptionByNotFoundStation() {
+        // given
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Station station3 = new Station(3L, "오카라");
+        Station station4 = new Station(4L, "배리");
+        Sections sections = new Sections(List.of(new Section(1L, 1L, station1, station2, 2)));
+
+        // when & then
+        assertThatThrownBy(() -> sections.addSection(new Section(1L, station3, station4, 2)))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("구간 추가는 상행역 하행역 중 하나를 포함해야합니다.");
+    }
 }
