@@ -13,7 +13,12 @@ public class SubwayExceptionController {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> handleOtherException(RuntimeException e) {
+    public ResponseEntity<?> handleUncheckedException(RuntimeException e) {
         return ResponseEntity.internalServerError().body("서버에 오류가 있으니 잠시 후 다시 시도해주세요.");
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleCheckedException(Exception e) {
+        return ResponseEntity.internalServerError().body("확인되지 않은 오류가 있습니다. 잠시 후 다시 시도해주세요.");
     }
 }
