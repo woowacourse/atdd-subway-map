@@ -40,23 +40,37 @@ class JdbcSectionDaoTest {
         Section section = new Section(null, id, upStation, downStation, 1);
 
         // when
-        Section savedSection = sectionDao.save(section);
+        long savedSectionId = sectionDao.save(section);
 
         // then
-        assertThat(savedSection.getId()).isNotNull();
+        assertThat(savedSectionId).isNotNull();
     }
 
     @Test
     @DisplayName("Line Id에 해당하는 Section을 조회할 수 있다.")
     void findAllByLineId() {
         long id = lineDao.save(new Line("신분당선", "bg-red-600"));
+        stationDao.save(new Station("오리"));
+        stationDao.save(new Station("배카라"));
+        stationDao.save(new Station("오카라"));
+
+        assertThat(sectionDao.findAllByLineId(id)).hasSize(3);
+    }
+
+    @Test
+    @DisplayName("Sections를 업데이트할 수 있다.")
+    void updateSections() {
+        long id = lineDao.save(new Line("신분당선", "bg-red-600"));
         Station station1 = stationDao.save(new Station("오리"));
         Station station2 = stationDao.save(new Station("배카라"));
         Station station3 = stationDao.save(new Station("오카라"));
 
-        List<Section> expected = List.of(sectionDao.save(new Section(null, id, station1, station2, 1)),
-                sectionDao.save(new Section(null, id, station2, station3, 1)));
+        long sectionId1 = sectionDao.save(new Section(id, station1, station2, 1));
+        long sectionId2 = sectionDao.save(new Section(id, station2, station3, 1));
 
-        assertThat(sectionDao.findAllByLineId(id)).isEqualTo(expected);
+        List<Section> sections = List.of(new Section(sectionId1, id, station1, station3, 3),
+                new Section(sectionId2, id, station2, station3, 1));
+
+        assertThat(sectionDao.updateSections(sections)).isEqualTo(2);
     }
 }

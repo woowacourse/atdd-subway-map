@@ -29,10 +29,10 @@ public class InmemorySectionDao implements SectionDao {
     }
 
     @Override
-    public Section save(final Section section) {
+    public long save(final Section section) {
         Section persistSection = createNewObject(section);
         sections.put(persistSection.getId(), persistSection);
-        return persistSection;
+        return persistSection.getId();
     }
 
     private Section createNewObject(Section section) {
@@ -48,5 +48,13 @@ public class InmemorySectionDao implements SectionDao {
                 .stream()
                 .filter(section -> section.getLineId() == lineId)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public int updateSections(final List<Section> sections) {
+        clear();
+        this.sections.putAll(sections.stream()
+                .collect(Collectors.toMap(Section::getId, section -> section)));
+        return sections.size();
     }
 }

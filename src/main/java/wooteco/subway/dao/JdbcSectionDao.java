@@ -1,8 +1,10 @@
 package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -28,7 +30,7 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public Section save(final Section section) {
+    public long save(final Section section) {
         final String sql = "insert into SECTION (line_id, up_station_id, down_station_id, distance) values(?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -41,8 +43,7 @@ public class JdbcSectionDao implements SectionDao {
             return ps;
         }, keyHolder);
 
-        long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new Section(id, section);
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     @Override
@@ -54,5 +55,26 @@ public class JdbcSectionDao implements SectionDao {
                 + "where line_id = ?";
 
         return jdbcTemplate.query(sql, sectionRowMapper, lineId);
+    }
+
+    @Override
+    public int updateSections(final List<Section> sections) {
+        final String sql = "update SECTION set up_station_id = ?, down_station_id = ?, distance = ? where id = ?";
+        return jdbcTemplate.batchUpdate(sql,
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(final PreparedStatement ps, final int i) throws SQLException {
+                        Section section = sections.get(i);
+                        ps.setLong(1, section.getUpStation().getId());
+                        ps.setLong(2, section.getDownStation().getId());
+                        ps.setInt(3, section.getDistance());
+                        ps.setLong(4, section.getId());
+                    }
+
+                    @Override
+                    public int getBatchSize() {
+                        return sections.size();
+                    }
+                }).length;
     }
 }
