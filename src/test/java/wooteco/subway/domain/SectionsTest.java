@@ -1,7 +1,9 @@
 package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.LinkedList;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -71,6 +73,40 @@ class SectionsTest {
         Section target = new Section(new Station("홍대입구역"), new Station("당산역"), 1);
 
         assertThat(sections.calculateRelation(target)).isEqualTo(Relation.INCLUDE);
+    }
+
+    @DisplayName("추가하려는 구간의 두 역이 이미 존재하면 예외 발생")
+    @Test
+    void 구간_추가_두_역_이미_존재_예외발생() {
+        Section section1 = new Section(new Station("당산역"), new Station("합정역"), 1);
+        Section section2 = new Section(new Station("합정역"), new Station("홍대입구역"), 1);
+        LinkedList<Section> listSections = new LinkedList<>();
+        listSections.add(section1);
+        listSections.add(section2);
+
+        Sections sections = new Sections(listSections);
+        Section target = new Section(new Station("당산역"), new Station("홍대입구역"), 1);
+
+        assertThatThrownBy(() -> sections.add(target))
+                .isInstanceOf(IllegalArgumentException.class);
+
+    }
+
+    @DisplayName("추가하려는 구간과 겹치는 역이 없다면 예외 발생")
+    @Test
+    void 구간_추가_겹치는_역_없음_예외발생() {
+        Section section1 = new Section(new Station("당산역"), new Station("합정역"), 1);
+        Section section2 = new Section(new Station("합정역"), new Station("홍대입구역"), 1);
+        LinkedList<Section> listSections = new LinkedList<>();
+        listSections.add(section1);
+        listSections.add(section2);
+
+        Sections sections = new Sections(listSections);
+        Section target = new Section(new Station("강남역"), new Station("선릉역"), 1);
+
+        assertThatThrownBy(() -> sections.add(target))
+                .isInstanceOf(IllegalArgumentException.class);
+
     }
 
 }

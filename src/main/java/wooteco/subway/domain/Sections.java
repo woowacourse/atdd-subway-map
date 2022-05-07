@@ -26,16 +26,13 @@ public class Sections {
     public Station findBottomTerminal() {
         return sections.getLast().getDown();
     }
-//
-//    public void add(Section newSection) {
-//        for (Section section : sections) {
-//            Relation relation = section.calculateRelation(newSection);
-//            if (relation.equals(Relation.EXTEND)) {
-//                sections.addFirst(newSection);
-//                return;
-//            }
-//        }
-//    }
+
+    public void add(Section newSection) {
+        Relation relation = calculateRelation(newSection);
+        if (relation.equals(Relation.NONE) || relation.equals(Relation.INCLUDE)) {
+            throw new IllegalArgumentException("해당 노선은 추가할 수 없습니다.");
+        }
+    }
 
     public List<Section> getSections() {
         return Collections.unmodifiableList(sections);
