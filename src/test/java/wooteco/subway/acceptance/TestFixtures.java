@@ -8,12 +8,12 @@ import wooteco.subway.dto.LineRequest;
 
 public class TestFixtures {
 
-    public static ExtractableResponse<Response> extractPostResponse(LineRequest lineRequest) {
+    public static <T> ExtractableResponse<Response> extractPostResponse(T request, String url) {
         return RestAssured.given().log().all()
-                .body(lineRequest)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines")
+                .post(url)
                 .then().log().all()
                 .extract();
     }
