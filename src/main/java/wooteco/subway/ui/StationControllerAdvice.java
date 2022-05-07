@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import wooteco.subway.exception.GlobalUnknownException;
 import wooteco.subway.exception.LineDuplicateException;
 import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.exception.NotFoundStationException;
@@ -21,7 +22,7 @@ public class StationControllerAdvice {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Void> unknownException() {
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<GlobalUnknownException> unknownException(Exception e) {
+        return new ResponseEntity<>(new GlobalUnknownException(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
