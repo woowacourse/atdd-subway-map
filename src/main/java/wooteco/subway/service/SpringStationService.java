@@ -33,7 +33,7 @@ public class SpringStationService implements StationService {
 
     private void validateDuplicateName(StationServiceRequest stationServiceRequest) {
         if (stationRepository.existsByName(stationServiceRequest.getName())) {
-            throw new StationDuplicateException();
+            throw new StationDuplicateException(stationServiceRequest.getName());
         }
     }
 

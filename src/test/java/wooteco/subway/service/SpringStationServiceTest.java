@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -10,9 +11,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.StationDuplicateException;
 import wooteco.subway.service.dto.StationServiceRequest;
 
 @DisplayName("SpringStationService 는")
@@ -42,8 +43,10 @@ class SpringStationServiceTest {
         @DisplayName("역 이름이 중복되면 예외가 발생한다.")
         void saveFailIfExists() {
             stationService.save(STATION_FIXTURE);
+
             assertThatThrownBy(() -> stationService.save(STATION_FIXTURE))
-                    .isInstanceOf(DuplicateKeyException.class);
+                    .isInstanceOf(StationDuplicateException.class)
+                    .hasMessage("이미 존재하는 지하철역입니다. : " + STATION_FIXTURE.getName());
         }
     }
 
@@ -66,7 +69,9 @@ class SpringStationServiceTest {
         stationService.deleteById(station.getId());
         final List<Station> afterDelete = stationService.findAll();
 
-        assertThat(stations).isNotEmpty();
-        assertThat(afterDelete).isEmpty();
+        assertAll(
+                () -> assertThat(stations).isNotEmpty(),
+                () -> assertThat(afterDelete).isEmpty()
+        );
     }
 }
