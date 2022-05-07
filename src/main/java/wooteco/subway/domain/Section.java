@@ -90,7 +90,6 @@ public class Section {
         return new Section(id, lineId, this.upStation, section.upStation, this.distance - section.distance);
     }
 
-    // TODO : 제거 고려
     public Section createExtensionSection(final Section section) {
         return new Section(id, lineId, this.upStation, section.downStation, this.distance + section.distance);
     }
