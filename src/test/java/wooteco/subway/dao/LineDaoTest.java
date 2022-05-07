@@ -23,7 +23,7 @@ class LineDaoTest {
 
     @BeforeEach
     void setUp() {
-        lineDao = new LineDao(jdbcTemplate);
+        lineDao = new JdbcLineDao(jdbcTemplate);
     }
 
     @Test

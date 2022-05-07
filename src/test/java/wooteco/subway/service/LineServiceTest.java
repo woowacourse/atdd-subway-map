@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.JdbcLineDao;
 import wooteco.subway.service.dto.line.LineRequestDTO;
 import wooteco.subway.service.dto.line.LineResponseDTO;
 
@@ -28,7 +28,7 @@ class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(new LineDao(jdbcTemplate));
+        lineService = new LineService(new JdbcLineDao(jdbcTemplate));
     }
 
     @Test

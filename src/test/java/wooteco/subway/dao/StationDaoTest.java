@@ -23,7 +23,7 @@ class StationDaoTest {
 
     @BeforeEach
     void setUp() {
-        stationDao = new StationDao(jdbcTemplate);
+        stationDao = new JdbcStationDao(jdbcTemplate);
     }
 
     @Test

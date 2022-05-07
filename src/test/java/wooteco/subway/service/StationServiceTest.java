@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.JdbcStationDao;
 import wooteco.subway.service.dto.station.StationResponseDTO;
 
 import java.util.List;
@@ -24,7 +24,7 @@ class StationServiceTest {
 
     @BeforeEach
     void setUp() {
-        stationService = new StationService(new StationDao(jdbcTemplate));
+        stationService = new StationService(new JdbcStationDao(jdbcTemplate));
     }
 
     @Test
