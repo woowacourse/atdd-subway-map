@@ -18,15 +18,12 @@ public class LineDao {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;
-    private final JdbcTemplate jdbcTemplate;
 
-    public LineDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate, DataSource dataSource,
-                   JdbcTemplate jdbcTemplate) {
+    public LineDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate, DataSource dataSource) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.simpleInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("LINE")
                 .usingGeneratedKeyColumns("id");
-        this.jdbcTemplate = jdbcTemplate;
     }
 
     public Line save(Line line) {
@@ -64,12 +61,8 @@ public class LineDao {
     }
 
     public void deleteById(Long id) {
-        final String sql = "delete from LINE where id = ?";
-        jdbcTemplate.update(sql, id);
+        final String sql = "delete from LINE where id = :id";
+        namedParameterJdbcTemplate.update(sql, Map.of("id", id));
     }
 
-    public void deleteAll() {
-        final String sql = "delete from LINE";
-        jdbcTemplate.update(sql);
-    }
 }

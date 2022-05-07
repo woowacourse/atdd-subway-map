@@ -30,9 +30,6 @@ class LineDaoTest {
     private static final Line LINE_FIXTURE3 = new Line(3L, "line3", "color");
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
@@ -42,7 +39,7 @@ class LineDaoTest {
 
     @BeforeEach
     void setup() {
-        lineDao = new LineDao(namedParameterJdbcTemplate, dataSource, jdbcTemplate);
+        lineDao = new LineDao(namedParameterJdbcTemplate, dataSource);
     }
 
     @Nested
