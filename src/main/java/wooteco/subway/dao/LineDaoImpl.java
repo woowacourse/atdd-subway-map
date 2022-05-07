@@ -1,22 +1,27 @@
 package wooteco.subway.dao;
 
-import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Objects;
-import org.springframework.jdbc.core.JdbcTemplate;
+import javax.sql.DataSource;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
 @Repository
 public class LineDaoImpl implements LineDao {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final SimpleJdbcInsert insertActor;
 
-    public LineDaoImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public LineDaoImpl(DataSource dataSource) {
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.insertActor = new SimpleJdbcInsert(dataSource)
+                .withTableName("line")
+                .usingGeneratedKeyColumns("id");
     }
 
     private static final RowMapper<Line> actorRowMapper = (resultSet, rowNum) -> new Line(
@@ -27,47 +32,42 @@ public class LineDaoImpl implements LineDao {
 
     @Override
     public Line save(Line line) {
-        String sql = "insert into line (name, color) values (?, ?) ";
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, line.getName());
-            ps.setString(2, line.getColor());
-            return ps;
-        }, keyHolder);
-
-        Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
+        Long id = insertActor.executeAndReturnKey(parameters).longValue();
         return new Line(id, line.getName(), line.getColor());
     }
 
     @Override
     public List<Line> findAll() {
         String sql = "select * from line";
-        return jdbcTemplate.query(sql, actorRowMapper);
+        return namedParameterJdbcTemplate.query(sql, actorRowMapper);
     }
 
     @Override
     public int deleteById(Long id) {
-        String sql = "delete from line where id = ?";
-        return jdbcTemplate.update(sql, id);
+        String sql = "delete from line where id = :id";
+        SqlParameterSource namedParameter = new MapSqlParameterSource("id", id);
+        return namedParameterJdbcTemplate.update(sql, namedParameter);
     }
 
     @Override
     public Line findById(Long id) {
-        String sql = "select * from line where id = ?";
-        return jdbcTemplate.queryForObject(sql, actorRowMapper, id);
+        String sql = "select * from line where id = :id";
+        SqlParameterSource namedParameter = new MapSqlParameterSource("id", id);
+        return namedParameterJdbcTemplate.queryForObject(sql, namedParameter, actorRowMapper);
     }
 
     @Override
     public boolean exists(Line line) {
-        String sql = "select exists (select name from line where name = ? or color = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, line.getName(), line.getColor());
+        String sql = "select exists (select name from line where name = :name or color = :color)";
+        SqlParameterSource namedParameters = new BeanPropertySqlParameterSource(line);
+        return Boolean.TRUE.equals(namedParameterJdbcTemplate.queryForObject(sql, namedParameters, Boolean.class));
     }
 
     @Override
-    public int update(Long id, Line updatingLine) {
-        String sql = "update line set name = ?, color = ? where id = ?";
-        return jdbcTemplate.update(sql, updatingLine.getName(), updatingLine.getColor(), id);
+    public int update(Line updatingLine) {
+        String sql = "update line set name = :name, color = :color where id = :id";
+        SqlParameterSource namedParameters = new BeanPropertySqlParameterSource(updatingLine);
+        return namedParameterJdbcTemplate.update(sql, namedParameters);
     }
 }

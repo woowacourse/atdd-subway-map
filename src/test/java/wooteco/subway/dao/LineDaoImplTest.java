@@ -3,6 +3,8 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,24 +12,23 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.line.LineNotFoundException;
 
 @JdbcTest
 @Sql("classpath:lineDao.sql")
 class LineDaoImplTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private DataSource dataSource;
 
     private LineDao lineDao;
     private Line line;
 
     @BeforeEach
     void setUp() {
-        lineDao = new LineDaoImpl(jdbcTemplate);
+        lineDao = new LineDaoImpl(dataSource);
         line = lineDao.save(new Line("신분당선", "red"));
     }
 
@@ -52,18 +53,28 @@ class LineDaoImplTest {
     @Test
     void findById_exception() {
         assertThatThrownBy(() -> lineDao.findById(-1L))
-                .isInstanceOf(LineNotFoundException.class);
+                .isInstanceOf(EmptyResultDataAccessException.class);
+    }
+
+    @DisplayName("모든 노선의 정보를 가져온다.")
+    @Test
+    void findAll() {
+        lineDao.save(new Line("8호선", "pink"));
+
+        List<Line> actual = lineDao.findAll();
+
+        assertThat(actual).hasSize(2);
     }
 
     @DisplayName("id에 해당하는 노선의 정보를 바꾼다.")
     @Test
     void update() {
-        Line updatingLine = new Line("7호선", "darkGreen");
-        lineDao.update(line.getId(), updatingLine);
+        Line updatingLine = new Line(line.getId(), "7호선", "darkGreen");
+        lineDao.update(updatingLine);
 
         Line updated = lineDao.findById(line.getId());
 
-        assertThat(updated).isEqualTo(new Line(line.getId(), "7호선", "darkGreen"));
+        assertThat(updated).isEqualTo(updatingLine);
     }
 
     @DisplayName("id에 해당하는 노선을 제거한다.")

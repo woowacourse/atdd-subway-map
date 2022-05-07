@@ -65,7 +65,7 @@ class LineServiceTest {
     @DisplayName("존재하지 않는 노선을 수정하려하면 예외를 발생시킨다.")
     @Test
     void updateLineById_exception() {
-        assertThatThrownBy(() -> lineService.update(2L, new Line("6호선", "brown")))
+        assertThatThrownBy(() -> lineService.update(new Line(2L, "6호선", "brown")))
                 .isInstanceOf(LineNotFoundException.class);
     }
 }

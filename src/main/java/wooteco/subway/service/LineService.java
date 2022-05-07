@@ -43,8 +43,8 @@ public class LineService {
         }
     }
 
-    public void update(Long id, Line updatingLine) {
-        int executionResult = lineDao.update(id, updatingLine);
+    public void update(Line updatingLine) {
+        int executionResult = lineDao.update(updatingLine);
         if (executionResult == 0) {
             throw new LineNotFoundException();
         }

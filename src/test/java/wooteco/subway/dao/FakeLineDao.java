@@ -50,9 +50,10 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public int update(Long id, Line updatingLine) {
+    public int update(Line updatingLine) {
+        Long id = updatingLine.getId();
         if (lines.containsKey(id)) {
-            lines.put(id, new Line(id, updatingLine.getName(), updatingLine.getColor()));
+            lines.put(id, updatingLine);
             return 1;
         }
         return 0;
