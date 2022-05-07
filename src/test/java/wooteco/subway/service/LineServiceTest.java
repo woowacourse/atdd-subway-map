@@ -28,27 +28,6 @@ class LineServiceTest extends ServiceTest {
     private LineService lineService;
 
     @Test
-    @DisplayName("노선을 생성한다.")
-    void Create() {
-        // given
-        final String name = "7호선";
-        final String color = "bg-red-600";
-
-        final LineRequest request = new LineRequest(name, color, null, null, 0);
-        final Line expected = new Line(name, color);
-
-        given(lineDao.insert(expected))
-                .willReturn(Optional.of(expected));
-
-        // when
-        final LineResponse actual = lineService.create(request);
-
-        // then
-        assertThat(actual.getName()).isEqualTo(expected.getName());
-        assertThat(actual.getColor()).isEqualTo(expected.getColor());
-    }
-
-    @Test
     @DisplayName("노선과 구간을 생성한다.")
     void Create_WithSection_Success() {
         // given
@@ -72,7 +51,7 @@ class LineServiceTest extends ServiceTest {
                 .willReturn(any(Long.class));
 
         // when
-        final LineResponse actual = lineService.create2(request);
+        final LineResponse actual = lineService.create(request);
 
         // then
         assertThat(actual.getName()).isEqualTo(expected.getName());
@@ -98,7 +77,7 @@ class LineServiceTest extends ServiceTest {
                 .willReturn(Optional.empty());
 
         // then
-        assertThatThrownBy(() -> lineService.create2(request))
+        assertThatThrownBy(() -> lineService.create(request))
                 .isInstanceOf(DuplicateLineException.class);
     }
 

@@ -34,8 +34,9 @@ public class AcceptanceTest {
 
     @AfterEach
     void cleanUp() {
-        jdbcTemplate.execute("DELETE FROM station;");
-        jdbcTemplate.execute("DELETE FROM line;");
+        jdbcTemplate.execute("DELETE FROM section");
+        jdbcTemplate.execute("DELETE FROM station");
+        jdbcTemplate.execute("DELETE FROM line");
     }
 
     protected long createAndGetStationId(StationRequest request) {

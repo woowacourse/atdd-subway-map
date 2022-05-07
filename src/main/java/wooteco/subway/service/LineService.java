@@ -34,13 +34,6 @@ public class LineService {
         final Line line = new Line(request.getName(), request.getColor());
         final Line savedLine = lineDao.insert(line)
                 .orElseThrow(DuplicateLineException::new);
-        return LineResponse.from(savedLine);
-    }
-
-    public LineResponse create2(final LineRequest request) {
-        final Line line = new Line(request.getName(), request.getColor());
-        final Line savedLine = lineDao.insert(line)
-                .orElseThrow(DuplicateLineException::new);
 
         final Station upStation = stationDao.findById(request.getUpStationId())
                 .orElseThrow(NoSuchStationException::new);
