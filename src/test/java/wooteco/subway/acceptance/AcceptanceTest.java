@@ -9,7 +9,7 @@ import org.springframework.test.annotation.DirtiesContext;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
     @LocalServerPort
-    int port;
+    protected int port;
 
     @BeforeEach
     public void setUp() {
