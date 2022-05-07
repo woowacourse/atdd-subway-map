@@ -135,7 +135,7 @@ public class LineServiceTest {
 
     @DisplayName("존재하지 않는 ID의 노선을 수정한다면 예외가 발생한다.")
     @Test
-    void updateLine_noExistLine_Exception() throws Exception {
+    void updateLine_noExistLine_Exception() {
         // given
         LineRequest updateRequest = new LineRequest("9호선", "GREEN");
         given(lineDao.findById(1L))
@@ -163,7 +163,7 @@ public class LineServiceTest {
 
     @DisplayName("중복된 색깔로 노선을 수정한다.")
     @Test
-    void updateLine_duplicate_color_exception() throws Exception {
+    void updateLine_duplicate_color_exception() {
         // given
         LineRequest updateRequest = new LineRequest("9호선", "GREEN");
         given(lineDao.findById(1L))
@@ -178,7 +178,7 @@ public class LineServiceTest {
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
-    void deleteLine() throws Exception {
+    void deleteLine() {
         // given
         Line line = new Line(1L, "test", "BLACK");
         given(lineDao.findById(1L))
@@ -191,7 +191,7 @@ public class LineServiceTest {
 
     @DisplayName("삭제 요청 시 ID에 해당하는 지하철 노선이 없다면 에러를 응답한다.")
     @Test
-    void deleteLine_noExistLine_exception() throws Exception {
+    void deleteLine_noExistLine_exception() {
         // given
         given(lineDao.findById(1L))
             .willReturn(Optional.empty());

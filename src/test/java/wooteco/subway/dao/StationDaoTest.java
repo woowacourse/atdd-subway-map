@@ -22,7 +22,7 @@ class StationDaoTest {
     private StationDao stationDao;
 
     @BeforeEach
-    void beforEach() {
+    void beforeEach() {
         stationDao = new StationDao(jdbcTemplate);
     }
 
