@@ -1,9 +1,13 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Line {
     private Long id;
     private String name;
     private String color;
+    List<Station> stations = new ArrayList<>();
 
     public Line(Long id, String name, String color) {
         this.id = id;
@@ -26,5 +30,9 @@ public class Line {
 
     public String getColor() {
         return color;
+    }
+
+    public List<Station> getStations() {
+        return stations;
     }
 }

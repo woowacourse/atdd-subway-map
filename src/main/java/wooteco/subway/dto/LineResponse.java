@@ -1,9 +1,14 @@
 package wooteco.subway.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+import wooteco.subway.domain.Station;
+
 public class LineResponse {
     private Long id;
     private String name;
     private String color;
+    List<StationResponse> stations = new ArrayList<>();
 
     public LineResponse() {
     }
