@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
@@ -9,11 +10,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.NotFoundException;
 
 @SuppressWarnings("NonAsciiCharacters")
 @SpringBootTest
@@ -45,17 +46,41 @@ class LineDaoTest {
     class FindByIdTest {
 
         @Test
-        void 존재하는_데이터의_id가_입력된_경우_성공() {
-            Line actual = dao.findById(1L);
-            Line excepted = new Line(1L, "이미 존재하는 노선 이름", "노란색");
+        void 존재하는_데이터의_id인_경우_해당_데이터가_담긴_Optional_반환() {
+            Line actual = dao.findById(1L).get();
 
-            assertThat(actual).isEqualTo(excepted);
+            Line expected = new Line(1L, "이미 존재하는 노선 이름", "노란색");
+
+            assertThat(actual).isEqualTo(expected);
         }
 
         @Test
-        void 존재하지_않는_데이터의_id가_입력된_경우_예외발생() {
-            assertThatThrownBy(() -> dao.findById(99999L))
-                    .isInstanceOf(NotFoundException.class);
+        void 존재하지_않는_데이터의_id인_경우_비어있는_Optional_반환() {
+            boolean dataFound = dao.findById(9999L).isPresent();
+
+            assertThat(dataFound).isFalse();
+        }
+    }
+
+
+    @DisplayName("findByName 메서드는 name에 해당하는 데이터를 조회한다")
+    @Nested
+    class FindByNameTest {
+
+        @Test
+        void 저장된_name인_경우_해당_데이터가_담긴_Optional_반환() {
+            Line actual = dao.findByName("이미 존재하는 노선 이름").get();
+
+            Line expected = new Line(1L, "이미 존재하는 노선 이름", "노란색");
+
+            assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        void 저장되지_않는_name인_경우_비어있는_Optional_반환() {
+            boolean dataFound = dao.findByName("존재하지 않는 역 이름").isPresent();
+
+            assertThat(dataFound).isFalse();
         }
     }
 
@@ -75,7 +100,7 @@ class LineDaoTest {
         @Test
         void 중복되는_이름인_경우_예외발생() {
             assertThatThrownBy(() -> dao.save(new Line("이미 존재하는 노선 이름", "노란색")))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(DataAccessException.class);
         }
     }
 
@@ -85,7 +110,7 @@ class LineDaoTest {
 
         @Test
         void 중복되지_않는_이름으로_수정_가능() {
-            dao.update(new Line(1L,"새로운 노선 이름", "노란색"));
+            dao.update(new Line(1L, "새로운 노선 이름", "노란색"));
 
             String actual = jdbcTemplate.queryForObject("SELECT name FROM line WHERE id = 1", String.class);
             String expected = "새로운 노선 이름";
@@ -95,7 +120,7 @@ class LineDaoTest {
 
         @Test
         void 색상은_자유롭게_수정_가능() {
-            dao.update(new Line(1L,"이미 존재하는 노선 이름", "새로운 색상"));
+            dao.update(new Line(1L, "이미 존재하는 노선 이름", "새로운 색상"));
 
             String actual = jdbcTemplate.queryForObject("SELECT color FROM line WHERE id = 1", String.class);
             String expected = "새로운 색상";
@@ -105,14 +130,14 @@ class LineDaoTest {
 
         @Test
         void 중복되는_이름으로_수정하려는_경우_예외발생() {
-            assertThatThrownBy(() -> dao.update(new Line(2L,"이미 존재하는 노선 이름", "노란색")))
-                    .isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> dao.update(new Line(2L, "이미 존재하는 노선 이름", "노란색")))
+                    .isInstanceOf(DataAccessException.class);
         }
 
         @Test
-        void 존재하지_않는_노선을_수정하려는_경우_예외발생() {
-            assertThatThrownBy(() -> dao.update(new Line(999999999L,"새로운 노선 이름", "노란색")))
-                    .isInstanceOf(IllegalArgumentException.class);
+        void 존재하지_않는_노선을_수정하려는_경우_예외_미발생() {
+            assertThatNoException()
+                    .isThrownBy(() -> dao.update(new Line(999999999L, "새로운 노선 이름", "노란색")));
         }
     }
 
@@ -131,9 +156,9 @@ class LineDaoTest {
         }
 
         @Test
-        void 존재하지_않는_데이터의_id가_입력된_경우_예외발생() {
-            assertThatThrownBy(() -> dao.deleteById(99999L))
-                    .isInstanceOf(IllegalArgumentException.class);
+        void 존재하지_않는_데이터의_id가_입력되더라도_결과는_동일하므로_예외_미발생() {
+            assertThatNoException()
+                    .isThrownBy(() -> dao.deleteById(99999L));
         }
     }
 }

@@ -7,19 +7,18 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.exception.NotFoundException;
 
 @Service
 public class LineService {
+
+    private static final String LINE_NOT_FOUND_EXCEPTION_MESSAGE = "해당되는 노선은 존재하지 않습니다.";
+    private static final String DUPLICATE_NAME_EXCEPTION_MESSAGE = "중복되는 이름의 지하철 노선이 존재합니다.";
 
     private final LineDao lineDao;
 
     public LineService(LineDao lineDao) {
         this.lineDao = lineDao;
-    }
-
-    public LineResponse save(LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        return toLineResponse(lineDao.save(line));
     }
 
     public List<LineResponse> findAll() {
@@ -30,17 +29,43 @@ public class LineService {
     }
 
     public LineResponse find(Long id) {
-        Line line = lineDao.findById(id);
+        Line line = lineDao.findById(id)
+                .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE));
         return toLineResponse(line);
     }
 
+    public LineResponse save(LineRequest lineRequest) {
+        validateUniqueName(lineRequest.getName());
+
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        return toLineResponse(lineDao.save(line));
+    }
+
     public void update(Long id, LineRequest lineRequest) {
+        validateExistingStation(id);
+        validateUniqueName(lineRequest.getName());
+
         Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
         lineDao.update(line);
     }
 
     public void delete(Long id) {
+        validateExistingStation(id);
         lineDao.deleteById(id);
+    }
+
+    private void validateExistingStation(Long id) {
+        boolean isExistingStation = lineDao.findById(id).isPresent();
+        if (!isExistingStation) {
+            throw new IllegalArgumentException(LINE_NOT_FOUND_EXCEPTION_MESSAGE);
+        }
+    }
+
+    private void validateUniqueName(String name) {
+        boolean isDuplicateName = lineDao.findByName(name).isPresent();
+        if (isDuplicateName) {
+            throw new IllegalArgumentException(DUPLICATE_NAME_EXCEPTION_MESSAGE);
+        }
     }
 
     private LineResponse toLineResponse(Line line) {

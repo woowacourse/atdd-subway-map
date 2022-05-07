@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.LineDao2;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.exception.NotFoundException;
@@ -20,13 +20,13 @@ import wooteco.subway.exception.NotFoundException;
 @SpringBootTest
 @Transactional
 @Sql("classpath:dao_test_db.sql")
-class LineService2Test {
+class LineServiceTest {
 
     @Autowired
-    private LineService2 service;
+    private LineService service;
 
     @Autowired
-    private LineDao2 dao;
+    private LineDao dao;
 
     @Test
     void findAll_메서드는_모든_데이터를_id_순서대로_조회() {
