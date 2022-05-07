@@ -36,10 +36,9 @@ public class StationService {
 
     public List<StationResponse> findStations() {
         List<Station> stations = stationDao.findAll();
-        List<StationResponse> stationResponses = stations.stream()
+        return stations.stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toUnmodifiableList());
-        return stationResponses;
     }
 
     @Transactional

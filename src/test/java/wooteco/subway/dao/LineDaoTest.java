@@ -42,7 +42,6 @@ class LineDaoTest {
         Line line = lineDao.insert(new Line(name, color));
 
         Line foundLine = lineDao.findById(line.getId());
-
         assertThat(foundLine.getName()).isEqualTo(name);
     }
 

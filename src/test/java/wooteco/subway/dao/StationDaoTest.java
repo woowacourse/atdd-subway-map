@@ -35,10 +35,10 @@ class StationDaoTest {
     @Test
     @DisplayName("이미 존재하는 이름의 지하철 역인지 확인한다.")
     void existByName() {
-        Station station = stationDao.insert(new Station("강남역"));
+        stationDao.insert(new Station("강남역"));
         Boolean actual = stationDao.existByName(new Station("강남역"));
 
-        assertThat(actual).isEqualTo(true);
+        assertThat(actual).isTrue();
     }
 
     @Test
