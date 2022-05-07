@@ -7,17 +7,13 @@ public class Station {
     public Station() {
     }
 
-    public Station(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
     public Station(String name) {
         this.name = name;
     }
 
-    public boolean isSameName(Station station) {
-        return this.name.equals(station.name);
+    public Station(Long id, String name) {
+        this(name);
+        this.id = id;
     }
 
     public Long getId() {

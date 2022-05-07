@@ -9,15 +9,14 @@ public class Line {
     private Line() {
     }
 
-    public Line(Long id, String name, String color) {
-        this.id = id;
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+    public Line(Long id, String name, String color) {
+        this(name, color);
+        this.id = id;
     }
 
     public Long getId() {

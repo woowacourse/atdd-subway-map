@@ -14,10 +14,13 @@ public class FakeStationDao implements StationDao {
 
     public Station save(Station station) {
         boolean existName = stations.stream()
-                .anyMatch(station::isSameName);
+                .map(Station::getName)
+                .anyMatch(stations::equals);
+
         if (existName) {
-            throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");
+            throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
         }
+
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
