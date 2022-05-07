@@ -128,7 +128,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     }
 
-
     private ExtractableResponse<Response> addLine(final String name, final String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
@@ -149,5 +148,4 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
-
 }
