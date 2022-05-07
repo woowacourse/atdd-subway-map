@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
@@ -19,12 +20,13 @@ public class LineService {
     }
 
     public LineResponse create(String name, String color) {
-        Line line = new Line(name, color);
-        Line savedLine = lineDao.save(line);
-        return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(), null);
+        try {
+            Line line = lineDao.save(new Line(name, color));
+            return new LineResponse(line.getId(), line.getName(), line.getColor(), null);
+        } catch (DuplicateKeyException e) {
+            throw new DuplicateNameException(name + "은 이미 존재합니다.");
+        }
     }
-
-
 
     public List<LineResponse> findAll() {
         return lineDao.findAll()
@@ -39,7 +41,11 @@ public class LineService {
     }
 
     public void update(Long lineId, String name, String color) {
-        lineDao.update(new Line(lineId, name, color));
+        try {
+            lineDao.update(new Line(lineId, name, color));
+        } catch (DuplicateKeyException e) {
+            throw new DuplicateNameException(name + "은 이미 존재합니다.");
+        }
     }
 
     public void delete(Long lineId) {

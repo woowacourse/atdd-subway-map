@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -9,7 +8,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.exception.NotFoundException;
 
 import javax.sql.DataSource;
@@ -30,12 +28,8 @@ public class LineDao {
 
     public Line save(Line line) {
         final SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
-        try {
-            final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-            return new Line(id, line.getName(), line.getColor());
-        } catch (DuplicateKeyException e) {
-            throw new DuplicateNameException("중복된 지하철 노선 이름이 있습니다.");
-        }
+        final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        return new Line(id, line.getName(), line.getColor());
     }
 
     public List<Line> findAll() {

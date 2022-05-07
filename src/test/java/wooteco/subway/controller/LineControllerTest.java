@@ -46,7 +46,7 @@ class LineControllerTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("중복된 이름을 가진 지하철 노선을 등록할 때 예외를 발생시킨다.")
+    @DisplayName("중복된 이름을 가진 지하철 노선을 등록할 때 400 상태코드로 응답한다.")
     @Test
     void throwsExceptionWhenCreateDuplicatedName() {
         lineDao.save(new Line("신분당선", "red"));
@@ -121,6 +121,23 @@ class LineControllerTest extends AcceptanceTest {
                 () -> assertThat(updatedLine.getName()).isEqualTo("다른분당선"),
                 () -> assertThat(updatedLine.getColor()).isEqualTo("blue")
         );
+    }
+
+    @DisplayName("노선에서 수정하려는 이름을 가진 노선이 존재한다면 400 상태코드로 응답한다.")
+    @Test
+    void updateLineResponse400() {
+        lineDao.save(new Line("다른분당선", "blue"));
+        Line line = lineDao.save(new Line("신분당선", "red"));
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(new Line("다른분당선", "blue"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + line.getId())
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선을 삭제한다.")
