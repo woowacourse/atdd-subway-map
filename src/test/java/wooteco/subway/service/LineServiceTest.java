@@ -34,9 +34,11 @@ class LineServiceTest {
         given(lineDao.isExistName("name")).willReturn(false);
         given(lineDao.insert("name", "red")).willReturn(new Line(1L, "name", "red"));
 
-        assertThat(lineService.insert(lineRequest).getId()).isEqualTo(1L);
-        assertThat(lineService.insert(lineRequest).getName()).isEqualTo("name");
-        assertThat(lineService.insert(lineRequest).getColor()).isEqualTo("red");
+        LineResponse lineResponse = lineService.insert(lineRequest);
+
+        assertThat(lineResponse.getId()).isEqualTo(1L);
+        assertThat(lineResponse.getName()).isEqualTo("name");
+        assertThat(lineResponse.getColor()).isEqualTo("red");
     }
 
     @Test
