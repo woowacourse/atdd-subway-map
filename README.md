@@ -1,39 +1,30 @@
-<p align="center">
-    <img width="200px;" src="https://raw.githubusercontent.com/woowacourse/atdd-subway-admin-frontend/master/images/main_logo.png"/>
-</p>
-<p align="center">
-  <a href="https://techcourse.woowahan.com/c/Dr6fhku7" alt="woowacourse subway">
-    <img alt="Website" src="https://img.shields.io/website?url=https%3A%2F%2Fedu.nextstep.camp%2Fc%2FR89PYi5H">
-  </a>
-  <img alt="GitHub" src="https://img.shields.io/github/license/woowacourse/atdd-subway-map">
-</p>
-
-<br>
-
 # 지하철 노선도 미션
-스프링 과정 실습을 위한 지하철 노선도 애플리케이션
 
-<br>
+---
 
-## 🚀 Getting Started
-### Usage
-#### application 구동
-```
-./gradlew bootRun
-```
-<br>
+## 1단계 기능 요구사항 
+### 지하철 역 정보 관리 API
+- [x] 등록 기능
+- [x] 목록 조회 기능
+  - [x] 이미 등록된 이름이면 에러 응답 
+- [x] 삭제 기능
 
-## ✏️ Code Review Process
-[텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
+### 지하철 노선 관리 API
+- [x] 등록 기능
+  - [x] 이미 등록된 이름이면 에러 응답
+- [x] 전체 목록 조회 기능
+- [x] 단일 노선 조회 기능
+- [x] 수정 기능
+  - [x] 수정 된 노선 이름이 중복이면 에러 응답
+- [x] 삭제 기능
 
-<br>
+## 1단계 프로그래밍 제약 사항
+- 스프링 빈 사용 금지(@controller 제외)
 
-## 🐞 Bug Report
+---
 
-버그를 발견한다면, [Issues](https://github.com/woowacourse/atdd-subway-map/issues) 에 등록해주세요 :)
-
-<br>
-
-## 📝 License
-
-This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master/LICENSE) licensed.
+## 2단계 기능 요구사항
+- [x] 스프링 빈 활용하기
+- [x] 스프링 JDBC 활용하여 H2 DB에 저장하기
+  - [x] Dao 객체가 아닌 DB에서 데이터를 관리하기
+- [x] H2 DB를 통해 저장
