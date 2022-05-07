@@ -72,8 +72,8 @@ public class LineDaoTest extends DaoTest {
         final Optional<Line> actual = lineDao.findById(persistLine.getId());
 
         // then
-        assertThat(actual.isPresent()).isTrue();
-        assertThat(actual.get()).isEqualTo(persistLine);
+        assertThat(actual).isPresent()
+                .contains(persistLine);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class LineDaoTest extends DaoTest {
         final Optional<Line> possibleLine = lineDao.findById(1L);
 
         // then
-        assertThat(possibleLine.isEmpty()).isTrue();
+        assertThat(possibleLine).isEmpty();
     }
 
     @Test
@@ -126,7 +126,7 @@ public class LineDaoTest extends DaoTest {
 
         // then
         assertThat(affectedRows).isOne();
-        assertThat(lineDao.findAll()).hasSize(0);
+        assertThat(lineDao.findAll()).isEmpty();
     }
 
     @Test
