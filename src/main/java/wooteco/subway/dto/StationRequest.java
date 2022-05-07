@@ -1,16 +1,27 @@
 package wooteco.subway.dto;
 
-public class StationRequest {
-    private String name;
+import javax.validation.constraints.NotBlank;
+import wooteco.subway.domain.Station;
 
-    public StationRequest() {
+public class StationRequest {
+
+    @NotBlank(message = "역 이름은 빈 값일 수 없습니다.")
+    private final String name;
+
+    private StationRequest() {
+        this(null);
     }
 
     public StationRequest(String name) {
         this.name = name;
     }
 
+    public Station toEntity() {
+        return new Station(name);
+    }
+
     public String getName() {
         return name;
     }
+
 }

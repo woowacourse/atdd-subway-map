@@ -9,45 +9,54 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.Line;
 
 @Repository
-public class StationDao {
+public class LineDao {
 
-    private static final RowMapper<Station> STATION_MAPPER = (resultSet, rowNum) -> new Station(
+    private static final RowMapper<Line> LINE_MAPPER = (resultSet, rowNum) -> new Line(
             resultSet.getLong("id"),
-            resultSet.getString("name")
+            resultSet.getString("name"),
+            resultSet.getString("color")
     );
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;
 
-    public StationDao(DataSource dataSource) {
+    public LineDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.simpleInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("STATION")
+                .withTableName("LINE")
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Station save(Station station) {
-        SqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
+    public Line save(Line line) {
+        SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
         Long id = simpleInsert.executeAndReturnKey(parameters).longValue();
-        return new Station(id, station.getName());
+        return new Line(id, line.getName(), line.getColor());
     }
 
-    public List<Station> findAll() {
-        String sql = "SELECT * FROM STATION";
-        return jdbcTemplate.query(sql, STATION_MAPPER);
+    public List<Line> findAll() {
+        String sql = "SELECT * FROM LINE";
+        return jdbcTemplate.query(sql, LINE_MAPPER);
     }
 
-    public Station findById(Long id) {
-        String sql = "SELECT * FROM STATION WHERE id = :id";
+    public Line findById(Long id) {
+        String sql = "SELECT * FROM LINE WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.queryForObject(sql, parameters, STATION_MAPPER);
+        return jdbcTemplate.queryForObject(sql, parameters, LINE_MAPPER);
+    }
+
+    public void updateById(Long id, Line line) {
+        String sql = "UPDATE LINE SET name = :name, color = :color WHERE id = :id";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id)
+                .addValue("name", line.getName())
+                .addValue("color", line.getColor());
+        jdbcTemplate.update(sql, parameters);
     }
 
     public void deleteById(Long id) {
-        String sql = "DELETE FROM STATION WHERE id = :id";
+        String sql = "DELETE FROM LINE WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         jdbcTemplate.update(sql, parameters);
     }
