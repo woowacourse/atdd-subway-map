@@ -45,7 +45,7 @@ public class StationControllerTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성할 때 400을 반환한다.")
     @Test
     void createStationWithDuplicateName() {
         stationDao.save(new Station("강남역"));
@@ -96,5 +96,17 @@ public class StationControllerTest extends AcceptanceTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("지하철역을 제거할 때 id에 맞는 노선이 없으면 404 상태코드로 응답한다.")
+    @Test
+    void deleteLineResponse404() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/stations/" + 1L)
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }
