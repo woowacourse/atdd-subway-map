@@ -23,8 +23,8 @@ public class LineService {
 
     public LineResponse createLine(final LineRequest lineRequest) {
         validateLineName(lineRequest.getName());
-        final Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), Collections.emptyList());
+        final Line line = lineDao.save(lineRequest.toEntity());
+        return LineResponse.from(line);
     }
 
     private void validateLineName(final String name) {
