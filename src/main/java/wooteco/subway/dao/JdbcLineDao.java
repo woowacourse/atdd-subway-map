@@ -33,6 +33,12 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
+    public boolean existsByName(String name) {
+        String sql = "select count(*) from LINE where name = :name";
+        return 0 != jdbcTemplate.queryForObject(sql, Map.of("name", name), Integer.class);
+    }
+
+    @Override
     public List<Line> findAll() {
         String sql = "select * from LINE";
         return jdbcTemplate.query(sql, generateMapper());

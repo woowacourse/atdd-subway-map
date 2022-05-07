@@ -7,6 +7,8 @@ public interface LineDao {
 
     Line save(Line line);
 
+    boolean existsByName(String name);
+
     List<Line> findAll();
 
     Line findById(Long id);
