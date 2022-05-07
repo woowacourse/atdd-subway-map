@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dto.request.StationRequest;
 import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.exception.NotFoundException;
 
 @SuppressWarnings("NonAsciiCharacters")
 @SpringBootTest
@@ -75,7 +76,7 @@ class StationServiceTest {
         @Test
         void 존재하지_않는_데이터의_id가_입력된_경우_예외발생() {
             assertThatThrownBy(() -> service.delete(99999L))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(NotFoundException.class);
         }
     }
 }

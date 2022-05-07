@@ -99,12 +99,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }
 
         @Test
-        void 수정하려는_지하철_노선이_존재하지_않는_경우_400_BAD_REQUEST() {
+        void 수정하려는_지하철_노선이_존재하지_않는_경우_404_NOT_FOUND() {
             Map<String, String> params = jsonLineOf("NEW 분당선", "bg-red-600");
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.PUT, "/lines/9999", params);
 
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
         }
 
         @Test
@@ -133,10 +133,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }
 
         @Test
-        void 삭제하려는_지하철_노선이_존재하지_않는_경우_BAD_REQUEST() {
+        void 삭제하려는_지하철_노선이_존재하지_않는_경우_NOT_FOUND() {
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.DELETE, "/lines/99999");
 
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
         }
     }
 

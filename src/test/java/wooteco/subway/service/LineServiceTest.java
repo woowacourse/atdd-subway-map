@@ -116,7 +116,7 @@ class LineServiceTest {
         void 존재하지_않는_노선을_수정하려는_경우_예외발생() {
             LineRequest validLineRequest = new LineRequest("새로운 노선 이름", "노란색");
             assertThatThrownBy(() -> service.update(999999999L, validLineRequest))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(NotFoundException.class);
         }
     }
 
@@ -136,7 +136,7 @@ class LineServiceTest {
         @Test
         void 존재하지_않는_데이터의_id가_입력된_경우_예외발생() {
             assertThatThrownBy(() -> service.delete(99999L))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(NotFoundException.class);
         }
     }
 }

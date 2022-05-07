@@ -8,6 +8,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.StationRequest;
 import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.exception.NotFoundException;
 
 @Service
 public class StationService {
@@ -45,7 +46,7 @@ public class StationService {
     private void validateExistingStation(Long id) {
         boolean isExistingStation = stationDao.findById(id).isPresent();
         if (!isExistingStation) {
-            throw new IllegalArgumentException(STATION_NOT_FOUND_EXCEPTION_MESSAGE);
+            throw new NotFoundException(STATION_NOT_FOUND_EXCEPTION_MESSAGE);
         }
     }
 

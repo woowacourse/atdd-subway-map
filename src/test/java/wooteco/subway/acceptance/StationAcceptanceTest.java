@@ -71,12 +71,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         }
 
-        @DisplayName("존재하지 않는 id로 지하철역을 제거하려는 경우 예외가 발생한다.")
+        @DisplayName("존재하지 않는 id로 지하철역을 제거하려는 경우 404 NOT FOUND")
         @Test
         void deleteNonExistingStation() {
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.DELETE, "/stations/999");
 
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
         }
     }
 

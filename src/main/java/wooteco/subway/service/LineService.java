@@ -57,7 +57,7 @@ public class LineService {
     private void validateExistingStation(Long id) {
         boolean isExistingStation = lineDao.findById(id).isPresent();
         if (!isExistingStation) {
-            throw new IllegalArgumentException(LINE_NOT_FOUND_EXCEPTION_MESSAGE);
+            throw new NotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE);
         }
     }
 
