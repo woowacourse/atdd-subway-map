@@ -6,13 +6,18 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
-import wooteco.subway.dao.MemoryLineDao;
 import wooteco.subway.domain.Line;
 
+@SpringBootTest
+@Transactional
 class LineServiceTest {
 
-	private final LineService lineService = new LineService(new MemoryLineDao());
+	@Autowired
+	private LineService lineService;
 
 	@DisplayName("지하철 노선을 저장한다.")
 	@Test

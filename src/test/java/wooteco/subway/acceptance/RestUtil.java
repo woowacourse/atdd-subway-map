@@ -13,7 +13,7 @@ import wooteco.subway.controller.dto.LineResponse;
 import wooteco.subway.controller.dto.StationRequest;
 import wooteco.subway.controller.dto.StationResponse;
 
-public class RestAssuredUtil {
+public class RestUtil {
 
 	public static ExtractableResponse<Response> post(StationRequest stationRequest) {
 		return RestAssured.given()
@@ -51,5 +51,11 @@ public class RestAssuredUtil {
 		return response.jsonPath().getList(".", StationResponse.class).stream()
 			.map(StationResponse::getId)
 			.collect(Collectors.toList());
+	}
+
+	public static <T> T toResponseDto(ExtractableResponse<Response> response, Class<T> responseClass) {
+		return response.body()
+			.jsonPath()
+			.getObject(".", responseClass);
 	}
 }

@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import wooteco.subway.dao.MemoryStationDao;
+import wooteco.subway.service.fake.MemoryStationDao;
 import wooteco.subway.domain.Station;
 
 public class StationServiceTest {

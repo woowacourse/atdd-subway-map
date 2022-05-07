@@ -1,9 +1,10 @@
-package wooteco.subway.dao;
+package wooteco.subway.service.fake;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
 public class MemoryLineDao implements LineDao {

@@ -18,21 +18,35 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.controller.dto.LineRequest;
 import wooteco.subway.controller.dto.LineResponse;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.StationService;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
 
 	private final LineService lineService;
+	private final StationService stationService;
 
-	public LineController(LineService lineService) {
+	public LineController(LineService lineService, StationService stationService) {
 		this.lineService = lineService;
+		this.stationService = stationService;
+	}
+
+	public ResponseEntity<LineResponse> createLine2(@RequestBody LineRequest lineRequest) {
+		Line line = lineService.create(lineRequest.getName(), lineRequest.getColor());
+		return ResponseEntity.created(URI.create("/lines/" + line.getId()))
+			.body(LineResponse.from(line));
 	}
 
 	@PostMapping
 	public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-		Line line = lineService.create(lineRequest.getName(), lineRequest.getColor());
+		Station upStation = stationService.findOne(lineRequest.getUpStationId());
+		Station downStation = stationService.findOne(lineRequest.getDownStationId());
+		Section section = new Section(upStation, downStation, lineRequest.getDistance());
+		Line line = lineService.create(lineRequest.getName(), lineRequest.getColor(), section);
 		return ResponseEntity.created(URI.create("/lines/" + line.getId()))
 			.body(LineResponse.from(line));
 	}

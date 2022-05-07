@@ -41,14 +41,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-        assertThat(RestAssuredUtil.getIdFromStation(response)).isNotNull();
+        assertThat(RestUtil.getIdFromStation(response)).isNotNull();
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
         // given
-        RestAssuredUtil.post(stationRequest);
+        RestUtil.post(stationRequest);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -68,8 +68,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = RestAssuredUtil.post(stationRequest);
-        ExtractableResponse<Response> createResponse2 = RestAssuredUtil.post(new StationRequest("역삼역"));
+        ExtractableResponse<Response> createResponse1 = RestUtil.post(stationRequest);
+        ExtractableResponse<Response> createResponse2 = RestUtil.post(new StationRequest("역삼역"));
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -81,7 +81,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = extractExpectedIds(createResponse1, createResponse2);
-        List<Long> resultLineIds = RestAssuredUtil.getIdsFromStation(response);
+        List<Long> resultLineIds = RestUtil.getIdsFromStation(response);
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -96,7 +96,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = RestAssuredUtil.post(stationRequest);
+        ExtractableResponse<Response> createResponse = RestUtil.post(stationRequest);
 
         // when
         String uri = createResponse.header("Location");

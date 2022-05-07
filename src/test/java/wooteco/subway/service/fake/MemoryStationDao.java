@@ -1,9 +1,10 @@
-package wooteco.subway.dao;
+package wooteco.subway.service.fake;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
 public class MemoryStationDao implements StationDao {
