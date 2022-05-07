@@ -30,11 +30,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         final ExtractableResponse<Response> createResponse = post(LINES_URI, newLineRequestJson);
+        final LineResponse lineResponse = createResponse.as(LineResponse.class);
 
         // then
         assertAll(
                 () -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(createResponse.header("Location")).isNotBlank()
+                () -> assertThat(createResponse.header("Location")).isNotBlank(),
+                () -> assertThat(lineResponse.getName()).isEqualTo(BOONDANGLINE_REQUEST.getName()),
+                () -> assertThat(lineResponse.getColor()).isEqualTo(BOONDANGLINE_REQUEST.getColor())
         );
     }
 

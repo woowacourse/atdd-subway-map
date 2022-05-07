@@ -29,11 +29,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // when
         final ExtractableResponse<Response> createResponse = post(STATIONS_URI, newStationRequestJson);
+        final StationResponse stationResponse = createResponse.as(StationResponse.class);
 
         // then
         assertAll(
                 () -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(createResponse.header("Location")).isNotBlank()
+                () -> assertThat(createResponse.header("Location")).isNotBlank(),
+                () -> assertThat(stationResponse.getName()).isEqualTo(GANGNAM_REQUEST.getName())
         );
     }
 
