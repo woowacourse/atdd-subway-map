@@ -35,6 +35,11 @@ public class StationService {
         }
     }
 
+    private StationResponse createStationResponse(Station newStation) {
+        return new StationResponse(newStation.getId(), newStation.getName());
+    }
+
+    @Transactional(readOnly = true)
     public List<StationResponse> findAll() {
         return stationDao.findAll().stream()
             .map(this::createStationResponse)
@@ -43,9 +48,5 @@ public class StationService {
 
     public void delete(Long stationId) {
         stationDao.deleteById(stationId);
-    }
-
-    private StationResponse createStationResponse(Station newStation) {
-        return new StationResponse(newStation.getId(), newStation.getName());
     }
 }

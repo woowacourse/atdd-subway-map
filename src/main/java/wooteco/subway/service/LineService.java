@@ -47,19 +47,21 @@ public class LineService {
         }
     }
 
+    private LineResponse createLineResponse(Line newLine) {
+        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+    }
+
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         return lineDao.findAll().stream()
             .map(this::createLineResponse)
             .collect(Collectors.toUnmodifiableList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(Long lineId) {
         Line line = lineDao.findById(lineId);
         return createLineResponse(line);
-    }
-
-    public void delete(Long lineId) {
-        lineDao.deleteById(lineId);
     }
 
     public void update(Long lineId, LineRequest lineRequest) {
@@ -86,7 +88,7 @@ public class LineService {
         }
     }
 
-    private LineResponse createLineResponse(Line newLine) {
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+    public void delete(Long lineId) {
+        lineDao.deleteById(lineId);
     }
 }
