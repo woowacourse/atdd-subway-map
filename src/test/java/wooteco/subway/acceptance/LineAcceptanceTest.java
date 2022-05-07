@@ -124,7 +124,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     class DeleteLineTest extends AcceptanceTest {
 
         @Test
-        void 성공시_200_OK() {
+        void 성공시_204_OK() {
             postLine("신분당선", "bg-red-600");
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.DELETE, "/lines/1");
@@ -133,7 +133,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }
 
         @Test
-        void 삭제하려는_지하철_노선이_존재하지_않는_경우_NOT_FOUND() {
+        void 삭제하려는_지하철_노선이_존재하지_않는_경우_404_NOT_FOUND() {
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.DELETE, "/lines/99999");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());

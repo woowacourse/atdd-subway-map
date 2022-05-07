@@ -24,7 +24,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     class CreateStationTest extends AcceptanceTest {
 
         @Test
-        void 지하철역을_생성한다() {
+        void 성공시_201_CREATED() {
             Map<String, String> params = jsonStationOf("강남역");
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", params);
@@ -34,7 +34,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         }
 
         @Test
-        void 중복되는_이름의_지하철역_생성_시도시_예외발생() {
+        void 중복되는_이름의_지하철역_생성_시도시_400_BAD_REQUEST() {
             Map<String, String> params = jsonStationOf("강남역");
             postStation(params);
 
@@ -46,7 +46,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("GET /stations - 지하철역 조회 테스트")
     @Test
-    void 지하철역을_조회한다() {
+    void 성공시_200_OK() {
         postStations("강남역", "역삼역");
 
         ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/stations");
@@ -63,7 +63,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     class DeleteStationTest extends AcceptanceTest {
 
         @Test
-        void 지하철역을_제거한다() {
+        void 성공시_204_OK() {
             postStations("강남역");
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.DELETE, "/stations/1");
