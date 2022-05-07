@@ -9,6 +9,7 @@ import wooteco.subway.domain.Station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JdbcStationDao implements StationDao {
@@ -38,9 +39,9 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Station findById(Long id) {
+    public Optional<Station> findById(Long id) {
         final String sql = "select * from STATION where id = ?";
-        return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, stationRowMapper, id));
     }
 
     @Override
