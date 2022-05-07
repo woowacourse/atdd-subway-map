@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -60,12 +59,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(StationResponse::getId)
-                .collect(toList());
+
+        List<Long> expectedLineIds = List.of(extractId(createResponse1), extractId(createResponse2));
+        List<Long> resultLineIds = extractIds(response);
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -83,5 +79,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private Long extractId(ExtractableResponse<Response> response) {
+        return response.jsonPath()
+                .getObject(".", StationResponse.class)
+                .getId();
+    }
+
+    private List<Long> extractIds(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", StationResponse.class).stream()
+                .map(StationResponse::getId)
+                .collect(toList());
     }
 }
