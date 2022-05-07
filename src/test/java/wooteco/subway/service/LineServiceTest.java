@@ -14,7 +14,8 @@ import org.mockito.InjectMocks;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
-import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.line.DuplicateLineException;
+import wooteco.subway.exception.line.NoSuchLineException;
 
 class LineServiceTest extends ServiceTest {
 
@@ -53,8 +54,7 @@ class LineServiceTest extends ServiceTest {
 
         // then
         assertThatThrownBy(() -> lineService.create(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("중복된 이름의 노선은 저장할 수 없습니다.");
+                .isInstanceOf(DuplicateLineException.class);
     }
 
     @Test
@@ -107,8 +107,7 @@ class LineServiceTest extends ServiceTest {
 
         // when
         assertThatThrownBy(() -> lineService.findById(id))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("해당 ID에 맞는 노선을 찾지 못했습니다.");
+                .isInstanceOf(NoSuchLineException.class);
     }
 
     @Test
@@ -146,8 +145,7 @@ class LineServiceTest extends ServiceTest {
 
         // then
         assertThatThrownBy(() -> lineService.updateById(id, request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("ID에 해당하는 노선이 존재하지 않습니다.");
+                .isInstanceOf(NoSuchLineException.class);
     }
 
     @Test
@@ -170,8 +168,7 @@ class LineServiceTest extends ServiceTest {
 
         // then
         assertThatThrownBy(() -> lineService.updateById(id, request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("중복된 이름의 노선이 존재합니다.");
+                .isInstanceOf(DuplicateLineException.class);
     }
 
     @Test

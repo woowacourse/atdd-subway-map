@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.dto.ErrorResponse;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.SubwayMapException;
 
 @ControllerAdvice(assignableTypes = {StationController.class, LineController.class})
 public class ExceptionAdvice {
@@ -18,19 +19,25 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(value = {IllegalArgumentException.class})
     public ResponseEntity<ErrorResponse> handleException(final Exception e) {
-        return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+        return ResponseEntity.badRequest().body(ErrorResponse.from(e));
     }
 
     @ExceptionHandler(value = {NotFoundException.class})
     public ResponseEntity<ErrorResponse> handleNotFoundException(final Exception e) {
-        return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(ErrorResponse.from(e), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = {SubwayMapException.class})
+    public ResponseEntity<ErrorResponse> handleSubWayMapException(final SubwayMapException e) {
+        return ResponseEntity.status(e.getHttpStatus())
+                .body(ErrorResponse.from(e));
     }
 
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<ErrorResponse> handleUnexpectedException(final Exception e,
                                                                    final HttpServletRequest request) {
         log(e, request);
-        return ResponseEntity.internalServerError().body(new ErrorResponse("서버가 요청을 처리할 수 없습니다."));
+        return ResponseEntity.internalServerError().body(ErrorResponse.from("서버가 요청을 처리할 수 없습니다."));
     }
 
     private void log(final Exception e, final HttpServletRequest request) {

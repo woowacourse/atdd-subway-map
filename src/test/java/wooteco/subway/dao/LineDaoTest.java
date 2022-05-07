@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.line.NoSuchLineException;
 
 public class LineDaoTest extends DaoTest {
 
@@ -100,7 +101,7 @@ public class LineDaoTest extends DaoTest {
     }
 
     @Test
-    @DisplayName("업데이트하려는 노선 이름이 중복되면 에외가 발생한다.")
+    @DisplayName("업데이트하려는 노선이 존재하지 않으면 에외가 발생한다.")
     void UpdateById_InvalidId_ExceptionThrown() {
         // given
         final String name = "5호선";
@@ -110,8 +111,7 @@ public class LineDaoTest extends DaoTest {
 
         // then
         assertThatThrownBy(() -> lineDao.updateById(999L, line))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("id가 일치하는 노선이 존재하지 않습니다.");
+                .isInstanceOf(NoSuchLineException.class);
     }
 
     @Test
@@ -133,7 +133,6 @@ public class LineDaoTest extends DaoTest {
     @DisplayName("존재하지 않는 id의 역을 삭제하면 예외가 발생한다.")
     void DeleteById_InvalidId_ExceptionThrown() {
         assertThatThrownBy(() -> lineDao.deleteById(999L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("id가 일치하는 노선이 존재하지 않습니다.");
+                .isInstanceOf(NoSuchLineException.class);
     }
 }

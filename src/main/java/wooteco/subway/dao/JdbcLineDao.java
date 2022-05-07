@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.line.NoSuchLineException;
 
 @Repository
 public class JdbcLineDao implements LineDao {
@@ -83,7 +84,7 @@ public class JdbcLineDao implements LineDao {
 
     private void checkAffectedRows(final int affectedRows) {
         if (affectedRows == 0) {
-            throw new IllegalArgumentException("id가 일치하는 노선이 존재하지 않습니다.");
+            throw new NoSuchLineException();
         }
     }
 
