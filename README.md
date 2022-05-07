@@ -1,39 +1,27 @@
-<p align="center">
-    <img width="200px;" src="https://raw.githubusercontent.com/woowacourse/atdd-subway-admin-frontend/master/images/main_logo.png"/>
-</p>
-<p align="center">
-  <a href="https://techcourse.woowahan.com/c/Dr6fhku7" alt="woowacourse subway">
-    <img alt="Website" src="https://img.shields.io/website?url=https%3A%2F%2Fedu.nextstep.camp%2Fc%2FR89PYi5H">
-  </a>
-  <img alt="GitHub" src="https://img.shields.io/github/license/woowacourse/atdd-subway-map">
-</p>
+# 지하철 노선도 미션 
 
-<br>
+## 기능 요구사항 작성
 
-# 지하철 노선도 미션
-스프링 과정 실습을 위한 지하철 노선도 애플리케이션
+### 1단계 - 지하철역/노선 관리 기능
 
-<br>
+1. 지하철 역 관리 API 기능 완성
+   1. [예외]: 이미 등록된 지하철역 생성시 예외 처리
 
-## 🚀 Getting Started
-### Usage
-#### application 구동
-```
-./gradlew bootRun
-```
-<br>
+2. 지하철 노선 관리 API
+   1. 지하철 노선 등록
+      1. [예외]: 이미 등록된 노선 생성시 예외 처리
+   2. 지하철 노선 목록
+   3. 지하철 노선 조회
+   4. 지하철 노선 수정
+   5. 지하철 노선 삭제
 
-## ✏️ Code Review Process
-[텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
+3. 노선 기능 E2E 테스트 작성 
 
-<br>
+### 2단계 - 프레임워크 적용
+   1. Spring JDBC 의존성 추가 및 H2 데이터베이스 연결
+      - StationDao
+      - LineDao
 
-## 🐞 Bug Report
-
-버그를 발견한다면, [Issues](https://github.com/woowacourse/atdd-subway-map/issues) 에 등록해주세요 :)
-
-<br>
-
-## 📝 License
-
-This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master/LICENSE) licensed.
+   2. 스프링 빈 관리 
+      - Dao 객체 스프링 빈으로 관리 
+      - Service 객체 스프링 빈으로 관리
