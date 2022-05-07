@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import wooteco.subway.dao.JdbcLineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
@@ -32,13 +31,13 @@ public class LineService {
 
     public LineResponse showById(Long id) {
         return LineResponse.from(jdbcLineDao.findById(id)
-            .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다.")));
+                .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다.")));
     }
 
     public List<LineResponse> showAll() {
         return jdbcLineDao.findAll().stream()
-            .map(LineResponse::from)
-            .collect(Collectors.toList());
+                .map(LineResponse::from)
+                .collect(Collectors.toList());
     }
 
     @Transactional

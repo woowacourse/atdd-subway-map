@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,8 +38,8 @@ class LineDaoTest {
     void duplicateNameAndColor(String name, String color) {
         LineDao.save(new Line(name, color));
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> LineDao.save(new Line("1호선", "black")))
-            .withMessage("노선의 이름은 중복될 수 없습니다.");
+                .isThrownBy(() -> LineDao.save(new Line("1호선", "black")))
+                .withMessage("노선의 이름은 중복될 수 없습니다.");
     }
 
     @Test
@@ -62,8 +63,8 @@ class LineDaoTest {
     @DisplayName("없는 노선 목록을 조회할 경우 예외를 발생시킨다.")
     void notFindById() {
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> LineDao.findById(1L))
-            .withMessage("조회하려는 id가 없습니다.");
+                .isThrownBy(() -> LineDao.findById(1L))
+                .withMessage("조회하려는 id가 없습니다.");
     }
 
     @Test
@@ -81,8 +82,8 @@ class LineDaoTest {
     void modifyDuplicateNameAndColor(String name, String color) {
         Line line = LineDao.save(new Line("1호선", "black"));
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> LineDao.modify(line.getId(), name, color))
-            .withMessage("노선의 이름과 색깔은 중복될 수 없습니다.");
+                .isThrownBy(() -> LineDao.modify(line.getId(), name, color))
+                .withMessage("노선의 이름과 색깔은 중복될 수 없습니다.");
     }
 
     @Test

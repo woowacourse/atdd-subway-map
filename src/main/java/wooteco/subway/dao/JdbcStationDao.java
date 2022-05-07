@@ -13,22 +13,24 @@ import wooteco.subway.domain.Station;
 public class JdbcStationDao {
 
     private static final RowMapper<Station> mapper = (rs, rowNum) ->
-        new Station(
-            rs.getLong("id"),
-            rs.getString("name")
-        );
+            new Station(
+                    rs.getLong("id"),
+                    rs.getString("name")
+            );
 
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
+    private JdbcTemplate jdbcTemplate;
+    private SimpleJdbcInsert simpleJdbcInsert;
+
 
     public JdbcStationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-            .withTableName("station")
-            .usingGeneratedKeyColumns("id");
+                .withTableName("station")
+                .usingGeneratedKeyColumns("id");
     }
 
     public Station save(Station station) {
+        System.out.println("hello");
         SqlParameterSource parameters = new MapSqlParameterSource("name", station.getName());
         long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Station(id, station.getName());

@@ -78,7 +78,7 @@ public class Line {
         }
         Line line = (Line) o;
         return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects
-            .equals(color, line.color);
+                .equals(color, line.color);
     }
 
     @Override

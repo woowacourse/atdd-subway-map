@@ -15,11 +15,11 @@ import wooteco.subway.domain.Line;
 public class JdbcLineDao {
 
     private static final RowMapper<Line> mapper = (rs, rowNum) ->
-        new Line(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("color")
-        );
+            new Line(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("color")
+            );
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -27,20 +27,20 @@ public class JdbcLineDao {
     public JdbcLineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-            .withTableName("line")
-            .usingGeneratedKeyColumns("id");
+                .withTableName("line")
+                .usingGeneratedKeyColumns("id");
     }
 
     public Line save(Line line) {
         SqlParameterSource parameters = new MapSqlParameterSource()
-            .addValue("name", line.getName())
-            .addValue("color", line.getColor());
+                .addValue("name", line.getName())
+                .addValue("color", line.getColor());
         long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Line(id, line.getName(), line.getColor());
     }
 
     public Optional<Line> findById(Long id) {
-        String sql = "select *  from line where id = ?";
+        String sql = "select *  from line where id = (?)";
         return Optional.ofNullable(DataAccessUtils.singleResult(jdbcTemplate.query(sql, mapper, id)));
     }
 

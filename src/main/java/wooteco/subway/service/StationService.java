@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import wooteco.subway.dao.JdbcStationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
@@ -32,8 +31,8 @@ public class StationService {
     public List<StationResponse> showAll() {
         List<Station> stations = jdbcStationDao.findAll();
         return stations.stream()
-            .map(it -> new StationResponse(it.getId(), it.getName()))
-            .collect(Collectors.toList());
+                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .collect(Collectors.toList());
     }
 
     @Transactional

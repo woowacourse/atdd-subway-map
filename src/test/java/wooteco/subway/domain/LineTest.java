@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,8 +23,8 @@ class LineTest {
     @DisplayName("이름과 색깔이 값이 없을 경우 예외를 발생한다.")
     void empty(String value) {
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> new Line(value, value))
-            .withMessage("이름과 색깔은 공백일 수 없습니다.");
+                .isThrownBy(() -> new Line(value, value))
+                .withMessage("이름과 색깔은 공백일 수 없습니다.");
     }
 
     @ParameterizedTest(name = "이름 : {0}, 메시지 : {1}")
@@ -31,8 +32,8 @@ class LineTest {
     @DisplayName("노선 이름이 3글자 미만 10글자 초과일 경우 예외를 발생한다.")
     void invalidName(String value, String message) {
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> new Line(value, "blue"))
-            .withMessage(message);
+                .isThrownBy(() -> new Line(value, "blue"))
+                .withMessage(message);
     }
 
     @ParameterizedTest
@@ -40,8 +41,8 @@ class LineTest {
     @DisplayName("노선 이름은 한글과 숫자가 아닌 경우 예외를 발생한다.")
     void invalidName(String name) {
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> new Line(name, "blue"))
-            .withMessage("노선 이름은 한글과 숫자이어야 합니다.");
+                .isThrownBy(() -> new Line(name, "blue"))
+                .withMessage("노선 이름은 한글과 숫자이어야 합니다.");
     }
 
     @Test
@@ -58,8 +59,8 @@ class LineTest {
     void modifyEmpty(String value) {
         Line line = new Line("2호선", "red");
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> line.update(value, value))
-            .withMessage("이름과 색깔은 공백일 수 없습니다.");
+                .isThrownBy(() -> line.update(value, value))
+                .withMessage("이름과 색깔은 공백일 수 없습니다.");
     }
 
     @ParameterizedTest(name = "이름 : {0}, 메시지 : {1}")
@@ -68,8 +69,8 @@ class LineTest {
     void invalidUpdateName(String value, String message) {
         Line line = new Line("2호선", "blue");
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> line.update(value, "blue"))
-            .withMessage(message);
+                .isThrownBy(() -> line.update(value, "blue"))
+                .withMessage(message);
     }
 
     @ParameterizedTest
@@ -78,8 +79,8 @@ class LineTest {
     void invalidUpdateName(String name) {
         Line line = new Line("2호선", "blue");
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> line.update(name, "blue"))
-            .withMessage("노선 이름은 한글과 숫자이어야 합니다.");
+                .isThrownBy(() -> line.update(name, "blue"))
+                .withMessage("노선 이름은 한글과 숫자이어야 합니다.");
     }
 
 }
