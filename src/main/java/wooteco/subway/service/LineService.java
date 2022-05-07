@@ -17,7 +17,8 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public LineResponse save(Line line) {
+    public LineResponse save(LineRequest lineRequest) {
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         return toLineResponse(lineDao.save(line));
     }
 
