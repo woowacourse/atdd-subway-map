@@ -35,13 +35,12 @@ public class LineDao {
         final Map<String, Object> params = new HashMap<>();
         params.put("name", line.getName());
         params.put("color", line.getColor());
-        Long id;
         try {
-            id = simpleInsert.executeAndReturnKey(params).longValue();
+            final Long id = simpleInsert.executeAndReturnKey(params).longValue();
+            return new Line(id, line.getName(), line.getColor());
         } catch (DuplicateKeyException e) {
             throw new LineDuplicateException(line.toString());
         }
-        return new Line(id, line.getName(), line.getColor());
     }
 
     public List<Line> findAll() {

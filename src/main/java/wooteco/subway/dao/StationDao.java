@@ -33,13 +33,12 @@ public class StationDao {
     public Station save(Station station) {
         final Map<String, Object> params = new HashMap<>();
         params.put("name", station.getName());
-        final Long id;
         try {
-            id = simpleInsert.executeAndReturnKey(params).longValue();
+            final Long id = simpleInsert.executeAndReturnKey(params).longValue();
+            return new Station(id, station.getName());
         } catch (DuplicateKeyException e) {
             throw new StationDuplicateException(station.toString());
         }
-        return new Station(id, station.getName());
     }
 
     public List<Station> findAll() {
