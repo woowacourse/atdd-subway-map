@@ -1,17 +1,18 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.jdbc;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 
 @Repository
-public class JdbcLineDao implements LineDao{
+public class JdbcLineDao implements LineDao {
 
     private static final RowMapper<Line> Line_ROW_MAPPER = (rs, rowNum) -> new Line(
             rs.getLong("id"),
