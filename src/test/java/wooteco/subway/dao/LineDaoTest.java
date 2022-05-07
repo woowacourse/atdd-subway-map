@@ -6,8 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -16,9 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.NotFoundException;
 
 @SuppressWarnings("NonAsciiCharacters")
 @JdbcTest
@@ -38,7 +34,7 @@ class LineDaoTest {
 
     @Test
     void findAll_메서드는_모든_데이터를_조회한다() {
-        LineFixture.setUp(jdbcTemplate, new Line("분당선", "노란색"), new Line("신분당선", "빨간색"),
+        LineFixtures.setUp(jdbcTemplate, new Line("분당선", "노란색"), new Line("신분당선", "빨간색"),
             new Line("2호선", "초록색"));
         List<Line> actual = dao.findAll();
 
@@ -53,7 +49,7 @@ class LineDaoTest {
 
     @Test
     void findById는_단건의_데이터를_조회한다() {
-        LineFixture.setUp(jdbcTemplate, new Line("분당선", "노란색"));
+        LineFixtures.setUp(jdbcTemplate, new Line("분당선", "노란색"));
         Line actual = dao.findById(1L);
         Line excepted = new Line(1L, "분당선", "노란색");
 
@@ -71,7 +67,7 @@ class LineDaoTest {
 
     @Test
     void update_메서드는_데이터를_수정한다() {
-        LineFixture.setUp(jdbcTemplate, new Line("분당선", "노란색"));
+        LineFixtures.setUp(jdbcTemplate, new Line("분당선", "노란색"));
         dao.update(new Line(1L, "8호선", "노란색"));
 
         String actual = jdbcTemplate.queryForObject("SELECT name FROM line WHERE id = 1",
@@ -97,7 +93,7 @@ class LineDaoTest {
 
     @Test
     void delete_메서드는_데이터를_삭제한다() {
-        LineFixture.setUp(jdbcTemplate, new Line("분당선", "노란색"));
+        LineFixtures.setUp(jdbcTemplate, new Line("분당선", "노란색"));
         dao.deleteById(1L);
 
         assertThat(dao.existById(1L)).isFalse();

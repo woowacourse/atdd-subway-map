@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -34,7 +32,7 @@ class StationDaoTest {
 
     @Test
     void findAll_메서드는_모든_데이터를_조회한다() {
-        StationFixture.setUp(jdbcTemplate, "중복되는 역 이름", "선릉역", "잠실역");
+        StationFixtures.setUp(jdbcTemplate, "중복되는 역 이름", "선릉역", "잠실역");
         List<Station> actual = dao.findAll();
 
         List<Station> expected = List.of(
@@ -70,7 +68,7 @@ class StationDaoTest {
 
     @Test
     void deleteById_메서드는_데이터를_삭제한다() {
-        StationFixture.setUp(jdbcTemplate, "테스트 역");
+        StationFixtures.setUp(jdbcTemplate, "테스트 역");
         dao.deleteById(1L);
 
         assertThat(dao.existById(1L)).isFalse();
