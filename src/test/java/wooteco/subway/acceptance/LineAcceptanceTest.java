@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -26,9 +25,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        Map<String, String> params = makeParams("2호선", "초록색");
+        LineRequest lineRequest = new LineRequest("2호선", "초록색");
 
-        ExtractableResponse<Response> response = requestPost(params);
+        ExtractableResponse<Response> response = requestPost(lineRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -37,13 +36,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
     @Test
     void createLineWithDuplicateName() {
-        Map<String, String> params = makeParams("2호선", "초록색");
+        LineRequest lineRequest = new LineRequest("2호선", "초록색");
 
-        requestPost(params);
+        requestPost(lineRequest);
 
-        params.put("color", "분홍색");
+        lineRequest = new LineRequest("2호선", "분홍색");
 
-        ExtractableResponse<Response> response = requestPost(params);
+        ExtractableResponse<Response> response = requestPost(lineRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -51,13 +50,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 노선 색상으로 노선을 생성한다.")
     @Test
     void createLineWithDuplicateColor() {
-        Map<String, String> params = makeParams("2호선", "초록색");
+        LineRequest lineRequest = new LineRequest("2호선", "초록색");
 
-        requestPost(params);
+        requestPost(lineRequest);
 
-        params.put("name", "3호선");
+        lineRequest = new LineRequest("3호선", "초록색");
 
-        ExtractableResponse<Response> response = requestPost(params);
+        ExtractableResponse<Response> response = requestPost(lineRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -65,11 +64,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("전체 지하철 노선을 조회한다.")
     @Test
     void getLines() {
-        Map<String, String> params1 = makeParams("1호선", "군청색");
-        requestPost(params1);
+        LineRequest lineRequest1 = new LineRequest("1호선", "군청색");
+        requestPost(lineRequest1);
 
-        Map<String, String> params2 = makeParams("2호선", "초록색");
-        requestPost(params2);
+        LineRequest lineRequest2 = new LineRequest("2호선", "초록색");
+        requestPost(lineRequest2);
 
         ExtractableResponse<Response> response = requestGet();
 
@@ -80,8 +79,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 id로 조회한다.")
     @Test
     void getLine() {
-        Map<String, String> params = makeParams("2호선", "초록색");
-        ExtractableResponse<Response> createResponse = requestPost(params);
+        LineRequest lineRequest = new LineRequest("2호선", "초록색");
+        ExtractableResponse<Response> createResponse = requestPost(lineRequest);
 
         Long id = getId(createResponse);
         ExtractableResponse<Response> response = requestGet(id);
@@ -94,14 +93,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("특정 id를 가지는 노선을 수정한다.")
     @Test
     void updateLine() {
-        Map<String, String> params = makeParams("2호선", "초록색");
-        ExtractableResponse<Response> createResponse = requestPost(params);
+        LineRequest lineRequest = new LineRequest("2호선", "초록색");
+        ExtractableResponse<Response> createResponse = requestPost(lineRequest);
 
         Long id = getId(createResponse);
 
-        Map<String, String> params2 = makeParams("1호선", "군청색");
+        LineRequest lineRequest2 = new LineRequest("1호선", "군청색");
         RestAssured.given().log().all()
-                .body(params2)
+                .body(lineRequest2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put("/lines/" + id)
@@ -119,8 +118,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("특정 id의 노선을 삭제한다.")
     @Test
     void deleteLine() {
-        Map<String, String> params = makeParams("2호선", "초록색");
-        ExtractableResponse<Response> createResponse = requestPost(params);
+        LineRequest lineRequest = new LineRequest("2호선", "초록색");
+        ExtractableResponse<Response> createResponse = requestPost(lineRequest);
 
         long id = getId(createResponse);
 
@@ -140,16 +139,16 @@ class LineAcceptanceTest extends AcceptanceTest {
     @ParameterizedTest
     @CsvSource(value = {",", "'',''", "' ',' '"})
     void notAllowNullOrBlankNameAndColor(String name, String color) {
-        Map<String, String> params = makeParams(name, color);
+        LineRequest lineRequest = new LineRequest(name, color);
 
-        ExtractableResponse<Response> response = requestPost(params);
+        ExtractableResponse<Response> response = requestPost(lineRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private ExtractableResponse<Response> requestPost(Map<String, String> params) {
+    private ExtractableResponse<Response> requestPost(LineRequest lineRequest) {
         return RestAssured.given().log().all()
-                .body(params)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -177,12 +176,5 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     private long getId(ExtractableResponse<Response> createResponse) {
         return Long.parseLong(createResponse.header("Location").split("/")[2]);
-    }
-
-    private Map<String, String> makeParams(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        return params;
     }
 }
