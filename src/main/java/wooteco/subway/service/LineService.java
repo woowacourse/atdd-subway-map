@@ -19,8 +19,8 @@ public class LineService {
 
     public LineResponse create(final LineRequest request) {
         Line line = new Line(request.getName(), request.getColor());
-        final Line newLine = lineDao.save(line);
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        final Line savedLine = lineDao.save(line);
+        return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor());
     }
 
     public List<LineResponse> findAll() {
