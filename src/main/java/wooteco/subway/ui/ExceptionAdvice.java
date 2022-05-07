@@ -14,6 +14,9 @@ import wooteco.subway.exception.SubwayMapException;
 @ControllerAdvice(assignableTypes = {StationController.class, LineController.class})
 public class ExceptionAdvice {
 
+    private static final String LOG_MESSAGE_FORMAT = "[{}] {} {}";
+    private static final String INTERNAL_SERVER_ERROR_MESSAGE = "서버가 요청을 처리할 수 없습니다.";
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @ExceptionHandler(value = {IllegalArgumentException.class})
@@ -36,13 +39,12 @@ public class ExceptionAdvice {
         log(e, request);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ErrorResponse.from("서버가 요청을 처리할 수 없습니다."));
+                .body(ErrorResponse.from(INTERNAL_SERVER_ERROR_MESSAGE));
     }
 
     private void log(final Exception e, final HttpServletRequest request) {
-        final String messageFormat = "[{}] {} {}";
         logger.error(
-                messageFormat,
+                LOG_MESSAGE_FORMAT,
                 LocalDateTime.now(),
                 request.getMethod(),
                 request.getRequestURI(),
