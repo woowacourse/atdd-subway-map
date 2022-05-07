@@ -34,7 +34,7 @@ public class StationService {
         stationDao.delete(stationId);
     }
 
-    public void validateExistStation(final Long stationId) {
+    private void validateExistStation(final Long stationId) {
         if (!stationDao.existById(stationId)) {
             throw new NotFoundException("존재하지 않는 Station입니다.");
         }
