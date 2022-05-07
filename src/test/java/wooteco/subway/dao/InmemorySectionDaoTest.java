@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
@@ -40,11 +39,13 @@ class InmemorySectionDaoTest {
     @Test
     @DisplayName("Line Id에 해당하는 Section을 조회할 수 있다.")
     void findAllByLineId() {
-        long id = lineDao.save(new Line("신분당선", "bg-red-600"));
-        stationDao.save(new Station("오리"));
-        stationDao.save(new Station("배카라"));
-        stationDao.save(new Station("오카라"));
+        long lineId = 1L;
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Station station3 = new Station(3L, "오카라");
+        sectionDao.save(new Section(lineId, station1, station2, 2));
+        sectionDao.save(new Section(lineId, station2, station3, 2));
 
-        assertThat(sectionDao.findAllByLineId(id)).hasSize(3);
+        assertThat(sectionDao.findAllByLineId(lineId)).hasSize(2);
     }
 }
