@@ -31,7 +31,7 @@ public class JdbcLineDao implements LineDao {
     public JdbcLineDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("LINE")
+                .withTableName("line")
                 .usingGeneratedKeyColumns("id");
     }
 

@@ -29,7 +29,7 @@ public class JdbcStationDao implements StationDao {
     public JdbcStationDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("STATION")
+                .withTableName("station")
                 .usingGeneratedKeyColumns("id");
     }
 
