@@ -34,4 +34,20 @@ public class Section {
             throw new IllegalArgumentException("두 종점간의 거리가 유효하지 않습니다.");
         }
     }
+
+    public Long getLineId() {
+        return lineId;
+    }
+
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
 }

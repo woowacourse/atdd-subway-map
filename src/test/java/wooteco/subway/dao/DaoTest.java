@@ -19,9 +19,12 @@ class DaoTest {
 
     protected LineDao lineDao;
 
+    protected SectionDao sectionDao;
+
     @BeforeEach
     void setUp() {
         stationDao = new JdbcStationDao(jdbcTemplate, dataSource);
         lineDao = new JdbcLineDao(jdbcTemplate, dataSource);
+        sectionDao = new JdbcSectionDao(dataSource);
     }
 }
