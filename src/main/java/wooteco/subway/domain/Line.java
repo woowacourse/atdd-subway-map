@@ -21,14 +21,6 @@ public class Line {
         this.color = color;
     }
 
-    public boolean isSameName(final Line line) {
-        return name.equals(line.name);
-    }
-
-    public boolean isSameId(final Long id) {
-        return this.id.equals(id);
-    }
-
     public Long getId() {
         return id;
     }

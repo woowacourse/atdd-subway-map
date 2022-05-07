@@ -23,6 +23,7 @@ public class AcceptanceTest {
 
     @LocalServerPort
     int port;
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
