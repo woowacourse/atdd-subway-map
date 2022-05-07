@@ -27,7 +27,10 @@ class LineDaoTest {
 
 	@BeforeEach
 	void init() {
-		lineDao = new JdbcLineDao(dataSource, jdbcTemplate);
+		lineDao = new JdbcLineDao(dataSource, jdbcTemplate,
+			new JdbcSectionDao(dataSource, jdbcTemplate,
+				new JdbcStationDao(dataSource, jdbcTemplate)
+			));
 	}
 
 	@DisplayName("지하철 노선을 저장한다.")

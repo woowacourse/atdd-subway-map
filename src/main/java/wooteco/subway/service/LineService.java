@@ -16,11 +16,9 @@ import wooteco.subway.domain.Section;
 public class LineService {
 
 	private final LineDao lineDao;
-	private final SectionDao sectionDao;
 
-	public LineService(LineDao lineDao, SectionDao sectionDao) {
+	public LineService(LineDao lineDao) {
 		this.lineDao = lineDao;
-		this.sectionDao = sectionDao;
 	}
 
 	@Transactional
@@ -33,12 +31,8 @@ public class LineService {
 	@Transactional
 	public Line create(String name, String color, Section section) {
 		validateNameNotDuplicated(name);
-		Long lineId = lineDao.save(new Line(name, color));
-		Long sectionId = sectionDao.save(lineId, section);
-
-		Section foundSection = sectionDao.findById(sectionId);
-		Line line = lineDao.findById(lineId);
-		return line.createWithSection(List.of(foundSection));
+		Long lineId = lineDao.save(new Line(name, color, List.of(section)));
+		return lineDao.findById(lineId);
 	}
 
 	private void validateNameNotDuplicated(String name) {
@@ -48,15 +42,11 @@ public class LineService {
 	}
 
 	public List<Line> listLines() {
-		return lineDao.findAll().stream()
-			.map(line -> line.createWithSection(sectionDao.findByLineId(line.getId())))
-			.collect(Collectors.toList());
+		return lineDao.findAll();
 	}
 
 	public Line findOne(Long id) {
-		Line line = lineDao.findById(id);
-		List<Section> sections = sectionDao.findByLineId(line.getId());
-		return line.createWithSection(sections);
+		return lineDao.findById(id);
 	}
 
 	@Transactional

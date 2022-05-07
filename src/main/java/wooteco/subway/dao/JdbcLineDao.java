@@ -3,6 +3,8 @@ package wooteco.subway.dao;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -21,31 +23,40 @@ public class JdbcLineDao implements LineDao {
 	private static final String NO_SUCH_ID_ERROR = "해당 id에 맞는 지하철 노선이 없습니다.";
 	private final SimpleJdbcInsert insertActor;
 	private final NamedParameterJdbcTemplate jdbcTemplate;
+	private final SectionDao sectionDao;
 
-	public JdbcLineDao(DataSource dataSource, NamedParameterJdbcTemplate jdbcTemplate) {
+	public JdbcLineDao(DataSource dataSource, NamedParameterJdbcTemplate jdbcTemplate,
+		SectionDao sectionDao) {
 		this.jdbcTemplate = jdbcTemplate;
 		this.insertActor = new SimpleJdbcInsert(dataSource)
 			.withTableName("line")
 			.usingGeneratedKeyColumns("id");
+		this.sectionDao = sectionDao;
 	}
 
 	@Override
 	public Long save(Line line) {
-		return insertActor.executeAndReturnKey(new BeanPropertySqlParameterSource(line))
+		long lineId = insertActor.executeAndReturnKey(new BeanPropertySqlParameterSource(line))
 			.longValue();
+		line.getSections().forEach(section -> sectionDao.save(lineId, section));
+		return lineId;
 	}
 
 	@Override
 	public List<Line> findAll() {
 		String sql = "select * from line";
-		return jdbcTemplate.query(sql, getLineMapper());
+		return jdbcTemplate.query(sql, getLineMapper()).stream()
+			.map(line -> line.createWithSection(sectionDao.findByLineId(line.getId())))
+			.collect(Collectors.toList());
 	}
 
 	@Override
 	public Line findById(Long id) {
 		String sql = "select * from line where id = :id";
 		try {
-			return jdbcTemplate.queryForObject(sql, Map.of("id", id), getLineMapper());
+			Line line = jdbcTemplate.queryForObject(sql, Map.of("id", id), getLineMapper());
+			return Objects.requireNonNull(line)
+				.createWithSection(sectionDao.findByLineId(line.getId()));
 		} catch (EmptyResultDataAccessException exception) {
 			throw new NoSuchElementException(NO_SUCH_ID_ERROR);
 		}

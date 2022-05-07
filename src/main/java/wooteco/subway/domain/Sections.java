@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,5 +16,9 @@ public class Sections {
 		return values.stream()
 			.flatMap(section -> section.getStations().stream())
 			.collect(Collectors.toList());
+	}
+
+	public List<Section> getValues() {
+		return new ArrayList<>(values);
 	}
 }
