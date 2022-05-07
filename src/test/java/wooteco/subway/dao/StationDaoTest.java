@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Station;
@@ -20,7 +19,7 @@ import wooteco.subway.domain.Station;
 @SuppressWarnings("NonAsciiCharacters")
 @JdbcTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Sql("classpath:schema.sql")
+@Sql("classpath:schema-test.sql")
 class StationDaoTest {
 
     @Autowired
@@ -46,49 +45,34 @@ class StationDaoTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @DisplayName("save 메서드는 데이터를 저장한다")
-    @Nested
-    class SaveTest {
+    @Test
+    void save_메서드는_데이터를_저장한다() {
+        Station actual = dao.save(new Station("청계산입구역"));
 
-        @Test
-        void 중복되지_않는_이름인_경우_성공() {
-            Station actual = dao.save(new Station("청계산입구역"));
+        Station expected = new Station(1L, "청계산입구역");
 
-            Station expected = new Station(1L, "청계산입구역");
-
-            assertThat(actual).isEqualTo(expected);
-        }
-
-        @Test
-        void 중복되는_이름인_경우_예외발생() {
-            StationFixture.setUp(jdbcTemplate, "중복되는 역 이름");
-            Station station = new Station("중복되는 역 이름");
-
-            assertThatThrownBy(() -> dao.save(station))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
+        assertThat(actual).isEqualTo(expected);
     }
 
-    @DisplayName("deleteById 메서드는 데이터를 삭제한다")
-    @Nested
-    class DeleteByIdTest {
+    @Test
+    void existById_메서드는_해당_id로_존재_하는지_확인() {
+        dao.save(new Station("3호선"));
 
-        @Test
-        void 존재하는_역의_id가_입력된_경우_성공() {
-            StationFixture.setUp(jdbcTemplate, "테스트 역");
-            dao.deleteById(1L);
+        assertThat(dao.existById(1L)).isTrue();
+    }
 
-            boolean exists = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM station WHERE id = 1", new EmptySqlParameterSource(),
-                Integer.class) > 0;
+    @Test
+    void existById_메서드는_해당_Name으로_존재_하는지_확인() {
+        dao.save(new Station("4호선"));
 
-            assertThat(exists).isFalse();
-        }
+        assertThat(dao.existByName("4호선")).isTrue();
+    }
 
-        @Test
-        void 존재하지_않는_역의_id가_입력된_경우_예외발생() {
-            assertThatThrownBy(() -> dao.deleteById(99999L))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
+    @Test
+    void deleteById_메서드는_데이터를_삭제한다() {
+        StationFixture.setUp(jdbcTemplate, "테스트 역");
+        dao.deleteById(1L);
+
+        assertThat(dao.existById(1L)).isFalse();
     }
 }

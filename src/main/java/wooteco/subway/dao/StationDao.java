@@ -2,7 +2,6 @@ package wooteco.subway.dao;
 
 import java.util.Collections;
 import java.util.List;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
@@ -36,26 +35,34 @@ public class StationDao {
 
     public Station save(Station station) {
         final String sql = "INSERT INTO station(name) VALUES (:name)";
-
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource paramSource = new BeanPropertySqlParameterSource(station);
-        try {
-            jdbcTemplate.update(sql, paramSource, keyHolder);
-        } catch (DataAccessException e) {
-            throw new IllegalArgumentException("해당 이름의 지하철역을 생성할 수 없습니다.");
-        }
+
+        jdbcTemplate.update(sql, paramSource, keyHolder);
         return new Station(keyHolder.getKey().longValue(), station.getName());
     }
 
     public void deleteById(Long id) {
         final String sql = "DELETE FROM station WHERE id = :id";
-
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("id", id);
 
-        int effectedRowCount = jdbcTemplate.update(sql, paramSource);
-        if (effectedRowCount == 0) {
-            throw new IllegalArgumentException("해당되는 역은 존재하지 않습니다.");
-        }
+        jdbcTemplate.update(sql, paramSource);
+    }
+
+    public boolean existById(Long id) {
+        final String sql = "SELECT COUNT(*) FROM station WHERE id = :id";
+        MapSqlParameterSource paramSource = new MapSqlParameterSource();
+        paramSource.addValue("id", id);
+
+        return jdbcTemplate.queryForObject(sql, paramSource, Integer.class) != 0;
+    }
+
+    public boolean existByName(String name) {
+        final String sql = "SELECT COUNT(*) FROM station WHERE name = :name";
+        MapSqlParameterSource paramSource = new MapSqlParameterSource();
+        paramSource.addValue("name", name);
+
+        return jdbcTemplate.queryForObject(sql, paramSource, Integer.class) != 0;
     }
 }
