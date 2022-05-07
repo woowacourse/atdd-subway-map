@@ -50,8 +50,8 @@ class LineRepositoryTest {
     void findAll() {
         final LineEntity lineEntity = new LineEntity("2호선", "bg-600-green");
         final LineEntity lineEntity2 = new LineEntity("3호선", "bg-600-blue");
-        final LineEntity save = lineRepository.save(lineEntity);
-        final LineEntity save2 = lineRepository.save(lineEntity2);
+        lineRepository.save(lineEntity);
+        lineRepository.save(lineEntity2);
 
         final List<LineEntity> lines = lineRepository.findAll();
 

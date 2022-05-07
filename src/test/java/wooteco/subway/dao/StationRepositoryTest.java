@@ -49,8 +49,8 @@ class StationRepositoryTest {
     void findAll() {
         final StationEntity stationEntity = new StationEntity(1L, "선릉역");
         final StationEntity stationEntity2 = new StationEntity(2L, "삼성역");
-        final StationEntity saved = stationRepository.save(stationEntity);
-        final StationEntity saved2 = stationRepository.save(stationEntity2);
+        stationRepository.save(stationEntity);
+        stationRepository.save(stationEntity2);
 
         final List<StationEntity> lines = stationRepository.findAll();
 
