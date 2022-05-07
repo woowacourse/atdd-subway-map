@@ -18,7 +18,7 @@ public class Line {
     }
 
     private void validateName(final String name) {
-        if (name.isBlank()) {
+        if (name.equals(null) ||name.isBlank()) {
             throw new IllegalLineNameException();
         }
     }

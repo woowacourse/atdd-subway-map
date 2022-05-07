@@ -14,7 +14,7 @@ public class Station {
     }
 
     private void validateName(final String name) {
-        if (name.isBlank()) {
+        if (name.equals(null) || name.isBlank()) {
             throw new IllegalStationNameException();
         }
     }
