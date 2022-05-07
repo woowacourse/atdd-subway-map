@@ -8,6 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import wooteco.subway.exception.ColorEmptyException;
+import wooteco.subway.exception.LineEmptyException;
 
 public class LineTest {
 
@@ -30,8 +32,8 @@ public class LineTest {
     @DisplayName("노선 이름이 공백인 경우, 예외를 발생한다.")
     void createEmptyName(final String name) {
         assertThatThrownBy(() -> new Line(name, "bg-red-600"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("노선 이름은 공백일 수 없습니다.");
+                .isInstanceOf(LineEmptyException.class)
+                .hasMessage("지하철 노선 이름은 공백일 수 없습니다.");
     }
 
     @ParameterizedTest
@@ -39,7 +41,7 @@ public class LineTest {
     @DisplayName("색상이 공백인 경우, 예외를 발생한다.")
     void createEmptyColor(final String color) {
         assertThatThrownBy(() -> new Line("신분당선", color))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("색상이 공백일 수 없습니다.");
+                .isInstanceOf(ColorEmptyException.class)
+                .hasMessage("지하철 노선의 색상명이 공백일 수 없습니다.");
     }
 }
