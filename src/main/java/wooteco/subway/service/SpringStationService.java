@@ -8,6 +8,7 @@ import wooteco.subway.dao.StationRepository;
 import wooteco.subway.dao.entity.StationEntity;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.StationDeleteFailureException;
+import wooteco.subway.exception.StationDuplicateException;
 import wooteco.subway.service.dto.StationServiceRequest;
 
 @Service
@@ -22,9 +23,18 @@ public class SpringStationService implements StationService {
     @Transactional
     @Override
     public Station save(StationServiceRequest stationServiceRequest) {
+        validateDuplicateName(stationServiceRequest);
+
         StationEntity stationEntity = new StationEntity(stationServiceRequest.getName());
         final StationEntity saved = stationRepository.save(stationEntity);
+
         return new Station(saved.getId(), saved.getName());
+    }
+
+    private void validateDuplicateName(StationServiceRequest stationServiceRequest) {
+        if (stationRepository.existsByName(stationServiceRequest.getName())) {
+            throw new StationDuplicateException();
+        }
     }
 
     @Transactional(readOnly = true)
