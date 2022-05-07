@@ -167,6 +167,12 @@ public class Sections {
                 .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
     }
 
+    public void removeSection(final Section section) {
+        if (!sections.contains(section)) {
+            throw new IllegalStateException("해당 구간이 포함되어있지 않습니다.");
+        }
+    }
+
     public List<Section> getSections() {
         return List.copyOf(sections);
     }

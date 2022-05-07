@@ -180,4 +180,21 @@ class SectionsTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("기존 길이보다 긴 구간은 중간에 추가될 수 없습니다.");
     }
+
+    @Test
+    @DisplayName("구간 제거 시 Section이 포함되지 않은 경우 예외 발생")
+    void removeSectionExceptionByNotFoundException() {
+        // given
+        Station station1 = new Station(1L, "오리");
+        Station station2 = new Station(2L, "배카라");
+        Station station3 = new Station(3L, "오카라");
+        Sections sections = new Sections(List.of(new Section(1L, 1L, station1, station2, 2)));
+
+        Section removeSection = new Section(2L, 1L, station1, station3, 2);
+
+        // when & then
+        assertThatThrownBy(() -> sections.removeSection(removeSection))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("해당 구간이 포함되어있지 않습니다.");
+    }
 }
