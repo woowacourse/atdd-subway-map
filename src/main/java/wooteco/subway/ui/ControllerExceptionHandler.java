@@ -2,6 +2,7 @@ package wooteco.subway.ui;
 
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,7 +17,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<String> handleDataNotFound() {
-        return ResponseEntity.badRequest().body("해당 데이터를 조회할 수 없습니다.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 데이터를 조회할 수 없습니다.");
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
