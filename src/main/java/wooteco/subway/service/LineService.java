@@ -42,6 +42,7 @@ public class LineService {
         return findById(savedLineId);
     }
 
+    @Transactional
     public List<LineResponse> findAll() {
         return lineDao.findAll()
                 .stream()
