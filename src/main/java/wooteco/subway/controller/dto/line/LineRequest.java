@@ -1,6 +1,7 @@
-package wooteco.subway.dto;
+package wooteco.subway.controller.dto.line;
 
 public class LineRequest {
+
     private String name;
     private String color;
     private Long upStationId;

@@ -1,20 +1,23 @@
 package wooteco.subway.domain;
 
-public class Station {
+public class Line {
 
     private static final long TEMPORARY_ID = 0L;
 
     private final Long id;
     private final String name;
+    private final String color;
 
-    public Station(Long id, String name) {
+    public Line(Long id, String name, String color) {
         this.id = id;
         this.name = name;
+        this.color = color;
     }
 
-    public Station(String name) {
+    public Line(String name, String color) {
         this.id = TEMPORARY_ID;
         this.name = name;
+        this.color = color;
     }
 
     public Long getId() {
@@ -23,5 +26,9 @@ public class Station {
 
     public String getName() {
         return name;
+    }
+
+    public String getColor() {
+        return color;
     }
 }
