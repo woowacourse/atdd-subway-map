@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.dto.ErrorResponse;
 import wooteco.subway.exception.BlankArgumentException;
 import wooteco.subway.exception.DuplicateException;
+import wooteco.subway.exception.NotDeletableSectionException;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.exception.NotSplittableSectionException;
 
@@ -13,7 +14,7 @@ import wooteco.subway.exception.NotSplittableSectionException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler({DuplicateException.class, BlankArgumentException.class,
-        NotSplittableSectionException.class})
+        NotSplittableSectionException.class, NotDeletableSectionException.class})
     private ResponseEntity<ErrorResponse> handleExceptionToBadRequest(Exception e) {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }

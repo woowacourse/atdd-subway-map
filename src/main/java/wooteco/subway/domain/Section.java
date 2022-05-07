@@ -22,8 +22,16 @@ public class Section {
         this(id, lineId, edge.getUpStationId(), edge.getDownStationId(), edge.getDistance());
     }
 
+    public Section(Long lineId, SectionEdge edge) {
+        this(null, lineId, edge);
+    }
+
     public Section split(Section section) {
-        return new Section(id, lineId, edge.splitBy(section.getEdge()));
+        return new Section(id, lineId, edge.split(section.getEdge()));
+    }
+
+    public Section merge(Section section) {
+        return new Section(lineId, edge.merge(section.getEdge()));
     }
 
     public Long getLineId() {

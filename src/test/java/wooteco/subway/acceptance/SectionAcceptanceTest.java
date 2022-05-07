@@ -1,15 +1,14 @@
 package wooteco.subway.acceptance;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @DisplayName("구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -20,16 +19,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         long upStationId = requestCreateStation("강남역").jsonPath().getLong("id");
         long downStationId = requestCreateStation("역삼역").jsonPath().getLong("id");
 
-        Map<String, Object> params = Map.of(
-            "upStationId", upStationId,
-            "downStationId", downStationId,
-            "distance", 10);
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(params)
-            .when().post("/lines/1/sections")
-            .then().extract();
+        ExtractableResponse<Response> response = requestAddSection(1L, upStationId, downStationId,
+            10);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
@@ -42,16 +33,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         long lineId = requestCreateLine("신분당선", "bg-red-600", upStationId, downStationId, 10)
             .jsonPath().getLong("id");
 
-        Map<String, Object> params = Map.of(
-            "upStationId", upStationId,
-            "downStationId", Math.max(upStationId, downStationId) + 1,
-            "distance", 10);
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(params)
-            .when().post("/lines/" + lineId+ "/sections")
-            .then().extract();
+        ExtractableResponse<Response> response = requestAddSection(lineId, upStationId,
+            Math.max(upStationId, downStationId) + 1, 10);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
@@ -65,16 +48,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .jsonPath().getLong("id");
         long newStationId = requestCreateStation("선릉역").jsonPath().getLong("id");
 
-        Map<String, Object> params = Map.of(
-            "upStationId", newStationId,
-            "downStationId", upStationId,
-            "distance", 8);
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(params)
-            .when().post("/lines/" + lineId+ "/sections")
-            .then().extract();
+        ExtractableResponse<Response> response = requestAddSection(lineId, newStationId,
+            upStationId, 8);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -87,16 +62,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         long lineId = requestCreateLine("신분당선", "bg-red-600", upStationId, downStationId, 10)
             .jsonPath().getLong("id");
 
-        Map<String, Object> params = Map.of(
-            "upStationId", downStationId,
-            "downStationId", upStationId,
-            "distance", 8);
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(params)
-            .when().post("/lines/" + lineId+ "/sections")
-            .then().extract();
+        ExtractableResponse<Response> response = requestAddSection(lineId, downStationId,
+            upStationId, 8);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -110,16 +77,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         long lineId = requestCreateLine("신분당선", "bg-red-600", upStationId, downStationId, 10)
             .jsonPath().getLong("id");
 
-        Map<String, Object> params = Map.of(
-            "upStationId", upStationId,
-            "downStationId", newStationId,
-            "distance", 8);
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(params)
-            .when().post("/lines/" + lineId+ "/sections")
-            .then().extract();
+        ExtractableResponse<Response> response = requestAddSection(lineId, upStationId,
+            newStationId, 8);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -133,16 +92,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         long lineId = requestCreateLine("신분당선", "bg-red-600", upStationId, downStationId, 10)
             .jsonPath().getLong("id");
 
-        Map<String, Object> params = Map.of(
-            "upStationId", upStationId,
-            "downStationId", newStationId,
-            "distance", 10);
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(params)
-            .when().post("/lines/" + lineId+ "/sections")
-            .then().extract();
+        ExtractableResponse<Response> response = requestAddSection(lineId, upStationId,
+            newStationId, 10);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -157,16 +108,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         long lineId = requestCreateLine("신분당선", "bg-red-600", upStationId, downStationId, 10)
             .jsonPath().getLong("id");
 
-        Map<String, Object> params = Map.of(
-            "upStationId", notFoundStationId1,
-            "downStationId", notFoundStationId2,
-            "distance", 3);
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(params)
-            .when().post("/lines/" + lineId+ "/sections")
-            .then().extract();
+        ExtractableResponse<Response> response = requestAddSection(lineId, notFoundStationId1,
+            notFoundStationId2, 3);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -180,17 +123,119 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         long lineId = requestCreateLine("신분당선", "bg-red-600", upStationId, downStationId, 10)
             .jsonPath().getLong("id");
 
-        Map<String, Object> params = Map.of(
-            "upStationId", newStationId,
-            "downStationId", newStationId,
-            "distance", 3);
+        ExtractableResponse<Response> response = requestAddSection(lineId, newStationId,
+            newStationId, 3);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("구간 삭제 시 지하철 노선이 존재하지 않는 경우")
+    @Test
+    void deleteSectionToNotFoundLine() {
+        long stationId = requestCreateStation("강남역").jsonPath().getLong("id");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(params)
-            .when().post("/lines/" + lineId+ "/sections")
+            .when().delete("/lines/1/sections?stationId=" + stationId)
+            .then().extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("구간 삭제 시 존재하지 않는 지하철 역을 사용할 경우")
+    @Test
+    void deleteSectionWithNotFoundStation() {
+        long upStationId = requestCreateStation("강남역").jsonPath().getLong("id");
+        long downStationId = requestCreateStation("역삼역").jsonPath().getLong("id");
+        long lineId = requestCreateLine("신분당선", "bg-red-600", upStationId, downStationId, 10)
+            .jsonPath().getLong("id");
+        long notFoundStationId = Math.max(upStationId, downStationId) + 1;
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when().delete("/lines/" + lineId + "/sections?stationId=" + notFoundStationId)
+            .then().extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("노선에 추가되지 않은 지하철역을 삭제 시 실패")
+    @Test
+    void deleteNotValidStationSection() {
+        long upStationId = requestCreateStation("강남역").jsonPath().getLong("id");
+        long downStationId = requestCreateStation("역삼역").jsonPath().getLong("id");
+        long notFoundStationId = requestCreateStation("선릉역").jsonPath().getLong("id");
+        long lineId = requestCreateLine("신분당선", "bg-red-600", upStationId, downStationId, 10)
+            .jsonPath().getLong("id");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when().delete("/lines/" + lineId + "/sections?stationId=" + notFoundStationId)
             .then().extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("구간 한 개만 있는 노선에서는 구간 삭제 실패")
+    @Test
+    void deleteOnlyOneSection() {
+        long upStationId = requestCreateStation("강남역").jsonPath().getLong("id");
+        long downStationId = requestCreateStation("역삼역").jsonPath().getLong("id");
+        long lineId = requestCreateLine("신분당선", "bg-red-600", upStationId, downStationId, 10)
+            .jsonPath().getLong("id");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when().delete("/lines/" + lineId + "/sections?stationId=" + upStationId)
+            .then().extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("상행 종점 구간 제거")
+    @Test
+    void deleteLastUpStationSection() {
+        long stationId1 = requestCreateStation("강남역").jsonPath().getLong("id");
+        long stationId2 = requestCreateStation("역삼역").jsonPath().getLong("id");
+        long stationId3 = requestCreateStation("잠실역").jsonPath().getLong("id");
+        long lineId = requestCreateLine("신분당선", "bg-red-600", stationId1, stationId2, 10)
+            .jsonPath().getLong("id");
+        requestAddSection(lineId, stationId2, stationId3, 5);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when().delete("/lines/" + lineId + "/sections?stationId=" + stationId1)
+            .then().extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("하행 종점 구간 제거")
+    @Test
+    void deleteLastDownStationSection() {
+        long stationId1 = requestCreateStation("강남역").jsonPath().getLong("id");
+        long stationId2 = requestCreateStation("역삼역").jsonPath().getLong("id");
+        long stationId3 = requestCreateStation("잠실역").jsonPath().getLong("id");
+        long lineId = requestCreateLine("신분당선", "bg-red-600", stationId1, stationId2, 10)
+            .jsonPath().getLong("id");
+        requestAddSection(lineId, stationId2, stationId3, 5);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when().delete("/lines/" + lineId + "/sections?stationId=" + stationId3)
+            .then().extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("중간의 구간 제거")
+    @Test
+    void deleteSectionAndMerge() {
+        long stationId1 = requestCreateStation("강남역").jsonPath().getLong("id");
+        long stationId2 = requestCreateStation("역삼역").jsonPath().getLong("id");
+        long stationId3 = requestCreateStation("잠실역").jsonPath().getLong("id");
+        long lineId = requestCreateLine("신분당선", "bg-red-600", stationId1, stationId2, 10)
+            .jsonPath().getLong("id");
+        requestAddSection(lineId, stationId2, stationId3, 5);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when().delete("/lines/" + lineId + "/sections?stationId=" + stationId2)
+            .then().extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

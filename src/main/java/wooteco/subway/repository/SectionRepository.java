@@ -102,4 +102,19 @@ public class SectionRepository {
     public void deleteByLineId(Long lineId) {
         jdbcTemplate.update("DELETE FROM SECTION WHERE line_id = ?", lineId);
     }
+
+    public int findCountByLineId(Long lineId) {
+        return jdbcTemplate
+            .queryForObject("SELECT COUNT(*) FROM SECTION WHERE line_id = ?", Integer.class, lineId);
+    }
+
+    public void deleteByLineIdAndStationId(Long lineId, Long stationId) {
+        jdbcTemplate.update(
+            "DELETE FROM SECTION WHERE line_id =? AND (up_station_id = ? OR down_station_id = ?)",
+            lineId, stationId, stationId);
+    }
+
+    public void deleteById(Long id) {
+        jdbcTemplate.update("DELETE FROM SECTION WHERE id = ?", id);
+    }
 }

@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.DuplicateSectionException;
+import wooteco.subway.exception.NotDeletableSectionException;
 import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.exception.NotFoundStationException;
 import wooteco.subway.exception.NotSplittableSectionException;
@@ -82,8 +83,12 @@ public class SectionService {
     }
 
     private boolean isNotFoundStationsOnLine(Long lineId, Long upStationId, Long downStationId) {
-        return !sectionRepository.existByLineIdAndStationId(lineId, upStationId) &&
-            !sectionRepository.existByLineIdAndStationId(lineId, downStationId);
+        return isNotFoundStationOnLine(lineId, upStationId) &&
+            isNotFoundStationOnLine(lineId, downStationId);
+    }
+
+    private boolean isNotFoundStationOnLine(Long lineId, Long upStationId) {
+        return !sectionRepository.existByLineIdAndStationId(lineId, upStationId);
     }
 
     private Optional<Section> findExistSection(Long lineId, Long upStationId, Long downStationId) {
@@ -102,5 +107,46 @@ public class SectionService {
     private void updateExistSection(Section newSection, Section existSection) {
         Section sectionForUpdate = existSection.split(newSection);
         sectionRepository.update(sectionForUpdate);
+    }
+
+    public void deleteSection(Long lineId, Long stationId) {
+        if (isNotFoundLine(lineId)) {
+            throw new NotFoundLineException(lineId);
+        }
+
+        if (isNotFoundStation(stationId)) {
+            throw new NotFoundStationException(stationId);
+        }
+
+        if (isNotFoundStationOnLine(lineId, stationId)) {
+            throw new NotDeletableSectionException(stationId);
+        }
+
+        if (hasOnlyOneSection(lineId)) {
+            throw new NotDeletableSectionException(stationId);
+        }
+
+        Optional<Section> prevSectionOptional = findSameDownStationExistSection(lineId, stationId);
+        Optional<Section> nextSectionOptional = findSameUpStationExistSection(lineId, stationId);
+
+        if (prevSectionOptional.isPresent() && nextSectionOptional.isPresent()) {
+            saveMergedSection(prevSectionOptional.get(), nextSectionOptional.get());
+        }
+
+        prevSectionOptional.ifPresent(this::deleteSection);
+        nextSectionOptional.ifPresent(this::deleteSection);
+    }
+
+    private void saveMergedSection(Section prevSection, Section nextSection) {
+        Section newSection = prevSection.merge(nextSection);
+        sectionRepository.save(newSection);
+    }
+
+    private boolean hasOnlyOneSection(Long lineId) {
+        return sectionRepository.findCountByLineId(lineId) == 1;
+    }
+
+    private void deleteSection(Section nextSection) {
+        sectionRepository.deleteById(nextSection.getId());
     }
 }

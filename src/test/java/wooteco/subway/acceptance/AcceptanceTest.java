@@ -65,4 +65,18 @@ public class AcceptanceTest {
             .then().log().all()
             .extract();
     }
+
+    protected ExtractableResponse<Response> requestAddSection(long lineId, long upStationId,
+                                                              long downStationId, int distance) {
+        Map<String, Object> params = Map.of(
+            "upStationId", upStationId,
+            "downStationId", downStationId,
+            "distance", distance);
+
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(params)
+            .when().post("/lines/" + lineId + "/sections")
+            .then().extract();
+    }
 }

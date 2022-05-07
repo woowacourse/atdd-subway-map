@@ -15,7 +15,7 @@ public class SectionEdge {
         this.distance = distance;
     }
 
-    public SectionEdge splitBy(SectionEdge edge) {
+    public SectionEdge split(SectionEdge edge) {
         if (isInvalidDistance(edge)) {
             throw new NotSplittableSectionException(edge.getUpStationId(), edge.getDownStationId());
         }
@@ -48,6 +48,10 @@ public class SectionEdge {
 
     private int newDistance(SectionEdge edge) {
         return this.distance - edge.getDistance();
+    }
+
+    public SectionEdge merge(SectionEdge edge) {
+        return new SectionEdge(upStationId, edge.getDownStationId(), distance + edge.getDistance());
     }
 
     public Long getUpStationId() {

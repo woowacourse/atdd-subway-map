@@ -16,6 +16,7 @@ import wooteco.subway.domain.SectionEdge;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.exception.DuplicateSectionException;
+import wooteco.subway.exception.NotDeletableSectionException;
 import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.exception.NotFoundStationException;
 import wooteco.subway.exception.NotSplittableSectionException;
@@ -176,7 +177,7 @@ public class SectionServiceTest {
             .containsExactlyInAnyOrder(new SectionEdge(upStation.getId(), downStation.getId(), 10));
     }
 
-    @DisplayName("종점이 아니고 구간에 추가되지 않은 상행역으로 구간 추가 시 예외 발생")
+    @DisplayName("구간에 추가되지 않은 역을 상행, 하행역으로 추가 시 예외 발생")
     @Test
     void addSectionWithNotFoundUpStation() {
         Station upStation = stationRepository.save(new Station("강남역"));
@@ -196,5 +197,125 @@ public class SectionServiceTest {
             .collect(Collectors.toList());
         assertThat(sectionEdges)
             .containsExactlyInAnyOrder(new SectionEdge(upStation.getId(), downStation.getId(), 10));
+    }
+
+    @DisplayName("존재하지 않는 노선에 구간 삭제 시 예외 발생")
+    @Test
+    void deleteSectionToNotFoundLine() {
+        Station upStation = stationRepository.save(new Station("강남역"));
+
+        assertThatThrownBy(() -> sectionService.deleteSection(1L, upStation.getId())
+        ).isInstanceOf(NotFoundLineException.class);
+    }
+
+    @DisplayName("존재하지 않는 역으로 구간 삭제 시 예외 발생")
+    @Test
+    void deleteSectionWithNotFoundUpAndDownStation() {
+        Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
+
+        assertThatThrownBy(() -> sectionService.deleteSection(line.getId(), 1L)
+        ).isInstanceOf(NotFoundStationException.class);
+    }
+
+    @DisplayName("구간에 추가되지 않은 역을 삭제 시 예외 발생")
+    @Test
+    void deleteSectionWithNotFoundUpStation() {
+        Station upStation = stationRepository.save(new Station("강남역"));
+        Station downStation = stationRepository.save(new Station("역삼역"));
+        Station notFoundStation = stationRepository.save(new Station("선릉역"));
+        Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
+        sectionRepository
+            .save(new Section(line.getId(), upStation.getId(), downStation.getId(), 10));
+
+        assertThatThrownBy(() -> sectionService.deleteSection(line.getId(), notFoundStation.getId()))
+            .isInstanceOf(NotDeletableSectionException.class);
+
+        List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
+            .map(Section::getEdge)
+            .collect(Collectors.toList());
+        assertThat(sectionEdges)
+            .containsExactlyInAnyOrder(new SectionEdge(upStation.getId(), downStation.getId(), 10));
+    }
+
+    @DisplayName("구간이 하나인 노선에서 구간 삭제 시 예외 발생")
+    @Test
+    void deleteOnlyOneSection() {
+        Station upStation = stationRepository.save(new Station("강남역"));
+        Station downStation = stationRepository.save(new Station("역삼역"));
+        Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
+        sectionRepository
+            .save(new Section(line.getId(), upStation.getId(), downStation.getId(), 10));
+
+        assertThatThrownBy(() -> sectionService.deleteSection(line.getId(), upStation.getId()))
+            .isInstanceOf(NotDeletableSectionException.class);
+
+        List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
+            .map(Section::getEdge)
+            .collect(Collectors.toList());
+        assertThat(sectionEdges)
+            .containsExactlyInAnyOrder(new SectionEdge(upStation.getId(), downStation.getId(), 10));
+    }
+
+    @DisplayName("상행 종점 구간 제거")
+    @Test
+    void deleteLastUpStationSection() {
+        Station station1 = stationRepository.save(new Station("강남역"));
+        Station station2 = stationRepository.save(new Station("역삼역"));
+        Station station3 = stationRepository.save(new Station("잠실역"));
+        Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
+        sectionRepository
+            .save(new Section(line.getId(), station1.getId(), station2.getId(), 10));
+        sectionRepository
+            .save(new Section(line.getId(), station2.getId(), station3.getId(), 5));
+
+        sectionService.deleteSection(line.getId(), station1.getId());
+
+        List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
+            .map(Section::getEdge)
+            .collect(Collectors.toList());
+        assertThat(sectionEdges)
+            .containsExactlyInAnyOrder(new SectionEdge(station2.getId(), station3.getId(), 5));
+    }
+
+    @DisplayName("하행 종점 구간 제거")
+    @Test
+    void deleteLastDownStationSection() {
+        Station station1 = stationRepository.save(new Station("강남역"));
+        Station station2 = stationRepository.save(new Station("역삼역"));
+        Station station3 = stationRepository.save(new Station("잠실역"));
+        Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
+        sectionRepository
+            .save(new Section(line.getId(), station1.getId(), station2.getId(), 10));
+        sectionRepository
+            .save(new Section(line.getId(), station2.getId(), station3.getId(), 5));
+
+        sectionService.deleteSection(line.getId(), station3.getId());
+
+        List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
+            .map(Section::getEdge)
+            .collect(Collectors.toList());
+        assertThat(sectionEdges)
+            .containsExactlyInAnyOrder(new SectionEdge(station1.getId(), station2.getId(), 10));
+    }
+
+    @DisplayName("중간 구간 제거")
+    @Test
+    void deleteBetweenSection() {
+        Station station1 = stationRepository.save(new Station("강남역"));
+        Station station2 = stationRepository.save(new Station("역삼역"));
+        Station station3 = stationRepository.save(new Station("잠실역"));
+        Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
+        sectionRepository
+            .save(new Section(line.getId(), station1.getId(), station2.getId(), 10));
+        sectionRepository
+            .save(new Section(line.getId(), station2.getId(), station3.getId(), 5));
+
+        sectionService.deleteSection(line.getId(), station2.getId());
+
+        List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
+            .map(Section::getEdge)
+            .collect(Collectors.toList());
+        assertThat(sectionEdges)
+            .containsExactlyInAnyOrder(new SectionEdge(station1.getId(), station3.getId(), 15));
     }
 }
