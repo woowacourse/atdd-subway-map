@@ -6,15 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -24,13 +23,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", null, null, 0);
 
         // when
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -48,24 +45,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        final Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "신분당선");
-        params1.put("color", "bg-red-600");
+        final LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600", null, null, 0);
 
         final ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(params1)
+                .body(lineRequest1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
                 .extract();
 
-        final Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "분당선");
-        params2.put("color", "bg-green-600");
+        final LineRequest lineRequest2 = new LineRequest("분당선", "bg-green-600", null, null, 0);
 
         final ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(params2)
+                .body(lineRequest2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -96,12 +89,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLineById() {
         /// given
-        final Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "신분당선");
-        params1.put("color", "bg-red-600");
+        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", null, null, 0);
 
         final ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params1)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -132,12 +123,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineById() {
         // given
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", null, null, 0);
 
         final ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -148,13 +137,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         final String name = "다른분당선";
         final String color = "bg-red-600";
-
-        final Map<String, String> newParams = new HashMap<>();
-        newParams.put("name", name);
-        newParams.put("color", color);
+        final LineRequest updateRequest = new LineRequest(name, color, null, null, 0);
 
         RestAssured.given().log().all()
-                .body(newParams)
+                .body(updateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put(uri)
@@ -181,12 +167,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", null, null, 0);
 
         final ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -209,12 +193,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        final Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "신분당선");
-        params1.put("color", "bg-red-600");
+        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", null, null, 0);
 
         RestAssured.given().log().all()
-                .body(params1)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -222,12 +204,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // when
-        final Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "신분당선");
-        params2.put("color", "bg-red-600");
 
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params2)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
