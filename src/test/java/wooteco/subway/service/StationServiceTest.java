@@ -69,11 +69,8 @@ public class StationServiceTest {
         Long id = stationResponse.getId();
 
         stationService.deleteStation(id);
-
         List<Station> stations = stationDao.findAll();
-        List<String> stationNames = stations.stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
-        assertThat(stationNames).doesNotContain("강남역");
+
+        assertThat(stations).isEmpty();
     }
 }

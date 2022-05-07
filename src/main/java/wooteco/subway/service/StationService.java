@@ -29,7 +29,7 @@ public class StationService {
     }
 
     private void validateDuplicateName(Station station) {
-        if(stationDao.existByName(station)){
+        if (stationDao.existByName(station)) {
             throw new IllegalArgumentException(DUPLICATE_EXCEPTION_MESSAGE);
         }
     }

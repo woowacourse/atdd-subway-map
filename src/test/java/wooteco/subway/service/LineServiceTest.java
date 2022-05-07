@@ -93,7 +93,6 @@ public class LineServiceTest {
         LineResponse lineResponse = lineService.insertLine(lineRequest);
 
         lineService.updateLine(lineResponse.getId(), new LineRequest("분당선", "bg-green-500"));
-
         Line line = lineDao.findById(lineResponse.getId());
 
         assertThat(line.getName()).isEqualTo("분당선");
