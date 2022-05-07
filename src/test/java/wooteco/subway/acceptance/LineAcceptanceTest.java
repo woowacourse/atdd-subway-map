@@ -13,7 +13,6 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
@@ -27,13 +26,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         final LineRequest params = new LineRequest("신분당선", "bg-red-600");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = AcceptanceFixture.post(params, "/lines");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -47,24 +40,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithDuplicateName() {
         // given
         final LineRequest params = new LineRequest("신분당선", "bg-red-600");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        AcceptanceFixture.post(params, "/lines");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = AcceptanceFixture.post(params, "/lines");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -75,24 +54,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         final LineRequest params1 = new LineRequest("신분당선", "bg-red-600");
-
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(params1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse1 = AcceptanceFixture.post(params1, "/lines");
 
         final LineRequest params2 = new LineRequest("분당선", "br-green-600");
-
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse2 = AcceptanceFixture.post(params2, "/lines");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -118,22 +83,11 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         final LineRequest params = new LineRequest("신분당선", "bg-red-600");
 
-        ExtractableResponse<Response> param = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
+        ExtractableResponse<Response> param = AcceptanceFixture.post(params, "/lines");
         final String savedId = param.header("Location").split("/")[2];
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines/" + savedId)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = AcceptanceFixture.get("/lines/" + savedId);
 
         // then
         final Long findId = response.response().jsonPath().getLong("id");
@@ -150,14 +104,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         final LineRequest params = new LineRequest("신분당선", "bg-red-600");
 
-        ExtractableResponse<Response> param = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
+        ExtractableResponse<Response> param = AcceptanceFixture.post(params, "/lines");
         final String savedId = param.header("Location").split("/")[2];
 
         // when
@@ -165,13 +112,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         updateParams.put("name", "다른분당선");
         updateParams.put("color", "bg-red-600");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(updateParams)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/lines/" + savedId)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = AcceptanceFixture.put(updateParams, "/lines/" + savedId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -183,22 +124,11 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         final LineRequest params = new LineRequest("신분당선", "bg-red-600");
 
-        ExtractableResponse<Response> param = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
+        ExtractableResponse<Response> param = AcceptanceFixture.post(params, "/lines");
         final String savedId = param.header("Location").split("/")[2];
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete("/lines/" + savedId)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = AcceptanceFixture.delete("/lines/" + savedId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
