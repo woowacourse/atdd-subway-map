@@ -3,7 +3,6 @@ package wooteco.subway.dao;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -50,12 +49,6 @@ public class StationDaoImpl implements StationDao {
     public int deleteById(Long id) {
         String sql = "delete from station where id = ?";
         return jdbcTemplate.update(sql, id);
-    }
-
-    @Override
-    public Optional<Station> findById(Long id) {
-        String sql = "select * from station where id = ?";
-        return Optional.of(jdbcTemplate.queryForObject(sql, actorRowMapper, id));
     }
 
     @Override

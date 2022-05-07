@@ -1,16 +1,15 @@
 package wooteco.subway.dao;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import wooteco.subway.domain.Station;
 
 public class FakeStationDao implements StationDao {
 
     private Long seq = 0L;
-    private Map<Long, Station> stations = new HashMap<>();
+    private final Map<Long, Station> stations = new HashMap<>();
 
     @Override
     public Station save(Station station) {
@@ -21,9 +20,7 @@ public class FakeStationDao implements StationDao {
 
     @Override
     public List<Station> findAll() {
-        return stations.values()
-                .stream()
-                .collect(Collectors.toList());
+        return new ArrayList<>(stations.values());
     }
 
     @Override
@@ -33,11 +30,6 @@ public class FakeStationDao implements StationDao {
             return 1;
         }
         return 0;
-    }
-
-    @Override
-    public Optional<Station> findById(Long id) {
-        return Optional.of(stations.get(id));
     }
 
     @Override

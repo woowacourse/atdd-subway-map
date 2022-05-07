@@ -3,7 +3,6 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -63,16 +62,5 @@ class StationDaoImplTest {
         List<Station> stations = stationDao.findAll();
 
         assertThat(stations).isEmpty();
-    }
-
-    @DisplayName("id 값에 해당하는 지하철 역을 삭제한다.")
-    @Test
-    void findById() {
-        Long seoulStationId = 1L;
-
-        Optional<Station> station = stationDao.findById(seoulStationId);
-
-        assertThat(station.isPresent()).isTrue();
-        assertThat(station.get()).isEqualTo(new Station(seoulStationId, "서울역"));
     }
 }
