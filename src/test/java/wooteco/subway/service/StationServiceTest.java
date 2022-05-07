@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DataDuplicationException;
 import wooteco.subway.exception.DataNotExistException;
 
 class StationServiceTest {
@@ -43,7 +44,7 @@ class StationServiceTest {
 
         //then
         assertThatThrownBy(() -> stationService.createStation(station))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(DataDuplicationException.class)
             .hasMessageContaining("이미 등록된 역입니다.");
     }
 

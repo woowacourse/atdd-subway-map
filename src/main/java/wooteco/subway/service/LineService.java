@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.DataDuplicationException;
 import wooteco.subway.exception.DataNotExistException;
 
 @Service
@@ -22,7 +23,7 @@ public class LineService {
     public Line createLine(Line line) {
         Optional<Line> foundLine = lineDao.findByName(line.getName());
         if (foundLine.isPresent()) {
-            throw new IllegalArgumentException("이미 등록된 노선입니다.");
+            throw new DataDuplicationException("이미 등록된 노선입니다.");
         }
         return lineDao.save(line);
     }
@@ -39,7 +40,7 @@ public class LineService {
     public void update(Line line) {
         Optional<Line> foundLine = lineDao.findByName(line.getName());
         if (foundLine.isPresent() && !line.hasSameId(foundLine.get())) {
-            throw new IllegalArgumentException("이미 등록된 노선입니다.");
+            throw new DataDuplicationException("이미 등록된 노선입니다.");
         }
         lineDao.update(line);
     }
