@@ -54,7 +54,7 @@ public class LineService {
 	@Transactional
 	public void addSection(Long id, Section section) {
 		Line line = lineDao.findById(id);
-		line.addSection(section)
+		line.findUpdatedSectionByAdd(section)
 			.ifPresent(lineDao::updateSection);
 		lineDao.saveSection(id, section);
 	}

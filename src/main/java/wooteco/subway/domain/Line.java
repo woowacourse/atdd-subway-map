@@ -63,4 +63,8 @@ public class Line {
 	public List<Section> getSections() {
 		return sections.getValues();
 	}
+
+	public Optional<Section> findUpdatedSectionByAdd(Section section) {
+		return sections.add(section);
+	}
 }

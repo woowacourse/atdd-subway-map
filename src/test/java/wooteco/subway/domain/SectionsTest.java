@@ -109,7 +109,7 @@ class SectionsTest {
 	@DisplayName("추가할 구간의 상행역, 하행역이 이미 추가되어 있으면 추가하지 못한다.")
 	@Test
 	void cannotAddByExistStations() {
-		Section section = new Section(station1, station2, 6);
+		Section section = new Section(station1, station5, 6);
 		assertThatThrownBy(() -> sections.add(section))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("상행역과 하행역 둘 다 이미 노선에 존재합니다.");

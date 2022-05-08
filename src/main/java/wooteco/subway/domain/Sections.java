@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -15,44 +16,54 @@ public class Sections {
 	}
 
 	public Optional<Section> add(Section section) {
-		List<Section> matchSections = values.stream()
+		List<Section> matchSections = findMatchStations(section);
+		validateMatchAnyStation(matchSections);
+		validateNotHasBothStations(section, matchSections);
+		values.add(section);
+
+		return findSectionIfUpStationMatch(section, matchSections)
+			.map(value -> updateSection(section, value))
+			.orElseGet(() -> findSectionIfDownStationMatch(section, matchSections));
+	}
+
+	private List<Section> findMatchStations(Section section) {
+		return values.stream()
 			.filter(each -> each.hasAnySameStation(section))
 			.collect(Collectors.toList());
+	}
 
+	private void validateMatchAnyStation(List<Section> matchSections) {
 		if (matchSections.isEmpty()) {
 			throw new IllegalArgumentException("등록할 구간의 상행역과 하행역이 노선에 존재하지 않습니다.");
 		}
+	}
 
-		Optional<Section> sameUpStationSection = matchSections.stream()
-			.filter(each -> each.hasSameUpStation(section))
-			.findAny();
-
-		Optional<Section> sameDownStationSection = matchSections.stream()
-			.filter(each -> each.hasSameDownStation(section))
-			.findAny();
-
-		if (sameUpStationSection.isPresent() && sameDownStationSection.isPresent()) {
+	private void validateNotHasBothStations(Section section, List<Section> matchSections) {
+		if (section.isIncludedIn(matchSections)) {
 			throw new IllegalArgumentException("상행역과 하행역 둘 다 이미 노선에 존재합니다.");
 		}
+	}
 
-		Section updatedSection = null;
+	private Optional<Section> findSectionIfUpStationMatch(Section section, List<Section> matchSections) {
+		return findSectionByCondition(matchSections, each -> each.hasSameUpStation(section));
+	}
 
-		if (sameUpStationSection.isPresent()) {
-			Section existSection = sameUpStationSection.get();
-			updatedSection = existSection.dividedBy(section);
-			values.remove(existSection);
-			values.add(updatedSection);
-		}
+	private Optional<Section> updateSection(Section section, Section existSection) {
+		Section updatedSection = existSection.dividedBy(section);
+		values.remove(existSection);
+		values.add(updatedSection);
+		return Optional.of(updatedSection);
+	}
 
-		if (sameDownStationSection.isPresent()) {
-			Section existSection = sameDownStationSection.get();
-			updatedSection = existSection.dividedBy(section);
-			values.remove(existSection);
-			values.add(updatedSection);
-		}
+	private Optional<Section> findSectionIfDownStationMatch(Section section, List<Section> matchSections) {
+		return findSectionByCondition(matchSections, each -> each.hasSameDownStation(section))
+			.flatMap(value -> updateSection(section, value));
+	}
 
-		values.add(section);
-		return Optional.ofNullable(updatedSection);
+	private Optional<Section> findSectionByCondition(List<Section> matchSections, Predicate<Section> condition) {
+		return matchSections.stream()
+			.filter(condition)
+			.findAny();
 	}
 
 	public List<Station> sortStations() {

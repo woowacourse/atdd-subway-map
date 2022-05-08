@@ -1,6 +1,8 @@
 package wooteco.subway.domain;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Section {
 
@@ -71,6 +73,13 @@ public class Section {
 		return result;
 	}
 
+	public boolean isIncludedIn(List<Section> sections) {
+		return sections.stream()
+			.flatMap(each -> each.getStations().stream())
+			.collect(Collectors.toSet())
+			.containsAll(getStations());
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -93,6 +102,10 @@ public class Section {
 
 	public int getDistance() {
 		return distance;
+	}
+
+	public List<Station> getStations() {
+		return List.of(upStation, downStation);
 	}
 
 	@Override
