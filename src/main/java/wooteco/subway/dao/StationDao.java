@@ -15,7 +15,7 @@ import java.util.Optional;
 @Repository
 public class StationDao {
 
-    public static final RowMapper<Station> ROW_MAPPER = (rs, rowNum) -> {
+    private static final RowMapper<Station> ROW_MAPPER = (rs, rowNum) -> {
         long id = rs.getLong("id");
         String name = rs.getString("name");
         return new Station(id, name);

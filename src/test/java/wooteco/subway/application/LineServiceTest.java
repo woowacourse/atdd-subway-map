@@ -29,16 +29,16 @@ public class LineServiceTest {
     @DisplayName("지하철 노선 저장")
     @Test
     void saveLine() {
-        long savedLineId = lineService.save("신분당선", "bg-red-600");
+        Line saveLine = lineService.saveAndGet("신분당선", "bg-red-600");
 
-        assertThat(lineDao.findById(savedLineId)).isNotEmpty();
+        assertThat(lineDao.findById(saveLine.getId())).isNotEmpty();
     }
 
     @DisplayName("지하철 노선 빈 이름으로 저장")
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void saveLineWithEmptyName(String name) {
-        assertThatThrownBy(() -> lineService.save(name, "bg-red-600"))
+        assertThatThrownBy(() -> lineService.saveAndGet(name, "bg-red-600"))
             .isInstanceOf(BlankArgumentException.class);
     }
 
@@ -46,7 +46,7 @@ public class LineServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void saveLineWithEmptyColor(String color) {
-        assertThatThrownBy(() -> lineService.save("신분당선", color))
+        assertThatThrownBy(() -> lineService.saveAndGet("신분당선", color))
             .isInstanceOf(BlankArgumentException.class);
     }
 
@@ -56,9 +56,9 @@ public class LineServiceTest {
         String lineName = "신분당선";
         String lineColor = "bg-red-600";
 
-        lineService.save(lineName, lineColor);
+        lineService.saveAndGet(lineName, lineColor);
 
-        assertThatThrownBy(() -> lineService.save(lineName, lineColor))
+        assertThatThrownBy(() -> lineService.saveAndGet(lineName, lineColor))
             .isInstanceOf(DuplicateException.class);
     }
 
@@ -73,9 +73,9 @@ public class LineServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void updateLineWithEmptyName(String name) {
-        long savedLineId = lineService.save("신분당선", "bg-red-600");
+        Line saveLine = lineService.saveAndGet("신분당선", "bg-red-600");
 
-        assertThatThrownBy(() -> lineService.update(savedLineId, name, "bg-red-600"))
+        assertThatThrownBy(() -> lineService.update(saveLine.getId(), name, "bg-red-600"))
             .isInstanceOf(BlankArgumentException.class);
     }
 
@@ -83,20 +83,20 @@ public class LineServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void updateLineWithEmptyColor(String color) {
-        long savedLineId = lineService.save("신분당선", "bg-red-600");
+        Line saveLine = lineService.saveAndGet("신분당선", "bg-red-600");
 
-        assertThatThrownBy(() -> lineService.update(savedLineId, "신분당선", color))
+        assertThatThrownBy(() -> lineService.update(saveLine.getId(), "신분당선", color))
             .isInstanceOf(BlankArgumentException.class);
     }
 
     @DisplayName("지하철 노선의 정보를 수정한다.")
     @Test
     void updateLine() {
-        long savedLineId = lineService.save("신분당선", "bg-red-600");
+        Line saveLine = lineService.saveAndGet("신분당선", "bg-red-600");
 
-        lineService.update(savedLineId, "1호선", "bg-blue-600");
+        lineService.update(saveLine.getId(), "1호선", "bg-blue-600");
 
-        Line expectedLine = lineDao.findById(savedLineId).orElseThrow();
+        Line expectedLine = lineDao.findById(saveLine.getId()).orElseThrow();
         assertThat(expectedLine.getName()).isEqualTo("1호선");
         assertThat(expectedLine.getColor()).isEqualTo("bg-blue-600");
     }
@@ -118,10 +118,10 @@ public class LineServiceTest {
     @DisplayName("지하철 노선을 삭제 시도")
     @Test
     void deleteLine() {
-        long savedLineId = lineService.save("신분당선", "bg-red-600");
+        Line saveLine = lineService.saveAndGet("신분당선", "bg-red-600");
 
-        lineService.deleteById(savedLineId);
+        lineService.deleteById(saveLine.getId());
 
-        assertThat(lineDao.findById(savedLineId)).isEmpty();
+        assertThat(lineDao.findById(saveLine.getId())).isEmpty();
     }
 }

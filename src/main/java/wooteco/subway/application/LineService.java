@@ -17,11 +17,12 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public long save(String name, String color) {
+    public Line saveAndGet(String name, String color) {
         if (lineDao.existByName(name)) {
             throw new DuplicateException();
         }
-        return lineDao.save(new Line(name, color));
+        long savedLineId = lineDao.save(new Line(name, color));
+        return new Line(savedLineId, name, color);
     }
 
     @Transactional(readOnly = true)

@@ -31,32 +31,32 @@ class LineDaoTest {
         List<Line> linesBeforeSave = lineDao.findAll();
         assertThat(linesBeforeSave.size()).isEqualTo(0);
 
-        Line line = new Line(1L, "선릉역", "bg-yellow-600");
+        Line line = new Line("신분당선", "bg-yellow-600");
         long savedLineId = lineDao.save(line);
 
         List<Line> linesAfterSave = lineDao.findAll();
         assertThat(linesAfterSave.size()).isEqualTo(1);
 
         Line foundLine = lineDao.findById(savedLineId).get();
-        assertThat(foundLine).isEqualTo(new Line(savedLineId, "선릉역", "bg-yellow-600"));
+        assertThat(foundLine).isEqualTo(new Line(savedLineId, "신분당선", "bg-yellow-600"));
     }
 
     @DisplayName("수정을 할 수 있다")
     @Test
     void can_update() {
-        Line line = new Line(1L, "선릉역", "bg-yellow-600");
+        Line line = new Line("신분당선", "bg-yellow-600");
         long savedLineId = lineDao.save(line);
 
-        lineDao.update(new Line(savedLineId, "서울역", "bg-blue-600"));
+        lineDao.update(new Line(savedLineId, "7호선", "bg-brown-600"));
 
         Line foundLine = lineDao.findById(savedLineId).get();
-        assertThat(foundLine.getName()).isEqualTo("서울역");
+        assertThat(foundLine.getName()).isEqualTo("7호선");
     }
 
     @DisplayName("삭제를 할 수 있다")
     @Test
     void can_delete() {
-        Line line = new Line(1L, "선릉역", "bg-yellow-600");
+        Line line = new Line( "신분당선", "bg-yellow-600");
         long savedLineId = lineDao.save(line);
 
         lineDao.deleteById(savedLineId);
@@ -68,8 +68,8 @@ class LineDaoTest {
     @DisplayName("전체 삭제를 할 수 있다")
     @Test
     void can_deleteAll() {
-        Line line1 = new Line(1L, "선릉역", "bg-yellow-600");
-        Line line2 = new Line(1L, "선정릉역", "bg-yellow-600");
+        Line line1 = new Line("신분당선", "bg-yellow-600");
+        Line line2 = new Line("7호선", "bg-brown-600");
 
         lineDao.save(line1);
         lineDao.save(line2);

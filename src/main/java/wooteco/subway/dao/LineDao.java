@@ -15,7 +15,7 @@ import java.util.Optional;
 @Repository
 public class LineDao {
 
-    public static final RowMapper<Line> ROW_MAPPER = (rs, rn) -> {
+    private static final RowMapper<Line> ROW_MAPPER = (rs, rn) -> {
         long newId = rs.getLong("id");
         String name = rs.getString("name");
         String color = rs.getString("color");
