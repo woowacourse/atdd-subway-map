@@ -1,5 +1,8 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Section {
 
     public static final int MINIMUM_DISTANCE = 1;
@@ -61,5 +64,45 @@ public class Section {
 
     public Integer getDistance() {
         return distance;
+    }
+
+    public boolean isLinkedToUpStation(Section other) {
+        return upStationId == other.downStationId;
+    }
+
+    public boolean isLinkedToDownStation(Section other) {
+        return downStationId == other.upStationId;
+    }
+
+    public boolean hasStation(Long stationId) {
+        return (upStationId == stationId || downStationId == stationId);
+    }
+
+    public boolean ableToLink(Section newSection) {
+        return isLinkedToUpStation(newSection) || isLinkedToDownStation(newSection);
+    }
+
+    public boolean isSameUpStation(Section other) {
+        return upStationId == other.upStationId;
+    }
+
+    public boolean isSameDownStation(Section other) {
+        return downStationId == other.downStationId;
+    }
+
+    public boolean ableToDivide(Section newSection) {
+        return (isSameUpStation(newSection) != isSameDownStation(newSection)) && (distance > newSection.distance);
+    }
+
+    public List<Section> divide(Section newSection) {
+        List<Section> parts = new ArrayList<>();
+        if (upStationId == newSection.getUpStationId()) {
+            parts.add(Section.of(lineId, upStationId, newSection.downStationId, newSection.distance));
+            parts.add(Section.of(lineId, newSection.downStationId, downStationId, distance - newSection.distance));
+            return parts;
+        }
+        parts.add(Section.of(lineId, upStationId, newSection.upStationId, newSection.distance));
+        parts.add(Section.of(lineId, newSection.upStationId, downStationId, distance - newSection.distance));
+        return parts;
     }
 }

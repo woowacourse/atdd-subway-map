@@ -10,6 +10,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.SectionAddManager;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -115,5 +116,12 @@ public class SubwayService {
 
     public void deleteStation(Long id) {
         stationDao.deleteById(id);
+    }
+
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        SectionAddManager addManager = SectionAddManager.of(sectionDao.findByLineId(lineId));
+        List<Section> updatedSections = addManager.add(sectionRequest.toEntity(lineId));
+        sectionDao.delete(lineId);
+        updatedSections.forEach(sectionDao::save);
     }
 }

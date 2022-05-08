@@ -43,4 +43,8 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 노선 추가시 upStationId(상행 종점), downStationId(하행 종점), distance(두 종점사이 거리)를 추가로 받음
   - [x] 상행 종점, 하행 종점은 달라야 함
   - [x] distance는 양의 정수만 허용
-- [ ] 노선 목록/조회 시 포함된 모든 역에 대한 정보도 body에 담아서 줌
+- [x] 노선 목록/조회 시 포함된 모든 역에 대한 정보도 body에 담아서 줌
+- [x] 특정 노선에 section을 추가
+  - [x] 추가되는 section의 역 a-b에서 a 혹은 b는 이미 존재하는 SECTION에 포함되어 있는 역이여야 함(둘다 포함 혹은 둘다 미포함이면 예외)
+  - [x] 추가하는 section a-c 는 이미 존재하는 a-b 사이의 거리보다 작아야 함. 이 외는 모두 예외(같거나 크면 안됨)
+  - [x] 갈래길은 없음 a-b(5)에 a-c(3)을 추가하면 a-c-b(3, 2)가 됨
