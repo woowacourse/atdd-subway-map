@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -300,8 +301,8 @@ class SectionsTest {
         Section CtoD = new Section(new Station("C"), new Station("D"), 1);
         Section DtoE = new Section(new Station("D"), new Station("E"), 1);
 
-        List<Section> mixed = List.of(AtoB, DtoE, BtoC, CtoD);
-        Sections sections = Sections.from(AtoB, mixed);
+        ArrayList<Section> mixed = new ArrayList<>(List.of(AtoB, DtoE, BtoC, CtoD));
+        Sections sections = Sections.from(mixed);
         List<Section> result = sections.getSections();
 
         assertAll(

@@ -1,10 +1,10 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public class Sections {
@@ -20,16 +20,22 @@ public class Sections {
         sections.add(section);
     }
 
-    public static Sections from(Section first, List<Section> mixedSections) {
-        Sections sections = new Sections(first);
-        while (sections.getSections().size() != mixedSections.size()) {
-            for (int i = 0; i < mixedSections.size(); i ++)
-                if (sections.findBottom().canDownExtendBy(mixedSections.get(i))) {
-                    sections.add(mixedSections.get(i));
+    public static Sections from(ArrayList<Section> mixedSections) {
+        LinkedList<Section> sections = new LinkedList<>(List.of(mixedSections.remove(0)));
+        while (!mixedSections.isEmpty()) {
+            for (int i = 0; i < mixedSections.size(); i ++) {
+                Section section = mixedSections.get(i);
+                if (sections.getFirst().canUpExtendBy(section)) {
+                    sections.addFirst(mixedSections.remove(i));
+                    break;
+                }
+                if (sections.getLast().canDownExtendBy(section)) {
+                    sections.addLast(mixedSections.remove(i));
                     break;
                 }
             }
-        return sections;
+        }
+        return new Sections(sections);
     }
 
     public Section findTop() {
