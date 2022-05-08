@@ -82,11 +82,8 @@ class SectionsTest {
     void 구간_추가_두_역_이미_존재_예외발생() {
         Section section1 = new Section(new Station("당산역"), new Station("합정역"), 1);
         Section section2 = new Section(new Station("합정역"), new Station("홍대입구역"), 1);
-        LinkedList<Section> listSections = new LinkedList<>();
-        listSections.add(section1);
-        listSections.add(section2);
+        Sections sections = new Sections(new LinkedList<>(List.of(section1, section2)));
 
-        Sections sections = new Sections(listSections);
         Section target = new Section(new Station("당산역"), new Station("홍대입구역"), 1);
 
         assertThatThrownBy(() -> sections.add(target))
@@ -99,11 +96,8 @@ class SectionsTest {
     void 구간_추가_겹치는_역_없음_예외발생() {
         Section section1 = new Section(new Station("당산역"), new Station("합정역"), 1);
         Section section2 = new Section(new Station("합정역"), new Station("홍대입구역"), 1);
-        LinkedList<Section> listSections = new LinkedList<>();
-        listSections.add(section1);
-        listSections.add(section2);
+        Sections sections = new Sections(new LinkedList<>(List.of(section1, section2)));
 
-        Sections sections = new Sections(listSections);
         Section target = new Section(new Station("강남역"), new Station("선릉역"), 1);
 
         assertThatThrownBy(() -> sections.add(target))
