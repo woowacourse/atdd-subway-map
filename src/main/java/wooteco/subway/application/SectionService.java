@@ -74,7 +74,15 @@ public class SectionService {
             Section newSection = prev.merge(next);
             sectionRepository.save(newSection);
         }
-        prevOptional.ifPresent(section -> sectionRepository.deleteById(section.getId()));
-        nextOptional.ifPresent(section -> sectionRepository.deleteById(section.getId()));
+
+        if (prevOptional.isPresent()) {
+            Section section = prevOptional.get();
+            sectionRepository.deleteById(section.getId());
+        }
+
+        if (nextOptional.isPresent()) {
+            Section section = nextOptional.get();
+            sectionRepository.deleteById(section.getId());
+        }
     }
 }
