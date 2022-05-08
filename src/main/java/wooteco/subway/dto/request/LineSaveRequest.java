@@ -1,19 +1,17 @@
-package wooteco.subway.domain;
+package wooteco.subway.dto.request;
 
-public class Line {
+public class LineSaveRequest {
 
-    private final Long id;
     private final String name;
     private final String color;
 
-    public Line(Long id, String name, String color) {
-        this.id = id;
+    private LineSaveRequest(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
+    public static LineSaveRequest of(String name, String color) {
+        return new LineSaveRequest(name, color);
     }
 
     public String getName() {

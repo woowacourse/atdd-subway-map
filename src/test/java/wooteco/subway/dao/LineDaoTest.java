@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.request.LineSaveRequest;
 
 @JdbcTest
 class LineDaoTest {
@@ -17,28 +18,31 @@ class LineDaoTest {
     private final LineDao lineDao;
 
     @Autowired
-    LineDaoTest(NamedParameterJdbcTemplate namedParameterJdbcTemplate){
+    LineDaoTest(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.lineDao = new LineDao(namedParameterJdbcTemplate);
     }
 
     @DisplayName("라인을 저장한다.")
     @Test
     void lineSaveTest() {
-        Line savedLine = lineDao.save(new Line("신분당선", "bg-red-600"));
+        LineSaveRequest lineSaveRequest = LineSaveRequest.of("신분당선", "bg-red-600");
+        Line savedLine = lineDao.save(lineSaveRequest);
         assertThat(savedLine.getId()).isNotZero();
     }
 
     @DisplayName("전체 라인을 조회한다.")
     @Test
     void findAllLines() {
-        lineDao.save(new Line("신분당선", "bg-red-600"));
+        LineSaveRequest lineSaveRequest = LineSaveRequest.of("신분당선", "bg-red-600");
+        lineDao.save(lineSaveRequest);
         assertThat(lineDao.findAll()).hasSize(1);
     }
 
     @DisplayName("특정 라인을 조회한다.")
     @Test
     void findById() {
-        Line savedLine = lineDao.save(new Line("신분당선", "bg-red-600"));
+        LineSaveRequest lineSaveRequest = LineSaveRequest.of("신분당선", "bg-red-600");
+        Line savedLine = lineDao.save(lineSaveRequest);
         Optional<Line> wrappedLine = lineDao.findById(savedLine.getId());
         assert (wrappedLine).isPresent();
         assertAll(
@@ -50,8 +54,10 @@ class LineDaoTest {
     @DisplayName("특정 라인을 수정한다.")
     @Test
     void updateLine() {
-        Line savedLine = lineDao.save(new Line("신분당선", "bg-red-600"));
-        lineDao.update(savedLine.getId(), new Line("경의중앙선", "bg-mint-600"));
+        LineSaveRequest lineSaveRequest = LineSaveRequest.of("신분당선", "bg-red-600");
+        Line savedLine = lineDao.save(lineSaveRequest);
+        LineSaveRequest updateLineSaveRequest = LineSaveRequest.of("경의중앙선", "bg-mint-600");
+        lineDao.update(savedLine.getId(), updateLineSaveRequest);
         Optional<Line> wrappedLine = lineDao.findById(savedLine.getId());
         assert (wrappedLine).isPresent();
         assertAll(
@@ -63,7 +69,8 @@ class LineDaoTest {
     @DisplayName("특정 라인을 삭제한다.")
     @Test
     void deleteLine() {
-        Line savedLine = lineDao.save(new Line("신분당선", "bg-red-600"));
+        LineSaveRequest lineSaveRequest = LineSaveRequest.of("신분당선", "bg-red-600");
+        Line savedLine = lineDao.save(lineSaveRequest);
         lineDao.deleteById(savedLine.getId());
         Optional<Line> wrappedLine = lineDao.findById(savedLine.getId());
         assertThat(wrappedLine).isEmpty();

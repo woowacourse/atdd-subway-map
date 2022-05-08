@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.request.LineSaveRequest;
 
 @Repository
 public class LineDao {
@@ -22,16 +23,17 @@ public class LineDao {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    public Line save(Line line) {
+    public Line save(LineSaveRequest lineSaveRequest) {
         String sql = "insert into LINE (name, color) values (:name, :color)";
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", line.getName());
-        params.put("color", line.getColor());
+        params.put("name", lineSaveRequest.getName());
+        params.put("color", lineSaveRequest.getColor());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder);
-        return new Line(Objects.requireNonNull(keyHolder.getKey()).longValue(), line.getName(), line.getColor());
+        return new Line(Objects.requireNonNull(keyHolder.getKey()).longValue(), lineSaveRequest.getName(),
+                lineSaveRequest.getColor());
     }
 
     public List<Line> findAll() {
@@ -65,13 +67,13 @@ public class LineDao {
         return Optional.ofNullable(DataAccessUtils.singleResult(queryResult));
     }
 
-    public int update(Long id, Line newLine) {
+    public int update(Long id, LineSaveRequest lineSaveRequest) {
         String sql = "update LINE set name = :name, color = :color where id = :id";
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
-        params.put("name", newLine.getName());
-        params.put("color", newLine.getColor());
+        params.put("name", lineSaveRequest.getName());
+        params.put("color", lineSaveRequest.getColor());
 
         return namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
     }
