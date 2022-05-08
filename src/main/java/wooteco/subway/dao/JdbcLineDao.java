@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -27,13 +28,13 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Long save(Line line) {
+    public Long save(LineRequest lineRequest) {
         final String sql = "insert into LINE (name, color) values (?, ?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, line.getName());
-            ps.setString(2, line.getColor());
+            ps.setString(1, lineRequest.getName());
+            ps.setString(2, lineRequest.getColor());
             return ps;
         }, keyHolder);
 
