@@ -46,11 +46,39 @@ class LineDaoTest {
     @Test
     void can_update() {
         Line line = new Line(1L, "선릉역", "bg-yellow-600");
-        lineDao.save(line);
+        Line savedLine = lineDao.save(line);
+        Long savedLineId = savedLine.getId();
 
-        lineDao.update(new Line(1L, "서울역", "bg-blue-600"));
+        lineDao.update(new Line(savedLineId, "서울역", "bg-blue-600"));
 
-        Line foundLine = lineDao.findById(1L).get();
+        Line foundLine = lineDao.findById(savedLineId).get();
         assertThat(foundLine.getName()).isEqualTo("서울역");
+    }
+
+    @DisplayName("삭제를 할 수 있다")
+    @Test
+    void can_delete() {
+        Line line = new Line(1L, "선릉역", "bg-yellow-600");
+        Line savedLine = lineDao.save(line);
+
+        lineDao.deleteById(savedLine.getId());
+
+        List<Line> foundLines = lineDao.findAll();
+        assertThat(foundLines.size()).isEqualTo(0);
+    }
+
+    @DisplayName("전체 삭제를 할 수 있다")
+    @Test
+    void can_deleteAll() {
+        Line line1 = new Line(1L, "선릉역", "bg-yellow-600");
+        Line line2 = new Line(1L, "선정릉역", "bg-yellow-600");
+
+        lineDao.save(line1);
+        lineDao.save(line2);
+
+        lineDao.deleteAll();
+
+        List<Line> foundLines = lineDao.findAll();
+        assertThat(foundLines.size()).isEqualTo(0);
     }
 }
