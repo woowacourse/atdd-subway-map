@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.List;
+
 public class Line {
 
     private Long id;
@@ -26,9 +28,19 @@ public class Line {
     }
 
     public Line(String name, String color, Sections sections) {
+        validateNameNotEmpty(name);
+        validateColorNotEmpty(color);
         this.name = name;
         this.color = color;
         this.sections = sections;
+    }
+
+    public void add(Section section) {
+        sections.add(section);
+    }
+
+    public void delete(Station station) {
+        sections.delete(station);
     }
 
     private void validateNameNotEmpty(String name) {
@@ -41,6 +53,10 @@ public class Line {
         if (color.isBlank()) {
             throw new IllegalArgumentException("색상은 비워둘 수 없습니다.");
         }
+    }
+
+    public List<Section> getSections() {
+        return sections.getSections();
     }
 
     public Long getId() {
