@@ -47,6 +47,18 @@ public class LineDao {
         return Optional.ofNullable(DataAccessUtils.singleResult(lines));
     }
 
+    public Optional<Line> findByName(String name) {
+        String sql = "SELECT id, name, color FROM LINE WHERE name = ?";
+
+        List<Line> lines = jdbcTemplate.query(sql, (resultSet, rowNum) -> new Line(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("color")
+        ), name);
+
+        return Optional.ofNullable(DataAccessUtils.singleResult(lines));
+    }
+
     public List<Line> findAll() {
         String sql = "SELECT id, name, color FROM LINE";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Line(

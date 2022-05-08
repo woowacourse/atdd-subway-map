@@ -9,8 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -48,7 +48,8 @@ class StationServiceTest {
     void createStation_throwsExceptionWithDuplicateName() {
         String name = "선릉역";
         Station station = new Station(name);
-        given(stationDao.findAll()).willReturn(List.of(station));
+
+        given(stationDao.findByName(name)).willReturn(Optional.of(station));
 
         assertThatThrownBy(() -> stationService.createStation(station))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -76,7 +77,7 @@ class StationServiceTest {
         String name = "선릉역";
         Station station = new Station(id, name);
 
-        given(stationDao.findAll()).willReturn(List.of(station));
+        given(stationDao.findById(id)).willReturn(Optional.of(station));
 
         stationService.delete(1L);
         verify(stationDao, times(1)).deleteById(1L);
@@ -85,14 +86,7 @@ class StationServiceTest {
     @DisplayName("삭제하려는 지하철 역 ID가 존재하지 않을 경우 예외를 발생한다.")
     @Test
     void delete_throwsExceptionIfIdNotExist() {
-        long id = 1L;
-        String name = "선릉역";
-        Station station = new Station(id, name);
-
-        given(stationDao.findAll()).willReturn(Collections.emptyList());
-        stationService.createStation(station);
-
-        assertThatThrownBy(() -> stationService.delete(id))
+        assertThatThrownBy(() -> stationService.delete(1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("삭제하려는 지하철 역 ID가 존재하지 않습니다.");
     }

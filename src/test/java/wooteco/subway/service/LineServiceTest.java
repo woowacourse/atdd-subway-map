@@ -10,7 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,7 +51,8 @@ class LineServiceTest {
         String lineName = "신분당선";
         String lineColor = "bg-red-600";
         Line line = new Line(lineName, lineColor);
-        given(lineDao.findAll()).willReturn(List.of(line));
+
+        given(lineDao.findByName(lineName)).willReturn(Optional.of(line));
 
         assertThatThrownBy(() -> lineService.createLine(line))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -76,7 +76,7 @@ class LineServiceTest {
     @Test
     void getLineById() {
         Line expected = new Line("신분당선", "bg-red-600");
-        given(lineDao.findById(1L)).willReturn(Optional.ofNullable(expected));
+        given(lineDao.findById(1L)).willReturn(Optional.of(expected));
 
         Line actual = lineService.getLineById(1L);
 
@@ -88,7 +88,7 @@ class LineServiceTest {
     void updateLine() {
         Line newLine = new Line(1L, "분당선", "bg-yellow-600");
 
-        given(lineDao.findAll()).willReturn(List.of(newLine));
+        given(lineDao.findById(1L)).willReturn(Optional.of(newLine));
 
         lineService.update(1L, newLine);
         verify(lineDao, times(1)).update(1L, newLine);
@@ -97,8 +97,6 @@ class LineServiceTest {
     @DisplayName("수정하려는 노선 ID가 존재하지 않을 경우 예외를 발생한다.")
     @Test
     void update_throwsExceptionIfLineIdIsNotExisting() {
-        given(lineDao.findAll()).willReturn(Collections.emptyList());
-
         assertThatThrownBy(() -> lineService.update(1L, new Line("분당선", "bg-yellow-600")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("대상 노선 ID가 존재하지 않습니다.");
@@ -112,7 +110,7 @@ class LineServiceTest {
         String color = "bg-red-600";
         Line line = new Line(id, name, color);
 
-        given(lineDao.findAll()).willReturn(List.of(line));
+        given(lineDao.findById(id)).willReturn(Optional.of(line));
 
         lineService.delete(1L);
         verify(lineDao, times(1)).deleteById(1L);
@@ -121,8 +119,6 @@ class LineServiceTest {
     @DisplayName("삭제하려는 노선 ID가 존재하지 않을 경우 예외를 발생한다.")
     @Test
     void delete_throwsExceptionIfLineIdIsNotExisting() {
-        given(lineDao.findAll()).willReturn(Collections.emptyList());
-
         assertThatThrownBy(() -> lineService.delete(1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("대상 노선 ID가 존재하지 않습니다.");

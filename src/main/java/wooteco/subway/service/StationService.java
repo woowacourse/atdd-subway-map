@@ -5,7 +5,6 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class StationService {
@@ -31,21 +30,17 @@ public class StationService {
     }
 
     private void validateDuplicateName(Station station) {
-        List<String> names = stationDao.findAll().stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
+        boolean isExisting = stationDao.findByName(station.getName()).isPresent();
 
-        if (names.contains(station.getName())) {
+        if (isExisting) {
             throw new IllegalArgumentException("이미 존재하는 지하철 역입니다.");
         }
     }
 
     private void validateExist(Long id) {
-        List<Long> stationIds = stationDao.findAll().stream()
-                .map(Station::getId)
-                .collect(Collectors.toList());
+        boolean isExisting = stationDao.findById(id).isPresent();
 
-        if (!stationIds.contains(id)) {
+        if (!isExisting) {
             throw new IllegalArgumentException("삭제하려는 지하철 역 ID가 존재하지 않습니다.");
         }
     }

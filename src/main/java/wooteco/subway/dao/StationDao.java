@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
@@ -8,6 +9,7 @@ import wooteco.subway.domain.Station;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class StationDao {
@@ -37,6 +39,26 @@ public class StationDao {
                 resultSet.getLong("id"),
                 resultSet.getString("name")
         ));
+    }
+
+    public Optional<Station> findById(Long id) {
+        String sql = "SELECT id, name FROM STATION WHERE id = ?";
+        List<Station> stations = jdbcTemplate.query(sql, (resultSet, rowNum) -> new Station(
+                resultSet.getLong("id"),
+                resultSet.getString("name")
+        ), id);
+
+        return Optional.ofNullable(DataAccessUtils.singleResult(stations));
+    }
+
+    public Optional<Station> findByName(String name) {
+        String sql = "SELECT id, name FROM STATION WHERE name = ?";
+        List<Station> stations = jdbcTemplate.query(sql, (resultSet, rowNum) -> new Station(
+                resultSet.getLong("id"),
+                resultSet.getString("name")
+        ), name);
+
+        return Optional.ofNullable(DataAccessUtils.singleResult(stations));
     }
 
     public void deleteById(Long id) {

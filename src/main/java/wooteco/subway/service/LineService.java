@@ -6,7 +6,6 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -33,31 +32,27 @@ public class LineService {
     }
 
     public void update(Long id, Line newLine) {
-        validateExist(id);
+        validateExistById(id);
         lineDao.update(id, newLine);
     }
 
     public void delete(Long id) {
-        validateExist(id);
+        validateExistById(id);
         lineDao.deleteById(id);
     }
 
     private void validateDuplicateName(Line line) {
-        List<String> names = lineDao.findAll().stream()
-                .map(Line::getName)
-                .collect(Collectors.toList());
+        boolean isExisting = lineDao.findByName(line.getName()).isPresent();
 
-        if (names.contains(line.getName())) {
+        if (isExisting) {
             throw new IllegalArgumentException("이미 존재하는 노선입니다.");
         }
     }
 
-    private void validateExist(Long id) {
-        List<Long> lineIds = lineDao.findAll().stream()
-                .map(Line::getId)
-                .collect(Collectors.toList());
+    private void validateExistById(Long id) {
+        boolean isExisting = lineDao.findById(id).isPresent();
 
-        if (!lineIds.contains(id)) {
+        if (!isExisting) {
             throw new IllegalArgumentException("대상 노선 ID가 존재하지 않습니다.");
         }
     }
