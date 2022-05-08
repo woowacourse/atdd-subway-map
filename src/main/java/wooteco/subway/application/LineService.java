@@ -3,6 +3,8 @@ package wooteco.subway.application;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.application.exception.DuplicateLineNameException;
+import wooteco.subway.application.exception.NotFoundLineException;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
@@ -10,8 +12,6 @@ import wooteco.subway.domain.SectionEdge;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.application.exception.DuplicateLineNameException;
-import wooteco.subway.application.exception.NotFoundLineException;
 import wooteco.subway.repository.LineRepository;
 import wooteco.subway.repository.SectionRepository;
 

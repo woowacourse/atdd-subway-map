@@ -128,5 +128,5 @@ public class SectionTest {
         assertThatThrownBy(() -> section1.merge(section2))
             .isInstanceOf(UnmergeableException.class);
     }
-    
+
 }

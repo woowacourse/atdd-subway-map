@@ -71,10 +71,10 @@ public class SectionServiceTest {
         Station newStation = stationRepository.save(new Station("선릉역"));
         Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
         Section section1 = sectionRepository.save(new Section(line.getId(),
-                new SectionEdge(upStation.getId(), downStation.getId(), 10)));
+            new SectionEdge(upStation.getId(), downStation.getId(), 10)));
 
         Section section2 = sectionService.addSection(line.getId(),
-                new AddSectionRequest(newStation.getId(), upStation.getId(), 8));
+            new AddSectionRequest(newStation.getId(), upStation.getId(), 8));
 
         List<Section> sections = sectionRepository.findAllByLineId(line.getId());
         assertThat(sections).containsExactlyInAnyOrder(section1, section2);
@@ -88,10 +88,10 @@ public class SectionServiceTest {
         Station newStation = stationRepository.save(new Station("선릉역"));
         Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
         Section section = sectionRepository.save(new Section(line.getId(),
-                new SectionEdge(upStation.getId(), downStation.getId(), 10)));
+            new SectionEdge(upStation.getId(), downStation.getId(), 10)));
 
         Section newSection = sectionService.addSection(line.getId(),
-                new AddSectionRequest(downStation.getId(), newStation.getId(), 8));
+            new AddSectionRequest(downStation.getId(), newStation.getId(), 8));
 
         List<Section> sections = sectionRepository.findAllByLineId(line.getId());
         assertThat(sections).containsExactlyInAnyOrder(section, newSection);
@@ -104,7 +104,7 @@ public class SectionServiceTest {
         Station downStation = stationRepository.save(new Station("역삼역"));
         Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
         Section section = sectionRepository.save(new Section(line.getId(),
-                new SectionEdge(upStation.getId(), downStation.getId(), 10)));
+            new SectionEdge(upStation.getId(), downStation.getId(), 10)));
 
         assertThatThrownBy(() -> sectionService.addSection(line.getId(),
             new AddSectionRequest(upStation.getId(), downStation.getId(), 8))
@@ -122,10 +122,10 @@ public class SectionServiceTest {
         Station newStation = stationRepository.save(new Station("선릉역"));
         Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
         sectionRepository.save(new Section(line.getId(),
-                new SectionEdge(upStation.getId(), downStation.getId(), 10)));
+            new SectionEdge(upStation.getId(), downStation.getId(), 10)));
 
         sectionService.addSection(line.getId(),
-                new AddSectionRequest(upStation.getId(), newStation.getId(), 8));
+            new AddSectionRequest(upStation.getId(), newStation.getId(), 8));
 
         List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
             .map(Section::getEdge)
@@ -143,10 +143,10 @@ public class SectionServiceTest {
         Station newStation = stationRepository.save(new Station("선릉역"));
         Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
         sectionRepository.save(new Section(line.getId(),
-                new SectionEdge(upStation.getId(), downStation.getId(), 10)));
+            new SectionEdge(upStation.getId(), downStation.getId(), 10)));
 
         sectionService.addSection(line.getId(),
-                new AddSectionRequest(newStation.getId(), downStation.getId(), 8));
+            new AddSectionRequest(newStation.getId(), downStation.getId(), 8));
 
         List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
             .map(Section::getEdge)
@@ -164,7 +164,7 @@ public class SectionServiceTest {
         Station newStation = stationRepository.save(new Station("선릉역"));
         Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
         sectionRepository.save(new Section(line.getId(),
-                new SectionEdge(upStation.getId(), downStation.getId(), 10)));
+            new SectionEdge(upStation.getId(), downStation.getId(), 10)));
 
         assertThatThrownBy(() -> sectionService.addSection(line.getId(),
             new AddSectionRequest(newStation.getId(), downStation.getId(), 10)))
@@ -186,7 +186,7 @@ public class SectionServiceTest {
         Station notFoundStation2 = stationRepository.save(new Station("잠실역"));
         Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
         sectionRepository.save(new Section(line.getId(),
-                new SectionEdge(upStation.getId(), downStation.getId(), 10)));
+            new SectionEdge(upStation.getId(), downStation.getId(), 10)));
 
         assertThatThrownBy(() -> sectionService.addSection(line.getId(),
             new AddSectionRequest(notFoundStation1.getId(), notFoundStation2.getId(), 3)))
@@ -227,7 +227,7 @@ public class SectionServiceTest {
         Station notFoundStation = stationRepository.save(new Station("선릉역"));
         Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
         sectionRepository.save(new Section(line.getId(),
-                new SectionEdge(upStation.getId(), downStation.getId(), 10)));
+            new SectionEdge(upStation.getId(), downStation.getId(), 10)));
 
         assertThatThrownBy(() -> sectionService
             .deleteSection(line.getId(), new DeleteSectionRequest(notFoundStation.getId())))
@@ -247,7 +247,7 @@ public class SectionServiceTest {
         Station downStation = stationRepository.save(new Station("역삼역"));
         Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
         sectionRepository.save(new Section(line.getId(),
-                new SectionEdge(upStation.getId(), downStation.getId(), 10)));
+            new SectionEdge(upStation.getId(), downStation.getId(), 10)));
 
         assertThatThrownBy(() -> sectionService
             .deleteSection(line.getId(), new DeleteSectionRequest(upStation.getId())))
@@ -268,9 +268,9 @@ public class SectionServiceTest {
         Station station3 = stationRepository.save(new Station("잠실역"));
         Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
         sectionRepository.save(new Section(line.getId(),
-                new SectionEdge(station1.getId(), station2.getId(), 10)));
+            new SectionEdge(station1.getId(), station2.getId(), 10)));
         sectionRepository.save(new Section(line.getId(),
-                new SectionEdge(station2.getId(), station3.getId(), 5)));
+            new SectionEdge(station2.getId(), station3.getId(), 5)));
 
         sectionService.deleteSection(line.getId(), new DeleteSectionRequest(station1.getId()));
 
@@ -289,9 +289,9 @@ public class SectionServiceTest {
         Station station3 = stationRepository.save(new Station("잠실역"));
         Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
         sectionRepository.save(new Section(line.getId(),
-                new SectionEdge(station1.getId(), station2.getId(), 10)));
+            new SectionEdge(station1.getId(), station2.getId(), 10)));
         sectionRepository.save(new Section(line.getId(),
-                new SectionEdge(station2.getId(), station3.getId(), 5)));
+            new SectionEdge(station2.getId(), station3.getId(), 5)));
 
         sectionService.deleteSection(line.getId(), new DeleteSectionRequest(station3.getId()));
 
@@ -312,7 +312,7 @@ public class SectionServiceTest {
         sectionRepository.save(new Section(line.getId(),
             new SectionEdge(station1.getId(), station2.getId(), 10)));
         sectionRepository.save(new Section(line.getId(),
-                new SectionEdge(station2.getId(), station3.getId(), 5)));
+            new SectionEdge(station2.getId(), station3.getId(), 5)));
 
         sectionService.deleteSection(line.getId(), new DeleteSectionRequest(station2.getId()));
 
