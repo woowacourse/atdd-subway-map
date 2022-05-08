@@ -35,10 +35,6 @@ public class LineRequest {
         return new Line(name, color);
     }
 
-    public Line toLineWithId(final Long id) {
-        return new Line(id, name, color);
-    }
-
     public String getName() {
         return name;
     }
