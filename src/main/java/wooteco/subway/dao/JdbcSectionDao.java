@@ -90,7 +90,7 @@ public class JdbcSectionDao implements SectionDao {
 
     @Override
     public void delete(List<Section> sections) {
-        final String sql = "delete from LINE where id = ?";
+        final String sql = "delete from SECTION where id = ?";
 
         List<Long> sectionsId = sections.stream()
                 .map(Section::getId)
