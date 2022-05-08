@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
@@ -42,7 +43,7 @@ public class StationService {
     public void deleteStation(Long id){
         Optional<Station> wrappedStation = stationDao.findById(id);
         if (wrappedStation.isEmpty()) {
-            throw new IllegalArgumentException(NOT_EXIST_ERROR);
+            throw new NoSuchElementException(NOT_EXIST_ERROR);
         }
         stationDao.deleteById(id);
     }
