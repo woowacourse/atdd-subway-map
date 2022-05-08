@@ -25,7 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 생성한다.")
     @Test
     void createLine() {
-        final ExtractableResponse<Response> response = addLine("신분당선", "bg-red-600");
+        final ExtractableResponse<Response> response = createLine("신분당선", "bg-red-600");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -34,8 +34,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 노선 이름으로 노선 생성 시도 시 Bad request가 응답된다.")
     @Test
     void createLineWithDuplicateName() {
-        addLine("강남역", "bg-red-600");
-        final ExtractableResponse<Response> response = addLine("강남역", "bg-red-600");
+        createLine("강남역", "bg-red-600");
+        final ExtractableResponse<Response> response = createLine("강남역", "bg-red-600");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -43,8 +43,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 조회한다.")
     @TestFactory
     Stream<DynamicTest> getLines() {
-        final ExtractableResponse<Response> createResponse1 = addLine("1호선", "bg-red-600");
-        final ExtractableResponse<Response> createResponse2 = addLine("2호선", "bg-green-600");
+        final ExtractableResponse<Response> createResponse1 = createLine("1호선", "bg-red-600");
+        final ExtractableResponse<Response> createResponse2 = createLine("2호선", "bg-green-600");
 
         return Stream.of(
                 DynamicTest.dynamicTest("생성된 노선 목록을 불러온다", () -> {
@@ -69,7 +69,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 제거한다.")
     @Test
     void deleteLine() {
-        final ExtractableResponse<Response> createResponse = addLine("1호선", "bg-red-600");
+        final ExtractableResponse<Response> createResponse = createLine("1호선", "bg-red-600");
 
         final String uri = createResponse.header("Location");
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -84,7 +84,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("특정 노선을 조회한다.")
     @Test
     void getLine() {
-        final ExtractableResponse<Response> createResponse = addLine("1호선", "bg-red-600");
+        final ExtractableResponse<Response> createResponse = createLine("1호선", "bg-red-600");
         final LineResponse expected = createResponse.jsonPath().getObject(".", LineResponse.class);
 
         final ExtractableResponse<Response> response = getLines(createResponse.header("Location"));
@@ -97,7 +97,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 갱신한다.")
     @Test
     void updateLine() {
-        final ExtractableResponse<Response> createResponse = addLine("1호선", "bg-red-600");
+        final ExtractableResponse<Response> createResponse = createLine("1호선", "bg-red-600");
         final LineResponse expected = createResponse.jsonPath().getObject(".", LineResponse.class);
 
         final String newLineName = "11호선";
@@ -128,7 +128,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     }
 
-    private ExtractableResponse<Response> addLine(final String name, final String color) {
+    private ExtractableResponse<Response> createLine(final String name, final String color) {
         final Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
@@ -148,4 +148,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
 }

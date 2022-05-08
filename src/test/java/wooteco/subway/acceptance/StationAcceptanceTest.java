@@ -24,7 +24,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        final ExtractableResponse<Response> response = addStation("강남역");
+        final ExtractableResponse<Response> response = createStation("강남역");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -33,8 +33,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
-        addStation("강남역");
-        final ExtractableResponse<Response> response = addStation("강남역");
+        createStation("강남역");
+        final ExtractableResponse<Response> response = createStation("강남역");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -42,8 +42,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     Stream<DynamicTest> getStations() {
-        final ExtractableResponse<Response> createResponse1 = addStation("강남역");
-        final ExtractableResponse<Response> createResponse2 = addStation("역삼역");
+        final ExtractableResponse<Response> createResponse1 = createStation("강남역");
+        final ExtractableResponse<Response> createResponse2 = createStation("역삼역");
 
         return Stream.of(
                 DynamicTest.dynamicTest("생성된 지하철역 목록을 불러온다.", () -> {
@@ -66,7 +66,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
-        final ExtractableResponse<Response> createResponse = addStation("강남역");
+        final ExtractableResponse<Response> createResponse = createStation("강남역");
 
         final String uri = createResponse.header("Location");
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -78,7 +78,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> addStation(final String name) {
+    private ExtractableResponse<Response> createStation(final String name) {
         final Map<String, String> params = new HashMap<>();
         params.put("name", name);
         return RestAssured.given().log().all()
