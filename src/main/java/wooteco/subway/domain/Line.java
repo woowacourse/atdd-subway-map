@@ -1,6 +1,6 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.exception.BlankArgumentException;
+import wooteco.subway.exception.constant.BlankArgumentException;
 
 import java.util.Objects;
 

@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.DuplicateException;
-import wooteco.subway.exception.NotExistException;
+import wooteco.subway.exception.constant.DuplicateException;
+import wooteco.subway.exception.constant.NotExistException;
 
 @Service
 @Transactional

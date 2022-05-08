@@ -1,11 +1,11 @@
-package wooteco.subway.ui;
+package wooteco.subway.exception.handler;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import wooteco.subway.exception.BlankArgumentException;
-import wooteco.subway.exception.DuplicateException;
-import wooteco.subway.exception.NotExistException;
+import wooteco.subway.exception.constant.BlankArgumentException;
+import wooteco.subway.exception.constant.DuplicateException;
+import wooteco.subway.exception.constant.NotExistException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
