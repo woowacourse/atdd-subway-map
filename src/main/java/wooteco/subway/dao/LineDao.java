@@ -45,12 +45,6 @@ public class LineDao {
                 (rs, rowNum) -> new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color")));
     }
 
-    public int deleteAll() {
-        String sql = "delete from LINE";
-
-        return namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource());
-    }
-
     public Optional<Line> findById(Long id) {
         String sql = "select * from LINE where id=:id";
 
