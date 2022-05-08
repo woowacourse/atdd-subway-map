@@ -1,8 +1,10 @@
 package wooteco.subway.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class Section {
 
@@ -75,6 +77,34 @@ public class Section {
         if (distance <= newSectionDistance) {
             throw new IllegalArgumentException("기존 구간의 길이 보다 작지 않습니다.");
         }
+    }
+
+    public Section merge(final Section section) {
+        final Long criteriaId = findDuplicateId(section);
+        if (criteriaId.equals(upStationId)) {
+            return new Section(
+                    lineId,
+                    section.upStationId,
+                    downStationId,
+                    distance + section.getDistance()
+            );
+        }
+        return new Section(
+                lineId,
+                upStationId,
+                section.downStationId,
+                distance + section.getDistance()
+        );
+    }
+
+    private Long findDuplicateId(final Section section) {
+        final Set<Long> stationIds = new HashSet<>();
+        stationIds.add(upStationId);
+        stationIds.add(downStationId);
+        if (stationIds.contains(section.upStationId)) {
+            return section.upStationId;
+        }
+        return section.downStationId;
     }
 
     public Long getId() {

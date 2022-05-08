@@ -106,4 +106,23 @@ class SectionTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("기존 구간의 길이 보다 작지 않습니다.");
     }
+
+    @Test
+    @DisplayName("두 구간을 합친다.")
+    void Merge() {
+        // given
+        final Section section1 = new Section(line.getId(), samseong.getId(), yeoksam.getId(), 10);
+        final Section section2 = new Section(line.getId(), yeoksam.getId(), seolleung.getId(), 7);
+
+        // when
+        final Section actual = section1.merge(section2);
+        final Section actual2 = section2.merge(section1);
+
+        // then
+        assertThat(actual.getUpStationId()).isEqualTo(samseong.getId());
+        assertThat(actual.getDownStationId()).isEqualTo(seolleung.getId());
+        assertThat(actual.getDistance()).isEqualTo(17);
+
+        assertThat(actual).isEqualTo(actual2);
+    }
 }
