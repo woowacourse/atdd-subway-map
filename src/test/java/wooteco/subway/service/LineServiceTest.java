@@ -6,13 +6,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.InmemoryLineDao;
-import wooteco.subway.dao.InmemorySectionDao;
-import wooteco.subway.dao.InmemoryStationDao;
+import wooteco.subway.dao.line.InmemoryLineDao;
+import wooteco.subway.dao.section.InmemorySectionDao;
+import wooteco.subway.dao.station.InmemoryStationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineSaveRequest;
-import wooteco.subway.dto.LineUpdateRequest;
+import wooteco.subway.dto.line.LineSaveRequest;
+import wooteco.subway.dto.line.LineUpdateRequest;
 import wooteco.subway.exception.NotFoundException;
 
 class LineServiceTest {

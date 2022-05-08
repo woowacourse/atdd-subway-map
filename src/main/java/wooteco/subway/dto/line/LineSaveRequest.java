@@ -1,4 +1,4 @@
-package wooteco.subway.dto;
+package wooteco.subway.dto.line;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;

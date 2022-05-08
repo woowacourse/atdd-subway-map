@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.StationDao;
+import wooteco.subway.dao.station.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.station.StationResponse;
 import wooteco.subway.exception.NotFoundException;
 
 @Service

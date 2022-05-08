@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

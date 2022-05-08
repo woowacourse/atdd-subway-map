@@ -1,4 +1,4 @@
-package wooteco.subway.dto;
+package wooteco.subway.dto.section;
 
 import javax.validation.constraints.Positive;
 

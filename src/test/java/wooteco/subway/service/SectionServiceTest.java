@@ -5,13 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.InmemoryLineDao;
-import wooteco.subway.dao.InmemorySectionDao;
-import wooteco.subway.dao.InmemoryStationDao;
+import wooteco.subway.dao.line.InmemoryLineDao;
+import wooteco.subway.dao.section.InmemorySectionDao;
+import wooteco.subway.dao.station.InmemoryStationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.SectionSaveRequest;
+import wooteco.subway.dto.section.SectionSaveRequest;
 
 class SectionServiceTest {
 
