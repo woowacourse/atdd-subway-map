@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.station.StationRequest;
@@ -15,9 +16,11 @@ import wooteco.subway.exception.station.DuplicateStationException;
 public class StationService {
 
     private final StationDao stationDao;
+    private final SectionDao sectionDao;
 
-    public StationService(final StationDao stationDao) {
+    public StationService(final StationDao stationDao, final SectionDao sectionDao) {
         this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
     }
 
     public StationResponse create(final StationRequest request) {
@@ -36,6 +39,9 @@ public class StationService {
     }
 
     public void delete(final Long id) {
+        if (sectionDao.isStationExist(id)) {
+            throw new IllegalArgumentException("역이 구간에 등록되어 있습니다.");
+        }
         stationDao.deleteById(id);
     }
 }

@@ -78,12 +78,26 @@ class StationServiceTest extends ServiceTest {
     @DisplayName("id에 해당하는 역을 삭제한다.")
     void Delete() {
         // given
-        final long id = 1L;
-        given(stationDao.deleteById(id))
+        given(sectionDao.isStationExist(any(Long.class)))
+                .willReturn(false);
+        given(stationDao.deleteById(any(Long.class)))
                 .willReturn(1);
 
         // then
-        assertThatCode(() -> stationService.delete(id))
+        assertThatCode(() -> stationService.delete(1L))
                 .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("id에 해당하는 역이 구간에 등록되어 있으면 삭제할 수 없다.")
+    void Delete_RegisteredInSection_ExceptionThrown() {
+        // given
+        given(sectionDao.isStationExist(any(Long.class)))
+                .willReturn(true);
+
+        // then
+        assertThatThrownBy(() -> stationService.delete(1L))
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessage("역이 구간에 등록되어 있습니다.");
     }
 }
