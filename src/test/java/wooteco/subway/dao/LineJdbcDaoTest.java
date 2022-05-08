@@ -2,8 +2,10 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,13 +36,19 @@ class LineJdbcDaoTest {
     @Test
     void saveLine() {
         // given
-        Line line = new Line("line", "color");
+        String name = "line";
+        String color = "color";
+        Line line = new Line(name, color);
 
         // when
         Long savedId = dao.save(line);
 
         // then
-        assertThat(dao.findById(savedId)).isEqualTo(line);
+        Line findLine = dao.findById(savedId);
+        assertAll(
+                () -> assertThat(findLine.getName()).isEqualTo(name),
+                () -> assertThat(findLine.getColor()).isEqualTo(color)
+        );
     }
 
     @DisplayName("같은 이름의 노선이 있는 경우 예외를 던진다")
@@ -94,7 +102,10 @@ class LineJdbcDaoTest {
         Line findLine = dao.findById(savedId);
 
         // then
-        assertThat(findLine).isEqualTo(line);
+        assertAll(
+                () -> assertThat(findLine.getName()).isEqualTo(line.getName()),
+                () -> assertThat(findLine.getColor()).isEqualTo(line.getColor())
+        );
     }
 
     @DisplayName("존재하지 않는 id로 노선을 조회하면 예외가 발생한다")
@@ -107,12 +118,20 @@ class LineJdbcDaoTest {
     @DisplayName("노선 정보를 수정한다")
     @Test
     void update() {
+        // given
         Long savedId = dao.save(new Line("line", "color"));
+        String changedName = "changedName";
+        String changedColor = "changedColor";
 
-        Long updateId = dao.update(savedId, "changedName", "changedColor");
+        // when
+        Long updateId = dao.update(savedId, changedName, changedColor);
 
+        // then
         Line findLine = dao.findById(updateId);
-        assertThat(findLine).isEqualTo(new Line("changedName", "changedColor"));
+        assertAll(
+                () -> assertThat(findLine.getName()).isEqualTo(changedName),
+                () -> assertThat(findLine.getColor()).isEqualTo(changedColor)
+        );
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 이름을 수정하면 예외가 발생한다")

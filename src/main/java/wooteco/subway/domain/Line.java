@@ -39,20 +39,22 @@ public class Line {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final Line line = (Line) o;
-        return name.equals(line.name) && color.equals(line.color);
+
+        Line line = (Line) o;
+
+        return id != null ? id.equals(line.id) : line.id == null;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, color);
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override

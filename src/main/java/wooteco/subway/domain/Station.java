@@ -31,20 +31,22 @@ public class Station {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final Station station = (Station) o;
-        return id.equals(station.id) && name.equals(station.name);
+
+        Station station = (Station) o;
+
+        return id != null ? id.equals(station.id) : station.id == null;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override
