@@ -19,14 +19,14 @@ public class StationDao {
 
     public Station save(Station station) {
         checkDuplication(station.getName());
-        String sql = "insert into STATION (name) values (?)";
+        String sql = "insert into Station (name) values (?)";
         jdbcTemplate.update(sql, station.getName());
 
         return includeIdIn(station);
     }
 
     private void checkDuplication(String name) {
-        String sql = "select count(*) from STATION where name = '" + name + "'";
+        String sql = "select count(*) from Station where name = '" + name + "'";
 
         if (jdbcTemplate.queryForObject(sql, Integer.class) > 0) {
             throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");
@@ -34,7 +34,7 @@ public class StationDao {
     }
 
     public List<Station> findAll() {
-        String sql = "select * from STATION";
+        String sql = "select * from Station";
         return jdbcTemplate.query(sql, new StationMapper());
     }
 
@@ -45,13 +45,13 @@ public class StationDao {
     }
 
     private Station includeIdIn(Station station) {
-        String sql2 = "select max(id) from STATION";
+        String sql2 = "select max(id) from Station";
         Long id = jdbcTemplate.queryForObject(sql2, Long.class);
         return new Station(id, station.getName());
     }
 
     public void deleteById(Long id) {
-        String sql = "delete from STATION where id = ?";
+        String sql = "delete from Station where id = ?";
         jdbcTemplate.update(sql, id);
     }
 }
