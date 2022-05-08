@@ -1,4 +1,4 @@
-package wooteco.subway.ui;
+package wooteco.subway.presentation;
 
 import java.net.URI;
 import java.util.List;
