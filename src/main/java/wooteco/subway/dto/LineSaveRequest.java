@@ -1,7 +1,7 @@
 package wooteco.subway.dto;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 import wooteco.subway.domain.Line;
 
 public class LineSaveRequest {
@@ -16,7 +16,7 @@ public class LineSaveRequest {
 
     private long downStationId;
 
-    @Min(value = 1, message = "상행-하행 노선 길이는 1 이상의 값만 들어올 수 있습니다.")
+    @Positive(message = "상행-하행 노선 길이는 1 이상의 값만 들어올 수 있습니다.")
     private int distance;
 
     private LineSaveRequest() {
