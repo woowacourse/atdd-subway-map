@@ -14,7 +14,7 @@ class SectionTest {
 
     @ParameterizedTest
     @ValueSource(ints = {-1, 0})
-    @DisplayName("생성 시 distance 가 0 이하인 경우 예외 발생")
+    @DisplayName("생성 시 distance 가 0 이하인 경우 생예외가 발생한다.")
     void createExceptionByNotPositiveDistance(final int distance) {
         Station upStation = new Station(1L, "오리");
         Station downStation = new Station(2L, "배카라");
@@ -25,7 +25,7 @@ class SectionTest {
     }
 
     @Test
-    @DisplayName("upStation 과 downStation 이 중복될 경우 예외 발생")
+    @DisplayName("upStation 과 downStation 이 중복될 경우 생예외가 발생한다.")
     void createExceptionDByDuplicateStationId() {
         Station station = new Station(1L, "오리");
 
@@ -177,7 +177,7 @@ class SectionTest {
     }
 
     @Test
-    @DisplayName("연장된 Section을 만들어 반환할 수 있따.")
+    @DisplayName("연장된 Section을 만들어 반환할 수 있다.")
     void createExtensionSection() {
         // given
         Station station1 = new Station(1L, "오리");

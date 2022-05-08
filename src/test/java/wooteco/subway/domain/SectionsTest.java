@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class SectionsTest {
 
     @Test
-    @DisplayName("생성 시 size가 0이면 예외 발생")
+    @DisplayName("생성 시 size가 0이면 생예외가 발생한다.")
     void createExceptionByEmptySize() {
         assertThatThrownBy(() -> new Sections(new ArrayList<>()))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -39,7 +39,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("Section을 추가할 때 상행, 하행역을 하나도 포함하지않으면 예외 발생")
+    @DisplayName("Section을 추가할 때 상행, 하행역을 하나도 포함하지않으면 생예외가 발생한다.")
     void addSectionExceptionByNotFoundStation() {
         // given
         Station station1 = new Station(1L, "오리");
@@ -55,7 +55,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("이미 상행에서 하행으로 갈 수 있는 Section이면 예외 발생")
+    @DisplayName("이미 상행에서 하행으로 갈 수 있는 Section이면 생예외가 발생한다.")
     void addSectionExceptionByExistSection() {
         // given
         Station station1 = new Station(1L, "오리");
@@ -131,7 +131,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("상행역과 일치하는 역의 사이에 들어갈 때 더 큰 길이의 Section이면 예외 발생")
+    @DisplayName("상행역과 일치하는 역의 사이에 들어갈 때 더 큰 길이의 Section이면 생예외가 발생한다.")
     void addSectionBetweenEqualsUpStationExceptionByLargerDistance() {
         // given
         Station station1 = new Station(1L, "오리");
@@ -167,7 +167,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("하행역과 일치하는 역의 사이에 들어갈 때 더 큰 길이의 Section이면 예외 발생")
+    @DisplayName("하행역과 일치하는 역의 사이에 들어갈 때 더 큰 길이의 Section이면 생예외가 발생한다.")
     void addSectionBetweenEqualsDownStationExceptionByLargerDistance() {
         // given
         Station station1 = new Station(1L, "오리");
@@ -183,7 +183,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("구간 제거 시 Station이 포함되지 않은 경우 예외 발생")
+    @DisplayName("구간 제거 시 Station이 포함되지 않은 경우 생예외가 발생한다.")
     void removeSectionExceptionByNotFoundException() {
         // given
         Station station1 = new Station(1L, "오리");
@@ -198,7 +198,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("구간 제거 시 Section이 하나뿐이면 예외 발생")
+    @DisplayName("구간 제거 시 Section이 하나뿐이면 생예외가 발생한다.")
     void removeSectionExceptionByLimitSize() {
         // given
         Station station1 = new Station(1L, "오리");

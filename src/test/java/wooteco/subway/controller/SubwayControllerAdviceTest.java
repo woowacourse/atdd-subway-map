@@ -36,7 +36,7 @@ class SubwayControllerAdviceTest {
     }
 
     @Test
-    @DisplayName("name이 null이고 distance가 음수인 line save request dto 요청")
+    @DisplayName("name이 null이고 distance가 음수인 line save request dto 요청할 경우 예외가 발생한다.")
     void invalidNullNameLineSaveRequest() {
         LineSaveRequest request = new LineSaveRequest(null, "bg-red-600", 1, 2, -1);
         String nameNullErrorMessage = "line 이름은 공백 혹은 null이 들어올 수 없습니다.";
@@ -53,7 +53,7 @@ class SubwayControllerAdviceTest {
     }
 
     @Test
-    @DisplayName("Section삭제 시 RequestParam 양수가 아닌 값 요청")
+    @DisplayName("Section삭제 시 RequestParam 양수가 아닌 값 요청할 경우 예외가 발생한다.")
     void invalidNegativeStationIdDeleteSection() {
         String errorMessage = "역의 id는 양수 값만 들어올 수 있습니다.";
         RestAssured.given().log().all()

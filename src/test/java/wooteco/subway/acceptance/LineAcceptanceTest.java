@@ -86,7 +86,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("기존에 존재하는 노선의 이름으로 노선을 생성한다.")
+    @DisplayName("기존에 존재하는 노선의 이름으로 노선을 생성하면 노선을 생성할 수 없다.")
     void createLinesWithExistNames() {
         // given
         Long upStationId = postStations(new StationSaveRequest("강남역")).response()
