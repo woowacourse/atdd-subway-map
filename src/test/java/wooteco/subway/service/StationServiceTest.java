@@ -38,8 +38,7 @@ class StationServiceTest {
     @Test
     void saveDuplicateName() {
         stationRepository.save(new Station("신림역"));
-        assertThatThrownBy(
-                () -> stationService.save(new StationRequest("신림역"))
+        assertThatThrownBy(() -> stationService.save(new StationRequest("신림역"))
         ).isInstanceOf(NameDuplicatedException.class);
     }
 

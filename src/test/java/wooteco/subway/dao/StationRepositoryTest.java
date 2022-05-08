@@ -24,8 +24,8 @@ class StationRepositoryTest extends RepositoryTest {
         Station saveStation = stationRepository.save(station);
 
         assertAll(
-                () -> assertThat(saveStation.getId()).isNotNull(),
-                () -> assertThat(saveStation).isEqualTo(station)
+            () -> assertThat(saveStation.getId()).isNotNull(),
+            () -> assertThat(saveStation).isEqualTo(station)
         );
     }
 
@@ -50,8 +50,8 @@ class StationRepositoryTest extends RepositoryTest {
         List<Station> stations = stationRepository.findAll();
 
         assertAll(
-                () -> assertThat(stations).hasSize(2),
-                () -> assertThat(stations).containsExactly(station1, station2)
+            () -> assertThat(stations).hasSize(2),
+            () -> assertThat(stations).containsExactly(station1, station2)
         );
     }
 

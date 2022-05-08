@@ -33,9 +33,9 @@ public class LineServiceTest {
         LineResponse lineResponse = lineService.create(lineRequest);
 
         assertAll(
-                () -> assertThat(lineResponse.getId()).isNotNull(),
-                () -> assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName()),
-                () -> assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor())
+            () -> assertThat(lineResponse.getId()).isNotNull(),
+            () -> assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName()),
+            () -> assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor())
         );
     }
 
@@ -64,8 +64,8 @@ public class LineServiceTest {
         LineResponse lineResponse = lineService.showLine(line.getId());
 
         assertAll(
-                () -> assertThat(lineResponse.getName()).isEqualTo("분당선"),
-                () -> assertThat(lineResponse.getColor()).isEqualTo("bg-red-600")
+            () -> assertThat(lineResponse.getName()).isEqualTo("분당선"),
+            () -> assertThat(lineResponse.getColor()).isEqualTo("bg-red-600")
         );
     }
 
@@ -77,8 +77,8 @@ public class LineServiceTest {
 
         Line findUpdateLine = lineRepository.findById(line.getId());
         assertAll(
-                () -> assertThat(findUpdateLine.getName()).isEqualTo("신분당선"),
-                () -> assertThat(findUpdateLine.getColor()).isEqualTo("bg-yellow-600")
+            () -> assertThat(findUpdateLine.getName()).isEqualTo("신분당선"),
+            () -> assertThat(findUpdateLine.getColor()).isEqualTo("bg-yellow-600")
         );
     }
 

@@ -23,8 +23,8 @@ public class LineRepositoryTest extends RepositoryTest {
         Line saveLine = lineRepository.save(line);
 
         assertAll(
-                () -> assertThat(saveLine.getId()).isNotNull(),
-                () -> assertThat(saveLine).isEqualTo(line)
+            () -> assertThat(saveLine.getId()).isNotNull(),
+            () -> assertThat(saveLine).isEqualTo(line)
         );
     }
 
@@ -49,8 +49,8 @@ public class LineRepositoryTest extends RepositoryTest {
         List<Line> lines = lineRepository.findAll();
 
         assertAll(
-                () -> assertThat(lines).hasSize(2),
-                () -> assertThat(lines).containsExactly(saveLine1, saveLine2)
+            () -> assertThat(lines).hasSize(2),
+            () -> assertThat(lines).containsExactly(saveLine1, saveLine2)
         );
     }
 
@@ -86,8 +86,8 @@ public class LineRepositoryTest extends RepositoryTest {
         Line findUpdateLine = lineRepository.findById(saveLine.getId());
 
         assertAll(
-                () -> assertThat(findUpdateLine.getName()).isEqualTo("신분당선"),
-                () -> assertThat(findUpdateLine.getColor()).isEqualTo("bg-yellow-600")
+            () -> assertThat(findUpdateLine.getName()).isEqualTo("신분당선"),
+            () -> assertThat(findUpdateLine.getColor()).isEqualTo("bg-yellow-600")
         );
     }
 
