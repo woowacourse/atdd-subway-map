@@ -2,7 +2,6 @@ package wooteco.subway.controller;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,12 +34,7 @@ public class StationController {
 
     @GetMapping
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<StationResponse> stationResponses = stationService.findAll()
-                .stream()
-                .map(StationResponse::from)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok().body(stationResponses);
+        return ResponseEntity.ok().body(stationService.findAll());
     }
 
     @DeleteMapping("/{stationId}")
