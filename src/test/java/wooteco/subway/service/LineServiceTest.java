@@ -69,6 +69,6 @@ public class LineServiceTest {
 
         Assertions.assertThatThrownBy(() -> lineService.deleteLine(invalidLineId))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당하는 노선이 존재하지 않습니다.");
+                .hasMessage(invalidLineId + "번에 해당하는 노선이 존재하지 않습니다.");
     }
 }

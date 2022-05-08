@@ -45,6 +45,6 @@ public class StationServiceTest {
 
         Assertions.assertThatThrownBy(() -> stationService.deleteStation(invalidStationId))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당하는 역이 존재하지 않습니다.");
+                .hasMessage(invalidStationId + "번에 해당하는 역이 존재하지 않습니다.");
     }
 }
