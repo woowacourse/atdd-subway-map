@@ -46,6 +46,14 @@ public class Section {
         }
     }
 
+    public boolean isSameUpStation(final Long upStationId) {
+        return this.upStationId.equals(upStationId);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
     public Long getLineId() {
         return lineId;
     }
