@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,5 +44,16 @@ class StationServiceTest {
 
         assertThatThrownBy(() -> stationService.save(stationRequest))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("다수의 지하철역을 조회한다.")
+    @Test
+    void 다수_지하철역_조회() {
+        stationService.save(new StationRequest("강남역"));
+        stationService.save(new StationRequest("선릉역"));
+
+        List<StationResponse> stations = stationService.findAll();
+
+        assertThat(stations.size()).isEqualTo(2);
     }
 }

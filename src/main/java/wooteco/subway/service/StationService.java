@@ -1,5 +1,8 @@
 package wooteco.subway.service;
 
+import static java.util.stream.Collectors.toList;
+
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
@@ -25,5 +28,12 @@ public class StationService {
 
         Station station = stationDao.save(new Station(stationRequest.getName()));
         return new StationResponse(station);
+    }
+
+    public List<StationResponse> findAll() {
+        return stationDao.findAll()
+                .stream()
+                .map(StationResponse::new)
+                .collect(toList());
     }
 }
