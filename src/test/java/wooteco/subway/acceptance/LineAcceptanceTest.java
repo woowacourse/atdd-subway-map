@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationRequest;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +20,9 @@ import static org.hamcrest.Matchers.equalTo;
 
 @DisplayName("지하철노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+    private final StationRequest stationRequest1 = new StationRequest("강남역");
+    private final StationRequest stationRequest2 = new StationRequest("역삼역");
+    private final StationRequest stationRequest3 = new StationRequest("분당역");
     private final LineRequest lineRequest1 =
             new LineRequest("신분당선", "bg-red-600", 1L, 2L, 20);
     private final LineRequest lineRequest2 =
@@ -28,6 +32,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
+        createStationResponse(stationRequest1);
+        createStationResponse(stationRequest2);
         // when
         ExtractableResponse<Response> response = createLineResponse(lineRequest1);
 
@@ -202,6 +208,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> createStationResponse(StationRequest stationRequest) {
+        return RestAssured.given().log().all()
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
                 .then().log().all()
                 .extract();
     }
