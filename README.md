@@ -37,3 +37,19 @@
 ## 📝 License
 
 This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master/LICENSE) licensed.
+
+
+## 기능목록
+### 1단계
+- [x] 기존에 존재하는 지하철역 이름으로 지하철역을 생성할 시에 에러 처리를 한다
+- [x] 지하철 노선을 등록한다.
+- [x] 전체 지하철 노선 목록을 조회한다. 
+- [x] 단일 지하철 노선을 조죄한다.
+- [x] 지하철 노선을 수정한다.
+- [x] 지하철 노선을 삭제한다.
+
+### 2단계
+- [x] 스프링 JDBC 활용하여 H2 DB에 저장하기
+- [x] Dao 객체가 아닌 DB에서 데이터를 관리하기
+- [x] DB에 접근하기 위한 JdbcTemplate 이용하기 
+- [x] 스프링 빈 활용하기
