@@ -1,4 +1,4 @@
-package wooteco.subway.exception;
+package wooteco.subway.application.exception;
 
 public abstract class DuplicateException extends IllegalArgumentException {
 

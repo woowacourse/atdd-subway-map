@@ -17,10 +17,10 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.BlankArgumentException;
-import wooteco.subway.exception.DuplicateLineNameException;
-import wooteco.subway.exception.NotFoundLineException;
-import wooteco.subway.exception.NotFoundStationException;
+import wooteco.subway.domain.exception.BlankArgumentException;
+import wooteco.subway.application.exception.DuplicateLineNameException;
+import wooteco.subway.application.exception.NotFoundLineException;
+import wooteco.subway.application.exception.NotFoundStationException;
 import wooteco.subway.repository.LineRepository;
 import wooteco.subway.repository.StationRepository;
 

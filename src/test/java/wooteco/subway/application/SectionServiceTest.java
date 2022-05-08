@@ -14,13 +14,14 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.SectionEdge;
 import wooteco.subway.domain.Station;
+import wooteco.subway.domain.exception.UnsplittableException;
 import wooteco.subway.dto.AddSectionRequest;
 import wooteco.subway.dto.DeleteSectionRequest;
-import wooteco.subway.exception.DuplicateSectionException;
-import wooteco.subway.exception.NotDeletableSectionException;
-import wooteco.subway.exception.NotFoundLineException;
-import wooteco.subway.exception.NotFoundStationException;
-import wooteco.subway.exception.NotSplittableSectionException;
+import wooteco.subway.application.exception.DuplicateSectionException;
+import wooteco.subway.application.exception.UndeletableSectionException;
+import wooteco.subway.application.exception.NotFoundLineException;
+import wooteco.subway.application.exception.NotFoundStationException;
+import wooteco.subway.application.exception.UnaddableSectionException;
 import wooteco.subway.repository.LineRepository;
 import wooteco.subway.repository.SectionRepository;
 import wooteco.subway.repository.StationRepository;
@@ -171,7 +172,7 @@ public class SectionServiceTest {
 
         assertThatThrownBy(() -> sectionService.addSection(line.getId(),
             new AddSectionRequest(newStation.getId(), downStation.getId(), 10)))
-            .isInstanceOf(NotSplittableSectionException.class);
+            .isInstanceOf(UnsplittableException.class);
 
         List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
             .map(Section::getEdge)
@@ -193,7 +194,7 @@ public class SectionServiceTest {
 
         assertThatThrownBy(() -> sectionService.addSection(line.getId(),
             new AddSectionRequest(notFoundStation1.getId(), notFoundStation2.getId(), 3)))
-            .isInstanceOf(NotSplittableSectionException.class);
+            .isInstanceOf(UnaddableSectionException.class);
 
         List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
             .map(Section::getEdge)
@@ -234,7 +235,7 @@ public class SectionServiceTest {
 
         assertThatThrownBy(() -> sectionService
             .deleteSection(line.getId(), new DeleteSectionRequest(notFoundStation.getId())))
-            .isInstanceOf(NotDeletableSectionException.class);
+            .isInstanceOf(UndeletableSectionException.class);
 
         List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
             .map(Section::getEdge)
@@ -254,7 +255,7 @@ public class SectionServiceTest {
 
         assertThatThrownBy(() -> sectionService
             .deleteSection(line.getId(), new DeleteSectionRequest(upStation.getId())))
-            .isInstanceOf(NotDeletableSectionException.class);
+            .isInstanceOf(UndeletableSectionException.class);
 
         List<SectionEdge> sectionEdges = sectionRepository.findAllByLineId(line.getId()).stream()
             .map(Section::getEdge)

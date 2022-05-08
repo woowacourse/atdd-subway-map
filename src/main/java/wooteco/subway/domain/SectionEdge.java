@@ -1,7 +1,8 @@
 package wooteco.subway.domain;
 
 import java.util.Objects;
-import wooteco.subway.exception.NotSplittableSectionException;
+import wooteco.subway.domain.exception.UnmergeableException;
+import wooteco.subway.domain.exception.UnsplittableException;
 
 public class SectionEdge {
 
@@ -16,42 +17,52 @@ public class SectionEdge {
     }
 
     public SectionEdge split(SectionEdge edge) {
-        if (isInvalidDistance(edge)) {
-            throw new NotSplittableSectionException(edge.getUpStationId(), edge.getDownStationId());
+        if (isSameStationIds(edge) || isInvalidDistance(edge)) {
+            throw new UnsplittableException();
         }
-        return new SectionEdge(newUpStationId(edge), newDownStationId(edge), newDistance(edge));
+
+        if (isSameWithUpStationId(edge.upStationId)) {
+            return new SectionEdge(edge.downStationId, downStationId, distance - edge.distance);
+        }
+
+        if (isSameWithDownStationId(edge.downStationId)) {
+            return new SectionEdge(upStationId, edge.upStationId, distance - edge.distance);
+        }
+
+        throw new UnsplittableException();
+    }
+
+    private boolean isSameStationIds(SectionEdge e) {
+        return (isSameWithUpStationId(e.upStationId) && isSameWithDownStationId(e.downStationId))
+            || (isSameWithUpStationId(e.downStationId) && isSameWithDownStationId(e.upStationId));
+    }
+
+    private boolean isSameWithUpStationId(Long upStationId) {
+        return this.upStationId.equals(upStationId);
+    }
+
+    private boolean isSameWithDownStationId(Long downStationId) {
+        return this.downStationId.equals(downStationId);
     }
 
     private boolean isInvalidDistance(SectionEdge edge) {
-        return distance <= edge.getDistance();
-    }
-
-    private Long newUpStationId(SectionEdge edge) {
-        if (upStationId.equals(edge.getUpStationId())) {
-            return edge.getDownStationId();
-        }
-        if (downStationId.equals(edge.getDownStationId())) {
-            return upStationId;
-        }
-        throw new NotSplittableSectionException(edge.getUpStationId(), edge.getDownStationId());
-    }
-
-    private Long newDownStationId(SectionEdge edge) {
-        if (upStationId.equals(edge.getUpStationId())) {
-            return downStationId;
-        }
-        if (downStationId.equals(getDownStationId())) {
-            return edge.getUpStationId();
-        }
-        throw new NotSplittableSectionException(edge.getUpStationId(), edge.getDownStationId());
-    }
-
-    private int newDistance(SectionEdge edge) {
-        return this.distance - edge.getDistance();
+        return distance <= edge.distance;
     }
 
     public SectionEdge merge(SectionEdge edge) {
-        return new SectionEdge(upStationId, edge.getDownStationId(), distance + edge.getDistance());
+        if (isSameStationIds(edge)) {
+            throw new UnmergeableException();
+        }
+
+        if (isSameWithUpStationId(edge.downStationId)) {
+            return new SectionEdge(edge.upStationId, downStationId, distance + edge.distance);
+        }
+
+        if (isSameWithDownStationId(edge.upStationId)) {
+            return new SectionEdge(upStationId, edge.downStationId, distance + edge.distance);
+        }
+
+        throw new UnmergeableException();
     }
 
     public Long getUpStationId() {

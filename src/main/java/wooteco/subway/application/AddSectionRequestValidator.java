@@ -2,10 +2,10 @@ package wooteco.subway.application;
 
 import org.springframework.stereotype.Component;
 import wooteco.subway.dto.AddSectionRequest;
-import wooteco.subway.exception.DuplicateSectionException;
-import wooteco.subway.exception.NotFoundLineException;
-import wooteco.subway.exception.NotFoundStationException;
-import wooteco.subway.exception.NotSplittableSectionException;
+import wooteco.subway.application.exception.DuplicateSectionException;
+import wooteco.subway.application.exception.NotFoundLineException;
+import wooteco.subway.application.exception.NotFoundStationException;
+import wooteco.subway.application.exception.UnaddableSectionException;
 import wooteco.subway.repository.LineRepository;
 import wooteco.subway.repository.SectionRepository;
 import wooteco.subway.repository.StationRepository;
@@ -30,7 +30,7 @@ public class AddSectionRequestValidator {
         Long downStationId = request.getDownStationId();
 
         if (isSameStationId(upStationId, downStationId)) {
-            throw new NotSplittableSectionException(upStationId, downStationId);
+            throw new UnaddableSectionException(upStationId, downStationId);
         }
         if (isNotFoundLine(lineId)) {
             throw new NotFoundLineException(lineId);
@@ -45,7 +45,7 @@ public class AddSectionRequestValidator {
             throw new DuplicateSectionException(lineId, upStationId, downStationId);
         }
         if (isNotFoundStationsOnLine(lineId, upStationId, downStationId)) {
-            throw new NotSplittableSectionException(upStationId, downStationId);
+            throw new UnaddableSectionException(upStationId, downStationId);
         }
     }
 

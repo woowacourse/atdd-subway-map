@@ -7,8 +7,8 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.DuplicateStationNameException;
-import wooteco.subway.exception.NotFoundStationException;
+import wooteco.subway.application.exception.DuplicateStationNameException;
+import wooteco.subway.application.exception.NotFoundStationException;
 import wooteco.subway.repository.StationRepository;
 
 @Service

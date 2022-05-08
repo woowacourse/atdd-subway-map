@@ -1,6 +1,8 @@
 package wooteco.subway.domain;
 
 import java.util.Objects;
+import wooteco.subway.domain.exception.UnmergeableException;
+import wooteco.subway.domain.exception.UnsplittableException;
 
 public class Section {
 
@@ -27,11 +29,21 @@ public class Section {
     }
 
     public Section split(Section section) {
-        return new Section(id, lineId, edge.split(section.getEdge()));
+        if (!isSameLineId(section.getLineId())) {
+            throw new UnsplittableException();
+        }
+        return new Section(lineId, edge.split(section.edge));
+    }
+
+    private boolean isSameLineId(Long lineId) {
+        return this.lineId.equals(lineId);
     }
 
     public Section merge(Section section) {
-        return new Section(lineId, edge.merge(section.getEdge()));
+        if (!isSameLineId(section.lineId)) {
+            throw new UnmergeableException();
+        }
+        return new Section(lineId, edge.merge(section.edge));
     }
 
     public Long getLineId() {

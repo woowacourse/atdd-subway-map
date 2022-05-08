@@ -28,12 +28,21 @@ public class SectionService {
         addSectionRequestValidator.validate(lineId, request);
         Section newSection = new Section(lineId, request.getUpStationId(),
             request.getDownStationId(), request.getDistance());
-        findExistSection(lineId, request.getUpStationId(), request.getDownStationId())
-            .ifPresent(existSection -> updateExistSection(newSection, existSection));
+
+        Optional<Section> overlapSectionOptional = findOverlapSection(lineId, request.getUpStationId(),
+            request.getDownStationId());
+
+        if (overlapSectionOptional.isPresent()) {
+            Section overlapSection = overlapSectionOptional.get();
+            Section splitSection = overlapSection.split(newSection);
+            sectionRepository.save(splitSection);
+            sectionRepository.deleteById(overlapSection.getId());
+        }
+
         return sectionRepository.save(newSection);
     }
 
-    private Optional<Section> findExistSection(Long lineId, Long upStationId, Long downStationId) {
+    private Optional<Section> findOverlapSection(Long lineId, Long upStationId, Long downStationId) {
         return findNextSection(lineId, upStationId)
             .or(() -> findPrevSection(lineId, downStationId));
     }
@@ -44,11 +53,6 @@ public class SectionService {
 
     private Optional<Section> findPrevSection(Long lineId, Long stationId) {
         return sectionRepository.findByLineIdAndDownStationId(lineId, stationId);
-    }
-
-    private void updateExistSection(Section newSection, Section existSection) {
-        Section sectionForUpdate = existSection.split(newSection);
-        sectionRepository.update(sectionForUpdate);
     }
 
     public void deleteSection(Long lineId, DeleteSectionRequest request) {

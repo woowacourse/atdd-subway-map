@@ -12,9 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
-import wooteco.subway.exception.BlankArgumentException;
-import wooteco.subway.exception.DuplicateStationNameException;
-import wooteco.subway.exception.NotFoundStationException;
+import wooteco.subway.domain.exception.BlankArgumentException;
+import wooteco.subway.application.exception.DuplicateStationNameException;
+import wooteco.subway.application.exception.NotFoundStationException;
 import wooteco.subway.repository.StationRepository;
 
 @SpringBootTest

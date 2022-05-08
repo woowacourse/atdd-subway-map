@@ -1,7 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.Objects;
-import wooteco.subway.exception.BlankArgumentException;
+import wooteco.subway.domain.exception.BlankArgumentException;
 
 public class Station {
 

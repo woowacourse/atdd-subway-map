@@ -1,4 +1,4 @@
-package wooteco.subway.exception;
+package wooteco.subway.domain.exception;
 
 public class BlankArgumentException extends IllegalArgumentException {
 
