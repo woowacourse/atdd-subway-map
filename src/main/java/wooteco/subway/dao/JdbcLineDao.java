@@ -61,7 +61,6 @@ public class JdbcLineDao implements LineDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
-
     }
 
     private RowMapper<Line> generateMapper() {
