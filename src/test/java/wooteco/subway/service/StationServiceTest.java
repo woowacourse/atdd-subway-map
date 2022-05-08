@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dto.StationRequest;
@@ -42,8 +43,7 @@ class StationServiceTest {
         stationService.save(stationRequest);
 
         assertThatThrownBy(() -> stationService.save(stationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("같은 이름의 역은 등록할 수 없습니다.");
+                .isInstanceOf(DuplicateKeyException.class);
     }
 
     @DisplayName("모든 지하철 역을 조회한다.")

@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -20,8 +21,6 @@ public class LineDao {
     }
 
     public Line save(Line line) {
-        validateLineName(line);
-
         String sql = "INSERT INTO line (name, color) VALUES (:name, :color)";
 
         Map<String, Object> params = new HashMap<>();
@@ -37,25 +36,10 @@ public class LineDao {
         return new Line(lineId, line.getName(), line.getColor());
     }
 
-    private void validateLineName(Line line) {
-        String sql = "SELECT id, name, color FROM line WHERE name = :name";
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", line.getName());
-        params.put("color", line.getColor());
-
-        List<Line> lines = jdbcTemplate.query(sql, params,
-                (rs, rowNum) -> new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color")));
-
-        if (lines.size() > 0) {
-            throw new IllegalArgumentException("같은 이름의 노선은 등록할 수 없습니다.");
-        }
-    }
-
     public List<Line> findAll() {
         String sql = "SELECT * FROM line";
-        return jdbcTemplate.query(sql, new MapSqlParameterSource(),
-                (rs, rowNum) -> new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color")));
+
+        return jdbcTemplate.query(sql, getRowMapper());
     }
 
     public Line findById(Long id) {
@@ -64,26 +48,20 @@ public class LineDao {
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
 
-        List<Line> lines = jdbcTemplate.query(sql, new MapSqlParameterSource(params),
-                (rs, rowNum) -> new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color")));
-
-        if (lines.isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않는 노선입니다.");
-        }
-        return lines.get(0);
+        return jdbcTemplate.queryForObject(sql, params, getRowMapper());
     }
 
-    public Line update(Long id, String name, String color) {
+    public Line update(Long id, Line line) {
         String sql = "UPDATE line SET name=:name, color=:color where id=:id";
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
-        params.put("name", name);
-        params.put("color", color);
+        params.put("name", line.getName());
+        params.put("color", line.getColor());
 
         jdbcTemplate.update(sql, params);
 
-        return new Line(id, name, color);
+        return new Line(id, line.getName(), line.getColor());
     }
 
     public void deleteById(Long id) {
@@ -92,10 +70,10 @@ public class LineDao {
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
 
-        int affected = jdbcTemplate.update(sql, params);
+        jdbcTemplate.update(sql, params);
+    }
 
-        if (affected == 0) {
-            throw new IllegalArgumentException("존재하지 않는 노선입니다.");
-        }
+    private RowMapper<Line> getRowMapper() {
+        return (rs, rowNum) -> new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color"));
     }
 }
