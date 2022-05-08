@@ -2,8 +2,10 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import wooteco.subway.exception.NotFoundException;
 
 public class Sections {
 
@@ -23,57 +25,82 @@ public class Sections {
     }
 
     public List<Station> calculateSortedStations() {
-        Section section = calculateFirstSection(findAnySection());
-        return createSortedStations(section);
+        return createSortedStations(calculateTopSection());
     }
 
     private Section findAnySection() {
         return sections.stream()
                 .findAny()
-                .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
+                .orElseThrow(notFoundSectionSupplier());
     }
 
-    private Section calculateFirstSection(final Section section) {
-        if (!hasUpSection(section)) {
+    private Supplier<NotFoundException> notFoundSectionSupplier() {
+        return () -> new NotFoundException("section을 찾을 수 없습니다.");
+    }
+
+    private Section calculateTopSection() {
+        return calculateTopSection(findAnySection());
+    }
+
+    private Section calculateTopSection(final Section section) {
+        if (!hasUpperSection(section)) {
             return section;
         }
-        return calculateFirstSection(calculateUpSection(section));
+        return calculateTopSection(upperSection(section));
     }
 
-    private boolean hasUpSection(final Section section) {
+    private boolean hasUpperSection(final Section section) {
         return sections.stream()
-                .anyMatch(section::isUpSection);
+                .anyMatch(section::isUpperSection);
     }
 
-    private Section calculateUpSection(final Section section) {
+    private Section upperSection(final Section section) {
         return sections.stream()
-                .filter(section::isUpSection)
+                .filter(section::isUpperSection)
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
+                .orElseThrow(notFoundSectionSupplier());
+    }
+
+    private Section calculateLastSection() {
+        return calculateLastSection(findAnySection());
+    }
+
+    private Section calculateLastSection(final Section section) {
+        if (!hasLowerSection(section)) {
+            return section;
+        }
+        return calculateLastSection(calculateDownSection(section));
+    }
+
+    private Section calculateDownSection(final Section section) {
+        return sections.stream()
+                .filter(section::isLowerSection)
+                .findFirst()
+                .orElseThrow(notFoundSectionSupplier());
     }
 
     private List<Station> createSortedStations(Section section) {
         List<Station> stations = new ArrayList<>();
         stations.add(section.getUpStation());
 
-        while (hasDownSection(section)) {
+        while (hasLowerSection(section)) {
             stations.add(section.getDownStation());
-            section = downSection(section);
+            section = lowerSection(section);
         }
         stations.add(section.getDownStation());
         return stations;
     }
 
-    private boolean hasDownSection(final Section section) {
+    private boolean hasLowerSection(final Section section) {
         return sections.stream()
-                .anyMatch(section::isDownSection);
+                .anyMatch(section::isLowerSection);
     }
 
-    private Section downSection(final Section section) {
+    private Section lowerSection(final Section section) {
         return sections.stream()
-                .filter(section::isDownSection)
+                .filter(section::isLowerSection)
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
+                .orElseThrow(notFoundSectionSupplier());
     }
 
     public void addSection(final Section section) {
@@ -86,11 +113,7 @@ public class Sections {
             addSectionByEqualsUpStation(section);
             return;
         }
-        if (hasEqualsDownStation(section)) {
-            addSectionByEqualsDownStation(section);
-            return;
-        }
-        throw new RuntimeException("section 추가가 불가능한 상태입니다.");
+        addSectionByEqualsDownStation(section);
     }
 
     private void validateAdditionalSection(final Section section) {
@@ -102,35 +125,9 @@ public class Sections {
         }
     }
 
-    private void addSectionByEqualsDownStation(final Section section) {
-        Section updatedSection = sections.stream()
-                .filter(section::equalsDownStation)
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
-        if (updatedSection.isEqualsOrLargerDistance(section)) {
-            throw new IllegalStateException("기존 길이보다 긴 구간은 중간에 추가될 수 없습니다.");
-        }
-        sections.add(section);
-        sections.removeIf(updatedSection::equals);
-        sections.add(updatedSection.createMiddleSectionByUpStationSection(section));
-    }
-
-    private void addSectionByEqualsUpStation(final Section section) {
-        Section updatedSection = sections.stream()
-                .filter(section::equalsUpStation)
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
-        if (updatedSection.isEqualsOrLargerDistance(section)) {
-            throw new IllegalStateException("기존 길이보다 긴 구간은 중간에 추가될 수 없습니다.");
-        }
-        sections.add(section);
-        sections.removeIf(updatedSection::equals);
-        sections.add(updatedSection.createMiddleSectionByDownStationSection(section));
-    }
-
     private boolean hasNotUpStationOrDownStation(final Section section) {
         return sections.stream()
-                .noneMatch(section::isUpSectionOrDownSection);
+                .noneMatch(section::containsUpStationOrDownStation);
     }
 
     private boolean existUpStationToDownStation(final Section section) {
@@ -148,25 +145,40 @@ public class Sections {
     }
 
     private boolean isUpperThanTopSection(final Section section) {
-        return calculateFirstSection(findAnySection()).isUpSection(section);
+        return calculateTopSection().isUpperSection(section);
     }
 
     private boolean isLowerThanBottomSection(final Section section) {
-        return calculateLastSection(findAnySection()).isDownSection(section);
+        return calculateLastSection().isLowerSection(section);
     }
 
-    private Section calculateLastSection(final Section section) {
-        if (!hasDownSection(section)) {
-            return section;
-        }
-        return calculateLastSection(calculateDownSection(section));
+    private void addSectionByEqualsUpStation(final Section section) {
+        Section updatedSection = findSection(section::equalsUpStation);
+        validateEqualsOrLargerDistance(section, updatedSection);
+        sections.add(section);
+        sections.removeIf(updatedSection::equals);
+        sections.add(updatedSection.createMiddleSectionByDownStationSection(section));
     }
 
-    private Section calculateDownSection(final Section section) {
+    private void addSectionByEqualsDownStation(final Section section) {
+        Section updatedSection = findSection(section::equalsDownStation);
+        validateEqualsOrLargerDistance(section, updatedSection);
+        sections.add(section);
+        sections.removeIf(updatedSection::equals);
+        sections.add(updatedSection.createMiddleSectionByUpStationSection(section));
+    }
+
+    private Section findSection(final Predicate<Section> isDesiredSection) {
         return sections.stream()
-                .filter(section::isDownSection)
+                .filter(isDesiredSection)
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
+                .orElseThrow(notFoundSectionSupplier());
+    }
+
+    private void validateEqualsOrLargerDistance(final Section section, final Section updatedSection) {
+        if (updatedSection.isEqualsOrLargerDistance(section)) {
+            throw new IllegalStateException("기존 길이보다 긴 구간은 중간에 추가될 수 없습니다.");
+        }
     }
 
     public Section removeSection(final Station station) {
@@ -191,28 +203,28 @@ public class Sections {
     }
 
     private boolean isTopStation(final Station station) {
-        return calculateFirstSection(findAnySection()).isUpStation(station);
+        return calculateTopSection().isUpStation(station);
     }
 
     private Section removeTopSection() {
-        Section topSection = calculateFirstSection(findAnySection());
+        Section topSection = calculateTopSection();
         sections.removeIf(topSection::equals);
         return topSection;
     }
 
     private boolean isBottomStation(final Station station) {
-        return calculateLastSection(findAnySection()).isDownStation(station);
+        return calculateLastSection().isDownStation(station);
     }
 
     private Section removeBottomSection() {
-        Section bottomSection = calculateLastSection(findAnySection());
+        Section bottomSection = calculateLastSection();
         sections.removeIf(bottomSection::equals);
         return bottomSection;
     }
 
     private Section removeIntervalStation(final Station station) {
-        Section removeSection = findSectionByUpStation(station);
-        Section updateSection = findSectionByDownStation(station);
+        Section removeSection = findSection(isUpStation(station));
+        Section updateSection = findSection(isDownStations(station));
 
         sections.removeIf(removeSection::equals);
         sections.removeIf(updateSection::equals);
@@ -220,18 +232,12 @@ public class Sections {
         return removeSection;
     }
 
-    private Section findSectionByUpStation(final Station station) {
-        return sections.stream()
-                .filter(section -> section.isUpStation(station))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
+    private Predicate<Section> isUpStation(final Station station) {
+        return section -> section.isUpStation(station);
     }
 
-    private Section findSectionByDownStation(final Station station) {
-        return sections.stream()
-                .filter(section -> section.isDownStation(station))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("section을 찾을 수 없습니다."));
+    private Predicate<Section> isDownStations(final Station station) {
+        return section -> section.isDownStation(station);
     }
 
     public List<Section> getSections() {

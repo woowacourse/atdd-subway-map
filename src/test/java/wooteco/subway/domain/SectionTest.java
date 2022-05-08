@@ -45,8 +45,8 @@ class SectionTest {
         Section downSection = new Section(1L, station2, station3, 3);
 
         assertAll(
-                () -> assertThat(downSection.isUpSection(upSection)).isTrue(),
-                () -> assertThat(upSection.isUpSection(downSection)).isFalse()
+                () -> assertThat(downSection.isUpperSection(upSection)).isTrue(),
+                () -> assertThat(upSection.isUpperSection(downSection)).isFalse()
         );
     }
 
@@ -61,8 +61,8 @@ class SectionTest {
         Section downSection = new Section(1L, station2, station3, 3);
 
         assertAll(
-                () -> assertThat(upSection.isDownSection(downSection)).isTrue(),
-                () -> assertThat(downSection.isDownSection(upSection)).isFalse()
+                () -> assertThat(upSection.isLowerSection(downSection)).isTrue(),
+                () -> assertThat(downSection.isLowerSection(upSection)).isFalse()
         );
     }
 
@@ -76,7 +76,7 @@ class SectionTest {
         Section section = new Section(1L, station1, station2, 2);
         Section compareSection = new Section(1L, station1, station3, 3);
 
-        assertThat(section.isUpSectionOrDownSection(compareSection)).isTrue();
+        assertThat(section.containsUpStationOrDownStation(compareSection)).isTrue();
     }
 
     @Test

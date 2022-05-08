@@ -41,15 +41,15 @@ public class Section {
         this(id, section.lineId, section.upStation, section.downStation, section.distance);
     }
 
-    public boolean isUpSection(final Section section) {
+    public boolean isUpperSection(final Section section) {
         return this.upStation.equals(section.downStation);
     }
 
-    public boolean isDownSection(final Section section) {
+    public boolean isLowerSection(final Section section) {
         return this.downStation.equals(section.upStation);
     }
 
-    public boolean isUpSectionOrDownSection(final Section section) {
+    public boolean containsUpStationOrDownStation(final Section section) {
         return containsStation(section.upStation) || containsStation(section.downStation);
     }
 
