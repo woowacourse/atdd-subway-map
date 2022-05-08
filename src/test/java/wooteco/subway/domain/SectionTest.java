@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -75,5 +76,95 @@ class SectionTest {
         assertThatThrownBy(() -> origin.divideBy(other))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("거리");
+    }
+
+    @DisplayName("두 구간이 같은 상행역 공유하는지 확인")
+    @Test
+    void 두_구간_같은_상행역_TRUE1() {
+        Section section1 = new Section(new Station("합정역"), new Station("홍대입구역"), 2);
+        Section section2 = new Section(new Station("합정역"), new Station("신촌역"), 4);
+
+        assertThat(section1.isSameUpStation(section2)).isTrue();
+    }
+
+    @DisplayName("두 구간이 다른 상행역인지 확인")
+    @Test
+    void 두_구간_같은_상행역_FALSE() {
+        Section section1 = new Section(new Station("합정역"), new Station("홍대입구역"), 2);
+        Section section2 = new Section(new Station("홍대입구역"), new Station("신촌역"), 4);
+
+        assertThat(section1.isSameUpStation(section2)).isFalse();
+    }
+
+    @DisplayName("두 구간이 같은 하행역 공유하는지 확인")
+    @Test
+    void 두_구간_같은_하행역_TRUE() {
+        Section section1 = new Section(new Station("합정역"), new Station("홍대입구역"), 2);
+        Section section2 = new Section(new Station("당산역"), new Station("홍대입구역"), 4);
+
+        assertThat(section1.isSameDownStation(section2)).isTrue();
+    }
+
+    @DisplayName("두 구간이 다른 하행역인지 확인")
+    @Test
+    void 두_구간_같은_하행역_FALSE() {
+        Section section1 = new Section(new Station("합정역"), new Station("홍대입구역"), 2);
+        Section section2 = new Section(new Station("당산역"), new Station("합정역"), 4);
+
+        assertThat(section1.isSameDownStation(section2)).isFalse();
+    }
+
+    @DisplayName("상행 기준으로 합칠 수 있는지 확인")
+    @Test
+    void 상행_기준_연장_TRUE() {
+        Section origin = new Section(new Station("합정역"), new Station("홍대입구역"), 2);
+        Section target = new Section(new Station("당산역"), new Station("합정역"), 4);
+
+        assertThat(origin.canUpExtendBy(target)).isTrue();
+    }
+
+    @DisplayName("상행 기준으로 합칠 수 없는 경우 확인")
+    @Test
+    void 상행_기준_연장_FALSE() {
+        Section origin = new Section(new Station("합정역"), new Station("홍대입구역"), 2);
+        Section target = new Section(new Station("홍대입구역"), new Station("신촌역"), 4);
+
+        assertThat(origin.canUpExtendBy(target)).isFalse();
+    }
+
+    @DisplayName("하행 기준으로 합칠 수 있는지 확인")
+    @Test
+    void 하행_기준_연장_TRUE() {
+        Section origin = new Section(new Station("합정역"), new Station("홍대입구역"), 2);
+        Section target = new Section(new Station("홍대입구역"), new Station("신촌역"), 4);
+
+        assertThat(origin.canDownExtendBy(target)).isTrue();
+    }
+
+    @DisplayName("하행 기준으로 합칠 수 없는 경우 확인")
+    @Test
+    void 하행_기준_연장_FALSE() {
+        Section origin = new Section(new Station("합정역"), new Station("홍대입구역"), 2);
+        Section target = new Section(new Station("신촌역"), new Station("합정역"), 4);
+
+        assertThat(origin.canDownExtendBy(target)).isFalse();
+    }
+
+    @DisplayName("이미 모든 역이 포함된 경우 확인")
+    @Test
+    void 모든_구간_포함_TRUE() {
+        Set<Station> stations = Set.of(new Station("합정역"), new Station("홍대입구역"), new Station("신촌역"));
+        Section section = new Section(new Station("합정역"), new Station("홍대입구역"), 2);
+
+        assertThat(section.isAlreadyIn(stations)).isTrue();
+    }
+
+    @DisplayName("모든 역이 포함되지 않은 경우 확인")
+    @Test
+    void 모든_구간_포함_FALSE() {
+        Set<Station> stations = Set.of(new Station("합정역"), new Station("홍대입구역"), new Station("신촌역"));
+        Section section = new Section(new Station("신촌역"), new Station("이대역"), 2);
+
+        assertThat(section.isAlreadyIn(stations)).isFalse();
     }
 }

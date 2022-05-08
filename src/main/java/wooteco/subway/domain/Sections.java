@@ -19,12 +19,12 @@ public class Sections {
         sections.add(section);
     }
 
-    public Station findUpperTerminal() {
-        return sections.getFirst().getUp();
+    public Section findTop() {
+        return sections.getFirst();
     }
 
-    public Station findBottomTerminal() {
-        return sections.getLast().getDown();
+    public Section findBottom() {
+        return sections.getLast();
     }
 
     public void add(Section section) {
@@ -33,11 +33,11 @@ public class Sections {
             throw new IllegalArgumentException("해당 노선은 추가할 수 없습니다.");
         }
         if (relation.equals(Relation.EXTEND)) {
-            if (findUpperTerminal().equals(section.getDown())) {
+            if (findTop().canUpExtendBy(section)) {
                 sections.addFirst(section);
                 return;
             }
-            if (findBottomTerminal().equals(section.getUp())) {
+            if (findBottom().canDownExtendBy(section)) {
                 sections.addLast(section);
                 return;
             }
@@ -58,15 +58,14 @@ public class Sections {
     }
 
     public Relation calculateRelation(Section target) {
-        Set<Station> stations = getStations();
-        if (stations.contains(target.getUp()) && stations.contains(target.getDown())) {
+        if (target.isAlreadyIn(getStations())) {
             return Relation.INCLUDE;
         }
-        if (findUpperTerminal().equals(target.getDown()) || findBottomTerminal().equals(target.getUp())) {
+        if (findTop().canUpExtendBy(target) || findBottom().canDownExtendBy(target)) {
             return Relation.EXTEND;
         }
         for (Section section : sections) {
-            if (section.getUp().equals(target.getUp()) || section.getDown().equals(target.getDown())) {
+            if (section.isSameUpStation(target) || section.isSameDownStation(target)) {
                 return Relation.DIVIDE;
             }
         }

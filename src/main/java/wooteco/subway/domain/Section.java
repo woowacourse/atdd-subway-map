@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class Section {
 
@@ -25,6 +26,26 @@ public class Section {
             return new Section(this.up, section.up, this.distance - section.distance);
         }
         throw new IllegalArgumentException("겹치는 역이 없어 나눌 수 없습니다");
+    }
+
+    public boolean isSameUpStation(Section section) {
+        return this.up.equals(section.up);
+    }
+
+    public boolean isSameDownStation(Section section) {
+        return this.down.equals(section.down);
+    }
+
+    public boolean canUpExtendBy(Section section) {
+        return this.up.equals(section.down);
+    }
+
+    public boolean canDownExtendBy(Section section) {
+        return this.down.equals(section.up);
+    }
+
+    public boolean isAlreadyIn(Set<Station> stations) {
+        return stations.containsAll(List.of(up, down));
     }
 
     private void validateStationsNotEqual(Station up, Station down) {
