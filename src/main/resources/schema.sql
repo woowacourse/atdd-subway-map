@@ -26,6 +26,8 @@ create table SECTION
     down_station_id bigint not null,
     distance        int,
     primary key (id),
+    foreign key (line_id) references line (id)
+        on update cascade on delete cascade,
     foreign key (up_station_id) references station (id),
     foreign key (down_station_id) references station (id)
 );
