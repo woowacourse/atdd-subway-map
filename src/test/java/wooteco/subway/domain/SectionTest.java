@@ -30,4 +30,50 @@ class SectionTest {
         assertThatThrownBy(() -> new Section(up, down, Integer.parseInt(distance)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("상행이 겹치는 경우 겹치는 구간을 제외한 나머지 구간 반환")
+    @Test
+    void 상행_겹치는_구간_빼기() {
+        Section origin = new Section(new Station("강남역"), new Station("사당역"), 2);
+        Section other = new Section(new Station("강남역"), new Station("방배역"), 1);
+
+        Section divided = origin.divideBy(other);
+        Section expected = new Section(new Station("방배역"), new Station("사당역"), 1);
+
+        assertThat(divided).isEqualTo(expected);
+    }
+
+    @DisplayName("하행이 겹치는 경우 겹치는 구간을 제외한 나머지 구간 반환")
+    @Test
+    void 하행_겹치는_구간_빼기() {
+        Section origin = new Section(new Station("강남역"), new Station("양재시민의숲역"), 5);
+        Section other = new Section(new Station("양재역"), new Station("양재시민의숲역"), 3);
+
+        Section divided = origin.divideBy(other);
+        Section expected = new Section(new Station("강남역"), new Station("양재역"), 2);
+
+        assertThat(divided).isEqualTo(expected);
+    }
+
+    @DisplayName("겹치는 역이 없다면 예외 발생")
+    @Test
+    void 겹치는_구간_없으면_쪼개기_불가_예외발생() {
+        Section origin = new Section(new Station("홍대입구역"), new Station("힙정역"), 5);
+        Section other = new Section(new Station("사당역"), new Station("강남역"), 3);
+
+        assertThatThrownBy(() -> origin.divideBy(other))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("겹치는 역");
+    }
+
+    @DisplayName("기존 구간보다 빼려는 구간이 더 길면 예외발생")
+    @Test
+    void 구간_나눌_시_1이하_예외발생() {
+        Section origin = new Section(new Station("합정역"), new Station("홍대입구역"), 2);
+        Section other = new Section(new Station("당산역"), new Station("홍대입구역"), 4);
+
+        assertThatThrownBy(() -> origin.divideBy(other))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("거리");
+    }
 }
