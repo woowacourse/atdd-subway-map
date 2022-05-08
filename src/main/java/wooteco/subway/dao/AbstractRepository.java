@@ -107,8 +107,9 @@ public abstract class AbstractRepository<T, ID> {
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             final T tEntity;
             try {
-                tEntity = clazz.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                tEntity = clazz.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }
             for (String field : fields) {
