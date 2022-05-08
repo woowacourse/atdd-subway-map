@@ -8,9 +8,6 @@ public class LineServiceRequest {
     private Long downStationId;
     private int distance;
 
-    private LineServiceRequest() {
-    }
-
     public LineServiceRequest(Long id, String name, String color, Long upStationId, Long downStationId, int distance) {
         this.id = id;
         this.name = name;
