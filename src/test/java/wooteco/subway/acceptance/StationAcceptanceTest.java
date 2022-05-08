@@ -34,20 +34,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성할 경우 예외를 발생한다.")
-    @Test
-    void createStationWithDuplicateName() {
-        // given
-        Map<String, String> params = createParam("강남역");
-        createStation(params);
-
-        // when
-        ExtractableResponse<Response> response = createStation(params);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
@@ -80,11 +66,35 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = createStation(params);
 
         // when
-        String createdId = getIdFromResponse(createResponse);
+        Long createdId = getIdFromResponse(createResponse);
         ExtractableResponse<Response> response = deleteStation(createdId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성할 경우 예외를 발생한다.")
+    @Test
+    void createStationWithDuplicateName() {
+        // given
+        Map<String, String> params = createParam("강남역");
+        createStation(params);
+
+        // when
+        ExtractableResponse<Response> response = createStation(params);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("존재하지 않은 지하철 노선을 제거하려 할 경우 BAD REQUEST가 반환된다.")
+    @Test
+    void deleteLine_returnsBadRequestWithNotExistingId() {
+        // given & when
+        ExtractableResponse<Response> response = deleteStation(3L);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> createStation(Map<String, String> params) {
@@ -106,7 +116,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> deleteStation(String createdId) {
+    private ExtractableResponse<Response> deleteStation(Long createdId) {
         return RestAssured.given().log().all()
                 .when()
                 .delete("/stations/" + createdId)
@@ -120,7 +130,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         return params;
     }
 
-    private String getIdFromResponse(ExtractableResponse<Response> response) {
-        return response.header("Location").split("stations/")[1];
+    private Long getIdFromResponse(ExtractableResponse<Response> response) {
+        return Long.parseLong(response.header("Location").split("stations/")[1]);
     }
 }
