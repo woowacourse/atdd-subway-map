@@ -21,6 +21,9 @@ public class Station {
         if (name.isBlank()) {
             throw new IllegalArgumentException("지하철역 이름이 공백일 수 없습니다.");
         }
+        if (name.length() >= 255) {
+            throw new IllegalArgumentException("지하철역 이름이 너무 깁니다.");
+        }
     }
 
     public Long getId() {
