@@ -142,7 +142,7 @@ public class Section implements Comparable<Section> {
         if (upStationId.equals(o.downStationId)) {
             return 1;
         }
-        return 0;
+        return -1;
     }
 
     @Override
