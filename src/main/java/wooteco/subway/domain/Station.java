@@ -11,12 +11,14 @@ public class Station {
 
     public Station(Long id, String name) {
         this.id = id;
+        if (Objects.isNull(name)) {
+            throw new IllegalArgumentException("[ERROR] 잘못된 입력값입니다.");
+        }
         this.name = name;
     }
 
     public Station(String name) {
-        id = null;
-        this.name = name;
+        this(null, name);
     }
 
     public Long getId() {
