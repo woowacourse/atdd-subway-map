@@ -11,7 +11,8 @@ import wooteco.subway.domain.Line;
 class LineServiceTest extends ServiceTest {
     @Autowired
     private LineService lineService;
-    private final Line line = new Line("신분당선", "red");
+    private final Line line = new Line("신분당선", "red", 1L, 2L, 10);
+    private final Line line2 = new Line("분당선", "green", 3L, 4L, 10);
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -33,7 +34,6 @@ class LineServiceTest extends ServiceTest {
     @Test
     void findAll() {
         //given
-        Line line2 = new Line("분당선", "green");
         lineService.save(line);
         lineService.save(line2);
 
@@ -46,7 +46,6 @@ class LineServiceTest extends ServiceTest {
     @Test
     void update() {
         //given
-        Line line2 = new Line("분당선", "green");
         Long id = lineService.save(line).getId();
 
         //when
