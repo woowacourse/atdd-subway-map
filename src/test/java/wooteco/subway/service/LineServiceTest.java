@@ -9,9 +9,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -34,9 +37,10 @@ class LineServiceTest {
         String lineName = "신분당선";
         String lineColor = "bg-red-600";
         Line line = new Line(lineName, lineColor);
+        LineRequest lineRequest = new LineRequest(line.getName(), line.getColor(), null, null, 0);
         given(lineDao.save(line)).willReturn(new Line(1L, lineName, lineColor));
 
-        Line actual = lineService.createLine(line);
+        LineResponse actual = lineService.createLine(lineRequest);
 
         Assertions.assertAll(
                 () -> assertThat(actual.getId()).isOne(),
@@ -51,10 +55,11 @@ class LineServiceTest {
         String lineName = "신분당선";
         String lineColor = "bg-red-600";
         Line line = new Line(lineName, lineColor);
+        LineRequest lineRequest = new LineRequest(line.getName(), line.getColor(), null, null, 0);
 
         given(lineDao.findByName(lineName)).willReturn(Optional.of(line));
 
-        assertThatThrownBy(() -> lineService.createLine(line))
+        assertThatThrownBy(() -> lineService.createLine(lineRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 존재하는 노선입니다.");
     }
@@ -67,7 +72,9 @@ class LineServiceTest {
         List<Line> expected = List.of(line1, line2);
         given(lineDao.findAll()).willReturn(expected);
 
-        List<Line> actual = lineService.getAllLines();
+        List<Line> actual = lineService.getAllLines().stream()
+                .map(lineResponse -> new Line(lineResponse.getName(), lineResponse.getColor()))
+                .collect(Collectors.toList());
 
         assertThat(actual).containsAll(expected);
     }
@@ -78,7 +85,8 @@ class LineServiceTest {
         Line expected = new Line("신분당선", "bg-red-600");
         given(lineDao.findById(1L)).willReturn(Optional.of(expected));
 
-        Line actual = lineService.getLineById(1L);
+        LineResponse lineResponse = lineService.getLineById(1L);
+        Line actual = new Line(lineResponse.getId(), lineResponse.getName(), lineResponse.getColor());
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -87,17 +95,19 @@ class LineServiceTest {
     @Test
     void updateLine() {
         Line newLine = new Line(1L, "분당선", "bg-yellow-600");
-
+        LineRequest lineRequest = new LineRequest(newLine.getName(), newLine.getColor(), null, null, 0);
         given(lineDao.findById(1L)).willReturn(Optional.of(newLine));
 
-        lineService.update(1L, newLine);
-        verify(lineDao, times(1)).update(1L, newLine);
+        lineService.update(1L, lineRequest);
+        verify(lineDao, times(1)).findById(1L);
     }
 
     @DisplayName("수정하려는 노선 ID가 존재하지 않을 경우 예외를 발생한다.")
     @Test
     void update_throwsExceptionIfLineIdIsNotExisting() {
-        assertThatThrownBy(() -> lineService.update(1L, new Line("분당선", "bg-yellow-600")))
+        Line line = new Line("분당선", "bg-yellow-600");
+        LineRequest lineRequest = new LineRequest(line.getName(), line.getColor(), null, null, 0);
+        assertThatThrownBy(() -> lineService.update(1L, lineRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("대상 노선 ID가 존재하지 않습니다.");
     }

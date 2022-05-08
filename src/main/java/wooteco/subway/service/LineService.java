@@ -4,8 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -17,21 +20,27 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line createLine(Line line) {
-        validateDuplicateName(line);
-        return lineDao.save(line);
+    public LineResponse createLine(LineRequest line) {
+        Line newLine = Line.from(line);
+        validateDuplicateName(newLine);
+        return LineResponse.from(lineDao.save(newLine));
     }
 
-    public List<Line> getAllLines() {
-        return lineDao.findAll();
+    public List<LineResponse> getAllLines() {
+        return lineDao.findAll()
+                .stream()
+                .map(LineResponse::from)
+                .collect(Collectors.toList());
     }
 
-    public Line getLineById(Long id) {
+    public LineResponse getLineById(Long id) {
         return lineDao.findById(id)
+                .map(LineResponse::from)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선 ID입니다."));
     }
 
-    public void update(Long id, Line newLine) {
+    public void update(Long id, LineRequest line) {
+        Line newLine = Line.from(line);
         validateExistById(id);
         lineDao.update(id, newLine);
     }

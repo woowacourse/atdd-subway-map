@@ -3,8 +3,11 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StationService {
@@ -15,13 +18,16 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station createStation(Station station) {
-        validateDuplicateName(station);
-        return stationDao.save(station);
+    public StationResponse createStation(StationRequest station) {
+        Station newStation = Station.from(station);
+        validateDuplicateName(newStation);
+        return StationResponse.from(stationDao.save(newStation));
     }
 
-    public List<Station> getAllStations() {
-        return stationDao.findAll();
+    public List<StationResponse> getAllStations() {
+        return stationDao.findAll().stream()
+                .map(StationResponse::from)
+                .collect(Collectors.toList());
     }
 
     public void delete(Long id) {

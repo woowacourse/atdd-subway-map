@@ -8,9 +8,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -35,7 +38,7 @@ class StationServiceTest {
         Station station = new Station(name);
         given(stationDao.save(station)).willReturn(new Station(1L, name));
 
-        Station actual = stationService.createStation(station);
+        StationResponse actual = stationService.createStation(new StationRequest(station.getName()));
 
         assertAll(
                 () -> assertThat(actual.getId()).isOne(),
@@ -48,10 +51,11 @@ class StationServiceTest {
     void createStation_throwsExceptionWithDuplicateName() {
         String name = "선릉역";
         Station station = new Station(name);
+        StationRequest stationRequest = new StationRequest(station.getName());
 
         given(stationDao.findByName(name)).willReturn(Optional.of(station));
 
-        assertThatThrownBy(() -> stationService.createStation(station))
+        assertThatThrownBy(() -> stationService.createStation(stationRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 존재하는 지하철 역입니다.");
     }
@@ -65,8 +69,9 @@ class StationServiceTest {
         List<Station> expected = List.of(station1, station2, station3);
         given(stationDao.findAll()).willReturn(expected);
 
-        List<Station> actual = stationService.getAllStations();
-
+        List<Station> actual = stationService.getAllStations().stream()
+                .map(stationResponse -> new Station(stationResponse.getName()))
+                .collect(Collectors.toList());
         assertThat(actual).containsAll(expected);
     }
 
