@@ -143,12 +143,15 @@ class LineServiceTest extends ServiceTest {
         given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(expected));
 
-        final List<Station> expectedStations = List.of(
-                new Station(1L, "선릉역"),
-                new Station(2L, "삼성역")
+        final List<Section> sections = List.of(
+                new Section(1L, id, 1L, 2L, 10)
         );
-        given(stationDao.findAllByLineId(any(Long.class)))
-                .willReturn(expectedStations);
+        given(sectionDao.findAllByLineId(any(Long.class)))
+                .willReturn(sections);
+
+        given(stationDao.findById(any(Long.class)))
+                .willReturn(Optional.of(new Station(1L, "선릉역")))
+                .willReturn(Optional.of(new Station(2L, "삼성역")));
 
         // when
         final LineResponse actual = lineService.findById(id);
@@ -161,9 +164,7 @@ class LineServiceTest extends ServiceTest {
                 .stream()
                 .map(StationResponse::getName)
                 .collect(Collectors.toList());
-        final List<String> expectedStationNames = expectedStations.stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
+        final List<String> expectedStationNames = List.of("선릉역", "삼성역");
         assertThat(actualStationNames).isEqualTo(expectedStationNames);
     }
 
@@ -188,7 +189,7 @@ class LineServiceTest extends ServiceTest {
         given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(line));
 
-        given(stationDao.findAllByLineId(any(Long.class)))
+        given(sectionDao.findAllByLineId(any(Long.class)))
                 .willReturn(Collections.emptyList());
 
         // then

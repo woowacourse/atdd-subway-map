@@ -192,7 +192,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         final LineResponse expectedResponse = LineResponse.of(
                 new Line(lineId, LINE_NAME, LINE_COLOR),
-                List.of(yeoksam, seolleung, samseong)
+                List.of(seolleung, yeoksam, samseong)
         );
 
         // when
@@ -219,7 +219,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         final LineResponse expectedResponse = LineResponse.of(
                 new Line(lineId, LINE_NAME, LINE_COLOR),
-                List.of(yeoksam, seolleung, samseong)
+                List.of(yeoksam, samseong, seolleung)
         );
 
         // when
@@ -247,7 +247,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         final LineResponse expectedResponse = LineResponse.of(
                 new Line(lineId, LINE_NAME, LINE_COLOR),
-                List.of(seolleung, samseong)
+                List.of(samseong, seolleung)
         );
 
         // when
@@ -261,11 +261,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> deleteDeleteSection(final Long lineId, final Long stationId) {
         return RestAssured.given().log().all()
-                    .queryParam("stationId", stationId)
-                    .when()
-                    .delete(LINE_PATH_PREFIX + SLASH + lineId + SECTION_PATH_PREFIX)
-                    .then().log().all()
-                    .extract();
+                .queryParam("stationId", stationId)
+                .when()
+                .delete(LINE_PATH_PREFIX + SLASH + lineId + SECTION_PATH_PREFIX)
+                .then().log().all()
+                .extract();
     }
 
     @Test

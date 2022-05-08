@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -65,11 +66,27 @@ public class LineService {
     public LineResponse findById(final Long id) {
         final Line line = lineDao.findById(id)
                 .orElseThrow(NoSuchLineException::new);
-        final List<Station> stations = stationDao.findAllByLineId(line.getId());
+        final List<Station> stations = findAllSortedStation(line.getId());
         if (stations.isEmpty()) {
             throw new NoSuchStationException();
         }
         return LineResponse.of(line, stations);
+    }
+
+    private List<Station> findAllSortedStation(final Long lineId) {
+        final List<Section> sections = sectionDao.findAllByLineId(lineId)
+                .stream().sorted()
+                .collect(Collectors.toList());
+
+        final LinkedHashSet<Long> ids = new LinkedHashSet<>();
+        for (Section section : sections) {
+            ids.add(section.getUpStationId());
+            ids.add(section.getDownStationId());
+        }
+
+        return ids.stream()
+                .map(it -> stationDao.findById(it).orElseThrow(NoSuchStationException::new))
+                .collect(Collectors.toList());
     }
 
     public void updateById(final Long id, final LineRequest request) {
