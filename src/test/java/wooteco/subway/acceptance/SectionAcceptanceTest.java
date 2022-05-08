@@ -53,7 +53,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         final LineResponse expectedResponse = LineResponse.of(
                 new Line(lineId, LINE_NAME, LINE_COLOR),
-                List.of(this.yeoksam, seolleung, samseong)
+                List.of(yeoksam, seolleung, samseong)
         );
 
         // when
@@ -98,7 +98,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         final LineResponse expectedResponse = LineResponse.of(
                 new Line(lineId, LINE_NAME, LINE_COLOR),
-                List.of(this.yeoksam, seolleung, samseong)
+                List.of(yeoksam, seolleung, samseong)
         );
 
         // when
@@ -192,7 +192,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         final LineResponse expectedResponse = LineResponse.of(
                 new Line(lineId, LINE_NAME, LINE_COLOR),
-                List.of(this.yeoksam, seolleung, samseong)
+                List.of(yeoksam, seolleung, samseong)
         );
 
         // when
@@ -219,7 +219,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         final LineResponse expectedResponse = LineResponse.of(
                 new Line(lineId, LINE_NAME, LINE_COLOR),
-                List.of(this.yeoksam, seolleung, samseong)
+                List.of(yeoksam, seolleung, samseong)
         );
 
         // when
@@ -229,5 +229,142 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @DisplayName("상행 종점 구간을 삭제한다.")
+    void DeleteSection_UpEndStation_OK() {
+        // given
+        final long lineId = createAndGetLineId(new LineRequest(
+                LINE_NAME,
+                LINE_COLOR,
+                yeoksam.getId(),
+                samseong.getId(),
+                10
+        ));
+
+        postCreateSection(new SectionRequest(samseong.getId(), seolleung.getId(), 7), lineId);
+
+        final LineResponse expectedResponse = LineResponse.of(
+                new Line(lineId, LINE_NAME, LINE_COLOR),
+                List.of(seolleung, samseong)
+        );
+
+        // when
+        final ExtractableResponse<Response> actual = deleteDeleteSection(lineId, yeoksam.getId());
+        final LineResponse actualResponse = findLineById(lineId);
+
+        // then
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
+
+    private ExtractableResponse<Response> deleteDeleteSection(final Long lineId, final Long stationId) {
+        return RestAssured.given().log().all()
+                    .queryParam("stationId", stationId)
+                    .when()
+                    .delete(LINE_PATH_PREFIX + SLASH + lineId + SECTION_PATH_PREFIX)
+                    .then().log().all()
+                    .extract();
+    }
+
+    @Test
+    @DisplayName("하행 종점 구간을 삭제한다.")
+    void DeleteSection_DownEndStation_OK() {
+        // given
+        final long lineId = createAndGetLineId(new LineRequest(
+                LINE_NAME,
+                LINE_COLOR,
+                yeoksam.getId(),
+                samseong.getId(),
+                10
+        ));
+
+        postCreateSection(new SectionRequest(samseong.getId(), seolleung.getId(), 7), lineId);
+
+        final LineResponse expectedResponse = LineResponse.of(
+                new Line(lineId, LINE_NAME, LINE_COLOR),
+                List.of(yeoksam, samseong)
+        );
+
+        // when
+        final ExtractableResponse<Response> actual = deleteDeleteSection(lineId, seolleung.getId());
+        final LineResponse actualResponse = findLineById(lineId);
+
+        // then
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @DisplayName("종점이 아닌 중간 역을 삭제한다.")
+    void DeleteSection_NotEndStation_OK() {
+        // given
+        final long lineId = createAndGetLineId(new LineRequest(
+                LINE_NAME,
+                LINE_COLOR,
+                yeoksam.getId(),
+                samseong.getId(),
+                10
+        ));
+
+        postCreateSection(new SectionRequest(samseong.getId(), seolleung.getId(), 7), lineId);
+
+        final LineResponse expectedResponse = LineResponse.of(
+                new Line(lineId, LINE_NAME, LINE_COLOR),
+                List.of(yeoksam, seolleung)
+        );
+
+        // when
+        final ExtractableResponse<Response> actual = deleteDeleteSection(lineId, samseong.getId());
+        final LineResponse actualResponse = findLineById(lineId);
+
+        // then
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @DisplayName("구간이 하나인 역은 삭제할 수 없다.")
+    void DeleteSection_LastOneSection_BadRequest() {
+        // given
+        final long lineId = createAndGetLineId(new LineRequest(
+                LINE_NAME,
+                LINE_COLOR,
+                yeoksam.getId(),
+                samseong.getId(),
+                10
+        ));
+
+        // when
+        final ExtractableResponse<Response> actual = deleteDeleteSection(lineId, samseong.getId());
+        final ErrorResponse actualResponse = actual.as(ErrorResponse.class);
+
+        // then
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(actualResponse.getMessage()).isEqualTo("구간을 삭제할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("삭제하려는 구간이 노선에 존재하지 않으면 404을 반환한다.")
+    void DeleteSection_NotIncludedStation_BadRequest() {
+        // given
+        final long lineId = createAndGetLineId(new LineRequest(
+                LINE_NAME,
+                LINE_COLOR,
+                yeoksam.getId(),
+                samseong.getId(),
+                10
+        ));
+
+        postCreateSection(new SectionRequest(samseong.getId(), seolleung.getId(), 7), lineId);
+
+        // when
+        final ExtractableResponse<Response> actual = deleteDeleteSection(lineId, 999L);
+        final ErrorResponse actualResponse = actual.as(ErrorResponse.class);
+
+        // then
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(actualResponse.getMessage()).isEqualTo("구간이 존재하지 않습니다.");
     }
 }
