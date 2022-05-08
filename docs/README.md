@@ -43,13 +43,46 @@
 
 ### 3단계 요구사항 정리
 - [x] 서비스 레이어 추가하기
-1. 지하철 노선 추가 API 수정 `POST /lines`
+1. 도메인에 요구사항 적용
+   - [ ] Station 도메인
+     - Station 도메인의 역할 : 역에 대한 표현을 한다.
+     - 필드 : id, name
+       - 이름이 null 혹은 빈 문자열이면 안된다.
+       - 이름이 255자를 초과하면 안된다.
+     - name이 같은지 확인해주는 책임을 가진다.
+   - [ ] Section 도메인
+     - Section 도메인의 역할 : 역과 역을 잇는 구간에 대한 표현을 한다.
+     - 필드 : upStation, downStation, distance
+       - `예외` 거리는 0 또는 음수이면 안된다.
+       - `예외` upStation, downStation은 null이면 안된다.
+   - [ ] Sections 도메인
+     - Sections 도메인의 역할 : 하나의 노선에 존재하는 구간들을 표현해준다.
+     - 필드 : List<Sectoin> sections
+       - sections는 적어도 하나의 Section을 가지고 있어야 한다.
+     - [ ] 새로운 구간을 추가한다.
+       - `예외` 상행역, 하행역 둘 중 하나도 노선에 포함되지 않는 경우 예외를 발생시킨다.
+       - 새로운 구간이 기존에 존재하는 구간 맨 앞에 삽입하는 경우 ( B-C =(A-B추가)=> A-B-C )
+       - 새로운 구간이 기존에 존재하는 구간 맨 뒤에 삽입하는 경우 ( A-B =(B-C추가)=> A-B-C )
+       - 새로운 구간이 기존에 존재하는 구간 사이에 삽입하는 경우 ( A-B =(A-C추가)=> A-C-B )
+         - `예외` 구간 사이에 추가할 경우 기존 역 사이의 길이보다 크거나 같으면 예외를 발생시킨다.
+         - 삽입 한 뒤에 `C-B 간의 거리`는 `A-B 간의 거리 - A-C간의 거리`가 된다.
+     - [ ] 구간을 제거한다.
+       - Station을 입력받아 해당 Station이 포함된 구간을 제거한다.
+         - `예외` 제거하려는 Station이 포함된 Section이 존재하지 않는 경우 예외를 발생시킨다.
+         - `예외` sections의 사이즈가 1일 때 제거하려고 하면 예외를 발생시킨다.
+         - 맨 앞 혹은 맨 뒤 구간을 제거하는 경우
+           - 그냥 삭제만 하면 된다.
+         - 구간 사이의 역을 제거하는 경우
+           - 두 구간이 영향을 받는다.
+           - 만일 A-B-C 에서 B 역을 제거할 경우 B가 포함된 `A-B`, `B-C`를 제거하고 `A-C` 구간을 새로 생성한다.
+             - 이 때, 거리는 `A-B 구간의 거리 + B-C 구간의 거리`
+2. 지하철 노선 추가 API 수정 `POST /lines`
    - [ ] 노선 추가 시 구간 정보를 함께 등록한다.
      - 결과 상태 코드는 `200 OK` 이다.
      - `요청` json으로 name, color, upStationId, downStationId, distance를 받는다.
      - `응답` json으로 id, name, color, stations(station 리스트)를 반환한다.
      - stations의 요소는 station의 id, name을 각각 가진다.
-2. 구간 관리 API 구현
+3. 구간 관리 API 구현
     - [ ] 구간 추가 기능 노선에 구간을 추가 (`POST /lines/{line_id}/sections`)
       - 결과 상태 코드는 `200 OK` 이다.
       - `요청` json으로 upStationId, downStationId, distance를 받는다.
