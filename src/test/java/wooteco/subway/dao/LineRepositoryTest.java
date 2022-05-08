@@ -20,11 +20,11 @@ public class LineRepositoryTest extends RepositoryTest {
     @Test
     void save() {
         Line line = new Line("분당선", "bg-red-600");
-        Line saveLine = lineRepository.save(line);
+        Line savedLine = lineRepository.save(line);
 
         assertAll(
-            () -> assertThat(saveLine.getId()).isNotNull(),
-            () -> assertThat(saveLine).isEqualTo(line)
+            () -> assertThat(savedLine.getId()).isNotNull(),
+            () -> assertThat(savedLine).isEqualTo(line)
         );
     }
 
@@ -42,34 +42,34 @@ public class LineRepositoryTest extends RepositoryTest {
     @Test
     void findAll() {
         Line line1 = new Line("분당선", "bg-red-600");
-        Line saveLine1 = lineRepository.save(line1);
+        Line savedLine1 = lineRepository.save(line1);
         Line line2 = new Line("신분당선", "bg-red-600");
-        Line saveLine2 = lineRepository.save(line2);
+        Line savedLine2 = lineRepository.save(line2);
 
         List<Line> lines = lineRepository.findAll();
 
         assertAll(
             () -> assertThat(lines).hasSize(2),
-            () -> assertThat(lines).containsExactly(saveLine1, saveLine2)
+            () -> assertThat(lines).containsExactly(savedLine1, savedLine2)
         );
     }
 
     @DisplayName("노선을 조회한다.")
     @Test
     void findById() {
-        Line saveLine = lineRepository.save(new Line("분당선", "bg-red-600"));
-        Line findLine = lineRepository.findById(saveLine.getId());
+        Line savedLine = lineRepository.save(new Line("분당선", "bg-red-600"));
+        Line line = lineRepository.findById(savedLine.getId());
 
-        assertThat(findLine).isEqualTo(saveLine);
+        assertThat(line).isEqualTo(savedLine);
     }
 
     @DisplayName("이름으로 노선을 조회한다.")
     @Test
     void findByName() {
-        Line saveLine = lineRepository.save(new Line("분당선", "bg-red-600"));
-        Line findLine = lineRepository.findByName("분당선").orElse(null);
+        Line savedLine = lineRepository.save(new Line("분당선", "bg-red-600"));
+        Line line = lineRepository.findByName("분당선").orElse(null);
 
-        assertThat(findLine).isEqualTo(saveLine);
+        assertThat(line).isEqualTo(savedLine);
     }
 
     @DisplayName("이름으로 노선을 조회시 없을 경우 빈 Optional을 반환한다.")
@@ -81,9 +81,9 @@ public class LineRepositoryTest extends RepositoryTest {
     @DisplayName("노선을 수정한다.")
     @Test
     void update() {
-        Line saveLine = lineRepository.save(new Line("분당선", "bg-red-600"));
-        lineRepository.update(new Line(saveLine.getId(), "신분당선", "bg-yellow-600"));
-        Line findUpdateLine = lineRepository.findById(saveLine.getId());
+        Line savedLine = lineRepository.save(new Line("분당선", "bg-red-600"));
+        lineRepository.update(new Line(savedLine.getId(), "신분당선", "bg-yellow-600"));
+        Line findUpdateLine = lineRepository.findById(savedLine.getId());
 
         assertAll(
             () -> assertThat(findUpdateLine.getName()).isEqualTo("신분당선"),
@@ -94,8 +94,8 @@ public class LineRepositoryTest extends RepositoryTest {
     @DisplayName("노선을 삭제한다.")
     @Test
     void deleteById() {
-        Line saveLine = lineRepository.save(new Line("분당선", "bg-red-600"));
-        lineRepository.deleteById(saveLine.getId());
+        Line savedLine = lineRepository.save(new Line("분당선", "bg-red-600"));
+        lineRepository.deleteById(savedLine.getId());
 
         assertThat(lineRepository.findAll()).isEmpty();
     }

@@ -21,11 +21,11 @@ class StationRepositoryTest extends RepositoryTest {
     @Test
     void save() {
         Station station = new Station("신림역");
-        Station saveStation = stationRepository.save(station);
+        Station savedStation = stationRepository.save(station);
 
         assertAll(
-            () -> assertThat(saveStation.getId()).isNotNull(),
-            () -> assertThat(saveStation).isEqualTo(station)
+            () -> assertThat(savedStation.getId()).isNotNull(),
+            () -> assertThat(savedStation).isEqualTo(station)
         );
     }
 
@@ -58,8 +58,8 @@ class StationRepositoryTest extends RepositoryTest {
     @DisplayName("역을 삭제한다")
     @Test
     void deleteById() {
-        Station saveStation = stationRepository.save(new Station("신림역"));
-        stationRepository.deleteById(saveStation.getId());
+        Station savedStation = stationRepository.save(new Station("신림역"));
+        stationRepository.deleteById(savedStation.getId());
 
         assertThat(stationRepository.findAll()).isEmpty();
     }
@@ -88,8 +88,8 @@ class StationRepositoryTest extends RepositoryTest {
     @DisplayName("id로 역을 조회한다.")
     @Test
     void findById() {
-        Station saveStation = stationRepository.save(new Station("신림역"));
-        assertThat(stationRepository.findById(saveStation.getId())).isNotNull();
+        Station savedStation = stationRepository.save(new Station("신림역"));
+        assertThat(stationRepository.findById(savedStation.getId())).isNotNull();
     }
 
     @DisplayName("id로 역 조회시 존재하지 않는 id일 경우 에러를 발생한다")
