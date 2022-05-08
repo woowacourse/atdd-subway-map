@@ -19,9 +19,9 @@ class LineDaoTest {
 
     private LineDao lineDao;
 
-    private Line testLine1 = new Line(1L, 2L, "testName", "black", 10L);
-    private Line testLine2 = new Line(3L, 4L, "testName", "white", 10L);
-    private Line testLine3 = new Line(5L, 6L, "testName3", "black", 10L);
+    private Line testLine1 = new Line(1L, "testName", "black", 10L);
+    private Line testLine2 = new Line(3L, "testName", "white", 10L);
+    private Line testLine3 = new Line(5L, "testName3", "black", 10L);
 
     @Autowired
     private LineDaoTest(JdbcTemplate jdbcTemplate) {

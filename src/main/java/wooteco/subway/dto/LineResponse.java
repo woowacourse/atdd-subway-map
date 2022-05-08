@@ -31,4 +31,8 @@ public class LineResponse {
     public String getColor() {
         return color;
     }
+
+    public List<StationResponse> getStations() {
+        return stations;
+    }
 }

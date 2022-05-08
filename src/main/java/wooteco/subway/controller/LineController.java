@@ -22,7 +22,7 @@ import wooteco.subway.service.LineService;
 
 @RestController
 public class LineController {
-    
+
     private final LineService lineService;
 
     public LineController(LineService lineService) {

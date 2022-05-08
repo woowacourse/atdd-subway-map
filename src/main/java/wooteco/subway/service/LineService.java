@@ -1,11 +1,16 @@
 package wooteco.subway.service;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -15,19 +20,24 @@ import wooteco.subway.dto.StationResponse;
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
     private final StationDao stationDao;
 
-    public LineService(LineDao lineDao, StationDao stationDao) {
+    public LineService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
         this.stationDao = stationDao;
     }
 
     public LineResponse create(LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance());
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance());
         Line newLine = lineDao.save(line);
-        StationResponse upStation = new StationResponse(stationDao.findById(newLine.getUpStationId()));
-        StationResponse downStation = new StationResponse(stationDao.findById(newLine.getDownStationId()));
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), List.of(upStation, downStation));
+
+        Section saveSection = new Section(newLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(),
+                lineRequest.getDistance());
+        sectionDao.save(saveSection);
+        Set<StationResponse> stations = extractUniqueStationsFromSections(newLine);
+        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), new ArrayList<>(stations));
     }
 
     public List<LineResponse> findAll() {
@@ -38,16 +48,15 @@ public class LineService {
                         it.getName(),
                         it.getColor(),
                         it.getStations().stream()
-                            .map(StationResponse::new)
-                            .collect(Collectors.toList())))
+                                .map(StationResponse::new)
+                                .collect(Collectors.toList())))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id);
-        StationResponse upStation = new StationResponse(stationDao.findById(line.getUpStationId()));
-        StationResponse downStation = new StationResponse(stationDao.findById(line.getDownStationId()));
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), List.of(upStation, downStation));
+        Set<StationResponse> stations = extractUniqueStationsFromSections(line);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>(stations));
     }
 
     public void changeField(LineResponse findLine, LineRequest lineRequest) {
@@ -56,5 +65,18 @@ public class LineService {
 
     public void deleteById(Long id) {
         lineDao.deleteById(id);
+    }
+
+    private Set<StationResponse> extractUniqueStationsFromSections(Line line) {
+        List<Section> sections = sectionDao.findAllByLineId(line.getId());
+        Set<StationResponse> stations = new LinkedHashSet<>();
+
+        for (Section section : sections) {
+            Station upStation = stationDao.findById(section.getUpStationId());
+            Station downStation = stationDao.findById(section.getDownStationId());
+            stations.add(new StationResponse(upStation));
+            stations.add(new StationResponse(downStation));
+        }
+        return stations;
     }
 }
