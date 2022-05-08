@@ -90,14 +90,6 @@ public class SectionRepository {
         return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId, stationId);
     }
 
-    public Section update(Section section) {
-        jdbcTemplate.update(
-            "UPDATE SECTION SET line_id = ?, up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?",
-            section.getLineId(), section.getUpStationId(), section.getDownStationId(),
-            section.getDistance(), section.getId());
-        return section;
-    }
-
     public void deleteAll() {
         jdbcTemplate.update("DELETE FROM SECTION");
     }
