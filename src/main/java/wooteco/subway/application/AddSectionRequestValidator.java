@@ -30,7 +30,7 @@ public class AddSectionRequestValidator {
         Long downStationId = request.getDownStationId();
 
         if (isSameStationId(upStationId, downStationId)) {
-            throw new UnaddableSectionException(upStationId, downStationId);
+            throw new UnaddableSectionException(lineId, upStationId, downStationId);
         }
         if (isNotFoundLine(lineId)) {
             throw new NotFoundLineException(lineId);
@@ -45,7 +45,7 @@ public class AddSectionRequestValidator {
             throw new DuplicateSectionException(lineId, upStationId, downStationId);
         }
         if (isNotFoundStationsOnLine(lineId, upStationId, downStationId)) {
-            throw new UnaddableSectionException(upStationId, downStationId);
+            throw new UnaddableSectionException(lineId, upStationId, downStationId);
         }
     }
 

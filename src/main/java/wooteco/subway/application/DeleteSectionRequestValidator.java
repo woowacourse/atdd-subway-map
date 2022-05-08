@@ -31,11 +31,8 @@ public class DeleteSectionRequestValidator {
         if (isNotFoundStation(request.getStationId())) {
             throw new NotFoundStationException(request.getStationId());
         }
-        if (isNotFoundStationOnLine(lineId, request.getStationId())) {
-            throw new UndeletableSectionException(request.getStationId());
-        }
-        if (hasOnlyOneSection(lineId)) {
-            throw new UndeletableSectionException(request.getStationId());
+        if (isNotFoundStationOnLine(lineId, request.getStationId()) || hasOnlyOneSection(lineId)) {
+            throw new UndeletableSectionException(lineId, request.getStationId());
         }
     }
 
