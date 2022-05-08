@@ -1,9 +1,5 @@
 package wooteco.subway.dao;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -11,6 +7,11 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class StationDao {
@@ -23,38 +24,32 @@ public class StationDao {
     }
 
     public Station save(Station station) {
-        validateStationName(station);
-
         String sql = "INSERT INTO station (name) VALUES (:name)";
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", station.getName());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-
         jdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder);
-
         long stationId = keyHolder.getKey().longValue();
 
         return new Station(stationId, station.getName());
     }
 
-    private void validateStationName(Station station) {
-        String sql = "SELECT id, name FROM station WHERE name = :name";
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", station.getName());
-
-        List<Station> stations = jdbcTemplate.query(sql, params, rowMapper);
-
-        if (stations.size() > 0) {
-            throw new IllegalArgumentException("같은 이름의 역은 등록할 수 없습니다.");
-        }
-    }
-
     public List<Station> findAll() {
         String sql = "SELECT * FROM station";
         return jdbcTemplate.query(sql, new MapSqlParameterSource(), rowMapper);
+    }
+
+    public Optional<Station> findByName(String name) {
+        String sql = "SELECT id, name FROM station WHERE name = :name";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+
+        List<Station> stations = jdbcTemplate.query(sql, params, rowMapper);
+
+        return stations.stream().findFirst();
     }
 
     public void deleteById(Long id) {
