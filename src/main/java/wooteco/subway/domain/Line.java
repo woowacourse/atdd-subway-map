@@ -24,9 +24,13 @@ public class Line {
     }
 
     public Line(Long id, String name, String color, Section section) {
-        this(name, color);
-        this.id = id;
+        this(id, name, color);
         this.sections = new Sections(List.of(section));
+    }
+
+    public Line(Long id, String name, String color, List<Section> sections) {
+        this(id, name, color);
+        this.sections = new Sections(sections);
     }
 
     public void addSection(Section section) {
