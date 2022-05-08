@@ -88,18 +88,46 @@ class LineServiceTest extends ServiceTest {
     void FindAll() {
         // given
         final List<Line> expected = List.of(
-                new Line("7호선", "bg-red-600"),
-                new Line("5호선", "bg-blue-600")
+                new Line(1L, "7호선", "bg-red-600"),
+                new Line(2L, "5호선", "bg-blue-600")
         );
-
         given(lineDao.findAll())
                 .willReturn(expected);
+
+        final List<Station> expectedStations1 = List.of(
+                new Station(1L, "선릉역"),
+                new Station(2L, "삼성역")
+        );
+        final List<Station> expectedStations2 = List.of(
+                new Station(3L, "왕십리역"),
+                new Station(4L, "답십리역")
+        );
+        given(stationDao.findAllByLineId(any(Long.class)))
+                .willReturn(expectedStations1)
+                .willReturn(expectedStations2);
 
         // when
         final List<LineResponse> actual = lineService.findAll();
 
         // then
         assertThat(actual).hasSameSizeAs(expected);
+
+        final LineResponse actualLine1 = actual.get(0);
+        assertThat(actualLine1.getName()).isEqualTo("7호선");
+
+        final List<String> actualStationNames1 = actualLine1.getStations()
+                .stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertThat(actualStationNames1).containsExactly("선릉역", "삼성역");
+
+        final LineResponse actualLine2 = actual.get(1);
+        assertThat(actualLine2.getName()).isEqualTo("5호선");
+        final List<String> actualStationNames2 = actualLine2.getStations()
+                .stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertThat(actualStationNames2).containsExactly("왕십리역", "답십리역");
     }
 
     @Test

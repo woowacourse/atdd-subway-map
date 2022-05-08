@@ -55,7 +55,10 @@ public class LineService {
     public List<LineResponse> findAll() {
         return lineDao.findAll()
                 .stream()
-                .map(LineResponse::from)
+                .map(line -> {
+                    final List<Station> stations = stationDao.findAllByLineId(line.getId());
+                    return LineResponse.of(line, stations);
+                })
                 .collect(Collectors.toList());
     }
 

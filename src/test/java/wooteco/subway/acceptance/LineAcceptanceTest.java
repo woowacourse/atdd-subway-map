@@ -8,7 +8,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,11 +69,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void Show_Lines() {
         // given
         final ExtractableResponse<Response> expected1 = createLine(lineRequest);
+        final long lineId1 = extractId(expected1);
 
-        final long upStationId2 = createAndGetStationId(new StationRequest("왕십리"));
+        final long upStationId2 = createAndGetStationId(new StationRequest("왕십리역"));
         final long downStationId2 = createAndGetStationId(new StationRequest("답십리역"));
         final ExtractableResponse<Response> expected2 = createLine(
                 new LineRequest("5호선", "bg-violet-600", upStationId2, downStationId2, 7));
+        final long lineId2 = extractId(expected2);
 
         // when
         final ExtractableResponse<Response> actual = RestAssured.given().log().all()
@@ -83,17 +84,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+
         // then
-        final List<Long> expectedLineIds = Stream.of(expected1, expected2)
-                .map(this::extractId)
-                .collect(Collectors.toList());
-
-        final List<Long> actualLineIds = actual.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
-
+        final List<LineResponse> actualLines = actual.jsonPath().getList(".", LineResponse.class);
         assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(actualLineIds).containsAll(expectedLineIds);
+        assertThat(actualLines).hasSize(2);
+
+        // 첫 번째 노선
+        final LineResponse actualLine1 = actualLines.get(0);
+        assertThat(actualLine1.getId()).isEqualTo(lineId1);
+        assertThat(actualLine1.getName()).isEqualTo(lineRequest.getName());
+        assertThat(actualLine1.getColor()).isEqualTo(lineRequest.getColor());
+
+        final List<String> actualStationNames1 = actualLine1.getStations()
+                .stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertThat(actualStationNames1).containsExactly(upStationName, downStationName);
+
+        // 두 번째 노선
+        final LineResponse actualLine2 = actualLines.get(1);
+        assertThat(actualLine2.getId()).isEqualTo(lineId2);
+        assertThat(actualLine2.getName()).isEqualTo("5호선");
+        assertThat(actualLine2.getColor()).isEqualTo("bg-violet-600");
+
+        final List<String> actualStationNames2 = actualLine2.getStations()
+                .stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertThat(actualStationNames2).containsExactly("왕십리역", "답십리역");
     }
 
     @DisplayName("id로 노선을 조회한다.")
