@@ -80,7 +80,7 @@ public class LineDaoTest {
         assertThat(actual).isEqualTo("1호선");
     }
 
-    @DisplayName("인자로 전달된 id를 가지는 레코드가 올바르지 수정되는 것을 확인한다.")
+    @DisplayName("인자로 전달된 id를 가지는 레코드가 올바르게 수정되는 것을 확인한다.")
     @Test
     void edit() {
         jdbcTemplate.update("insert into Line (name, color) values (?, ?)", "1호선", "#0052A4");
