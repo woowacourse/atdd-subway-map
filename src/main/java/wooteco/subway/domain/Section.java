@@ -6,9 +6,19 @@ import java.util.Set;
 
 public class Section {
 
+    private Long id;
     private final Station up;
     private final Station down;
     private final int distance;
+
+    public Section(Long id, Station up, Station down, int distance) {
+        validateStationsNotEqual(up, down);
+        validateDistanceIsNatural(distance);
+        this.id = id;
+        this.up = up;
+        this.down = down;
+        this.distance = distance;
+    }
 
     public Section(Station up, Station down, int distance) {
         validateStationsNotEqual(up, down);
@@ -73,6 +83,10 @@ public class Section {
 
     public Station getDown() {
         return down;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     @Override
