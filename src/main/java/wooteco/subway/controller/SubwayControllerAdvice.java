@@ -1,5 +1,6 @@
 package wooteco.subway.controller;
 
+import javax.validation.ConstraintViolationException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,12 @@ public class SubwayControllerAdvice {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<SubwayErrorResponse> handleValidException(MethodArgumentNotValidException exception) {
+    public ResponseEntity<SubwayErrorResponse> handleMethodValidException(MethodArgumentNotValidException exception) {
+        return ResponseEntity.badRequest().body(SubwayErrorResponse.from(exception));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<SubwayErrorResponse> handleParameterValidException(ConstraintViolationException exception) {
         return ResponseEntity.badRequest().body(SubwayErrorResponse.from(exception));
     }
 

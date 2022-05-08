@@ -48,4 +48,16 @@ class SubwayControllerAdviceTest {
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .body("message", is(errorMessage));
     }
+
+    @Test
+    @DisplayName("Section삭제 시 RequestParam 양수가 아닌 값 요청")
+    void invalidNegativeStationIdDeleteSection() {
+        String errorMessage = "역의 id는 양수 값만 들어올 수 있습니다.";
+        RestAssured.given().log().all()
+                .when()
+                .delete("/lines/1/sections?stationId=-1")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body("message", is(errorMessage));
+    }
 }
