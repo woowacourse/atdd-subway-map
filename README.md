@@ -58,20 +58,17 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 
 - [x] 지하철 노선 등록
     - [x] [예외] 지하철역과 마찬가지로 같은 이름의 노선은 생성 불가
+    - [x] 노선 추가 시 이름, 노선 색상 외에도 3가지 정보를 추가로 입력 받음
+        - [x] upStationId: 상행 종점
+        - [x] downStationId: 하행 종점
+        - [x] distance: 두 종점간의 거리
+    - [x] 노선 추가 시 구간(Section) 정보도 함께 등록
 - [x] 지하철 노선 목록
 - [x] 지하철 노선 조회
 - [x] 지하철 노선 수정
 - [x] 지하철 노선 삭제
 - [x] 지하철 노선 db 생성 및 데이터 연결
 - [x] static 객체를 스프링 빈으로 변경
-
-### 지하철 노선 추가 API 수정
-
-- [x] 노선 추가 시 3가지 정보를 추가로 입력 받음
-    - [x] upStationId: 상행 종점
-    - [x] downStationId: 하행 종점
-    - [x] distance: 두 종점간의 거리
-- [ ] 두 종점간의 연결 정보를 이용하여 노선 추가 시 구간(Section) 정보도 함께 등록
 
 ### 구간 관리 API 구현
 
