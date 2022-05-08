@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,6 @@ public abstract class AbstractRepository<T, ID> {
     }
 
     private Type getGenericClassType(int index) {
-
         Type type = getClass().getGenericSuperclass();
 
         while (!(type instanceof ParameterizedType)) {
@@ -73,6 +73,8 @@ public abstract class AbstractRepository<T, ID> {
 
     public T save(T t) {
         Map<String, Object> params = getParamsByT(t);
+        params.values().removeAll(Collections.singleton(null));
+
         final long generatedId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
         final Field idField = ReflectionUtils.findField(clazz, "id");
@@ -88,17 +90,43 @@ public abstract class AbstractRepository<T, ID> {
             found.setAccessible(true);
 
             final Method method = getters.stream()
-                    .filter(getter -> getter.getName().toLowerCase().contains(field))
+                    .filter(getter -> {
+                        final String name = getter.getName();
+                        if (name.startsWith("get")) {
+                            return name.replaceFirst("get", "").equalsIgnoreCase(field);
+                        }
+                        if (name.startsWith("has")) {
+                            return name.replaceFirst("has", "").equalsIgnoreCase(field);
+                        }
+                        if (name.startsWith("is")) {
+                            return name.replaceFirst("is", "").equalsIgnoreCase(field);
+                        }
+                        throw new NoSuchElementException("save를 위한 Entity 값 할당에 실패했습니다");
+                    })
                     .findAny()
                     .orElseThrow(NoSuchElementException::new);
 
             try {
-                params.put(field, method.invoke(t));
+                params.put(replaceField(field), method.invoke(t));
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         }
         return params;
+    }
+
+    private String replaceField(String field) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        final char[] chars = field.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            if (Character.isUpperCase(chars[i])) {
+                stringBuilder.append("_");
+            }
+            stringBuilder.append(chars[i]);
+        }
+
+        return stringBuilder.toString();
     }
 
     public List<T> findAll() {
