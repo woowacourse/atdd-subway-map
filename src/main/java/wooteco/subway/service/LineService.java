@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,14 +25,11 @@ public class LineService {
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Line register(final String name, final String color) {
-        validateDuplicateName(name);
-        final LineEntity lineEntity = new LineEntity(Line.createWithoutId(name, color));
-        final LineEntity savedLineEntity = lineDao.save(lineEntity);
-        return new Line(savedLineEntity.getId(), savedLineEntity.getName(), savedLineEntity.getColor());
-    }
-
-    private void validateDuplicateName(final String name) {
-        if (lineDao.findByName(name).isPresent()) {
+        try {
+            final LineEntity lineEntity = new LineEntity(Line.createWithoutId(name, color));
+            final LineEntity savedLineEntity = lineDao.save(lineEntity);
+            return new Line(savedLineEntity.getId(), savedLineEntity.getName(), savedLineEntity.getColor());
+        } catch (DataIntegrityViolationException e) {
             throw new DuplicateNameException("[ERROR] 이미 존재하는 노선 이름입니다.");
         }
     }
@@ -55,9 +54,7 @@ public class LineService {
         final Optional<LineEntity> lineEntityToBeModified = lineDao.findById(id);
         lineEntityToBeModified.ifPresentOrElse(
                 lineEntity -> {
-                    validateDuplicateNameForUpdate(id, name);
-                    Line newLine = new Line(id, name, color);
-                    lineDao.update(new LineEntity(newLine));
+                    updateLineData(id, name, color);
                 },
                 () -> {
                     throw new NoSuchElementException("[ERROR] 노선이 존재하지 않습니다");
@@ -65,9 +62,12 @@ public class LineService {
         );
     }
 
-    private void validateDuplicateNameForUpdate(final Long id, final String name) {
-        if (lineDao.existByNameExcludeId(id, name)) {
-            throw new DuplicateNameException("[ERROR] 이미 존재하는 노선 이름입니다.");
+    private void updateLineData(final Long id, final String name, final String color) {
+        try {
+            Line newLine = new Line(id, name, color);
+            lineDao.update(new LineEntity(newLine));
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateNameException("[ERROR] 이름이 중복되어 데이터를 수정할 수 없습니다.");
         }
     }
 

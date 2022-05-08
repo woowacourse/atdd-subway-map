@@ -3,6 +3,7 @@ package wooteco.subway.mockDao;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.DataIntegrityViolationException;
 import wooteco.subway.repository.dao.StationDao;
 import wooteco.subway.repository.entity.StationEntity;
 
@@ -16,9 +17,20 @@ public class MockStationDao implements StationDao {
     }
 
     public StationEntity save(final StationEntity stationEntity) {
+        if (existName(stationEntity.getName())) {
+            throw new DataIntegrityViolationException("이름 중복되어서 라인 추가 불가능");
+        }
         final StationEntity saved = new StationEntity(++seq, stationEntity.getName());
         store.add(saved);
         return saved;
+    }
+
+    private boolean existName(final String name) {
+        final Optional<StationEntity> any = store.stream()
+                .filter(lineEntity -> lineEntity.getName().equals(name))
+                .findAny();
+
+        return any.isPresent();
     }
 
     public List<StationEntity> findAll() {
