@@ -29,8 +29,8 @@ public class SectionDto {
         this.distance = distance;
     }
 
-    public static SectionDto from(Section section, Line line) {
-        return new SectionDto(line.getId(), section.getUp().getId(), section.getDown().getId(), section.getDistance());
+    public static SectionDto of(Section section, Long lineId) {
+        return new SectionDto(lineId, section.getUp().getId(), section.getDown().getId(), section.getDistance());
     }
 
     public Long getId() {

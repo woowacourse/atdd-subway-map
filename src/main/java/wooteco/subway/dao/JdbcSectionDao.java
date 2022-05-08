@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.dto.SectionDto;
@@ -34,6 +35,12 @@ public class JdbcSectionDao implements SectionDao {
                                 "distance", sectionDto.getDistance()))
                 .longValue();
         return findById(id);
+    }
+
+    @Override
+    public int saveAll(List<SectionDto> sectionDtos) {
+        int[] inserted = insertActor.executeBatch(SqlParameterSourceUtils.createBatch(sectionDtos));
+        return inserted.length;
     }
 
     @Override
