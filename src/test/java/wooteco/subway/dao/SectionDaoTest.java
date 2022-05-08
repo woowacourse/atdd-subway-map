@@ -77,6 +77,26 @@ class SectionDaoTest extends DaoTest {
     }
 
     @Test
+    @DisplayName("노선이 일치하는 모든 구간을 조회한다.")
+    void FindAllByLineId() {
+        // given
+        final Long middleStationId = stationDao.insert(new Station("가운데역"))
+                .orElseThrow()
+                .getId();
+        final Section section1 = new Section(lineId, upStationId, middleStationId, 10);
+        sectionDao.insert(section1);
+
+        final Section section2 = new Section(lineId, middleStationId, downStationId, 7);
+        sectionDao.insert(section2);
+
+        // when
+        final List<Section> actual = sectionDao.findAllByLineId(lineId);
+
+        // then
+        assertThat(actual).hasSize(2);
+    }
+
+    @Test
     @DisplayName("노선이 일치하고 상행 역이 동일한 구간을 조회한다.")
     void FindBy_SameUpStationId_SectionFound() {
         // given

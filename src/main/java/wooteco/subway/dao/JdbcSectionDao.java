@@ -45,6 +45,12 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
+    public List<Section> findAllByLineId(final Long lineId) {
+        final String sql = "SELECT * FROM section WHERE line_id = ?";
+        return jdbcTemplate.query(sql, rowMapper, lineId);
+    }
+
+    @Override
     public Optional<Section> findBy(final Long lineId, final Long upStationId, final Long downStationId) {
         try {
             final String sql = "SELECT * FROM section WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
