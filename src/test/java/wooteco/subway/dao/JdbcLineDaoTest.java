@@ -46,17 +46,7 @@ public class JdbcLineDaoTest {
     }
 
     @Test
-    @DisplayName("지하철 노선 목록을 조회한다.")
-    void findAllLines() {
-        final int expected = 2;
-
-        final int actual = lineDao.findAll().size();
-
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    @DisplayName("지하철 단일 노선을 조회한다.")
+    @DisplayName("지하철 특정 노선을 조회한다.")
     void findLine() {
         final Line expected = new Line("다른분당선", "bg-blue-600");
         final long lineId = lineDao.save(expected);
@@ -65,6 +55,16 @@ public class JdbcLineDaoTest {
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 노선이 존재하지 않습니다."));
 
         assertThat(actual.getName()).isEqualTo(expected.getName());
+    }
+
+    @Test
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    void findAllLines() {
+        final int expected = 2;
+
+        final int actual = lineDao.findAll().size();
+
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
