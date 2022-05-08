@@ -142,5 +142,43 @@ class SectionsTest {
                 () -> assertThat(result.get(1)).isEqualTo(target)
         );
     }
+    
+    @DisplayName("상행역을 공유하는 구간 추가")
+    @Test
+    void 구간_추가_상행역_공유1() {
+        Section AtoC = new Section(new Station("A"), new Station("C"), 5);
+        Section CtoD = new Section(new Station("C"), new Station("D"), 1);
+        Sections sections = new Sections(new LinkedList<>(List.of(AtoC, CtoD)));
+
+        Section AtoB = new Section(new Station("A"), new Station("B"), 3);
+        sections.add(AtoB);
+        List<Section> result = sections.getSections();
+
+        Section BtoC = new Section(new Station("B"), new Station("C"), 2);
+        assertAll(
+                () -> assertThat(result.get(0)).isEqualTo(AtoB),
+                () -> assertThat(result.get(1)).isEqualTo(BtoC),
+                () -> assertThat(result.get(2)).isEqualTo(CtoD)
+        );
+    }
+
+    @DisplayName("상행역을 공유하는 구간 추가")
+    @Test
+    void 구간_추가_상행역_공유2() {
+        Section AtoB = new Section(new Station("A"), new Station("B"), 2);
+        Section BtoD = new Section(new Station("B"), new Station("D"), 4);
+        Sections sections = new Sections(new LinkedList<>(List.of(AtoB, BtoD)));
+
+        Section BtoC = new Section(new Station("B"), new Station("C"), 1);
+        sections.add(BtoC);
+        List<Section> result = sections.getSections();
+
+        Section CtoD = new Section(new Station("C"), new Station("D"), 3);
+        assertAll(
+                () -> assertThat(result.get(0)).isEqualTo(AtoB),
+                () -> assertThat(result.get(1)).isEqualTo(BtoC),
+                () -> assertThat(result.get(2)).isEqualTo(CtoD)
+        );
+    }
 
 }

@@ -42,6 +42,17 @@ public class Sections {
                 return;
             }
         }
+        if (relation.equals(Relation.DIVIDE)) {
+            for (int i = 0; i < sections.size(); i++) {
+                Section origin = sections.get(i);
+                if (origin.isSameUpStation(section)) {
+                    Section divided = origin.divideBy(section);
+                    sections.set(i, section);
+                    sections.add(i + 1, divided);
+                    return;
+                }
+            }
+        }
     }
 
     public List<Section> getSections() {
