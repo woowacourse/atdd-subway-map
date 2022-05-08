@@ -24,7 +24,9 @@ public class StationService {
 
     private void validateDuplicateName(Station station) {
         Optional<Station> optionalStation = stationDao.findByName(station.getName());
-        optionalStation.orElseThrow(() -> new IllegalArgumentException("같은 이름의 역은 등록할 수 없습니다."));
+        if (optionalStation.isPresent()) {
+            throw new IllegalArgumentException("같은 이름의 역은 등록할 수 없습니다.");
+        }
     }
 
     public List<Station> findAll() {

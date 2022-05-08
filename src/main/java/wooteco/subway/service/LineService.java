@@ -23,7 +23,9 @@ public class LineService {
 
     private void validateDuplicateName(Line line) {
         Optional<Line> optionalLine = lineDao.findByName(line.getName());
-        optionalLine.orElseThrow(() -> new IllegalArgumentException("같은 이름의 노선은 등록할 수 없습니다."));
+        if (optionalLine.isPresent()) {
+            throw new IllegalArgumentException("같은 이름의 노선은 등록할 수 없습니다.");
+        }
     }
 
     public List<Line> findAll() {
