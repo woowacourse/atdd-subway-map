@@ -6,13 +6,18 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineResponse;
@@ -43,6 +48,40 @@ class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.body().jsonPath().getLong("id")).isNotNull(),
                 () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("신분당선"),
                 () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo("rgb-red-600")
+        );
+    }
+
+    @DisplayName("라인을 등록 할 때 입력값이 잘못되면 예외를 발생한다.")
+    @ParameterizedTest
+    @MethodSource("badLineRequest")
+    void createLineWithBadInput(String name, String color, String errorMessage) {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message")).isEqualTo(errorMessage)
+        );
+    }
+
+    private static Stream<Arguments> badLineRequest() {
+        return Stream.of(
+                Arguments.of(new String(new char[256]), new String(new char[20]), "이름은 255자를 초과할 수 없습니다."),
+                Arguments.of(new String(new char[255]), new String(new char[21]), "색은 20자를 초과할 수 없습니다."),
+                Arguments.of(null, new String(new char[21]), "이름은 비어있을 수 없습니다."),
+                Arguments.of(new String(new char[255]), "", "색은 비어있을 수 없습니다.")
         );
     }
 
