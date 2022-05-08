@@ -13,10 +13,8 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -78,13 +76,6 @@ public class LineService {
         return section.getId();
     }
 
-    private Line loadLine(Long lineId) {
-        final Line findLine = lineDao.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 노선이 존재하지 않습니다."));
-        final List<Section> sections = sectionDao.findByLineId(lineId);
-        return new Line(findLine.getId(), findLine.getName(), findLine.getColor(), sections);
-    }
-
     private void saveSplitSection(Section existSection, Section section) {
         final int newDistance = existSection.getDistance() - section.getDistance();
         if (existSection.hasSameUpStation(section)) {
@@ -113,7 +104,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        final Line line = checkExistLineById(id);
+        final Line line = loadLine(id);
         return makeLineResponseByLine(line);
     }
 
@@ -159,18 +150,55 @@ public class LineService {
         sectionDao.delete(sections);
     }
 
-    private Line checkExistLineById(Long id) {
-        return lineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 노선이 존재하지 않습니다."));
+    private void checkExistLineById(Long id) {
+        lineDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(id + "번에 해당하는 노선이 존재하지 않습니다."));
     }
 
     public void deleteSection(Long lineId, Long stationId) {
-//        final Station station = stationDao.findById(stationId)
-//                .orElseThrow(() -> new IllegalArgumentException(stationId + "번에 해당하는 지하철역이 존재하지 않습니다."));
-//        final Line line = lineDao.findById(lineId)
-//                .orElseThrow(() -> new IllegalArgumentException(lineId + "번에 해당하는 노선이 존재하지 않습니다."));
-//        List<Section> sections = sectionDao.findByLineId(lineId);
-//        line.deleteSections(station);
-        // DAO 삭제로직
+        final Station station = stationDao.findById(stationId)
+                .orElseThrow(() -> new IllegalArgumentException(stationId + "번에 해당하는 지하철역이 존재하지 않습니다."));
+        final Line line = loadLine(lineId);
+        line.deleteSections(station);
+        final Optional<Section> upSection = sectionDao.findByDownStationId(lineId, stationId);
+        final Optional<Section> downSection = sectionDao.findByUpStationId(lineId, stationId);
+        checkFinalSection(upSection, downSection);
+        stationDao.deleteById(stationId);
+    }
+
+    private Line loadLine(Long lineId) {
+        final Line findLine = lineDao.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 노선이 존재하지 않습니다."));
+        final List<Section> sections = sectionDao.findByLineId(lineId);
+        return new Line(findLine.getId(), findLine.getName(), findLine.getColor(), sections);
+    }
+
+    private void checkFinalSection(Optional<Section> upSection, Optional<Section> downSection) {
+        if (upSection.isPresent() && downSection.isPresent()) {
+            upSection.ifPresent(deleteAndMergeSections(downSection));
+            return;
+        }
+        upSection.ifPresent(deleteFinalSection());
+        downSection.ifPresent(deleteFinalSection());
+    }
+
+    private Consumer<Section> deleteAndMergeSections(Optional<Section> downSection) {
+        return upSection -> {
+            downSection.ifPresent(updateDownSectionByDeletion(upSection));
+        };
+    }
+
+    private Consumer<Section> updateDownSectionByDeletion(Section upSection) {
+        return downSection -> {
+            sectionDao.delete(List.of(upSection));
+            sectionDao.updateUpStation(downSection.getId(), upSection.getUpStationId(),
+                    upSection.getDistance() + downSection.getDistance());
+        };
+    }
+
+    private Consumer<Section> deleteFinalSection() {
+        return section -> {
+            sectionDao.delete(List.of(section));
+        };
     }
 }

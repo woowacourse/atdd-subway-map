@@ -20,20 +20,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private final StationRequest 잠실 = new StationRequest("잠실역");
     private final StationRequest 선릉 = new StationRequest("선릉역");
     private final StationRequest 강남 = new StationRequest("강남역");
-    private final StationRequest 노원 = new StationRequest("노원역");
-    private final StationRequest 이촌 = new StationRequest("이촌역");
 
     private final LineRequest 이호선 =
             new LineRequest("2호선", "bg-green-600", 1L, 4L, 50);
-    private final LineRequest 사호선 =
-            new LineRequest("4호선", "bg-blue-600", 5L, 6L, 80);
-    private final LineRequest 칠호선 =
-            new LineRequest("7호선", "bg-green-400", 1L, 5L, 60);
 
     private final SectionRequest 건대입구_강남 =
             new SectionRequest(1L, 4L, 50);
-    private final SectionRequest 노원_이촌 =
-            new SectionRequest(5L, 6L, 80);
     private final SectionRequest 건대입구_잠실 =
             new SectionRequest(1L, 2L, 30);
     private final SectionRequest 잠실_강남 =
@@ -42,8 +34,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             new SectionRequest(3L, 4L, 10);
     private final SectionRequest 노원_건대입구 =
             new SectionRequest(5L, 1L, 30);
-    private final SectionRequest 건대입구_이촌 =
-            new SectionRequest(1L, 6L, 50);
 
 
     @BeforeEach
@@ -52,12 +42,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createStationResponse(잠실);
         createStationResponse(선릉);
         createStationResponse(강남);
-        createStationResponse(노원);
-        createStationResponse(이촌);
 
         createLineResponse(이호선);
-        createLineResponse(사호선);
-        createLineResponse(칠호선);
     }
 
     @DisplayName("지하철 구간을 같은 상행역에 등록한다.")
@@ -146,20 +132,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteNotExistSection() {
         // given
-
+        createSectionResponse(1L, 선릉_강남);
+        ExtractableResponse<Response> response = deleteSectionResponse(1L, 2L);
         // when
-
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("구간이 하나만 존재할 경우 구간을 제거할 때 예외를 발생시킨다.")
     @Test
     void deleteOnlyOneExistSection() {
         // given
-
+        ExtractableResponse<Response> response = deleteSectionResponse(1L, 4L);
         // when
-
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private void findSectionsByDeleteLine(Long lineId) {
@@ -202,7 +189,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all()
                 .when()
                 .queryParam("stationId", stationId)
-                .post("/lines/" + lineId + "/sections")
+                .delete("/lines/" + lineId + "/sections")
                 .then().log().all()
                 .extract();
     }
