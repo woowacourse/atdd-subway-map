@@ -12,26 +12,27 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.SectionService;
 
 @Controller
 @RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line newLine = lineService.save(lineRequest.toEntity());
-        lineService.addSection(lineRequest.toSection(newLine.getId()));
+        sectionService.saveSection(lineRequest.toSection(newLine.getId()));
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId()))
                 .body(LineResponse.of(newLine, lineService.findStationsOfLine(newLine)));
     }
@@ -55,17 +56,5 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/{id}/sections")
-    public ResponseEntity<Void> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
-        lineService.addSection(sectionRequest.toEntity(id));
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/{id}/sections")
-    public ResponseEntity<Void> deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
-        lineService.deleteSection(id, stationId);
-        return ResponseEntity.ok().build();
     }
 }

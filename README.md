@@ -59,10 +59,10 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 지하철 노선 등록
     - [x] [예외] 지하철역과 마찬가지로 같은 이름의 노선은 생성 불가
     - [x] 노선 추가 시 이름, 노선 색상 외에도 3가지 정보를 추가로 입력 받음
-        - [x] upStationId: 상행 종점
-        - [x] downStationId: 하행 종점
-        - [x] distance: 두 종점간의 거리
-    - [x] 노선 추가 시 구간(Section) 정보도 함께 등록
+        - [x] 구간(Section) 정보도 함께 등록
+            - [x] upStationId: 상행 종점
+            - [x] downStationId: 하행 종점
+            - [x] distance: 두 종점간의 거리
 - [x] 지하철 노선 목록
 - [x] 지하철 노선 조회
 - [x] 지하철 노선 수정
@@ -97,7 +97,9 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 ## TODO
 
 - [x] 컨트롤러 테스트코드 간소화
-- [ ] vo 동등성 기준 변경
+- [x] vo 동등성 기준 변경
+- [ ] Line 테이블에 상/하행/거리 정보가 제외되도록 변경
+- [ ] Section 안에 stationId 대신 station이 포함되도록 변경
 
 ### 1단계 피드백
 

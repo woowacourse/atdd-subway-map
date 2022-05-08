@@ -3,12 +3,21 @@ package wooteco.subway.domain;
 import java.util.Objects;
 
 public class Section {
+    private Long id;
     private Long lineId;
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
     public Section() {
+    }
+
+    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+        this.id = id;
+        this.lineId = lineId;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
     }
 
     public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
@@ -34,6 +43,10 @@ public class Section {
         return distance;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -43,22 +56,12 @@ public class Section {
             return false;
         }
         Section section = (Section) o;
-        return distance == section.distance && Objects.equals(lineId, section.lineId) && Objects.equals(
-                upStationId, section.upStationId) && Objects.equals(downStationId, section.downStationId);
+        return distance == section.distance && Objects.equals(id, section.id) && lineId.equals(section.lineId)
+                && upStationId.equals(section.upStationId) && downStationId.equals(section.downStationId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lineId, upStationId, downStationId, distance);
-    }
-
-    @Override
-    public String toString() {
-        return "Section{" +
-                "lineId=" + lineId +
-                ", upStationId=" + upStationId +
-                ", downStationId=" + downStationId +
-                ", distance=" + distance +
-                '}';
+        return Objects.hash(id, lineId, upStationId, downStationId, distance);
     }
 }
