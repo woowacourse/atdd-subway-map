@@ -3,8 +3,6 @@ package wooteco.subway.dao;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
@@ -14,9 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@Transactional
-@SpringBootTest
-public class LineRepositoryTest {
+public class LineRepositoryTest extends RepositoryTest {
 
     @Autowired
     LineRepository lineRepository;

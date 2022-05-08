@@ -49,7 +49,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - api
 - [x] post - /lines 등록 - name, color
 - [x] get - /lines - List - id, name, color 
-- [ ] get - /lines/{id} - id, name, color
-- [ ] put - /lines/{id} - name, color
-- [ ] delete - /lines/{id}
+- [x] get - /lines/{id} - id, name, color
+- [x] put - /lines/{id} - name, color
+- [x] delete - /lines/{id}
 
