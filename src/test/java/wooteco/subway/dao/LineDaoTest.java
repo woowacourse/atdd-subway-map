@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.Fixtures.getLine;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +18,8 @@ class LineDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private final Line line = new Line("신분당선", "red");
+    private final Line line = new Line("신분당선", "red", 1L, 2L, 10);
+    private final Line line2 = new Line("분당선", "green", 3L, 4L, 10);
 
     @BeforeEach
     void setUp() {
@@ -32,7 +34,7 @@ class LineDaoTest {
 
         //when then
         assertThat(lineDao.findById(id))
-                .isEqualTo(line);
+                .isEqualTo(getLine(id, line));
     }
 
     @DisplayName("해당 이름의 지하철 노선이 있는지 여부를 확인한다.")
@@ -59,23 +61,21 @@ class LineDaoTest {
     @Test
     void findAll() {
         //given
-        Line line2 = new Line("분당선", "green");
-        lineDao.save(line);
-        lineDao.save(line2);
+        Long id1 = lineDao.save(line);
+        Long id2 = lineDao.save(line2);
 
         //when
         List<Line> lines = lineDao.findAll();
 
         //then
         assertThat(lines)
-                .containsOnly(line, line2);
+                .containsOnly(getLine(id1, line), getLine(id2, line2));
     }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void update() {
         //given
-        Line line2 = new Line("분당선", "green");
         Long id = lineDao.save(line);
 
         //when

@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.Fixtures.getStation;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +29,7 @@ class StationDaoTest {
     void saveAndFind() {
         Long id = stationDao.save(station);
         assertThat(stationDao.findById(id))
-                .isEqualTo(station);
+                .isEqualTo(getStation(id, station));
     }
 
     @DisplayName("해당 이름의 지하철역이 있는지 확인한다.")
@@ -57,12 +58,12 @@ class StationDaoTest {
     void findAll() {
         //given
         Station station1 = new Station("선릉역");
-        stationDao.save(station);
-        stationDao.save(station1);
+        Long id = stationDao.save(station);
+        Long id2 = stationDao.save(station1);
 
         //when then
         assertThat(stationDao.findAll())
-                .containsOnly(station, station1);
+                .containsOnly(getStation(id, station), getStation(id2, station1));
     }
 
     @DisplayName("지하철역을 삭제한다.")

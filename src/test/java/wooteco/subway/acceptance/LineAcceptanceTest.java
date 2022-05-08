@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.Fixtures.getStation;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -31,20 +32,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
+        //given
         setRequest().body(station).post("/stations");
         setRequest().body(station2).post("/stations");
+        LineResponse lineResponse = new LineResponse(1L, "신분당선", "bg-red-600",
+                List.of(getStation(1L, station.toEntity()), getStation(2L, station2.toEntity())));
 
+        //when
         ExtractableResponse<Response> response = getResponse(setRequest().body(line).post("/lines"));
 
+        //then
         assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.CREATED.value());
-
         assertThat(response.header("Location"))
                 .isNotBlank();
         assertThat(response.body().as(LineResponse.class))
-                .isEqualTo(new LineResponse(1L, "신분당선", "bg-red-600",
-                                List.of(station.toEntity(), station2.toEntity()))
-                );
+                .isEqualTo(lineResponse);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")

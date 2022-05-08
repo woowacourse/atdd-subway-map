@@ -21,23 +21,7 @@ public class Line {
     }
 
     public Line(String name, String color, Long upStationId, Long downStationId, int distance) {
-        this.name = name;
-        this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
-    }
-
-    public Line(Long id, String name, String color) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-    }
-
-    public Line(String name, String color) {
-        this.id = null;
-        this.name = name;
-        this.color = color;
+        this(0L, name, color, upStationId, downStationId, distance);
     }
 
     public Long getId() {
@@ -73,11 +57,13 @@ public class Line {
             return false;
         }
         Line line = (Line) o;
-        return name.equals(line.name) && color.equals(line.color);
+        return distance == line.distance && Objects.equals(id, line.id) && Objects.equals(name,
+                line.name) && Objects.equals(color, line.color) && Objects.equals(upStationId,
+                line.upStationId) && Objects.equals(downStationId, line.downStationId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, color);
+        return Objects.hash(id, name, color, upStationId, downStationId, distance);
     }
 }

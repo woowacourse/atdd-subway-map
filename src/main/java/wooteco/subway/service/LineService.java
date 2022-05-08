@@ -26,9 +26,10 @@ public class LineService {
         return lineDao.findAll();
     }
 
-    public void update(Long id, Line line) {
+    public Line update(Long id, Line line) {
         validateID(id);
         lineDao.update(id, line);
+        return lineDao.findById(id);
     }
 
     public void delete(Long id) {

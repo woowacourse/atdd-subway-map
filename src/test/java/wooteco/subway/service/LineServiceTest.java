@@ -34,12 +34,12 @@ class LineServiceTest extends ServiceTest {
     @Test
     void findAll() {
         //given
-        lineService.save(line);
-        lineService.save(line2);
+        Line resLine = lineService.save(line);
+        Line resLine2 = lineService.save(line2);
 
         //when then
         assertThat(lineService.findAll())
-                .containsOnly(line, line2);
+                .containsOnly(resLine, resLine2);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -49,11 +49,11 @@ class LineServiceTest extends ServiceTest {
         Long id = lineService.save(line).getId();
 
         //when
-        lineService.update(id, line2);
+        Line updateLine = lineService.update(id, line2);
 
         //then
         assertThat(lineService.findAll())
-                .containsOnly(line2);
+                .containsOnly(updateLine);
     }
 
     @DisplayName("없는 지하철 노선을 수정할 수 없다.")
@@ -68,14 +68,15 @@ class LineServiceTest extends ServiceTest {
     @Test
     void delete() {
         //given
-        Long id = lineService.save(line).getId();
+        Line resLine = lineService.save(line);
+        Long id = resLine.getId();
 
         //when
         lineService.delete(id);
 
         //then
         assertThat(lineService.findAll())
-                .isNotIn(line);
+                .isNotIn(resLine);
     }
 
     @DisplayName("없는 지하철 노선을 삭제할 수 없다.")

@@ -12,6 +12,7 @@ class StationServiceTest extends ServiceTest {
     @Autowired
     private StationService stationService;
     private static final Station station = new Station("강남역");
+    private static final Station station2 = new Station("선릉역");
 
     @DisplayName("지하철역을 저장한다.")
     @Test
@@ -35,27 +36,27 @@ class StationServiceTest extends ServiceTest {
     @Test
     void findAll() {
         //given
-        Station station2 = new Station("선릉역");
-        stationService.save(station);
-        stationService.save(station2);
+        Station resStation = stationService.save(station);
+        Station resStation2 = stationService.save(station2);
 
         //when then
         assertThat(stationService.findAll())
-                .containsOnly(station, station2);
+                .containsOnly(resStation, resStation2);
     }
 
     @DisplayName("지하철역을 삭제한다.")
     @Test
     void delete() {
         //given
-        Long id = stationService.save(station).getId();
+        Station resStation = stationService.save(station);
+        Long id = resStation.getId();
 
         //when
         stationService.delete(id);
 
         //then
         assertThat(stationService.findAll())
-                .isNotIn(station);
+                .isNotIn(resStation);
     }
 
     @DisplayName("없는 지하철역을 삭제할 수 없다.")
