@@ -76,7 +76,7 @@ class SectionTest {
         Section section = new Section(1L, station1, station2, 2);
         Section compareSection = new Section(1L, station1, station3, 3);
 
-        assertThat(section.containsUpStationOrDownStation(compareSection)).isTrue();
+        assertThat(section.isConnectedSection(compareSection)).isTrue();
     }
 
     @Test

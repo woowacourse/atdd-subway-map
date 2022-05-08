@@ -117,7 +117,7 @@ public class Sections {
     }
 
     private void validateAdditionalSection(final Section section) {
-        if (hasNotUpStationOrDownStation(section)) {
+        if (hasNotConnectedSection(section)) {
             throw new IllegalStateException("구간 추가는 기존의 상행역 하행역 중 하나를 포함해야합니다.");
         }
         if (existUpStationToDownStation(section)) {
@@ -125,9 +125,9 @@ public class Sections {
         }
     }
 
-    private boolean hasNotUpStationOrDownStation(final Section section) {
+    private boolean hasNotConnectedSection(final Section section) {
         return sections.stream()
-                .noneMatch(section::containsUpStationOrDownStation);
+                .noneMatch(section::isConnectedSection);
     }
 
     private boolean existUpStationToDownStation(final Section section) {
