@@ -18,16 +18,6 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section divideBy(Section section) {
-        if (this.up.equals(section.up)) {
-            return new Section(section.down, this.down, this.distance - section.distance);
-        }
-        if (this.down.equals(section.down)) {
-            return new Section(this.up, section.up, this.distance - section.distance);
-        }
-        throw new IllegalArgumentException("겹치는 역이 없어 나눌 수 없습니다");
-    }
-
     public boolean isSameUpStation(Section section) {
         return this.up.equals(section.up);
     }
@@ -46,6 +36,23 @@ public class Section {
 
     public boolean isAlreadyIn(Set<Station> stations) {
         return stations.containsAll(List.of(up, down));
+    }
+
+    public Section divideBy(Section section) {
+        if (this.up.equals(section.up)) {
+            return new Section(section.down, this.down, this.distance - section.distance);
+        }
+        if (this.down.equals(section.down)) {
+            return new Section(this.up, section.up, this.distance - section.distance);
+        }
+        throw new IllegalArgumentException("겹치는 역이 없어 나눌 수 없습니다");
+    }
+
+    public Section combine(Section section) {
+        if (!this.down.equals(section.up)) {
+            throw new IllegalArgumentException("합칠 수 없는 구간입니다.");
+        }
+        return new Section(this.up, section.down, this.distance + section.distance);
     }
 
     private void validateStationsNotEqual(Station up, Station down) {

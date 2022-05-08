@@ -167,4 +167,26 @@ class SectionTest {
 
         assertThat(section.isAlreadyIn(stations)).isFalse();
     }
+    
+    @DisplayName("두 구간을 한 구간으로 합침")
+    @Test
+    void 두_구간_합치기() {
+        Section section1 = new Section(new Station("당산역"), new Station("합정역"), 1);
+        Section section2 = new Section(new Station("합정역"), new Station("홍대입구역"), 2);
+
+        Section combined = new Section(new Station("당산역"), new Station("홍대입구역"), 3);
+
+        assertThat(section1.combine(section2)).isEqualTo(combined);
+    }
+
+    @DisplayName("두 구간을 합칠 수 없으면 예외발생")
+    @Test
+    void 두_구간_합치기_예외발생() {
+        Section section1 = new Section(new Station("당산역"), new Station("합정역"), 1);
+        Section section2 = new Section(new Station("강남역"), new Station("선릉역"), 2);
+
+        assertThatThrownBy(() -> section1.combine(section2))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("합칠 수 없는 구간");
+    }
 }
