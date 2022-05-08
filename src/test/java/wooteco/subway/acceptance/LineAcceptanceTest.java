@@ -10,17 +10,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineSaveRequest;
 import wooteco.subway.dto.LineUpdateRequest;
-import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.StationSaveRequest;
 
 class LineAcceptanceTest extends AcceptanceTest {
 
-    public static ExtractableResponse<Response> postLines(final LineRequest lineRequest) {
+    public static ExtractableResponse<Response> postLines(final LineSaveRequest lineSaveRequest) {
         return RestAssured.given().log().all()
-                .body(lineRequest)
+                .body(lineSaveRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -66,16 +66,16 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 추가한다.")
     void save() {
         //given
-        Long upStationId = postStations(new StationRequest("강남역")).response()
+        Long upStationId = postStations(new StationSaveRequest("강남역")).response()
                 .as(StationResponse.class)
                 .getId();
-        Long downStationId = postStations(new StationRequest("역삼역")).response()
+        Long downStationId = postStations(new StationSaveRequest("역삼역")).response()
                 .as(StationResponse.class)
                 .getId();
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 3);
+        LineSaveRequest lineSaveRequest = new LineSaveRequest("신분당선", "bg-red-600", upStationId, downStationId, 3);
 
         //when
-        ExtractableResponse<Response> response = postLines(lineRequest);
+        ExtractableResponse<Response> response = postLines(lineSaveRequest);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -86,17 +86,17 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 노선의 이름으로 노선을 생성한다.")
     void createLinesWithExistNames() {
         // given
-        Long upStationId = postStations(new StationRequest("강남역")).response()
+        Long upStationId = postStations(new StationSaveRequest("강남역")).response()
                 .as(StationResponse.class)
                 .getId();
-        Long downStationId = postStations(new StationRequest("역삼역")).response()
+        Long downStationId = postStations(new StationSaveRequest("역삼역")).response()
                 .as(StationResponse.class)
                 .getId();
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 3);
-        postLines(lineRequest);
+        LineSaveRequest lineSaveRequest = new LineSaveRequest("신분당선", "bg-red-600", upStationId, downStationId, 3);
+        postLines(lineSaveRequest);
 
         // when
-        ExtractableResponse<Response> response = postLines(lineRequest);
+        ExtractableResponse<Response> response = postLines(lineSaveRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -106,14 +106,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("전체 노선 목록을 조회한다.")
     void findAllLines() {
         //given
-        Long upStationId = postStations(new StationRequest("강남역")).response()
+        Long upStationId = postStations(new StationSaveRequest("강남역")).response()
                 .as(StationResponse.class)
                 .getId();
-        Long downStationId = postStations(new StationRequest("역삼역")).response()
+        Long downStationId = postStations(new StationSaveRequest("역삼역")).response()
                 .as(StationResponse.class)
                 .getId();
-        postLines(new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 3));
-        postLines(new LineRequest("분당선", "bg-green-600", upStationId, downStationId, 3));
+        postLines(new LineSaveRequest("신분당선", "bg-red-600", upStationId, downStationId, 3));
+        postLines(new LineSaveRequest("분당선", "bg-green-600", upStationId, downStationId, 3));
 
         // when
         ExtractableResponse<Response> response = getLines();
@@ -127,13 +127,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("단일 노선을 조회한다.")
     void findLine() {
         // given
-        Long upStationId = postStations(new StationRequest("강남역")).response()
+        Long upStationId = postStations(new StationSaveRequest("강남역")).response()
                 .as(StationResponse.class)
                 .getId();
-        Long downStationId = postStations(new StationRequest("역삼역")).response()
+        Long downStationId = postStations(new StationSaveRequest("역삼역")).response()
                 .as(StationResponse.class)
                 .getId();
-        String location = postLines(new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 3))
+        String location = postLines(new LineSaveRequest("신분당선", "bg-red-600", upStationId, downStationId, 3))
                 .header("Location");
 
         // when
@@ -147,13 +147,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 수정한다.")
     void updateLine() {
         //given
-        Long upStationId = postStations(new StationRequest("강남역")).response()
+        Long upStationId = postStations(new StationSaveRequest("강남역")).response()
                 .as(StationResponse.class)
                 .getId();
-        Long downStationId = postStations(new StationRequest("역삼역")).response()
+        Long downStationId = postStations(new StationSaveRequest("역삼역")).response()
                 .as(StationResponse.class)
                 .getId();
-        String location = postLines(new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 3))
+        String location = postLines(new LineSaveRequest("신분당선", "bg-red-600", upStationId, downStationId, 3))
                 .header("Location");
 
         // when
@@ -167,13 +167,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 삭제한다.")
     void deleteLine() {
         //given
-        Long upStationId = postStations(new StationRequest("강남역")).response()
+        Long upStationId = postStations(new StationSaveRequest("강남역")).response()
                 .as(StationResponse.class)
                 .getId();
-        Long downStationId = postStations(new StationRequest("역삼역")).response()
+        Long downStationId = postStations(new StationSaveRequest("역삼역")).response()
                 .as(StationResponse.class)
                 .getId();
-        String location = postLines(new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 3))
+        String location = postLines(new LineSaveRequest("신분당선", "bg-red-600", upStationId, downStationId, 3))
                 .header("Location");
 
         // when

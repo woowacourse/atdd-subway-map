@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.StationSaveRequest;
 import wooteco.subway.service.StationService;
 
 @RestController
@@ -28,8 +28,8 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationRequest stationRequest) {
-        Station station = stationService.save(stationRequest.toStation());
+    public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationSaveRequest stationSaveRequest) {
+        Station station = stationService.save(stationSaveRequest.toStation());
         return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(StationResponse.from(station));
     }
 

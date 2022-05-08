@@ -10,8 +10,8 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineSaveRequest;
 import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.exception.NotFoundException;
 
@@ -29,14 +29,14 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse save(final LineRequest lineRequest) {
-        if (lineDao.existByName(lineRequest.getName())) {
+    public LineResponse save(final LineSaveRequest lineSaveRequest) {
+        if (lineDao.existByName(lineSaveRequest.getName())) {
             throw new IllegalStateException("이미 존재하는 노선 이름입니다.");
         }
-        long savedLineId = lineDao.save(lineRequest.toLine());
-        Station upStation = stationDao.findById(lineRequest.getUpStationId());
-        Station downStation = stationDao.findById(lineRequest.getDownStationId());
-        Section section = new Section(savedLineId, upStation, downStation, lineRequest.getDistance());
+        long savedLineId = lineDao.save(lineSaveRequest.toLine());
+        Station upStation = stationDao.findById(lineSaveRequest.getUpStationId());
+        Station downStation = stationDao.findById(lineSaveRequest.getDownStationId());
+        Section section = new Section(savedLineId, upStation, downStation, lineSaveRequest.getDistance());
         sectionDao.save(section);
         return findById(savedLineId);
     }

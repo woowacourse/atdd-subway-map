@@ -4,7 +4,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import wooteco.subway.domain.Line;
 
-public class LineRequest {
+public class LineSaveRequest {
 
     @NotBlank(message = "line 이름은 공백 혹은 null이 들어올 수 없습니다.")
     private String name;
@@ -19,11 +19,11 @@ public class LineRequest {
     @Min(value = 1, message = "상행-하행 노선 길이는 1 이상의 값만 들어올 수 있습니다.")
     private int distance;
 
-    private LineRequest() {
+    private LineSaveRequest() {
     }
 
-    public LineRequest(final String name, final String color, final long upStationId, final long downStationId,
-                       final int distance) {
+    public LineSaveRequest(final String name, final String color, final long upStationId, final long downStationId,
+                           final int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;

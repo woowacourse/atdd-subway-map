@@ -11,11 +11,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.LineSaveRequest;
 import wooteco.subway.dto.SectionSaveRequest;
-import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.StationSaveRequest;
 
 public class SectionAcceptanceTest extends AcceptanceTest {
 
@@ -43,16 +43,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간을 추가한다.")
     void saveSection() {
         // given
-        Long stationId1 = postStations(new StationRequest("강남역"))
+        Long stationId1 = postStations(new StationSaveRequest("강남역"))
                 .as(StationResponse.class)
                 .getId();
-        Long stationId2 = postStations(new StationRequest("역삼역"))
+        Long stationId2 = postStations(new StationSaveRequest("역삼역"))
                 .as(StationResponse.class)
                 .getId();
-        Long stationId3 = postStations(new StationRequest("선릉역"))
+        Long stationId3 = postStations(new StationSaveRequest("선릉역"))
                 .as(StationResponse.class)
                 .getId();
-        Long lineId = postLines(new LineRequest("신분당선", "bg-red-600", stationId1, stationId3, 10))
+        Long lineId = postLines(new LineSaveRequest("신분당선", "bg-red-600", stationId1, stationId3, 10))
                 .as(LineResponse.class)
                 .getId();
         SectionSaveRequest sectionSaveRequest = new SectionSaveRequest(stationId1, stationId2, 3);
@@ -68,17 +68,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간을 삭제한다.")
     void removeSection() {
         // given
-        Long stationId1 = postStations(new StationRequest("강남역"))
+        Long stationId1 = postStations(new StationSaveRequest("강남역"))
                 .as(StationResponse.class)
                 .getId();
-        Long stationId2 = postStations(new StationRequest("역삼역"))
+        Long stationId2 = postStations(new StationSaveRequest("역삼역"))
                 .as(StationResponse.class)
                 .getId();
-        Long stationId3 = postStations(new StationRequest("선릉역"))
+        Long stationId3 = postStations(new StationSaveRequest("선릉역"))
                 .as(StationResponse.class)
                 .getId();
 
-        Long lineId = postLines(new LineRequest("신분당선", "bg-red-600", stationId1, stationId2, 10))
+        Long lineId = postLines(new LineSaveRequest("신분당선", "bg-red-600", stationId1, stationId2, 10))
                 .as(LineResponse.class)
                 .getId();
         postSections(lineId, new SectionSaveRequest(stationId2, stationId3, 10));
