@@ -1,6 +1,5 @@
 package wooteco.subway.dao;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +12,6 @@ import wooteco.subway.domain.Line;
 
 @Repository
 public class LineDao {
-    private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
