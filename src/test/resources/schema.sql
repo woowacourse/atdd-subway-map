@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS "SECTION"
     up_station_id bigint not null,
     down_station_id bigint not null,
     distance int not null,
-    "ORDER" bigint not null,
+    line_order bigint not null,
     primary key(id),
     foreign key (line_id) references LINE(id),
     foreign key (up_station_id) references STATION(id),
