@@ -148,4 +148,12 @@ public class Sections {
             }
         }
     }
+
+    public Section findDifferentSection(Sections other, Section except) {
+        other.sections.remove(except);
+        for (Section section : sections) {
+            other.sections.remove(section);
+        }
+        return other.findTop();
+    }
 }

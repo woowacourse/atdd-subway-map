@@ -310,5 +310,20 @@ class SectionsTest {
                 () -> assertThat(result.get(3)).isEqualTo(DtoE)
         );
     }
+    
+    @DisplayName("변경된 구간 찾기")
+    @Test
+    void 변경된_구간_찾기() {
+        Section AtoC = new Section(new Station("A"), new Station("C"), 2);
+        Section CtoD = new Section(new Station("C"), new Station("D"), 1);
+        Section DtoE = new Section(new Station("D"), new Station("E"), 1);
+        Sections origin = new Sections(new LinkedList<>(List.of(AtoC, CtoD, DtoE)));
+
+        Section AtoB = new Section(new Station("A"), new Station("B"), 1);
+        Section BtoC = new Section(new Station("B"), new Station("C"), 1);
+        Sections other = new Sections(new LinkedList<>(List.of(AtoB, BtoC, CtoD, DtoE)));
+
+        assertThat(origin.findDifferentSection(other, BtoC)).isEqualTo(AtoB);
+    }
 
 }
