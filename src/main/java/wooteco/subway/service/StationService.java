@@ -36,4 +36,9 @@ public class StationService {
                 .map(StationResponse::new)
                 .collect(toList());
     }
+
+    @Transactional
+    public void deleteById(Long id) {
+        stationDao.deleteById(id);
+    }
 }

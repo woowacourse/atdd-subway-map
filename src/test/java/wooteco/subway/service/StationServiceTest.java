@@ -56,4 +56,14 @@ class StationServiceTest {
 
         assertThat(stations.size()).isEqualTo(2);
     }
+
+    @DisplayName("지하철역을 삭제한다.")
+    @Test
+    void 지하철역_삭제() {
+        StationResponse stationResponse = stationService.save(new StationRequest("신림역"));
+
+        stationService.deleteById(stationResponse.getId());
+
+        assertThat(stationService.findAll().size()).isEqualTo(0);
+    }
 }
