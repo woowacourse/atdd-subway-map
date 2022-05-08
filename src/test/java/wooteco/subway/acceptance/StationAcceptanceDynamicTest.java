@@ -41,10 +41,7 @@ public class StationAcceptanceDynamicTest extends AcceptanceTest {
 
                     ExtractableResponse<Response> response = generateStation(name);
 
-                    assertAll(
-                            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                            () -> assertThat(response.jsonPath().getString("message")).isEqualTo("중복된 이름입니다.")
-                    );
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 }),
                 dynamicTest("지하철역을 조회한다.", () -> {
                     generateStation("역삼역");

@@ -113,6 +113,20 @@ public class LineAcceptanceDynamicTest extends AcceptanceTest {
 
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
                 }),
+                dynamicTest("중복된 이름을 가진 노선으로 수정할 경우 예외를 던진다.", () -> {
+                    ExtractableResponse<Response> createdResponse = generateLine("5호선", "bg-purple-600");
+                    Long id = createdResponse.body().jsonPath().getLong("id");
+
+                    ExtractableResponse<Response> response = RestAssured.given().log().all()
+                            .body(Map.of("name", "2호선", "color", "bg-green-600"))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .when()
+                            .put("/lines/" + id)
+                            .then().log().all()
+                            .extract();
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                }),
                 dynamicTest("노선을 삭제한다.", () -> {
                     ExtractableResponse<Response> response = RestAssured.given().log().all()
                             .when()
