@@ -2,16 +2,19 @@ package wooteco.subway.domain;
 
 import java.util.Objects;
 
-public class Station {
+public class Line {
+
     private Long id;
     private String name;
+    private String color;
 
-    public Station(String name) {
+    public Line(String name, String color) {
         this.name = name;
+        this.color = color;
     }
 
-    public Station(Long id, String name) {
-        this(name);
+    public Line(Long id, String name, String color) {
+        this(name, color);
         this.id = id;
     }
 
@@ -23,36 +26,44 @@ public class Station {
         return name;
     }
 
+    public String getColor() {
+        return color;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Station)) {
+        if (!(o instanceof Line)) {
             return false;
         }
 
-        Station station = (Station) o;
+        Line line = (Line) o;
 
-        if (!Objects.equals(id, station.id)) {
+        if (!Objects.equals(id, line.id)) {
             return false;
         }
-        return Objects.equals(name, station.name);
+        if (!Objects.equals(name, line.name)) {
+            return false;
+        }
+        return Objects.equals(color, line.color);
     }
 
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (color != null ? color.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "Station{" +
+        return "Line{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
                 '}';
     }
 }
-
