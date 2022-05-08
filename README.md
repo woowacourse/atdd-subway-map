@@ -60,11 +60,11 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 
 ## 3단계
 
-- [ ] 노선 추가 시 3가지 정보를 추가로 입력 받는다.
+- [x] 노선 추가 시 3가지 정보를 추가로 입력 받는다.
     - upStationId: 상행 종점
     - downStationId: 하행 종점
     - distance: 두 종점간의 거리
-- [ ] 노선 추가 시 `Section`도 함께 등록한다.
+- [x] 노선 추가 시 `Section`도 함께 등록한다.
 
 ### 구간 관리 API 구현
 

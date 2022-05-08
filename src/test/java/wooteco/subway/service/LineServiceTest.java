@@ -5,10 +5,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.repository.LineRepository;
 import wooteco.subway.domain.repository.LineRepositoryImpl;
-import wooteco.subway.domain.repository.StationRepository;
-import wooteco.subway.domain.Line;
+import wooteco.subway.domain.repository.SectionRepository;
+import wooteco.subway.domain.repository.SectionRepositoryImpl;
 import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.LineResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
@@ -28,12 +29,14 @@ public class LineServiceTest {
 
     private LineService lineService;
     private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private SectionService sectionService;
+    private SectionRepository sectionRepository;
 
     @BeforeEach
     void setUp() {
         lineRepository = new LineRepositoryImpl(dataSource);
-        lineService = new LineService(lineRepository, stationRepository);
+        sectionRepository = new SectionRepositoryImpl(dataSource);
+        lineService = new LineService(lineRepository, sectionService);
     }
 
     @DisplayName("노선을 생성한다.")

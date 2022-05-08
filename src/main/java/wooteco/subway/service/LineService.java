@@ -2,11 +2,9 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.domain.repository.LineRepository;
-import wooteco.subway.domain.repository.StationRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.repository.LineRepository;
 import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.LineResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
@@ -19,28 +17,22 @@ import java.util.stream.Collectors;
 @Service
 public class LineService {
 
-    public static final String NOT_FOUND_MESSAGE = "[ERROR] %d 식별자에 해당하는 역을 찾을수 없습니다.";
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+    private final SectionService sectionService;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, SectionService sectionService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.sectionService = sectionService;
     }
 
     public LineResponse create(final LineRequest lineRequest) {
         validateDuplicatedName(lineRequest);
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, lineRequest.getUpStationId())));
 
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, lineRequest.getDownStationId())));
-
-        Section section = new Section(upStation, downStation, lineRequest.getDistance());
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor(), section);
+        Line line = Line.create(lineRequest.getName(), lineRequest.getColor());
         Line savedLine = lineRepository.save(line);
 
-        return new LineResponse(savedLine);
+        Section savedSection = sectionService.create(line.getId(), lineRequest);
+        return new LineResponse(savedLine, List.of(savedSection.getUpStation(), savedSection.getDownStation()));
     }
 
     private void validateDuplicatedName(LineRequest lineRequest) {

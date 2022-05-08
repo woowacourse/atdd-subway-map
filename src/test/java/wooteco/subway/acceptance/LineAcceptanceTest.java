@@ -3,11 +3,15 @@ package wooteco.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.domain.Station;
+import wooteco.subway.domain.repository.StationRepository;
 import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.LineResponse;
 
@@ -21,14 +25,23 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final LineRequest BODY = new LineRequest("신분당선", "bg-red-600");
+    @Autowired
+    private StationRepository stationRepository;
 
+    private LineRequest request;
+
+    @BeforeEach
+    void setUp2(){
+        Station upStation = stationRepository.save(new Station("신림역"));
+        Station downStation = stationRepository.save(new Station("신도림"));
+        request = new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
+    }
     @DisplayName("노선을 생성하면 201 created를 반환하고 Location header에 url resource를 반환한다.")
     @Test
     void createLine() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(BODY)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -45,14 +58,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithDuplicateName() {
 
         RestAssured.given().log().all()
-                .body(BODY)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all();
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(BODY)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -67,7 +80,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
 
         ExtractableResponse<Response> newBundangPostResponse = RestAssured.given().log().all()
-                .body(BODY)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -113,7 +126,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
 
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(BODY)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -137,7 +150,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
 
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(BODY)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -164,7 +177,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteStation() {
 
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(BODY)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
