@@ -30,7 +30,7 @@ public class Section {
 
     public Section split(Section section) {
         if (!isSameLineId(section.getLineId())) {
-            throw new UnsplittableException();
+            throw new UnsplittableException(this, section);
         }
         return new Section(lineId, edge.split(section.edge));
     }
@@ -41,7 +41,7 @@ public class Section {
 
     public Section merge(Section section) {
         if (!isSameLineId(section.lineId)) {
-            throw new UnmergeableException();
+            throw new UnmergeableException(this, section);
         }
         return new Section(lineId, edge.merge(section.edge));
     }

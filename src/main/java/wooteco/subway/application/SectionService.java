@@ -29,7 +29,8 @@ public class SectionService {
         Section newSection = new Section(lineId, request.getUpStationId(),
             request.getDownStationId(), request.getDistance());
 
-        Optional<Section> overlapSectionOptional = findOverlapSection(lineId, request.getUpStationId(),
+        Optional<Section> overlapSectionOptional = findOverlapSection(lineId,
+            request.getUpStationId(),
             request.getDownStationId());
 
         if (overlapSectionOptional.isPresent()) {
@@ -42,7 +43,8 @@ public class SectionService {
         return sectionRepository.save(newSection);
     }
 
-    private Optional<Section> findOverlapSection(Long lineId, Long upStationId, Long downStationId) {
+    private Optional<Section> findOverlapSection(Long lineId, Long upStationId,
+                                                 Long downStationId) {
         return findNextSection(lineId, upStationId)
             .or(() -> findPrevSection(lineId, downStationId));
     }

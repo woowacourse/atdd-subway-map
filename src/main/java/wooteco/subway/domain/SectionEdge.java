@@ -18,7 +18,7 @@ public class SectionEdge {
 
     public SectionEdge split(SectionEdge edge) {
         if (isSameStationIds(edge) || isInvalidDistance(edge)) {
-            throw new UnsplittableException();
+            throw new UnsplittableException(this, edge);
         }
 
         if (isSameWithUpStationId(edge.upStationId)) {
@@ -29,7 +29,7 @@ public class SectionEdge {
             return new SectionEdge(upStationId, edge.upStationId, distance - edge.distance);
         }
 
-        throw new UnsplittableException();
+        throw new UnsplittableException(this, edge);
     }
 
     private boolean isSameStationIds(SectionEdge e) {
@@ -51,7 +51,7 @@ public class SectionEdge {
 
     public SectionEdge merge(SectionEdge edge) {
         if (isSameStationIds(edge)) {
-            throw new UnmergeableException();
+            throw new UnmergeableException(this, edge);
         }
 
         if (isSameWithUpStationId(edge.downStationId)) {
@@ -62,7 +62,7 @@ public class SectionEdge {
             return new SectionEdge(upStationId, edge.downStationId, distance + edge.distance);
         }
 
-        throw new UnmergeableException();
+        throw new UnmergeableException(this, edge);
     }
 
     public Long getUpStationId() {
