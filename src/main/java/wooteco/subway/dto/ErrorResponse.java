@@ -2,7 +2,10 @@ package wooteco.subway.dto;
 
 public class ErrorResponse {
 
-    private final String message;
+    private String message;
+
+    private ErrorResponse() {
+    }
 
     private ErrorResponse(final String message) {
         this.message = message;
