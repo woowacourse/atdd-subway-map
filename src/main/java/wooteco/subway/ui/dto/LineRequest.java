@@ -1,10 +1,22 @@
 package wooteco.subway.ui.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+import org.hibernate.validator.constraints.Length;
+
 public class LineRequest {
+
+    @NotBlank
+    @Length(min = 1, max = 255)
     private String name;
+    @NotBlank
+    @Length(min = 1, max = 20)
     private String color;
+    @Positive
     private Long upStationId;
+    @Positive
     private Long downStationId;
+    @Positive
     private int distance;
 
     private LineRequest() {
