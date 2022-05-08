@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -57,4 +58,14 @@ class StationServiceTest {
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("없는 Station 입니다.");
     }
+
+    @Test
+    @DisplayName("모든 Station을 조회할 수 있다.")
+    void findAll() {
+        stationService.save(new Station("오리"));
+        stationService.save(new Station("배카라"));
+
+        assertThat(stationService.findAll()).hasSize(2);
+    }
+
 }
