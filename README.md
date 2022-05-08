@@ -73,8 +73,8 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 
 ### 지하철 노선 관련
 
-- [ ] 노선 추가 시 상행종점, 하행종점, 거리를 추가로 입력
-- [ ] 노선 추가 시 구간(Section) 정조도 함께 등록
+- [x] 노선 추가 시 상행종점, 하행종점, 거리를 추가로 입력
+- [x] 노선 추가 시 구간(Section) 정보도 함께 등록
 
 ### 구간관리 관련
 

@@ -15,7 +15,11 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import wooteco.subway.acceptance.AcceptanceTestFixture;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.NotFoundException;
 
@@ -23,6 +27,12 @@ import wooteco.subway.exception.NotFoundException;
 class LineServiceTest {
     @Mock
     LineDao lineDao;
+
+    @Mock
+    SectionDao sectionDao;
+
+    @Mock
+    StationDao stationDao;
 
     @InjectMocks
     LineService lineService;
@@ -32,6 +42,11 @@ class LineServiceTest {
     void save() {
         given(lineDao.isExistName("name")).willReturn(false);
         given(lineDao.insert("name", "red")).willReturn(new Line(1L, "name", "red"));
+
+        given(sectionDao.insert(1L, 2L, 10, 1L)).willReturn(Section.of(1L, 1L, 2L, 10));
+
+        given(stationDao.findById(1L)).willReturn(Optional.of(new Station(1L, "name")));
+        given(stationDao.findById(2L)).willReturn(Optional.of(new Station(2L, "name2")));
 
         LineResponse lineResponse = lineService.insert(AcceptanceTestFixture.lineRequestPost);
 
@@ -55,16 +70,24 @@ class LineServiceTest {
     @DisplayName("지하철 노선 목록을 조회할 수 있다.")
     void findAll() {
         given(lineDao.findAll()).willReturn(List.of(new Line(1L, "name", "red"), new Line(2L, "name2", "blue")));
+        given(sectionDao.findByLineId(1L)).willReturn(List.of(Section.of(1L, 1L, 2L, 10)));
+        given(sectionDao.findByLineId(2L)).willReturn(List.of(Section.of(2L, 3L, 4L, 10)));
 
-        List<Long> ids = lineService.findAll().stream()
+        given(stationDao.findById(1L)).willReturn(Optional.of(new Station(1L, "name")));
+        given(stationDao.findById(2L)).willReturn(Optional.of(new Station(2L, "name2")));
+        given(stationDao.findById(3L)).willReturn(Optional.of(new Station(3L, "name3")));
+        given(stationDao.findById(4L)).willReturn(Optional.of(new Station(4L, "name4")));
+        List<LineResponse> lineResponses = lineService.findAll();
+
+        List<Long> ids = lineResponses.stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
 
-        List<String> names = lineService.findAll().stream()
+        List<String> names = lineResponses.stream()
                 .map(LineResponse::getName)
                 .collect(Collectors.toList());
 
-        List<String> colors = lineService.findAll().stream()
+        List<String> colors = lineResponses.stream()
                 .map(LineResponse::getColor)
                 .collect(Collectors.toList());
 
@@ -77,6 +100,9 @@ class LineServiceTest {
     @DisplayName("존재하는 지하철 노선을 조회할 수 있다.")
     void findById() {
         given(lineDao.findById(1L)).willReturn(Optional.of(new Line(1L, "name", "red")));
+        given(sectionDao.findByLineId(1L)).willReturn(List.of(Section.of(1L, 1L, 2L, 10)));
+        given(stationDao.findById(1L)).willReturn(Optional.of(new Station(1L, "name")));
+        given(stationDao.findById(2L)).willReturn(Optional.of(new Station(2L, "name2")));
 
         LineResponse response = lineService.findById(1L);
 

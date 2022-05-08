@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static wooteco.subway.acceptance.AcceptanceTestFixture.delete;
 import static wooteco.subway.acceptance.AcceptanceTestFixture.get;
 import static wooteco.subway.acceptance.AcceptanceTestFixture.getLineRequest;
+import static wooteco.subway.acceptance.AcceptanceTestFixture.getStationRequest;
 import static wooteco.subway.acceptance.AcceptanceTestFixture.insert;
 import static wooteco.subway.acceptance.AcceptanceTestFixture.lineRequestPost;
 import static wooteco.subway.acceptance.AcceptanceTestFixture.lineRequestPost2;
@@ -15,6 +16,7 @@ import io.restassured.response.Response;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,15 @@ import wooteco.subway.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    @BeforeEach
+    void setStations() {
+        insert(getStationRequest("name1"), "/stations");
+         insert(getStationRequest("name2"), "/stations");
+        insert(getStationRequest("name3"), "/stations");
+        insert(getStationRequest("name4"), "/stations");
+
+    }
 
     @Test
     @DisplayName("지하철 노선을 생성한다.")

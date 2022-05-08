@@ -18,6 +18,13 @@ public class LineResponse {
         color = line.getColor();
     }
 
+    public LineResponse(Line line, List<StationResponse> stations) {
+        id = line.getId();
+        name = line.getName();
+        color = line.getColor();
+        this.stations = stations;
+    }
+
     public Long getId() {
         return id;
     }
