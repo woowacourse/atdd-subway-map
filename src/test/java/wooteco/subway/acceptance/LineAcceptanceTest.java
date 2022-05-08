@@ -142,34 +142,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("존재하지 않은 지하철 노선을 조회하려 할 경우 BAD REQUEST가 반환된다.")
+    @DisplayName("존재하지 않은 지하철 노선을 조회하려 할 경우 NOT FOUND가 반환된다.")
     @Test
     void getLine_returnsBadRequestWithNotExistingId() {
         // given & when
         ExtractableResponse<Response> response = getLineById(3L);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    @DisplayName("존재하지 않은 지하철 노선을 수정하려 할 경우 BAD REQUEST가 반환된다.")
+    @DisplayName("존재하지 않은 지하철 노선을 수정하려 할 경우 NOT FOUND가 반환된다.")
     @Test
     void updateLine_returnsBadRequestWithNotExistingId() {
         // given & when
         ExtractableResponse<Response> response = updateLine(3L, createParam("신분당선", "bg-red-600"));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    @DisplayName("존재하지 않은 지하철 노선을 제거하려 할 경우 BAD REQUEST가 반환된다.")
+    @DisplayName("존재하지 않은 지하철 노선을 제거하려 할 경우 NOT FOUND가 반환된다.")
     @Test
     void deleteLine_returnsBadRequestWithNotExistingId() {
         // given & when
         ExtractableResponse<Response> response = deleteLine(3L);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private ExtractableResponse<Response> createLine(Map<String, String> params) {

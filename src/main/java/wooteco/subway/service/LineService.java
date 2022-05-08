@@ -6,6 +6,8 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.DuplicateNameException;
+import wooteco.subway.exception.NotFoundIdException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +38,7 @@ public class LineService {
     public LineResponse getLineById(Long id) {
         return lineDao.findById(id)
                 .map(LineResponse::from)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선 ID입니다."));
+                .orElseThrow(NotFoundIdException::new);
     }
 
     public void update(Long id, LineRequest line) {
@@ -54,7 +56,7 @@ public class LineService {
         boolean isExisting = lineDao.findByName(line.getName()).isPresent();
 
         if (isExisting) {
-            throw new IllegalArgumentException("이미 존재하는 노선입니다.");
+            throw new DuplicateNameException();
         }
     }
 
@@ -62,7 +64,7 @@ public class LineService {
         boolean isExisting = lineDao.findById(id).isPresent();
 
         if (!isExisting) {
-            throw new IllegalArgumentException("대상 노선 ID가 존재하지 않습니다.");
+            throw new NotFoundIdException();
         }
     }
 }

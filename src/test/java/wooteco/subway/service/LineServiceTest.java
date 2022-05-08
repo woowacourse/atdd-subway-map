@@ -11,6 +11,8 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.DuplicateNameException;
+import wooteco.subway.exception.NotFoundIdException;
 
 import java.util.List;
 import java.util.Optional;
@@ -60,8 +62,7 @@ class LineServiceTest {
         given(lineDao.findByName(lineName)).willReturn(Optional.of(line));
 
         assertThatThrownBy(() -> lineService.createLine(lineRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 존재하는 노선입니다.");
+                .isInstanceOf(DuplicateNameException.class);
     }
 
     @DisplayName("등록된 모든 노선을 반환한다.")
@@ -108,8 +109,7 @@ class LineServiceTest {
         Line line = new Line("분당선", "bg-yellow-600");
         LineRequest lineRequest = new LineRequest(line.getName(), line.getColor(), null, null, 0);
         assertThatThrownBy(() -> lineService.update(1L, lineRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("대상 노선 ID가 존재하지 않습니다.");
+                .isInstanceOf(NotFoundIdException.class);
     }
 
     @DisplayName("등록된 노선을 삭제한다.")
@@ -130,7 +130,6 @@ class LineServiceTest {
     @Test
     void delete_throwsExceptionIfLineIdIsNotExisting() {
         assertThatThrownBy(() -> lineService.delete(1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("대상 노선 ID가 존재하지 않습니다.");
+                .isInstanceOf(NotFoundIdException.class);
     }
 }

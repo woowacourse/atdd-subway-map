@@ -87,14 +87,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("존재하지 않은 지하철 노선을 제거하려 할 경우 BAD REQUEST가 반환된다.")
+    @DisplayName("존재하지 않은 지하철 노선을 제거하려 할 경우 NOT FOUND가 반환된다.")
     @Test
     void deleteLine_returnsBadRequestWithNotExistingId() {
         // given & when
         ExtractableResponse<Response> response = deleteStation(3L);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private ExtractableResponse<Response> createStation(Map<String, String> params) {

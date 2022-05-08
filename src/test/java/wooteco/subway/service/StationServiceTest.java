@@ -10,6 +10,8 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.DuplicateNameException;
+import wooteco.subway.exception.NotFoundIdException;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,8 +58,7 @@ class StationServiceTest {
         given(stationDao.findByName(name)).willReturn(Optional.of(station));
 
         assertThatThrownBy(() -> stationService.createStation(stationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 존재하는 지하철 역입니다.");
+                .isInstanceOf(DuplicateNameException.class);
     }
 
     @DisplayName("등록된 모든 지하철역을 반환한다.")
@@ -92,7 +93,6 @@ class StationServiceTest {
     @Test
     void delete_throwsExceptionIfIdNotExist() {
         assertThatThrownBy(() -> stationService.delete(1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("삭제하려는 지하철 역 ID가 존재하지 않습니다.");
+                .isInstanceOf(NotFoundIdException.class);
     }
 }
