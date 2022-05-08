@@ -5,6 +5,9 @@ import static wooteco.subway.acceptance.AcceptanceTestFixture.delete;
 import static wooteco.subway.acceptance.AcceptanceTestFixture.get;
 import static wooteco.subway.acceptance.AcceptanceTestFixture.getLineRequest;
 import static wooteco.subway.acceptance.AcceptanceTestFixture.insert;
+import static wooteco.subway.acceptance.AcceptanceTestFixture.lineRequestPost;
+import static wooteco.subway.acceptance.AcceptanceTestFixture.lineRequestPost2;
+import static wooteco.subway.acceptance.AcceptanceTestFixture.lineRequestPut;
 import static wooteco.subway.acceptance.AcceptanceTestFixture.update;
 
 import io.restassured.response.ExtractableResponse;
@@ -24,7 +27,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     void createLine() {
         // given & when
-        ExtractableResponse<Response> response = insert(getLineRequest("name", "red"), "/lines");
+        ExtractableResponse<Response> response = insert(getLineRequest(lineRequestPost), "/lines");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -35,10 +38,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        insert(getLineRequest("name", "red"), "/lines");
+        insert(getLineRequest(lineRequestPost), "/lines");
 
         // when
-        ExtractableResponse<Response> createResponse = insert(getLineRequest("name", "green"), "/lines");
+        ExtractableResponse<Response> createResponse = insert(getLineRequest(lineRequestPost), "/lines");
 
         // then
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -49,9 +52,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        ExtractableResponse<Response> createResponse1 = insert(getLineRequest("name", "red"), "/lines");
+        ExtractableResponse<Response> createResponse1 = insert(getLineRequest(lineRequestPost), "/lines");
 
-        ExtractableResponse<Response> createResponse2 = insert(getLineRequest("name2", "green"), "/lines");
+        ExtractableResponse<Response> createResponse2 = insert(getLineRequest(lineRequestPost2), "/lines");
         // when
         ExtractableResponse<Response> getResponse = get("/lines");
 
@@ -72,9 +75,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         /// given
-        ExtractableResponse<Response> createResponse1 = insert(getLineRequest("name", "red"), "/lines");
+        ExtractableResponse<Response> createResponse1 = insert(getLineRequest(lineRequestPost), "/lines");
 
-        ExtractableResponse<Response> createResponse2 = insert(getLineRequest("name2", "green"), "/lines");
+        ExtractableResponse<Response> createResponse2 = insert(getLineRequest(lineRequestPost2), "/lines");
 
         Long expectedId = Long.parseLong(createResponse1.header("Location").split("/")[2]);
 
@@ -93,7 +96,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = insert(getLineRequest("name", "red"), "/lines");
+        ExtractableResponse<Response> createResponse = insert(getLineRequest(lineRequestPost), "/lines");
 
         // when
         String path = createResponse.header("Location");
@@ -109,11 +112,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createResponse = insert(getLineRequest("name", "red"), "/lines");
+        ExtractableResponse<Response> createResponse = insert(getLineRequest(lineRequestPost), "/lines");
         String path = createResponse.header("Location");
 
         //when
-        ExtractableResponse<Response> updateResponse = update(getLineRequest("2호선", "green"), path);
+        ExtractableResponse<Response> updateResponse = update(getLineRequest(lineRequestPut), path);
 
         // then
         ExtractableResponse<Response> findResponse = get(path);
@@ -121,20 +124,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse lineResponse = findResponse.as(LineResponse.class);
 
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(lineResponse.getName()).isEqualTo("2호선");
-        assertThat(lineResponse.getColor()).isEqualTo("green");
+        assertThat(lineResponse.getName()).isEqualTo("name2");
+        assertThat(lineResponse.getColor()).isEqualTo("blue");
     }
 
     @DisplayName("기존에 존재하는 지하철 노선명으로 지하철 노선명을 수정한다.")
     @Test
     void updateLineWithDuplicateName() {
         /// given
-        ExtractableResponse<Response> createResponse1 = insert(getLineRequest("name", "red"), "/lines");
-        ExtractableResponse<Response> createResponse2 = insert(getLineRequest("name2", "green"), "/lines");
-        String path = createResponse2.header("Location");
+        ExtractableResponse<Response> createResponse1 = insert(getLineRequest(lineRequestPost), "/lines");
+        ExtractableResponse<Response> createResponse2 = insert(getLineRequest(lineRequestPost2), "/lines");
+        String path = createResponse1.header("Location");
 
         //when
-        ExtractableResponse<Response> updateResponse = update(getLineRequest("name", "green"), path);
+        ExtractableResponse<Response> updateResponse = update(getLineRequest(lineRequestPut), path);
 
         // then
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

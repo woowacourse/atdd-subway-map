@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import wooteco.subway.acceptance.AcceptanceTestFixture;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.NotFoundException;
 
@@ -30,11 +30,10 @@ class LineServiceTest {
     @Test
     @DisplayName("지하철 노선 이름이 중복되지 않는다면 등록할 수 있다.")
     void save() {
-        LineRequest lineRequest = new LineRequest("name", "red");
         given(lineDao.isExistName("name")).willReturn(false);
         given(lineDao.insert("name", "red")).willReturn(new Line(1L, "name", "red"));
 
-        LineResponse lineResponse = lineService.insert(lineRequest);
+        LineResponse lineResponse = lineService.insert(AcceptanceTestFixture.lineRequestPost);
 
         assertThat(lineResponse.getId()).isEqualTo(1L);
         assertThat(lineResponse.getName()).isEqualTo("name");
@@ -44,11 +43,10 @@ class LineServiceTest {
     @Test
     @DisplayName("지하철 노선 이름이 중복된다면 등록할 수 없다.")
     void saveDuplicate() {
-        LineRequest lineRequest = new LineRequest("name", "red");
         given(lineDao.isExistName("name")).willReturn(true);
         given(lineDao.insert("name", "red")).willReturn(new Line(1L, "name", "red"));
 
-        assertThatThrownBy(() -> lineService.insert(lineRequest))
+        assertThatThrownBy(() -> lineService.insert(AcceptanceTestFixture.lineRequestPost))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지하철 노선 이름이 중복될 수 없습니다.");
     }
@@ -118,23 +116,19 @@ class LineServiceTest {
     @Test
     @DisplayName("존재하는 지하철 노선을 수정할 수 있다.")
     void update() {
-        LineRequest lineRequest = new LineRequest("name2", "blue");
-
         given(lineDao.findById(1L)).willReturn(Optional.of(new Line(1L, "name2", "blue")));
         given(lineDao.isExistName(1L, "name2")).willReturn(false);
 
-        assertDoesNotThrow(() -> lineService.update(1L, lineRequest));
+        assertDoesNotThrow(() -> lineService.update(1L, AcceptanceTestFixture.lineRequestPut));
     }
 
     @Test
     @DisplayName("존재하지 않는 지하철 노선을 수정할 수 없다.")
     void updateNotFound() {
-        LineRequest lineRequest = new LineRequest("name2", "blue");
-
         given(lineDao.update(new Line(1L, "name2", "blue"))).willReturn(0);
         given(lineDao.isExistName(1L, "name2")).willReturn(false);
 
-        assertThatThrownBy(() -> lineService.update(1L, lineRequest))
+        assertThatThrownBy(() -> lineService.update(1L, AcceptanceTestFixture.lineRequestPut))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 노선입니다.");
     }
@@ -142,12 +136,10 @@ class LineServiceTest {
     @Test
     @DisplayName("지하철 노선 이름이 중복된다면 수정할 수 없다.")
     void updateDuplicate() {
-        LineRequest lineRequest = new LineRequest("name", "blue");
+        given(lineDao.isExistName(1L, "name2")).willReturn(true);
+        given(lineDao.findById(1L)).willReturn(Optional.of(new Line(1L, "name", "blue")));
 
-        given(lineDao.update(new Line(1L, "name", "blue"))).willReturn(1);
-        given(lineDao.isExistName(1L, "name")).willReturn(true);
-
-        assertThatThrownBy(() -> lineService.update(1L, lineRequest))
+        assertThatThrownBy(() -> lineService.update(1L, AcceptanceTestFixture.lineRequestPut))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지하철 노선 이름이 중복될 수 없습니다.");
     }
