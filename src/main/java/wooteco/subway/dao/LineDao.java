@@ -21,27 +21,34 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(resultSet.getLong("id"),
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
+            resultSet.getLong("id"),
+            resultSet.getLong("up_station_id"),
+            resultSet.getLong("down_station_id"),
             resultSet.getString("name"),
-            resultSet.getString("color"));
+            resultSet.getString("color"),
+            resultSet.getLong("distance"));
 
     public Line save(Line line) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "insert into line (name, color) values (?, ?)";
+        String sql = "insert into line (up_station_id, down_station_id, name, color, distance) values (?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, line.getName());
-            ps.setString(2, line.getColor());
+            ps.setLong(1, line.getUpStationId());
+            ps.setLong(2, line.getDownStationId());
+            ps.setString(3, line.getName());
+            ps.setString(4, line.getColor());
+            ps.setLong(5, line.getDistance());
             return ps;
         }, keyHolder);
         long insertedId = keyHolder.getKey().longValue();
 
-        return new Line(insertedId, line.getName(), line.getColor());
+        return new Line(insertedId, line.getUpStationId(), line.getDownStationId(), line.getName(), line.getColor(), line.getDistance());
     }
 
     public List<Line> findAll() {
-        String sql = "select id, name, color from line";
+        String sql = "select id, up_station_id, down_station_id, name, color, distance from line";
         return jdbcTemplate.query(sql, lineRowMapper);
     }
 
@@ -52,7 +59,7 @@ public class LineDao {
     }
 
     public Line findById(Long id) {
-        String sql = "select id, name, color from line where id = (?)";
+        String sql = "select id, up_station_id, down_station_id, name, color, distance from line where id = (?)";
         return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
 

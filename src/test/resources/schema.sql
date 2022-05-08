@@ -1,3 +1,7 @@
+drop table if exists STATION;
+drop table if exists LINE;
+drop table if exists SECTION;
+
 create table if not exists STATION
 (
     id bigint auto_increment not null,
@@ -8,8 +12,11 @@ create table if not exists STATION
 create table if not exists LINE
 (
     id bigint auto_increment not null,
+    up_station_id bigint not null,
+    down_station_id bigint not null,
     name varchar(255) not null unique,
     color varchar(20) not null,
+    distance int,
     primary key(id)
 );
 

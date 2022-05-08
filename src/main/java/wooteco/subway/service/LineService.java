@@ -18,7 +18,7 @@ public class LineService {
     }
 
     public LineResponse create(LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        Line line = new Line(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance());
         Line newLine = lineDao.save(line);
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
