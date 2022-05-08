@@ -1,15 +1,13 @@
 package wooteco.subway.dao;
 
 import java.lang.reflect.Field;
-import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
@@ -23,30 +21,30 @@ public class JdbcLineDao implements LineDao {
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_COLOR = "color";
     private static final String COLUMN_ID = "id";
+    private static final String TABLE_NAME = "line";
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert lineInserter;
 
     public JdbcLineDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.lineInserter = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(TABLE_NAME)
+                .usingGeneratedKeyColumns(COLUMN_ID);
     }
 
     @Override
     public Line save(Line line) {
-        try {
-            final String sql = "INSERT INTO line SET name = ? , color = ?";
+        Map<String, String> params = Map.of(COLUMN_NAME, line.getName(), COLUMN_COLOR, line.getColor());
+        long insertedId = lineInserter.executeAndReturnKey(params).longValue();
+        return setId(line, insertedId);
+    }
 
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(con -> {
-                PreparedStatement prepareStatement = con.prepareStatement(sql, new String[]{COLUMN_ID});
-                prepareStatement.setString(1, line.getName());
-                prepareStatement.setString(2, line.getColor());
-                return prepareStatement;
-            }, keyHolder);
-            long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-            return setId(line, id);
-        } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException(ExceptionMessage.DUPLICATED_LINE_NAME.getContent());
-        }
+    private Line setId(Line line, long id) {
+        Field field = ReflectionUtils.findField(Line.class, COLUMN_ID);
+        Objects.requireNonNull(field).setAccessible(true);
+        ReflectionUtils.setField(field, line, id);
+        return line;
     }
 
     @Override
@@ -62,13 +60,6 @@ public class JdbcLineDao implements LineDao {
             long id = resultSet.getLong(COLUMN_ID);
             return setId(new Line(name, color), id);
         };
-    }
-
-    private Line setId(Line line, long id) {
-        Field field = ReflectionUtils.findField(Line.class, COLUMN_ID);
-        Objects.requireNonNull(field).setAccessible(true);
-        ReflectionUtils.setField(field, line, id);
-        return line;
     }
 
     @Override

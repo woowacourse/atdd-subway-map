@@ -6,9 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.ExceptionMessage;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -51,6 +50,42 @@ public class LineAcceptanceTest extends AcceptanceTest {
             assertThat(lineResponse.getName()).isEqualTo(lineName);
             assertThat(lineResponse.getColor()).isEqualTo(lineColor);
         });
+    }
+
+    @Test
+    @DisplayName("이미 존재하는 이름의 호선을 생성하려고 하면 BAD REQUEST를 반환한다.")
+    void createLine_duplicatedName() {
+        // given
+        String lineName = "7호선";
+        String redColor = "bg-red-600";
+        String blueColor = "bg-blue-600";
+
+        LineRequest lineRequest = new LineRequest(lineName, redColor, null, null, 0);
+
+        RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        LineRequest duplicatedNameRequest = new LineRequest(lineName, blueColor, null, null, 0);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(duplicatedNameRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // then
+        String bodyMessage = response.jsonPath().get("message");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(bodyMessage).isEqualTo(ExceptionMessage.DUPLICATED_LINE_NAME.getContent());
     }
 
     @DisplayName("모든 노선을 조회한다.")
