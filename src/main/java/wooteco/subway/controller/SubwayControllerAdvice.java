@@ -12,12 +12,12 @@ import wooteco.subway.dto.SubwayErrorResponse;
 @RestControllerAdvice
 public class SubwayControllerAdvice {
 
-    @ExceptionHandler({IllegalStateException.class, NoSuchElementException.class})
+    @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<SubwayErrorResponse> handleBusinessException(RuntimeException exception) {
         return ResponseEntity.badRequest().body(SubwayErrorResponse.from(exception));
     }
 
-    @ExceptionHandler(NoHandlerFoundException.class)
+    @ExceptionHandler({NoHandlerFoundException.class, NoSuchElementException.class})
     public ResponseEntity<Void> handleNoHandlerFoundException() {
         return ResponseEntity.notFound().build();
     }

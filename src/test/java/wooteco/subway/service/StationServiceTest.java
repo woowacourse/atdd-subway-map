@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.NoSuchElementException;
@@ -16,6 +17,14 @@ class StationServiceTest {
 
     @Autowired
     private StationService stationService;
+
+    @Test
+    @DisplayName("역 이름이 존재하지 않을 때 저장된다.")
+    void save() {
+        stationService.save(new Station("오리"));
+        assertThatCode(() -> stationService.save(new Station("배카라")))
+                .doesNotThrowAnyException();
+    }
 
     @Test
     @DisplayName("이미 존재하는 역 이름이 있을 때 예외가 발생한다.")
