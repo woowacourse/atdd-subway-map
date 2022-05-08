@@ -33,8 +33,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        createStationResponse(stationRequest1);
-        createStationResponse(stationRequest2);
         // when
         ExtractableResponse<Response> response = createLineResponse(lineRequest1);
 
@@ -47,8 +45,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        createStationResponse(stationRequest1);
-        createStationResponse(stationRequest2);
         createLineResponse(lineRequest1);
 
         // when
@@ -62,8 +58,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        createStationResponse(stationRequest1);
-        createStationResponse(stationRequest2);
         createStationResponse(stationRequest3);
         ExtractableResponse<Response> createResponse1 = createLineResponse(lineRequest1);
         ExtractableResponse<Response> createResponse2 = createLineResponse(lineRequest2);
@@ -96,8 +90,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLineById() {
         /// given
-        createStationResponse(stationRequest1);
-        createStationResponse(stationRequest2);
         ExtractableResponse<Response> createResponse = createLineResponse(lineRequest1);
         int expectedLineId = Integer.parseInt(createResponse.header("Location").split("/")[2]);
 
@@ -116,8 +108,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLineByInvalidId() {
         /// given
-        createStationResponse(stationRequest1);
-        createStationResponse(stationRequest2);
         ExtractableResponse<Response> createResponse = createLineResponse(lineRequest1);
 
         // when
@@ -137,7 +127,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         ExtractableResponse<Response> createResponse = createLineResponse(lineRequest1);
-
         // when
         int resultLineId = Integer.parseInt(createResponse.header("Location").split("/")[2]);
         RestAssured.given().log().all()
@@ -221,6 +210,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> createLineResponse(LineRequest lineRequest) {
+        createStationResponse(stationRequest1);
+        createStationResponse(stationRequest2);
+
         return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
