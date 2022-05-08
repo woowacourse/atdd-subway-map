@@ -45,6 +45,25 @@ public class SectionDaoImpl implements SectionDao {
     }
 
     @Override
+    public Optional<Section> findBySameUpOrDownStationId(Long lineId, Section section) {
+        List<Section> sections = findByLineId(lineId);
+        return sections.stream()
+                .filter(it -> Objects.equals(it.getUpStationId(), section.getUpStationId()) ||
+                        Objects.equals(it.getDownStationId(), section.getDownStationId()))
+                .findFirst();
+    }
+
+    @Override
+    public void updateDownStation(Long id, Long downStationId, int newDistance) {
+
+    }
+
+    @Override
+    public void updateUpStation(Long id, Long upStationId, int newDistance) {
+
+    }
+
+    @Override
     public void delete(List<Section> deleteSections) {
         for (Section deleteSection : deleteSections) {
             deleteById(deleteSection.getId());

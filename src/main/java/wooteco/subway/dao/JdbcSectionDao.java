@@ -57,6 +57,26 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
+    public Optional<Section> findBySameUpOrDownStationId(Long lineId, Section section) {
+        final String sql = "select * from SECTION where (line_id = ? and up_station_id = ?) or" +
+                " (line_id = ? and down_station_id = ?)";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper,
+                lineId, section.getUpStationId(), lineId, section.getDownStationId()));
+    }
+
+    @Override
+    public void updateDownStation(Long id, Long downStationId, int newDistance) {
+        final String sql = "update SECTION set down_station_id = ?, distance = ? where id = ?";
+        jdbcTemplate.update(sql, downStationId, newDistance, id);
+    }
+
+    @Override
+    public void updateUpStation(Long id, Long upStationId, int newDistance) {
+        final String sql = "update SECTION set up_station_id = ?, distance = ? where id = ?";
+        jdbcTemplate.update(sql, upStationId, newDistance, id);
+    }
+
+    @Override
     public void delete(List<Section> sections) {
         final String sql = "delete from LINE where id = ?";
 

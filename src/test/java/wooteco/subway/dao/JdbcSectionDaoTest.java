@@ -83,6 +83,41 @@ public class JdbcSectionDaoTest {
     }
 
     @Test
+    @DisplayName("해당 노선의 상행역 또는 하행역이 같은 구간을 구한다.")
+    void findBySameUpOrDownStationId() {
+        final Section section = new Section(lineId, 1L, 3L, 10);
+
+        final Section actual = sectionDao.findBySameUpOrDownStationId(lineId, section)
+                .orElseThrow(() -> new IllegalArgumentException("구간이 존재하지 않습니다."));
+
+        assertThat(actual).isEqualTo(section1);
+    }
+
+    @Test
+    @DisplayName("구간의 상행역을 수정한다.")
+    void updateUpStation() {
+        final Section expected = new Section(1L, lineId, 3L, 2L, 10);
+
+        sectionDao.updateUpStation(1L, 3L, 10);
+        final Section actual = sectionDao.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 구간이 존재하지 않습니다."));
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("구간의 하행역을 수정한다.")
+    void updateDownStation() {
+        final Section expected = new Section(1L, lineId, 1L, 3L, 20);
+
+        sectionDao.updateDownStation(1L, 3L, 20);
+        final Section actual = sectionDao.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 구간이 존재하지 않습니다."));
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     @DisplayName("지하철 구간을 삭제한다.")
     void delete() {
         sectionDao.delete(List.of(section1));
