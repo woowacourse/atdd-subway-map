@@ -98,7 +98,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 
 - [x] 컨트롤러 테스트코드 간소화
 - [x] vo 동등성 기준 변경
-- [ ] Line 테이블에 상/하행/거리 정보가 제외되도록 변경
+- [x] Line 테이블에 상/하행/거리 정보가 제외되도록 변경
 - [ ] Section 안에 stationId 대신 station이 포함되도록 변경
 
 ### 1단계 피드백
