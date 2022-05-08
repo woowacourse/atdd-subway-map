@@ -1,5 +1,7 @@
 package wooteco.subway.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
@@ -8,13 +10,17 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.section.SectionCreationRequest;
+import wooteco.subway.dto.section.SectionDeletionRequest;
 import wooteco.subway.exception.line.NoSuchLineException;
+import wooteco.subway.exception.section.NoSuchSectionException;
 
 @Service
 @Transactional
 public class SectionService {
 
     private static final int VALID_STATION_COUNT = 1;
+    private static final int MIN_SECTION_SIZE = 1;
+    private static final int MERGE_REQUIRED_SIZE = 2;
 
     private final LineDao lineDao;
     private final StationDao stationDao;
@@ -62,5 +68,50 @@ public class SectionService {
     private void extendSection(final SectionCreationRequest request) {
         final Section newUpSection = request.toEntity();
         sectionDao.insert(newUpSection);
+    }
+
+    public void delete(final SectionDeletionRequest request) {
+        lineDao.findById(request.getLineId())
+                .orElseThrow(NoSuchLineException::new);
+
+        final List<Section> sections = findDeletableSections(request);
+        deleteAll(sections);
+
+        if (sections.size() == MERGE_REQUIRED_SIZE) {
+            merge(sections);
+        }
+    }
+
+    private List<Section> findDeletableSections(final SectionDeletionRequest request) {
+        final List<Section> sections = findAllByLineId(request.getLineId())
+                .stream()
+                .filter(it -> it.contains(request.getStationId()))
+                .collect(Collectors.toList());
+
+        if (sections.isEmpty()) {
+            throw new NoSuchSectionException();
+        }
+        return sections;
+    }
+
+    private List<Section> findAllByLineId(final Long lineId) {
+        final List<Section> allSections = sectionDao.findAllByLineId(lineId);
+        if (allSections.size() == MIN_SECTION_SIZE) {
+            throw new IllegalArgumentException("구간을 삭제할 수 없습니다.");
+        }
+        return allSections;
+    }
+
+    private void deleteAll(final List<Section> sections) {
+        sections.stream()
+                .map(Section::getId)
+                .forEach(sectionDao::deleteById);
+    }
+
+    private void merge(final List<Section> sections) {
+        final Section firstSection = sections.get(0);
+        final Section secondSection = sections.get(1);
+        final Section mergedSection = firstSection.merge(secondSection);
+        sectionDao.insert(mergedSection);
     }
 }

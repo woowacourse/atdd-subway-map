@@ -17,7 +17,9 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.section.SectionCreationRequest;
+import wooteco.subway.dto.section.SectionDeletionRequest;
 import wooteco.subway.exception.line.NoSuchLineException;
+import wooteco.subway.exception.section.NoSuchSectionException;
 
 class SectionServiceTest extends ServiceTest {
 
@@ -180,5 +182,114 @@ class SectionServiceTest extends ServiceTest {
         // then
         assertThatCode(() -> sectionService.save(request))
                 .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("중간에 위치한 구간을 삭제한다.")
+    void Delete_MiddleStation_Success() {
+        // given
+        final SectionDeletionRequest request = new SectionDeletionRequest(line.getId(), 2L);
+
+        given(lineDao.findById(any(Long.class)))
+                .willReturn(Optional.of(line));
+
+        final List<Section> sections = List.of(
+                new Section(1L, line.getId(), 1L, 2L, 5),
+                new Section(2L, line.getId(), 2L, 3L, 7),
+                new Section(3L, line.getId(), 3L, 4L, 11)
+        );
+        given(sectionDao.findAllByLineId(any(Long.class)))
+                .willReturn(sections);
+
+        // then
+        assertThatCode(() -> sectionService.delete(request))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("상행 종점에 위치한 구간을 삭제한다.")
+    void Delete_UpStation_Success() {
+        // given
+        final SectionDeletionRequest request = new SectionDeletionRequest(line.getId(), 1L);
+
+        given(lineDao.findById(any(Long.class)))
+                .willReturn(Optional.of(line));
+
+        final List<Section> sections = List.of(
+                new Section(1L, line.getId(), 1L, 2L, 5),
+                new Section(2L, line.getId(), 2L, 3L, 7),
+                new Section(3L, line.getId(), 3L, 4L, 11)
+        );
+        given(sectionDao.findAllByLineId(any(Long.class)))
+                .willReturn(sections);
+
+        // then
+        assertThatCode(() -> sectionService.delete(request))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("하행 종점에 위치한 구간을 삭제한다.")
+    void Delete_DownStation_Success() {
+        // given
+        final SectionDeletionRequest request = new SectionDeletionRequest(line.getId(), 4L);
+
+        given(lineDao.findById(any(Long.class)))
+                .willReturn(Optional.of(line));
+
+        final List<Section> sections = List.of(
+                new Section(1L, line.getId(), 1L, 2L, 5),
+                new Section(2L, line.getId(), 2L, 3L, 7),
+                new Section(3L, line.getId(), 3L, 4L, 11)
+        );
+        given(sectionDao.findAllByLineId(any(Long.class)))
+                .willReturn(sections);
+
+        // then
+        assertThatCode(() -> sectionService.delete(request))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("삭제하려는 구간이 마지막 하나의 구간이면 예외를 던진다.")
+    void Delete_LastOneSection_ExceptionThrown() {
+        // given
+        final SectionDeletionRequest request = new SectionDeletionRequest(line.getId(), 999L);
+
+        given(lineDao.findById(any(Long.class)))
+                .willReturn(Optional.of(line));
+
+        final List<Section> sections = List.of(
+                new Section(1L, line.getId(), 1L, 2L, 10)
+        );
+        given(sectionDao.findAllByLineId(any(Long.class)))
+                .willReturn(sections);
+
+        // then
+        assertThatThrownBy(() -> sectionService.delete(request))
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessage("구간을 삭제할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("삭제하려는 역과 일치하는 구간이 존재하지 않으면 예외를 던진다.")
+    void Delete_NotExistStation_ExceptionThrown() {
+        // given
+        final SectionDeletionRequest request = new SectionDeletionRequest(line.getId(), 1L);
+
+        given(lineDao.findById(any(Long.class)))
+                .willReturn(Optional.of(line));
+
+        final List<Section> sections = List.of(
+                new Section(1L, line.getId(), 2L, 3L, 5),
+                new Section(2L, line.getId(), 3L, 4L, 7),
+                new Section(3L, line.getId(), 5L, 2L, 11)
+        );
+        given(sectionDao.findAllByLineId(any(Long.class)))
+                .willReturn(sections);
+
+        // then
+        assertThatThrownBy(() -> sectionService.delete(request))
+                        .isInstanceOf(NoSuchSectionException.class);
     }
 }
