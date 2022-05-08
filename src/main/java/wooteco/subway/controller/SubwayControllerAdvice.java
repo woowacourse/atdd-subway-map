@@ -44,8 +44,8 @@ public class SubwayControllerAdvice {
         return ResponseEntity.internalServerError().build();
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Void> handleException(RuntimeException exception) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Void> handleException() {
         return ResponseEntity.internalServerError().build();
     }
 }
