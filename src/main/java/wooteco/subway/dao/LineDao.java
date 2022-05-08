@@ -15,7 +15,10 @@ public class LineDao {
     private static final RowMapper<Line> LINE_ROW_MAPPER = (rs, rowNum) -> new Line(
             rs.getLong("id"),
             rs.getString("name"),
-            rs.getString("color"));
+            rs.getString("color"),
+            rs.getLong("upStationId"),
+            rs.getLong("downStationId"),
+            rs.getInt("distance"));
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -24,13 +27,16 @@ public class LineDao {
     }
 
     public Long save(Line line) {
-        final String sql = "INSERT INTO line (name, color) VALUES (?, ?);";
+        final String sql = "INSERT INTO line (name, color, upStationId, downStationId, distance) VALUES (?, ?, ?, ?, ?);";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setString(1, line.getName());
             preparedStatement.setString(2, line.getColor());
+            preparedStatement.setLong(3, line.getUpStationId());
+            preparedStatement.setLong(4, line.getDownStationId());
+            preparedStatement.setInt(5, line.getDistance());
             return preparedStatement;
         }, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
@@ -57,8 +63,9 @@ public class LineDao {
     }
 
     public void update(Long id, Line line) {
-        final String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
-        jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
+        final String sql = "UPDATE line SET name = ?, color = ?, upStationId = ?, downStationId = ?, distance = ? WHERE id = ?";
+        jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getUpStationId(), line.getDownStationId(),
+                line.getDistance(), id);
     }
 
     public void delete(Long id) {

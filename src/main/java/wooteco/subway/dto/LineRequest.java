@@ -22,7 +22,7 @@ public class LineRequest {
     }
 
     public Line toEntity() {
-        return new Line(name, color);
+        return new Line(name, color, upStationId, downStationId, distance);
     }
 
     public String getName() {
