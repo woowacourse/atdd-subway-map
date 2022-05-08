@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -35,12 +36,6 @@ public class LineDao {
         return jdbcTemplate.query(sql, lineMapper);
     }
 
-    private static class LineMapper implements RowMapper<Line> {
-        public Line mapRow(ResultSet rs, int rowCnt) throws SQLException {
-            return new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color"));
-        }
-    }
-
     private Line includeIdIn(Line line) {
         String sql = "select max(id) from Line";
         Long id = jdbcTemplate.queryForObject(sql, Long.class);
@@ -60,5 +55,11 @@ public class LineDao {
     public void deleteById(Long id) {
         String sql = "delete from Line where id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    private static class LineMapper implements RowMapper<Line> {
+        public Line mapRow(ResultSet rs, int rowCnt) throws SQLException {
+            return new Line(rs.getLong("id"), rs.getString("name"), rs.getString("color"));
+        }
     }
 }
