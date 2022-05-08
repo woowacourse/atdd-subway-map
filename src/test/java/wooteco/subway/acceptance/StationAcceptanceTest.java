@@ -19,9 +19,6 @@ import io.restassured.response.Response;
 import wooteco.subway.controller.dto.StationRequest;
 
 @DisplayName("지하철역 관련 기능 인수 테스트")
-@Sql(scripts = "classpath:/delete.sql",
-    executionPhase = ExecutionPhase.AFTER_TEST_METHOD
-)
 public class StationAcceptanceTest extends AcceptanceTest {
 
     private final StationRequest stationRequest = new StationRequest("강남역");

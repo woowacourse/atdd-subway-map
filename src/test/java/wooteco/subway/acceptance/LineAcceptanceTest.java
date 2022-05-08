@@ -24,9 +24,6 @@ import wooteco.subway.controller.dto.StationRequest;
 import wooteco.subway.controller.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 인수 테스트")
-@Sql(scripts = "classpath:/delete.sql",
-	executionPhase = ExecutionPhase.AFTER_TEST_METHOD
-)
 public class LineAcceptanceTest extends AcceptanceTest {
 
 	private LineRequest lineRequest;
