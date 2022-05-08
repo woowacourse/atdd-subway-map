@@ -75,14 +75,19 @@ public class LineService {
     private void checkFinalSectionAndAdd(Long lineId, SectionRequest sectionRequest, Section section) {
         final Optional<Section> upSection = sectionDao.findByDownStationId(lineId, section.getUpStationId());
         final Optional<Section> downSection = sectionDao.findByUpStationId(lineId, sectionRequest.getDownStationId());
-        if (upSection.isEmpty() || downSection.isEmpty()) {
-            sectionDao.save(section);
+        if (upSection.isEmpty() && downSection.isEmpty()) {
+            addNotFinalSection(lineId, section);
             return;
         }
+        sectionDao.save(section);
+    }
+
+    private void addNotFinalSection(Long lineId, Section section) {
         final Section existSection = sectionDao.findBySameUpOrDownStationId(lineId, section)
                 .orElseThrow(() -> new NoSuchElementException("구간이 존재하지 않습니다."));
         saveSplitSection(existSection, section);
         sectionDao.save(section);
+        return;
     }
 
     private void saveSplitSection(Section existSection, Section section) {
@@ -182,12 +187,18 @@ public class LineService {
     }
 
     private void checkFinalAndDeleteSections(Optional<Section> upSection, Optional<Section> downSection) {
-        if (upSection.isPresent() && downSection.isPresent()) {
-            upSection.ifPresent(deleteAndMergeSections(downSection));
+        if (upSection.isEmpty() || downSection.isEmpty()) {
+            upSection.ifPresent(deleteFinalSection());
+            downSection.ifPresent(deleteFinalSection());
             return;
         }
-        upSection.ifPresent(deleteFinalSection());
-        downSection.ifPresent(deleteFinalSection());
+        upSection.ifPresent(deleteAndMergeSections(downSection));
+    }
+
+    private Consumer<Section> deleteFinalSection() {
+        return section -> {
+            sectionDao.delete(List.of(section));
+        };
     }
 
     private Consumer<Section> deleteAndMergeSections(Optional<Section> downSection) {
@@ -201,12 +212,6 @@ public class LineService {
             sectionDao.delete(List.of(upSection));
             sectionDao.updateUpStation(downSection.getId(), upSection.getUpStationId(),
                     upSection.getDistance() + downSection.getDistance());
-        };
-    }
-
-    private Consumer<Section> deleteFinalSection() {
-        return section -> {
-            sectionDao.delete(List.of(section));
         };
     }
 }
