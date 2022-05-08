@@ -20,6 +20,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private final StationRequest 잠실 = new StationRequest("잠실역");
     private final StationRequest 선릉 = new StationRequest("선릉역");
     private final StationRequest 강남 = new StationRequest("강남역");
+    private final StationRequest 노원 = new StationRequest("노원역");
+    private final StationRequest 서울대입구 = new StationRequest("서울대입구역");
 
     private final LineRequest 이호선 =
             new LineRequest("2호선", "bg-green-600", 1L, 4L, 50);
@@ -34,6 +36,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             new SectionRequest(3L, 4L, 10);
     private final SectionRequest 노원_건대입구 =
             new SectionRequest(5L, 1L, 30);
+    private final SectionRequest 건대입구_서울대입구 =
+            new SectionRequest(1L, 6L, 60);
 
 
     @BeforeEach
@@ -42,6 +46,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createStationResponse(잠실);
         createStationResponse(선릉);
         createStationResponse(강남);
+        createStationResponse(노원);
+        createStationResponse(서울대입구);
 
         createLineResponse(이호선);
     }
@@ -106,6 +112,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("존재하는 구간보다 더 긴 구간을 등록할 때 예외를 발생시킨다.")
+    @Test
+    void createLongerSection() {
+        // given
+        // when
+        ExtractableResponse<Response> response = createSectionResponse(1L, 건대입구_서울대입구);
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("이미 존재하는 구간을 등록할 때 예외를 발생시킨다.")
     void createDuplicateSection() {
         // given
@@ -115,9 +131,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철 구간을 제거한다.")
+    @DisplayName("지하철 중간 구간을 제거한다.")
     @Test
-    void deleteSection() {
+    void deleteMiddleSection() {
         // given
         createSectionResponse(1L, 건대입구_잠실);
         createSectionResponse(1L, 선릉_강남);
@@ -125,7 +141,45 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        findSectionsByDeleteLine(1L);
+        findSectionsByDeleteLine(1L,
+                new StationResponse(1L, 건대입구.getName()),
+                new StationResponse(3L, 선릉.getName()),
+                new StationResponse(4L, 강남.getName())
+        );
+    }
+
+    @DisplayName("지하철 상행 종점 구간을 제거한다.")
+    @Test
+    void deleteFinalUpSection() {
+        // given
+        createSectionResponse(1L, 건대입구_잠실);
+        createSectionResponse(1L, 선릉_강남);
+        ExtractableResponse<Response> response = deleteSectionResponse(1L, 1L);
+        // when
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        findSectionsByDeleteLine(1L,
+                new StationResponse(2L, 잠실.getName()),
+                new StationResponse(3L, 선릉.getName()),
+                new StationResponse(4L, 강남.getName())
+        );
+    }
+
+    @DisplayName("지하철 하행 종점 구간을 제거한다.")
+    @Test
+    void deleteFinalDownSection() {
+        // given
+        createSectionResponse(1L, 건대입구_잠실);
+        createSectionResponse(1L, 선릉_강남);
+        ExtractableResponse<Response> response = deleteSectionResponse(1L, 4L);
+        // when
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        findSectionsByDeleteLine(1L,
+                new StationResponse(1L, 건대입구.getName()),
+                new StationResponse(2L, 잠실.getName()),
+                new StationResponse(3L, 선릉.getName())
+        );
     }
 
     @DisplayName("존재하지 않는 구간을 제거할 때 예외를 발생시킨다.")
@@ -149,15 +203,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private void findSectionsByDeleteLine(Long lineId) {
+    private void findSectionsByDeleteLine(Long lineId, StationResponse stationResponse1,
+                                          StationResponse stationResponse2,
+                                          StationResponse stationResponse3) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .get("/lines/" + lineId)
                 .then().log().all()
                 .extract();
-        final StationResponse stationResponse1 = new StationResponse(1L, 건대입구.getName());
-        final StationResponse stationResponse2 = new StationResponse(3L, 선릉.getName());
-        final StationResponse stationResponse3 = new StationResponse(4L, 강남.getName());
         checkByDeleteValidSections(lineId, response, stationResponse1, stationResponse2, stationResponse3);
     }
 
