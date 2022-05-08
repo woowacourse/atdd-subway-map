@@ -45,10 +45,6 @@ public class Line {
         sections.delete(station);
     }
 
-    public boolean isSameName(Line line) {
-        return name.equals(line.getName());
-    }
-
     public Long getId() {
         return id;
     }

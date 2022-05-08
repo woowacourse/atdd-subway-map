@@ -12,7 +12,7 @@ public class Sections {
         this.sections = new ArrayList<>(sections);
     }
 
-    public Sections() {
+    private Sections() {
         this(new ArrayList<>());
     }
 

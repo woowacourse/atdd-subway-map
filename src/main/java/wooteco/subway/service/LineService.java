@@ -33,7 +33,7 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         checkExistLineByName(lineRequest);
         final Long id = lineDao.save(lineRequest);
-        final Section section = saveSection(id, lineRequest.getUpStationId(), lineRequest.getDownStationId(),
+        final Section section = saveInitialSection(id, lineRequest.getUpStationId(), lineRequest.getDownStationId(),
                 lineRequest.getDistance());
         final Line line = new Line(id, lineRequest.getName(), lineRequest.getColor(), section);
 
@@ -45,13 +45,13 @@ public class LineService {
         return new LineResponse(id, line.getName(), line.getColor(), List.of(upStationResponse, downStationResponse));
     }
 
-    private void checkExistLineByName(wooteco.subway.dto.LineRequest lineRequest) {
+    private void checkExistLineByName(LineRequest lineRequest) {
         if (lineDao.hasLine(lineRequest.getName())) {
             throw new IllegalArgumentException("같은 이름의 노선이 존재합니다.");
         }
     }
 
-    private Section saveSection(Long newLineId, Long upStationId, Long downStationId, int distance) {
+    private Section saveInitialSection(Long newLineId, Long upStationId, Long downStationId, int distance) {
         final Section section = new Section(newLineId, upStationId, downStationId, distance);
         Long sectionId = sectionDao.save(section);
         return new Section(sectionId, newLineId, upStationId, downStationId, distance);
@@ -62,7 +62,7 @@ public class LineService {
                 .orElseThrow(() -> new NoSuchElementException("구간 상행역 생성에 오류가 발생했습니다."));
     }
 
-    public Long addSection(Long lineId, SectionRequest sectionRequest) {
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
         final Line line = loadLine(lineId);
         validateLine(sectionDao.findByLineId(lineId));
 
@@ -70,10 +70,9 @@ public class LineService {
                 sectionRequest.getDistance());
         line.addSection(section);
         final Section existSection = sectionDao.findBySameUpOrDownStationId(lineId, section)
-                .orElseThrow(() -> new IllegalArgumentException("구간이 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("구간이 존재하지 않습니다."));
         saveSplitSection(existSection, section);
         sectionDao.save(section);
-        return section.getId();
     }
 
     private void saveSplitSection(Section existSection, Section section) {
@@ -162,7 +161,7 @@ public class LineService {
         line.deleteSections(station);
         final Optional<Section> upSection = sectionDao.findByDownStationId(lineId, stationId);
         final Optional<Section> downSection = sectionDao.findByUpStationId(lineId, stationId);
-        checkFinalSection(upSection, downSection);
+        checkFinalAndDeleteSections(upSection, downSection);
         stationDao.deleteById(stationId);
     }
 
@@ -173,7 +172,7 @@ public class LineService {
         return new Line(findLine.getId(), findLine.getName(), findLine.getColor(), sections);
     }
 
-    private void checkFinalSection(Optional<Section> upSection, Optional<Section> downSection) {
+    private void checkFinalAndDeleteSections(Optional<Section> upSection, Optional<Section> downSection) {
         if (upSection.isPresent() && downSection.isPresent()) {
             upSection.ifPresent(deleteAndMergeSections(downSection));
             return;
