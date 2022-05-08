@@ -5,6 +5,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LineService {
@@ -24,7 +25,8 @@ public class LineService {
     }
 
     public Line findById(Long id) {
-        return lineDao.findById(id);
+        Optional<Line> line = lineDao.findById(id);
+        return line.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
     }
 
     public void update(Long id, Line line) {

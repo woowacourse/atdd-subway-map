@@ -11,6 +11,7 @@ import wooteco.subway.domain.Line;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class LineDao {
@@ -61,7 +62,7 @@ public class LineDao {
         return jdbcTemplate.query(sql, new MapSqlParameterSource(), rowMapper);
     }
 
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String sql = "SELECT id, name, color FROM line WHERE id=:id";
 
         Map<String, Object> params = new HashMap<>();
@@ -69,10 +70,7 @@ public class LineDao {
 
         List<Line> lines = jdbcTemplate.query(sql, new MapSqlParameterSource(params), rowMapper);
 
-        if (lines.isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않는 노선입니다.");
-        }
-        return lines.get(0);
+        return lines.stream().findFirst();
     }
 
     public Line update(Long id, String name, String color) {

@@ -11,6 +11,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.domain.Line;
 
+import java.util.Optional;
+
 @JdbcTest
 public class LineDaoTest {
 
@@ -64,17 +66,17 @@ public class LineDaoTest {
         Line line = new Line("2호선", "green");
         Line savedLine = lineDao.save(line);
 
-        Line foundLine = lineDao.findById(savedLine.getId());
+        Optional<Line> foundLine = lineDao.findById(savedLine.getId());
 
-        assertThat(foundLine.getName()).isEqualTo(savedLine.getName());
+        assertThat(foundLine.get().getName()).isEqualTo(savedLine.getName());
     }
 
-    @DisplayName("존재하지 않는 지하철 노선을 조회할 경우 예외가 발생한다.")
+    @DisplayName("존재하지 않는 지하철 노선을 조회할 경우 Optional.empty로 반환한다.")
     @Test
     void findNotExistingLine() {
-        assertThatThrownBy(() -> lineDao.findById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 노선입니다.");
+        Optional<Line> foundLine = lineDao.findById(1L);
+
+        assertThat(foundLine.isPresent()).isFalse();
     }
 
     @DisplayName("지하철 노선을 수정한다.")
