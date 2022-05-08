@@ -37,7 +37,7 @@ public class StationService {
 
     public List<StationResponse> showStations() {
         return stationRepository.findAll().stream()
-                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .map(StationResponse::new)
                 .collect(Collectors.toList());
     }
 
