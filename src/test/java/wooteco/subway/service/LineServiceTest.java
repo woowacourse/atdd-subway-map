@@ -41,8 +41,8 @@ class LineServiceTest {
     @Test
     @DisplayName("정상적으로 원하는 LineRequest를 저장하여 반환할 수 있다.")
     void save() {
-        Station upStation = stationDao.save(new Station("오리"));
-        Station downStation = stationDao.save(new Station("배카라"));
+        Station upStation = stationDao.findById(stationDao.save(new Station("오리")));
+        Station downStation = stationDao.findById(stationDao.save(new Station("배카라")));
         LineSaveRequest lineSaveRequest = new LineSaveRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 1);
 
         assertThat(lineService.save(lineSaveRequest)).isNotNull();

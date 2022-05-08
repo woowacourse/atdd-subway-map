@@ -5,7 +5,7 @@ import wooteco.subway.domain.Station;
 
 public interface StationDao {
 
-    Station save(Station station);
+    long save(Station station);
 
     List<Station> findAll();
 

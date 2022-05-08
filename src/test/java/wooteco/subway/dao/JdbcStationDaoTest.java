@@ -26,10 +26,9 @@ class JdbcStationDaoTest {
     @Test
     @DisplayName("Station을 저장할 수 있다.")
     void save() {
-        Station station = new Station("배카라");
-        Station savedStation = stationDao.save(station);
+        long savedStationId = stationDao.save(new Station("배카라"));
 
-        assertThat(savedStation.getId()).isNotNull();
+        assertThat(savedStationId).isNotNull();
     }
 
     @Test
@@ -44,9 +43,9 @@ class JdbcStationDaoTest {
     @Test
     @DisplayName("id로 Station을 조회한다.")
     void findById() {
-        Station station = stationDao.save(new Station("오리"));
+        long savedStationId = stationDao.save(new Station("오리"));
 
-        assertThat(stationDao.findById(station.getId())).isNotNull();
+        assertThat(stationDao.findById(savedStationId)).isNotNull();
     }
 
     @Test
@@ -61,16 +60,15 @@ class JdbcStationDaoTest {
     @Test
     @DisplayName("id를 가진 Station이 존재하는지 확인할 수 있다.")
     void existById() {
-        Station station = stationDao.save(new Station("오리"));
+        long savedStationId = stationDao.save(new Station("오리"));
 
-        assertThat(stationDao.existById(station.getId())).isTrue();
+        assertThat(stationDao.existById(savedStationId)).isTrue();
     }
 
     @Test
     @DisplayName("Station을 삭제할 수 있다.")
     void delete() {
-        Station station = stationDao.save(new Station("오리"));
-        Long stationId = station.getId();
+        long stationId = stationDao.save(new Station("오리"));
 
         assertThat(stationDao.delete(stationId)).isEqualTo(1);
     }

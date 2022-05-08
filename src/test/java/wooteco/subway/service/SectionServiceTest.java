@@ -33,13 +33,13 @@ class SectionServiceTest {
     void save() {
         // given
         long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
-        long stationId1 = stationDao.save(new Station("오리")).getId();
-        long stationId2 = stationDao.save(new Station("배카라")).getId();
-        long stationId3 = stationDao.save(new Station("오카라")).getId();
-        sectionDao.save(new Section(lineId, new Station(stationId1, "오리"), new Station(stationId3, "오카라"), 10));
+        Station station1 = stationDao.findById(stationDao.save(new Station("오리")));
+        Station station2 = stationDao.findById(stationDao.save(new Station("배카라")));
+        Station station3 = stationDao.findById(stationDao.save(new Station("오카라")));
+        sectionDao.save(new Section(lineId, station1, station3, 10));
 
         // when
-        int result = sectionService.save(lineId, new SectionSaveRequest(stationId1, stationId2, 3));
+        int result = sectionService.save(lineId, new SectionSaveRequest(station1.getId(), station2.getId(), 3));
 
         // then
         assertThat(result).isEqualTo(result);
@@ -50,14 +50,14 @@ class SectionServiceTest {
     void delete() {
         // given
         long lineId = lineDao.save(new Line("신분당선", "bg-red-600"));
-        long stationId1 = stationDao.save(new Station("오리")).getId();
-        long stationId2 = stationDao.save(new Station("배카라")).getId();
-        long stationId3 = stationDao.save(new Station("오카라")).getId();
-        sectionDao.save(new Section(lineId, new Station(stationId1, "오리"), new Station(stationId2, "배카라"), 10));
-        sectionDao.save(new Section(lineId, new Station(stationId2, "배카라"), new Station(stationId3, "오카라"), 10));
+        Station station1 = stationDao.findById(stationDao.save(new Station("오리")));
+        Station station2 = stationDao.findById(stationDao.save(new Station("배카라")));
+        Station station3 = stationDao.findById(stationDao.save(new Station("오카라")));
+        sectionDao.save(new Section(lineId, station1, station2, 10));
+        sectionDao.save(new Section(lineId, station2, station3, 10));
 
         // when
-        sectionService.delete(lineId, stationId2);
+        sectionService.delete(lineId, station2.getId());
 
         // then
         assertThat(sectionDao.findAllByLineId(lineId)).hasSize(1);

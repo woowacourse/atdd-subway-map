@@ -20,9 +20,9 @@ class InmemoryStationDaoTest {
     @DisplayName("Station을 저장할 수 있다.")
     void save() {
         Station station = new Station("오리");
-        Station savedStation = stationDao.save(station);
+        long savedStationId = stationDao.save(station);
 
-        assertThat(savedStation.getId()).isNotNull();
+        assertThat(savedStationId).isNotNull();
     }
 
     @Test
@@ -37,16 +37,15 @@ class InmemoryStationDaoTest {
     @Test
     @DisplayName("id로 Station을 조회한다.")
     void findById() {
-        Station station = stationDao.save(new Station("오리"));
+        long savedStationId = stationDao.save(new Station("오리"));
 
-        assertThat(stationDao.findById(station.getId())).isNotNull();
+        assertThat(stationDao.findById(savedStationId)).isNotNull();
     }
 
     @Test
     @DisplayName("Station을 삭제할 수 있다.")
     void delete() {
-        Station station = stationDao.save(new Station("오리"));
-        Long stationId = station.getId();
+        Long stationId = stationDao.save(new Station("오리"));
 
         assertThat(stationDao.delete(stationId)).isEqualTo(1);
     }
@@ -63,8 +62,8 @@ class InmemoryStationDaoTest {
     @Test
     @DisplayName("id를 가진 Station이 존재하는지 확인할 수 있다.")
     void existById() {
-        Station station = stationDao.save(new Station("오리"));
+        Long stationId = stationDao.save(new Station("오리"));
 
-        assertThat(stationDao.existById(station.getId())).isTrue();
+        assertThat(stationDao.existById(stationId)).isTrue();
     }
 }

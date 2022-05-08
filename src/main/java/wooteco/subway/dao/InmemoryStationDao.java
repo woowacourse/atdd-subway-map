@@ -29,10 +29,10 @@ public class InmemoryStationDao implements StationDao {
     }
 
     @Override
-    public Station save(Station station) {
+    public long save(Station station) {
         Station persistStation = createNewObject(station);
         stations.put(persistStation.getId(), persistStation);
-        return persistStation;
+        return persistStation.getId();
     }
 
     private Station createNewObject(Station station) {

@@ -24,7 +24,7 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Station save(final Station station) {
+    public long save(final Station station) {
         final String sql = "insert into STATION (name) values (?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -34,8 +34,7 @@ public class JdbcStationDao implements StationDao {
             return ps;
         }, keyHolder);
 
-        long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new Station(id, station.getName());
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     @Override

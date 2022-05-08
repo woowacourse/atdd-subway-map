@@ -19,11 +19,16 @@ public class StationService {
     }
 
     @Transactional
-    public Station save(final Station station) {
+    public StationResponse save(final Station station) {
         if (stationDao.existByName(station.getName())) {
             throw new IllegalStateException("이미 존재하는 역 이름입니다.");
         }
-        return stationDao.save(station);
+        long savedStationId = stationDao.save(station);
+        return StationResponse.from(findById(savedStationId));
+    }
+
+    private Station findById(final long savedStationId) {
+        return stationDao.findById(savedStationId);
     }
 
     public List<StationResponse> findAll() {
