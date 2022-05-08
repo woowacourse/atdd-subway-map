@@ -1,8 +1,5 @@
 package wooteco.subway.dao;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,6 +7,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class LineDao {
@@ -66,8 +67,10 @@ public class LineDao {
     }
 
     public Line update(Line line) {
-        jdbcTemplate.update("UPDATE LINE SET name = ?, color = ? WHERE id = ?", line.getName(),
-            line.getColor(), line.getId());
+        jdbcTemplate.update("UPDATE LINE SET name = ?, color = ? WHERE id = ?",
+                line.getName(),
+                line.getColor(),
+                line.getId());
         return line;
     }
 
