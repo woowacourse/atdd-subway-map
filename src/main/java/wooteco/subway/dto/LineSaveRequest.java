@@ -12,10 +12,10 @@ public class LineSaveRequest {
     @NotBlank(message = "line 색상은 공백 혹은 null이 들어올 수 없습니다.")
     private String color;
 
-    @Positive(message = "역의 id는 양수 값만 들어올 수 있습니다.")
+    @Positive(message = "상행역의 id는 양수 값만 들어올 수 있습니다.")
     private long upStationId;
 
-    @Positive(message = "역의 id는 양수 값만 들어올 수 있습니다.")
+    @Positive(message = "하행역의 id는 양수 값만 들어올 수 있습니다.")
     private long downStationId;
 
     @Positive(message = "상행-하행 노선 길이는 양수 값만 들어올 수 있습니다.")
