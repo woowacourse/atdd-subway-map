@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +29,7 @@ class LineServiceTest {
         lineService = new LineService(lineDao);
     }
 
-    @DisplayName("지하철 노선을 생성한다.")
+    @DisplayName("지하철 노선을 중복 생성한다.")
     @Test
     void save() {
         Line line = new Line("신분당선", "red");
@@ -64,6 +65,16 @@ class LineServiceTest {
         assertThat(lines.get(0).getName()).isEqualTo("분당선");
     }
 
+    @DisplayName("없는 지하철 노선을 수정한다.")
+    @Test
+    void updateNotExistLine() {
+        Line line = new Line("신분당선", "red");
+
+        assertThatThrownBy(() -> lineService.update(0L, line))
+            .isInstanceOf(NoSuchElementException.class)
+            .hasMessage("해당 아이디의 노선이 없습니다.");
+    }
+
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void delete() {
@@ -75,5 +86,13 @@ class LineServiceTest {
         List<Line> lines = lineService.findAll();
 
         assertThat(lines).hasSize(0);
+    }
+
+    @DisplayName("없는 지하철 노선을 삭제한다.")
+    @Test
+    void deleteNotExistLine() {
+        assertThatThrownBy(() -> lineService.delete(0L))
+            .isInstanceOf(NoSuchElementException.class)
+            .hasMessage("해당 아이디의 노선이 없습니다.");
     }
 }

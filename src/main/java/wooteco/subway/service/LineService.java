@@ -10,8 +10,10 @@ import wooteco.subway.domain.Line;
 
 @Service
 public class LineService {
+
     private static final String ALREADY_IN_LINE_ERROR_MESSAGE = "이미 해당 이름의 노선이 있습니다.";
     private static final String NOT_EXIST_LINE_ID_ERROR_MESSAGE = "해당 아이디의 노선이 없습니다.";
+
     private final LineDao lineDao;
 
     public LineService(LineDao lineDao) {
