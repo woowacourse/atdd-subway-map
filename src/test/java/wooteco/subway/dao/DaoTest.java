@@ -25,6 +25,6 @@ class DaoTest {
     void setUp() {
         stationDao = new JdbcStationDao(jdbcTemplate, dataSource);
         lineDao = new JdbcLineDao(jdbcTemplate, dataSource);
-        sectionDao = new JdbcSectionDao(dataSource);
+        sectionDao = new JdbcSectionDao(jdbcTemplate, dataSource);
     }
 }

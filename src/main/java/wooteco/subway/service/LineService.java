@@ -50,7 +50,6 @@ public class LineService {
         return LineResponse.of(savedLine, List.of(upStation, downStation));
     }
 
-
     @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         return lineDao.findAll()
