@@ -27,6 +27,14 @@ public class Sections {
         return sections.getLast();
     }
 
+    public Station findTopStation() {
+        return findTop().getUp();
+    }
+
+    public Station findBottomStation() {
+        return findBottom().getDown();
+    }
+
     public void add(Section section) {
         Relation relation = calculateRelation(section);
         validateSectionAddable(relation);
@@ -105,5 +113,16 @@ public class Sections {
             }
         }
         return false;
+    }
+
+    public void remove(Station station) {
+        if (station.equals(findTopStation())) {
+            sections.removeFirst();
+            return;
+        }
+        if (station.equals(findBottomStation())) {
+            sections.removeLast();
+            return;
+        }
     }
 }
