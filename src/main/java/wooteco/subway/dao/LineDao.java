@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import java.util.Collections;
 import java.util.List;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
@@ -47,7 +48,7 @@ public class LineDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource paramSource = new BeanPropertySqlParameterSource(line);
 
-        jdbcTemplate.update(sql, paramSource, keyHolder);
+        jdbcTemplate.update(sql, paramSource, keyHolder, new String[]{"ID"});
         return new Line(keyHolder.getKey().longValue(), line.getName(), line.getColor());
     }
 
@@ -68,7 +69,7 @@ public class LineDao {
     }
 
     public boolean existByName(String name) {
-        final String sql = "SELECT COUNT(*) FROM line WHERE name = :name";
+        final String sql = "SELECT EXISTS (SELECT 1 FROM line WHERE name = :name)";
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("name", name);
 
@@ -76,7 +77,7 @@ public class LineDao {
     }
 
     public boolean existById(Long id) {
-        final String sql = "SELECT COUNT(*) FROM line WHERE id = :id";
+        final String sql = "SELECT EXISTS (SELECT 1 FROM line WHERE id = :id)";
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("id", id);
 

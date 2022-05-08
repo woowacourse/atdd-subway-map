@@ -51,7 +51,7 @@ public class StationDao {
     }
 
     public boolean existById(Long id) {
-        final String sql = "SELECT COUNT(*) FROM station WHERE id = :id";
+        final String sql = "SELECT EXISTS (SELECT 1 FROM station WHERE id = :id)";
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("id", id);
 
@@ -59,7 +59,7 @@ public class StationDao {
     }
 
     public boolean existByName(String name) {
-        final String sql = "SELECT COUNT(*) FROM station WHERE name = :name";
+        final String sql = "SELECT EXISTS (SELECT 1 FROM station WHERE name = :name)";
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("name", name);
 
