@@ -18,19 +18,15 @@ public class StationDao {
     }
 
     public Station save(Station station) {
-        checkDuplication(station.getName());
         String sql = "insert into Station (name) values (?)";
         jdbcTemplate.update(sql, station.getName());
 
         return includeIdIn(station);
     }
 
-    private void checkDuplication(String name) {
-        String sql = "select count(*) from Station where name = '" + name + "'";
-
-        if (jdbcTemplate.queryForObject(sql, Integer.class) > 0) {
-            throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");
-        }
+    public int counts(String name) {
+        String sql = String.format("select count(*) from Station where name = '%s'", name);
+        return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
     public List<Station> findAll() {
