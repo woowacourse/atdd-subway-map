@@ -10,6 +10,8 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.DuplicateLineException;
 
 @Service
 public class LineService {
@@ -27,7 +29,16 @@ public class LineService {
             Line newLine = lineDao.save(line);
             return new LineResponse(newLine);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateKeyException("이미 존재하는 노선입니다.");
+            throw new DuplicateLineException("이미 존재하는 노선입니다.");
+        }
+    }
+
+    private void validateUnique(Line line) {
+        if (lineDao.existsName(line)) {
+            throw new DuplicateLineException("이미 존재하는 노선 이름입니다.");
+        }
+        if (lineDao.existsColor(line)) {
+            throw new DuplicateLineException("이미 존재하는 노선 색상입니다.");
         }
     }
 
@@ -43,7 +54,7 @@ public class LineService {
             Line line = lineDao.findById(id);
             return new LineResponse(line);
         } catch (EmptyResultDataAccessException e) {
-            throw new EmptyResultDataAccessException("존재하지 않는 노선입니다.", 1);
+            throw new DataNotFoundException("존재하지 않는 노선입니다.");
         }
     }
 
@@ -54,7 +65,7 @@ public class LineService {
         try {
             lineDao.updateById(id, line);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateKeyException("이미 존재하는 노선 이름이나 색상으로 변경할 수 없습니다.");
+            throw new DuplicateLineException("이미 존재하는 노선 이름이나 색상으로 변경할 수 없습니다.");
         }
     }
 
@@ -67,7 +78,7 @@ public class LineService {
         try {
             lineDao.findById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new EmptyResultDataAccessException("존재하지 않는 노선입니다.", 1);
+            throw new DataNotFoundException("존재하지 않는 노선입니다.");
         }
     }
 

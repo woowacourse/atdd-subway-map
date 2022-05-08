@@ -6,11 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.DuplicateStationException;
 
 class StationServiceTest {
 
@@ -34,7 +34,7 @@ class StationServiceTest {
         stationService.create(stationRequest);
 
         assertThatThrownBy(() -> stationService.create(stationRequest))
-                .isInstanceOf(DuplicateKeyException.class)
+                .isInstanceOf(DuplicateStationException.class)
                 .hasMessage("이미 존재하는 역입니다.");
     }
 
@@ -67,7 +67,7 @@ class StationServiceTest {
     @Test
     void deleteNotExist() {
         assertThatThrownBy(() -> stationService.delete(Long.MAX_VALUE))
-                .isInstanceOf(EmptyResultDataAccessException.class)
+                .isInstanceOf(DataNotFoundException.class)
                 .hasMessage("존재하지 않는 역입니다.");
     }
 

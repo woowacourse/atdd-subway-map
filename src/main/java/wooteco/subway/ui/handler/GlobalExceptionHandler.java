@@ -2,23 +2,23 @@ package wooteco.subway.ui.handler;
 
 import java.util.stream.Collectors;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.DuplicateDataException;
 
 @ControllerAdvice
-public class RestExceptionHandler {
+public class GlobalExceptionHandler {
 
-    @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<String> handleDuplicateKey(DuplicateKeyException e) {
+    @ExceptionHandler(DuplicateDataException.class)
+    public ResponseEntity<String> handleDuplicateKey(DuplicateDataException e) {
         return ResponseEntity.badRequest()
                 .body(e.getMessage());
     }
 
-    @ExceptionHandler(EmptyResultDataAccessException.class)
+    @ExceptionHandler(DataNotFoundException.class)
     public ResponseEntity<Void> handleDataNotFound() {
         return ResponseEntity.notFound()
                 .build();

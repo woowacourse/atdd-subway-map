@@ -10,6 +10,8 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.DuplicateStationException;
 
 @Service
 public class StationService {
@@ -27,7 +29,7 @@ public class StationService {
             Station newStation = stationDao.save(station);
             return new StationResponse(newStation);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateKeyException("이미 존재하는 역입니다.");
+            throw new DuplicateStationException("이미 존재하는 역입니다.");
         }
     }
 
@@ -48,7 +50,7 @@ public class StationService {
         try {
             stationDao.findById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new EmptyResultDataAccessException("존재하지 않는 역입니다.", 1);
+            throw new DataNotFoundException("존재하지 않는 역입니다.");
         }
     }
 
