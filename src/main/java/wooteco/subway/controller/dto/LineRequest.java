@@ -24,6 +24,10 @@ public class LineRequest {
         return new Line(id, name, color);
     }
 
+    public SectionRequest toSectionRequest() {
+        return new SectionRequest(upStationId, downStationId, distance);
+    }
+
     public String getName() {
         return name;
     }

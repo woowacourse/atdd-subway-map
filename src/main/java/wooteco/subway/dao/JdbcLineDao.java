@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 
 @Repository
 public class JdbcLineDao implements LineDao {
@@ -94,5 +95,15 @@ public class JdbcLineDao implements LineDao {
 	public Boolean existsByName(String name) {
 		String sql = "select exists (select * from line where name = :name)";
 		return jdbcTemplate.queryForObject(sql, Map.of("name", name), Boolean.class);
+	}
+
+	@Override
+	public void saveSection(Long lineId, Section section) {
+		sectionDao.save(lineId, section);
+	}
+
+	@Override
+	public void updateSection(Section section) {
+		sectionDao.update(section);
 	}
 }

@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 public class Line {
 
@@ -37,6 +38,10 @@ public class Line {
 
 	public boolean isSameId(Long id) {
 		return this.id.equals(id);
+	}
+
+	public Optional<Section> addSection(Section section) {
+		return sections.add(section);
 	}
 
 	public Long getId() {

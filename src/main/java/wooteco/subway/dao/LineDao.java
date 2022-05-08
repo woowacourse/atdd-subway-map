@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.util.List;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 
 public interface LineDao {
 	Long save(Line line);
@@ -16,4 +17,8 @@ public interface LineDao {
 	void remove(Long id);
 
 	Boolean existsByName(String name);
+
+	void saveSection(Long id, Section section);
+
+	void updateSection(Section section);
 }

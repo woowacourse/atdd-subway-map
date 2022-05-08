@@ -69,4 +69,17 @@ class SectionDaoTest {
 		assertThat(foundSection.getUpStationId()).isEqualTo(upStation.getId());
 		assertThat(foundSection.getDownStationId()).isEqualTo(downStation.getId());
 	}
+
+	@DisplayName("구간을 수정한다.")
+	@Test
+	void updateSection() {
+		Section section = new Section(upStation, downStation, 10);
+		Long sectionId = sectionDao.save(1L, section);
+
+		Section updatedSection = new Section(sectionId, downStation, upStation, 7);
+		sectionDao.update(updatedSection);
+
+		Section findSection = sectionDao.findById(sectionId);
+		assertThat(findSection).isEqualTo(updatedSection);
+	}
 }

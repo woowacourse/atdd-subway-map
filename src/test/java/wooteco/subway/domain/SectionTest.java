@@ -20,4 +20,79 @@ class SectionTest {
 		Section section = new Section(new Station("강남역"), new Station("역삼역"), 10);
 		assertThat(section.isDownStation(new Station("역삼역"))).isTrue();
 	}
+
+	@DisplayName("같은 역을 하나라도 가지면 true")
+	@Test
+	void hasSameStationsTrue() {
+		Section section1 = new Section(new Station("강남역"), new Station("역삼역"), 10);
+		Section section2 = new Section(new Station("역삼역"), new Station("선릉역"), 10);
+		assertThat(section1.hasAnySameStation(section2)).isTrue();
+	}
+
+	@DisplayName("다 다른 역이면 false")
+	@Test
+	void hasSameStationsFalse() {
+		Section section1 = new Section(new Station("강남역"), new Station("역삼역"), 10);
+		Section section2 = new Section(new Station("교대역"), new Station("선릉역"), 10);
+		assertThat(section1.hasAnySameStation(section2)).isFalse();
+	}
+
+	@DisplayName("상행역이 같은 구간으로 존재하던 구간을 수정한다.")
+	@Test
+	void dividedBySameUpStation() {
+		Station station1 = new Station(1L, "강남역");
+		Station station2 = new Station(2L, "역삼역");
+		Station station3 = new Station(3L, "선릉역");
+
+		Section newSection = new Section(2L, station1, station3, 5);
+		Section existSection = new Section(1L, station1, station2, 10);
+
+		Section section = existSection.dividedBy(newSection);
+		assertThat(section).isEqualTo(new Section(1L, station3, station2, 5));
+	}
+
+	@DisplayName("하행역이 같은 구간으로 존재하던 구간을 수정한다.")
+	@Test
+	void dividedBySameDownStation() {
+		Station station1 = new Station(1L, "강남역");
+		Station station2 = new Station(2L, "역삼역");
+		Station station3 = new Station(3L, "선릉역");
+
+		Section newSection = new Section(2L, station3, station2, 5);
+		Section existSection = new Section(1L, station1, station2, 10);
+
+		Section section = existSection.dividedBy(newSection);
+		assertThat(section).isEqualTo(new Section(1L, station1, station3, 5));
+	}
+
+	@DisplayName("하행역과 상행역 둘 다 같지 않으면 구간을 나눌 수 없다.")
+	@Test
+	void cannotDivideByStation() {
+		Station station1 = new Station(1L, "강남역");
+		Station station2 = new Station(2L, "역삼역");
+		Station station3 = new Station(3L, "선릉역");
+		Station station4 = new Station(4L, "교대역");
+
+		Section newSection = new Section(2L, station3, station4, 5);
+		Section existSection = new Section(1L, station1, station2, 10);
+
+		assertThatThrownBy(() -> existSection.dividedBy(newSection))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("상행역이나 하행역 중 하나가 같아야 구간을 나눌 수 있습니다.");
+	}
+
+	@DisplayName("추가할 구간 거리가 기존 구간 거리보다 같거나 크면 나눌 수 없다.")
+	@Test
+	void cannotDivideByDistance() {
+		Station station1 = new Station(1L, "강남역");
+		Station station2 = new Station(2L, "역삼역");
+		Station station3 = new Station(3L, "선릉역");
+
+		Section newSection = new Section(2L, station3, station2, 5);
+		Section existSection = new Section(1L, station1, station2, 5);
+
+		assertThatThrownBy(() -> existSection.dividedBy(newSection))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("기존 구간의 거리가 더 길어야 합니다.");
+	}
 }

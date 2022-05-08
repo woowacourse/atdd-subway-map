@@ -16,7 +16,7 @@ class LineServiceTest {
 
 	private final LineService lineService = new LineService(new MemoryLineDao());
 	private final Section section = new Section(
-		new Station("강남역"), new Station("역삼역"), 10);
+		new Station(1L, "강남역"), new Station(2L, "역삼역"), 10);
 
 	@DisplayName("지하철 노선을 저장한다.")
 	@Test
@@ -73,5 +73,19 @@ class LineServiceTest {
 		Line line = lineService.create("신분당선", "bg-red-600", section);
 		lineService.remove(line.getId());
 		assertThat(lineService.listLines()).isEmpty();
+	}
+
+	@DisplayName("하행종점 이후 구간을 추가한다.")
+	@Test
+	void addSection() {
+		Line line = lineService.create("2호선", "bg-red-600", section);
+		Section newSection = new Section(
+			new Station(2L, "역삼역"), new Station(2L, "교대역"), 10);
+		lineService.addSection(line.getId(), newSection);
+
+		Line updatedLine = lineService.findOne(line.getId());
+
+		assertThat(updatedLine.getSections())
+			.containsAll(List.of(section, newSection));
 	}
 }

@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 
 public class MemoryLineDao implements LineDao {
 
@@ -14,7 +15,7 @@ public class MemoryLineDao implements LineDao {
 
 	@Override
 	public Long save(Line line) {
-		Line newLine = new Line(++seq, line.getName(), line.getColor());
+		Line newLine = new Line(++seq, line.getName(), line.getColor(), line.getSections());
 		lines.add(newLine);
 		return newLine.getId();
 	}
@@ -47,5 +48,15 @@ public class MemoryLineDao implements LineDao {
 	public Boolean existsByName(String name) {
 		return lines.stream()
 			.anyMatch(line -> line.isSameName(name));
+	}
+
+	@Override
+	public void updateSection(Section section) {
+
+	}
+
+	@Override
+	public void saveSection(Long id, Section section) {
+
 	}
 }

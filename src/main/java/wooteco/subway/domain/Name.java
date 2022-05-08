@@ -39,4 +39,11 @@ public class Name {
 	public int hashCode() {
 		return Objects.hash(getValue());
 	}
+
+	@Override
+	public String toString() {
+		return "Name{" +
+			"value='" + value + '\'' +
+			'}';
+	}
 }
