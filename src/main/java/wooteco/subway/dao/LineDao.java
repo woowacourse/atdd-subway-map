@@ -1,15 +1,15 @@
 package wooteco.subway.dao;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import javax.sql.DataSource;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-
-import javax.sql.DataSource;
-import java.util.List;
-import java.util.Map;
 
 @Repository
 public class LineDao {
@@ -43,11 +43,11 @@ public class LineDao {
 
     public Optional<Line> findById(Long id) {
         final String sql = "SELECT * FROM LINE WHERE id = ?";
-        List<Line> result = jdbcTemplate.query(sql, lineRowMapper, id);
-        if(result.isEmpty()){
+        try{
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineRowMapper, id));
+        } catch(IncorrectResultSizeDataAccessException e) {
             return Optional.empty();
         }
-        return Optional.of(result.get(0));
     }
 
     public int delete(Long id) {
