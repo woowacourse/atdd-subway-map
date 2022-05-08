@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class Sections {
@@ -147,13 +148,5 @@ public class Sections {
                 return;
             }
         }
-    }
-
-    public Section findDifferentSection(Sections other, Section except) {
-        other.sections.remove(except);
-        for (Section section : sections) {
-            other.sections.remove(section);
-        }
-        return other.findTop();
     }
 }
