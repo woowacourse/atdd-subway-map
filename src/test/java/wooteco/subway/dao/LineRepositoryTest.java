@@ -7,29 +7,25 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import javax.sql.DataSource;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.TestConstructor.AutowireMode;
 import wooteco.subway.dao.entity.LineEntity;
 
 @JdbcTest
+@TestConstructor(autowireMode = AutowireMode.ALL)
+@DisplayName("Line 레포지토리")
 class LineRepositoryTest {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private DataSource dataSource;
-    @Autowired
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
-    @BeforeEach
-    void setup() {
-        lineRepository = new LineRepository(jdbcTemplate, dataSource, namedParameterJdbcTemplate);
+    public LineRepositoryTest(JdbcTemplate jdbcTemplate, DataSource dataSource,
+                              NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.lineRepository = new LineRepository(jdbcTemplate, dataSource, namedParameterJdbcTemplate);
     }
 
     @Test
