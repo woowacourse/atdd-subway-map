@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,5 +31,17 @@ class StationServiceTest {
         StationResponse stationResponse = stationService.save(stationRequest);
 
         assertThat(stationResponse.getName()).isEqualTo(name);
+    }
+
+    @DisplayName("중복된 이름의 지하철역을 저장할 경우 예외를 발생시킨다.")
+    @Test
+    void 중복된_지하철역_저장_예외발생() {
+        String name = "선릉역";
+        StationRequest stationRequest = new StationRequest(name);
+
+        stationService.save(stationRequest);
+
+        assertThatThrownBy(() -> stationService.save(stationRequest))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
