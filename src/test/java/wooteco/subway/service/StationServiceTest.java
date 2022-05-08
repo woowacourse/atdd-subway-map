@@ -20,10 +20,10 @@ import wooteco.subway.utils.exception.NameDuplicatedException;
 class StationServiceTest {
 
     @Autowired
-    StationService stationService;
+    private StationService stationService;
 
     @Autowired
-    StationRepository stationRepository;
+    private StationRepository stationRepository;
 
     @DisplayName("역 요청을 받아 저장한다.")
     @Test

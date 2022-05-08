@@ -15,7 +15,7 @@ import wooteco.subway.utils.exception.NameDuplicatedException;
 class StationRepositoryTest extends RepositoryTest {
 
     @Autowired
-    StationRepository stationRepository;
+    private StationRepository stationRepository;
 
     @DisplayName("역을 저장한다.")
     @Test

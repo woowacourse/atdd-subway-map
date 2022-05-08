@@ -4,9 +4,9 @@ import java.util.Objects;
 
 public class Line {
 
-    private String name;
-    private String color;
-    private Long id;
+    private final String name;
+    private final String color;
+    private final Long id;
 
     public Line(Long id, String name, String color) {
         this.id = id;

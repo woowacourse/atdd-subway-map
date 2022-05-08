@@ -14,7 +14,7 @@ import wooteco.subway.utils.exception.NameDuplicatedException;
 public class LineRepositoryTest extends RepositoryTest {
 
     @Autowired
-    LineRepository lineRepository;
+    private LineRepository lineRepository;
 
     @DisplayName("노선을 저장한다.")
     @Test
