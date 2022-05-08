@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Sections {
     private static final int CANNOT_DELETE_SECTION_MAX_SIZE = 1;
+
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -162,5 +163,9 @@ public class Sections {
     public boolean hasSection(Section section) {
         return sections.stream()
                 .anyMatch(it -> it.isSameStations(section));
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }
