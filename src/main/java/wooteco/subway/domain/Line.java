@@ -18,11 +18,6 @@ public class Line {
         this.id = id;
     }
 
-    public Line(Long id, Line line) {
-        this(line.getName(), line.getColor());
-        this.id = id;
-    }
-
     public Long getId() {
         return id;
     }
