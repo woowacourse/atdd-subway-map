@@ -115,7 +115,7 @@ public class Sections {
         return false;
     }
 
-    public void remove(Station station) {
+    public void delete(Station station) {
         if (station.equals(findTopStation())) {
             sections.removeFirst();
             return;
@@ -123,6 +123,17 @@ public class Sections {
         if (station.equals(findBottomStation())) {
             sections.removeLast();
             return;
+        }
+
+        for (int i = 0; i < sections.size(); i++) {
+            Section section = sections.get(i);
+            if (section.getDown().equals(station)) {
+                Section combined = section.combine(sections.get(i + 1));
+                sections.remove(i);
+                sections.remove(i);
+                sections.add(i, combined);
+                return;
+            }
         }
     }
 }

@@ -142,7 +142,7 @@ class SectionsTest {
                 () -> assertThat(result.get(1)).isEqualTo(target)
         );
     }
-    
+
     @DisplayName("상행역을 공유하는 구간 추가")
     @Test
     void 구간_추가_상행역_공유1() {
@@ -227,8 +227,7 @@ class SectionsTest {
         Section CtoD = new Section(new Station("C"), new Station("D"), 1);
         Sections sections = new Sections(new LinkedList<>(List.of(AtoB, BtoC, CtoD)));
 
-        Station A = new Station("A");
-        sections.remove(A);
+        sections.delete(new Station("A"));
         List<Section> result = sections.getSections();
 
         assertAll(
@@ -237,7 +236,6 @@ class SectionsTest {
                 () -> assertThatThrownBy(() -> result.get(2))
                         .isInstanceOf(IndexOutOfBoundsException.class)
         );
-
     }
 
     @DisplayName("상행 종점역 제거")
@@ -248,8 +246,7 @@ class SectionsTest {
         Section CtoD = new Section(new Station("C"), new Station("D"), 1);
         Sections sections = new Sections(new LinkedList<>(List.of(AtoB, BtoC, CtoD)));
 
-        Station D = new Station("D");
-        sections.remove(D);
+        sections.delete(new Station("D"));
         List<Section> result = sections.getSections();
 
         assertAll(
@@ -258,7 +255,46 @@ class SectionsTest {
                 () -> assertThatThrownBy(() -> result.get(2))
                         .isInstanceOf(IndexOutOfBoundsException.class)
         );
+    }
 
+    @DisplayName("중간역 제거")
+    @Test
+    void 중간역_제거1() {
+        Section AtoB = new Section(new Station("A"), new Station("B"), 1);
+        Section BtoC = new Section(new Station("B"), new Station("C"), 1);
+        Section CtoD = new Section(new Station("C"), new Station("D"), 1);
+        Sections sections = new Sections(new LinkedList<>(List.of(AtoB, BtoC, CtoD)));
+
+        Section AtoC = new Section(new Station("A"), new Station("C"), 2);
+        sections.delete(new Station("B"));
+        List<Section> result = sections.getSections();
+
+        assertAll(
+                () -> assertThat(result.get(0)).isEqualTo(AtoC),
+                () -> assertThat(result.get(1)).isEqualTo(CtoD),
+                () -> assertThatThrownBy(() -> result.get(2))
+                        .isInstanceOf(IndexOutOfBoundsException.class)
+        );
+    }
+
+    @DisplayName("중간역 제거")
+    @Test
+    void 중간역_제거2() {
+        Section AtoB = new Section(new Station("A"), new Station("B"), 1);
+        Section BtoC = new Section(new Station("B"), new Station("C"), 1);
+        Section CtoD = new Section(new Station("C"), new Station("D"), 2);
+        Sections sections = new Sections(new LinkedList<>(List.of(AtoB, BtoC, CtoD)));
+
+        Section BtoD = new Section(new Station("B"), new Station("D"), 3);
+        sections.delete(new Station("C"));
+        List<Section> result = sections.getSections();
+
+        assertAll(
+                () -> assertThat(result.get(0)).isEqualTo(AtoB),
+                () -> assertThat(result.get(1)).isEqualTo(BtoD),
+                () -> assertThatThrownBy(() -> result.get(2))
+                        .isInstanceOf(IndexOutOfBoundsException.class)
+        );
     }
 
 }
