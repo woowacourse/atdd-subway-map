@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.ExceptionMessage;
-import wooteco.subway.exception.InternalServerException;
 import wooteco.subway.exception.NotFoundException;
 
 @Repository
@@ -82,10 +81,6 @@ public class JdbcLineDao implements LineDao {
     @Override
     public Integer deleteById(Long id) {
         String sql = "DELETE FROM line where id = ?";
-        int affectedRows = jdbcTemplate.update(sql, id);
-        if (affectedRows == 0) {
-            throw new InternalServerException(ExceptionMessage.UNKNOWN_DELETE_LINE_FAIL.getContent());
-        }
-        return affectedRows;
+        return jdbcTemplate.update(sql, id);
     }
 }
