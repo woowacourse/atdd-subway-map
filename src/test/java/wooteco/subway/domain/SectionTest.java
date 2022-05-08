@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -124,5 +126,21 @@ class SectionTest {
         assertThat(actual.getDistance()).isEqualTo(17);
 
         assertThat(actual).isEqualTo(actual2);
+    }
+
+    @Test
+    @DisplayName("두 구간을 정렬한다.")
+    void Sort() {
+        // given
+        final Section section1 = new Section(line.getId(), samseong.getId(), yeoksam.getId(), 1);
+        final Section section2 = new Section(line.getId(), seolleung.getId(), samseong.getId(), 1);
+
+        // when
+        final List<Section> actual = Stream.of(section1, section2)
+                .sorted()
+                .collect(Collectors.toList());
+
+        // then
+        assertThat(actual).containsExactly(section2, section1);
     }
 }
