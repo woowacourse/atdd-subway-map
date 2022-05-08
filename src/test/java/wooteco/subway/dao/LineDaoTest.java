@@ -35,17 +35,17 @@ public class LineDaoTest {
         assertThat(line.getName()).isEqualTo(savedLine.getName());
     }
 
-    @DisplayName("같은 이름의 노선을 저장하는 경우 예외가 발생한다.")
-    @Test
-    void saveExistingName() {
-        Line line = new Line("2호선", "green");
-        lineDao.save(line);
-
-        assertThatThrownBy(() -> {
-            lineDao.save(line);
-        }).isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("같은 이름의 노선은 등록할 수 없습니다.");
-    }
+//    @DisplayName("같은 이름의 노선을 저장하는 경우 예외가 발생한다.")
+//    @Test
+//    void saveExistingName() {
+//        Line line = new Line("2호선", "green");
+//        lineDao.save(line);
+//
+//        assertThatThrownBy(() -> {
+//            lineDao.save(line);
+//        }).isInstanceOf(IllegalArgumentException.class)
+//                .hasMessage("같은 이름의 노선은 등록할 수 없습니다.");
+//    }
 
     @DisplayName("모든 지하철 노선을 조회한다.")
     @Test
@@ -60,7 +60,7 @@ public class LineDaoTest {
         assertThat(lineDao.findAll().size()).isEqualTo(3);
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("id로 지하철 노선을 조회한다.")
     @Test
     void findById() {
         Line line = new Line("2호선", "green");
@@ -69,6 +69,17 @@ public class LineDaoTest {
         Optional<Line> foundLine = lineDao.findById(savedLine.getId());
 
         assertThat(foundLine.get().getName()).isEqualTo(savedLine.getName());
+    }
+
+    @DisplayName("name으로 지하철 노선을 조회한다.")
+    @Test
+    void findByName() {
+        Line line = new Line("2호선", "green");
+        Line savedLine = lineDao.save(line);
+
+        Optional<Line> foundLine = lineDao.findByName(savedLine.getName());
+
+        assertThat(foundLine.get().getColor()).isEqualTo(savedLine.getColor());
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 조회할 경우 Optional.empty로 반환한다.")

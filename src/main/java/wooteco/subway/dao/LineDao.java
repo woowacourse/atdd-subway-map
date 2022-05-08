@@ -26,8 +26,6 @@ public class LineDao {
     }
 
     public Line save(Line line) {
-        validateLineName(line);
-
         String sql = "INSERT INTO line (name, color) VALUES (:name, :color)";
 
         Map<String, Object> params = new HashMap<>();
@@ -43,20 +41,6 @@ public class LineDao {
         return new Line(lineId, line.getName(), line.getColor());
     }
 
-    private void validateLineName(Line line) {
-        String sql = "SELECT id, name, color FROM line WHERE name = :name";
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", line.getName());
-        params.put("color", line.getColor());
-
-        List<Line> lines = jdbcTemplate.query(sql, params, rowMapper);
-
-        if (lines.size() > 0) {
-            throw new IllegalArgumentException("같은 이름의 노선은 등록할 수 없습니다.");
-        }
-    }
-
     public List<Line> findAll() {
         String sql = "SELECT * FROM line";
         return jdbcTemplate.query(sql, new MapSqlParameterSource(), rowMapper);
@@ -69,6 +53,17 @@ public class LineDao {
         params.put("id", id);
 
         List<Line> lines = jdbcTemplate.query(sql, new MapSqlParameterSource(params), rowMapper);
+
+        return lines.stream().findFirst();
+    }
+
+    public Optional<Line> findByName(String name) {
+        String sql = "SELECT id, name, color FROM line WHERE name = :name";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+
+        List<Line> lines = jdbcTemplate.query(sql, params, rowMapper);
 
         return lines.stream().findFirst();
     }

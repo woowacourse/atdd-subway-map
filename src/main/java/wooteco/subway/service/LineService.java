@@ -17,7 +17,13 @@ public class LineService {
     }
 
     public Line save(Line line) {
+        validateDuplicateName(line);
         return lineDao.save(line);
+    }
+
+    private void validateDuplicateName(Line line) {
+        Optional<Line> optionalLine = lineDao.findByName(line.getName());
+        optionalLine.orElseThrow(() -> new IllegalArgumentException("같은 이름의 노선은  노선입니다."));
     }
 
     public List<Line> findAll() {
