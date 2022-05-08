@@ -1,13 +1,15 @@
 package wooteco.subway.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.SectionWithStation;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 
@@ -57,10 +59,5 @@ public class LineService {
         if (!lineDao.hasLine(id)) {
             throw new IllegalArgumentException(NO_ID_ERROR_MESSAGE);
         }
-    }
-
-    public List<Station> findStationsOfLine(Line line) {
-        Sections sections = new Sections(sectionDao.findAllByLineId(line.getId()));
-        return sections.getStations(line);
     }
 }

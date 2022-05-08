@@ -1,27 +1,23 @@
 package wooteco.subway.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.SectionWithStation;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 
 @Service
 public class SectionService {
-    private static final String ALREADY_IN_LINE_ERROR_MESSAGE = "이미 해당 이름의 노선이 있습니다.";
-    private static final String NO_ID_ERROR_MESSAGE = "해당 아이디의 노선이 없습니다.";
-
-    private final LineDao lineDao;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
 
-    public SectionService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
-        this.lineDao = lineDao;
+    public SectionService(SectionDao sectionDao, StationDao stationDao) {
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
     }
@@ -31,11 +27,24 @@ public class SectionService {
         return sectionDao.findById(id);
     }
 
-    public List<Station> findStationsOfLine(Line line) {
-        List<Station> result = new ArrayList<>();
-        Sections sections = new Sections(sectionDao.findAllByLineId(line.getId()));
+    public List<Station> findStationsOfLine(Long lineId) {
+        Sections sections = new Sections(
+                sectionDao.findAllByLineId(lineId)
+                        .stream()
+                        .map(getSectionWithStation())
+                        .collect(Collectors.toList())
+        );
+        return sections.calculateStations();
+    }
 
-        return result;
+    private Function<Section, SectionWithStation> getSectionWithStation() {
+        return section -> new SectionWithStation(
+                section.getId(),
+                section.getLineId(),
+                stationDao.findById(section.getUpStationId()),
+                stationDao.findById(section.getDownStationId()),
+                section.getDistance()
+        );
     }
 
     public void deleteSection(Long lineId, Long stationId) {

@@ -24,11 +24,20 @@ class SectionServiceTest extends ServiceTest {
     @Autowired
     private LineService lineService;
 
-    @DisplayName("지하철 구간을 생성한다.")
+    @DisplayName("맨 처음 지하철 구간을 생성한다.")
     @Test
     void saveSection() {
         Section resSection = sectionService.saveSection(SECTION);
         assertThat(resSection)
+                .isEqualTo(getSection(resSection.getId(), SECTION));
+    }
+
+    @DisplayName("상행종점을 등록한다")
+    @Test
+    void saveSection_upStation() {
+        Section resSection = sectionService.saveSection(SECTION_2);
+        Section resSection2 = sectionService.saveSection(SECTION);
+        assertThat(sectionService.findStationsOfLine(SECTION.getLineId()))
                 .isEqualTo(getSection(resSection.getId(), SECTION));
     }
 
@@ -44,7 +53,7 @@ class SectionServiceTest extends ServiceTest {
         sectionService.saveSection(SECTION_2);
 
         //when then
-        assertThat(lineService.findStationsOfLine(saveLine))
+        assertThat(sectionService.findStationsOfLine(saveLine.getId()))
                 .containsOnly(saveStation, saveStation2, saveStation3);
     }
 }

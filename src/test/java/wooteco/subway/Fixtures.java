@@ -8,6 +8,7 @@ public class Fixtures {
     public static final Station STATION = new Station("강남역");
     public static final Station STATION_2 = new Station("선릉역");
     public static final Station STATION_3 = new Station("잠실역");
+    public static final Station STATION_4 = new Station("사당역");
 
     public static final Line LINE = new Line("신분당선", "red");
     public static final Line LINE_2 = new Line("분당선", "green");

@@ -68,7 +68,6 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 지하철 노선 수정
 - [x] 지하철 노선 삭제
 - [x] 지하철 노선 db 생성 및 데이터 연결
-- [x] static 객체를 스프링 빈으로 변경
 
 ### 구간 관리 API 구현
 
@@ -82,7 +81,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
         - [ ] [예외] 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
     - [ ] [예외] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
     - [ ] [예외] 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
-- [ ] 노선에 포함된 구간 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답
+- [x] 노선에 포함된 구간 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답
 - [ ] 구간 제거
     - [ ] 종점이 제거될 경우 다음으로 오던 역이 종점이 됨
     - [ ] 중간역이 제거될 경우 재배치를 함
@@ -99,7 +98,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 컨트롤러 테스트코드 간소화
 - [x] vo 동등성 기준 변경
 - [x] Line 테이블에 상/하행/거리 정보가 제외되도록 변경
-- [ ] Section 안에 stationId 대신 station이 포함되도록 변경
+- [x] station이 포함된 Section 클래스 생성
 
 ### 1단계 피드백
 

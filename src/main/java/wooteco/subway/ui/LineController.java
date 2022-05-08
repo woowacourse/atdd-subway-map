@@ -34,14 +34,14 @@ public class LineController {
         Line newLine = lineService.save(lineRequest.toLine());
         sectionService.saveSection(lineRequest.toSection(newLine.getId()));
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId()))
-                .body(LineResponse.of(newLine, lineService.findStationsOfLine(newLine)));
+                .body(LineResponse.of(newLine, sectionService.findStationsOfLine(newLine.getId())));
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         List<LineResponse> lineResponses = lineService.findAll()
                 .stream()
-                .map(line -> LineResponse.of(line, lineService.findStationsOfLine(line)))
+                .map(line -> LineResponse.of(line, sectionService.findStationsOfLine(line.getId())))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
