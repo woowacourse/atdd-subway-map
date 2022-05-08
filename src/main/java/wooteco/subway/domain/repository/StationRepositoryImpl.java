@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.domain.repository;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;

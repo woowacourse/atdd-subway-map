@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.domain.repository;
 
 import wooteco.subway.domain.Station;
 

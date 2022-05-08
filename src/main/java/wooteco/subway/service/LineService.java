@@ -2,8 +2,8 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.LineRepository;
-import wooteco.subway.dao.StationRepository;
+import wooteco.subway.domain.repository.LineRepository;
+import wooteco.subway.domain.repository.StationRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
