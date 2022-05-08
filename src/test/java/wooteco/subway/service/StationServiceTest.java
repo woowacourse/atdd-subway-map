@@ -1,10 +1,9 @@
 package wooteco.subway.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.Mockito;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
@@ -18,13 +17,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.BDDMockito.given;
 
-@SpringBootTest
 class StationServiceTest {
-    @Mock
     StationDao stationDao;
-
-    @InjectMocks
     StationService stationService;
+
+    @BeforeEach
+    public void setUp() {
+        stationDao = Mockito.mock(StationDao.class);
+        stationService = new StationService(stationDao);
+    }
 
     @Test
     @DisplayName("지하철 역 이름이 중복되지 않는다면 등록할 수 있다.")
