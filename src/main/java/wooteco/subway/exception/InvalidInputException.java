@@ -1,10 +1,10 @@
 package wooteco.subway.exception;
 
-public class CustomException extends RuntimeException {
+public class InvalidInputException extends RuntimeException {
 
     private final String message;
 
-    public CustomException(String message) {
+    public InvalidInputException(String message) {
         this.message = message;
     }
 

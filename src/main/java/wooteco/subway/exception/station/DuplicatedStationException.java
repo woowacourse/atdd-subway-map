@@ -1,8 +1,8 @@
 package wooteco.subway.exception.station;
 
-import wooteco.subway.exception.CustomException;
+import wooteco.subway.exception.InvalidInputException;
 
-public class DuplicatedStationException extends CustomException {
+public class DuplicatedStationException extends InvalidInputException {
 
     private static final String MESSAGE = "이미 존재하는 역 이름입니다.";
 
