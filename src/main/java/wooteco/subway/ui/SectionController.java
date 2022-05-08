@@ -22,7 +22,7 @@ public class SectionController {
 
     @PostMapping("/{id}/sections")
     public ResponseEntity<Void> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
-        sectionService.saveSection(sectionRequest.toEntity(id));
+        sectionService.save(sectionRequest.toEntity(id));
         return ResponseEntity.ok().build();
     }
 

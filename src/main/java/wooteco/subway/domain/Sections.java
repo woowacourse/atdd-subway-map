@@ -49,4 +49,14 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("해당 하행과 상행으로 연결되는 구간이 없습니다."));
     }
+
+    public boolean isMiddleUpAttachSection(Section inSection) {
+        return sections.stream()
+                .anyMatch(section -> section.getUpStation().getId().equals(inSection.getUpStationId()));
+    }
+
+    public boolean isMiddleDownAttachSection(Section inSection) {
+        return sections.stream()
+                .anyMatch(section -> section.getDownStation().getId().equals(inSection.getDownStationId()));
+    }
 }

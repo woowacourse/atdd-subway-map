@@ -9,8 +9,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.SectionWithStation;
-import wooteco.subway.domain.Station;
 
 @Repository
 public class SectionDao {
@@ -51,6 +49,28 @@ public class SectionDao {
     public Section findById(Long id) {
         final String sql = "SELECT * FROM section WHERE id = ?;";
         return jdbcTemplate.queryForObject(sql, SECTION_ROW_MAPPER, id);
+    }
+
+    public Section findByUpStationId(Long lineId, Long upStationId) {
+        final String sql = "SELECT * FROM section WHERE upStationId = ? AND lineId = ?;";
+        return jdbcTemplate.queryForObject(sql, SECTION_ROW_MAPPER, upStationId, lineId);
+    }
+
+    public Section findByDownStationId(Long lineId, Long downStationId) {
+        final String sql = "SELECT * FROM section WHERE downStationId = ? AND lineId = ?;";
+        return jdbcTemplate.queryForObject(sql, SECTION_ROW_MAPPER, downStationId, lineId);
+    }
+
+    public boolean hasUpStationId(Section section) {
+        final String sql = "SELECT EXISTS (SELECT * FROM section WHERE upStationId = ? AND lineId = ?);";
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(sql, Boolean.class, section.getUpStationId(), section.getLineId()));
+    }
+
+    public boolean hasDownStationId(Section section) {
+        final String sql = "SELECT EXISTS (SELECT * FROM section WHERE downStationId = ? AND lineId = ?);";
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(sql, Boolean.class, section.getDownStationId(), section.getLineId()));
     }
 
     public void delete(Long id) {

@@ -27,6 +27,16 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section calculateDownRemainSection(Section section) {
+        return new Section(section.getLineId(), section.getDownStationId(),
+                downStationId, distance - section.getDistance());
+    }
+
+    public Section calculateUpRemainSection(Section section) {
+        return new Section(section.getLineId(), upStationId,
+                section.upStationId, distance - section.getDistance());
+    }
+
     public Long getLineId() {
         return lineId;
     }
@@ -64,4 +74,5 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id, lineId, upStationId, downStationId, distance);
     }
+
 }

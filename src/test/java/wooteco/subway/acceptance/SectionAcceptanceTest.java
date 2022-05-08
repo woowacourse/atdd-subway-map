@@ -37,7 +37,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         setRequest().body(line).post("/lines");
 
         //when
-        ExtractableResponse<Response> response = getResponse(setRequest().body(section)
+        ExtractableResponse<Response> response = getResponse(setRequest().body(section2)
                 .post("/lines/" + lineId + "/sections"));
 
         //then

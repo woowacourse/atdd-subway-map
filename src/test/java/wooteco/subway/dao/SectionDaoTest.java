@@ -51,6 +51,44 @@ class SectionDaoTest {
                 .containsOnly(getSection(id, SECTION), getSection(id2, SECTION_2));
     }
 
+    @DisplayName("해당 지하철 노선 upStationId의 지하철 구간들을 조회한다.")
+    @Test
+    void findByUpStationId() {
+        Long id = sectionDao.save(SECTION);
+        Section section = sectionDao.findByUpStationId(SECTION.getLineId(),SECTION.getUpStationId());
+        assertThat(section)
+                .isEqualTo(getSection(id,SECTION));
+    }
+
+    @DisplayName("해당 지하철 노선 downStationId의 지하철 구간들을 조회한다.")
+    @Test
+    void findByDownStationId() {
+        Long id = sectionDao.save(SECTION);
+        Section section = sectionDao.findByDownStationId(SECTION.getLineId(),SECTION.getDownStationId());
+        assertThat(section)
+                .isEqualTo(getSection(id,SECTION));
+    }
+
+    @DisplayName("해당 지하철 노선 upStationId의 지하철 구간이 있는지 확인한다.")
+    @Test
+    void hasUpStationId() {
+        sectionDao.save(SECTION);
+        assertThat(sectionDao.hasUpStationId(SECTION))
+                .isTrue();
+        assertThat(sectionDao.hasUpStationId(SECTION_2))
+                .isFalse();
+    }
+
+    @DisplayName("해당 지하철 노선 downStationId 지하철 구간이 있는지 확인한다.")
+    @Test
+    void hasDownStationId() {
+        sectionDao.save(SECTION);
+        assertThat(sectionDao.hasDownStationId(SECTION))
+                .isTrue();
+        assertThat(sectionDao.hasDownStationId(SECTION_2))
+                .isFalse();
+    }
+
     @DisplayName("지하철 구간을 삭제한다.")
     @Test
     void delete() {

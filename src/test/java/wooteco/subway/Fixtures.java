@@ -15,6 +15,9 @@ public class Fixtures {
 
     public static final Section SECTION = new Section(1L, 1L, 2L, 10);
     public static final Section SECTION_2 = new Section(1L, 2L, 3L, 5);
+    public static final Section SECTION_3 = new Section(1L, 2L, 4L, 3);
+    public static final Section SECTION_4 = new Section(1L, 3L, 4L, 3);
+    public static final Section SECTION_5 = new Section(1L, 2L, 4L, 10);
 
     public static Station getStation(Long id, Station station) {
         return new Station(id, station.getName());
