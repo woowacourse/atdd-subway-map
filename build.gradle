@@ -17,6 +17,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
+	// spring jdbc
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+
+	// database
+	runtimeOnly 'com.h2database:h2'
+
 	// log
 	implementation 'net.rakugakibox.spring.boot:logback-access-spring-boot-starter:2.7.1'
 
