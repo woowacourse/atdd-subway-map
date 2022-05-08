@@ -13,7 +13,7 @@ public class Section {
     }
 
     public Section(Long upStationId, Long downStationId, int distance) {
-        validateSection(upStationId, downStationId);
+        validateSection(upStationId, downStationId, distance);
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
@@ -29,9 +29,12 @@ public class Section {
         this.id = id;
     }
 
-    private void validateSection(Long upStationId, Long downStationId) {
+    private void validateSection(Long upStationId, Long downStationId, int distance) {
         if (Objects.equals(upStationId, downStationId)) {
             throw new IllegalArgumentException("상행역과 하행역은 같을 수 없습니다.");
+        }
+        if (distance <= 0) {
+            throw new IllegalArgumentException("구간 거리는 0 이하일 수 없습니다.");
         }
     }
 

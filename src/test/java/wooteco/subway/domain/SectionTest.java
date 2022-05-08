@@ -19,6 +19,14 @@ public class SectionTest {
                 .hasMessage("상행역과 하행역은 같을 수 없습니다.");
     }
 
+    @Test
+    @DisplayName("거리가 0 미만일 경우 예외를 발생시킨다.")
+    void validateDistance() {
+        assertThatThrownBy(()->new Section(1L, 3L, 0))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("구간 거리는 0 이하일 수 없습니다.");
+    }
+
     @ParameterizedTest
     @DisplayName("해당 구간에 특정 구간의 상행역이 존재하는지 알려준다.")
     @CsvSource({"1, 3, 5, true", "1, 2, 30, true",
