@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.Collections;
 import java.util.List;
 
 public class Line {
@@ -14,6 +15,7 @@ public class Line {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+        this.sections = new Sections(Collections.emptyList());
     }
 
     public Line(Long id, String name, String color) {
@@ -21,13 +23,18 @@ public class Line {
         this.id = id;
     }
 
-    public Line(String name, String color, Section section) {
+    public Line(Long id, String name, String color, Section section) {
         this(name, color);
+        this.id = id;
         this.sections = new Sections(List.of(section));
     }
 
     public void addSection(Section section) {
         sections.add(section);
+    }
+
+    public List<Section> findAll() {
+        return sections.getSections();
     }
 
     public void deleteSections(Station station) {
@@ -60,9 +67,5 @@ public class Line {
 
     public Sections getSections() {
         return sections;
-    }
-
-    public List<Section> getAllSections() {
-        return sections.getSections();
     }
 }
