@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static wooteco.subway.acceptance.StationAcceptanceTest.postStations;
 
 import io.restassured.RestAssured;
@@ -78,8 +79,10 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = postLines(lineSaveRequest);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.header("Location")).isNotBlank()
+        );
     }
 
     @Test
@@ -119,8 +122,10 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getLines();
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList(".", LineResponse.class)).hasSize(2);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList(".", LineResponse.class)).hasSize(2)
+        );
     }
 
     @Test
