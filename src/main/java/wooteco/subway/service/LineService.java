@@ -51,6 +51,12 @@ public class LineService {
         }
     }
 
+    public List<LineResponse> findAll() {
+        return lineDao.findAll().stream()
+                .map(line -> findById(line.getId()))
+                .collect(toUnmodifiableList());
+    }
+
     public LineResponse findById(Long id) {
         final Line line = lineDao.findById(id);
 
@@ -83,12 +89,6 @@ public class LineService {
         return stations.stream()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());
-    }
-
-    public List<LineResponse> findAll() {
-        return lineDao.findAll().stream()
-                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
-                .collect(toUnmodifiableList());
     }
 
     public Long updateByLine(Long id, LineRequest request) {

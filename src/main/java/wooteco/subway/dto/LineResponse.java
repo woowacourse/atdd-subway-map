@@ -7,7 +7,7 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private List<StationResponse> stationResponses;
+    private List<StationResponse> stations;
 
     public LineResponse() {
     }
@@ -22,7 +22,7 @@ public class LineResponse {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stationResponses = stationResponses;
+        this.stations = stationResponses;
     }
 
     public Long getId() {
@@ -37,8 +37,8 @@ public class LineResponse {
         return color;
     }
 
-    public List<StationResponse> getStationResponses() {
-        return stationResponses;
+    public List<StationResponse> getStations() {
+        return stations;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class LineResponse {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
-                ", stationResponses=" + stationResponses +
+                ", stationResponses=" + stations +
                 '}';
     }
 }

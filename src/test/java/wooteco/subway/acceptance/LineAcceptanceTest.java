@@ -75,9 +75,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 전체를 조회한다.")
     void getLines() {
         // given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "신분당선");
-        params1.put("color", "br-red-600");
+        LineRequest params1 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -86,9 +84,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "분당선");
-        params2.put("color", "br-green-600");
+        LineRequest params2 = new LineRequest("분당선", "bg-green-600", 1L, 2L, 10);
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
