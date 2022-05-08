@@ -36,27 +36,25 @@ public class LineService {
         Section saveSection = new Section(newLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(),
                 lineRequest.getDistance());
         sectionDao.save(saveSection);
-        Set<StationResponse> stations = extractUniqueStationsFromSections(newLine);
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), new ArrayList<>(stations));
+        List<StationResponse> stations = extractUniqueStationsFromSections(newLine);
+        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), stations);
     }
 
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
-                .map(it -> new LineResponse(
-                        it.getId(),
-                        it.getName(),
-                        it.getColor(),
-                        it.getStations().stream()
-                                .map(StationResponse::new)
-                                .collect(Collectors.toList())))
+                .map(line -> new LineResponse(
+                        line.getId(),
+                        line.getName(),
+                        line.getColor(),
+                        extractUniqueStationsFromSections(line)))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id);
-        Set<StationResponse> stations = extractUniqueStationsFromSections(line);
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>(stations));
+        List<StationResponse> stations = extractUniqueStationsFromSections(line);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }
 
     public void changeField(LineResponse findLine, LineRequest lineRequest) {
@@ -67,7 +65,7 @@ public class LineService {
         lineDao.deleteById(id);
     }
 
-    private Set<StationResponse> extractUniqueStationsFromSections(Line line) {
+    private ArrayList<StationResponse> extractUniqueStationsFromSections(Line line) {
         List<Section> sections = sectionDao.findAllByLineId(line.getId());
         Set<StationResponse> stations = new LinkedHashSet<>();
 
@@ -77,6 +75,6 @@ public class LineService {
             stations.add(new StationResponse(upStation));
             stations.add(new StationResponse(downStation));
         }
-        return stations;
+        return new ArrayList<StationResponse>(stations);
     }
 }

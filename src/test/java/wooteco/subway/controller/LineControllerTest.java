@@ -122,7 +122,7 @@ class LineControllerTest {
                 given().log().all().
                 when()
                 .get(uri).
-                then().
+                then().log().all().
                 statusCode(HttpStatus.OK.value());
     }
 
@@ -131,31 +131,30 @@ class LineControllerTest {
     void getStations() {
         /// given
         ExtractableResponse<Response> createResponse1 = RestAssured.
-                given().log().all()
-                .body(testLine1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE).
-                        when()
-                .post("/lines").
-                        then()
-                .extract();
+                given().log().all().
+                    body(testLine1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/lines").
+                then().
+                    extract();
 
         ExtractableResponse<Response> createResponse2 = RestAssured.
-                given().log().all()
-                .body(testLine2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE).
-                        when()
-                .post("/lines").
-                        then().
-                        extract();
+                given().log().all().
+                    body(testLine2).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/lines").
+                then().
+                    extract();
 
         // when
         ExtractableResponse<Response> response = RestAssured.
-                given().
-                log().all().
+                given().log().all().
                 when().
-                get("/lines")
-                .then().
-                        extract();
+                    get("/lines").
+                then().log().all().
+                    extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -172,21 +171,22 @@ class LineControllerTest {
     @Test
     void deleteStation() {
         // given
+        StationDao stationDao = new StationDao(jdbcTemplate);
         ExtractableResponse<Response> createResponse = RestAssured.
                 given().log().all().
-                body(testLine1).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
+                    body(testLine1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                post("/lines").
-                then().
-                extract();
+                    post("/lines").
+                then().log().all().
+                    extract();
 
         // when
         String uri = createResponse.header("Location");
 //        RestAssured.given().log().all().
 //                when().
 //                    delete(uri).
-//                then().
+//                then().log().all().
 //                    statusCode(HttpStatus.NO_CONTENT.value());
     }
 
@@ -196,33 +196,32 @@ class LineControllerTest {
         /// given
         ExtractableResponse<Response> createResponse1 = RestAssured.
                 given().log().all().
-                body(testLine1).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
+                    body(testLine1).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                post("/lines").
-                then()
-                .extract();
+                    post("/lines").
+                then().log().all().
+                    extract();
 
         ExtractableResponse<Response> createResponse2 = RestAssured.
-                given().
-                log().all()
-                .body(testLine2).
-                        contentType(MediaType.APPLICATION_JSON_VALUE).
-                        when().
-                        post("/lines").
-                        then().
-                        extract();
+                given().log().all().
+                    body(testLine2).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    post("/lines").
+                then().log().all().
+                    extract();
 
         // when
         String uri = createResponse1.header("Location");
         RestAssured.
                 given().log().all().
-                body(testLine3).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
+                    body(testLine3).
+                    contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                put(uri).
-                then().
-                statusCode(HttpStatus.OK.value()).log().all();
+                    put(uri).
+                then().log().all().
+                    statusCode(HttpStatus.OK.value()).log().all();
     }
 
     @DisplayName("존재하지 않는 id의 노선 이름을 변경한다.")
