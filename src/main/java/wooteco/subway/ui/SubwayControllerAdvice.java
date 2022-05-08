@@ -12,7 +12,7 @@ import wooteco.subway.exception.SubwayUnknownException;
 import wooteco.subway.exception.SubwayValidationException;
 import wooteco.subway.ui.dto.ExceptionResponse;
 
-@RestControllerAdvice(basePackageClasses = {LineController.class, StationController.class})
+@RestControllerAdvice
 public class SubwayControllerAdvice {
 
     private static final String UNKNOWN_EXCEPTION_MESSAGE = "확인되지 않은 예외가 발생했습니다. 관리자에게 문의해주세요.";
