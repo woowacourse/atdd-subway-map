@@ -29,29 +29,42 @@ public class Sections {
 
     public void add(Section section) {
         Relation relation = calculateRelation(section);
+        validateSectionAddable(relation);
+
+        if (relation.equals(Relation.EXTEND)) {
+            extendSections(section);
+            return;
+        }
+
+        for (int i = 0; i < sections.size(); i++) {
+            Section origin = sections.get(i);
+            if (origin.isSameUpStation(section)) {
+                sections.remove(i);
+                sections.addAll(i, List.of(section, origin.divideBy(section)));
+                return;
+            }
+            if (origin.isSameDownStation(section)) {
+                sections.remove(i);
+                sections.addAll(i, List.of(origin.divideBy(section), section));
+                return;
+            }
+        }
+    }
+
+    private void extendSections(Section section) {
+        if (findTop().canUpExtendBy(section)) {
+            sections.addFirst(section);
+            return;
+        }
+        if (findBottom().canDownExtendBy(section)) {
+            sections.addLast(section);
+            return;
+        }
+    }
+
+    private void validateSectionAddable(Relation relation) {
         if (relation.equals(Relation.NONE) || relation.equals(Relation.INCLUDE)) {
             throw new IllegalArgumentException("해당 노선은 추가할 수 없습니다.");
-        }
-        if (relation.equals(Relation.EXTEND)) {
-            if (findTop().canUpExtendBy(section)) {
-                sections.addFirst(section);
-                return;
-            }
-            if (findBottom().canDownExtendBy(section)) {
-                sections.addLast(section);
-                return;
-            }
-        }
-        if (relation.equals(Relation.DIVIDE)) {
-            for (int i = 0; i < sections.size(); i++) {
-                Section origin = sections.get(i);
-                if (origin.isSameUpStation(section)) {
-                    Section divided = origin.divideBy(section);
-                    sections.set(i, section);
-                    sections.add(i + 1, divided);
-                    return;
-                }
-            }
         }
     }
 
@@ -72,14 +85,25 @@ public class Sections {
         if (target.isAlreadyIn(getStations())) {
             return Relation.INCLUDE;
         }
-        if (findTop().canUpExtendBy(target) || findBottom().canDownExtendBy(target)) {
+        if (canExtendBy(target)) {
             return Relation.EXTEND;
         }
-        for (Section section : sections) {
-            if (section.isSameUpStation(target) || section.isSameDownStation(target)) {
-                return Relation.DIVIDE;
-            }
+        if (canAnyDivideBy(target)) {
+            return Relation.DIVIDE;
         }
         return Relation.NONE;
+    }
+
+    private boolean canExtendBy(Section target) {
+        return findTop().canUpExtendBy(target) || findBottom().canDownExtendBy(target);
+    }
+
+    private boolean canAnyDivideBy(Section target) {
+        for (Section section : sections) {
+            if (section.isSameUpStation(target) || section.isSameDownStation(target)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
