@@ -31,7 +31,7 @@ public class LineService {
         return extractLine(lineDao.findById(id));
     }
 
-    public void patch(Long id, Line line) {
+    public void modify(Long id, Line line) {
         extractLine(lineDao.findById(id));
         lineDao.update(id, line);
     }

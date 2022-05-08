@@ -43,7 +43,7 @@ public class LineController {
     @PutMapping("/lines/{lineId}")
     public void updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
         Line newLine = new Line(lineRequest.getName(), lineRequest.getColor());
-        lineService.patch(lineId, newLine);
+        lineService.modify(lineId, newLine);
     }
 
     @DeleteMapping("/lines/{lineId}")
