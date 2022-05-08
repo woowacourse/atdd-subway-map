@@ -5,11 +5,12 @@ public class Line {
     private static final int NAME_LENGTH = 255;
     private static final int COLOR_LENGTH = 20;
 
-    private Long id;
-    private String name;
-    private String color;
+    private final Long id;
+    private final String name;
+    private final String color;
 
     public Line() {
+        this(null, null, null);
     }
 
     public Line(String name, String color) {
