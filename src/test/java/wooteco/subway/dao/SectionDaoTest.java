@@ -102,7 +102,7 @@ class SectionDaoTest extends DaoTest {
         final Section expected = new Section(sectionId, lineId, upStationId, downStationId, 10);
 
         // when
-        final Optional<Section> actual = sectionDao.findBy(lineId, upStationId, 999L);
+        final Optional<Section> actual = sectionDao.findBy(lineId, 999L, downStationId);
 
         // then
         assertThat(actual).isPresent()

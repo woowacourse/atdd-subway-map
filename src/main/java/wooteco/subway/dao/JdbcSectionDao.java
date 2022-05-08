@@ -46,8 +46,8 @@ public class JdbcSectionDao implements SectionDao {
     @Override
     public Optional<Section> findBy(final Long lineId, final Long upStationId, final Long downStationId) {
         try {
-            final String sql = "SELECT * FROM section WHERE line_id = ? AND up_station_id = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, upStationId));
+            final String sql = "SELECT * FROM section WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, upStationId, downStationId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
