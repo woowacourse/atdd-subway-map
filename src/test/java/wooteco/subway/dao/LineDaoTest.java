@@ -32,12 +32,11 @@ class LineDaoTest {
         assertThat(linesBeforeSave.size()).isEqualTo(0);
 
         Line line = new Line(1L, "선릉역", "bg-yellow-600");
-        Line savedLine = lineDao.save(line);
+        long savedLineId = lineDao.save(line);
 
         List<Line> linesAfterSave = lineDao.findAll();
         assertThat(linesAfterSave.size()).isEqualTo(1);
 
-        Long savedLineId = savedLine.getId();
         Line foundLine = lineDao.findById(savedLineId).get();
         assertThat(foundLine).isEqualTo(new Line(savedLineId, "선릉역", "bg-yellow-600"));
     }
@@ -46,8 +45,7 @@ class LineDaoTest {
     @Test
     void can_update() {
         Line line = new Line(1L, "선릉역", "bg-yellow-600");
-        Line savedLine = lineDao.save(line);
-        Long savedLineId = savedLine.getId();
+        long savedLineId = lineDao.save(line);
 
         lineDao.update(new Line(savedLineId, "서울역", "bg-blue-600"));
 
@@ -59,9 +57,9 @@ class LineDaoTest {
     @Test
     void can_delete() {
         Line line = new Line(1L, "선릉역", "bg-yellow-600");
-        Line savedLine = lineDao.save(line);
+        long savedLineId = lineDao.save(line);
 
-        lineDao.deleteById(savedLine.getId());
+        lineDao.deleteById(savedLineId);
 
         List<Line> foundLines = lineDao.findAll();
         assertThat(foundLines.size()).isEqualTo(0);

@@ -17,7 +17,7 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line save(String name, String color) {
+    public long save(String name, String color) {
         if (lineDao.existByName(name)) {
             throw new DuplicateException();
         }

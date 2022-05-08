@@ -1,8 +1,5 @@
 package wooteco.subway.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +12,9 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.exception.BlankArgumentException;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotExistException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -29,9 +29,9 @@ public class LineServiceTest {
     @DisplayName("지하철 노선 저장")
     @Test
     void saveLine() {
-        Line line = lineService.save("신분당선", "bg-red-600");
+        long savedLineId = lineService.save("신분당선", "bg-red-600");
 
-        assertThat(lineDao.findById(line.getId())).isNotEmpty();
+        assertThat(lineDao.findById(savedLineId)).isNotEmpty();
     }
 
     @DisplayName("지하철 노선 빈 이름으로 저장")
@@ -73,9 +73,9 @@ public class LineServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void updateLineWithEmptyName(String name) {
-        Line line = lineService.save("신분당선", "bg-red-600");
+        long savedLineId = lineService.save("신분당선", "bg-red-600");
 
-        assertThatThrownBy(() -> lineService.update(line.getId(), name, "bg-red-600"))
+        assertThatThrownBy(() -> lineService.update(savedLineId, name, "bg-red-600"))
             .isInstanceOf(BlankArgumentException.class);
     }
 
@@ -83,20 +83,20 @@ public class LineServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void updateLineWithEmptyColor(String color) {
-        Line line = lineService.save("신분당선", "bg-red-600");
+        long savedLineId = lineService.save("신분당선", "bg-red-600");
 
-        assertThatThrownBy(() -> lineService.update(line.getId(), "신분당선", color))
+        assertThatThrownBy(() -> lineService.update(savedLineId, "신분당선", color))
             .isInstanceOf(BlankArgumentException.class);
     }
 
     @DisplayName("지하철 노선의 정보를 수정한다.")
     @Test
     void updateLine() {
-        Line line = lineService.save("신분당선", "bg-red-600");
+        long savedLineId = lineService.save("신분당선", "bg-red-600");
 
-        lineService.update(line.getId(), "1호선", "bg-blue-600");
+        lineService.update(savedLineId, "1호선", "bg-blue-600");
 
-        Line expectedLine = lineDao.findById(line.getId()).orElseThrow();
+        Line expectedLine = lineDao.findById(savedLineId).orElseThrow();
         assertThat(expectedLine.getName()).isEqualTo("1호선");
         assertThat(expectedLine.getColor()).isEqualTo("bg-blue-600");
     }
@@ -118,10 +118,10 @@ public class LineServiceTest {
     @DisplayName("지하철 노선을 삭제 시도")
     @Test
     void deleteLine() {
-        Line line = lineService.save("신분당선", "bg-red-600");
+        long savedLineId = lineService.save("신분당선", "bg-red-600");
 
-        lineService.deleteById(line.getId());
+        lineService.deleteById(savedLineId);
 
-        assertThat(lineDao.findById(line.getId())).isEmpty();
+        assertThat(lineDao.findById(savedLineId)).isEmpty();
     }
 }

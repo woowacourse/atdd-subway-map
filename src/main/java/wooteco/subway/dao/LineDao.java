@@ -16,7 +16,7 @@ import java.util.Optional;
 public class LineDao {
 
     public static final RowMapper<Line> ROW_MAPPER = (rs, rn) -> {
-        Long newId = rs.getLong("id");
+        long newId = rs.getLong("id");
         String name = rs.getString("name");
         String color = rs.getString("color");
         return new Line(newId, name, color);
@@ -27,7 +27,7 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Line save(Line line) {
+    public long save(Line line) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -38,8 +38,8 @@ public class LineDao {
             return ps;
         }, keyHolder);
 
-        Long id = keyHolder.getKey().longValue();
-        return new Line(id, line.getName(), line.getColor());
+        long savedId = keyHolder.getKey().longValue();
+        return savedId;
     }
 
     public Optional<Line> findById(Long id) {
