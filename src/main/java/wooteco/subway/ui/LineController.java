@@ -29,17 +29,17 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createStation(@RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        Line line = lineRequest.toEntity();
         Line newLine = lineService.save(line);
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), null);
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        LineResponse lineResponse = LineResponse.from(newLine);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> findAllLines() {
         List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), null))
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
@@ -47,13 +47,13 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
         Line line = lineService.findLineById(id);
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), null);
+        LineResponse lineResponse = LineResponse.from(line);
         return ResponseEntity.ok().body(lineResponse);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
+        Line line = lineRequest.toEntityWithId(id);
         lineService.update(line);
         return ResponseEntity.ok().build();
     }
