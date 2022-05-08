@@ -162,7 +162,6 @@ public class LineService {
         final Optional<Section> upSection = sectionDao.findByDownStationId(lineId, stationId);
         final Optional<Section> downSection = sectionDao.findByUpStationId(lineId, stationId);
         checkFinalAndDeleteSections(upSection, downSection);
-        stationDao.deleteById(stationId);
     }
 
     private Line loadLine(Long lineId) {
