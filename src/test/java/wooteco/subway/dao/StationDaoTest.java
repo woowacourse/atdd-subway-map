@@ -15,8 +15,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.NoStationFoundException;
-import wooteco.subway.exception.StationDuplicateException;
 
 @DisplayName("Station Dao를 통해서")
 @JdbcTest
@@ -56,7 +54,7 @@ class StationDaoTest {
         void save_Fail_If_Exists() {
             stationDao.save(STATION_FIXTURE);
             assertThatThrownBy(() -> stationDao.save(STATION_FIXTURE))
-                    .isInstanceOf(StationDuplicateException.class)
+                    .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("이미 존재하는 지하철역입니다. Station{name='선릉역'}");
         }
     }
@@ -92,7 +90,7 @@ class StationDaoTest {
         @DisplayName("아이디가 존재하지 않으면 예외를 던진다.")
         void delete_By_Id_Fail() {
             assertThatThrownBy(() -> stationDao.deleteById(1L))
-                    .isInstanceOf(NoStationFoundException.class)
+                    .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("요청한 지하철 역이 존재하지 않습니다. id=1");
         }
     }

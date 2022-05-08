@@ -9,13 +9,13 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.NoStationFoundException;
-import wooteco.subway.exception.StationDuplicateException;
 
 @Repository
 public class StationDao {
 
     private static final int NO_ROW_AFFECTED = 0;
+    private static final String STATION_DUPLICATED = "이미 존재하는 지하철역입니다. ";
+    private static final String STATION_NOT_FOUND = "요청한 지하철 역이 존재하지 않습니다. ";
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;
@@ -34,7 +34,7 @@ public class StationDao {
             final Long id = simpleInsert.executeAndReturnKey(params).longValue();
             return new Station(id, station.getName());
         } catch (DuplicateKeyException e) {
-            throw new StationDuplicateException(station.toString());
+            throw new IllegalStateException(STATION_DUPLICATED + station);
         }
     }
 
@@ -49,7 +49,7 @@ public class StationDao {
         final String sql = "delete from STATION where id = :id";
         final int theNumberOfAffectedRow = namedParameterJdbcTemplate.update(sql, Map.of("id", id));
         if (theNumberOfAffectedRow == NO_ROW_AFFECTED) {
-            throw new NoStationFoundException("id=" + id);
+            throw new IllegalStateException(STATION_NOT_FOUND + "id=" + id);
         }
     }
 }
