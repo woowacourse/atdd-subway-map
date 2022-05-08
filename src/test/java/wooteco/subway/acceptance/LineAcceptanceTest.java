@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 
 @DisplayName("지하철노선 관련 기능")
@@ -46,6 +47,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
+        createStationResponse(stationRequest1);
+        createStationResponse(stationRequest2);
         createLineResponse(lineRequest1);
 
         // when
@@ -59,6 +62,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
+        createStationResponse(stationRequest1);
+        createStationResponse(stationRequest2);
+        createStationResponse(stationRequest3);
         ExtractableResponse<Response> createResponse1 = createLineResponse(lineRequest1);
         ExtractableResponse<Response> createResponse2 = createLineResponse(lineRequest2);
 
@@ -78,12 +84,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+        RestAssured.given().log().all()
+                .when()
+                .get("/lines/")
+                .then().log().all()
+                .body("name", contains(lineRequest1.getName(), lineRequest2.getName()))
+                .body("color", contains(lineRequest1.getColor(), lineRequest2.getColor()));
     }
 
     @DisplayName("지하철 단일 노선을 조회한다.")
     @Test
     void getLineById() {
         /// given
+        createStationResponse(stationRequest1);
+        createStationResponse(stationRequest2);
         ExtractableResponse<Response> createResponse = createLineResponse(lineRequest1);
         int expectedLineId = Integer.parseInt(createResponse.header("Location").split("/")[2]);
 
@@ -93,13 +107,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .when()
                 .get("/lines/" + expectedLineId)
                 .then().log().all()
-                .body("id", equalTo(expectedLineId));
+                .body("id", equalTo(expectedLineId))
+                .body("name", equalTo(lineRequest1.getName()))
+                .body("color", equalTo(lineRequest1.getColor()));
     }
 
     @DisplayName("존재하지 않는 id로 지하철 단일 노선을 조회할 때 예외를 발생시킨다.")
     @Test
     void getLineByInvalidId() {
         /// given
+        createStationResponse(stationRequest1);
+        createStationResponse(stationRequest2);
         ExtractableResponse<Response> createResponse = createLineResponse(lineRequest1);
 
         // when

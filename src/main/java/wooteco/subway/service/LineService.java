@@ -12,6 +12,7 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,15 +64,44 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         final List<Line> lines = lineDao.findAll();
+        for (Line line : lines) {
+            makeLineResponseByLine(line);
+        }
         return lines.stream()
-                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+                .map(this::makeLineResponseByLine)
                 .collect(Collectors.toUnmodifiableList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
         final Line line = checkExistLineById(id);
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        return makeLineResponseByLine(line);
+    }
+
+    private LineResponse makeLineResponseByLine(Line line) {
+        final List<Section> sections = sectionDao.findByLineId(line.getId());
+        final List<Station> stations = findStationsBySections(sections);
+        final List<StationResponse> stationResponses = makeStationResponseByStation(stations);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
+    }
+
+    private List<Station> findStationsBySections(List<Section> sections) {
+        final List<Station> stations = new ArrayList<>();
+        for (Section section : sections) {
+            Station upStation = findByStationId(section.getUpStationId());
+            Station downStation = findByStationId(section.getDownStationId());
+            stations.add(upStation);
+            stations.add(downStation);
+        }
+        return stations.stream()
+                .distinct()
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    private List<StationResponse> makeStationResponseByStation(List<Station> stations) {
+        return stations.stream()
+                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public void updateLine(Long id, String name, String color) {
