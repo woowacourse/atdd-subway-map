@@ -47,8 +47,7 @@ class LineServiceTest {
         lineService.save(line);
         lineService.save(line2);
 
-        assertThat(lineService.findAll())
-            .hasSize(2);
+        assertThat(lineService.findAll()).hasSize(2);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -62,8 +61,7 @@ class LineServiceTest {
 
         List<Line> lines = lineService.findAll();
 
-        assertThat(lines.get(0).getName())
-            .isEqualTo("분당선");
+        assertThat(lines.get(0).getName()).isEqualTo("분당선");
     }
 
     @DisplayName("지하철 노선을 삭제한다.")

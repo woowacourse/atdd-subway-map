@@ -31,8 +31,16 @@ class StationDaoTest {
     void saveAndFind() {
         Station station = new Station("강남역");
         stationDao.save(station);
-        assertThat(stationDao.findByName("강남역").getName())
-            .isEqualTo("강남역");
+        assertThat(stationDao.findByName("강남역").isPresent()).isTrue();
+    }
+
+    @DisplayName("지하철 노선을 id로 조회한다.")
+    @Test
+    void findById() {
+        Station station = new Station("강남역");
+        Station savedStation = stationDao.save(station);
+
+        assertThat(stationDao.findById(savedStation.getId()).isPresent()).isTrue();
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -40,11 +48,11 @@ class StationDaoTest {
     void findAll() {
         Station station = new Station("강남역");
         Station station1 = new Station("선릉역");
+
         stationDao.save(station);
         stationDao.save(station1);
 
-        assertThat(stationDao.findAll())
-            .hasSize(2);
+        assertThat(stationDao.findAll()).hasSize(2);
     }
 
     @DisplayName("지하철역을 삭제한다.")

@@ -46,8 +46,7 @@ class StationServiceTest {
         stationService.save(station);
         stationService.save(station1);
 
-        assertThat(stationService.findAll())
-            .hasSize(2);
+        assertThat(stationService.findAll()).hasSize(2);
     }
 
     @DisplayName("지하철역을 삭제한다.")

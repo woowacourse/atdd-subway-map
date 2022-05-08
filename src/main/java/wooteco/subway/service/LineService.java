@@ -11,6 +11,7 @@ import wooteco.subway.domain.Line;
 @Service
 public class LineService {
     private static final String ALREADY_IN_LINE_ERROR_MESSAGE = "이미 해당 이름의 노선이 있습니다.";
+    private static final String NOT_EXIST_LINE_ID_ERROR_MESSAGE = "해당 아이디의 노선이 없습니다.";
     private final LineDao lineDao;
 
     public LineService(LineDao lineDao) {
@@ -18,12 +19,15 @@ public class LineService {
     }
 
     public Line save(Line line) {
-        try {
-            lineDao.findByName(line.getName());
-        } catch (NoSuchElementException exception) {
-            return lineDao.save(line);
-        }
-        throw new IllegalStateException(ALREADY_IN_LINE_ERROR_MESSAGE);
+        validateDuplicatedName(line.getName());
+        return lineDao.save(line);
+    }
+
+    private void validateDuplicatedName(String name) {
+        lineDao.findByName(name)
+            .ifPresent(line -> {
+                throw new IllegalStateException(ALREADY_IN_LINE_ERROR_MESSAGE);
+            });
     }
 
     public List<Line> findAll() {
@@ -31,10 +35,17 @@ public class LineService {
     }
 
     public void update(Long id, Line line) {
+        validateExistId(id);
         lineDao.update(id, line);
     }
 
     public void delete(Long id) {
+        validateExistId(id);
         lineDao.delete(id);
+    }
+
+    private void validateExistId(Long id) {
+        lineDao.findById(id)
+            .orElseThrow(() -> new NoSuchElementException(NOT_EXIST_LINE_ID_ERROR_MESSAGE));
     }
 }

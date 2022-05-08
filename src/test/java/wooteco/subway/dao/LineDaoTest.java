@@ -2,8 +2,6 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.NoSuchElementException;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,8 +29,16 @@ class LineDaoTest {
     void saveAndFind() {
         Line line = new Line("신분당선", "red");
         lineDao.save(line);
-        assertThat(lineDao.findByName("신분당선").getName())
-            .isEqualTo("신분당선");
+        assertThat(lineDao.findByName("신분당선").isPresent()).isTrue();
+    }
+
+    @DisplayName("지하철 노선을 id로 조회한다.")
+    @Test
+    void findById() {
+        Line line = new Line("신분당선", "red");
+        Line savedLine = lineDao.save(line);
+
+        assertThat(lineDao.findById(savedLine.getId()).isPresent()).isTrue();
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -44,8 +50,7 @@ class LineDaoTest {
         lineDao.save(line);
         lineDao.save(line1);
 
-        assertThat(lineDao.findAll())
-            .hasSize(2);
+        assertThat(lineDao.findAll()).hasSize(2);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -54,15 +59,10 @@ class LineDaoTest {
         Line line = new Line("신분당선", "red");
         Line line2 = new Line("분당선", "green");
 
-        lineDao.save(line);
-        lineDao.update(lineDao.findByName("신분당선").getId(), line2);
+        Line savedLine = lineDao.save(line);
+        lineDao.update(savedLine.getId(), line2);
 
-        assertThatThrownBy(() -> lineDao.findByName("신분당선"))
-            .isInstanceOf(NoSuchElementException.class)
-            .hasMessage("해당 아이디의 노선이 없습니다.");
-
-        assertThat(lineDao.findByName("분당선").getName())
-            .isEqualTo("분당선");
+        assertThat(lineDao.findByName("신분당선").isEmpty()).isTrue();
     }
 
     @DisplayName("지하철 노선을 삭제한다.")
