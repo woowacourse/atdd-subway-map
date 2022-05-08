@@ -3,6 +3,7 @@ package wooteco.subway.controller;
 import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +38,8 @@ public class StationController {
     }
 
     @DeleteMapping("/{stationId}")
-    public ResponseEntity<Void> deleteStation(@PathVariable Long stationId) {
+    public ResponseEntity<Void> deleteStation(
+            @PathVariable @Positive(message = "노선의 id는 양수 값만 들어올 수 있습니다.") Long stationId) {
         stationService.delete(stationId);
         return ResponseEntity.noContent().build();
     }

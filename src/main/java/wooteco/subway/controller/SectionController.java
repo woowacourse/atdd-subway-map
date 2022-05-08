@@ -25,15 +25,16 @@ public class SectionController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveSection(@PathVariable long lineId,
+    public ResponseEntity<Void> saveSection(@PathVariable @Positive(message = "노선의 id는 양수 값만 들어올 수 있습니다.") long lineId,
                                             @RequestBody SectionSaveRequest sectionSaveRequest) {
         sectionService.save(lineId, sectionSaveRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteSection(@PathVariable long lineId,
-                                              @RequestParam @Positive(message = "역의 id는 양수 값만 들어올 수 있습니다.") long stationId) {
+    public ResponseEntity<Void> deleteSection(
+            @PathVariable @Positive(message = "노선의 id는 양수 값만 들어올 수 있습니다.") long lineId,
+            @RequestParam @Positive(message = "역의 id는 양수 값만 들어올 수 있습니다.") long stationId) {
         sectionService.delete(lineId, stationId);
         return ResponseEntity.ok().build();
     }
