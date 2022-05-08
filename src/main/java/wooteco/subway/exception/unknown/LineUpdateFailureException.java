@@ -1,4 +1,6 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.unknown;
+
+import wooteco.subway.exception.SubwayUnknownException;
 
 public class LineUpdateFailureException extends SubwayUnknownException {
 

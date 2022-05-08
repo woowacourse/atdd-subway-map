@@ -1,4 +1,6 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.validation;
+
+import wooteco.subway.exception.SubwayValidationException;
 
 public class LineColorDuplicateException extends SubwayValidationException {
 

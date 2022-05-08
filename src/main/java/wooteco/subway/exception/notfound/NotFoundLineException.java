@@ -1,4 +1,6 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.notfound;
+
+import wooteco.subway.exception.SubwayNotFoundException;
 
 public class NotFoundLineException extends SubwayNotFoundException {
 
