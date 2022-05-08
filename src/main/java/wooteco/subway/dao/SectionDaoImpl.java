@@ -54,13 +54,27 @@ public class SectionDaoImpl implements SectionDao {
     }
 
     @Override
-    public void updateDownStation(Long id, Long downStationId, int newDistance) {
+    public Optional<Section> findByUpStationId(Long lineId, Long upStationId) {
+        return findByLineId(lineId).stream()
+                .filter(it -> Objects.equals(it.getUpStationId(), upStationId))
+                .findFirst();
+    }
 
+    @Override
+    public Optional<Section> findByDownStationId(Long lineId, Long downStationId) {
+        return findByLineId(lineId).stream()
+                .filter(it -> Objects.equals(it.getUpStationId(), downStationId))
+                .findFirst();
+    }
+
+    @Override
+    public void updateDownStation(Long id, Long downStationId, int newDistance) {
+        // Need Setter method
     }
 
     @Override
     public void updateUpStation(Long id, Long upStationId, int newDistance) {
-
+        // Need Setter method
     }
 
     @Override

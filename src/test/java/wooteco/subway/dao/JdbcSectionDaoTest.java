@@ -94,6 +94,30 @@ public class JdbcSectionDaoTest {
     }
 
     @Test
+    @DisplayName("특정 노선의 특정 상행역을 포함하는 구간을 구한다.")
+    void findByUpStationId() {
+        final Section section2 = new Section(lineId, 2L, 3L, 10);
+        sectionDao.save(section2);
+
+        final Section actual = sectionDao.findByUpStationId(lineId, 1L)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 구간이 존재하지 않습니다."));
+
+        assertThat(actual).isEqualTo(section1);
+    }
+
+    @Test
+    @DisplayName("특정 노선의 특정 하행역을 포함하는 구간을 구한다.")
+    void findByDownStationId() {
+        final Section section2 = new Section(lineId, 2L, 3L, 10);
+        sectionDao.save(section2);
+
+        final Section actual = sectionDao.findByDownStationId(lineId, 3L)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 구간이 존재하지 않습니다."));
+
+        assertThat(actual).isEqualTo(section2);
+    }
+
+    @Test
     @DisplayName("구간의 상행역을 수정한다.")
     void updateUpStation() {
         final Section expected = new Section(1L, lineId, 3L, 2L, 10);
