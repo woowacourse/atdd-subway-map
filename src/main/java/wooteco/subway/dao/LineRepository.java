@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.utils.exception.ExceptionMessages;
 import wooteco.subway.utils.exception.IdNotFoundException;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
@@ -42,7 +41,7 @@ public class LineRepository {
                     .longValue();
             return new Line(id, line.getName(), line.getColor());
         } catch (DuplicateKeyException e) {
-            throw new NameDuplicatedException(ExceptionMessages.NAME_DUPLICATE_MESSAGE + line.getName());
+            throw new NameDuplicatedException(NameDuplicatedException.NAME_DUPLICATE_MESSAGE + line.getName());
         }
     }
 
@@ -57,7 +56,7 @@ public class LineRepository {
         try {
             return namedParameterJdbcTemplate.queryForObject(sql, parameters, rowMapper());
         } catch (EmptyResultDataAccessException e) {
-            throw new IdNotFoundException(ExceptionMessages.NO_ID_MESSAGE + id);
+            throw new IdNotFoundException(IdNotFoundException.NO_ID_MESSAGE + id);
         }
     }
 
@@ -86,9 +85,9 @@ public class LineRepository {
         try {
             namedParameterJdbcTemplate.update(sql, nameParameters);
         } catch (DuplicateKeyException e) {
-            throw new NameDuplicatedException(ExceptionMessages.NAME_DUPLICATE_MESSAGE + line.getName());
+            throw new NameDuplicatedException(NameDuplicatedException.NAME_DUPLICATE_MESSAGE + line.getName());
         } catch (EmptyResultDataAccessException e) {
-            throw new IdNotFoundException(ExceptionMessages.NO_ID_MESSAGE + line.getId());
+            throw new IdNotFoundException(IdNotFoundException.NO_ID_MESSAGE + line.getId());
         }
     }
 
@@ -97,7 +96,7 @@ public class LineRepository {
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         int rowCounts = namedParameterJdbcTemplate.update(sql, parameters);
         if (rowCounts == NO_ROW) {
-            throw new IdNotFoundException(ExceptionMessages.NO_ID_MESSAGE + id);
+            throw new IdNotFoundException(IdNotFoundException.NO_ID_MESSAGE + id);
         }
     }
 }

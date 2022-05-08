@@ -9,7 +9,6 @@ import wooteco.subway.dao.StationRepository;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.utils.exception.ExceptionMessages;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
 @Service
@@ -31,7 +30,7 @@ public class StationService {
 
     private void validateDuplicateName(final Optional<Station> station) {
         station.ifPresent(s -> {
-            throw new NameDuplicatedException(ExceptionMessages.NAME_DUPLICATE_MESSAGE);
+            throw new NameDuplicatedException(NameDuplicatedException.NAME_DUPLICATE_MESSAGE);
         });
     }
 

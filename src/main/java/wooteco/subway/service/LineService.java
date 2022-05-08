@@ -9,7 +9,6 @@ import wooteco.subway.dao.LineRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.utils.exception.ExceptionMessages;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
 @Service
@@ -31,7 +30,7 @@ public class LineService {
 
     private void validateDuplicateName(final Optional<Line> line) {
         line.ifPresent(l -> {
-            throw new NameDuplicatedException(ExceptionMessages.NAME_DUPLICATE_MESSAGE);
+            throw new NameDuplicatedException(NameDuplicatedException.NAME_DUPLICATE_MESSAGE);
         });
     }
 
