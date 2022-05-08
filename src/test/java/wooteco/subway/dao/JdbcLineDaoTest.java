@@ -38,6 +38,21 @@ public class JdbcLineDaoTest {
         );
     }
 
+    @DisplayName("노선을 명시적인 아이디와 함께 저장한다")
+    @Test
+    void 아이디와_노선_저장() {
+        Long id = 1L;
+        Line line = new Line("2호선", "bg-green-600");
+
+        Line savedLine = lineDao.saveWithId(id, line);
+
+        assertAll(
+                () -> assertThat(savedLine.getId()).isEqualTo(id),
+                () -> assertThat(savedLine.getName()).isEqualTo(line.getName()),
+                () -> assertThat(savedLine.getColor()).isEqualTo(line.getColor())
+        );
+    }
+
     @DisplayName("노선 이름으로 노선 유무를 반환한다.")
     @ParameterizedTest
     @CsvSource({"2호선,true", "3호선,false"})

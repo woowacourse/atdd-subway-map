@@ -8,6 +8,8 @@ public interface LineDao {
 
     Line save(Line line);
 
+    Line saveWithId(Long id, Line line);
+
     boolean existsByName(String name);
 
     List<Line> findAll();
