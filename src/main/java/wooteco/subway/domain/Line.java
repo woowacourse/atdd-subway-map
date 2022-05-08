@@ -40,7 +40,7 @@ public class Line {
 		return this.id.equals(id);
 	}
 
-	public Optional<Section> addSection(Section section) {
+	public Optional<Section> findUpdatedSectionByAdd(Section section) {
 		return sections.add(section);
 	}
 
@@ -62,9 +62,5 @@ public class Line {
 
 	public List<Section> getSections() {
 		return sections.getValues();
-	}
-
-	public Optional<Section> findUpdatedSectionByAdd(Section section) {
-		return sections.add(section);
 	}
 }
