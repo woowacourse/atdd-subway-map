@@ -3,13 +3,10 @@ package wooteco.subway.dao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
 
-import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -25,7 +22,7 @@ public class StationDao {
         String sql = "insert into STATION (name) values (?)";
         jdbcTemplate.update(sql, station.getName());
 
-        return createNewObject(station);
+        return includeIdIn(station);
     }
 
     private void checkDuplication(String name) {
@@ -47,9 +44,14 @@ public class StationDao {
         }
     }
 
-    private Station createNewObject(Station station) {
+    private Station includeIdIn(Station station) {
         String sql2 = "select max(id) from STATION";
         Long id = jdbcTemplate.queryForObject(sql2, Long.class);
         return new Station(id, station.getName());
+    }
+
+    public void deleteById(Long id) {
+        String sql = "delete from STATION where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }
