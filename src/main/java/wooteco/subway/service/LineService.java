@@ -14,7 +14,7 @@ import wooteco.subway.exception.InternalServerException;
 @Service
 public class LineService {
 
-    private static final int NOT_LINES_DELETED = 0;
+    private static final int LINES_NOT_DELETED = 0;
     private final LineDao lineDao;
 
     public LineService(final LineDao lineDao) {
@@ -51,7 +51,7 @@ public class LineService {
     public void deleteById(final Long id) {
         Integer deletedLines = lineDao.deleteById(id);
 
-        if (deletedLines == NOT_LINES_DELETED) {
+        if (deletedLines == LINES_NOT_DELETED) {
             throw new InternalServerException(ExceptionMessage.UNKNOWN_DELETE_LINE_FAIL.getContent());
         }
     }

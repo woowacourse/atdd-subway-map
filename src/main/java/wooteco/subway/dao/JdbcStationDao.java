@@ -10,8 +10,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.ExceptionMessage;
-import wooteco.subway.exception.InternalServerException;
 
 @Repository
 public class JdbcStationDao implements StationDao {
@@ -62,10 +60,6 @@ public class JdbcStationDao implements StationDao {
     @Override
     public Integer deleteById(Long id) {
         String sql = "DELETE FROM station WHERE id = ?";
-        Integer affectedRows = jdbcTemplate.update(sql, id);
-        if (affectedRows == 0) {
-            throw new InternalServerException(ExceptionMessage.UNKNOWN_DELETE_STATION_FAIL.getContent());
-        }
-        return affectedRows;
+        return jdbcTemplate.update(sql, id);
     }
 }
