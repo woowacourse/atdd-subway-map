@@ -24,6 +24,12 @@ public class StationDao {
         return includeIdIn(station);
     }
 
+    private Station includeIdIn(Station station) {
+        String sql = "select max(id) from Station";
+        Long id = jdbcTemplate.queryForObject(sql, Long.class);
+        return new Station(id, station.getName());
+    }
+
     public int counts(String name) {
         String sql = String.format("select count(*) from Station where name = '%s'", name);
         return jdbcTemplate.queryForObject(sql, Integer.class);
@@ -34,20 +40,15 @@ public class StationDao {
         return jdbcTemplate.query(sql, new StationMapper());
     }
 
+    public void deleteById(Long id) {
+        String sql = "delete from Station where id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
     private static final class StationMapper implements RowMapper {
         public Station mapRow(ResultSet rs, int rowCnt) throws SQLException {
             return new Station(rs.getLong("id"), rs.getString("name"));
         }
-    }
 
-    private Station includeIdIn(Station station) {
-        String sql2 = "select max(id) from Station";
-        Long id = jdbcTemplate.queryForObject(sql2, Long.class);
-        return new Station(id, station.getName());
-    }
-
-    public void deleteById(Long id) {
-        String sql = "delete from Station where id = ?";
-        jdbcTemplate.update(sql, id);
     }
 }
