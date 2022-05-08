@@ -15,8 +15,8 @@ public class SectionTest {
     @DisplayName("상행역과 동일한 경우 구간 분리")
     @Test
     void splitByUpStation() {
-        Section section1 = new Section(1L, 1L, 1L, 2L, 10);
-        Section section2 = new Section(2L, 1L, 1L, 3L, 6);
+        Section section1 = new Section(1L, 1L, new SectionEdge(1L, 2L, 10));
+        Section section2 = new Section(2L, 1L, new SectionEdge(1L, 3L, 6));
 
         Section newSection = section1.split(section2);
         SectionEdge newEdge = newSection.getEdge();
@@ -30,8 +30,8 @@ public class SectionTest {
     @DisplayName("하행역과 동일한 경우 구간 분리")
     @Test
     void splitByDownStation() {
-        Section section1 = new Section(1L, 1L, 1L, 2L, 10);
-        Section section2 = new Section(2L, 1L, 3L, 2L, 7);
+        Section section1 = new Section(1L, 1L, new SectionEdge(1L, 2L, 10));
+        Section section2 = new Section(2L, 1L, new SectionEdge(3L, 2L, 7));
 
         Section newSection = section1.split(section2);
         SectionEdge newEdge = newSection.getEdge();
@@ -45,8 +45,8 @@ public class SectionTest {
     @DisplayName("거리가 더 긴 구간으로 분리 시 예외 발생")
     @Test
     void splitByLongerDistanceSection() {
-        Section section1 = new Section(1L, 1L, 1L, 2L, 10);
-        Section section2 = new Section(2L, 1L, 3L, 2L, 10);
+        Section section1 = new Section(1L, 1L, new SectionEdge(1L, 2L, 10));
+        Section section2 = new Section(2L, 1L, new SectionEdge(3L, 2L, 10));
         assertThatThrownBy(() -> section1.split(section2))
             .isInstanceOf(UnsplittableException.class);
     }
@@ -54,8 +54,8 @@ public class SectionTest {
     @DisplayName("겹치지 않는 구간으로 분리 시 예외 발생")
     @Test
     void splitByNotOverlapSection() {
-        Section section1 = new Section(1L, 1L, 1L, 2L, 10);
-        Section section2 = new Section(2L, 1L, 3L, 4L, 5);
+        Section section1 = new Section(1L, 1L, new SectionEdge(1L, 2L, 10));
+        Section section2 = new Section(2L, 1L, new SectionEdge(3L, 4L, 5));
         assertThatThrownBy(() -> section1.split(section2))
             .isInstanceOf(UnsplittableException.class);
     }
@@ -63,8 +63,8 @@ public class SectionTest {
     @DisplayName("동일하지 않는 노선의 구간으로 분리 시 예외 발생")
     @Test
     void splitByNotSameLine() {
-        Section section1 = new Section(1L, 1L, 1L, 2L, 10);
-        Section section2 = new Section(2L, 2L, 1L, 3L, 5);
+        Section section1 = new Section(1L, 1L, new SectionEdge(1L, 2L, 10));
+        Section section2 = new Section(2L, 2L, new SectionEdge(1L, 3L, 5));
         assertThatThrownBy(() -> section1.split(section2))
             .isInstanceOf(UnsplittableException.class);
     }
@@ -74,8 +74,8 @@ public class SectionTest {
     @CsvSource({"1,2,1,2", "1,2,2,1"})
     void splitBySameUpAndDownStation(long upStationId1, long downStationId1,
                                      long upStationId2, long downStationId2) {
-        Section section1 = new Section(1L, 1L, upStationId1, downStationId1, 10);
-        Section section2 = new Section(2L, 1L, upStationId2, downStationId2, 5);
+        Section section1 = new Section(1L, 1L, new SectionEdge(upStationId1, downStationId1, 10));
+        Section section2 = new Section(2L, 1L, new SectionEdge(upStationId2, downStationId2, 5));
 
         assertThatThrownBy(() -> section1.split(section2))
             .isInstanceOf(UnsplittableException.class);
@@ -84,8 +84,8 @@ public class SectionTest {
     @DisplayName("동일하지 않는 노선의 구간 병합 시 예외 발생")
     @Test
     void mergeByNotSameLine() {
-        Section section1 = new Section(1L, 1L, 1L, 2L, 10);
-        Section section2 = new Section(2L, 2L, 1L, 3L, 5);
+        Section section1 = new Section(1L, 1L, new SectionEdge(1L, 2L, 10));
+        Section section2 = new Section(2L, 2L, new SectionEdge(1L, 3L, 5));
         assertThatThrownBy(() -> section1.merge(section2))
             .isInstanceOf(UnmergeableException.class);
     }
@@ -95,8 +95,8 @@ public class SectionTest {
     @CsvSource({"1,2,1,2", "1,2,2,1"})
     void mergeBySameUpAndDownStation(long upStationId1, long downStationId1,
                                      long upStationId2, long downStationId2) {
-        Section section1 = new Section(1L, 1L, upStationId1, downStationId1, 10);
-        Section section2 = new Section(2L, 1L, upStationId2, downStationId2, 5);
+        Section section1 = new Section(1L, 1L, new SectionEdge(upStationId1, downStationId1, 10));
+        Section section2 = new Section(2L, 1L, new SectionEdge(upStationId2, downStationId2, 5));
 
         assertThatThrownBy(() -> section1.merge(section2))
             .isInstanceOf(UnmergeableException.class);
@@ -108,8 +108,8 @@ public class SectionTest {
     void mergeByOverlapSection(long upStationId1, long downStationId1,
                                long upStationId2, long downStationId2,
                                long expectUpStationId, long expectDownStationId) {
-        Section section1 = new Section(1L, 1L, upStationId1, downStationId1, 10);
-        Section section2 = new Section(2L, 1L, upStationId2, downStationId2, 5);
+        Section section1 = new Section(1L, 1L, new SectionEdge(upStationId1, downStationId1, 10));
+        Section section2 = new Section(2L, 1L, new SectionEdge(upStationId2, downStationId2, 5));
 
         Section newSection = section1.merge(section2);
         SectionEdge newEdge = newSection.getEdge();
@@ -123,8 +123,8 @@ public class SectionTest {
     @DisplayName("겹치지 않는 구간 병합 시 예외 발생")
     @Test
     void mergeByNotOverlapSection() {
-        Section section1 = new Section(1L, 1L, 1L, 2L, 10);
-        Section section2 = new Section(2L, 1L, 3L, 4L, 5);
+        Section section1 = new Section(1L, 1L, new SectionEdge(1L, 2L, 10));
+        Section section2 = new Section(2L, 1L, new SectionEdge(3L, 4L, 5));
         assertThatThrownBy(() -> section1.merge(section2))
             .isInstanceOf(UnmergeableException.class);
     }

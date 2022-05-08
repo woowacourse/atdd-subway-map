@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.SectionEdge;
 
 @Repository
 public class SectionRepository {
@@ -20,7 +21,7 @@ public class SectionRepository {
         long upStationId = rs.getLong("up_station_id");
         long downStationId = rs.getLong("down_station_id");
         int distance = rs.getInt("distance");
-        return new Section(id, lineId, upStationId, downStationId, distance);
+        return new Section(id, lineId, new SectionEdge(upStationId, downStationId, distance));
     };
 
     private final JdbcTemplate jdbcTemplate;
@@ -45,9 +46,8 @@ public class SectionRepository {
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return new Section(id, section.getLineId(), section.getUpStationId(),
-            section.getDownStationId(),
-            section.getDistance());
+        return new Section(id, section.getLineId(), new SectionEdge(section.getUpStationId(),
+            section.getDownStationId(), section.getDistance()));
     }
 
     public List<Section> findAllByLineId(Long lineId) {

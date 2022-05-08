@@ -4,6 +4,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.SectionEdge;
 import wooteco.subway.dto.AddSectionRequest;
 import wooteco.subway.dto.DeleteSectionRequest;
 import wooteco.subway.repository.SectionRepository;
@@ -26,8 +27,9 @@ public class SectionService {
 
     public Section addSection(Long lineId, AddSectionRequest request) {
         addSectionRequestValidator.validate(lineId, request);
-        Section newSection = new Section(lineId, request.getUpStationId(),
+        SectionEdge newEdge = new SectionEdge(request.getUpStationId(),
             request.getDownStationId(), request.getDistance());
+        Section newSection = new Section(lineId, newEdge);
 
         Optional<Section> overlapSectionOptional = findOverlapSection(lineId,
             request.getUpStationId(),

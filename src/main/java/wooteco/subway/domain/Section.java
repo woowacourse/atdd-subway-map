@@ -10,22 +10,14 @@ public class Section {
     private final Long lineId;
     private final SectionEdge edge;
 
-    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
-        this(null, lineId, upStationId, downStationId, distance);
-    }
-
-    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
-        this.id = id;
-        this.lineId = lineId;
-        this.edge = new SectionEdge(upStationId, downStationId, distance);
+    public Section(Long lineId, SectionEdge edge) {
+        this(null, lineId, edge);
     }
 
     public Section(Long id, Long lineId, SectionEdge edge) {
-        this(id, lineId, edge.getUpStationId(), edge.getDownStationId(), edge.getDistance());
-    }
-
-    public Section(Long lineId, SectionEdge edge) {
-        this(null, lineId, edge);
+        this.id = id;
+        this.lineId = lineId;
+        this.edge = edge;
     }
 
     public Section split(Section section) {
