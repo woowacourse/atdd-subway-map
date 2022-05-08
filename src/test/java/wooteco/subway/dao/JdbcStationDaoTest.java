@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,7 +11,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
 
@@ -61,8 +61,9 @@ class JdbcStationDaoTest {
     @DisplayName("존재하지 않는 지하철역을 조회할 경우 예외가 발생한다.")
     @Test
     void 지하철역_조회_예외발생() {
-        assertThatThrownBy(() -> stationDao.findById(0L))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+        Optional<Station> station = stationDao.findById(0L);
+
+        assertThat(station).isEmpty();
     }
 
     @DisplayName("모든 지하철역을 조회한다.")
