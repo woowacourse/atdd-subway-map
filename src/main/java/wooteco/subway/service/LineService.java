@@ -23,7 +23,7 @@ public class LineService {
     @Transactional
     public LineResponse save(LineRequest lineRequest) {
         if (lineDao.existsByName(lineRequest.getName())) {
-            throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
+            throw new IllegalArgumentException(lineRequest.getName() + "은 이미 존재하는 노선 이름입니다.");
         }
 
         Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
