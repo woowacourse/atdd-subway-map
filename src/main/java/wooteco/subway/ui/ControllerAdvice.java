@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.dto.ErrorResponse;
 
 @RestControllerAdvice
-public class StationControllerAdvice {
+public class ControllerAdvice {
 
     @ExceptionHandler({IllegalStateException.class})
-    public ResponseEntity<ErrorResponse> duplicateStation(final RuntimeException exception) {
+    public ResponseEntity<ErrorResponse> duplicateStation(final IllegalStateException exception) {
         return new ResponseEntity<>(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
