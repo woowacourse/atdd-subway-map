@@ -17,8 +17,7 @@ public class LineService {
     }
 
     public Line create(Line line) {
-        Optional<Line> wrappedStation = lineDao.findByName(line.getName());
-        if (wrappedStation.isPresent()) {
+        if (checkExistByName(line.getName())) {
             throw new IllegalArgumentException("이미 같은 이름의 노선이 존재합니다.");
         }
         return lineDao.save(line);
@@ -40,6 +39,10 @@ public class LineService {
     public void remove(Long id) {
         extractLine(lineDao.findById(id));
         lineDao.deleteById(id);
+    }
+
+    private boolean checkExistByName(String name) {
+        return lineDao.findByName(name).isPresent();
     }
 
     private Line extractLine(Optional<Line> wrappedLine) {
