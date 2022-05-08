@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Section {
@@ -46,8 +48,33 @@ public class Section {
         }
     }
 
-    public boolean isSameUpStation(final Long upStationId) {
-        return this.upStationId.equals(upStationId);
+    public List<Section> assign(final Section newSection) {
+        checkBetweenDistance(newSection.distance);
+        final List<Section> sections = new ArrayList<>();
+        if (upStationId.equals(newSection.upStationId)) {
+            sections.add(newSection);
+            sections.add(new Section(
+                    lineId,
+                    newSection.downStationId,
+                    downStationId,
+                    distance - newSection.distance
+            ));
+            return sections;
+        }
+        sections.add(new Section(
+                lineId,
+                upStationId,
+                newSection.upStationId,
+                distance - newSection.distance
+        ));
+        sections.add(newSection);
+        return sections;
+    }
+
+    private void checkBetweenDistance(final int newSectionDistance) {
+        if (distance <= newSectionDistance) {
+            throw new IllegalArgumentException("기존 구간의 길이 보다 작지 않습니다.");
+        }
     }
 
     public Long getId() {
