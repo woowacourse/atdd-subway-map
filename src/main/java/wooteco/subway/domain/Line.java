@@ -6,7 +6,7 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-    private List<Station> stations;
+    private Sections sections;
 
     private Line() {
     }
@@ -21,9 +21,17 @@ public class Line {
         this.id = id;
     }
 
-    public Line(Long id, String name, String color, List<Station> stations) {
-        this(id, name, color);
-        this.stations = stations;
+    public Line(String name, String color, Section section) {
+        this(name, color);
+        this.sections = new Sections(List.of(section));
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public void deleteSections(Station station) {
+        sections.delete(station);
     }
 
     public boolean isSameName(Line line) {
@@ -50,7 +58,11 @@ public class Line {
         this.color = color;
     }
 
-    public List<Station> getStations() {
-        return stations;
+    public Sections getSections() {
+        return sections;
+    }
+
+    public List<Section> getAllSections() {
+        return sections.getSections();
     }
 }

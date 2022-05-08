@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Optional;
 
 public class LineDaoImpl implements LineDao {
-    private static final LineDaoImpl stationDao = new LineDaoImpl();
+    private static final LineDaoImpl lineDao = new LineDaoImpl();
     private static final List<Line> lines = new ArrayList<>();
     private static Long seq = 0L;
 
     public static LineDaoImpl getInstance() {
-        return stationDao;
+        return lineDao;
     }
 
     @Override
