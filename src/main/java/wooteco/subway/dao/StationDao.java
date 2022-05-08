@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.request.StationSaveRequest;
 
 @Repository
 public class StationDao {
@@ -46,15 +47,15 @@ public class StationDao {
         return Optional.ofNullable(DataAccessUtils.singleResult(queryResult));
     }
 
-    public Station save(Station station) {
+    public Station save(StationSaveRequest stationSaveRequest) {
         String sql = "insert into STATION (name) values (:name)";
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", station.getName());
+        params.put("name", stationSaveRequest.getName());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder);
-        return new Station(Objects.requireNonNull(keyHolder.getKey()).longValue(), station.getName());
+        return new Station(Objects.requireNonNull(keyHolder.getKey()).longValue(), stationSaveRequest.getName());
     }
 
     public List<Station> findAll() {

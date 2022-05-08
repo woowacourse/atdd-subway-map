@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.request.StationSaveRequest;
 
 @JdbcTest
 class StationDaoTest {
@@ -24,8 +25,8 @@ class StationDaoTest {
     @DisplayName("지하철역을 저장한다.")
     @Test
     void saveStation() {
-        Station station = new Station("강남역");
-        Station savedStation = stationDao.save(station);
+        StationSaveRequest stationSaveRequest = StationSaveRequest.of("강남역");
+        Station savedStation = stationDao.save(stationSaveRequest);
 
         assertAll(
                 () -> assertThat(savedStation.getId()).isNotZero(),
@@ -36,8 +37,8 @@ class StationDaoTest {
     @DisplayName("특정 지하철역을 이름으로 조회한다.")
     @Test
     void findByName() {
-        Station station = new Station("강남역");
-        stationDao.save(station);
+        StationSaveRequest stationSaveRequest = StationSaveRequest.of("강남역");
+        stationDao.save(stationSaveRequest);
         Optional<Station> wrappedStation = stationDao.findByName("강남역");
         assert (wrappedStation).isPresent();
 
@@ -50,8 +51,8 @@ class StationDaoTest {
     @DisplayName("특정 지하철역을 삭제한다.")
     @Test
     void deleteById() {
-        Station station = new Station("강남역");
-        Station savedStation = stationDao.save(station);
+        StationSaveRequest stationSaveRequest = StationSaveRequest.of("강남역");
+        Station savedStation = stationDao.save(stationSaveRequest);
         stationDao.deleteById(savedStation.getId());
 
         Optional<Station> wrappedStation = stationDao.findByName("강남역");
@@ -61,8 +62,8 @@ class StationDaoTest {
     @DisplayName("특정 지하철역을 아이디로 조회한다.")
     @Test
     void findById() {
-        Station station = new Station("강남역");
-        Station savedStation = stationDao.save(station);
+        StationSaveRequest stationSaveRequest = StationSaveRequest.of("강남역");
+        Station savedStation = stationDao.save(stationSaveRequest);
         Optional<Station> wrappedStation = stationDao.findById(savedStation.getId());
         assert (wrappedStation).isPresent();
 

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.StationRequest;
+import wooteco.subway.dto.request.StationSaveRequest;
 import wooteco.subway.dto.response.StationResponse;
 
 @Service
@@ -24,12 +25,12 @@ public class StationService {
     }
 
     public StationResponse createStation(StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
+        StationSaveRequest stationSaveRequest = StationSaveRequest.of(stationRequest.getName());
         Optional<Station> wrappedStation = stationDao.findByName(stationRequest.getName());
         if (wrappedStation.isPresent()) {
             throw new DuplicateKeyException(DUPLICATE_NAME_ERROR);
         }
-        Station newStation = stationDao.save(station);
+        Station newStation = stationDao.save(stationSaveRequest);
         return StationResponse.of(newStation);
     }
 
@@ -40,7 +41,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteStation(Long id){
+    public void deleteStation(Long id) {
         Optional<Station> wrappedStation = stationDao.findById(id);
         if (wrappedStation.isEmpty()) {
             throw new NoSuchElementException(NOT_EXIST_ERROR);
