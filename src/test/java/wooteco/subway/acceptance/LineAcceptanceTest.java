@@ -178,7 +178,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void UpdateLine_NotExistId_BadRequest() {
         // when
         final ExtractableResponse<Response> actual = RestAssured.given().log().all()
-                .body(new LineRequest("1호선", "bg-red-600"))
+                .body(lineOneRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put(LINE_PATH_PREFIX + SLASH + 999)
