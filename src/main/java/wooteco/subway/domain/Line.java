@@ -35,6 +35,15 @@ public class Line {
         this.sections = sections;
     }
 
+    public Line(Long id, String name, String color, Sections sections) {
+        validateNameNotEmpty(name);
+        validateColorNotEmpty(color);
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
+    }
+
     public void add(Section section) {
         sections.add(section);
     }

@@ -1,6 +1,5 @@
 package wooteco.subway.dto;
 
-import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 
 public class SectionDto {
