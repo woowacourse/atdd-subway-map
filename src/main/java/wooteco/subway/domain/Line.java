@@ -5,7 +5,7 @@ public class Line {
     private String name;
     private String color;
 
-    public Line() {
+    private Line() {
     }
 
     public Line(Long id, String name, String color) {
@@ -15,12 +15,7 @@ public class Line {
     }
 
     public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
-
-    public boolean isSameLine(Line other) {
-        return this.name.equals(other.name);
+        this(null, name, color);
     }
 
     public Long getId() {
