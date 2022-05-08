@@ -28,7 +28,7 @@
 ### 3단계 기능 목록
 
 > [제공된 페이지](https://d2owgqwkhzq0my.cloudfront.net/index.html) 를 통해 테스트할 수 있다.  
-> 변경된 [API 문서](https://d2owgqwkhzq0my.cloudfront.net/index.html) 는 링크를 통해 확인할 수 있다.
+> 변경된 [API 문서](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/c682be69ae4e412c9e3905a59ef7b7ed#Line) 는 링크를 통해 확인할 수 있다.
 
 1. 지하철 노선 API 변경
     - 지하철 노선은 구간 정보를 포함
