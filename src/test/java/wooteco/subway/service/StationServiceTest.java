@@ -53,7 +53,7 @@ class StationServiceTest {
         stationService.delete(id);
         List<Long> ids = stationService.showStations()
                 .stream()
-                .map(it -> it.getId())
+                .map(StationResponseDTO::getId)
                 .collect(Collectors.toList());
 
         Assertions.assertThat(ids).doesNotContain(id);

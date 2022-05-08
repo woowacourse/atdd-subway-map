@@ -207,7 +207,7 @@ public class LineAcceptance extends AcceptanceTest {
 
     private List<Long> responseIds(ExtractableResponse<Response> response) {
         return response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(it -> it.getId())
+                .map(LineResponse::getId)
                 .collect(Collectors.toList());
     }
 

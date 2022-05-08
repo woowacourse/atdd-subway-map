@@ -121,7 +121,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     private List<Long> responseIds(ExtractableResponse<Response> response) {
         return response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(it -> it.getId())
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
     }
 

@@ -30,7 +30,7 @@ public class StationController {
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
         List<StationResponse> stationResponses = stationService.showStations().stream()
-                .map(it -> ControllerDtoAssembler.stationResponseByDTO(it))
+                .map(ControllerDtoAssembler::stationResponseByDTO)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(stationResponses);
     }

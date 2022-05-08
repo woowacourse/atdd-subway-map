@@ -33,7 +33,7 @@ public class StationService {
 
     public List<StationResponseDTO> showStations() {
         return stationDao.findAll().stream()
-                .map(it -> new StationResponseDTO(it))
+                .map(StationResponseDTO::new)
                 .collect(Collectors.toList());
     }
 
