@@ -10,7 +10,7 @@ import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class StationService {
 
     private final StationDao stationDao;
@@ -19,6 +19,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public StationResponse save(StationRequest stationRequest) {
         validateByName(stationRequest.getName());
         Station station = new Station(stationRequest.getName());
@@ -35,14 +36,13 @@ public class StationService {
         return new StationResponse(station.getId(), station.getName());
     }
 
-    @Transactional(readOnly = true)
     public List<StationResponse> findAll() {
         return stationDao.findAll().stream()
             .map(this::toStationResponse)
             .collect(Collectors.toList());
     }
 
-
+    @Transactional
     public void delete(Long id) {
         validateById(id);
         stationDao.deleteById(id);

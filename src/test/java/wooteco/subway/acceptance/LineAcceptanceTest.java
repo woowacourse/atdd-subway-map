@@ -28,7 +28,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         void 성공시_201_CREATED() {
             Map<String, String> params = new HashMap<>() {{
                 put("name", "신분당선");
-                put("color", "bg-red-600");
+                put("color", "빨간색");
             }};
 
             ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -40,7 +40,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
             LineResponse actual = response.jsonPath().getObject(".", LineResponse.class);
-            LineResponse expected = new LineResponse(1L, "신분당선", "bg-red-600");
+            LineResponse expected = new LineResponse(1L, "신분당선", "빨간색");
             assertAll(() -> {
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
                 assertThat(response.header("Location")).isNotBlank();
@@ -52,7 +52,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         void 이미_존재하는_노선명_입력시_400_BAD_REQUEST() {
             Map<String, String> params = new HashMap<>() {{
                 put("name", "신분당선");
-                put("color", "bg-red-600");
+                put("color", "빨간색");
             }};
             postLine(params);
 
@@ -72,12 +72,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 성공시_200_OK() {
         postLine(new HashMap<>() {{
-            put("name", "신분당선1");
-            put("color", "bg-red-600");
+            put("name", "신분당선");
+            put("color", "빨간색");
         }});
         postLine(new HashMap<>() {{
-            put("name", "분당선2");
-            put("color", "bg-green-600");
+            put("name", "분당선");
+            put("color", "초록색");
         }});
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -100,7 +100,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 성공시_200_OK() {
-            postLine("신분당선", "bg-red-600");
+            postLine("신분당선", "빨간색");
 
             ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -109,7 +109,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
             LineResponse actual = response.jsonPath().getObject(".", LineResponse.class);
-            LineResponse expected = new LineResponse(1L, "신분당선", "bg-red-600");
+            LineResponse expected = new LineResponse(1L, "신분당선", "빨간색");
             assertAll(() -> {
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
                 assertThat(actual).isEqualTo(expected);
@@ -134,10 +134,10 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 성공시_200_OK() {
-            postLine("신분당선", "bg-red-600");
+            postLine("신분당선", "빨간색");
             HashMap<String, String> params = new HashMap<>() {{
                 put("name", "NEW 분당선");
-                put("color", "bg-red-600");
+                put("color", "빨간색");
             }};
 
             ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -155,7 +155,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         void 수정하려는_지하철_노선이_존재하지_않는_경우_400_BAD_REQUEST() {
             HashMap<String, String> params = new HashMap<>() {{
                 put("name", "NEW 분당선");
-                put("color", "bg-red-600");
+                put("color", "빨간색");
             }};
 
             ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -171,10 +171,10 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 이미_존재하는_지하철_노선_이름으로_수정시_400_BAD_REQUEST() {
-            postLine("신분당선", "bg-red-600");
+            postLine("신분당선", "빨간색");
             Map<String, String> params = new HashMap<>() {{
                 put("name", "NEW_분당선");
-                put("color", "bg-red-600");
+                put("color", "빨간색");
             }};
             postLine(params);
 
@@ -196,7 +196,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 성공시_200_OK() {
-            postLine("신분당선", "bg-red-600");
+            postLine("신분당선", "빨간색");
 
             ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
