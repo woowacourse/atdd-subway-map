@@ -41,17 +41,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 조회한다.")
     @Test
-    Stream<DynamicTest> getStations() {
+    Stream<DynamicTest> getStationsTest() {
         final ExtractableResponse<Response> createResponse1 = createStation("강남역");
         final ExtractableResponse<Response> createResponse2 = createStation("역삼역");
 
         return Stream.of(
                 DynamicTest.dynamicTest("생성된 지하철역 목록을 불러온다.", () -> {
-                    final ExtractableResponse<Response> response = getStations("/stations");
+                    final ExtractableResponse<Response> response = getStations();
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
                 }),
                 DynamicTest.dynamicTest("생성된 지하철역 목록이 저장한 목록과 일치한지 확인한다.", () -> {
-                    final ExtractableResponse<Response> response = getStations("/stations");
+                    final ExtractableResponse<Response> response = getStations();
                     final List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
                             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                             .collect(Collectors.toList());
@@ -90,11 +90,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> getStations(final String url) {
+    private ExtractableResponse<Response> getStations() {
         return RestAssured.given().log().all()
                 .when()
                 .get("/stations")
                 .then().log().all()
                 .extract();
     }
+
 }
