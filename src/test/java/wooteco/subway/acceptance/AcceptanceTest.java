@@ -18,6 +18,7 @@ public class AcceptanceTest {
 
     protected static final String STATION_PATH_PREFIX = "/stations";
     protected static final String LINE_PATH_PREFIX = "/lines";
+    protected static final String SECTION_PATH_PREFIX = "/sections";
     protected static final String LOCATION = "Location";
     protected static final String SLASH = "/";
 
