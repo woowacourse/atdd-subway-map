@@ -19,7 +19,7 @@ public class StationController {
         this.stationService = stationService;
     }
 
-    @PostMapping("/stations")
+    @PostMapping(value = "/stations", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         StationResponse newStation = stationService.createStation(stationRequest);
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(newStation);
@@ -31,7 +31,7 @@ public class StationController {
         return ResponseEntity.ok().body(stationResponses);
     }
 
-    @DeleteMapping("/stations/{id}")
+    @DeleteMapping(value = "/stations/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.delete(id);
         return ResponseEntity.noContent().build();

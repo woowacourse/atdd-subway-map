@@ -19,7 +19,7 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping("/lines")
+    @PostMapping(value = "/lines", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse newLine = lineService.createLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(newLine);
@@ -43,7 +43,7 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/lines/{id}")
+    @DeleteMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.delete(id);
 
