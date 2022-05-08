@@ -17,7 +17,7 @@ public class SectionEdge {
     }
 
     public SectionEdge split(SectionEdge edge) {
-        if (isSameStationIds(edge) || isInvalidDistance(edge)) {
+        if (isSameStationIds(edge) || isGreaterAndEqualDistance(edge.distance)) {
             throw new UnsplittableException(this, edge);
         }
 
@@ -45,8 +45,8 @@ public class SectionEdge {
         return this.downStationId.equals(downStationId);
     }
 
-    private boolean isInvalidDistance(SectionEdge edge) {
-        return distance <= edge.distance;
+    private boolean isGreaterAndEqualDistance(int distance) {
+        return this.distance <= distance;
     }
 
     public SectionEdge merge(SectionEdge edge) {
