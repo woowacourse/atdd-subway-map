@@ -42,18 +42,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선을 조회한다.")
     @TestFactory
-    Stream<DynamicTest> getLines() {
+    Stream<DynamicTest> getLinesTest() {
         final ExtractableResponse<Response> createResponse1 = createLine("1호선", "bg-red-600");
         final ExtractableResponse<Response> createResponse2 = createLine("2호선", "bg-green-600");
 
         return Stream.of(
                 DynamicTest.dynamicTest("생성된 노선 목록을 불러온다", () -> {
-                    final ExtractableResponse<Response> response = getLines("/lines");
+                    final ExtractableResponse<Response> response = getLines();
 
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
                 }),
                 DynamicTest.dynamicTest("생성된 노선이 저장한 노선과 일치한지 확인한다.", () -> {
-                    final ExtractableResponse<Response> response = getLines("/lines");
+                    final ExtractableResponse<Response> response = getLines();
                     final List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                             .collect(Collectors.toList());
@@ -87,7 +87,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> createResponse = createLine("1호선", "bg-red-600");
         final LineResponse expected = createResponse.jsonPath().getObject(".", LineResponse.class);
 
-        final ExtractableResponse<Response> response = getLines(createResponse.header("Location"));
+        final ExtractableResponse<Response> response = getLine(createResponse.header("Location"));
         final LineResponse actual = response.jsonPath().getObject(".", LineResponse.class);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -104,7 +104,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final String uri = createResponse.header("Location");
         final ExtractableResponse<Response> response = updateLine(newLineName, "bg-red-600", uri);
 
-        final ExtractableResponse<Response> updatedResponse = getLines(uri);
+        final ExtractableResponse<Response> updatedResponse = getLine(uri);
         final LineResponse actual = updatedResponse.jsonPath().getObject(".", LineResponse.class);
 
         assertAll(
@@ -141,7 +141,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> getLines(final String url) {
+    private ExtractableResponse<Response> getLines() {
+        return RestAssured.given().log().all()
+                .when()
+                .get("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> getLine(final String url) {
         return RestAssured.given().log().all()
                 .when()
                 .get(url)
