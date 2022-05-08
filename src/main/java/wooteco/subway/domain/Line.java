@@ -1,11 +1,17 @@
 package wooteco.subway.domain;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class Line {
     private Long id;
     private String name;
     private String color;
+    private Station upStation;
+    private Station downStation;
+    private final Set<Station> stations = new HashSet<>();
+    private final Set<Section> sections = new HashSet<>();
 
     public Line(final Long id, final String name, final String color) {
         this.id = id;
@@ -16,6 +22,16 @@ public class Line {
     public Line(final String name, final String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public Line(final long id, final String name, final String color, final Section section) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.upStation = section.getUpStation();
+        this.downStation = section.getDownStation();
+        sections.add(section);
+        stations.addAll(Set.of(upStation, downStation));
     }
 
     public Long getId() {
@@ -33,6 +49,10 @@ public class Line {
     public void update(final String name, final String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public boolean containsBoth(final Station first, final Station second) {
+        return stations.containsAll(Set.of(first, second));
     }
 
     @Override
