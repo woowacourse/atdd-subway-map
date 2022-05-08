@@ -50,7 +50,7 @@
        - 이름이 null 혹은 빈 문자열이면 안된다.
        - 이름이 255자를 초과하면 안된다.
      - name이 같은지 확인해주는 책임을 가진다.
-   - [ ] Section 도메인
+   - [x] Section 도메인
      - Section 도메인의 역할 : 역과 역을 잇는 구간에 대한 표현을 한다.
      - 필드 : upStation, downStation, distance
        - `예외` 거리는 0 또는 음수이면 안된다.
