@@ -12,6 +12,7 @@ import wooteco.subway.domain.Station;
 
 @Repository
 public class StationDao {
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public StationDao(NamedParameterJdbcTemplate jdbcTemplate) {
@@ -19,8 +20,6 @@ public class StationDao {
     }
 
     public Station save(Station station) {
-        validateStationName(station);
-
         String sql = "INSERT INTO station (name) VALUES (:name)";
 
         Map<String, Object> params = new HashMap<>();
@@ -35,23 +34,11 @@ public class StationDao {
         return new Station(stationId, station.getName());
     }
 
-    private void validateStationName(Station station) {
-        String sql = "SELECT id, name FROM station WHERE name = :name";
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", station.getName());
-
-        List<Station> stations = jdbcTemplate.query(sql, params,
-                (rs, rowNum) -> new Station(rs.getLong("id"), rs.getString("name")));
-
-        if (stations.size() > 0) {
-            throw new IllegalArgumentException("같은 이름의 역은 등록할 수 없습니다.");
-        }
-    }
-
     public List<Station> findAll() {
         String sql = "SELECT * FROM station";
-        return jdbcTemplate.query(sql, new MapSqlParameterSource(), (rs, rowNum) -> new Station(rs.getLong("id"), rs.getString("name")));
+
+        return jdbcTemplate.query(sql, new MapSqlParameterSource(),
+                (rs, rowNum) -> new Station(rs.getLong("id"), rs.getString("name")));
     }
 
     public void deleteById(Long id) {
@@ -60,10 +47,6 @@ public class StationDao {
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
 
-        int affected = jdbcTemplate.update(sql, params);
-
-        if (affected == 0) {
-            throw new IllegalArgumentException("존재하지 않는 역입니다.");
-        }
+        jdbcTemplate.update(sql, params);
     }
 }
