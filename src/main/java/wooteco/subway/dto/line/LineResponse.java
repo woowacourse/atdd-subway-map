@@ -1,6 +1,7 @@
 package wooteco.subway.dto.line;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
@@ -16,26 +17,12 @@ public class LineResponse {
     private LineResponse() {
     }
 
-    private LineResponse(final Long id, final String name, final String color) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-    }
-
     private LineResponse(final Long id, final String name, final String color,
                          final List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
-    }
-
-    public static LineResponse from(final Line line) {
-        return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor()
-        );
     }
 
     public static LineResponse of(final Line line, final List<Station> stations) {
@@ -64,5 +51,34 @@ public class LineResponse {
 
     public List<StationResponse> getStations() {
         return stations;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final LineResponse that = (LineResponse) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name)
+                && Objects.equals(color, that.color) && Objects.equals(stations, that.stations);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color, stations);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("LineResponse{");
+        sb.append("id=").append(id);
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", color='").append(color).append('\'');
+        sb.append(", stations=").append(stations);
+        sb.append('}');
+        return sb.toString();
     }
 }

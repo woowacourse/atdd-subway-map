@@ -5,7 +5,10 @@ import java.util.Objects;
 public class Station {
 
     private Long id;
-    private final Name name;
+    private Name name;
+
+    private Station() {
+    }
 
     public Station(final String name) {
         this.name = new Name(name);

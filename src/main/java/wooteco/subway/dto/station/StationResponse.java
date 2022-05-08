@@ -1,5 +1,6 @@
 package wooteco.subway.dto.station;
 
+import java.util.Objects;
 import wooteco.subway.domain.Station;
 
 public class StationResponse {
@@ -28,5 +29,31 @@ public class StationResponse {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final StationResponse that = (StationResponse) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("StationResponse{");
+        sb.append("id=").append(id);
+        sb.append(", name='").append(name).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }
