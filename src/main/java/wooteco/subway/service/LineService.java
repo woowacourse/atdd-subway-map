@@ -1,5 +1,8 @@
 package wooteco.subway.service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineRepository;
@@ -8,10 +11,6 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.utils.exception.ExceptionMessages;
 import wooteco.subway.utils.exception.NameDuplicatedException;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class LineService {

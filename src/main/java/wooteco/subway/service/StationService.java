@@ -1,5 +1,8 @@
 package wooteco.subway.service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationRepository;
@@ -8,10 +11,6 @@ import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.utils.exception.ExceptionMessages;
 import wooteco.subway.utils.exception.NameDuplicatedException;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class StationService {
@@ -26,8 +25,8 @@ public class StationService {
     public StationResponse save(final StationRequest stationRequest) {
         validateDuplicateName(stationRepository.findByName(stationRequest.getName()));
 
-        Station saveStation = stationRepository.save(new Station(stationRequest.getName()));
-        return new StationResponse(saveStation.getId(), saveStation.getName());
+        Station station = stationRepository.save(new Station(stationRequest.getName()));
+        return new StationResponse(station.getId(), station.getName());
     }
 
     private void validateDuplicateName(final Optional<Station> station) {

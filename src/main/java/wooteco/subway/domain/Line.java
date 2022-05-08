@@ -4,9 +4,9 @@ import java.util.Objects;
 
 public class Line {
 
-    private Long id;
     private final String name;
     private final String color;
+    private final Long id;
 
     public Line(Long id, String name, String color) {
         this.id = id;
@@ -34,8 +34,12 @@ public class Line {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Line line = (Line) o;
         return Objects.equals(name, line.name);
     }
