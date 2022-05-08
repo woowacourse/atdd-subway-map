@@ -33,7 +33,7 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
-    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/lines")
     public ResponseEntity<List<LineResponse>> showLines() {
         final List<Line> lines = lineService.findAll();
         final List<LineResponse> lineResponses = lines.stream()
@@ -42,7 +42,7 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponses);
     }
 
-    @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
         final Line line = lineService.findById(id);
         return ResponseEntity.ok().body(getLineResponse(line));
