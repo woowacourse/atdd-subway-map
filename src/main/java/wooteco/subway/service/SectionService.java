@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,11 +38,20 @@ public class SectionService {
                 .orElseThrow(NoSuchLineException::new);
         validateStationCount(request);
 
-        sectionDao.findBy(request.getLineId(), request.getUpStationId(), request.getDownStationId())
-                .ifPresent(existingSection -> insertBetween(request, existingSection));
+        final Optional<Section> divisibleSection = sectionDao.findBy(request.getLineId(), request.getUpStationId(),
+                request.getDownStationId());
+        if (divisibleSection.isPresent()) {
+            insertBetween(request, divisibleSection.get());
+            return;
+        }
 
-        sectionDao.findByLineIdAndUpStationId(request.getLineId(), request.getDownStationId())
-                .ifPresent(section -> extendSection(request));
+        final Optional<Section> upTerminalSection = sectionDao.findByLineIdAndUpStationId(
+                request.getLineId(),
+                request.getDownStationId()
+        );
+        if (upTerminalSection.isPresent()) {
+            extendSection(request);
+        }
 
         sectionDao.findByLineIdAndDownStationId(request.getLineId(), request.getUpStationId())
                 .ifPresent(section -> extendSection(request));
