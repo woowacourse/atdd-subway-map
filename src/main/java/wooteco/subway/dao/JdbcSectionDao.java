@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -39,6 +40,12 @@ public class JdbcSectionDao implements SectionDao {
     public SectionDto findById(Long id) {
         String sql = "select * from SECTION where id = :id";
         return jdbcTemplate.queryForObject(sql, Map.of("id", id), mapper());
+    }
+
+    @Override
+    public List<SectionDto> findByLineId(Long id) {
+        String sql = "select * from SECTION where line_id = :id";
+        return jdbcTemplate.query(sql, Map.of("id", id), mapper());
     }
 
     private RowMapper<SectionDto> mapper() {
