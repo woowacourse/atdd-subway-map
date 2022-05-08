@@ -72,4 +72,10 @@ public class JdbcSectionDao implements SectionDao {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Integer deleteById(final Long id) {
+        final String sql = "DELETE FROM section WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
+    }
 }

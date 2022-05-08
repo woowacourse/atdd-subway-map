@@ -170,4 +170,18 @@ class SectionDaoTest extends DaoTest {
         assertThat(actual).isPresent()
                 .contains(expected);
     }
+
+    @Test
+    @DisplayName("id에 해당하는 노선을 삭제한다.")
+    void DeleteById() {
+        // given
+        final Section section = new Section(lineId, upStationId, downStationId, 10);
+        final Long id = sectionDao.insert(section);
+
+        // when
+        final Integer actual = sectionDao.deleteById(id);
+
+        // then
+        assertThat(actual).isOne();
+    }
 }

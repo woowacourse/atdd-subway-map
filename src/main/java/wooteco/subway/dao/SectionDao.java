@@ -14,4 +14,6 @@ public interface SectionDao {
     Optional<Section> findByLineIdAndUpStationId(Long lineId, Long upStationId);
 
     Optional<Section> findByLineIdAndDownStationId(Long lineId, Long downStationId);
+
+    Integer deleteById(Long id);
 }
