@@ -24,8 +24,10 @@ public class LineServiceTest {
     @Test
     @DisplayName("이미 존재하는 노선을 생성하려고 하면 에러를 발생한다.")
     void save_duplicate_station() {
-        final LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600");
-        final LineRequest lineRequest2 = new LineRequest("신분당선", "bg-green-600");
+        final LineRequest lineRequest1 =
+                new LineRequest("신분당선", "bg-red-600", 1L, 2L, 20);
+        final LineRequest lineRequest2 =
+                new LineRequest("신분당선", "bg-green-600", 1L, 3L, 15);
 
         lineService.saveLine(lineRequest1);
 
@@ -37,7 +39,8 @@ public class LineServiceTest {
     @Test
     @DisplayName("존재하지 않는 노선을 접근하려고 하면 에러를 발생한다.")
     void not_exist_station() {
-        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        final LineRequest lineRequest =
+                new LineRequest("신분당선", "bg-red-600", 1L, 2L, 20);
 
         final LineResponse lineResponse = lineService.saveLine(lineRequest);
         final Long invalidLineId = lineResponse.getId() + 1L;

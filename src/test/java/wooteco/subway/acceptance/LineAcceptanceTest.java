@@ -19,8 +19,10 @@ import static org.hamcrest.Matchers.equalTo;
 
 @DisplayName("지하철노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private final LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600");
-    private final LineRequest lineRequest2 = new LineRequest("분당선", "bg-green-600");
+    private final LineRequest lineRequest1 =
+            new LineRequest("신분당선", "bg-red-600", 1L, 2L, 20);
+    private final LineRequest lineRequest2 =
+            new LineRequest("분당선", "bg-green-600", 1L, 3L, 15);
 
     @DisplayName("지하철노선을 생성한다.")
     @Test
