@@ -7,8 +7,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.service.dto.StationRequest;
+import wooteco.subway.service.dto.StationResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;

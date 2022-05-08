@@ -7,8 +7,8 @@ import wooteco.subway.domain.repository.StationRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.service.dto.LineRequest;
+import wooteco.subway.service.dto.LineResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 import wooteco.subway.utils.exception.NotFoundException;
 

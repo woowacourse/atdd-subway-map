@@ -8,8 +8,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import wooteco.subway.domain.repository.StationRepository;
 import wooteco.subway.domain.repository.StationRepositoryImpl;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.service.dto.StationRequest;
+import wooteco.subway.service.dto.StationResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
 import javax.sql.DataSource;

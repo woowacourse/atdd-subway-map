@@ -9,8 +9,8 @@ import wooteco.subway.domain.repository.LineRepository;
 import wooteco.subway.domain.repository.LineRepositoryImpl;
 import wooteco.subway.domain.repository.StationRepository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.service.dto.LineRequest;
+import wooteco.subway.service.dto.LineResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
 import javax.sql.DataSource;

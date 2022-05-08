@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.repository.StationRepository;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.service.dto.StationRequest;
+import wooteco.subway.service.dto.StationResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 
 import java.util.List;

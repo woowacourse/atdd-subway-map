@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import wooteco.subway.dto.ErrorResponse;
+import wooteco.subway.service.dto.ErrorResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 import wooteco.subway.utils.exception.NotFoundException;
 
