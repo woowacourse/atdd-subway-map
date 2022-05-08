@@ -6,6 +6,7 @@ import java.util.List;
 public class Sections {
     private static final String DUPLICATED_SECTION_ERROR_MESSAGE = "중복된 구간입니다.";
     private static final String LINK_FAILURE_ERROR_MESSAGE = "해당 구간은 역과 연결될 수 없습니다.";
+    private static final String NO_NEXT_SECTION_ERROR_MESSAGE = "해당 하행과 상행으로 연결되는 구간이 없습니다.";
 
     private final List<SectionWithStation> sections;
 
@@ -87,7 +88,7 @@ public class Sections {
         return sections.stream()
                 .filter(section -> nowSection.getDownStation().equals(section.getUpStation()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 하행과 상행으로 연결되는 구간이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(NO_NEXT_SECTION_ERROR_MESSAGE));
     }
 
     public boolean isMiddleSection(Section inSection) {
