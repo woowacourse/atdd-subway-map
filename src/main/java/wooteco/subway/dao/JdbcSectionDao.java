@@ -47,7 +47,11 @@ public class JdbcSectionDao implements SectionDao {
     @Override
     public Optional<Section> findById(Long id) {
         final String sql = "select * from SECTION where id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper, id));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper, id));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -60,20 +64,32 @@ public class JdbcSectionDao implements SectionDao {
     public Optional<Section> findBySameUpOrDownStationId(Long lineId, Section section) {
         final String sql = "select * from SECTION where (line_id = ? and up_station_id = ?) or" +
                 " (line_id = ? and down_station_id = ?)";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper,
-                lineId, section.getUpStationId(), lineId, section.getDownStationId()));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper,
+                    lineId, section.getUpStationId(), lineId, section.getDownStationId()));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Section> findByUpStationId(Long lineId, Long upStationId) {
         final String sql = "select * from SECTION where line_id = ? and up_station_id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper, lineId, upStationId));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper, lineId, upStationId));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Section> findByDownStationId(Long lineId, Long downStationId) {
         final String sql = "select * from SECTION where line_id = ? and down_station_id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper, lineId, downStationId));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper, lineId, downStationId));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override

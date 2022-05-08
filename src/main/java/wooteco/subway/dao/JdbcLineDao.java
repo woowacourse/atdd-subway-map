@@ -44,7 +44,11 @@ public class JdbcLineDao implements LineDao {
     @Override
     public Optional<Line> findById(Long id) {
         final String sql = "select * from LINE where id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineRowMapper, id));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineRowMapper, id));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override
