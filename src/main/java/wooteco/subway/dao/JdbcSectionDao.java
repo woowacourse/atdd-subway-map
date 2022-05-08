@@ -62,4 +62,14 @@ public class JdbcSectionDao implements SectionDao {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<Section> findByLineIdAndDownStationId(final Long lineId, final Long downStationId) {
+        try {
+            final String sql = "SELECT * FROM section WHERE line_id = ? AND down_station_id = ?";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, downStationId));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }

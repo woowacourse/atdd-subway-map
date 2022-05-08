@@ -153,4 +153,21 @@ class SectionDaoTest extends DaoTest {
         assertThat(actual).isPresent()
                 .contains(expected);
     }
+
+    @Test
+    @DisplayName("노선과 하행 종점이 일치하는 역을 조회한다.")
+    void FindByLineIdAndDownStationId() {
+        // given
+        final Section section = new Section(lineId, upStationId, downStationId, 10);
+        final Long id = sectionDao.insert(section);
+
+        final Section expected = new Section(id, lineId, upStationId, downStationId, 10);
+
+        // when
+        final Optional<Section> actual = sectionDao.findByLineIdAndDownStationId(lineId, downStationId);
+
+        // then
+        assertThat(actual).isPresent()
+                .contains(expected);
+    }
 }
