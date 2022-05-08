@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -72,5 +73,67 @@ class SectionDaoTest extends DaoTest {
 
         // then
         assertThat(actual).isFalse();
+    }
+
+    @Test
+    @DisplayName("노선이 일치하고 상행 역이 동일한 구간을 조회한다.")
+    void FindBy_SameUpStationId_SectionFound() {
+        // given
+        final Section section = new Section(lineId, upStationId, downStationId, 10);
+        final Long sectionId = sectionDao.insert(section);
+
+        final Section expected = new Section(sectionId, lineId, upStationId, downStationId, 10);
+
+        // when
+        final Optional<Section> actual = sectionDao.findBy(lineId, upStationId, 999L);
+
+        // then
+        assertThat(actual).isPresent()
+                .contains(expected);
+    }
+
+    @Test
+    @DisplayName("노선이 일치하고 하행 역이 동일한 구간을 조회한다.")
+    void FindBy_SameDownStationId_SectionFound() {
+        // given
+        final Section section = new Section(lineId, upStationId, downStationId, 10);
+        final Long sectionId = sectionDao.insert(section);
+
+        final Section expected = new Section(sectionId, lineId, upStationId, downStationId, 10);
+
+        // when
+        final Optional<Section> actual = sectionDao.findBy(lineId, upStationId, 999L);
+
+        // then
+        assertThat(actual).isPresent()
+                .contains(expected);
+    }
+
+    @Test
+    @DisplayName("노선이 일치하고 상행이나 하행 역이 동일한 구간이 존재하지 않으면 빈 Optional 을 반환한다.")
+    void FindBy_NewDownStation_EmptyOptionalReturned() {
+        // given
+        final Section section = new Section(lineId, upStationId, downStationId, 10);
+        sectionDao.insert(section);
+
+        // when
+        final Optional<Section> actual = sectionDao.findBy(lineId, downStationId, 999L);
+
+        // then
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    @DisplayName("노선이 일치하고 상행이나 하행 역이 동일한 구간이 존재하지 않으면 빈 Optional 을 반환한다.")
+    void FindBy_NewUpStation_EmptyOptionalReturned() {
+        // given
+        final Section section = new Section(lineId, upStationId, downStationId, 10);
+        sectionDao.insert(section);
+
+        // when
+        final Optional<Section> actual = sectionDao.findBy(lineId, 999L, upStationId);
+
+        // then
+        assertThat(actual).isEmpty();
     }
 }
