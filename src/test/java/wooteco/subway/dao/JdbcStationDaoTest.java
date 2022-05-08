@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
@@ -33,6 +35,17 @@ class JdbcStationDaoTest {
         assertThat(savedStation.getName()).isEqualTo(stationName);
     }
 
+    @DisplayName("지하철역 이름으로 지하철역 이름 유무를 반환한다.")
+    @ParameterizedTest
+    @CsvSource({"강남역,true", "역삼역,false"})
+    void 지하철역_이름_유무(String name, boolean expected) {
+        stationDao.save(new Station("강남역"));
+
+        boolean result = stationDao.existsByName(name);
+
+        assertThat(result).isEqualTo(expected);
+    }
+    
     @DisplayName("중복된 지하철역을 저장할 경우 예외가 발생한다.")
     @Test
     void 중복된_지하철역_예외발생() {

@@ -2,6 +2,8 @@ package wooteco.subway.dao;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -28,13 +30,23 @@ public class JdbcStationDao implements StationDao {
     @Override
     public Station save(Station station) {
         Long id = insertActor.executeAndReturnKey(Map.of("name", station.getName())).longValue();
-        return findById(id);
+        return findById(id).get();
     }
 
     @Override
-    public Station findById(Long id) {
+    public boolean existsByName(String name) {
+        String sql = "select count(*) from STATION where name = :name";
+        return 0 != jdbcTemplate.queryForObject(sql, Map.of("name", name), Integer.class);
+    }
+
+    @Override
+    public Optional<Station> findById(Long id) {
         String sql = "select * from STATION where id = :id";
-        return jdbcTemplate.queryForObject(sql, Map.of("id", id), generateMapper());
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, Map.of("id", id), generateMapper()));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -43,17 +55,17 @@ public class JdbcStationDao implements StationDao {
         return jdbcTemplate.query(sql, generateMapper());
     }
 
-    @Override
-    public void deleteById(Long id) {
-        String sql = "delete from STATION where id = :id";
-        jdbcTemplate.update(sql, Map.of("id", id));
-    }
-
     private RowMapper<Station> generateMapper() {
         return (resultSet, rowNum) ->
                 new Station(
                         resultSet.getLong("id"),
                         resultSet.getString("name")
                 );
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        String sql = "delete from STATION where id = :id";
+        jdbcTemplate.update(sql, Map.of("id", id));
     }
 }
