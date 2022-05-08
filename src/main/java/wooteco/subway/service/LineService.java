@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
@@ -44,13 +45,21 @@ public class LineService {
 
     @Transactional
     public LineResponse update(Long id, LineRequest lineRequest) {
+        try {
+            updateOrSave(id, lineRequest);
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException(lineRequest.getName() + "은 이미 존재하는 노선 이름입니다.");
+        }
+
+        return new LineResponse(getLine(id));
+    }
+
+    private void updateOrSave(Long id, LineRequest lineRequest) {
         lineDao.findById(id)
                 .ifPresentOrElse(
                         line -> lineDao.update(id, new Line(lineRequest.getName(), lineRequest.getColor())),
                         () -> lineDao.saveWithId(id, new Line(lineRequest.getName(), lineRequest.getColor()))
                 );
-
-        return new LineResponse(getLine(id));
     }
 
     @Transactional

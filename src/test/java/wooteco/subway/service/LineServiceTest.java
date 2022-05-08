@@ -117,6 +117,20 @@ class LineServiceTest {
         );
     }
 
+    @DisplayName("중복된 이름을 가진 노선으로 수정할 경우 예외를 던진다.")
+    @Test
+    void 중복된_이름_노선_수정_예외발생() {
+        lineService.save(new LineRequest("2호선", "bg-green-600"));
+        LineResponse lineResponse = lineService.save(new LineRequest("3호선", "bg-orange-600"));
+
+        String updateName = "2호선";
+        String updateColor = "bg-green-600";
+        LineRequest updateRequest = new LineRequest(updateName, updateColor);
+
+        assertThatThrownBy(() -> lineService.update(lineResponse.getId(), updateRequest))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     @DisplayName("노선을 삭제한다.")
     @Test
     void 노선_삭제() {
