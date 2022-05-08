@@ -1,7 +1,10 @@
 package wooteco.subway.ui;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -13,7 +16,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +24,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
+import wooteco.subway.service.LineService;
 
 @WebMvcTest(LineController.class)
 public class LineControllerTest {
@@ -36,17 +39,15 @@ public class LineControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private LineDao lineDao;
+    private LineService lineService;
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() throws Exception {
         // given
         LineRequest test = new LineRequest("test", "GREEN");
-        given(lineDao.findByName("test"))
-                .willReturn(Optional.empty());
-        given(lineDao.save(any(Line.class)))
-                .willReturn(new Line(1L, test.getName(), test.getColor()));
+        given(lineService.save(any(LineRequest.class)))
+                .willReturn(LineResponse.of(new Line(1L, "test", "GREEN")));
         // when
         ResultActions perform = mockMvc.perform(post("/lines")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -64,71 +65,83 @@ public class LineControllerTest {
     void createLine_duplication_exception() throws Exception {
         // given
         LineRequest test = new LineRequest("test", "GREEN");
-        given(lineDao.findByName("test"))
-                .willReturn(Optional.of(new Line(1L, test.getName(), test.getColor())));
+        given(lineService.save(any(LineRequest.class)))
+                .willThrow(new IllegalArgumentException("test : 이름이 중복되는 지하철 노선이 존재합니다."));
         // when
         ResultActions perform = mockMvc.perform(post("/lines")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(test)));
         // then
-        perform.andExpect(status().isBadRequest());
+        perform.andExpectAll(
+                status().isBadRequest(),
+                jsonPath("message").value("test : 이름이 중복되는 지하철 노선이 존재합니다.")
+        );
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() throws Exception {
         // given
-        given(lineDao.findAll())
-                .willReturn(List.of(new Line(1L, "test1", "GREEN"), new Line(2L, "test2", "YELLOW")));
+        given(lineService.findAll())
+                .willReturn(List.of(
+                        LineResponse.of(new Line(1L, "test1", "GREEN")),
+                        LineResponse.of(new Line(2L, "test2", "YELLOW"))));
         // when
         ResultActions perform = mockMvc.perform(get("/lines"));
         // then
-        perform.andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].name").value("test1"))
-                .andExpect(jsonPath("$[0].color").value("GREEN"))
-                .andExpect(jsonPath("$[1].id").value(2))
-                .andExpect(jsonPath("$[1].name").value("test2"))
-                .andExpect(jsonPath("$[1].color").value("YELLOW"));
+        perform.andExpectAll(
+                status().isOk(),
+                content().contentType(MediaType.APPLICATION_JSON),
+                jsonPath("$.length()").value(2),
+                jsonPath("$[0].id").value(1),
+                jsonPath("$[0].name").value("test1"),
+                jsonPath("$[0].color").value("GREEN"),
+                jsonPath("$[1].id").value(2),
+                jsonPath("$[1].name").value("test2"),
+                jsonPath("$[1].color").value("YELLOW")
+        );
     }
 
+    //
     @DisplayName("id를 이용해 지하철 노선을 조회한다.")
     @Test
     void getLine() throws Exception {
         // given
-        given(lineDao.findById(1L))
-                .willReturn(Optional.of(new Line(1L, "test1", "GREEN")));
+        given(lineService.findById(1L))
+                .willReturn(LineResponse.of(new Line(1L, "test1", "GREEN")));
         // when
         ResultActions perform = mockMvc.perform(get("/lines/1"));
         // then
-        perform.andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("id").value(1))
-                .andExpect(jsonPath("name").value("test1"))
-                .andExpect(jsonPath("color").value("GREEN"));
+        perform.andExpectAll(
+                status().isOk(),
+                content().contentType(MediaType.APPLICATION_JSON),
+                jsonPath("id").value(1),
+                jsonPath("name").value("test1"),
+                jsonPath("color").value("GREEN")
+        );
     }
 
     @DisplayName("존재하지 않는 id를 이용해 지하철 노선을 조회할 경우 에러가 발생한다.")
     @Test
     void getLine_noExistLine_exception() throws Exception {
         // given
-        given(lineDao.findById(1L))
-                .willReturn(Optional.empty());
+        given(lineService.findById(1L))
+                .willThrow(new IllegalArgumentException("1 : 해당 ID의 지하철 노선이 존재하지 않습니다."));
         // when
         ResultActions perform = mockMvc.perform(get("/lines/1"));
         // then
-        perform.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value("1 : 해당 ID의 지하철 노선이 존재하지 않습니다."));
+        perform.andExpectAll(
+                status().isBadRequest(),
+                jsonPath("message").value("1 : 해당 ID의 지하철 노선이 존재하지 않습니다.")
+        );
     }
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() throws Exception {
         // given
-        given(lineDao.findById(1L))
-                .willReturn(Optional.of(new Line(1L, "test", "BLACK")));
+        given(lineService.findById(1L))
+                .willReturn(LineResponse.of(new Line(1L, "test", "BLACK")));
         // when
         ResultActions perform = mockMvc.perform(delete("/lines/1"));
         // then
@@ -139,13 +152,15 @@ public class LineControllerTest {
     @Test
     void deleteLine_noExistLine_exception() throws Exception {
         // given
-        given(lineDao.findById(1L))
-                .willReturn(Optional.empty());
+        given(lineService.delete(1L))
+                .willThrow(new IllegalArgumentException("1 : 해당 ID의 지하철 노선이 존재하지 않습니다."));
         // when
         ResultActions perform = mockMvc.perform(delete("/lines/1"));
         // then
-        perform.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value("1 : 해당 ID의 지하철 노선이 존재하지 않습니다."));
+        perform.andExpectAll(
+                status().isBadRequest(),
+                jsonPath("message").value("1 : 해당 ID의 지하철 노선이 존재하지 않습니다.")
+        );
     }
 
     @DisplayName("노선을 수정한다.")
@@ -153,15 +168,15 @@ public class LineControllerTest {
     void updateLine() throws Exception {
         // given
         LineRequest updateRequest = new LineRequest("9호선", "GREEN");
-        given(lineDao.findById(1L))
-                .willReturn(Optional.of(new Line(1L, "11호선", "GRAY")));
-        given(lineDao.findByName("9호선")).willReturn(Optional.empty());
         // when
         ResultActions perform = mockMvc.perform(put("/lines/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateRequest)));
         // then
-        perform.andExpect(status().isOk());
+        assertAll(
+                () -> perform.andExpect(status().isOk()),
+                () -> verify(lineService).update(anyLong(), any(LineRequest.class))
+        );
     }
 
     @DisplayName("존재하지 않는 ID의 노선을 수정한다.")
@@ -169,14 +184,17 @@ public class LineControllerTest {
     void updateLine_noExistLine_Exception() throws Exception {
         // given
         LineRequest updateRequest = new LineRequest("9호선", "GREEN");
-        given(lineDao.findById(1L))
-                .willReturn(Optional.empty());
+        given(lineService.update(anyLong(), any(LineRequest.class)))
+                .willThrow(new IllegalArgumentException("1 : 해당 ID의 지하철 노선이 존재하지 않습니다."));
         // when
         ResultActions perform = mockMvc.perform(put("/lines/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateRequest)));
         // then
-        perform.andExpect(status().isBadRequest());
+        perform.andExpectAll(
+                status().isBadRequest(),
+                jsonPath("message").value("1 : 해당 ID의 지하철 노선이 존재하지 않습니다.")
+        );
     }
 
     @DisplayName("중복된 이름으로 노선을 수정한다.")
@@ -184,15 +202,16 @@ public class LineControllerTest {
     void updateLine_duplicateName_Exception() throws Exception {
         // given
         LineRequest updateRequest = new LineRequest("9호선", "GREEN");
-        given(lineDao.findById(1L))
-                .willReturn(Optional.of(new Line(1L, "11호선", "GRAY")));
-        given(lineDao.findByName("9호선"))
-                .willReturn(Optional.of(new Line(2L, "9호선", "BLUE")));
+        given(lineService.update(anyLong(), any(LineRequest.class)))
+                .willThrow(new IllegalArgumentException("9호선 : 이름이 중복되는 지하철 노선이 존재합니다."));
         // when
         ResultActions perform = mockMvc.perform(put("/lines/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateRequest)));
         // then
-        perform.andExpect(status().isBadRequest());
+        perform.andExpectAll(
+                status().isBadRequest(),
+                jsonPath("message").value("9호선 : 이름이 중복되는 지하철 노선이 존재합니다.")
+        );
     }
 }
