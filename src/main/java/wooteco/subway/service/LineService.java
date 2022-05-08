@@ -23,9 +23,8 @@ public class LineService {
     @Transactional
     public LineResponse create(final LineRequest lineRequest) {
         validateDuplicateName(lineRepository.findByName(lineRequest.getName()));
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line savedLine = lineRepository.save(line);
-        return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor());
+        Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 
     private void validateDuplicateName(final Optional<Line> line) {
@@ -42,8 +41,8 @@ public class LineService {
     }
 
     public LineResponse showLine(final Long id) {
-        Line findLine = lineRepository.findById(id);
-        return new LineResponse(findLine.getId(), findLine.getName(), findLine.getColor());
+        Line line = lineRepository.findById(id);
+        return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 
     @Transactional
