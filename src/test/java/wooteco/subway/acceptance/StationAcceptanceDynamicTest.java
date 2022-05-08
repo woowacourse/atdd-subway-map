@@ -22,7 +22,7 @@ import wooteco.subway.dto.StationResponse;
 
 public class StationAcceptanceDynamicTest extends AcceptanceTest {
 
-    @DisplayName("노선을 관리한다.")
+    @DisplayName("지하철역을 관리한다.")
     @TestFactory
     Stream<DynamicTest> dynamicTestFromStream() {
         return Stream.of(
