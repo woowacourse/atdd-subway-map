@@ -42,12 +42,12 @@ public class Line {
         }
 
         Line line = (Line) o;
-        return name.equals(line.name);
+        return id.equals(line.id);
     }
 
     @Override
     public int hashCode() {
-        return name != null ? name.hashCode() : 0;
+        return id.hashCode();
     }
 
     @Override
