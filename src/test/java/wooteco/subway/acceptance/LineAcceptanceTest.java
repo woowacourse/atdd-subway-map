@@ -14,18 +14,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("노선 관련 기능")
+@Sql("classpath:initStation.sql")
 class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("노선을 등록한다.")
     void createLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        LineRequest params = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()

@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
@@ -18,13 +20,19 @@ import wooteco.subway.dto.LineResponse;
 class LineServiceTest {
 
     @Autowired
+    private StationDao stationDao;
+    @Autowired
     private LineService lineService;
 
     @Test
     @DisplayName("노선을 저장할 수 있다.")
     void save() {
         // given
-        LineRequest request = new LineRequest("신분당선", "bg-red-600");
+        Station station1 = new Station("새로운역");
+        Station station2 = new Station("더새로운역");
+        Long stationSaveId1 = stationDao.save(station1);
+        Long stationSaveId2 = stationDao.save(station2);
+        LineRequest request = new LineRequest("신분당선", "bg-red-600", stationSaveId1, stationSaveId2, 10);
 
         // when
         Long savedId = lineService.save(request);
