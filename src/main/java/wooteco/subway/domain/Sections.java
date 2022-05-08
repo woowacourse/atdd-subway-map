@@ -19,6 +19,18 @@ public class Sections {
         sections.add(section);
     }
 
+    public static Sections from(Section first, List<Section> mixedSections) {
+        Sections sections = new Sections(first);
+        while (sections.getSections().size() != mixedSections.size()) {
+            for (int i = 0; i < mixedSections.size(); i ++)
+                if (sections.findBottom().canDownExtendBy(mixedSections.get(i))) {
+                    sections.add(mixedSections.get(i));
+                    break;
+                }
+            }
+        return sections;
+    }
+
     public Section findTop() {
         return sections.getFirst();
     }

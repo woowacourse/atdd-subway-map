@@ -290,5 +290,25 @@ class SectionsTest {
                         .isInstanceOf(IndexOutOfBoundsException.class)
         );
     }
+    
+    @DisplayName("섞인 구간을 순서대로 정렬해 생성")
+    @Test
+    void 섞인_구간_정렬_생성() {
+        Section AtoB = new Section(new Station("A"), new Station("B"), 1);
+        Section BtoC = new Section(new Station("B"), new Station("C"), 1);
+        Section CtoD = new Section(new Station("C"), new Station("D"), 1);
+        Section DtoE = new Section(new Station("D"), new Station("E"), 1);
+
+        List<Section> mixed = List.of(AtoB, DtoE, BtoC, CtoD);
+        Sections sections = Sections.from(AtoB, mixed);
+        List<Section> result = sections.getSections();
+
+        assertAll(
+                () -> assertThat(result.get(0)).isEqualTo(AtoB),
+                () -> assertThat(result.get(1)).isEqualTo(BtoC),
+                () -> assertThat(result.get(2)).isEqualTo(CtoD),
+                () -> assertThat(result.get(3)).isEqualTo(DtoE)
+        );
+    }
 
 }
