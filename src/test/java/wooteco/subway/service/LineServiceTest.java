@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import wooteco.subway.dao.LineRepository;
 import wooteco.subway.dao.LineRepositoryImpl;
+import wooteco.subway.dao.StationRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -27,11 +28,12 @@ public class LineServiceTest {
 
     private LineService lineService;
     private LineRepository lineRepository;
+    private StationRepository stationRepository;
 
     @BeforeEach
     void setUp() {
         lineRepository = new LineRepositoryImpl(dataSource);
-        lineService = new LineService(lineRepository);
+        lineService = new LineService(lineRepository, stationRepository);
     }
 
     @DisplayName("노선을 생성한다.")

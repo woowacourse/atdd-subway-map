@@ -23,7 +23,7 @@ public class LineRepositoryImpl implements LineRepository {
             long id = resultSet.getLong("id");
             String name = resultSet.getString("name");
             String color = resultSet.getString("color");
-            return new Line(id, name, color);
+            return new Line(id, name, color, section);
         };
     }
 
@@ -41,7 +41,7 @@ public class LineRepositoryImpl implements LineRepository {
                 .addValue("color", line.getColor());
 
         long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Line(id, line.getName(), line.getColor());
+        return new Line(id, line.getName(), line.getColor(), section);
     }
 
     @Override

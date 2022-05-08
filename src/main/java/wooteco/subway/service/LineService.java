@@ -3,7 +3,10 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineRepository;
+import wooteco.subway.dao.StationRepository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
@@ -16,15 +19,26 @@ import java.util.stream.Collectors;
 @Service
 public class LineService {
 
+    public static final String NOT_FOUND_MESSAGE = "[ERROR] %d 식별자에 해당하는 역을 찾을수 없습니다.";
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse create(final LineRequest lineRequest) {
         validateDuplicatedName(lineRequest);
-        Line savedLine = lineRepository.save(lineRequest.toLine());
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, lineRequest.getUpStationId())));
+
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, lineRequest.getDownStationId())));
+
+        Section section = new Section(upStation, downStation, lineRequest.getDistance());
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor(), section);
+        Line savedLine = lineRepository.save(line);
 
         return new LineResponse(savedLine);
     }
