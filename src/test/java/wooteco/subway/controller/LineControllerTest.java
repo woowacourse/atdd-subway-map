@@ -11,28 +11,42 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineControllerTest {
 
-    private Line testLine1 = new Line(1L, 2L, "신분당선", "bg-red-600", 10L);
-    private Line testLine2 = new Line(3L, 4L, "분당선", "bg-red-600", 20L);
-    private Line testLine3 = new Line(5L, 6L, "2호선", "bg-green-500", 30L);
+    private LineRequest testLine1 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10L);
+    private LineRequest testLine2 = new LineRequest("분당선", "bg-red-600", 3L, 4L, 20L);
+    private LineRequest testLine3 = new LineRequest("2호선", "bg-green-500", 5L, 6L, 30L);
 
     @LocalServerPort
     int port;
 
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
+        StationDao stationDao = new StationDao(jdbcTemplate);
+
+        stationDao.save(new Station(1L, "testStation1"));
+        stationDao.save(new Station(2L, "testStation2"));
+        stationDao.save(new Station(3L, "testStation3"));
+        stationDao.save(new Station(4L, "testStation4"));
     }
 
     @DisplayName("노선을 생성한다.")
@@ -51,6 +65,7 @@ class LineControllerTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
