@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import wooteco.subway.domain.Station;
 
 class StationServiceTest extends ServiceTest {
-    @Autowired
-    private StationService stationService;
     private static final Station station = new Station("강남역");
     private static final Station station2 = new Station("선릉역");
+    @Autowired
+    private StationService stationService;
 
     @DisplayName("지하철역을 저장한다.")
     @Test

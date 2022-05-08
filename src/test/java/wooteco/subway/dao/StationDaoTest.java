@@ -13,11 +13,11 @@ import wooteco.subway.domain.Station;
 
 @JdbcTest
 class StationDaoTest {
+    private final Station station = new Station("강남역");
+    private final Station station1 = new Station("선릉역");
     private StationDao stationDao;
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private final Station station = new Station("강남역");
 
     @BeforeEach
     void setUp() {
@@ -57,7 +57,6 @@ class StationDaoTest {
     @Test
     void findAll() {
         //given
-        Station station1 = new Station("선릉역");
         Long id = stationDao.save(station);
         Long id2 = stationDao.save(station1);
 

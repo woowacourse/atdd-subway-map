@@ -1,6 +1,8 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.Fixtures.LINE;
+import static wooteco.subway.Fixtures.LINE_2;
 import static wooteco.subway.Fixtures.getLine;
 
 import java.util.List;
@@ -18,8 +20,6 @@ class LineDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private final Line line = new Line("신분당선", "red", 1L, 2L, 10);
-    private final Line line2 = new Line("분당선", "green", 3L, 4L, 10);
 
     @BeforeEach
     void setUp() {
@@ -30,17 +30,17 @@ class LineDaoTest {
     @Test
     void saveAndFind() {
         //given
-        Long id = lineDao.save(line);
+        Long id = lineDao.save(LINE);
 
         //when then
         assertThat(lineDao.findById(id))
-                .isEqualTo(getLine(id, line));
+                .isEqualTo(getLine(id, LINE));
     }
 
     @DisplayName("해당 이름의 지하철 노선이 있는지 여부를 확인한다.")
     @Test
     void hasLine_name() {
-        lineDao.save(line);
+        lineDao.save(LINE);
         assertThat(lineDao.hasLine("신분당선"))
                 .isTrue();
         assertThat(lineDao.hasLine("분당선"))
@@ -50,7 +50,7 @@ class LineDaoTest {
     @DisplayName("해당 id의 지하철 노선이 있는지 여부를 확인한다.")
     @Test
     void hasLine_id() {
-        Long id = lineDao.save(line);
+        Long id = lineDao.save(LINE);
         assertThat(lineDao.hasLine(id))
                 .isTrue();
         assertThat(lineDao.hasLine(100L))
@@ -61,25 +61,25 @@ class LineDaoTest {
     @Test
     void findAll() {
         //given
-        Long id1 = lineDao.save(line);
-        Long id2 = lineDao.save(line2);
+        Long id1 = lineDao.save(LINE);
+        Long id2 = lineDao.save(LINE_2);
 
         //when
         List<Line> lines = lineDao.findAll();
 
         //then
         assertThat(lines)
-                .containsOnly(getLine(id1, line), getLine(id2, line2));
+                .containsOnly(getLine(id1, LINE), getLine(id2, LINE_2));
     }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void update() {
         //given
-        Long id = lineDao.save(line);
+        Long id = lineDao.save(LINE);
 
         //when
-        lineDao.update(id, line2);
+        lineDao.update(id, LINE_2);
 
         //then
         assertThat(lineDao.hasLine("신분당선"))
@@ -92,7 +92,7 @@ class LineDaoTest {
     @Test
     void delete() {
         //given
-        Long id = lineDao.save(line);
+        Long id = lineDao.save(LINE);
 
         //when
         lineDao.delete(id);

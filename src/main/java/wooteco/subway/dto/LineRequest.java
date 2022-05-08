@@ -22,8 +22,8 @@ public class LineRequest {
         this.distance = distance;
     }
 
-    public Line toEntity() {
-        return new Line(name, color, upStationId, downStationId, distance);
+    public Line toLine() {
+        return new Line(name, color);
     }
 
     public Section toSection(Long lineId) {

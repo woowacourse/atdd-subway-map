@@ -2,6 +2,8 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static wooteco.subway.Fixtures.LINE;
+import static wooteco.subway.Fixtures.LINE_2;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,21 +13,19 @@ import wooteco.subway.domain.Line;
 class LineServiceTest extends ServiceTest {
     @Autowired
     private LineService lineService;
-    private final Line line = new Line("신분당선", "red", 1L, 2L, 10);
-    private final Line line2 = new Line("분당선", "green", 3L, 4L, 10);
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void save() {
-        lineService.save(line);
+        lineService.save(LINE);
     }
 
     @DisplayName("이미 있는 이름의 지하철 노선을 저장할 수 없다.")
     @Test
     void save_error() {
-        lineService.save(line);
+        lineService.save(LINE);
 
-        assertThatThrownBy(() -> lineService.save(line))
+        assertThatThrownBy(() -> lineService.save(LINE))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 해당 이름의 노선이 있습니다.");
     }
@@ -34,8 +34,8 @@ class LineServiceTest extends ServiceTest {
     @Test
     void findAll() {
         //given
-        Line resLine = lineService.save(line);
-        Line resLine2 = lineService.save(line2);
+        Line resLine = lineService.save(LINE);
+        Line resLine2 = lineService.save(LINE_2);
 
         //when then
         assertThat(lineService.findAll())
@@ -46,10 +46,10 @@ class LineServiceTest extends ServiceTest {
     @Test
     void update() {
         //given
-        Long id = lineService.save(line).getId();
+        Long id = lineService.save(LINE).getId();
 
         //when
-        Line updateLine = lineService.update(id, line2);
+        Line updateLine = lineService.update(id, LINE_2);
 
         //then
         assertThat(lineService.findAll())
@@ -59,7 +59,7 @@ class LineServiceTest extends ServiceTest {
     @DisplayName("없는 지하철 노선을 수정할 수 없다.")
     @Test
     void update_error() {
-        assertThatThrownBy(() -> lineService.update(100L, line))
+        assertThatThrownBy(() -> lineService.update(100L, LINE))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 아이디의 노선이 없습니다.");
     }
@@ -68,7 +68,7 @@ class LineServiceTest extends ServiceTest {
     @Test
     void delete() {
         //given
-        Line resLine = lineService.save(line);
+        Line resLine = lineService.save(LINE);
         Long id = resLine.getId();
 
         //when

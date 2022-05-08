@@ -1,7 +1,12 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static wooteco.subway.Fixtures.LINE;
+import static wooteco.subway.Fixtures.SECTION;
+import static wooteco.subway.Fixtures.SECTION_2;
+import static wooteco.subway.Fixtures.STATION;
+import static wooteco.subway.Fixtures.STATION_2;
+import static wooteco.subway.Fixtures.STATION_3;
 import static wooteco.subway.Fixtures.getSection;
 
 import org.junit.jupiter.api.DisplayName;
@@ -19,31 +24,24 @@ class SectionServiceTest extends ServiceTest {
     @Autowired
     private LineService lineService;
 
-    private final Line line = new Line("신분당선", "red", 1L, 2L, 10);
-    private final Section section = new Section(1L, 1L, 2L, 10);
-    private final Section section2 = new Section(1L, 2L, 3L, 5);
-
     @DisplayName("지하철 구간을 생성한다.")
     @Test
     void saveSection() {
-        Section resSection = sectionService.saveSection(section);
+        Section resSection = sectionService.saveSection(SECTION);
         assertThat(resSection)
-                .isEqualTo(getSection(resSection.getId(), section));
+                .isEqualTo(getSection(resSection.getId(), SECTION));
     }
 
     @DisplayName("해당 지하철 노선 안의 역들을 조회할 수 있다.")
     @Test
     void findStationsOfLine() {
         //given
-        Station station = new Station("강남역");
-        Station station2 = new Station("선릉역");
-        Station station3 = new Station("잠실역");
-        Station saveStation = stationService.save(station);
-        Station saveStation2 = stationService.save(station2);
-        Station saveStation3 = stationService.save(station3);
-        Line saveLine = lineService.save(line);
-        sectionService.saveSection(section);
-        sectionService.saveSection(section2);
+        Station saveStation = stationService.save(STATION);
+        Station saveStation2 = stationService.save(STATION_2);
+        Station saveStation3 = stationService.save(STATION_3);
+        Line saveLine = lineService.save(LINE);
+        sectionService.saveSection(SECTION);
+        sectionService.saveSection(SECTION_2);
 
         //when then
         assertThat(lineService.findStationsOfLine(saveLine))

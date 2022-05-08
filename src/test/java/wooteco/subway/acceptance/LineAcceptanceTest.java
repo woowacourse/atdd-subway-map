@@ -151,12 +151,4 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().asString())
                 .isEqualTo("해당 아이디의 노선이 없습니다.");
     }
-
-    private RequestSpecification setRequest() {
-        return RestAssured.given().log().all().contentType(MediaType.APPLICATION_JSON_VALUE);
-    }
-
-    private ExtractableResponse<Response> getResponse(Response response) {
-        return response.then().log().all().extract();
-    }
 }
