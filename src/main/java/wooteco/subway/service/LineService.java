@@ -5,10 +5,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.LineWithStationRequest;
-import wooteco.subway.dto.LineResponse;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
