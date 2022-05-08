@@ -17,12 +17,12 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestConstructor.AutowireMode;
 import wooteco.subway.dao.StationRepository;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.StationDuplicateException;
+import wooteco.subway.exception.StationNameDuplicateException;
 import wooteco.subway.service.dto.StationServiceRequest;
 
-@DisplayName("지하철역 서비스")
-@TestConstructor(autowireMode = AutowireMode.ALL)
 @JdbcTest
+@TestConstructor(autowireMode = AutowireMode.ALL)
+@DisplayName("지하철역 서비스")
 class SpringStationServiceTest {
 
     private static final StationServiceRequest STATION_FIXTURE = new StationServiceRequest("선릉역");
@@ -51,10 +51,12 @@ class SpringStationServiceTest {
         @Test
         @DisplayName("역 이름이 중복되면 예외가 발생한다.")
         void saveFailIfExists() {
+            // given & when
             stationService.save(STATION_FIXTURE);
 
+            // then
             assertThatThrownBy(() -> stationService.save(STATION_FIXTURE))
-                    .isInstanceOf(StationDuplicateException.class)
+                    .isInstanceOf(StationNameDuplicateException.class)
                     .hasMessage("이미 존재하는 지하철역입니다. : " + STATION_FIXTURE.getName());
         }
     }
@@ -62,22 +64,34 @@ class SpringStationServiceTest {
     @Test
     @DisplayName("전체 지하철 역을 조회할 수 있다")
     void findAll() {
+        // given
+        final List<String> expected = List.of(
+                STATION_FIXTURE.getName(),
+                STATION_FIXTURE2.getName(),
+                STATION_FIXTURE3.getName()
+        );
+
+        // when
         stationService.save(STATION_FIXTURE);
         stationService.save(STATION_FIXTURE2);
         stationService.save(STATION_FIXTURE3);
 
-        assertThat(stationService.findAll()).extracting("name").isEqualTo(
-                List.of(STATION_FIXTURE.getName(), STATION_FIXTURE2.getName(), STATION_FIXTURE3.getName()));
+        // then
+        assertThat(stationService.findAll()).extracting("name").isEqualTo(expected);
     }
 
     @Test
     @DisplayName("아이디로 지하철역을 삭제할 수 있다")
     void deleteById() {
+        // given
         final Station station = stationService.save(STATION_FIXTURE);
         final List<Station> stations = stationService.findAll();
+
+        // when
         stationService.deleteById(station.getId());
         final List<Station> afterDelete = stationService.findAll();
 
+        // then
         assertAll(
                 () -> assertThat(stations).isNotEmpty(),
                 () -> assertThat(afterDelete).isEmpty()
