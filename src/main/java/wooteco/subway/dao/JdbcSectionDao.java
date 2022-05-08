@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -71,6 +72,12 @@ public class JdbcSectionDao implements SectionDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Section> findByLineIdAndStationId(final Long lineId, final Long stationId) {
+        final String sql = "SELECT * FROM section WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
+        return jdbcTemplate.query(sql, rowMapper, lineId, stationId, stationId);
     }
 
     @Override
