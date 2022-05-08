@@ -10,8 +10,16 @@ import java.util.NoSuchElementException;
 @RestControllerAdvice
 public class ControllerAdvice {
 
-    @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class})
-    public ResponseEntity<String> handle(Exception e){
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> IllegalHandle(Exception e){
+        return new ResponseEntity<>(
+                e.getMessage(),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+    
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> NoSuchHandle(Exception e){
         return new ResponseEntity<>(
                 e.getMessage(),
                 HttpStatus.BAD_REQUEST
