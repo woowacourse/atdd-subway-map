@@ -13,8 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 
 @JdbcTest
 class LineDaoTest {
@@ -24,13 +27,14 @@ class LineDaoTest {
 	@Autowired
 	private DataSource dataSource;
 	private LineDao lineDao;
+	private StationDao stationDao;
 
 	@BeforeEach
 	void init() {
+		stationDao = new JdbcStationDao(dataSource, jdbcTemplate);
 		lineDao = new JdbcLineDao(dataSource, jdbcTemplate,
-			new JdbcSectionDao(dataSource, jdbcTemplate,
-				new JdbcStationDao(dataSource, jdbcTemplate)
-			));
+			new JdbcSectionDao(dataSource, jdbcTemplate, stationDao)
+		);
 	}
 
 	@DisplayName("지하철 노선을 저장한다.")
@@ -59,6 +63,24 @@ class LineDaoTest {
 		Long lineId = lineDao.save(new Line(0L, "신분당선", "bg-red-600"));
 		Line foundLine = lineDao.findById(lineId);
 		assertThat(foundLine.getId()).isEqualTo(lineId);
+	}
+
+	@DisplayName("지하철 노선을 조회하면 구간도 함께 조회할 수 있다")
+	@Test
+	void findSections() {
+		Long upStationId = stationDao.save(new Station("강남역"));
+		Long downStationId = stationDao.save(new Station("역삼역"));
+		Section section = new Section(
+			new Station(upStationId, "강남역"), new Station(downStationId, "역삼역"),
+			10);
+		Long lineId = lineDao.save(new Line("신분당선", "bg-red-600", List.of(section)));
+
+		Line foundLine = lineDao.findById(lineId);
+		assertThat(foundLine.getSections())
+			.allSatisfy(each -> {
+				assertThat(each.getUpStationId()).isEqualTo(upStationId);
+				assertThat(each.getDownStationId()).isEqualTo(downStationId);
+			});
 	}
 
 	@DisplayName("없는 지하철 노선을 조회하면 예외가 발생한다.")
