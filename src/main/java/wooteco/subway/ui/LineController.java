@@ -2,7 +2,6 @@ package wooteco.subway.ui;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,10 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineCreateRequest;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
 
 @RestController
@@ -32,22 +30,19 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineCreateRequest lineCreateRequest) {
-        Line newLine = lineService.save(lineCreateRequest);
-        LineResponse lineResponse = LineResponse.from(newLine);
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        LineResponse lineResponse = lineService.save(lineCreateRequest);
+        URI uri = URI.create("/lines/" + lineResponse.getId());
+        return ResponseEntity.created(uri).body(lineResponse);
     }
 
     @GetMapping
     public List<LineResponse> showLines() {
-        List<Line> lines = lineService.findAll();
-        return lines.stream()
-                .map(LineResponse::from)
-                .collect(Collectors.toList());
+        return lineService.findAll();
     }
 
     @GetMapping("/{id}")
     public LineResponse findLine(@PathVariable Long id) {
-        return LineResponse.from(lineService.findById(id));
+        return lineService.findById(id);
     }
 
     @PutMapping("/{id}")

@@ -2,7 +2,6 @@ package wooteco.subway.ui;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.service.StationService;
@@ -30,17 +28,14 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station newStation = stationService.save(stationRequest);
-        StationResponse stationResponse = StationResponse.from(newStation);
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
+        StationResponse stationResponse = stationService.save(stationRequest);
+        URI uri = URI.create("/stations/" + stationResponse.getId());
+        return ResponseEntity.created(uri).body(stationResponse);
     }
 
     @GetMapping
     public List<StationResponse> showStations() {
-        List<Station> stations = stationService.findAll();
-        return stations.stream()
-                .map(StationResponse::from)
-                .collect(Collectors.toList());
+        return stationService.findAll();
     }
 
     @DeleteMapping("/{id}")

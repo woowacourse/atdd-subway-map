@@ -1,12 +1,15 @@
 package wooteco.subway.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineCreateRequest;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 
 @Service
 public class LineService {
@@ -20,11 +23,11 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line save(LineCreateRequest lineCreateRequest) {
+    public LineResponse save(LineCreateRequest lineCreateRequest) {
         validDuplicatedName(lineCreateRequest.getName());
         Line line = new Line(lineCreateRequest.getName(), lineCreateRequest.getColor());
         Long id = lineDao.save(line);
-        return new Line(id, line.getName(), line.getColor());
+        return new LineResponse(id, line.getName(), line.getColor(), new ArrayList<>());
     }
 
     public void update(Long id, LineRequest lineRequest) {
@@ -38,16 +41,20 @@ public class LineService {
         }
     }
 
-    public Line findById(Long id) {
+    public LineResponse findById(Long id) {
         try {
-            return lineDao.findById(id);
+            Line line = lineDao.findById(id);
+            return LineResponse.from(line);
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException(NONE_LINE_ERROR_MESSAGE);
         }
     }
 
-    public List<Line> findAll() {
-        return lineDao.findAll();
+    public List<LineResponse> findAll() {
+        return lineDao.findAll()
+                .stream()
+                .map(LineResponse::from)
+                .collect(Collectors.toList());
     }
 
     public void deleteById(Long id) {
