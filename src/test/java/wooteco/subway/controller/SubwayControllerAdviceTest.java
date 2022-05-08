@@ -1,5 +1,7 @@
 package wooteco.subway.controller;
 
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -37,7 +39,8 @@ class SubwayControllerAdviceTest {
     @DisplayName("name이 null이고 distance가 음수인 line save request dto 요청")
     void invalidNullNameLineSaveRequest() {
         LineSaveRequest request = new LineSaveRequest(null, "bg-red-600", 1, 2, -1);
-        String errorMessage = "line 이름은 공백 혹은 null이 들어올 수 없습니다.,상행-하행 노선 길이는 양수 값만 들어올 수 있습니다.";
+        String nameNullErrorMessage = "line 이름은 공백 혹은 null이 들어올 수 없습니다.";
+        String distanceNegativeErrorMessage = "상행-하행 노선 길이는 양수 값만 들어올 수 있습니다.";
 
         RestAssured.given().log().all()
                 .body(request)
@@ -46,7 +49,7 @@ class SubwayControllerAdviceTest {
                 .post("/lines")
                 .then().log().all()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .body("message", is(errorMessage));
+                .body("message", allOf(containsString(nameNullErrorMessage), containsString(distanceNegativeErrorMessage)));
     }
 
     @Test
