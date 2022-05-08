@@ -22,7 +22,7 @@ public class LineService {
         this.dao = dao;
     }
 
-    public LineResponse insert(LineRequest request) {
+    public LineResponse insert(LineRequest.Post request) {
         String name = request.getName();
         checkDuplicateName(dao.isExistName(name));
 
@@ -50,13 +50,14 @@ public class LineService {
         }
     }
 
-    public void update(Long id, LineRequest request) {
+    public void update(Long id, LineRequest.Put request) {
         String name = request.getName();
         checkDuplicateName(dao.isExistName(id, name));
 
-        LineResponse lineResponse = findById(id);
-        Line line = new Line(lineResponse.getId(), request.getName(), request.getColor());
-        dao.update(line);
+        Line oldLine = dao.findById(id)
+                .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND));
+        Line newLine = new Line(oldLine.getId(), request.getName(), request.getColor());
+        dao.update(newLine);
     }
 
     private void checkDuplicateName(boolean result) {
