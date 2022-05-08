@@ -2,13 +2,12 @@ package wooteco.subway.ui;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.dto.ErrorResponse;
-import wooteco.subway.exception.InternalServerException;
 import wooteco.subway.exception.NotFoundException;
 
-@ControllerAdvice(assignableTypes = {StationController.class, LineController.class})
+@RestControllerAdvice
 public class ExceptionAdvice {
 
     @ExceptionHandler(value = {IllegalArgumentException.class})
@@ -21,7 +20,7 @@ public class ExceptionAdvice {
         return new ResponseEntity<>(new ErrorResponse(exception.getMessage()), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(value = {InternalServerException.class})
+    @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<ErrorResponse> handleInternalServerException(Exception exception) {
         return ResponseEntity.internalServerError().body(new ErrorResponse(exception.getMessage()));
     }
