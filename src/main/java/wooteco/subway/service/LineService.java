@@ -23,7 +23,6 @@ public class LineService {
 
     private static final String STATION_NOT_FOUND = "존재하지 않는 지하철역입니다.";
 
-
     private final LineDao lineDao;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
@@ -58,6 +57,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         List<List<StationResponse>> stationResponses = lines.stream()
@@ -65,13 +65,14 @@ public class LineService {
                 .collect(Collectors.toList());
 
         List<LineResponse> lineResponses = new ArrayList<>();
-        for(int i = 0; i<lines.size(); i++){
+        for (int i = 0; i < lines.size(); i++) {
             lineResponses.add(new LineResponse(lines.get(i), stationResponses.get(i)));
         }
 
         return lineResponses;
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id)
                 .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND));
@@ -95,12 +96,14 @@ public class LineService {
         return stationResponses;
     }
 
+    @Transactional
     public void deleteById(Long id) {
         if (lineDao.delete(id) == 0) {
             throw new NotFoundException(LINE_NOT_FOUND);
         }
     }
 
+    @Transactional
     public void update(Long id, LineRequest.Put request) {
         String name = request.getName();
         checkDuplicateName(lineDao.isExistName(id, name));

@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
@@ -22,6 +23,7 @@ public class StationService {
         this.dao = dao;
     }
 
+    @Transactional
     public StationResponse insert(StationRequest request) {
         String name = request.getName();
 
@@ -32,6 +34,7 @@ public class StationService {
         return new StationResponse(dao.insert(name));
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findAll() {
         List<Station> stations = dao.findAll();
         return stations.stream()
@@ -39,6 +42,7 @@ public class StationService {
                 .collect(Collectors.toUnmodifiableList());
     }
 
+    @Transactional
     public void delete(Long id) {
         if (dao.delete(id) == 0) {
             throw new NotFoundException(STATION_NOT_FOUND);
