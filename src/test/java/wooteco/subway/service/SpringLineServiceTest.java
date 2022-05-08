@@ -14,8 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
-import wooteco.subway.exception.LineDuplicateException;
-import wooteco.subway.exception.NoLineFoundException;
 
 @SpringBootTest
 @Transactional
@@ -44,7 +42,7 @@ class SpringLineServiceTest {
         void save_Fail_If_Exists() {
             lineService.save(LINE_FIXTURE);
             assertThatThrownBy(() -> lineService.save(LINE_FIXTURE))
-                    .isInstanceOf(LineDuplicateException.class)
+                    .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("이미 존재하는 노선입니다. Line{name='2호선', color='bg-color-600'}");
         }
     }
@@ -89,7 +87,7 @@ class SpringLineServiceTest {
         @DisplayName("아이디가 존재하지 않는다면 예외를 던진다.")
         void delete_By_Id_Fail() {
             assertThatThrownBy(() -> lineService.deleteById(1L))
-                    .isInstanceOf(NoLineFoundException.class)
+                    .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("요청한 노선이 존재하지 않습니다. id=1");
         }
     }
@@ -119,7 +117,7 @@ class SpringLineServiceTest {
         @DisplayName("노선이 존재하지 않으면 예외를 던진다.")
         void update_Line_Fail() {
             assertThatThrownBy(() -> lineService.update(1L, new LineRequest("a", "b")))
-                    .isInstanceOf(NoLineFoundException.class)
+                    .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("요청한 노선이 존재하지 않습니다. id=1 LineRequest{name='a', color='b'}");
 
         }

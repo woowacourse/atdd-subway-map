@@ -5,13 +5,10 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.LineDuplicateException;
-import wooteco.subway.exception.NoLineFoundException;
 import wooteco.subway.exception.NoStationFoundException;
 import wooteco.subway.exception.StationDuplicateException;
 

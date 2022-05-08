@@ -12,12 +12,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.LineDuplicateException;
 import wooteco.subway.exception.NoStationFoundException;
 import wooteco.subway.exception.StationDuplicateException;
 

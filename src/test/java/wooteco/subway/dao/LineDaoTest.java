@@ -13,14 +13,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
-import wooteco.subway.exception.LineDuplicateException;
-import wooteco.subway.exception.NoLineFoundException;
 
 @DisplayName("Line Dao를 통해서")
 @JdbcTest
@@ -60,7 +56,7 @@ class LineDaoTest {
         void save_Fail_If_Exists() {
             lineDao.save(LINE_FIXTURE);
             assertThatThrownBy(() -> lineDao.save(LINE_FIXTURE))
-                    .isInstanceOf(LineDuplicateException.class)
+                    .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("이미 존재하는 노선입니다. Line{name='line1', color='color'}");
         }
     }
@@ -105,7 +101,7 @@ class LineDaoTest {
         @DisplayName("아이디가 존재하지 않는다면 예외를 던진다.")
         void delete_By_Id_Fail() {
             assertThatThrownBy(() -> lineDao.deleteById(1L))
-                    .isInstanceOf(NoLineFoundException.class)
+                    .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("요청한 노선이 존재하지 않습니다. id=1");
         }
 
@@ -136,7 +132,7 @@ class LineDaoTest {
         @DisplayName("노선이 존재하지 않으면 예외를 던진다.")
         void update_Line_Fail() {
             assertThatThrownBy(() -> lineDao.update(1L, new LineRequest("a", "b")))
-                    .isInstanceOf(NoLineFoundException.class)
+                    .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("요청한 노선이 존재하지 않습니다. id=1 LineRequest{name='a', color='b'}");
 
         }

@@ -1,20 +1,17 @@
 package wooteco.subway.ui;
 
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.dto.ErrorResponse;
-import wooteco.subway.exception.LineDuplicateException;
-import wooteco.subway.exception.NoLineFoundException;
 import wooteco.subway.exception.NoStationFoundException;
 import wooteco.subway.exception.StationDuplicateException;
 
 @RestControllerAdvice
 public class StationControllerAdvice {
 
-    @ExceptionHandler({StationDuplicateException.class, LineDuplicateException.class, NoLineFoundException.class,
+    @ExceptionHandler({StationDuplicateException.class, IllegalArgumentException.class, IllegalStateException.class,
             NoStationFoundException.class})
     public ResponseEntity<ErrorResponse> duplicateStation(final RuntimeException exception) {
         return new ResponseEntity<>(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);

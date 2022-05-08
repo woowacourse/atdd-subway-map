@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -13,13 +12,13 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
-import wooteco.subway.exception.LineDuplicateException;
-import wooteco.subway.exception.NoLineFoundException;
 
 @Repository
 public class LineDao {
 
     private static final int NO_ROW_AFFECTED = 0;
+    private static final String LINE_DUPLICATED = "이미 존재하는 노선입니다. ";
+    private static final String LINE_NOT_FOUND = "요청한 노선이 존재하지 않습니다. ";
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleInsert;
@@ -39,7 +38,7 @@ public class LineDao {
             final Long id = simpleInsert.executeAndReturnKey(params).longValue();
             return new Line(id, line.getName(), line.getColor());
         } catch (DuplicateKeyException e) {
-            throw new LineDuplicateException(line.toString());
+            throw new IllegalStateException(LINE_DUPLICATED + line);
         }
     }
 
@@ -69,7 +68,7 @@ public class LineDao {
         final SqlParameterSource parameter = new MapSqlParameterSource(params);
         final int theNumberOfAffectedRow = namedParameterJdbcTemplate.update(sql, parameter);
         if (theNumberOfAffectedRow == NO_ROW_AFFECTED) {
-            throw new NoLineFoundException("id=" + id + " " + lineRequest);
+            throw new IllegalStateException(LINE_NOT_FOUND + "id=" + id + " " + lineRequest);
         }
     }
 
@@ -77,7 +76,7 @@ public class LineDao {
         final String sql = "delete from LINE where id = :id";
         final int theNumberOfAffectedRow = namedParameterJdbcTemplate.update(sql, Map.of("id", id));
         if (theNumberOfAffectedRow == NO_ROW_AFFECTED) {
-            throw new NoLineFoundException("id=" + id);
+            throw new IllegalStateException(LINE_NOT_FOUND + "id=" + id);
         }
     }
 
