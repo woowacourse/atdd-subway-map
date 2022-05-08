@@ -69,6 +69,16 @@ public class LineService {
         final Section section = new Section(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
                 sectionRequest.getDistance());
         line.addSection(section);
+        checkFinalSectionAndAdd(lineId, sectionRequest, section);
+    }
+
+    private void checkFinalSectionAndAdd(Long lineId, SectionRequest sectionRequest, Section section) {
+        final Optional<Section> upSection = sectionDao.findByDownStationId(lineId, section.getUpStationId());
+        final Optional<Section> downSection = sectionDao.findByUpStationId(lineId, sectionRequest.getDownStationId());
+        if (upSection.isEmpty() || downSection.isEmpty()) {
+            sectionDao.save(section);
+            return;
+        }
         final Section existSection = sectionDao.findBySameUpOrDownStationId(lineId, section)
                 .orElseThrow(() -> new NoSuchElementException("구간이 존재하지 않습니다."));
         saveSplitSection(existSection, section);

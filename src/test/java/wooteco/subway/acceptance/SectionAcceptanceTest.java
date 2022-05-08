@@ -22,6 +22,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private final StationRequest 강남 = new StationRequest("강남역");
     private final StationRequest 노원 = new StationRequest("노원역");
     private final StationRequest 서울대입구 = new StationRequest("서울대입구역");
+    private final StationRequest 성수 = new StationRequest("성수역");
 
     private final LineRequest 이호선 =
             new LineRequest("2호선", "bg-green-600", 1L, 4L, 50);
@@ -38,6 +39,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             new SectionRequest(5L, 1L, 30);
     private final SectionRequest 건대입구_서울대입구 =
             new SectionRequest(1L, 6L, 60);
+    private final SectionRequest 강남_서울대입구 =
+            new SectionRequest(4L, 6L, 10);
+    private final SectionRequest 성수_건대입구 =
+            new SectionRequest(7L, 1L, 10);
 
 
     @BeforeEach
@@ -48,6 +53,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createStationResponse(강남);
         createStationResponse(노원);
         createStationResponse(서울대입구);
+        createStationResponse(성수);
 
         createLineResponse(이호선);
     }
@@ -61,7 +67,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        findSectionsByCreateLine(1L);
+        findSectionsByCreateLine(1L,
+                new StationResponse(1L, 건대입구.getName()),
+                new StationResponse(2L, 잠실.getName()),
+                new StationResponse(4L, 강남.getName())
+        );
     }
 
     @DisplayName("지하철 구간을 같은 하행역에 등록한다.")
@@ -73,18 +83,54 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        findSectionsByCreateLine(1L);
+        findSectionsByCreateLine(1L,
+                new StationResponse(1L, 건대입구.getName()),
+                new StationResponse(2L, 잠실.getName()),
+                new StationResponse(4L, 강남.getName())
+        );
     }
 
-    private void findSectionsByCreateLine(Long lineId) {
+    @DisplayName("상행 종점을 등록한다.")
+    @Test
+    void createFinalUpSection() {
+        // given
+        // when
+        ExtractableResponse<Response> response = createSectionResponse(1L, 성수_건대입구);
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        findSectionsByCreateLine(1L,
+                new StationResponse(1L, 건대입구.getName()),
+                new StationResponse(4L, 강남.getName()),
+                new StationResponse(7L, 성수.getName())
+        );
+    }
+
+    @DisplayName("하행 종점을 등록한다.")
+    @Test
+    void createFinalDownSection() {
+        // given
+        // when
+        ExtractableResponse<Response> response = createSectionResponse(1L, 강남_서울대입구);
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        findSectionsByCreateLine(1L,
+                new StationResponse(1L, 건대입구.getName()),
+                new StationResponse(4L, 강남.getName()),
+                new StationResponse(6L, 서울대입구.getName())
+        );
+    }
+
+    private void findSectionsByCreateLine(Long lineId,
+                                          StationResponse stationResponse1,
+                                          StationResponse stationResponse2,
+                                          StationResponse stationResponse3) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .get("/lines/" + lineId)
                 .then().log().all()
                 .extract();
-        final StationResponse stationResponse1 = new StationResponse(1L, 건대입구.getName());
-        final StationResponse stationResponse2 = new StationResponse(2L, 잠실.getName());
-        final StationResponse stationResponse3 = new StationResponse(4L, 강남.getName());
         checkByCreateValidSections(lineId, response, stationResponse1, stationResponse2, stationResponse3);
     }
 

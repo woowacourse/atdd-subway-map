@@ -56,7 +56,7 @@ public class Sections {
     }
 
     public void addWithSameDownStation(Section section) {
-        if (hasSameUpStationWithOtherDownStation(section)) {
+        if (hasSameDownStation(section)) {
             addSplitDownSection(section);
             return;
         }
