@@ -47,4 +47,10 @@ public class LineRepository {
         }
         return new Line(lineDto.getId(), lineDto.getName(), lineDto.getColor(), Sections.from(sections));
     }
+
+    public List<Line> findAll() {
+        return lineDao.findAll().stream()
+                .map(lineDto -> findById(lineDto.getId()))
+                .collect(Collectors.toList());
+    }
 }

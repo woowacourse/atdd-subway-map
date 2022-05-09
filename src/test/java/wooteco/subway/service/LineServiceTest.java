@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
@@ -33,9 +33,6 @@ class LineServiceTest {
 
     @Autowired
     private StationDao stationDao;
-
-    @Autowired
-    private SectionDao sectionDao;
 
     @DisplayName("노선을 저장한다")
     @Test
@@ -67,10 +64,19 @@ class LineServiceTest {
     void 모든_노선_조회() {
         Station up = stationDao.save(new Station("합정역"));
         Station down = stationDao.save(new Station("홍대입구역"));
+        Section section = new Section(up, down, 1);
+        Line line1 = new Line("1호선", "bg-darkblue-600", new Sections(section));
+        Line line2 = new Line("2호선", "bg-green-600", new Sections(section));
         lineService.save(new LineRequest("1호선", "bg-darkblue-600", up.getId(), down.getId(), 1));
         lineService.save(new LineRequest("2호선", "bg-green-600", up.getId(), down.getId(), 1));
 
-        assertThat(lineService.findAll().size()).isEqualTo(2);
+        List<Line> result = lineService.findAll();
+
+        assertAll(
+                () -> assertThat(result.size()).isEqualTo(2),
+                () -> assertThat(result.get(0)).isEqualTo(line1),
+                () -> assertThat(result.get(1)).isEqualTo(line2)
+        );
     }
 
     @DisplayName("노선을 조회한다")
@@ -81,12 +87,9 @@ class LineServiceTest {
         Line line = new Line("3호선", "bg-orange-600", new Sections(new Section(up, down, 3)));
         Line savedLine = lineService.save(new LineRequest("3호선", "bg-orange-600", up.getId(), down.getId(), 3));
 
-        Line foundLine = lineService.findById(savedLine.getId());
+        Line result = lineService.findById(savedLine.getId());
 
-        assertAll(
-                () -> assertThat(foundLine.getName()).isEqualTo(line.getName()),
-                () -> assertThat(foundLine.getColor()).isEqualTo(line.getColor())
-        );
+        assertThat(result).isEqualTo(line);
     }
 
     @DisplayName("존재하지 않는 노선을 조회할 시 예외가 발생한다")
@@ -105,12 +108,9 @@ class LineServiceTest {
         Line savedLine = lineService.save(new LineRequest("4호선", "bg-purple-600", up.getId(), down.getId(), 3));
         Line newLine = new Line("4호선", "bg-skyblue-600", new Sections(new Section(up, down, 3)));
 
-        Line updatedLine = lineService.update(savedLine.getId(), newLine);
+        Line result = lineService.update(savedLine.getId(), newLine);
 
-        assertAll(
-                () -> assertThat(updatedLine.getName()).isEqualTo(newLine.getName()),
-                () -> assertThat(updatedLine.getColor()).isEqualTo(newLine.getColor())
-        );
+        assertThat(result).isEqualTo(newLine);
     }
 
     @DisplayName("중복된 노선 이름으로 업데이트 시 예외가 발생한다")

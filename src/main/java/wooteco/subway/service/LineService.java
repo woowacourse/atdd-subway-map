@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
@@ -41,9 +42,7 @@ public class LineService {
     }
 
     public List<Line> findAll() {
-        return lineDao.findAll().stream()
-                .map(lineDto -> new Line(lineDto.getId(), lineDto.getName(), lineDto.getColor()))
-                .collect(Collectors.toList());
+        return lineRepository.findAll();
     }
 
     public Line findById(Long id) {
@@ -57,7 +56,7 @@ public class LineService {
     public Line update(Long id, Line line) {
         try {
             LineDto lineDto = lineDao.update(id, LineDto.from(line));
-            return new Line(lineDto.getId(), line.getName(), line.getColor());
+            return new Line(lineDto.getId(), line.getName(), line.getColor(), new Sections(new LinkedList<>(line.getSections())));
         } catch (DuplicateKeyException e) {
             throw new DuplicateKeyException("이미 존재하는 노선 이름입니다.");
         }
