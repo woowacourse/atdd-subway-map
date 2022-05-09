@@ -10,6 +10,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.repository.*;
 import wooteco.subway.service.dto.LineRequest;
+import wooteco.subway.service.dto.SectionRequest;
 
 import javax.sql.DataSource;
 
@@ -50,10 +51,11 @@ class SectionServiceTest {
 
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line savedLine = lineRepository.save(line);
-        Section section = sectionService.create(savedLine.getId(), lineRequest);
+        SectionRequest sectionRequest = SectionRequest.from(lineRequest);
+        Section section = sectionService.create(savedLine.getId(), sectionRequest);
 
         assertAll(
-                () -> assertThat(section.getId()).isEqualTo(1L),
+                () -> assertThat(section.getId()).isNotNull(),
                 () -> assertThat(section.getDistance()).isEqualTo(5),
                 () -> assertThat(section.getUpStation().getName()).isEqualTo("신림역")
         );

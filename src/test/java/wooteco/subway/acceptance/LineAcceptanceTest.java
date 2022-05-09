@@ -88,10 +88,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        LineRequest request = new LineRequest("분당선", "bg-green-600");
+        Station upStation = stationRepository.save(new Station("을지로입구역"));
+        Station downStation = stationRepository.save(new Station("을지로3가역"));
+        LineRequest request2 = new LineRequest("분당선", "bg-green-600",upStation.getId(), downStation.getId(), 5);
 
         ExtractableResponse<Response> bundangPostResponse = RestAssured.given().log().all()
-                .body(request)
+                .body(request2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")

@@ -13,7 +13,6 @@ import wooteco.subway.utils.exception.NameDuplicatedException;
 import wooteco.subway.utils.exception.NotFoundException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,14 +30,10 @@ public class LineService {
         this.sectionRepository = sectionRepository;
     }
 
-    public LineResponse create(final LineRequest lineRequest) {
+    public Line create(final LineRequest lineRequest) {
         validateDuplicatedName(lineRequest);
-
         Line line = Line.create(lineRequest.getName(), lineRequest.getColor());
-        Line savedLine = lineRepository.save(line);
-
-        Section savedSection = sectionService.create(line.getId(), lineRequest);
-        return new LineResponse(savedLine, List.of(savedSection.getUpStation(), savedSection.getDownStation()));
+        return lineRepository.save(line);
     }
 
     private void validateDuplicatedName(LineRequest lineRequest) {
@@ -47,28 +42,31 @@ public class LineService {
         }
     }
 
-    public List<LineResponse> showLines() {
+    public List<LineResponse> getLines() {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(line -> {
-                    List<Section> sections = sectionRepository.findAllByLineId(line.getId());
-                    List<Station> stations = new ArrayList<>();
-                    for (Section section : sections) {
-                        stations.add(section.getUpStation());
-                        stations.add(section.getDownStation());
-                    }
-                    List<Station> collect = stations.stream().distinct().collect(Collectors.toList());
-                    return new LineResponse(line, collect);
-                })
+                .map(line -> new LineResponse(line, getStations(line)))
                 .collect(Collectors.toList());
     }
 
-    public LineResponse showLine(final Long id) {
+    private List<Station> getStations(Line line) {
+        List<Section> sections = sectionRepository.findAllByLineId(line.getId());
+        List<Station> stations = new ArrayList<>();
+        for (Section section : sections) {
+            stations.add(section.getUpStation());
+            stations.add(section.getDownStation());
+        }
+        return stations.stream()
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public LineResponse getLine(final Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("[ERROR] 해당하는 식별자의 노선을 찾을수 없습니다."));
-
-        return new LineResponse(line);
+        List<Station> stations = getStations(line);
+        return new LineResponse(line, stations);
     }
 
     public void update(final Long id, final LineRequest lineRequest) {

@@ -49,12 +49,12 @@ public class LineServiceTest {
     @Test
     void create() {
         LineRequest lineRequest = new LineRequest("분당선", "bg-red-600");
-        LineResponse lineResponse = lineService.create(lineRequest);
+        Line line = lineService.create(lineRequest);
 
         assertAll(
-                () -> assertThat(lineResponse.getId()).isNotNull(),
-                () -> assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName()),
-                () -> assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor())
+                () -> assertThat(line.getId()).isNotNull(),
+                () -> assertThat(line.getName()).isEqualTo(lineRequest.getName()),
+                () -> assertThat(line.getColor()).isEqualTo(lineRequest.getColor())
         );
     }
 
@@ -75,7 +75,7 @@ public class LineServiceTest {
         Station station4 = stationRepository.save(new Station("선릉역"));
         sectionRepository.save(new Section(line1.getId(), station1, station2, 10));
         sectionRepository.save(new Section(line2.getId(), station3, station4, 10));
-        List<LineResponse> lineResponses = lineService.showLines();
+        List<LineResponse> lineResponses = lineService.getLines();
         assertAll(
                 () -> assertThat(lineResponses).hasSize(2),
                 () -> assertThat(lineResponses.get(0).getStations()).hasSize(2),
@@ -87,7 +87,7 @@ public class LineServiceTest {
     @Test
     void showLine() {
         Line line = lineRepository.save(new Line("분당선", "bg-red-600"));
-        LineResponse lineResponse = lineService.showLine(line.getId());
+        LineResponse lineResponse = lineService.getLine(line.getId());
 
         assertAll(
                 () -> assertThat(lineResponse.getName()).isEqualTo("분당선"),

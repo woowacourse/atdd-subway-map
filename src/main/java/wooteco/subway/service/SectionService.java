@@ -6,7 +6,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.repository.SectionRepository;
 import wooteco.subway.domain.repository.StationRepository;
-import wooteco.subway.service.dto.LineRequest;
+import wooteco.subway.service.dto.SectionRequest;
 import wooteco.subway.utils.exception.NotFoundException;
 
 @Transactional
@@ -22,14 +22,14 @@ public class SectionService {
         this.stationRepository = stationRepository;
     }
 
-    public Section create(Long lineId, LineRequest lineRequest) {
+    public Section create(Long lineId, SectionRequest sectionRequest) {
 
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, lineRequest.getUpStationId())));
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, lineRequest.getDownStationId())));
+        Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, sectionRequest.getUpStationId())));
+        Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, sectionRequest.getDownStationId())));
 
-        Section section = Section.create(lineId, upStation, downStation, lineRequest.getDistance());
+        Section section = Section.create(lineId, upStation, downStation, sectionRequest.getDistance());
         return sectionRepository.save(section);
     }
 
