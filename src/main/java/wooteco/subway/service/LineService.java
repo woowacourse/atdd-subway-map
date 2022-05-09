@@ -44,7 +44,7 @@ public class LineService {
 
     public LineResponseDTO create(LineRequestDTO lineRequestDTO) {
         validateDuplicate(lineRequestDTO);
-        Line line = lineDao.save(new Line(lineRequestDTO.getName(), lineRequestDTO.getColor()));
+        Line line = lineDao.create(new Line(lineRequestDTO.getName(), lineRequestDTO.getColor()));
 
         return new LineResponseDTO(line);
     }

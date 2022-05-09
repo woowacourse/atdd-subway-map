@@ -20,7 +20,7 @@ public class StationService {
 
     public StationResponseDTO createStation(String name) {
         validateExistName(name);
-        Station station = stationDao.save(new Station(name));
+        Station station = stationDao.create(new Station(name));
 
         return new StationResponseDTO(station);
     }

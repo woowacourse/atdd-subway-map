@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.jdbc;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.dao.jdbc.JdbcLineDao;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
 import java.util.List;
@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
-class LineDaoTest {
+class JdbcLineDaoTest {
 
     private LineDao lineDao;
 
@@ -30,23 +30,25 @@ class LineDaoTest {
     @Test
     @DisplayName("노선을 추가한다")
     void save() {
-        Line line = lineDao.save(new Line("1호선", "blue"));
+        Line line = lineDao.create(new Line("1호선", "blue"));
 
-        assertThat(line.getName()).isEqualTo("1호선");
-        assertThat(line.getColor()).isEqualTo("blue");
+        assertAll(
+                () -> assertThat(line.getName()).isEqualTo("1호선"),
+                () -> assertThat(line.getColor()).isEqualTo("blue")
+        );
     }
 
     @Test
     @DisplayName("특정 노선 조회")
     void findById() {
-        Line line = lineDao.save(new Line("1호선", "blue"));
+        Line line = lineDao.create(new Line("1호선", "blue"));
         assertThat(lineDao.findById(line.getId())).isEqualTo(line);
     }
 
     @Test
     void findAll() {
-        Line line1 = lineDao.save(new Line("1호선", "blue"));
-        Line line2 = lineDao.save(new Line("2호선", "green"));
+        Line line1 = lineDao.create(new Line("1호선", "blue"));
+        Line line2 = lineDao.create(new Line("2호선", "green"));
 
         List<Line> lines = lineDao.findAll();
 
@@ -59,7 +61,7 @@ class LineDaoTest {
 
     @Test
     void updateById() {
-        Line savedLine = lineDao.save(new Line("1호선", "blue"));
+        Line savedLine = lineDao.create(new Line("1호선", "blue"));
         Long id = savedLine.getId();
 
         lineDao.update(id, "2호선", "black");
@@ -69,7 +71,7 @@ class LineDaoTest {
 
     @Test
     void deleteById() {
-        Line line = lineDao.save(new Line("1호선", "blue"));
+        Line line = lineDao.create(new Line("1호선", "blue"));
 
         lineDao.deleteById(line.getId());
 

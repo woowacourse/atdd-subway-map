@@ -1,7 +1,12 @@
 package wooteco.subway.dao;
 
-import org.springframework.stereotype.Repository;
+import wooteco.subway.domain.Section;
 
-@Repository
 public interface SectionDao {
+
+    Section create(Section section);
+
+    void delete(Long id);
+
+    boolean existById(Long id);
 }

@@ -4,12 +4,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 
+@Repository
 public class JdbcStationDao implements StationDao {
 
     private static final RowMapper<Station> STATION_ROW_MAPPER = (rs, rowNum) -> new Station(
@@ -23,7 +25,7 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Station save(Station station) {
+    public Station create(Station station) {
         String sql = "INSERT INTO station (name) VALUES(?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
