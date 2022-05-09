@@ -115,7 +115,7 @@ public class Section {
     }
 
     private void checkAbleToMerge(Section other) {
-        if (!(isAbleToLinkOnUpStation(other) || isAbleToLinkOnUpStation(other))) {
+        if (!(isAbleToLinkOnUpStation(other) || isAbleToLinkOnDownStation(other))) {
             throw new IllegalArgumentException("합칠 수 없는 section입니다.");
         }
     }
