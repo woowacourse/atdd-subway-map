@@ -6,6 +6,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,19 +16,21 @@ public class LineService {
 
     private final LineDao lineDao;
     private final SectionService sectionService;
+    private final StationService stationService;
 
-    public LineService(LineDao lineDao, SectionService sectionService) {
+    public LineService(LineDao lineDao, SectionService sectionService, StationService stationService) {
         this.lineDao = lineDao;
         this.sectionService = sectionService;
+        this.stationService = stationService;
     }
 
     @Transactional
-    public Line save(LineRequest lineRequest) {
+    public LineResponse save(LineRequest lineRequest) {
         Line line = lineRequest.toEntity();
         validateDuplicateName(line);
         Line savedLine = lineDao.save(line);
-        sectionService.save(Section.of(savedLine, lineRequest));
-        return savedLine;
+        Section section = sectionService.save(Section.of(savedLine, lineRequest));
+        return LineResponse.from(savedLine);
     }
 
     private void validateDuplicateName(Line line) {

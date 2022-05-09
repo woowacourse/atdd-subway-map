@@ -28,7 +28,7 @@
 ## 🚀 3단계 기능 요구 사항
 ### 지하철 노선 추가 API 수정
 - [ ] 지하철 노선 등록
-    - [ ] 요청) 노선 추가 시 3가지 정보를 추가로 입력받는다
+    - [x] 요청) 노선 추가 시 3가지 정보를 추가로 입력받는다
         - [x] upStationId(상행 종점), downStationId(하행 종점), distance(두 종점 간 거리)
     - [ ] 응답) 포함된 역들(stations) 리스트를 함께 반환한다.
     - [ ] 노선 추가 시 구간(section) 정보도 함께 등록한다.
@@ -73,4 +73,4 @@
 - 구간 추가 시에는 상행역, 하행역, 상-하행역 간의 거리를 추가한다.
 
 ### 나중에 체크해볼 것
-- [ ] lineService.save() 에서 sectionService.save()에서 예외나면 롤백되나 확인
+- [x] lineService.save() 에서 sectionService.save()에서 예외나면 롤백되나 확인

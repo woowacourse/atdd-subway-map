@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 
 import java.util.HashMap;
@@ -48,6 +49,17 @@ public class StationDao {
         params.put("name", name);
 
         List<Station> stations = jdbcTemplate.query(sql, params, rowMapper);
+
+        return stations.stream().findFirst();
+    }
+
+    public Optional<Station> findById(Long id) {
+        String sql = "SELECT id, name FROM station WHERE id=:id";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+
+        List<Station> stations = jdbcTemplate.query(sql, new MapSqlParameterSource(params), rowMapper);
 
         return stations.stream().findFirst();
     }

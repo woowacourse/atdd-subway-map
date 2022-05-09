@@ -67,6 +67,24 @@ class StationDaoTest {
         assertThat(foundStation.isPresent()).isFalse();
     }
 
+    @DisplayName("id로 지하철 노선을 조회한다.")
+    @Test
+    void findById() {
+        Station station = new Station("선릉역");
+        Station savedStation = stationDao.save(station);
+
+        Optional<Station> foundStation = stationDao.findById(savedStation.getId());
+
+        assertThat(foundStation.get().getName()).isEqualTo(savedStation.getName());
+    }
+
+    @DisplayName("id로 조회한 지하철 노선이 없을 경우 empty optional을 반환한다.")
+    @Test
+    void findByIdReturnOptionalEmpty() {
+        Optional<Station> foundStation = stationDao.findById(1L);
+        assertThat(foundStation.isPresent()).isFalse();
+    }
+
     @DisplayName("모든 지하철 역을 조회한다.")
     @Test
     void findAll() {
