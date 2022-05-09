@@ -3,6 +3,7 @@ package wooteco.subway.mockDao;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.DuplicateKeyException;
 import wooteco.subway.repository.dao.LineDao;
 import wooteco.subway.repository.entity.LineEntity;
 
@@ -16,6 +17,12 @@ public class MockLineDao implements LineDao {
     }
 
     public LineEntity save(final LineEntity lineEntity) {
+        long duplicateNameCount = store.stream()
+                .filter(it -> it.getName().equals(lineEntity.getName()))
+                .count();
+        if (duplicateNameCount != 0) {
+            throw new DuplicateKeyException(null);
+        }
         final LineEntity saved = new LineEntity(++seq, lineEntity.getName(), lineEntity.getColor());
         store.add(saved);
         return saved;

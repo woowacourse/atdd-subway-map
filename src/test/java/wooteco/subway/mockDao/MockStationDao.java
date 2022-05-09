@@ -3,6 +3,7 @@ package wooteco.subway.mockDao;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.DuplicateKeyException;
 import wooteco.subway.repository.dao.StationDao;
 import wooteco.subway.repository.entity.StationEntity;
 
@@ -16,6 +17,12 @@ public class MockStationDao implements StationDao {
     }
 
     public StationEntity save(final StationEntity stationEntity) {
+        long duplicateNameCount = store.stream()
+                .filter(it -> it.getName().equals(stationEntity.getName()))
+                .count();
+        if (duplicateNameCount != 0) {
+            throw new DuplicateKeyException(null);
+        }
         final StationEntity saved = new StationEntity(++seq, stationEntity.getName());
         store.add(saved);
         return saved;

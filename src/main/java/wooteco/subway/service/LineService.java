@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.DuplicateLineNameException;
@@ -19,20 +20,17 @@ public class LineService {
     }
 
     public Line register(final String name, final String color) {
-        validateDuplicateName(name);
         final Line line = new Line(name, color);
-        final LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
-        return savedLineEntity.generateLine();
-    }
-
-    private void validateDuplicateName(final String name) {
-        if (lineDao.findByName(name).isPresent()) {
+        try {
+            final LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
+            return savedLineEntity.generateLine();
+        } catch (DuplicateKeyException exception) {
             throw new DuplicateLineNameException();
         }
     }
 
     public Line searchById(final Long id) {
-        LineEntity lineEntity = lineDao.findById(id).orElseThrow(NoSuchLineException::new);
+        final LineEntity lineEntity = lineDao.findById(id).orElseThrow(() -> new NoSuchLineException());
         return lineEntity.generateLine();
     }
 
@@ -44,9 +42,6 @@ public class LineService {
     }
 
     public void modify(final Long id, final String name, final String color) {
-        if (lineDao.findById(id).isEmpty()) {
-            throw new NoSuchLineException();
-        }
         lineDao.update(new LineEntity(id, name, color));
     }
 
