@@ -1,10 +1,8 @@
 package wooteco.subway.domain;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -19,13 +17,14 @@ class SectionsTest {
         final Station station4 = new Station(4L, "삼성역");
         final Section section1 = new Section(1L, station1, station2, 10);
         final Sections sections = new Sections(section1);
+
+        sections.addSection(station2, station3, 10);
+        sections.addSection(station3, station4, 5);
+
         final Section section2 = new Section(2L, station2, station3, 10);
         final Section section3 = new Section(3L, station3, station4, 5);
 
-        sections.add(station2.getId(), section2);
-        sections.add(station2.getId(), section3);
-
-        assertThat(sections.getValue()).isEqualTo(List.of(section1, section3, section2));
+        assertThat(sections.getValue()).isEqualTo(List.of(section1, section2, section3));
     }
 
 }
