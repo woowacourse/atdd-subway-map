@@ -3,9 +3,12 @@ package wooteco.subway;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.http.MediaType;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.response.StationResponseDto;
 import wooteco.subway.mockDao.MockStationDao;
 import wooteco.subway.repository.entity.StationEntity;
 
@@ -37,5 +40,19 @@ public class Fixture {
         final Station station = Station.createWithoutId(name);
         final StationEntity saved = stationDao.save(new StationEntity(station));
         return saved.getId();
+    }
+
+    public static List<Long> save2Stations() {
+        Map<String, String> stationParam1 = new HashMap<>();
+        stationParam1.put("name", "선릉역");
+        final StationResponseDto station1 = createStationRequest(stationParam1).jsonPath()
+                .getObject(".", StationResponseDto.class);
+
+        Map<String, String> stationParam2 = new HashMap<>();
+        stationParam2.put("name", "잠실역");
+        final StationResponseDto station2 = createStationRequest(stationParam2).jsonPath()
+                .getObject(".", StationResponseDto.class);
+
+        return List.of(station1.getId(), station2.getId());
     }
 }
