@@ -45,7 +45,7 @@ public class SectionsTest {
         Sections sections = createInitialSections("신당역", "동묘앞역");
         sections.add(createSection("동묘앞역", "창신역"));
 
-        assertThatThrownBy(() -> sections.add(createSection("신당역", "동묘앞역")))
+        assertThatThrownBy(() -> sections.add(createSection("신당역", "창신역")))
                 .isInstanceOf(SectionCreateException.class)
                 .hasMessageContaining("이미 존재하는 구간입니다.");
     }

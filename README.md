@@ -52,3 +52,14 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] get - /lines/{id} - id, name, color
 - [x] put - /lines/{id} - name, color
 - [x] delete - /lines/{id}
+
+- 구간
+- [x] 구간 등록
+  - [x] 구간 중복이 없는지
+  - [x] 거리가 0 초과인지
+  - [x] 이미 이어진 구간인지 (반대로도, 순환 불가)
+  - [x] 상행, 하행 둘 중 하나라도 구간에 존재하는지
+- [ ] 갈래길 제거
+    - [ ] 상행과 연결인지 하행과 연결인지 확인
+    - [ ] 상행 or 하행 to ? 의 길이와 새로운 섹션의 길이 비교
+    - [ ] 기존 데이터 업데이트, 새로운 노선은 추가
