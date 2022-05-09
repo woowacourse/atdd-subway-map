@@ -49,6 +49,5 @@ public class StationDao {
         public Station mapRow(ResultSet rs, int rowCnt) throws SQLException {
             return new Station(rs.getLong("id"), rs.getString("name"));
         }
-
     }
 }
