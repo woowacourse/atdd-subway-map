@@ -1,7 +1,10 @@
 package wooteco.subway.service;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,27 +69,58 @@ public class LineService {
     public LineResponse findById(final Long id) {
         final Line line = lineDao.findById(id)
                 .orElseThrow(NoSuchLineException::new);
-        final List<Station> stations = findAllSortedStation(line.getId());
-        if (stations.isEmpty()) {
-            throw new NoSuchStationException();
-        }
-        return LineResponse.of(line, stations);
+        final List<Section> sections = sectionDao.findAllByLineId(line.getId());
+        final Long upEndStationId = findUpEndStationId(sections);
+        return LineResponse.of(line, findAllStation(sections, upEndStationId));
     }
 
-    private List<Station> findAllSortedStation(final Long lineId) {
-        final List<Section> sections = sectionDao.findAllByLineId(lineId)
-                .stream().sorted()
-                .collect(Collectors.toList());
-
-        final LinkedHashSet<Long> ids = new LinkedHashSet<>();
+    private Long findUpEndStationId(List<Section> s) {
+        final List<Section> sections = new ArrayList<>(s);
+        final Map<Long, Integer> countByStationId = new HashMap<>();
         for (Section section : sections) {
-            ids.add(section.getUpStationId());
-            ids.add(section.getDownStationId());
+            countByStationId.put(section.getUpStationId(), countByStationId.getOrDefault(section.getUpStationId(), 0) + 1);
+            countByStationId.put(section.getDownStationId(), countByStationId.getOrDefault(section.getDownStationId(), 0) + 1);
+        }
+        Long result = null;
+        for (Entry<Long, Integer> entry : countByStationId.entrySet()) {
+            if (entry.getValue().equals(1)) {
+                for (Section section : sections) {
+                    if (!section.contains(entry.getKey())) {
+                        continue;
+                    }
+                    if (section.getUpStationId().equals(entry.getKey())) {
+                        result = entry.getKey();
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private List<Station> findAllStation(final List<Section> sections, final Long firstStationId) {
+        final List<Station> stations = new ArrayList<>();
+
+        stations.add(stationDao.findById(firstStationId).orElseThrow(NoSuchStationException::new));
+
+        Long targetStationId = null;
+        for (Section section : sections) {
+            if (section.getUpStationId().equals(firstStationId)) {
+                targetStationId = section.getDownStationId();
+                stations.add(stationDao.findById(section.getDownStationId()).orElseThrow(NoSuchStationException::new));
+                break;
+            }
+        }
+        while (stations.size() != sections.size() + 1) {
+            for (Section targetSection : sections) {
+                if (targetSection.getUpStationId().equals(targetStationId)) {
+                    stations.add(stationDao.findById(targetSection.getDownStationId()).orElseThrow(NoSuchStationException::new));
+                    targetStationId = targetSection.getDownStationId();
+                }
+            }
         }
 
-        return ids.stream()
-                .map(it -> stationDao.findById(it).orElseThrow(NoSuchStationException::new))
-                .collect(Collectors.toList());
+        return stations;
     }
 
     public void updateById(final Long id, final LineRequest request) {

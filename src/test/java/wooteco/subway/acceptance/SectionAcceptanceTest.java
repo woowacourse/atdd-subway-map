@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.ErrorResponse;
@@ -57,22 +56,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         );
 
         // when
-        final ExtractableResponse<Response> actual = postCreateSection(request, lineId);
+        final ExtractableResponse<Response> actual = createSection(request, lineId);
         final LineResponse actualResponse = findLineById(lineId);
 
         // then
         assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(actualResponse).isEqualTo(expectedResponse);
-    }
-
-    private ExtractableResponse<Response> postCreateSection(final SectionRequest request, final long lineId) {
-        return RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(LINE_PATH_PREFIX + SLASH + lineId + SECTION_PATH_PREFIX)
-                .then().log().all()
-                .extract();
     }
 
     private LineResponse findLineById(final long lineId) {
@@ -102,7 +91,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         );
 
         // when
-        final ExtractableResponse<Response> actual = postCreateSection(request, lineId);
+        final ExtractableResponse<Response> actual = createSection(request, lineId);
         final LineResponse actualResponse = findLineById(lineId);
 
         // then
@@ -125,7 +114,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ));
 
         // when
-        final ExtractableResponse<Response> actual = postCreateSection(request, lineId);
+        final ExtractableResponse<Response> actual = createSection(request, lineId);
         final ErrorResponse actualResponse = actual.as(ErrorResponse.class);
 
         // then
@@ -146,7 +135,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 10
         ));
         // when
-        final ExtractableResponse<Response> actual = postCreateSection(request, lineId);
+        final ExtractableResponse<Response> actual = createSection(request, lineId);
         final ErrorResponse actualResponse = actual.as(ErrorResponse.class);
 
         // then
@@ -169,7 +158,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 10
         ));
         // when
-        final ExtractableResponse<Response> actual = postCreateSection(request, lineId);
+        final ExtractableResponse<Response> actual = createSection(request, lineId);
         final ErrorResponse actualResponse = actual.as(ErrorResponse.class);
 
         // then
@@ -196,7 +185,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         );
 
         // when
-        final ExtractableResponse<Response> actual = postCreateSection(request, lineId);
+        final ExtractableResponse<Response> actual = createSection(request, lineId);
         final LineResponse actualResponse = findLineById(lineId);
 
         // then
@@ -223,7 +212,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         );
 
         // when
-        final ExtractableResponse<Response> actual = postCreateSection(request, lineId);
+        final ExtractableResponse<Response> actual = createSection(request, lineId);
         final LineResponse actualResponse = findLineById(lineId);
 
         // then
@@ -243,7 +232,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 10
         ));
 
-        postCreateSection(new SectionRequest(samseong.getId(), seolleung.getId(), 7), lineId);
+        createSection(new SectionRequest(samseong.getId(), seolleung.getId(), 7), lineId);
 
         final LineResponse expectedResponse = LineResponse.of(
                 new Line(lineId, LINE_NAME, LINE_COLOR),
@@ -280,7 +269,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 10
         ));
 
-        postCreateSection(new SectionRequest(samseong.getId(), seolleung.getId(), 7), lineId);
+        createSection(new SectionRequest(samseong.getId(), seolleung.getId(), 7), lineId);
 
         final LineResponse expectedResponse = LineResponse.of(
                 new Line(lineId, LINE_NAME, LINE_COLOR),
@@ -308,7 +297,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 10
         ));
 
-        postCreateSection(new SectionRequest(samseong.getId(), seolleung.getId(), 7), lineId);
+        createSection(new SectionRequest(samseong.getId(), seolleung.getId(), 7), lineId);
 
         final LineResponse expectedResponse = LineResponse.of(
                 new Line(lineId, LINE_NAME, LINE_COLOR),
@@ -357,7 +346,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 10
         ));
 
-        postCreateSection(new SectionRequest(samseong.getId(), seolleung.getId(), 7), lineId);
+        createSection(new SectionRequest(samseong.getId(), seolleung.getId(), 7), lineId);
 
         // when
         final ExtractableResponse<Response> actual = deleteDeleteSection(lineId, 999L);

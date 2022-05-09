@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -126,45 +124,5 @@ class SectionTest {
         assertThat(actual.getDistance()).isEqualTo(17);
 
         assertThat(actual).isEqualTo(actual2);
-    }
-
-    @Test
-    @DisplayName("3개의 구간을 정렬한다.")
-    void Sort_3Elements() {
-        // given
-        final Section section1 = new Section(1L, line.getId(), 3L, 4L, 1);
-        final Section section2 = new Section(2L, line.getId(), 2L, 1L, 1);
-        final Section section3 = new Section(3L, line.getId(), 1L, 3L, 1);
-
-        final List<Section> expected = List.of(section2, section3, section1);
-
-        // when
-        final List<Section> actual = Stream.of(section1, section2, section3)
-                .sorted()
-                .collect(Collectors.toList());
-
-        // then
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    @DisplayName("5개의 구간을 정렬한다.")
-    void Sort_5Elements() {
-        // given
-        final Section section1 = new Section(1L, line.getId(), 1L, 2L, 1);
-        final Section section2 = new Section(2L, line.getId(), 2L, 3L, 1);
-        final Section section3 = new Section(3L, line.getId(), 4L, 5L, 1);
-        final Section section4 = new Section(4L, line.getId(), 5L, 6L, 1);
-        final Section section5 = new Section(5L, line.getId(), 6L, 7L, 1);
-
-        final List<Section> expected = List.of(section1, section2, section3, section4, section5);
-
-        // when
-        final List<Section> actual = Stream.of(section5, section4, section3, section2, section1)
-                .sorted()
-                .collect(Collectors.toList());
-
-        // then
-        assertThat(actual).isEqualTo(expected);
     }
 }

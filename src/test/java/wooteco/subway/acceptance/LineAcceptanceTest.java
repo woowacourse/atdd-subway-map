@@ -15,6 +15,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
+import wooteco.subway.dto.section.SectionRequest;
 import wooteco.subway.dto.station.StationRequest;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -116,6 +117,37 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final LineResponse actualResponse = actual.body().as(LineResponse.class);
 
         // then
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actualResponse).isEqualTo(expected);
+    }
+
+    @DisplayName("id로 5개의 역을 포함한 노선을 상행에서 하행 순서로 정렬해서 조회한다.")
+    @Test
+    void ShowLine_5StationsOrderByUpStation_OK() {
+        // given
+        final long id = createAndGetLineId(lineOneRequest);
+
+        final long samseongId = createAndGetStationId(new StationRequest("삼성역"));
+
+        createSection(new SectionRequest(dapsimni.getId(), yeoksam.getId(), 5), (int) id);
+        createSection(new SectionRequest(yeoksam.getId(), wangsimni.getId(), 5), (int) id);
+        createSection(new SectionRequest(samseongId, yeoksam.getId(), 3), (int) id);
+
+        final LineResponse expected = LineResponse.of(
+                new Line(id, LINE_ONE_NAME, LINE_ONE_COLOR),
+                List.of(seolleung, dapsimni, new Station(samseongId, "삼성역"), yeoksam, wangsimni)
+        );
+
+        // when
+        final ExtractableResponse<Response> actual = RestAssured.given().log().all()
+                .when()
+                .get(LINE_PATH_PREFIX + SLASH + id)
+                .then().log().all()
+                .extract();
+        final LineResponse actualResponse = actual.body().as(LineResponse.class);
+
+        // then
+        // 선릉 - 답십리 - 삼성 - 역삼 - 왕십리
         assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(actualResponse).isEqualTo(expected);
     }

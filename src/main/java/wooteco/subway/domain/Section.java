@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class Section implements Comparable<Section> {
+public class Section {
 
     private static final int MIN_DISTANCE = 1;
 
@@ -129,20 +129,6 @@ public class Section implements Comparable<Section> {
 
     public int getDistance() {
         return distance;
-    }
-
-    @Override
-    public int compareTo(final Section o) {
-        if (!lineId.equals(o.lineId)) {
-            return 0;
-        }
-        if (downStationId.equals(o.upStationId)) {
-            return -1;
-        }
-        if (upStationId.equals(o.downStationId)) {
-            return 1;
-        }
-        return -1;
     }
 
     @Override
