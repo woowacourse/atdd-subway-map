@@ -26,9 +26,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<Map<String, String>> handleEmptyResultException(EmptyResultDataAccessException exception) {
         logger.error(exception.getMessage());
-        Map<String, String> body = new HashMap<>();
-        body.put("message", "조회 결과가 없습니다.");
-        return ResponseEntity.badRequest().body(body);
+        return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler

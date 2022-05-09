@@ -153,7 +153,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 노선을 조회할 수 없다. 상태코드는 bad request 이어야 한다.")
+    @DisplayName("존재하지 않는 노선을 조회할 수 없다. 상태코드는 not found 이어야 한다.")
     void findWrongLine() {
         // given
         String uri = URI.create("/lines/") + "0";
@@ -168,7 +168,7 @@ class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
