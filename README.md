@@ -36,16 +36,33 @@
 
 # API
 ## 지하철 역
-- [ ] 지하철 역 등록 `POST /stations`
-- [ ] 지하철 역 목록 `GET /stations`
-- [ ] 지하철 역 삭제 `DELETE /stations/{id}`
+- [x] 지하철 역 등록 `POST /stations`
+- [x] 지하철 역 목록 `GET /stations`
+- [x] 지하철 역 삭제 `DELETE /stations/{id}`
 
 ## 지하철 노선
-- [ ] 지하철 노선 등록 `POST /lines`
-- [ ] 지하철 노선 목록 `GET /lines`
-- [ ] 지하철 노선 조회 `GET /lines/{id}`
-- [ ] 지하철 노선 수정 `PUT /lines/{id}`
-- [ ] 지하철 노선 삭제 `DELETE /lines/{id}`
+아래 3가지 컬럼을 추가한다.
+
+- upStationId
+- downStationId
+- distance
+
+> 등록 - POST /lines
+  - 노선과 동시에 상행선, 하행선에 관한 구간도 등록한다.
+  - [ ]  [예외] 이름, 색깔은 빈값이면 안된다. (Bad Request 400)
+  - [ ]  [예외] 이름, 색깔은 중복이 있으면 안된다. (Bad Request 400)
+  - [ ]  [예외] 지하철이 있는 id 값이어야 한다. (Bad Request 400)
+  - [ ]  [예외] upStationId와 downStationId는 같아선 안된다. (Bad Request 400)
+  - [ ]  [예외] 거리는 1 이상이어야 한다. (Bad Request 400)
+> 목록 - GET /lines
+
+> 조회 - GET /lines/{id}
+  - [ ]  [예외] 노선이 있는 id 값이어야 한다. (Not Found 404)
+> 수정 - PUT /lines/{id}
+  - [ ]  [예외] 이미 있는 이름, 색깔이면 안된다. (Bad Request 400)
+  - [ ]  [예외] 노선이 있는 id 값이어야 한다. (Not Found 404)
+> 삭제 - DELETE /lines/{id}
+  - [ ]  [예외] 노선이 있는 id 값이어야 한다. (Not Found 404)
 
 ## 구간
 - [ ] 구간 등록 `POST /lines/1/sections`
