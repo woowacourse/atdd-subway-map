@@ -28,7 +28,7 @@ class JdbcStationDaoTest {
         this.stationDao = new JdbcStationDao(dataSource);
     }
 
-    @DisplayName("지하철 역을 저장한다.")
+    @DisplayName("지하철역을 저장한다.")
     @Test
     void save() {
         Station station = new Station("강남역");
@@ -36,7 +36,7 @@ class JdbcStationDaoTest {
         assertThat(stationId).isGreaterThan(0);
     }
 
-    @DisplayName("지하철 역 목록을 조회한다.")
+    @DisplayName("지하철역 목록을 조회한다.")
     @Test
     void findAll() {
         List<Station> stations = List.of(
@@ -49,7 +49,7 @@ class JdbcStationDaoTest {
         assertThat(foundStations).hasSize(3);
     }
 
-    @DisplayName("id로 지하철 역을 조회한다.")
+    @DisplayName("지하철역을 조회한다.")
     @Test
     void findById() {
         Long stationId = stationDao.save(new Station("강남역"));
@@ -59,22 +59,22 @@ class JdbcStationDaoTest {
         assertThat(station.getName()).isEqualTo("강남역");
     }
 
-    @DisplayName("없는 지하철 역을 조회하면 예외가 발생한다.")
+    @DisplayName("존재하지 않는 지하철역을 조회한다.")
     @Test
-    void findByIdException() {
+    void findWithNonexistentId() {
         assertThatThrownBy(() -> stationDao.findById(1L))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("해당 id에 맞는 지하철 역이 없습니다.");
     }
 
-    @DisplayName("해당 이름의 지하철 역이 존재하는지 확인한다.")
+    @DisplayName("해당 이름의 지하철역이 존재하는지 확인한다.")
     @Test
     void existsByName() {
         stationDao.save(new Station("강남역"));
         assertThat(stationDao.existsByName("강남역")).isTrue();
     }
 
-    @DisplayName("지하철 역을 삭제한다.")
+    @DisplayName("지하철역을 삭제한다.")
     @Test
     void remove() {
         Long stationId = stationDao.save(new Station("강남역"));
