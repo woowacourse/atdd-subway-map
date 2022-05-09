@@ -16,6 +16,7 @@ import java.util.List;
 @Repository
 public class LineDao {
 
+    private static final int UPDATE_QUERY_EMPTY_RESULT = 0;
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -66,7 +67,7 @@ public class LineDao {
     }
 
     private void validateExistById(int updateQueryResult, Long id) {
-        if (updateQueryResult == 0) {
+        if (updateQueryResult == UPDATE_QUERY_EMPTY_RESULT) {
             throw new NotFoundException(id + "에 해당하는 지하철 노선을 찾을 수 없습니다.");
         }
     }
