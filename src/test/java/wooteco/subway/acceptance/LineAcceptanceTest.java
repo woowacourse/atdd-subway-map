@@ -26,6 +26,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "rgb-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()

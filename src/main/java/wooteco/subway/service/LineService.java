@@ -25,7 +25,7 @@ public class LineService {
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
-        LineEntity lineEntity = lineRequest.toEntity();
+        LineEntity lineEntity = lineRequest.toLineEntity();
         Optional<Line> wrappedStation = lineDao.findByName(lineRequest.getName());
         if (wrappedStation.isPresent()) {
             throw new DuplicateKeyException(DUPLICATE_NAME_ERROR);
@@ -49,7 +49,7 @@ public class LineService {
 
     public void updateLine(Long id, LineRequest lineRequest) {
         checkLineExist(lineDao.findById(id));
-        LineEntity lineEntity = lineRequest.toEntity();
+        LineEntity lineEntity = lineRequest.toLineEntity();
         lineDao.update(id, lineEntity);
     }
 

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.entity.LineEntity;
 
 @JdbcTest
@@ -26,8 +25,7 @@ class LineDaoTest {
     @DisplayName("라인을 저장한다.")
     @Test
     void lineSaveTest() {
-        LineEntity lineEntity = new LineRequest("신분당선", "bg-red-600")
-                .toEntity();
+        LineEntity lineEntity = LineEntity.of("신분당선", "bg-red-600");
         Line savedLine = lineDao.save(lineEntity);
         assertThat(savedLine.getId()).isNotZero();
     }
@@ -35,8 +33,7 @@ class LineDaoTest {
     @DisplayName("전체 라인을 조회한다.")
     @Test
     void findAllLines() {
-        LineEntity lineEntity = new LineRequest("신분당선", "bg-red-600")
-                .toEntity();
+        LineEntity lineEntity = LineEntity.of("신분당선", "bg-red-600");
         lineDao.save(lineEntity);
         assertThat(lineDao.findAll()).hasSize(1);
     }
@@ -44,8 +41,7 @@ class LineDaoTest {
     @DisplayName("특정 라인을 조회한다.")
     @Test
     void findById() {
-        LineEntity lineEntity = new LineRequest("신분당선", "bg-red-600")
-                .toEntity();
+        LineEntity lineEntity = LineEntity.of("신분당선", "bg-red-600");
         Line savedLine = lineDao.save(lineEntity);
         Optional<Line> wrappedLine = lineDao.findById(savedLine.getId());
         assert (wrappedLine).isPresent();
@@ -58,11 +54,9 @@ class LineDaoTest {
     @DisplayName("특정 라인을 수정한다.")
     @Test
     void updateLine() {
-        LineEntity lineEntity = new LineRequest("신분당선", "bg-red-600")
-                .toEntity();
+        LineEntity lineEntity = LineEntity.of("신분당선", "bg-red-600");
         Line savedLine = lineDao.save(lineEntity);
-        LineEntity updateLineEntity = new LineRequest("경의중앙선", "bg-mint-600")
-                .toEntity();
+        LineEntity updateLineEntity = LineEntity.of("경의중앙선", "bg-mint-600");
         lineDao.update(savedLine.getId(), updateLineEntity);
         Optional<Line> wrappedLine = lineDao.findById(savedLine.getId());
         assert (wrappedLine).isPresent();
@@ -75,8 +69,7 @@ class LineDaoTest {
     @DisplayName("특정 라인을 삭제한다.")
     @Test
     void deleteLine() {
-        LineEntity lineEntity = new LineRequest("신분당선", "bg-red-600")
-                .toEntity();
+        LineEntity lineEntity = LineEntity.of("신분당선", "bg-red-600");
         Line savedLine = lineDao.save(lineEntity);
         lineDao.deleteById(savedLine.getId());
         Optional<Line> wrappedLine = lineDao.findById(savedLine.getId());
