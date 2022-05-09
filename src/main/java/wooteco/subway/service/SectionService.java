@@ -1,7 +1,9 @@
 package wooteco.subway.service;
 
+import org.springframework.stereotype.Service;
 import wooteco.subway.dto.SectionRequest;
 
+@Service
 public class SectionService {
 
     public void create(Long lineId, SectionRequest sectionRequest) {

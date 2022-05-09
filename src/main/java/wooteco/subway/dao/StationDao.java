@@ -38,6 +38,18 @@ public class StationDao {
         return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Integer.class));
     }
 
+    public int countById(Long id) {
+        String selectSql = "select count(*) from STATION where id = :id";
+        SqlParameterSource source = new MapSqlParameterSource("id", id);
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Integer.class));
+    }
+
+    public Station findById(Long id) {
+        String selectSql = "select * from STATION where id = :id";
+        SqlParameterSource source = new MapSqlParameterSource("id", id);
+        return jdbcTemplate.queryForObject(selectSql, source, eventRowMapper);
+    }
+
     public List<Station> findAll() {
         String selectSql = "select * from STATION";
         return jdbcTemplate.query(selectSql, eventRowMapper);

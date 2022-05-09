@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineCreateRequest;
 import wooteco.subway.dto.LineRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -24,7 +25,7 @@ class LineDaoTest {
     @Test
     void save() {
         // given
-        Line line = new Line("분당선", "yellow");
+        LineCreateRequest line = new LineCreateRequest("분당선", "yellow", 1L, 2L, 2);
 
         // when
         Long id = lineDao.save(line);

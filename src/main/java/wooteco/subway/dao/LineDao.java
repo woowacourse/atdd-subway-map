@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineCreateRequest;
 import wooteco.subway.dto.LineRequest;
 
 @Repository
@@ -27,7 +28,7 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long save(Line line) {
+    public Long save(LineCreateRequest line) {
         String insertSql = "insert into LINE (name, color) values (:name, :color)";
         SqlParameterSource source = new BeanPropertySqlParameterSource(line);
         KeyHolder keyHolder = new GeneratedKeyHolder();

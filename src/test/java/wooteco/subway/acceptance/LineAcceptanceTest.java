@@ -21,6 +21,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import wooteco.subway.dto.LineCreateRequest;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -56,13 +57,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "bg-green-500");
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "bg-green-500", 1L, 2L, 20);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(lineCreateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
