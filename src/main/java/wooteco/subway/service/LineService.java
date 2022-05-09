@@ -7,24 +7,34 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.LineDto;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.repository.LineRepository;
+import wooteco.subway.repository.StationRepository;
 
 @Service
 public class LineService {
 
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
     private final LineDao lineDao;
 
-    public LineService(LineRepository lineRepository, LineDao lineDao) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository,
+                       LineDao lineDao) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
         this.lineDao = lineDao;
     }
 
-    public Line save(Line line) {
+    public Line save(LineRequest lineRequest) {
+        Section section = new Section(stationRepository.findById(lineRequest.getUpStationId()),
+                stationRepository.findById(lineRequest.getDownStationId()), lineRequest.getDistance());
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor(), new Sections(section));
         try {
-            LineDto lineDto = lineDao.save(LineDto.from(line));
-            return new Line(lineDto.getId(), lineDto.getName(), lineDto.getColor());
+            Long lindId = lineRepository.save(line);
+            return lineRepository.findById(lindId);
         } catch (DuplicateKeyException e) {
             throw new DuplicateKeyException("이미 존재하는 노선 이름입니다.");
         }

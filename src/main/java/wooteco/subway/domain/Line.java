@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Line {
 
@@ -43,6 +44,10 @@ public class Line {
         this.name = name;
         this.color = color;
         this.sections = sections;
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations().stream().collect(Collectors.toList());
     }
 
     public void add(Section section) {

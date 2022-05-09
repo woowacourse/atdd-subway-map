@@ -49,18 +49,12 @@ class LineControllerTest {
                 new Station(1L, "서울역"),
                 new Station(2L, "용산역"), 10);
         Line mockLine = new Line(1L, "1호선", "bg-darkblue-600", new Sections(section));
-        LineRequest lineRequest = new LineRequest("1호선", "bg-darkblue-600", 1L, 2L, 10);
-        given(lineService.save(any(Line.class))).willReturn(mockLine);
+        given(lineService.save(any(LineRequest.class))).willReturn(mockLine);
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("name", "1호선");
-        body.put("color", "bg-darkblue-600");
-        body.put("upStationId", 1L);
-        body.put("downStationId", 2L);
-        body.put("distance", 10);
+        LineRequest lineRequest = new LineRequest("1호선", "bg-darkblue-600", 1L, 2L, 10);
 
         mockMvc.perform(post("/lines")
-                .content(objectMapper.writeValueAsString(body))
+                .content(objectMapper.writeValueAsString(lineRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))

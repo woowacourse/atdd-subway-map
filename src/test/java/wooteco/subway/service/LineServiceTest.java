@@ -11,7 +11,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
+import wooteco.subway.dto.LineDto;
+import wooteco.subway.dto.LineRequest;
 
 @SpringBootTest
 @Transactional
@@ -20,28 +28,36 @@ class LineServiceTest {
     @Autowired
     private LineService lineService;
 
+    @Autowired
+    private LineDao lineDao;
+
+    @Autowired
+    private StationDao stationDao;
+
+    @Autowired
+    private SectionDao sectionDao;
+
     @DisplayName("노선을 저장한다")
     @Test
     void 노선_저장() {
-        Line line = new Line("1호선", "bg-darkblue-600");
+        Station up = stationDao.save(new Station("서울역"));
+        Station down = stationDao.save(new Station("용산역"));
+        Section section = new Section(up, down, 3);
+        Line line = new Line("1호선", "bg-darkblue-600", new Sections(section));
 
-        Line savedLine = lineService.save(line);
+        Line result = lineService.save(new LineRequest("1호선", "bg-darkblue-600", up.getId(), down.getId(), 3));
 
-        assertAll(
-                () -> assertThat(savedLine.getName()).isEqualTo(line.getName()),
-                () -> assertThat(savedLine.getColor()).isEqualTo(line.getColor())
-        );
+        assertThat(result).isEqualTo(line);
     }
 
     @DisplayName("중복된 이름의 노선을 저장할 경우 예외가 발생한다")
     @Test
     void 중복된_노선_예외발생() {
-        Line line = new Line("2호선", "bg-green-600");
-        Line duplicatedNameLine = new Line("2호선", "bg-red-600");
+        Station up = stationDao.save(new Station("합정역"));
+        Station down = stationDao.save(new Station("홍대입구역"));
+        lineDao.save(new LineDto("2호선", "bg-blue-200"));
 
-        lineService.save(line);
-
-        assertThatThrownBy(() -> lineService.save(duplicatedNameLine))
+        assertThatThrownBy(() -> lineService.save(new LineRequest("2호선", "bg-red-600", up.getId(), down.getId(), 3)))
                 .isInstanceOf(DuplicateKeyException.class)
                 .hasMessageContaining("이미 존재하는 노선");
     }
@@ -49,8 +65,10 @@ class LineServiceTest {
     @DisplayName("모든 노선을 조회한다")
     @Test
     void 모든_노선_조회() {
-        lineService.save(new Line("1호선", "bg-darkblue-600"));
-        lineService.save(new Line("2호선", "bg-green-600"));
+        Station up = stationDao.save(new Station("합정역"));
+        Station down = stationDao.save(new Station("홍대입구역"));
+        lineService.save(new LineRequest("1호선", "bg-darkblue-600", up.getId(), down.getId(), 1));
+        lineService.save(new LineRequest("2호선", "bg-green-600", up.getId(), down.getId(), 1));
 
         assertThat(lineService.findAll().size()).isEqualTo(2);
     }
@@ -58,8 +76,10 @@ class LineServiceTest {
     @DisplayName("노선을 조회한다")
     @Test
     void 노선_조회() {
-        Line line = new Line("3호선", "bg-orange-600");
-        Line savedLine = lineService.save(line);
+        Station up = stationDao.save(new Station("합정역"));
+        Station down = stationDao.save(new Station("홍대입구역"));
+        Line line = new Line("3호선", "bg-orange-600", new Sections(new Section(up, down, 3)));
+        Line savedLine = lineService.save(new LineRequest("3호선", "bg-orange-600", up.getId(), down.getId(), 3));
 
         Line foundLine = lineService.findById(savedLine.getId());
 
@@ -80,9 +100,10 @@ class LineServiceTest {
     @DisplayName("노선을 업데이트한다")
     @Test
     void 노선_업데이트() {
-        Line line = new Line("4호선", "bg-purple-600");
-        Line newLine = new Line("4호선", "bg-skyblue-600");
-        Line savedLine = lineService.save(line);
+        Station up = stationDao.save(new Station("신용산역"));
+        Station down = stationDao.save(new Station("삼각지역"));
+        Line savedLine = lineService.save(new LineRequest("4호선", "bg-purple-600", up.getId(), down.getId(), 3));
+        Line newLine = new Line("4호선", "bg-skyblue-600", new Sections(new Section(up, down, 3)));
 
         Line updatedLine = lineService.update(savedLine.getId(), newLine);
 
@@ -95,10 +116,12 @@ class LineServiceTest {
     @DisplayName("중복된 노선 이름으로 업데이트 시 예외가 발생한다")
     @Test
     void 중복노선_업데이트_예외발생() {
-        lineService.save(new Line("5호선", "bg-purple-600"));
-        Line savedLine = lineService.save(new Line("6호선", "bg-brown-600"));
+        Station up = stationDao.save(new Station("신용산역"));
+        Station down = stationDao.save(new Station("삼각지역"));
+        lineDao.save(new LineDto("2호선", "bg-green-400"));
+        Line savedLine = lineService.save(new LineRequest("4호선", "bg-purple-600", up.getId(), down.getId(), 3));
 
-        Line newLine = new Line("5호선", "bg-brown-600");
+        Line newLine = new Line("2호선", "bg-brown-600");
 
         assertThatThrownBy(() -> lineService.update(savedLine.getId(), newLine))
                 .isInstanceOf(DuplicateKeyException.class)
@@ -108,7 +131,9 @@ class LineServiceTest {
     @DisplayName("노선 삭제")
     @Test
     void 노선_삭제() {
-        Line line = lineService.save(new Line("신분당선", "bg-red-600"));
+        Station up = stationDao.save(new Station("신용산역"));
+        Station down = stationDao.save(new Station("삼각지역"));
+        Line line = lineService.save(new LineRequest("4호선", "bg-purple-600", up.getId(), down.getId(), 3));
 
         lineService.deleteById(line.getId());
 

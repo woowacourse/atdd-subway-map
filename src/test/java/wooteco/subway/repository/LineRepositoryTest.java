@@ -73,10 +73,6 @@ class LineRepositoryTest {
         Long lineId = lineRepository.save(line);
         Line result = lineRepository.findById(lineId);
 
-        assertAll(
-                () -> assertThat(result.getName()).isEqualTo(line.getName()),
-                () -> assertThat(result.getColor()).isEqualTo(line.getColor()),
-                () -> assertThat(result.getSections()).isEqualTo(List.of(AtoB, BtoC))
-        );
+        assertThat(result).isEqualTo(line);
     }
 }
