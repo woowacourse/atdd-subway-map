@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 
 class SectionDaoTest extends DaoTest {
@@ -90,10 +91,11 @@ class SectionDaoTest extends DaoTest {
         sectionDao.insert(section2);
 
         // when
-        final List<Section> actual = sectionDao.findAllByLineId(lineId);
+        final Sections actual = sectionDao.findAllByLineId(lineId);
+        final List<Long> ids = actual.findAllId();
 
         // then
-        assertThat(actual).hasSize(2);
+        assertThat(ids).hasSize(2);
     }
 
     @Test

@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.util.List;
 import java.util.Optional;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 
 public interface SectionDao {
 
@@ -10,7 +11,7 @@ public interface SectionDao {
 
     boolean isStationExist(long stationId);
 
-    List<Section> findAllByLineId(Long lineId);
+    Sections findAllByLineId(Long lineId);
 
     Optional<Section> findBy(Long lineId, Long upStationId, Long downStationId);
 

@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 
 @Repository
 public class JdbcSectionDao implements SectionDao {
@@ -45,9 +46,9 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public List<Section> findAllByLineId(final Long lineId) {
+    public Sections findAllByLineId(final Long lineId) {
         final String sql = "SELECT * FROM section WHERE line_id = ?";
-        return jdbcTemplate.query(sql, rowMapper, lineId);
+        return new Sections(jdbcTemplate.query(sql, rowMapper, lineId));
     }
 
     @Override
