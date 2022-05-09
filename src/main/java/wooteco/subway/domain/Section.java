@@ -39,4 +39,23 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public boolean checkNotUnderDistance(Section newSection) {
+        return this.distance <= newSection.getDistance();
+    }
+
+    public int minusDistance(Section newSection) {
+        return this.distance - newSection.getDistance();
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", lineId=" + lineId +
+                ", upStationId=" + upStationId +
+                ", downStationId=" + downStationId +
+                ", distance=" + distance +
+                '}';
+    }
 }
