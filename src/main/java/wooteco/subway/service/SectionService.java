@@ -84,16 +84,21 @@ public class SectionService {
     public void deleteSection(Long lineId, Long stationId) {
         validateTwoMoreSections(lineId);
         Sections sections = getSections(lineId);
-        Station station = stationDao.findById(stationId);
-        if (sections.isFirstUpStation(station)) {
-            sectionDao.delete(sectionDao.findByUpStationId(lineId, stationId).getId());
-            return;
-        }
-        if (sections.isLastDownStation(station)) {
-            sectionDao.delete(sectionDao.findByDownStationId(lineId, stationId).getId());
+        if (sections.isFirstUpStation(stationDao.findById(stationId)) || sections.isLastDownStation(stationDao.findById(stationId))) {
+            deleteSideStation(lineId, stationId, sections);
             return;
         }
         deleteMiddleSection(lineId, stationId);
+    }
+
+    private void deleteSideStation(Long lineId, Long stationId, Sections sections) {
+        Station station = stationDao.findById(stationId);
+        if (sections.isFirstUpStation(station)) {
+            sectionDao.delete(sectionDao.findByUpStationId(lineId, stationId).getId());
+        }
+        if (sections.isLastDownStation(station)) {
+            sectionDao.delete(sectionDao.findByDownStationId(lineId, stationId).getId());
+        }
     }
 
     public void validateTwoMoreSections(Long lineId) {
@@ -107,8 +112,9 @@ public class SectionService {
         Section downSection = sectionDao.findByUpStationId(lineId, stationId);
         sectionDao.delete(upSection.getId());
         sectionDao.delete(downSection.getId());
+        int distance = upSection.getDistance() + downSection.getDistance();
         Section combinedSection = new Section(lineId, upSection.getUpStationId(), downSection.getDownStationId(),
-                upSection.getDistance() + downSection.getDistance());
+                distance);
         sectionDao.save(combinedSection);
     }
 }
