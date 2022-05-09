@@ -59,16 +59,16 @@ public class LineDao {
         });
     }
 
-    public void update(final Long id, final LineRequest lineRequest) {
+    public void update(final Long id, final Line line) {
         final String sql = "update LINE set name = :name, color = :color where id = :id";
         final Map<String, Object> params = new HashMap<>();
-        params.put("name", lineRequest.getName());
-        params.put("color", lineRequest.getColor());
+        params.put("name", line.getName());
+        params.put("color", line.getColor());
         params.put("id", id);
         final SqlParameterSource parameter = new MapSqlParameterSource(params);
         final int theNumberOfAffectedRow = namedParameterJdbcTemplate.update(sql, parameter);
         if (theNumberOfAffectedRow == NO_ROW_AFFECTED) {
-            throw new IllegalStateException(LINE_NOT_FOUND + "id=" + id + " " + lineRequest);
+            throw new IllegalStateException(LINE_NOT_FOUND + "id=" + id + " " + line);
         }
     }
 

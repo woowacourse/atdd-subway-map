@@ -116,9 +116,9 @@ class LineDaoTest {
         void update_Line_Success() {
             final Line line = lineDao.save(LINE_FIXTURE);
             final Long id = line.getId();
-            final LineRequest lineRequest = new LineRequest("22호선", "bg-color-777");
+//            final LineRequest lineRequest = new LineRequest("22호선", "bg-color-777");
 
-            lineDao.update(id, lineRequest);
+            lineDao.update(id, new Line("22호선", "bg-color-777"));
             final Line updated = lineDao.findById(id);
 
             assertAll(
@@ -131,9 +131,9 @@ class LineDaoTest {
         @Test
         @DisplayName("노선이 존재하지 않으면 예외를 던진다.")
         void update_Line_Fail() {
-            assertThatThrownBy(() -> lineDao.update(1L, new LineRequest("a", "b")))
+            assertThatThrownBy(() -> lineDao.update(1L, new Line("a", "b")))
                     .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("요청한 노선이 존재하지 않습니다. id=1 LineRequest{name='a', color='b'}");
+                    .hasMessageContaining("요청한 노선이 존재하지 않습니다. id=1 Line{name='a', color='b'}");
 
         }
     }

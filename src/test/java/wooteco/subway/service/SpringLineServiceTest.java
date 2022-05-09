@@ -118,7 +118,7 @@ class SpringLineServiceTest {
         void update_Line_Fail() {
             assertThatThrownBy(() -> lineService.update(1L, new LineRequest("a", "b")))
                     .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("요청한 노선이 존재하지 않습니다. id=1 LineRequest{name='a', color='b'}");
+                    .hasMessageContaining("요청한 노선이 존재하지 않습니다. id=1 Line{name='a', color='b'}");
 
         }
     }

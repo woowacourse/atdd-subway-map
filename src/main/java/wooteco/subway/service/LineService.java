@@ -38,7 +38,7 @@ public class LineService implements CommonLineService {
     @Override
     @Transactional
     public void update(final Long id, final LineRequest lineRequest) {
-        lineDao.update(id, lineRequest);
+        lineDao.update(id, new Line(lineRequest.getName(), lineRequest.getColor()));
     }
 
     @Override
