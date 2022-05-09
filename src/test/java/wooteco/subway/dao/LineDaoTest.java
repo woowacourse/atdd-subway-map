@@ -33,7 +33,7 @@ class LineDaoTest {
     @Autowired
     private DataSource dataSource;
 
-    private LineDao lineDao;
+    private CommonLineDao lineDao;
 
     @BeforeEach
     void setup() {
@@ -116,7 +116,6 @@ class LineDaoTest {
         void update_Line_Success() {
             final Line line = lineDao.save(LINE_FIXTURE);
             final Long id = line.getId();
-//            final LineRequest lineRequest = new LineRequest("22호선", "bg-color-777");
 
             lineDao.update(id, new Line("22호선", "bg-color-777"));
             final Line updated = lineDao.findById(id);
@@ -137,6 +136,4 @@ class LineDaoTest {
 
         }
     }
-
-
 }

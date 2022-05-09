@@ -31,7 +31,7 @@ class StationDaoTest {
     @Autowired
     private DataSource dataSource;
 
-    private StationDao stationDao;
+    private CommonStationDao stationDao;
 
     @BeforeEach
     void setup() {

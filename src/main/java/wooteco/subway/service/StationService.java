@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.CommonStationDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
@@ -10,9 +11,9 @@ import wooteco.subway.dto.StationRequest;
 @Service
 public class StationService {
 
-    private final StationDao stationDao;
+    private final CommonStationDao stationDao;
 
-    public StationService(final StationDao stationDao) {
+    public StationService(final CommonStationDao stationDao) {
         this.stationDao = stationDao;
     }
 

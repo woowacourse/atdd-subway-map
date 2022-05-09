@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
 @Repository
-public class StationDao {
+public class StationDao implements CommonStationDao {
 
     private static final int NO_ROW_AFFECTED = 0;
     private static final String STATION_DUPLICATED = "이미 존재하는 지하철역입니다. ";
@@ -27,6 +27,7 @@ public class StationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public Station save(final Station station) {
         final Map<String, Object> params = new HashMap<>();
         params.put("name", station.getName());
@@ -38,6 +39,7 @@ public class StationDao {
         }
     }
 
+    @Override
     public List<Station> findAll() {
         final String sql = "select id, name from STATION";
         return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) -> {
@@ -45,6 +47,7 @@ public class StationDao {
         });
     }
 
+    @Override
     public void deleteById(final Long id) {
         final String sql = "delete from STATION where id = :id";
         final int theNumberOfAffectedRow = namedParameterJdbcTemplate.update(sql, Map.of("id", id));

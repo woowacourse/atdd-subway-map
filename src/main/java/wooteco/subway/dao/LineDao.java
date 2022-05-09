@@ -11,10 +11,9 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
 
 @Repository
-public class LineDao {
+public class LineDao implements CommonLineDao {
 
     private static final int NO_ROW_AFFECTED = 0;
     private static final String LINE_DUPLICATED = "이미 존재하는 노선입니다. ";
@@ -30,6 +29,7 @@ public class LineDao {
                 .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public Line save(final Line line) {
         final Map<String, Object> params = new HashMap<>();
         params.put("name", line.getName());
@@ -42,6 +42,7 @@ public class LineDao {
         }
     }
 
+    @Override
     public List<Line> findAll() {
         final String sql = "select id, name, color from LINE";
         return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) -> {
@@ -50,6 +51,7 @@ public class LineDao {
         });
     }
 
+    @Override
     public Line findById(final Long id) {
         final String sql = "select id, name, color from LINE where id = :id";
         final SqlParameterSource parameter = new MapSqlParameterSource(Map.of("id", id));
@@ -59,6 +61,7 @@ public class LineDao {
         });
     }
 
+    @Override
     public void update(final Long id, final Line line) {
         final String sql = "update LINE set name = :name, color = :color where id = :id";
         final Map<String, Object> params = new HashMap<>();
@@ -72,6 +75,7 @@ public class LineDao {
         }
     }
 
+    @Override
     public void deleteById(final Long id) {
         final String sql = "delete from LINE where id = :id";
         final int theNumberOfAffectedRow = namedParameterJdbcTemplate.update(sql, Map.of("id", id));
