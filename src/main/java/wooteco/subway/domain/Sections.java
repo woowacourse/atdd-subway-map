@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import wooteco.subway.exception.section.NoSuchSectionException;
 import wooteco.subway.exception.station.NoSuchStationException;
@@ -105,5 +106,22 @@ public class Sections {
         return value.stream()
                 .map(Section::getId)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Sections sections = (Sections) o;
+        return Objects.equals(value, sections.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }
