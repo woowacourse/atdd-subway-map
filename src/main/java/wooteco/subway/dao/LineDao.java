@@ -21,4 +21,6 @@ public interface LineDao {
 	void saveSection(Long id, Section section);
 
 	void updateSection(Section section);
+
+	void removeSection(Section section);
 }

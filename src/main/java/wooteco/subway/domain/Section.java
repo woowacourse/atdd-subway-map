@@ -80,6 +80,10 @@ public class Section {
 			.containsAll(getStations());
 	}
 
+	public boolean matchAnyStation(Long stationId) {
+		return upStation.isSameId(stationId) || downStation.isSameId(stationId);
+	}
+
 	public Long getId() {
 		return id;
 	}

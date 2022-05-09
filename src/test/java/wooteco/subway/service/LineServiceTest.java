@@ -77,15 +77,98 @@ class LineServiceTest {
 
 	@DisplayName("하행종점 이후 구간을 추가한다.")
 	@Test
-	void addSection() {
+	void addSectionLeft() {
 		Line line = lineService.create("2호선", "bg-red-600", section);
 		Section newSection = new Section(
-			new Station(2L, "역삼역"), new Station(2L, "교대역"), 10);
+			new Station(2L, "역삼역"), new Station(3L, "교대역"), 10);
 		lineService.addSection(line.getId(), newSection);
 
 		Line updatedLine = lineService.findOne(line.getId());
 
 		assertThat(updatedLine.getSections())
 			.containsAll(List.of(section, newSection));
+	}
+
+	@DisplayName("상행종점 이후 구간을 추가한다.")
+	@Test
+	void addSectionRight() {
+		Line line = lineService.create("2호선", "bg-red-600", section);
+		Section newSection = new Section(
+			new Station(3L, "교대역"), new Station(1L, "강남역"), 10);
+		lineService.addSection(line.getId(), newSection);
+
+		Line updatedLine = lineService.findOne(line.getId());
+
+		assertThat(updatedLine.getSections())
+			.containsAll(List.of(section, newSection));
+	}
+
+	@DisplayName("상행역이 같은 구간을 추가한다.")
+	@Test
+	void addSectionLeftToRight() {
+		Line line = lineService.create("2호선", "bg-red-600", section);
+		Section newSection = new Section(
+			new Station(1L, "강남역"), new Station(3L, "교대역"), 5);
+		lineService.addSection(line.getId(), newSection);
+
+		Line updatedLine = lineService.findOne(line.getId());
+
+		Section updatedSection = new Section(
+			new Station(3L, "교대역"), new Station(2L, "역삼역"), 5);
+		assertThat(updatedLine.getSections())
+			.containsAll(List.of(updatedSection, newSection));
+	}
+
+	@DisplayName("하행역이 같은 구간을 추가한다.")
+	@Test
+	void addSectionRightToLeft() {
+		Line line = lineService.create("2호선", "bg-red-600", section);
+		Section newSection = new Section(
+			new Station(3L, "교대역"), new Station(2L, "역삼역"), 5);
+		lineService.addSection(line.getId(), newSection);
+
+		Line updatedLine = lineService.findOne(line.getId());
+
+		Section updatedSection = new Section(
+			new Station(1L, "강남역"), new Station(3L, "교대역"), 5);
+		assertThat(updatedLine.getSections())
+			.containsAll(List.of(updatedSection, newSection));
+	}
+
+	@DisplayName("역으로 구간을 삭제한다.")
+	@Test
+	void deleteSection() {
+		Line line = lineService.create("2호선", "bg-red-600", section);
+		Section newSection = new Section(
+			new Station(2L, "역삼역"), new Station(3L, "교대역"), 10);
+		lineService.addSection(line.getId(), newSection);
+
+		lineService.deleteSection(line.getId(), 2L);
+
+		Section sumSection = new Section(
+			new Station(1L, "강남역"), new Station(3L, "교대역"), 20);
+		Line updatedLine = lineService.findOne(line.getId());
+		assertThat(updatedLine.getSections())
+			.containsOnly(sumSection);
+	}
+
+	@DisplayName("노선에 구간이 하나밖에 없으면 삭제하지 못한다.")
+	@Test
+	void deleteSectionEmpty() {
+		Line line = lineService.create("2호선", "bg-red-600", section);
+
+		assertThatThrownBy(() -> lineService.deleteSection(line.getId(), 2L))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("구간이 하나일 땐 삭제할 수 없습니다.");
+	}
+
+	@DisplayName("노선에 해당하는 역이 없으면 예외가 발생한다.")
+	@Test
+	void deleteSectionNotExist() {
+		Line line = lineService.create("2호선", "bg-red-600", section);
+
+		assertThatThrownBy(() -> lineService.deleteSection(line.getId(), 3L))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("구간이 하나일 땐 삭제할 수 없습니다.");
 	}
 }

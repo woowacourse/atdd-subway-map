@@ -106,4 +106,9 @@ public class JdbcLineDao implements LineDao {
 	public void updateSection(Section section) {
 		sectionDao.update(section);
 	}
+
+	@Override
+	public void removeSection(Section section) {
+		sectionDao.remove(section.getId());
+	}
 }

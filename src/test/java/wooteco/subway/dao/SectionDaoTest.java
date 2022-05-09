@@ -82,4 +82,14 @@ class SectionDaoTest {
 		Section findSection = sectionDao.findById(sectionId);
 		assertThat(findSection).isEqualTo(updatedSection);
 	}
+
+	@DisplayName("구간을 삭제한다.")
+	@Test
+	void remove() {
+		Section section = new Section(upStation, downStation, 10);
+		Long sectionId = sectionDao.save(1L, section);
+		sectionDao.remove(sectionId);
+
+		assertThat(sectionDao.findByLineId(1L)).isEmpty();
+	}
 }

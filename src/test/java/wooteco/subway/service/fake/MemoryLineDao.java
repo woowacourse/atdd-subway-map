@@ -56,6 +56,11 @@ public class MemoryLineDao implements LineDao {
 	}
 
 	@Override
+	public void removeSection(Section section) {
+
+	}
+
+	@Override
 	public void saveSection(Long id, Section section) {
 
 	}

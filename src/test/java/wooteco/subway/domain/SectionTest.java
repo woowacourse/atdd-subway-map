@@ -132,4 +132,24 @@ class SectionTest {
 
 		assertThat(section.isIncludedIn(sections)).isFalse();
 	}
+
+	@DisplayName("상행역이든 하행역이든 역이 일치하는지 확인한다.")
+	@Test
+	void matchAnyStation() {
+		Section section = new Section(
+			new Station(1L, "강남역"),
+			new Station(2L, "역삼역"), 10
+		);
+		assertThat(section.matchAnyStation(2L)).isTrue();
+	}
+
+	@DisplayName("상행역이든 하행역이든 역이 일치하지 않는지 확인한다.")
+	@Test
+	void notMatchAnyStation() {
+		Section section = new Section(
+			new Station(1L, "강남역"),
+			new Station(2L, "역삼역"), 10
+		);
+		assertThat(section.matchAnyStation(3L)).isFalse();
+	}
 }

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 
 @Service
 @Transactional(readOnly = true)
@@ -57,5 +58,22 @@ public class LineService {
 		line.findUpdatedSectionByAdd(section)
 			.ifPresent(lineDao::updateSection);
 		lineDao.saveSection(id, section);
+	}
+
+	@Transactional
+	public void deleteSection(Long lineId, Long stationId) {
+		Line line = lineDao.findById(lineId);
+		if (line.sizeOfSection() == 1) {
+			throw new IllegalArgumentException("구간이 하나일 땐 삭제할 수 없습니다.");
+		}
+		Sections deletedSections = line.deleteSectionByStation(stationId);
+		if (deletedSections.isEmpty()) {
+			throw new IllegalArgumentException("삭제하려는 역 구간이 없습니다.");
+		}
+		deletedSections.executeEach(lineDao::removeSection);
+		Section newSection = deletedSections.sum();
+		if (!deletedSections.isExist(newSection)) {
+			lineDao.saveSection(lineId, newSection);
+		}
 	}
 }

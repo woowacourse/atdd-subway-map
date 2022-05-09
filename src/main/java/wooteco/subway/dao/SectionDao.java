@@ -12,4 +12,6 @@ public interface SectionDao {
 	List<Section> findByLineId(Long lineId);
 
 	void update(Section section);
+
+	void remove(Long id);
 }

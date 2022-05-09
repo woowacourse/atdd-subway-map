@@ -74,6 +74,14 @@ public class JdbcSectionDao implements SectionDao {
 		);
 	}
 
+	@Override
+	public void remove(Long id) {
+		String sql = "delete from section where id = :id";
+		if (jdbcTemplate.update(sql, Map.of("id", id)) == 0) {
+			throw new NoSuchElementException(NO_SUCH_ID_ERROR);
+		}
+	}
+
 	private RowMapper<Section> getSectionMapper() {
 		return ((rs, rowNum) -> new Section(
 			rs.getLong(1),

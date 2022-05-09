@@ -60,6 +60,14 @@ public class Line {
 		return sections.sortStations();
 	}
 
+	public int sizeOfSection() {
+		return sections.size();
+	}
+
+	public Sections deleteSectionByStation(Long stationId) {
+		return sections.deleteByStation(stationId);
+	}
+
 	public List<Section> getSections() {
 		return sections.getValues();
 	}

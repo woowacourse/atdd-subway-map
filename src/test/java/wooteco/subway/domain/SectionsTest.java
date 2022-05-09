@@ -115,4 +115,30 @@ class SectionsTest {
 			.hasMessage("상행역과 하행역 둘 다 이미 노선에 존재합니다.");
 
 	}
+
+	@DisplayName("역 id로 구간을 삭제한다.")
+	@Test
+	void findByStation() {
+		Sections findSections = sections.deleteByStation(3L);
+		assertThat(findSections.getValues()).containsOnly(
+			new Section(station2, station3, 10),
+			new Section(station3, station4, 10)
+		);
+		assertThat(sections.getValues()).containsOnly(
+			new Section(station1, station2, 10),
+			new Section(station2, station4, 20),
+			new Section(station4, station5, 10)
+		);
+	}
+
+	@DisplayName("Section 여러개를 하나의 Section으로 합친다.")
+	@Test
+	void sum() {
+		Section section = sections.sum();
+		assertThat(section).isEqualTo(new Section(
+			new Station(1L, "교대역"),
+			new Station(5L, "삼성역"),
+			40
+		));
+	}
 }

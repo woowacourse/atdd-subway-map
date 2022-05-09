@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -92,7 +93,56 @@ public class Sections {
 			.ifPresent(section -> sortDownStream(sortedStations, section));
 	}
 
+	public void executeEach(Consumer<Section> consumer) {
+		values.forEach(consumer);
+	}
+
+	public boolean isEmpty() {
+		return values.isEmpty();
+	}
+
+	public Sections deleteByStation(Long stationId) {
+		List<Section> sections = values.stream()
+			.filter(section -> section.matchAnyStation(stationId))
+			.collect(Collectors.toList());
+		sections.forEach(values::remove);
+		Sections resultSections = new Sections(sections);
+		addUpdatedSection(resultSections);
+		return resultSections;
+	}
+
+	private void addUpdatedSection(Sections resultSections) {
+		Section newSection = resultSections.sum();
+		if (!isExist(newSection)) {
+			values.add(newSection);
+		}
+	}
+
+	public int size() {
+		return values.size();
+	}
+
 	public List<Section> getValues() {
 		return new ArrayList<>(values);
+	}
+
+	public Section sum() {
+		List<Station> stations = sortStations();
+		int size = stations.size();
+		int sumDistance = addAllDistance();
+		return new Section(stations.get(0), stations.get(size - 1), sumDistance);
+	}
+
+	private int addAllDistance() {
+		return values.stream()
+			.mapToInt(Section::getDistance)
+			.sum();
+	}
+
+	public boolean isExist(Section section) {
+		return values.stream()
+			.anyMatch(
+				each -> each.hasSameUpStation(section)
+					&& each.hasSameDownStation(section));
 	}
 }
