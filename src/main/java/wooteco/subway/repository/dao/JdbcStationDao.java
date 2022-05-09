@@ -18,11 +18,12 @@ import wooteco.subway.repository.entity.StationEntity;
 @Repository
 public class JdbcStationDao implements StationDao {
 
-    private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final RowMapper<StationEntity> rowMapper = (resultSet, rowNum) -> new StationEntity(
+    private static final RowMapper<StationEntity> rowMapper = (resultSet, rowNum) -> new StationEntity(
             resultSet.getLong("id"),
             resultSet.getString("name")
     );
+
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public JdbcStationDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

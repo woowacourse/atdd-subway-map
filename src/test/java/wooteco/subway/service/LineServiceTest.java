@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.request.LineRequestDto;
 import wooteco.subway.exception.DuplicateLineNameException;
 import wooteco.subway.mockDao.MockLineDao;
 
@@ -25,7 +26,8 @@ class LineServiceTest {
     @DisplayName("노선 이름과 색깔을 입력받아서 해당 이름과 색깔을 가진 노선을 등록한다.")
     @Test
     void register() {
-        Line created = service.register("2호선", "bg-green-600");
+        LineRequestDto lineRequestDto = new LineRequestDto("2호선", "bg-green-600", null, null, 0);
+        Line created = service.register(lineRequestDto);
 
         assertAll(
                 () -> assertThat(created.getName()).isEqualTo("2호선"),
@@ -36,9 +38,10 @@ class LineServiceTest {
     @DisplayName("이미 존재하는 노선이름으로 등록하려할 시 예외가 발생한다.")
     @Test
     void registerDuplicateName() {
-        service.register("2호선", "bg-green-600");
+        LineRequestDto lineRequestDto = new LineRequestDto("2호선", "bg-green-600", null, null, 0);
+        service.register(lineRequestDto);
 
-        assertThatThrownBy(() -> service.register("2호선", "bg-green-600"))
+        assertThatThrownBy(() -> service.register(lineRequestDto))
                 .isInstanceOf(DuplicateLineNameException.class)
                 .hasMessage("[ERROR] 이미 존재하는 노선 이름입니다.");
     }
@@ -46,9 +49,12 @@ class LineServiceTest {
     @DisplayName("등록된 모든 노선 리스트를 조회한다.")
     @Test
     void searchAll() {
-        service.register("2호선", "bg-green-600");
-        service.register("신분당선", "bg-red-600");
-        service.register("분당선", "bg-yellow-600");
+        LineRequestDto lineRequestDto1 = new LineRequestDto("2호선", "bg-green-600", null, null, 0);
+        LineRequestDto lineRequestDto2 = new LineRequestDto("신분당선", "bg-red-600", null, null, 0);
+        LineRequestDto lineRequestDto3 = new LineRequestDto("분당선", "bg-yellow-600", null, null, 0);
+        service.register(lineRequestDto1);
+        service.register(lineRequestDto2);
+        service.register(lineRequestDto3);
 
         List<Line> lines = service.searchAll();
         List<String> names = lines.stream()
@@ -67,7 +73,8 @@ class LineServiceTest {
     @DisplayName("id 로 노선을 조회한다.")
     @Test
     void searchById() {
-        Line savedLine = service.register("2호선", "bg-green-600");
+        LineRequestDto lineRequestDto = new LineRequestDto("2호선", "bg-green-600", null, null, 0);
+        Line savedLine = service.register(lineRequestDto);
 
         Line searchedLine = service.searchById(savedLine.getId());
 
@@ -80,9 +87,11 @@ class LineServiceTest {
     @DisplayName("노선을 수정한다.")
     @Test
     void modify() {
-        Line savedLine = service.register("2호선", "bg-green-600");
+        LineRequestDto lineRequestDto = new LineRequestDto("2호선", "bg-green-600", null, null, 0);
+        Line savedLine = service.register(lineRequestDto);
 
-        service.modify(savedLine.getId(), "신분당선", "bg-red-600");
+        LineRequestDto newLineRequestDto = new LineRequestDto("신분당선", "bg-red-600", null, null, 0);
+        service.modify(savedLine.getId(), newLineRequestDto);
         Line searchedLine = service.searchById(savedLine.getId());
 
         assertAll(
@@ -94,8 +103,10 @@ class LineServiceTest {
     @DisplayName("id 로 노선을 삭제한다.")
     @Test
     void removeById() {
-        service.register("2호선", "bg-green-600");
-        Line line = service.register("신분당선", "bg-red-600");
+        LineRequestDto lineRequestDto1 = new LineRequestDto("2호선", "bg-green-600", null, null, 0);
+        LineRequestDto lineRequestDto2 = new LineRequestDto("신분당선", "bg-red-600", null, null, 0);
+        service.register(lineRequestDto1);
+        Line line = service.register(lineRequestDto2);
 
         service.remove(line.getId());
 

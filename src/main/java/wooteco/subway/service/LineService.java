@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.request.LineRequestDto;
 import wooteco.subway.exception.DuplicateLineNameException;
 import wooteco.subway.exception.NoSuchLineException;
 import wooteco.subway.repository.dao.LineDao;
@@ -19,8 +20,8 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line register(final String name, final String color) {
-        final Line line = new Line(name, color);
+    public Line register(final LineRequestDto lineRequestDto) {
+        final Line line = new Line(lineRequestDto.getName(), lineRequestDto.getColor());
         try {
             final LineEntity savedLineEntity = lineDao.save(new LineEntity(line));
             return savedLineEntity.generateLine();
@@ -41,8 +42,8 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public void modify(final Long id, final String name, final String color) {
-        lineDao.update(new LineEntity(id, name, color));
+    public void modify(final Long id, final LineRequestDto lineRequestDto) {
+        lineDao.update(new LineEntity(id, lineRequestDto.getName(), lineRequestDto.getColor()));
     }
 
     public void remove(final Long id) {

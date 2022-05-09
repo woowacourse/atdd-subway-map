@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.request.StationRequestDto;
 import wooteco.subway.exception.DuplicateStationNameException;
 import wooteco.subway.repository.dao.StationDao;
 import wooteco.subway.repository.entity.StationEntity;
@@ -18,8 +19,8 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station register(final String name) {
-        final Station station = new Station(name);
+    public Station register(final StationRequestDto stationRequestDto) {
+        final Station station = new Station(stationRequestDto.getName());
         try {
             final StationEntity savedStationEntity = stationDao.save(new StationEntity(station));
             return savedStationEntity.generateStation();

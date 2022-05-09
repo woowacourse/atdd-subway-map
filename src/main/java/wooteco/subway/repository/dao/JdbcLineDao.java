@@ -18,12 +18,13 @@ import wooteco.subway.repository.entity.LineEntity;
 @Repository
 public class JdbcLineDao implements LineDao {
 
-    private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final RowMapper<LineEntity> rowMapper = (resultSet, rowNum) -> new LineEntity(
+    private static final RowMapper<LineEntity> rowMapper = (resultSet, rowNum) -> new LineEntity(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("color")
     );
+
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public JdbcLineDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
