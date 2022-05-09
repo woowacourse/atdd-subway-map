@@ -1,6 +1,5 @@
-package wooteco.subway.dto;
+package wooteco.subway.service.dto;
 
-import java.util.ArrayList;
 import java.util.List;
 import wooteco.subway.domain.Line;
 

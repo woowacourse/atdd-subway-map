@@ -15,11 +15,11 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineCreateRequest;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.ui.dto.LineCreateRequest;
+import wooteco.subway.ui.dto.LineRequest;
+import wooteco.subway.service.dto.LineResponse;
+import wooteco.subway.ui.dto.SectionRequest;
+import wooteco.subway.service.dto.StationResponse;
 
 @Service
 public class LineService {

@@ -11,8 +11,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineCreateRequest;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.ui.dto.LineCreateRequest;
+import wooteco.subway.ui.dto.LineRequest;
 
 @Repository
 public class LineDao {

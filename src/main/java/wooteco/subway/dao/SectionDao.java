@@ -11,7 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
-import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.ui.dto.SectionRequest;
 
 @Repository
 public class SectionDao {

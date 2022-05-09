@@ -11,8 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineCreateRequest;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.ui.dto.LineCreateRequest;
+import wooteco.subway.ui.dto.LineRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
