@@ -22,7 +22,7 @@ public class StationService {
 
     @Transactional
     public StationResponse create(StationRequest stationRequest) {
-        Station station = stationRequest.toEntity();
+        Station station = new Station(stationRequest.getName());
         validateUnique(station);
         Station newStation = stationDao.save(station);
         return new StationResponse(newStation);

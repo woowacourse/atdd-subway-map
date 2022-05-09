@@ -5,7 +5,7 @@ public class Station {
     private final String name;
 
     public Station(String name) {
-        this.name = name;
+        this(null, name);
     }
 
     public Station(Long id, String name) {

@@ -22,7 +22,7 @@ public class LineService {
 
     @Transactional
     public LineResponse create(LineRequest lineRequest) {
-        Line line = lineRequest.toEntity();
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         validateUnique(line);
         Line newLine = lineDao.save(line);
         return new LineResponse(newLine);
