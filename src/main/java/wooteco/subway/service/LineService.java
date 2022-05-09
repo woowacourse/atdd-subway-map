@@ -65,9 +65,12 @@ public class LineService {
         return LineResponse.of(line, stations);
     }
 
-    public Line findById(Long id) {
-        Optional<Line> line = lineDao.findById(id);
-        return line.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+    public LineResponse findById(Long id) {
+        Line line = lineDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+        List<Station> stations = stationService.findAll();
+
+        return getLineResponse(line, stations);
     }
 
     public void update(Long id, Line line) {

@@ -1,7 +1,9 @@
 package wooteco.subway.service;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import wooteco.subway.domain.Line;
@@ -11,8 +13,12 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
@@ -77,5 +83,39 @@ public class LineServiceTest extends ServiceTest {
         //then
         assertThat(responses.size()).isEqualTo(2);
         assertThat(responses.get(0).getStations()).isNotEmpty();
+    }
+
+    @DisplayName("line id로 line 목록을 조회한다.")
+    @Test
+    void findById() {
+        Line line1 = new Line(1L, "1호선", "blue");
+        Station station1 = new Station(1L, "왕십리역");
+        Station station2 = new Station(2L, "시청역");
+
+        given(lineDao.findById(any()))
+                .willReturn(Optional.of(line1));
+        given(stationService.findAll())
+                .willReturn(List.of(station1, station2));
+        when(sectionService.getStationIds(1L))
+                .thenReturn(List.of(1L, 2L));
+
+        //when
+        LineResponse response = lineService.findById(1L);
+
+        //then
+        assertThat(response.getStations().size()).isEqualTo(2);
+    }
+
+    @DisplayName("존재하지 않는 line id로 line 목록을 조회한다.")
+    @Test
+    void findByIdThrowException() {
+        given(lineDao.findById(any()))
+                .willReturn(Optional.empty());
+
+        //when & then
+        assertThatThrownBy(() -> {
+            lineService.findById(1L);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 }
