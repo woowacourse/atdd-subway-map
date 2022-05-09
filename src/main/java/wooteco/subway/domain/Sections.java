@@ -36,7 +36,7 @@ public class Sections {
         }
     }
 
-    public void addWithSameUpStation(Section section) {
+    private void addWithSameUpStation(Section section) {
         if (hasSameUpStation(section)) {
             addSplitUpSection(section);
             return;
@@ -45,7 +45,7 @@ public class Sections {
     }
 
     private void addSplitUpSection(Section addSection) {
-        Section existSection = sections.stream()
+        final Section existSection = sections.stream()
                 .filter(it -> it.hasSameUpStation(addSection))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("구간 등록 중 상행역 불일치로 오류가 발생했습니다."));
@@ -55,7 +55,7 @@ public class Sections {
         sections.remove(existSection);
     }
 
-    public void addWithSameDownStation(Section section) {
+    private void addWithSameDownStation(Section section) {
         if (hasSameDownStation(section)) {
             addSplitDownSection(section);
             return;
@@ -64,7 +64,7 @@ public class Sections {
     }
 
     private void addSplitDownSection(Section section) {
-        Section existSection = sections.stream()
+        final Section existSection = sections.stream()
                 .filter(it -> it.hasSameDownStation(section))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("구간 등록 중 하행역 불일치로 오류가 발생했습니다."));
@@ -131,11 +131,19 @@ public class Sections {
     }
 
     private void deleteAndMergeSections(Station station) {
-        Section upSection = findUpSectionByStation(station);
-        Section downSection = findDownSectionByStation(station);
+        final Section upSection = findUpSectionByStation(station);
+        final Section downSection = findDownSectionByStation(station);
         sections.add(upSection.mergeSectionByCut(downSection));
         sections.remove(upSection);
         sections.remove(downSection);
+    }
+
+    private void deleteFinalStation(Station station, boolean hasUpSection) {
+        if (hasUpSection) {
+            sections.remove(findUpSectionByStation(station));
+            return;
+        }
+        sections.remove(findDownSectionByStation(station));
     }
 
     private Section findUpSectionByStation(Station station) {
@@ -150,14 +158,6 @@ public class Sections {
                 .filter(it -> it.hasSameUpStationByStation(station))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("구간 삭제 중 하행역 연결 오류가 발생했습니다."));
-    }
-
-    private void deleteFinalStation(Station station, boolean hasUpSection) {
-        if (hasUpSection) {
-            sections.remove(findUpSectionByStation(station));
-            return;
-        }
-        sections.remove(findDownSectionByStation(station));
     }
 
     public boolean hasSection(Section section) {
