@@ -324,4 +324,24 @@ class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .statusCode(HttpStatus.NOT_FOUND.value());
     }
+
+    @Test
+    @DisplayName("name을 지정하지 않고 요청하면 bad request 예외를 반환해야 한다.")
+    void emptyName() {
+        LineRequest lineRequest = new LineRequest(
+            null,
+            "bg-red-600",
+            stationId1,
+            stationId2,
+            10
+        );
+
+        RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(lineRequest)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
 }
