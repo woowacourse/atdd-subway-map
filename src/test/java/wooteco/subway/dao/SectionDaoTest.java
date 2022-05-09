@@ -13,7 +13,7 @@ import wooteco.subway.domain.Section;
 @JdbcTest
 public class SectionDaoTest {
 
-    public static final Section SECTION = new Section(1L, 1L, 1L, 1);
+    public static final Section SECTION = new Section(1L, 1L, 2L, 1);
 
     private JdbcSectionDao sectionDao;
 
@@ -33,5 +33,13 @@ public class SectionDaoTest {
         Integer count = jdbcTemplate.queryForObject("select count(*) from SECTION", Integer.class);
 
         assertThat(count).isEqualTo(1);
+    }
+
+    @DisplayName("해당 id의 지하철 노선이 있다면 true를 반환한다.")
+    @Test
+    void existSectionById() {
+        long sectionId = sectionDao.save(SECTION);
+
+        assertThat(sectionDao.existSectionById(sectionId)).isTrue();
     }
 }

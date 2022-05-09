@@ -32,4 +32,10 @@ public class JdbcSectionDao implements SectionDao {
 
         return keyHolder.getKey().longValue();
     }
+
+    @Override
+    public boolean existSectionById(Long id) {
+        final String sql = "select exists (select * from SECTION where id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
 }
