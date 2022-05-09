@@ -73,70 +73,70 @@ class JdbcSectionDaoTest {
     }
 
     @Test
-    @DisplayName("지하철 역이 대상 노선에 상행으로 존재하면 해당 구간의 거리를 가져온다.")
-    void findDistanceByLineIdAndUpStationId() {
+    @DisplayName("지하철 역이 대상 노선에 상행으로 존재하면 해당 구간의 id를 가져온다.")
+    void findIdByLineIdAndUpStationId() {
         // given
         Section givenSection = new Section(
                 new Line(1L, "신분당선", "yellow"),
                 new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
                 6, 1L);
-        Long savedSectionId = sectionDao.save(givenSection);
+        sectionDao.save(givenSection);
 
         // when
-        Optional<Integer> distance = sectionDao.findDistanceByLineIdAndUpStationId(1L, 1L);
+        Optional<Long> id = sectionDao.findIdByLineIdAndUpStationId(1L, 1L);
 
         // then
-        assertThat(distance.get()).isEqualTo(6);
+        assertThat(id.get()).isEqualTo(1L);
     }
 
     @Test
-    @DisplayName("지하철 역이 대상 노선에 상행으로 존재하지 않으면 해당 구간의 거리를 null로 가져온다.")
-    void findNullDistanceByLineIdAndUpStationId() {
+    @DisplayName("지하철 역이 대상 노선에 상행으로 존재하지 않으면 해당 구간의 id를 null로 가져온다.")
+    void findNullIdByLineIdAndUpStationId() {
         // given
         Section givenSection = new Section(
                 new Line(1L, "신분당선", "yellow"),
                 new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
                 6, 1L);
-        Long savedSectionId = sectionDao.save(givenSection);
+        sectionDao.save(givenSection);
 
         // when
-        Optional<Integer> distance = sectionDao.findDistanceByLineIdAndUpStationId(1L, 2L);
+        Optional<Long> distance = sectionDao.findIdByLineIdAndUpStationId(1L, 2L);
 
         // then
         assertThat(distance).isNotPresent();
     }
 
     @Test
-    @DisplayName("지하철 역이 대상 노선에 하행으로 존재하면 해당 구간의 거리를 가져온다.")
-    void findDistanceByLineIdAndDownStationId() {
+    @DisplayName("지하철 역이 대상 노선에 하행으로 존재하면 해당 구간의 id를 가져온다.")
+    void findIdByLineIdAndDownStationId() {
         // given
         Section givenSection = new Section(
                 new Line(1L, "신분당선", "yellow"),
                 new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
                 6, 1L);
-        Long savedSectionId = sectionDao.save(givenSection);
+        sectionDao.save(givenSection);
 
         // when
-        Optional<Integer> distance = sectionDao.findDistanceByLineIdAndDownStationId(1L, 2L);
+        Optional<Long> sectionId = sectionDao.findIdByLineIdAndDownStationId(1L, 2L);
 
         // then
-        assertThat(distance.get()).isEqualTo(6);
+        assertThat(sectionId.get()).isEqualTo(1L);
     }
 
     @Test
-    @DisplayName("지하철 역이 대상 노선에 하행으로 존재하지 않으면 해당 구간의 거리를 null로 가져온다.")
-    void findNullDistanceByLineIdAndDownStationId() {
+    @DisplayName("지하철 역이 대상 노선에 하행으로 존재하지 않으면 해당 구간의 id를 null로 가져온다.")
+    void findNullIdByLineIdAndDownStationId() {
         // given
         Section givenSection = new Section(
                 new Line(1L, "신분당선", "yellow"),
                 new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
                 6, 1L);
-        Long savedSectionId = sectionDao.save(givenSection);
+        sectionDao.save(givenSection);
 
         // when
-        Optional<Integer> distance = sectionDao.findDistanceByLineIdAndDownStationId(1L, 1L);
+        Optional<Long> id = sectionDao.findIdByLineIdAndDownStationId(1L, 1L);
 
         // then
-        assertThat(distance).isNotPresent();
+        assertThat(id).isNotPresent();
     }
 }

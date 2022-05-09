@@ -46,22 +46,22 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public Optional<Integer> findDistanceByLineIdAndUpStationId(long lineId, long stationId) {
-        String sql = "SELECT distance FROM \"SECTION\" WHERE line_id = (?) AND up_station_id = (?)";
-        List<Integer> distance = jdbcTemplate.query(sql,
-                (resultSet, rowMapper) -> resultSet.getInt("distance"),
+    public Optional<Long> findIdByLineIdAndUpStationId(long lineId, long stationId) {
+        String sql = "SELECT id FROM \"SECTION\" WHERE line_id = (?) AND up_station_id = (?)";
+        List<Long> id = jdbcTemplate.query(sql,
+                (resultSet, rowMapper) -> resultSet.getLong("id"),
                 lineId, stationId);
 
-        return Optional.ofNullable(DataAccessUtils.singleResult(distance));
+        return Optional.ofNullable(DataAccessUtils.singleResult(id));
     }
 
     @Override
-    public Optional<Integer> findDistanceByLineIdAndDownStationId(long lineId, long stationId) {
-        String sql = "SELECT distance FROM \"SECTION\" WHERE line_id = (?) AND down_station_id = (?)";
-        List<Integer> distance = jdbcTemplate.query(sql,
-                (resultSet, rowMapper) -> resultSet.getInt("distance"),
+    public Optional<Long> findIdByLineIdAndDownStationId(long lineId, long stationId) {
+        String sql = "SELECT id FROM \"SECTION\" WHERE line_id = (?) AND down_station_id = (?)";
+        List<Long> id = jdbcTemplate.query(sql,
+                (resultSet, rowMapper) -> resultSet.getLong("id"),
                 lineId, stationId);
 
-        return Optional.ofNullable(DataAccessUtils.singleResult(distance));
+        return Optional.ofNullable(DataAccessUtils.singleResult(id));
     }
 }
