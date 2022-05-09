@@ -7,10 +7,6 @@ public class Line {
     private final Name name;
     private final String color;
 
-    public Line(String name, String color) {
-        this(null, name, color);
-    }
-
     public Line(Long id, String name, String color) {
         this(id, new Name(name), color);
     }
