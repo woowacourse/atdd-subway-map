@@ -12,6 +12,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("지하철 노선 테스트")
 @JdbcTest
 class LineDaoTest {
 
@@ -68,11 +69,8 @@ class LineDaoTest {
     @DisplayName("전체 삭제를 할 수 있다")
     @Test
     void can_deleteAll() {
-        Line line1 = new Line("신분당선", "bg-yellow-600");
-        Line line2 = new Line("7호선", "bg-brown-600");
-
-        lineDao.save(line1);
-        lineDao.save(line2);
+        lineDao.save(new Line("신분당선", "bg-yellow-600"));
+        lineDao.save(new Line("7호선", "bg-brown-600"));
 
         lineDao.deleteAll();
 
