@@ -16,6 +16,7 @@
         - 컨트롤러의 역할의 변화
     - [ ] `@ExceptionHandler` 예외 처리
         - 만약, Exception이 발생한다면?
+        - [ ] `Exception`에 대한 예외 처리 추가
 - [x] `LineAcceptanceTest`
     - [x] 중복된 코드 Fixture 객체 or 메서드 분리
     - [x] `Stream`과 `람다` 활용
@@ -27,5 +28,18 @@
     - REST API를 테스트하기 위한 라이브러리(실제 웹과 동일한 기능 수행)
 - [x] `LineDaoTest`
     - [x] `assertAll` 검증 함수 학습 및 적용
+      - assertThat과 다르게 패키지 경로가 `junit.jupiter.api~`라는 차이점도 존재
     - [x] 하나의 메서드에서 2개의 테스트를 검증
 - [ ] 세가지 종류의 테스트, 사용한 목적과 어떤 기능을 사용했는지 작성
+
+### 지하철 노선도 미션 1,2단계 - 2차 피드백
+- [ ] `RequestBody`의 사용 목적(용도)
+- [ ] `LineAcceptaceTest`
+  - [ ] when 주석 제거
+  - [ ] TODO 제거 
+  - [ ] 예외 상태 코드 검증에 메시지 검증 추가하기
+- [ ] `InjectMock`과 `@Mock`의 차이점
+- [ ] `JdbcTemplate` 빈으로 등록한 적이 없으나 빈으로 관리되는 이유
+- [ ] 예외 메시지 - 톤 앤 매너
+- [ ] `ControllerAdvice`
+  

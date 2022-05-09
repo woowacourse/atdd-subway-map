@@ -40,3 +40,50 @@
   - 실제 DB에 저장이 잘 되었는지 확인할 수 있도록 설정하기
   - h2 console 활용 가능
 - [x] 스프링 빈 활용하기
+
+### 3단계 요구사항 정리
+- [ ] 지하철 노선 추가 API 수정
+  - 노선 속성 추가
+    - upStationId : 상행 종점 
+    - downStationId : 하행 종점 
+    - distance 두 종점간의 거리
+  - [ ] 노선 등록 `POST /lines`
+    - `요청` json으로 name, color, upStationId, downStationId, distance를 전송한다.
+      - 결과 상태 코드는 `201 Created` 이다.
+      - Location 헤더는 `/lines/{id}` 이다.
+    - `응답` json으로 id, name, color, stations를 반환한다.
+  - [ ] 노선 목록 조회 `GET /lines`
+    - 결과 상태 코드는 `200 OK` 이다.
+    - `응답` json으로 id, name, color, stations를 가진 리스트를 반환한다.
+  - [ ] 노선 조회 `GET /lines/{id}`
+    - 결과 상태 코드는 `200 OK` 이다.
+    - `응답` json으로 id, name, color, stations를 반환한다.
+  - [ ] 노선 수정 `PUT /lines/{id}`
+    - `요청` json으로 name, color를 전송한다.
+    - 결과 상태 코드는 `200 OK` 이다.
+  - [ ] 노선 삭제 `DELETE /lines/{id}`
+    - 결과 상태 코드는 `204 No Content` 이다. 
+- [ ] 구간 관리 API 구현
+  - [ ] 구간 등록 `POST /lines/{id}/sections`
+    - `요청` json으로 upStationId, downStationId, distance를 전송한다.
+      - 결과 상태 코드는 `200 OK` 이다.
+    - [ ] 노선 삭제 `DELETE /lines/{lineId}/sections?stations={stationId}`
+      - 결과 상태 코드는 `200 OK` 이다.
+- 구간 등록 방식
+  - 상행 종점 등록
+    - 기존 노선에 등록된 상행 종점을 기준으로 새로운 역을 추가한다.(새로운 역이 상행 종점이 됨)
+  - 하행 종점 등록
+    - 기존 노선에 등록된 하행 종점을 기준으로 새로운 역을 추가한다.(새로운 역이 하행 종점이 됨)
+  - 갈래길 방지
+    - 갈래길은 허용되지 않기 때문에 기존 구간을 변경
+    - ex) ( A - 7m - C ) -> ( A - 4m - B - 3m - C )
+  - `예외`
+    - 역 사이에 새로운 역을 등록할 경우 기존 역 사이의 길이보다 크거나 같을 수 없다.
+    - 상행선, 하행선 모두 등록되어있는 경우 추가할 수 없다.
+    - 상행, 하행 모두 등록되어있지 않다면 추가할 수 없다.
+- 구간 제거 방식
+  - 종점역이 제거될 경우 그 다음 역이 종점이 된다.
+  - 중간역이 제거될 경우 재배치한다.
+    - 길이는 두 구간 거리의 합으로 계산한다.
+  - `예외`
+    - 구간이 하나인 노선은 마지막 구간을 제거할 수 없다. 
