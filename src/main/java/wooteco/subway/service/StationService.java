@@ -23,7 +23,7 @@ public class StationService {
     public StationResponse create(StationRequest request) {
         validateDataSize(request.getName());
         Station station = new Station(request.getName());
-        Station newStation = stationDao.save(station);
+        Station newStation = stationDao.insert(station);
         return StationResponse.of(newStation);
     }
 

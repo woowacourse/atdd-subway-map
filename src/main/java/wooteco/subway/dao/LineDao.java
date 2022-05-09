@@ -24,7 +24,7 @@ public class LineDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Line save(Line line) {
+    public Line insert(Line line) {
         final SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
         final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Line(id, line.getName(), line.getColor());

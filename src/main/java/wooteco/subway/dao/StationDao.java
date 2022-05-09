@@ -24,7 +24,7 @@ public class StationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Station save(Station station) {
+    public Station insert(Station station) {
         final SqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
         final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Station(id, station.getName());

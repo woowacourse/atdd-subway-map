@@ -41,11 +41,11 @@ public class SectionDaoTest {
         LineDao lineDao = new LineDao(jdbcTemplate, dataSource);
         sectionDao = new SectionDao(jdbcTemplate, dataSource);
 
-        savedStation1 = stationDao.save(new Station("선릉역"));
-        savedStation2 = stationDao.save(new Station("선정릉역"));
-        savedStation3 = stationDao.save(new Station("한티역"));
+        savedStation1 = stationDao.insert(new Station("선릉역"));
+        savedStation2 = stationDao.insert(new Station("선정릉역"));
+        savedStation3 = stationDao.insert(new Station("한티역"));
 
-        savedLine1 = lineDao.save(new Line("분당선", "yellow"));
+        savedLine1 = lineDao.insert(new Line("분당선", "yellow"));
     }
 
 

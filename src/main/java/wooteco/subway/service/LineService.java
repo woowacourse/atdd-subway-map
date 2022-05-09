@@ -37,7 +37,7 @@ public class LineService {
         validatePositiveDistance(request.getDistance());
 
         Line line = new Line(request.getName(), request.getColor());
-        Line savedLine = lineDao.save(line);
+        Line savedLine = lineDao.insert(line);
 
         Section section = new Section(savedLine.getId(),
                 request.getUpStationId(), request.getDownStationId(), request.getDistance());

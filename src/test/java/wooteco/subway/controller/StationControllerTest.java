@@ -146,7 +146,7 @@ public class StationControllerTest extends AcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStationWithNotExistData() {
-        Station savedStation = stationDao.save(new Station("강남역"));
+        Station savedStation = stationDao.insert(new Station("강남역"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()

@@ -36,9 +36,9 @@ class LineControllerTest extends AcceptanceTest {
 
     @BeforeEach
     void setUpStations() {
-        savedStation1 = stationDao.save(new Station("선릉역"));
-        savedStation2 = stationDao.save(new Station("선정릉역"));
-        savedStation3 = stationDao.save(new Station("한티역"));
+        savedStation1 = stationDao.insert(new Station("선릉역"));
+        savedStation2 = stationDao.insert(new Station("선정릉역"));
+        savedStation3 = stationDao.insert(new Station("한티역"));
     }
 
     @DisplayName("지하철 노선을 등록한다.")
@@ -93,7 +93,7 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("중복된 이름을 가진 지하철 노선을 등록할 때 예외를 발생시킨다.")
     @Test
     void throwsExceptionWhenCreateDuplicatedName() {
-        lineDao.save(new Line("신분당선", "red"));
+        lineDao.insert(new Line("신분당선", "red"));
         LineRequest request = new LineRequest("신분당선", "red", null, null, 0);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -110,8 +110,8 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
-        Line savedLine1 = lineDao.save(new Line("신분당선", "red"));
-        Line savedLine2 = lineDao.save(new Line("1호선", "blue"));
+        Line savedLine1 = lineDao.insert(new Line("신분당선", "red"));
+        Line savedLine2 = lineDao.insert(new Line("1호선", "blue"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -134,7 +134,7 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
-        Line line = lineDao.save(new Line("신분당선", "red"));
+        Line line = lineDao.insert(new Line("신분당선", "red"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -154,7 +154,7 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
-        Line line = lineDao.save(new Line("신분당선", "red"));
+        Line line = lineDao.insert(new Line("신분당선", "red"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(new Line("다른분당선", "blue"))
@@ -175,7 +175,7 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void deleteLine() {
-        Line savedLine = lineDao.save(new Line("신분당선", "red"));
+        Line savedLine = lineDao.insert(new Line("신분당선", "red"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -191,7 +191,7 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("존재하지 않는 데이터를 삭제하려고 한다면 400예외가 발생한다.")
     @Test
     void deleteLineWithNotExistData() {
-        Line savedLine = lineDao.save(new Line("신분당선", "red"));
+        Line savedLine = lineDao.insert(new Line("신분당선", "red"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
