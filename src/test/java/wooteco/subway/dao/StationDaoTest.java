@@ -81,4 +81,17 @@ class StationDaoTest {
         // then
         assertThat(before.size() - 1).isEqualTo(after.size());
     }
+
+    @DisplayName("노선 ID로 조회")
+    @Test
+    void findByLineId() {
+        // given
+        Long id = 1L;
+
+        // when
+        List<Station> stations = stationDao.findByLineId(id);
+
+        // then
+        assertThat(stations.size()).isEqualTo(2);
+    }
 }

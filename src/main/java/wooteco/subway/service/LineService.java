@@ -1,10 +1,7 @@
 package wooteco.subway.service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -14,12 +11,11 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
+import wooteco.subway.service.dto.LineResponse;
+import wooteco.subway.service.dto.StationResponse;
 import wooteco.subway.ui.dto.LineCreateRequest;
 import wooteco.subway.ui.dto.LineRequest;
-import wooteco.subway.service.dto.LineResponse;
 import wooteco.subway.ui.dto.SectionRequest;
-import wooteco.subway.service.dto.StationResponse;
 
 @Service
 public class LineService {
@@ -101,17 +97,10 @@ public class LineService {
     }
 
     private List<StationResponse> findStations(Long id) {
-        List<Section> sections = sectionDao.findByLineId(id);
-
-        Set<StationResponse> stations = new LinkedHashSet<>();
-        for (Section section : sections) {
-            Station downStation = stationDao.findById(section.getDownStationId());
-            stations.add(StationResponse.from(downStation));
-
-            Station upStation = stationDao.findById(section.getUpStationId());
-            stations.add(StationResponse.from(upStation));
-        }
-        return new ArrayList<>(stations);
+        return stationDao.findByLineId(id)
+                .stream()
+                .map(StationResponse::from)
+                .collect(Collectors.toList());
     }
 
     public void deleteById(Long id) {
