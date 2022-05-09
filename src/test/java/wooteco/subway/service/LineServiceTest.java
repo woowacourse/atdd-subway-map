@@ -1,28 +1,33 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class LineServiceTest {
 
+    @InjectMocks
     private LineService lineService;
 
-    @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
+    @Mock
+    private LineDao lineDao;
 
-    @BeforeEach
-    void setup() {
-        LineDao lineDao = new LineDao(jdbcTemplate);
-        lineService = new LineService(lineDao);
-    }
+    @Mock
+    private SectionDao sectionDao;
+
 
     @Test
     @DisplayName("중복된 이름을 저장한다.")
@@ -30,11 +35,10 @@ class LineServiceTest {
         //given
         String name = "선릉역";
         String color = "red";
-        String color2 = "blue";
         //when
-        lineService.save(name, color);
+        given(lineDao.existByName(any(String.class))).willReturn(true);
         //then
-        assertThatThrownBy(() -> lineService.save(name, color2))
+        assertThatThrownBy(() -> lineService.save(new LineRequest(name, color)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("중복된 Line 이 존재합니다.");
     }
@@ -44,12 +48,11 @@ class LineServiceTest {
     void duplicatedColorException() {
         //given
         String name = "강남역";
-        String name2 = "교대역";
         String color = "orange";
         //when
-        lineService.save(name, color);
+        given(lineDao.existByColor(any(String.class))).willReturn(true);
         //then
-        assertThatThrownBy(() -> lineService.save(name2, color))
+        assertThatThrownBy(() -> lineService.save(new LineRequest(name, color)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("중복된 Line 이 존재합니다.");
     }
@@ -65,6 +68,17 @@ class LineServiceTest {
         assertThatThrownBy(() -> lineService.findById(id))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 ID의 노선은 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("line 과 section 을 저장한다.")
+    void save() {
+        //given
+        given(lineDao.save(any(Line.class))).willReturn(1L);
+        //when
+        LineResponse response = lineService.save(new LineRequest("2호선", "red", 1L, 2L, 10));
+        //then
+
     }
 
 }
