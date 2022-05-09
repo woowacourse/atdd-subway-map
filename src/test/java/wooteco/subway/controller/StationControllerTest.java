@@ -1,4 +1,4 @@
-package wooteco.subway.ui;
+package wooteco.subway.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.service.StationService;
+import wooteco.subway.ui.StationController;
 
 @WebMvcTest(StationController.class)
 class StationControllerTest {
