@@ -1,6 +1,5 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -10,11 +9,11 @@ public class Section {
 
     private static final int MIN_DISTANCE = 1;
 
-    private Long id;
     private final Long lineId;
     private final Long upStationId;
     private final Long downStationId;
     private final int distance;
+    private Long id;
 
     public Section(final Long id, final Long lineId, final Long upStationId, final Long downStationId,
                    final int distance) {
@@ -52,25 +51,18 @@ public class Section {
 
     public List<Section> assign(final Section newSection) {
         checkBetweenDistance(newSection.distance);
-        final List<Section> sections = new ArrayList<>();
+
+        final int assignedDistance = this.distance - newSection.distance;
         if (upStationId.equals(newSection.upStationId)) {
-            sections.add(newSection);
-            sections.add(new Section(
-                    lineId,
-                    newSection.downStationId,
-                    downStationId,
-                    distance - newSection.distance
-            ));
-            return sections;
+            return List.of(
+                    newSection,
+                    new Section(lineId, newSection.downStationId, downStationId, assignedDistance)
+            );
         }
-        sections.add(new Section(
-                lineId,
-                upStationId,
-                newSection.upStationId,
-                distance - newSection.distance
-        ));
-        sections.add(newSection);
-        return sections;
+        return List.of(
+                new Section(lineId, upStationId, newSection.upStationId, assignedDistance),
+                newSection
+        );
     }
 
     private void checkBetweenDistance(final int newSectionDistance) {
@@ -81,19 +73,20 @@ public class Section {
 
     public Section merge(final Section section) {
         final Long criteriaId = findDuplicateId(section);
+        final int mergedDistance = distance + section.getDistance();
         if (criteriaId.equals(upStationId)) {
             return new Section(
                     lineId,
                     section.upStationId,
                     downStationId,
-                    distance + section.getDistance()
+                    mergedDistance
             );
         }
         return new Section(
                 lineId,
                 upStationId,
                 section.downStationId,
-                distance + section.getDistance()
+                mergedDistance
         );
     }
 
