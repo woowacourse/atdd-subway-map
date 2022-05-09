@@ -1,23 +1,21 @@
 package wooteco.subway.dto;
 
-import org.springframework.lang.NonNull;
-
-import javax.validation.constraints.NotEmpty;
-
 public class LineRequest {
-
-    //TODO: ControllerTest에서 검증해보기!
-    @NotEmpty
     private String name;
-    @NotEmpty
     private String color;
+    private Long upStationId;
+    private Long downStationId;
+    private int distance;
 
     public LineRequest() {
     }
 
-    public LineRequest(String name, String color) {
+    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.color = color;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
     }
 
     public String getName() {
@@ -28,4 +26,15 @@ public class LineRequest {
         return color;
     }
 
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
 }
