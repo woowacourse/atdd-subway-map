@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
+import wooteco.subway.ui.dto.LineRequest;
+import wooteco.subway.ui.dto.LineResponse;
 
 @RestController
 public class LineController {

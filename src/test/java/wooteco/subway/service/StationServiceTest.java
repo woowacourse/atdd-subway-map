@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.service.dto.station.StationFindResponse;
+import wooteco.subway.service.dto.station.StationSaveRequest;
+import wooteco.subway.service.dto.station.StationSaveResponse;
 
 class StationServiceTest {
 
@@ -31,13 +34,15 @@ class StationServiceTest {
     @Test
     void save() {
         // given
-        Station station = new Station("범고래");
+        StationSaveRequest station = new StationSaveRequest("범고래");
 
         // when
-        Station result = stationService.save(station);
+        StationSaveResponse result = stationService.save(station);
 
         // then
-        assertThat(station).isEqualTo(result);
+        String stationName = station.getName();
+        String resultName = result.getName();
+        assertThat(stationName).isEqualTo(resultName);
     }
 
     @Test
@@ -47,10 +52,10 @@ class StationServiceTest {
         Station station2 = new Station("범고래");
 
         // when
-        stationService.save(station1);
+        stationService.save(new StationSaveRequest(station1.getName()));
 
         // then
-        assertThatThrownBy(() -> stationService.save(station2))
+        assertThatThrownBy(() -> stationService.save(new StationSaveRequest(station2.getName())))
             .hasMessage("중복된 이름이 존재합니다.")
             .isInstanceOf(IllegalArgumentException.class);
     }
@@ -58,30 +63,31 @@ class StationServiceTest {
     @Test
     void findAll() {
         // given
-        Station station1 = stationService.save(new Station("범고래"));
-        Station station2 = stationService.save(new Station("애쉬"));
+        StationSaveResponse station1 = stationService.save(new StationSaveRequest("범고래"));
+        StationSaveResponse station2 = stationService.save(new StationSaveRequest("애쉬"));
 
         // when
-        List<Station> stations = stationService.findAll();
+        List<StationFindResponse> stations = stationService.findAll();
 
         // then
-        assertThat(stations)
-            .hasSize(2)
-            .contains(station1, station2);
+        assertThat(stations).filteredOn((station) -> station.getName().equals(station1.getName()))
+            .hasSize(1);
+        assertThat(stations).filteredOn((station) -> station.getName().equals(station2.getName()))
+            .hasSize(1);
     }
 
     @Test
     void deleteById() {
         // given
-        Station station = stationService.save(new Station("범고래"));
+        StationSaveResponse savedStation = stationService.save(new StationSaveRequest("범고래"));
 
         // when
-        stationService.deleteById(station.getId());
-        List<Station> stations = stationService.findAll();
+        stationService.deleteById(savedStation.getId());
+        List<StationFindResponse> stations = stationService.findAll();
 
         // then
-        assertThat(stations)
-            .hasSize(0)
-            .doesNotContain(station);
+        assertThat(stations).filteredOn(
+                (station) -> station.getName().equals(savedStation.getName()))
+            .hasSize(1);
     }
 }

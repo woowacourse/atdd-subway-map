@@ -1,4 +1,4 @@
-package wooteco.subway.dto;
+package wooteco.subway.ui.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
