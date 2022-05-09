@@ -19,12 +19,7 @@ public class LineService {
     }
 
     public LineResponse findLineInfos(Long id) {
-        findAll().stream()
-                .filter(it -> it.getId().equals(id))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당 노선이 존재하지 않습니다."));
-
-        Line line = lineDao.findById(id);
+        var line = lineDao.findById(id);
         return new LineResponse(line);
     }
 
@@ -70,10 +65,8 @@ public class LineService {
     }
 
     public void updateById(Long id, String name, String color) {
-        lineDao.findAll().stream()
-                .filter(it -> it.getId().equals(id))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 노선 입니다."));
+        checkLineId(id);
+
         lineDao.findAll().stream()
                 .filter(it -> !it.getId().equals(id))
                 .filter(it -> it.getName().equals(name) || it.getColor().equals(color))
@@ -85,11 +78,12 @@ public class LineService {
         lineDao.update(id, name, color);
     }
 
+    private void checkLineId(Long id) {
+        lineDao.findById(id);
+    }
+
     public void deleteById(Long id) {
-        lineDao.findAll().stream()
-                .filter(it -> it.getId().equals(id))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 노선 입니다."));
+        checkLineId(id);
 
         lineDao.deleteById(id);
     }
