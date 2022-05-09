@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
@@ -31,5 +33,23 @@ class SectionDaoTest {
         Section savedSection = sectionDao.save(section);
 
         assertThat(section.getDistance()).isEqualTo(savedSection.getDistance());
+    }
+
+    @DisplayName("지하철 노선 구간 전체를 조회한다.")
+    @Test
+    void findAll() {
+        //given
+        Section section1 = new Section(10, 1L, 1L, 3L);
+        Section section2 = new Section(10, 2L, 11L, 13L);
+        Section section3 = new Section(10, 3L, 21L, 23L);
+        sectionDao.save(section1);
+        sectionDao.save(section2);
+        sectionDao.save(section3);
+
+        //when
+        List<Section> sections = sectionDao.findAll();
+
+        //then
+        assertThat(sections.size()).isEqualTo(3);
     }
 }
