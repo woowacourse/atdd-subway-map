@@ -37,7 +37,7 @@ class LineServiceTest {
         given(lineDao.save(any(Line.class))).willReturn(new Line(1L, "1호선", "blue"));
 
         // when
-        LineResponse lineResponse = lineService.create(new LineRequest("1호선", "blue"));
+        LineResponse lineResponse = lineService.create(new LineRequest("1호선", "blue", 1L, 2L, 12));
 
         // then
         assertThat(lineResponse.getId()).isEqualTo(1L);

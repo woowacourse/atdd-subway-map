@@ -19,9 +19,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 등록한다.")
     void save() {
         // given
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
+        params.put("upStationId", saveStationAndGetId("강남"));
+        params.put("downStationId", saveStationAndGetId("잠실"));
+        params.put("distance", 10);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -64,7 +67,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 id로 조회한다.")
     void showLine() {
         // given
-        long id = saveStationAndGetId("1호선", "blue");
+        long id = saveLineAndGetId("1호선", "blue");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -98,8 +101,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 목록을 조회한다.")
     void showLines() {
         /// given
-        saveStationAndGetId("1호선", "blue");
-        saveStationAndGetId("2호선", "green");
+        saveLineAndGetId("1호선", "blue");
+        saveLineAndGetId("2호선", "green");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -119,7 +122,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 id로 수정한다.")
     void modify() {
         // given
-        long id = saveStationAndGetId("1호선", "blue");
+        long id = saveLineAndGetId("1호선", "blue");
 
         // when
         Map<String, String> params2 = new HashMap<>();
@@ -141,7 +144,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 수정시 존재하지 않는 id인 경우 400응답을 한다.")
     void modifyNotfoundId() {
         // given
-        long id = saveStationAndGetId("1호선", "blue");
+        long id = saveLineAndGetId("1호선", "blue");
 
         // when
         Map<String, String> params2 = new HashMap<>();
@@ -164,7 +167,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 수정시 빈 값일 경우 400응답을 한다.")
     void modifyEmpty() {
         // given
-        long id = saveStationAndGetId("1호선", "blue");
+        long id = saveLineAndGetId("1호선", "blue");
 
         // when
         Map<String, String> params2 = new HashMap<>();
@@ -187,8 +190,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("수정시 노선이 중복될 경우 400응답을 한다.")
     void duplicateUpdate() {
         // given
-        saveStationAndGetId("1호선", "blue");
-        long id = saveStationAndGetId("2호선", "green");
+        saveLineAndGetId("1호선", "blue");
+        long id = saveLineAndGetId("2호선", "green");
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "1호선");
@@ -211,7 +214,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 id로 삭제한다.")
     void deleteById() {
         // given
-        long id = saveStationAndGetId("1호선", "blue");
+        long id = saveLineAndGetId("1호선", "blue");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -224,7 +227,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(204);
     }
 
-    private long saveStationAndGetId(String name, String color) {
+    private long saveLineAndGetId(String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
@@ -233,6 +236,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
+            .then().log().all()
+            .extract();
+        return savedResponse.body().jsonPath().getLong("id");
+    }
+
+    private long saveStationAndGetId(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        ExtractableResponse<Response> savedResponse = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
             .then().log().all()
             .extract();
         return savedResponse.body().jsonPath().getLong("id");

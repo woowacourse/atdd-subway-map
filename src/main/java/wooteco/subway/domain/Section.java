@@ -28,4 +28,32 @@ public class Section {
             throw new IllegalArgumentException("거리는 1이상이어야 합니다.");
         }
     }
+
+    public boolean hasUpSection(Section other) {
+        return upStation.equals(other.upStation);
+    }
+
+    public boolean hasDownSection(Section other) {
+        return downStation.equals(other.upStation);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
 }

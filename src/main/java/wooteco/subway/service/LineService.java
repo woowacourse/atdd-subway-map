@@ -4,7 +4,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
@@ -15,15 +19,28 @@ import wooteco.subway.exception.NotFoundException;
 public class LineService {
 
     private final LineDao lineDao;
+    private final StationDao stationDao;
+    private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
     }
 
     public LineResponse create(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         validateDuplicateNameAndColor(line.getName(), line.getColor());
-        return LineResponse.from(lineDao.save(line));
+        Line savedLine = lineDao.save(line);
+
+        Station upStation = stationDao.findById(lineRequest.getUpStationId())
+            .orElseThrow(() -> new NotFoundException("조회하려는 상행역이 없습니다."));
+        Station downStation = stationDao.findById(lineRequest.getUpStationId())
+            .orElseThrow(() -> new NotFoundException("조회하려는 하행역이 없습니다."));
+
+        sectionDao.save(new Section(savedLine, upStation, downStation, lineRequest.getDistance()));
+
+        return LineResponse.of(savedLine, List.of(upStation, downStation));
     }
 
     public LineResponse showById(Long id) {
