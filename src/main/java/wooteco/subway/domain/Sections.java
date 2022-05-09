@@ -30,6 +30,7 @@ public class Sections {
                     section.getDistance() - newSection.getDistance()));
                 return;
             }
+
             if (section.getDownStation().equals(newSection.getDownStation())) {
                 int index = values.indexOf(section);
                 values.set(index, new Section(section.getUpStation(), newSection.getUpStation(),
