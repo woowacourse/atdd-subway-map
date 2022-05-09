@@ -5,9 +5,7 @@ import wooteco.subway.domain.Line;
 public class LineRequest {
     private String name;
     private String color;
-
-    private LineRequest() {
-    }
+    
 
     public LineRequest(String name, String color) {
         this.name = name;
