@@ -11,6 +11,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.EmptyResultException;
 
 @Service
 public class LineService {
@@ -30,8 +31,9 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        Line line = lineDao.findById(id);
-        return LineResponse.from(line);
+        return lineDao.findById(id)
+            .map(LineResponse::from)
+            .orElseThrow(() -> new EmptyResultException("해당 노선을 찾을 수 없습니다."));
     }
 
     public List<LineResponse> findAll() {
@@ -46,7 +48,9 @@ public class LineService {
     }
 
     public boolean updateById(Long id, LineRequest lineRequest) {
-        Line line = lineDao.findById(id);
+        Line line = lineDao.findById(id)
+            .orElseThrow(() -> new EmptyResultException("해당 노선을 찾을 수 없습니다."));
+
         line.update(lineRequest.getName(), lineRequest.getColor());
         return lineDao.updateById(id, line);
     }

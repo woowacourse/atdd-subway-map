@@ -6,10 +6,11 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import wooteco.subway.exception.EmptyResultException;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
@@ -24,7 +25,7 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<Map<String, String>> handleEmptyResultException(EmptyResultDataAccessException exception) {
+    public ResponseEntity<Map<String, String>> handleEmptyResultException(EmptyResultException exception) {
         logger.error(exception.getMessage());
         return ResponseEntity.notFound().build();
     }
