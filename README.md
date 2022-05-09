@@ -84,8 +84,8 @@
         - 응답 body에 stations를 추가한다.
           - stations에는 노선에 포함된 역들이 있어야한다. 
         - [ERROR] upStationId, downStationId가 서로 같을 경우 예외를 발생시킨다.
-      - 지하철 노선 목록을 조회한다.
-        - 응답 body에 stations를 추가한다.
+    - 지하철 노선 목록을 조회한다.
+      - 응답 body에 stations를 추가한다.
     - 지하철 노선을 조회한다.
         - 응답 body에 stations를 추가한다.
 - 지하철 구간 관리 API를 구현한다.

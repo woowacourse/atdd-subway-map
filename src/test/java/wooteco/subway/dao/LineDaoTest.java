@@ -65,7 +65,7 @@ public class LineDaoTest {
     }
 
     @Test
-    @DisplayName("모든 지하철 노선을 조회한다.")
+    @DisplayName("지하철 노선 목록을 조회한다.")
     void findAll() {
         final Line line1 = new Line("신분당선", "bg-red-600");
         final Line line2 = new Line("분당선", "bg-black-000");

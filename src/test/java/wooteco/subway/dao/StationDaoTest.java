@@ -32,7 +32,7 @@ class StationDaoTest {
 
         final Long id = stationDao.save(station);
 
-        final String actual = stationDao.find(id).getName();
+        final String actual = stationDao.findById(id).getName();
         assertThat(actual).isEqualTo(station.getName());
     }
 
@@ -42,7 +42,7 @@ class StationDaoTest {
         final Station station = new Station("한성대입구역");
         final long id = stationDao.save(station);
 
-        final Station foundStation = stationDao.find(id);
+        final Station foundStation = stationDao.findById(id);
 
         assertThat(foundStation.getName()).isEqualTo(station.getName());
     }
@@ -52,7 +52,7 @@ class StationDaoTest {
     void findNotExistId() {
         final long id = 1L;
 
-        assertThatThrownBy(() -> stationDao.find(id))
+        assertThatThrownBy(() -> stationDao.findById(id))
                 .isInstanceOf(EmptyResultDataAccessException.class);
     }
 

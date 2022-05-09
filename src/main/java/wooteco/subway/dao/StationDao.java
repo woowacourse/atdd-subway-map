@@ -31,7 +31,7 @@ public class StationDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public Station find(final Long id) {
+    public Station findById(final Long id) {
         final String sql = "SELECT * FROM STATION WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper(), id);
     }

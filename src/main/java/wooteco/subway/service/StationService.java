@@ -31,7 +31,7 @@ public class StationService {
     }
 
     public void deleteStation(final Long id) {
-        stationDao.find(id);
+        stationDao.findById(id);
         stationDao.delete(id);
     }
 }

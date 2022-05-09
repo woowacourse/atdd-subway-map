@@ -71,7 +71,7 @@ class StationServiceTest {
         final Station station = new Station(id, "신대방역");
 
         // mocking
-        given(stationDao.find(id)).willReturn(station);
+        given(stationDao.findById(id)).willReturn(station);
 
         // when
         stationService.deleteStation(id);

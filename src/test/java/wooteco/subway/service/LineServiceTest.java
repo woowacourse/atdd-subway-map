@@ -5,9 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static wooteco.subway.Fixtures.BLUE;
 import static wooteco.subway.Fixtures.HYEHWA;
 import static wooteco.subway.Fixtures.ID_1;
 import static wooteco.subway.Fixtures.LINE_2;
+import static wooteco.subway.Fixtures.LINE_4;
 import static wooteco.subway.Fixtures.RED;
 import static wooteco.subway.Fixtures.SINSA;
 
@@ -58,8 +60,8 @@ class LineServiceTest {
         given(sectionDao.save(any(Section.class))).willReturn(ID_1);
         given(lineDao.find(1L)).willReturn(savedLine);
         given(sectionDao.findAllByLineId(1L)).willReturn(sections);
-        given(stationDao.find(1L)).willReturn(new Station(1L, HYEHWA));
-        given(stationDao.find(2L)).willReturn(new Station(2L, SINSA));
+        given(stationDao.findById(1L)).willReturn(new Station(1L, HYEHWA));
+        given(stationDao.findById(2L)).willReturn(new Station(2L, SINSA));
 
         // when
         final LineResponse response = lineService.create(request);
@@ -77,24 +79,27 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("모든 노선을 조회한다.")
-    void showLines() {
+    @DisplayName("지하철 노선 목록을 조회한다. 관련 역들도 함께 조회한다.")
+    void showAll() {
         // given
-        final List<Line> value = List.of(new Line("신분당선", "bg-red-600"),
-                new Line("분당선", "bg-black-000"));
+        final List<Line> lines = List.of(new Line(1L, LINE_2, RED), new Line(2L, LINE_4, BLUE));
 
         // mocking
-        given(lineDao.findAll()).willReturn(value);
+        given(lineDao.findAll()).willReturn(lines);
+        given(sectionDao.findAllByLineId(1L)).willReturn(new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10))));
+        given(sectionDao.findAllByLineId(2L)).willReturn(new Sections(List.of(new Section(2L, 2L, 1L, 2L, 10))));
+        given(stationDao.findById(1L)).willReturn(new Station(1L, HYEHWA));
+        given(stationDao.findById(2L)).willReturn(new Station(2L, SINSA));
 
         // when
-        final List<LineResponse> responses = lineService.showLines();
+        final List<LineResponse> responses = lineService.showAll();
 
         // then
         assertThat(responses).hasSize(2);
     }
 
     @Test
-    @DisplayName("노선을 조회한다.")
+    @DisplayName("노선을 조회한다. 관련 역들도 함께 조회한다.")
     void show() {
         // given
         final long id = 1L;
@@ -108,8 +113,8 @@ class LineServiceTest {
         given(lineDao.find(id)).willReturn(new Line(id, name, color));
         given(sectionDao.findAllByLineId(id)).willReturn(
                 new Sections(List.of(new Section(id, upStationId, downStationId, distance))));
-        given(stationDao.find(upStationId)).willReturn(new Station(upStationId, HYEHWA));
-        given(stationDao.find(downStationId)).willReturn(new Station(downStationId, SINSA));
+        given(stationDao.findById(upStationId)).willReturn(new Station(upStationId, HYEHWA));
+        given(stationDao.findById(downStationId)).willReturn(new Station(downStationId, SINSA));
 
         // when
         final LineResponse response = lineService.show(id);
