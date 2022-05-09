@@ -29,10 +29,9 @@ public class StationController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = stationService.findAll();
-        List<StationResponse> stationResponses = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
-                .collect(Collectors.toList());
+        List<StationResponse> stationResponses = stationService.findAll().stream()
+                        .map(StationResponse::from)
+                        .collect(Collectors.toList());
         return ResponseEntity.ok().body(stationResponses);
     }
 
