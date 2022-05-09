@@ -267,8 +267,8 @@ class SectionServiceTest extends ServiceTest {
 
         // then
         assertThatThrownBy(() -> sectionService.delete(request))
-                        .isInstanceOf(IllegalArgumentException.class)
-                        .hasMessage("구간을 삭제할 수 없습니다.");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("구간을 삭제할 수 없습니다.");
     }
 
     @Test
@@ -290,6 +290,6 @@ class SectionServiceTest extends ServiceTest {
 
         // then
         assertThatThrownBy(() -> sectionService.delete(request))
-                        .isInstanceOf(NoSuchSectionException.class);
+                .isInstanceOf(NoSuchSectionException.class);
     }
 }

@@ -97,7 +97,7 @@ class StationServiceTest extends ServiceTest {
 
         // then
         assertThatThrownBy(() -> stationService.delete(1L))
-                        .isInstanceOf(IllegalArgumentException.class)
-                        .hasMessage("역이 구간에 등록되어 있습니다.");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("역이 구간에 등록되어 있습니다.");
     }
 }
