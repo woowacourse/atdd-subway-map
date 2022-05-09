@@ -11,13 +11,12 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, String color) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
+    public Line(String name, String color) {
+        this(0L, name, color);
     }
 
-    public Line(String name, String color) {
+    public Line(Long id, String name, String color) {
+        this.id = id;
         this.name = name;
         this.color = color;
     }

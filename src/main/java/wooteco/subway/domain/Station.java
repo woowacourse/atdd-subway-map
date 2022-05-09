@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import java.util.Objects;
 
 public class Station {
+
     private Long id;
     private String name;
 
