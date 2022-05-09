@@ -39,7 +39,7 @@ public class LineDaoTest {
 
         assertThat(actualName).isEqualTo(LINE_2호선_GREEN.getName());
 
-        lineDao.delete(actual);
+        lineDao.deleteById(actual.getId());
     }
 
     @Test
@@ -50,7 +50,7 @@ public class LineDaoTest {
         assertThatThrownBy(() -> lineDao.save(LINE_2호선_GREEN))
             .isInstanceOf(DuplicateKeyException.class);
 
-        lineDao.delete(saved);
+        lineDao.deleteById(saved.getId());
     }
 
     @Test
@@ -63,8 +63,8 @@ public class LineDaoTest {
 
         assertThat(lines).hasSize(2);
 
-        lineDao.delete(line1);
-        lineDao.delete(line2);
+        lineDao.deleteById(line1.getId());
+        lineDao.deleteById(line2.getId());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class LineDaoTest {
     void deleteById() {
         final Line created = lineDao.save(LINE_2호선_GREEN);
 
-        lineDao.delete(created);
+        lineDao.deleteById(created.getId());
 
         assertThat(lineDao.findAll()).isEmpty();
     }
@@ -89,6 +89,6 @@ public class LineDaoTest {
         final Line updateLine = lineDao.findById(created.getId()).orElseThrow();
         assertThat(updateLine.getName()).isEqualTo(updateLine.getName());
 
-        lineDao.delete(updateLine);
+        lineDao.deleteById(updateLine.getId());
     }
 }

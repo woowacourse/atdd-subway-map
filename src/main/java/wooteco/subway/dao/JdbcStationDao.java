@@ -51,9 +51,9 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public void delete(final Station station) {
+    public void deleteById(final Long id) {
         final String sql = "DELETE FROM station WHERE id = :id";
-        final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
+        final MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
         namedParameterJdbcTemplate.update(sql, parameters);
     }
 

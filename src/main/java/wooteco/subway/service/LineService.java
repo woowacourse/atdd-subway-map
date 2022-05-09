@@ -51,6 +51,6 @@ public class LineService {
     @Transactional
     public void delete(final Long id) {
         final Line targetLine = findById(id);
-        lineDao.delete(targetLine);
+        lineDao.deleteById(targetLine.getId());
     }
 }

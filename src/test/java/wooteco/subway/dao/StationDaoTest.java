@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import javax.sql.DataSource;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,13 +27,6 @@ public class StationDaoTest {
         stationDao = new JdbcStationDao(dataSource);
     }
 
-    @AfterEach
-    void reset() {
-        for (final Station station : stationDao.findAll()) {
-            stationDao.delete(station);
-        }
-    }
-
     @Test
     @DisplayName("지하철역을 저장한다.")
     void save() {
@@ -52,15 +44,20 @@ public class StationDaoTest {
 
         assertThatThrownBy(() -> stationDao.save(created))
             .isInstanceOf(DuplicateKeyException.class);
+
+        stationDao.deleteById(created.getId());
     }
 
     @Test
     @DisplayName("모든 지하철 역을 조회한다")
     void findAll() {
-        stationDao.save(STATION_선릉);
-        stationDao.save(STATION_강남);
+        final Station created_1 = stationDao.save(STATION_선릉);
+        final Station created_2 = stationDao.save(STATION_강남);
 
         assertThat(stationDao.findAll()).hasSize(2);
+
+        stationDao.deleteById(created_1.getId());
+        stationDao.deleteById(created_2.getId());
     }
 
     @Test
@@ -68,8 +65,10 @@ public class StationDaoTest {
     void deleteById() {
         final Station created = stationDao.save(STATION_선릉);
 
-        stationDao.delete(created);
+        stationDao.deleteById(created.getId());
 
         assertThat(stationDao.findAll()).isEmpty();
+
+        stationDao.deleteById(created.getId());
     }
 }

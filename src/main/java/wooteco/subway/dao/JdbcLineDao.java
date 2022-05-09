@@ -70,9 +70,9 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public void delete(final Line line) {
+    public void deleteById(final Long id) {
         final String sql = "DELETE FROM line WHERE id = :id";
-        final BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
+        final MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
         namedParameterJdbcTemplate.update(sql, parameters);
     }
 
