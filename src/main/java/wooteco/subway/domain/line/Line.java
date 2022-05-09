@@ -6,12 +6,12 @@ public class Line {
 
     private final Long id;
     private final LineName name;
-    private final String color;
+    private final LineColor color;
 
     public Line(Long id, String name, String color) {
         this.id = id;
         this.name = new LineName(name);
-        this.color = color;
+        this.color = new LineColor(color);
     }
 
     public Line(String name, String color) {
@@ -27,6 +27,6 @@ public class Line {
     }
 
     public String getColor() {
-        return color;
+        return color.getColor();
     }
 }
