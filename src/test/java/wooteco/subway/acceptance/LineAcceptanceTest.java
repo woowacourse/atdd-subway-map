@@ -10,9 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +26,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import wooteco.subway.dto.LineCreateRequest;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -53,7 +58,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    @DisplayName("지하철 노선을 생성한다.")
+    @DisplayName("지하철 노선 생성")
     @Test
     void createLine() {
         // given
@@ -73,17 +78,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 노선 이름으로 지하철 노선을 생성한다.")
-    @Test
-    void createLineWithDuplicateName() {
+    @DisplayName("잘못된 지하철 노선 생성")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("parameterProvider")
+    void createLineFailed(String displayName, LineCreateRequest lineCreateRequest) {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(lineCreateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -92,6 +95,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private static Stream<Arguments> parameterProvider() {
+        return Stream.of(
+                Arguments.arguments(
+                        "이미 존재하는 노선 이름으로 생성",
+                        new LineCreateRequest("신분당선", "bg-red-600", 1L, 2L, 10)
+                ),
+                Arguments.arguments(
+                        "구간 거리가 음수",
+                        new LineCreateRequest("2호선", "bg-green-500", 1L, 2L, -10)
+                ),
+                Arguments.arguments(
+                        "구간 거리가 0",
+                        new LineCreateRequest("2호선", "bg-green-500", 1L, 2L, 0)
+                ),
+                Arguments.arguments(
+                        "존재하지 않는 역 등록 시도",
+                        new LineCreateRequest("2호선", "bg-green-500", 1L, 6L, 10)
+                )
+        );
     }
 
     @DisplayName("노선 목록을 조회한다.")
@@ -127,6 +151,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .get("/lines/" + id)
                 .then().log().all()
                 .extract();
+
         //then
         Integer findId = response.jsonPath().get("id");
         assertThat(findId).isEqualTo(Integer.parseInt(id));
@@ -156,13 +181,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String id = String.valueOf(savedId1);
 
         //when
-        Map<String, String> parameter = new HashMap<>();
         String name = "다른분당선";
-        parameter.put("name", name);
-        parameter.put("color", "bg-red-600");
+        LineRequest lineRequest = new LineRequest(name, "bg-red-600");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(parameter)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put("/lines/" + id)
@@ -180,13 +203,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String id = String.valueOf(savedId1);
 
         //when
-        Map<String, String> parameter = new HashMap<>();
         String name = "분당선";
-        parameter.put("name", name);
-        parameter.put("color", "bg-red-600");
+        LineRequest lineRequest = new LineRequest(name, "bg-red-600");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(parameter)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put("/lines/" + id)
