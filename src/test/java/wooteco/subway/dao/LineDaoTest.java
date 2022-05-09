@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +14,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
+import wooteco.subway.utils.exceptions.LineNotFoundException;
 
 @JdbcTest
 class LineDaoTest {
@@ -48,8 +50,7 @@ class LineDaoTest {
     void deleteById_exist() {
         Line line = lineDao.save(testLine1);
         Long deleteId = lineDao.deleteById(line.getId());
-        assertThatThrownBy(() -> lineDao.findById(deleteId))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(lineDao.findById(deleteId).isEmpty()).isTrue();
     }
 
     @DisplayName("존재하는 노선 id가 없으면 삭제되지 않는지 테스트")
@@ -64,16 +65,15 @@ class LineDaoTest {
     @Test
     void findById_exist() {
         Line line = lineDao.save(testLine1);
-        Line result = lineDao.findById(line.getId());
-        assertThat(result).isNotNull();
+        Optional<Line> result = lineDao.findById(line.getId());
+        assertThat(result.get()).isNotNull();
     }
 
-    @DisplayName("존재하는 노선 id가 없으면 예외가 발생하는지 테스트")
+    @DisplayName("존재하는 노선 id가 없으면 빈 옵셔널 반환하는지 테스트")
     @Test
     void findById_not_exist() {
         Line line = lineDao.save(testLine1);
-        assertThatThrownBy(() -> lineDao.findById(-1L))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(lineDao.findById(-1L).isEmpty()).isTrue();
     }
 
     @DisplayName("바뀐 이름이 중복될 때 예외가 발생하는지 테스트")
@@ -93,7 +93,7 @@ class LineDaoTest {
 
         lineDao.changeLineName(line.getId(), "testName4");
 
-        assertThat(lineDao.findById(line.getId()).getName()).isEqualTo("testName4");
+        assertThat(lineDao.findById(line.getId()).get().getName()).isEqualTo("testName4");
     }
 
     @DisplayName("원래 자신의 이름으로 바꿨을 때 예외가 발생하지 않는지 테스트")

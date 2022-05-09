@@ -1,8 +1,10 @@
 package wooteco.subway.dao;
 
+
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -53,9 +55,13 @@ public class LineDao {
         return id;
     }
 
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String sql = "select id, name, color, distance from line where id = (?)";
-        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineRowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public void changeLineName(Long id, String newName) {

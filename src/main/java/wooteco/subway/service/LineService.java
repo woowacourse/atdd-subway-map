@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.utils.exceptions.LineNotFoundException;
 
 @Service
 public class LineService {
@@ -52,7 +54,8 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        Line line = lineDao.findById(id);
+        Optional<Line> optionalLine = lineDao.findById(id);
+        Line line = optionalLine.orElseThrow(() -> new LineNotFoundException(id));
         List<StationResponse> stations = extractUniqueStationsFromSections(line);
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }

@@ -19,6 +19,7 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.service.LineService;
+import wooteco.subway.utils.exceptions.LineNotFoundException;
 
 
 @RestController
@@ -67,8 +68,8 @@ public class LineController {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler({EmptyResultDataAccessException.class})
+    @ExceptionHandler({LineNotFoundException.class})
     public ResponseEntity<StationResponse> handleNoContent() {
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.badRequest().build();
     }
 }

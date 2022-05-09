@@ -105,7 +105,7 @@ class LineControllerTest {
 
     @DisplayName("노선을 조회한다.")
     @Test
-    void getLine() {
+    void getLine_success() {
         /// given
         ExtractableResponse<Response> createResponse = RestAssured.
                 given().log().all()
@@ -124,6 +124,29 @@ class LineControllerTest {
                 .get(uri).
                 then().log().all().
                 statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("존재하지 않는노선을 조회한다.")
+    @Test
+    void getLine_fail() {
+        /// given
+        ExtractableResponse<Response> createResponse = RestAssured.
+                given().log().all()
+                .body(testLine1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE).
+                        when()
+                .post("/lines").
+                        then().
+                        extract();
+
+        // when
+        String uri = createResponse.header("Location");
+        RestAssured.
+                given().log().all().
+                when()
+                .get("/lines/-1").
+                then().log().all().
+                statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("노선들을 조회한다.")
@@ -255,7 +278,7 @@ class LineControllerTest {
                 when().
                 put(uri).
                 then().
-                statusCode(HttpStatus.NO_CONTENT.value());
+                statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("이미 저장된 이름으로 이름을 바꾼다.")
