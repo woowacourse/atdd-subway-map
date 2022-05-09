@@ -29,7 +29,7 @@
 ### 지하철 노선 추가 API 수정
 - [ ] 지하철 노선 등록
     - [ ] 요청) 노선 추가 시 3가지 정보를 추가로 입력받는다
-        - [ ] upStationId(상행 종점), downStationId(하행 종점), distance(두 종점 간 거리)
+        - [x] upStationId(상행 종점), downStationId(하행 종점), distance(두 종점 간 거리)
     - [ ] 응답) 포함된 역들(stations) 리스트를 함께 반환한다.
     - [ ] 노선 추가 시 구간(section) 정보도 함께 등록한다.
     - [ ] [ERROR] 노선 추가 시 upstaionId와 downStationId사이에 같은 노선 구간이 존재하는 경우

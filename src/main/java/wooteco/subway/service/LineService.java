@@ -3,6 +3,8 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.dto.LineRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,13 +13,18 @@ import java.util.Optional;
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionService sectionService;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SectionService sectionService) {
         this.lineDao = lineDao;
+        this.sectionService = sectionService;
     }
 
-    public Line save(Line line) {
+    public Line save(LineRequest lineRequest) {
+        Line line = lineRequest.toEntity();
         validateDuplicateName(line);
+        Line savedLine = lineDao.save(line);
+        sectionService.save(Section.of(savedLine, lineRequest));
         return lineDao.save(line);
     }
 
