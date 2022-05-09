@@ -46,7 +46,6 @@ public class LineController {
     @DeleteMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.delete(id);
-
         return ResponseEntity.noContent().build();
     }
 }
