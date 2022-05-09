@@ -1,8 +1,11 @@
 package wooteco.subway.dao;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -40,5 +43,15 @@ public class JdbcSectionDao implements SectionDao {
                 + ")";
 
         return jdbcTemplate.queryForObject(sql, boolean.class, lineId, stationId, stationId);
+    }
+
+    @Override
+    public Optional<Integer> findDistanceByLineIdAndUpStationId(long lineId, long stationId) {
+        String sql = "SELECT distance FROM \"SECTION\" WHERE line_id = (?) AND up_station_id = (?)";
+        List<Integer> distance = jdbcTemplate.query(sql,
+                (resultSet, rowMapper) -> resultSet.getInt("distance"),
+                lineId, stationId);
+
+        return Optional.ofNullable(DataAccessUtils.singleResult(distance));
     }
 }
