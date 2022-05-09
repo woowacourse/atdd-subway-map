@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
@@ -143,9 +144,9 @@ class LineServiceTest extends ServiceTest {
         given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(expected));
 
-        final List<Section> sections = List.of(
+        final Sections sections = new Sections(List.of(
                 new Section(1L, id, 1L, 2L, 10)
-        );
+        ));
         given(sectionDao.findAllByLineId(any(Long.class)))
                 .willReturn(sections);
 
@@ -190,7 +191,7 @@ class LineServiceTest extends ServiceTest {
                 .willReturn(Optional.of(line));
 
         given(sectionDao.findAllByLineId(any(Long.class)))
-                .willReturn(Collections.emptyList());
+                .willReturn(new Sections(Collections.emptyList()));
 
         // then
         assertThatThrownBy(() -> lineService.findById(line.getId()))

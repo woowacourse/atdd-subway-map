@@ -73,8 +73,8 @@ public class LineService {
     }
 
     private List<Station> findSortedStationsByLineId(final Long lineId) {
-        final Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
-        final List<Long> stationIds = sections.toStations();
+        final Sections sections = sectionDao.findAllByLineId(lineId);
+        final List<Long> stationIds = sections.toStationIds();
         return stationIds.stream()
                 .map(it -> stationDao.findById(it).orElseThrow(NoSuchStationException::new))
                 .collect(Collectors.toList());
