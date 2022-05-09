@@ -42,4 +42,8 @@ public class StationService {
             throw new IllegalArgumentException(NO_ID_ERROR_MESSAGE);
         }
     }
+
+    public Station findById(Long id) {
+        return stationDao.findById(id);
+    }
 }

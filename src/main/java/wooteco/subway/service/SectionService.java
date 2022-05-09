@@ -12,11 +12,10 @@ import wooteco.subway.domain.Station;
 
 @Service
 public class SectionService {
-    private static final String SECTION_LENGTH_ERROR_MESSAGE = "새 구간의 길이가 기존 역 사이 길이보다 작아야 합니다.";
-    private static final String DUPLICATED_SECTION_ERROR_MESSAGE = "중복된 구간입니다.";
     private static final String INVALID_STATION_ID_ERROR_MESSAGE = "구간 안에 존재하지 않는 아이디의 역이 있습니다.";
-    private static final String LINK_FAILURE_ERROR_MESSAGE = "해당 구간은 역과 연결될 수 없습니다.";
+    private static final String SECTION_LENGTH_ERROR_MESSAGE = "새 구간의 길이가 기존 역 사이 길이보다 작아야 합니다.";
     private static final String ONE_LESS_SECTION_ERROR_MESSAGE = "해당 지하철 노선은 1개 이하의 구간을 가지고 있어 역을 삭제할 수 없습니다.";
+
     private final SectionDao sectionDao;
     private final StationDao stationDao;
 
@@ -26,8 +25,9 @@ public class SectionService {
     }
 
     public Section save(Section section) {
-        validateSection(section);
+        checkStationExist(section);
         Sections sections = getSections(section.getLineId());
+        sections.validateSave(section);
         if (sections.isMiddleSection(section)) {
             boolean isUpAttach = sections.isMiddleUpAttachSection(section);
             Section baseSection = getBaseSection(section, isUpAttach);
@@ -36,6 +36,12 @@ public class SectionService {
         }
         Long id = sectionDao.save(section);
         return sectionDao.findById(id);
+    }
+
+    private void checkStationExist(Section section) {
+        if (!stationDao.hasStation(section.getUpStationId()) || !stationDao.hasStation(section.getDownStationId())) {
+            throw new IllegalArgumentException(INVALID_STATION_ID_ERROR_MESSAGE);
+        }
     }
 
     public Section findById(Long id) {
@@ -54,35 +60,6 @@ public class SectionService {
             return sectionDao.findByUpStationId(section.getLineId(), section.getUpStationId());
         }
         return sectionDao.findByDownStationId(section.getLineId(), section.getDownStationId());
-    }
-
-    private void validateSection(Section section) {
-        checkUniqueSection(section);
-        checkStationExist(section);
-        checkIsLinked(section);
-    }
-
-    private void checkUniqueSection(Section section) {
-        if (sectionDao.hasUpStationId(section) && sectionDao.hasDownStationId(section)) {
-            throw new IllegalArgumentException(DUPLICATED_SECTION_ERROR_MESSAGE);
-        }
-    }
-
-    private void checkStationExist(Section section) {
-        if (!stationDao.hasStation(section.getUpStationId()) || !stationDao.hasStation(section.getDownStationId())) {
-            throw new IllegalArgumentException(INVALID_STATION_ID_ERROR_MESSAGE);
-        }
-    }
-
-    private void checkIsLinked(Section section) {
-        if (sectionDao.findAllByLineId(section.getLineId()).size() != 0
-                && hasNoStationId(section) && hasNoStationId(section.getReverseSection())) {
-            throw new IllegalArgumentException(LINK_FAILURE_ERROR_MESSAGE);
-        }
-    }
-
-    private boolean hasNoStationId(Section section) {
-        return !sectionDao.hasUpStationId(section) && !sectionDao.hasDownStationId(section);
     }
 
     private void validateDistance(int existingDistance, int sectionDistance) {
@@ -119,8 +96,8 @@ public class SectionService {
         deleteMiddleSection(lineId, stationId);
     }
 
-    private void validateTwoMoreSections(Long lineId) {
-        if (sectionDao.findAllByLineId(lineId).size()<= 1) {
+    public void validateTwoMoreSections(Long lineId) {
+        if (sectionDao.findAllByLineId(lineId).size() <= 1) {
             throw new IllegalArgumentException(ONE_LESS_SECTION_ERROR_MESSAGE);
         }
     }

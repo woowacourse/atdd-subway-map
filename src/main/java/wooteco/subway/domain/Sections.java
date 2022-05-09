@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Sections {
+    private static final String DUPLICATED_SECTION_ERROR_MESSAGE = "중복된 구간입니다.";
+    private static final String LINK_FAILURE_ERROR_MESSAGE = "해당 구간은 역과 연결될 수 없습니다.";
+
     private final List<SectionWithStation> sections;
 
     public Sections(List<SectionWithStation> sections) {
@@ -17,6 +20,38 @@ public class Sections {
         final SectionWithStation lastSection = executeToLastSection(stations, firstSection);
         stations.add(lastSection.getDownStation());
         return stations;
+    }
+
+    public void validateSave(Section section) {
+        checkUniqueSection(section);
+        checkIsLinked(section);
+    }
+
+    private void checkUniqueSection(Section section) {
+        if (hasUpStationId(section) && hasDownStationId(section)) {
+            throw new IllegalArgumentException(DUPLICATED_SECTION_ERROR_MESSAGE);
+        }
+    }
+
+    private void checkIsLinked(Section section) {
+        if (sections.size() != 0
+                && hasNoStationId(section) && hasNoStationId(section.getReverseSection())) {
+            throw new IllegalArgumentException(LINK_FAILURE_ERROR_MESSAGE);
+        }
+    }
+
+    private boolean hasNoStationId(Section section) {
+        return !hasUpStationId(section) && !hasDownStationId(section);
+    }
+
+    private boolean hasUpStationId(Section inSection) {
+        return sections.stream()
+                .anyMatch(section -> section.getUpStation().getId().equals(inSection.getUpStationId()));
+    }
+
+    private boolean hasDownStationId(Section inSection) {
+        return sections.stream()
+                .anyMatch(section -> section.getDownStation().getId().equals(inSection.getDownStationId()));
     }
 
     private SectionWithStation getFirstSection() {
