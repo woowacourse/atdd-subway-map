@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.request.StationRequest;
 import wooteco.subway.entity.StationEntity;
 
 @JdbcTest
@@ -26,8 +25,7 @@ class StationDaoTest {
     @DisplayName("지하철역을 저장한다.")
     @Test
     void saveStation() {
-        StationEntity stationEntity = new StationRequest("강남역")
-                .toEntity();
+        StationEntity stationEntity = StationEntity.of("강남역");
         Station savedStation = stationDao.save(stationEntity);
 
         assertAll(
@@ -39,8 +37,7 @@ class StationDaoTest {
     @DisplayName("특정 지하철역을 이름으로 조회한다.")
     @Test
     void findByName() {
-        StationEntity stationEntity = new StationRequest("강남역")
-                .toEntity();
+        StationEntity stationEntity = StationEntity.of("강남역");
         stationDao.save(stationEntity);
         Optional<Station> wrappedStation = stationDao.findByName("강남역");
         assert (wrappedStation).isPresent();
@@ -54,8 +51,7 @@ class StationDaoTest {
     @DisplayName("특정 지하철역을 삭제한다.")
     @Test
     void deleteById() {
-        StationEntity stationEntity = new StationRequest("강남역")
-                .toEntity();
+        StationEntity stationEntity = StationEntity.of("강남역");
         Station savedStation = stationDao.save(stationEntity);
         stationDao.deleteById(savedStation.getId());
 
@@ -66,8 +62,7 @@ class StationDaoTest {
     @DisplayName("특정 지하철역을 아이디로 조회한다.")
     @Test
     void findById() {
-        StationEntity stationEntity = new StationRequest("강남역")
-                .toEntity();
+        StationEntity stationEntity = StationEntity.of("강남역");
         Station savedStation = stationDao.save(stationEntity);
         Optional<Station> wrappedStation = stationDao.findById(savedStation.getId());
         assert (wrappedStation).isPresent();
