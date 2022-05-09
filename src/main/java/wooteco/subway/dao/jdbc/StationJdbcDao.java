@@ -2,13 +2,16 @@ package wooteco.subway.dao.jdbc;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateStationNameException;
 
@@ -59,5 +62,18 @@ public class StationJdbcDao implements StationDao {
             preparedStatement.setString(1, station.getName());
             return preparedStatement;
         }, keyHolder);
+    }
+
+    @Override
+    public Optional<Station> findById(final Long id) {
+        final String sql = "SELECT id, name FROM STATION WHERE id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> new Station(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name")
+            ), id));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 }

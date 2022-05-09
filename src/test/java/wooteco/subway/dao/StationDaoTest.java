@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.jdbc.StationJdbcDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateStationNameException;
 
@@ -73,5 +75,22 @@ class StationDaoTest {
 
         // then
         assertThat(dao.findAll()).isEmpty();
+    }
+
+    @DisplayName("id로 역 하나를 조회한다")
+    @Test
+    void findById() {
+        Station savedStation = dao.save(new Station("station"));
+
+        Station findStation = dao.findById(savedStation.getId()).get();
+
+        assertThat(findStation).isEqualTo(savedStation);
+    }
+
+    @DisplayName("존재하지 않는 id로 역을 조회하면 빈 값을 반환한다")
+    @Test
+    void throwExceptionWhenTargetLineDoesNotExist() {
+        Optional<Station> optionalStation = dao.findById(1L);
+        assertThat(optionalStation).isEqualTo(Optional.empty());
     }
 }
