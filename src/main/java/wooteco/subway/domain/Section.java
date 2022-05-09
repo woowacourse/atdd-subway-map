@@ -39,16 +39,29 @@ public class Section {
     }
 
     public boolean haveStation(final Station upStation, final Station downStation) {
-        return isSameUpStation(upStation, downStation) || isSameDownStation(upStation, downStation);
-
+        return isSameUpStation(upStation) || isSameUpStation(downStation)
+                || isSameDownStation(upStation) || isSameDownStation(downStation);
     }
 
-    private boolean isSameUpStation(final Station upStation, final Station downStation) {
-        return this.upStation.equals(upStation) || this.upStation.equals(downStation);
+    public boolean isSameUpStation(final Station station) {
+        return upStation.equals(station);
     }
 
-    private boolean isSameDownStation(final Station upStation, final Station downStation) {
-        return this.downStation.equals(upStation) || this.downStation.equals(downStation);
+    public boolean isSameDownStation(final Station station) {
+        return downStation.equals(station);
+    }
+
+    public void updateStations(final Station upStation, final Station downStation) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+    }
+
+    public boolean isLongerThan(final int distance) {
+        return this.distance > distance;
+    }
+
+    public void subtractDistance(final int distance) {
+        this.distance -= distance;
     }
 
     public Long getId() {
@@ -87,5 +100,16 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(lineId, upStation, downStation);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", lineId=" + lineId +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
     }
 }

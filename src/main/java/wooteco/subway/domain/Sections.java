@@ -1,14 +1,17 @@
 package wooteco.subway.domain;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import wooteco.subway.utils.exception.SectionCreateException;
 
 public class Sections {
 
     private static final String SECTION_ALREADY_EXIST_MESSAGE = "이미 존재하는 구간입니다.";
     private static final String SECTION_NOT_CONNECT_MESSAGE = "구간이 연결되지 않습니다";
+    private static final String SECTION_MUST_SHORTER_MESSAGE = "기존의 구간보다 긴 구간은 넣을 수 없습니다.";
 
     private List<Section> values;
 
@@ -20,12 +23,13 @@ public class Sections {
         validateDuplicateSection(section);
         validateSectionConnect(section);
         validateExistSection(section.getUpStation(), section.getDownStation());
+        cutInSection(section);
         values.add(section);
     }
 
     private void validateExistSection(final Station upStation, final Station downStation) {
         Map<Station, Station> upToDownStations = values.stream()
-                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
+                .collect(toMap(Section::getUpStation, Section::getDownStation));
         if (isSectionConnected(upToDownStations, upStation, downStation)
                 || isSectionConnected(upToDownStations, downStation, upStation)) {
             throw new SectionCreateException(SECTION_ALREADY_EXIST_MESSAGE);
@@ -52,6 +56,32 @@ public class Sections {
                 .filter(value -> value.haveStation(section.getUpStation(), section.getDownStation()))
                 .findAny()
                 .orElseThrow(() -> new SectionCreateException(SECTION_NOT_CONNECT_MESSAGE));
+    }
+
+    private void cutInSection(final Section section) {
+        Optional<Section> foundExistSectionPoint = values.stream()
+                .filter(value -> value.isSameUpStation(value.getUpStation())
+                        || value.isSameDownStation(value.getDownStation()))
+                .findAny();
+        if (foundExistSectionPoint.isPresent()) {
+            Section foundSection = foundExistSectionPoint.get();
+            validateCutInDistance(section, foundSection);
+            updateCutInSection(section, foundSection);
+        }
+    }
+
+    private void updateCutInSection(Section section, Section foundSection) {
+        if (foundSection.isSameUpStation(section.getUpStation())) {
+            foundSection.updateStations(section.getDownStation(), foundSection.getDownStation());
+        }
+        foundSection.updateStations(foundSection.getUpStation(), section.getUpStation());
+        foundSection.subtractDistance(section.getDistance());
+    }
+
+    private void validateCutInDistance(Section section, Section foundSection) {
+        if (!foundSection.isLongerThan(section.getDistance())) {
+            throw new SectionCreateException(SECTION_MUST_SHORTER_MESSAGE);
+        }
     }
 
     public List<Section> getValues() {
