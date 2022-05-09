@@ -105,4 +105,18 @@ public class Section {
         parts.add(Section.of(lineId, newSection.upStationId, downStationId, distance - newSection.distance));
         return parts;
     }
+
+    public Section merge(Section other) {
+        checkAbleToMerge(other);
+        if (downStationId == other.upStationId) {
+            return new Section(null, lineId, upStationId, other.downStationId, distance + other.distance);
+        }
+        return new Section(null, lineId, other.upStationId, downStationId, distance + other.distance);
+    }
+
+    private void checkAbleToMerge(Section other) {
+        if (!(isLinkedToUpStation(other) || isLinkedToUpStation(other))) {
+            throw new IllegalArgumentException("합칠 수 없는 section입니다.");
+        }
+    }
 }

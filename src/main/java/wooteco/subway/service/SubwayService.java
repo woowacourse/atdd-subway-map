@@ -130,4 +130,11 @@ public class SubwayService {
         sectionDao.delete(lineId);
         sections.forEach(sectionDao::save);
     }
+
+    public void deleteSection(Long lineId, Long stationId) {
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        sections.delete(stationId);
+        sectionDao.delete(lineId);
+        sections.forEach(sectionDao::save);
+    }
 }

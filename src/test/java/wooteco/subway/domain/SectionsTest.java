@@ -144,4 +144,75 @@ public class SectionsTest {
         assertThat(ordered.get(0).getUpStationId()).isEqualTo(2L);
         assertThat(ordered.get(1).getUpStationId()).isEqualTo(1L);
     }
+
+    @DisplayName("노선에 section이 1개이면 section삭제 시 예외가 발생한다.")
+    @Test
+    void deleteFail() {
+        Section section1 = Section.of(1L, 1L, 2L, 10);
+        Sections sections = new Sections(List.of(section1));
+
+        assertThatThrownBy(() -> sections.delete(1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 역을 삭제할 수 없습니다. 노선에 역은 최소 2개는 존재해야 합니다.");
+    }
+
+    @DisplayName("노선에서 양 끝 종점이 아닌 section을 삭제하면 기존 section이 연결된다.")
+    @Test
+    void deleteSuccess_NoTerminalSection() {
+        Section section1 = Section.of(1L, 1L, 2L, 10);
+        Section section2 = Section.of(1L, 2L, 3L, 10);
+        Section section3 = Section.of(1L, 3L, 4L, 10);
+        Sections sections = new Sections(List.of(section1, section2, section3));
+
+        sections.delete(2L);
+
+        List<Section> orderedSections = sections.getSections();
+        assertThat(orderedSections.size()).isEqualTo(2);
+        assertThat(orderedSections.get(0).getUpStationId()).isEqualTo(3L);
+        assertThat(orderedSections.get(0).getDownStationId()).isEqualTo(4L);
+        assertThat(orderedSections.get(0).getDistance()).isEqualTo(10);
+        assertThat(orderedSections.get(1).getUpStationId()).isEqualTo(1L);
+        assertThat(orderedSections.get(1).getDownStationId()).isEqualTo(3L);
+        assertThat(orderedSections.get(1).getDistance()).isEqualTo(20);
+    }
+
+    @DisplayName("노선에서 상행 종점 section이 삭제한다.")
+    @Test
+    void deleteSuccess_UpTerminalSection() {
+        Section section1 = Section.of(1L, 1L, 2L, 10);
+        Section section2 = Section.of(1L, 2L, 3L, 10);
+        Section section3 = Section.of(1L, 3L, 4L, 10);
+        Sections sections = new Sections(List.of(section1, section2, section3));
+
+        sections.delete(1L);
+
+        List<Section> orderedSections = sections.getSections();
+        assertThat(orderedSections.size()).isEqualTo(2);
+        assertThat(orderedSections.get(0).getUpStationId()).isEqualTo(3L);
+        assertThat(orderedSections.get(0).getDownStationId()).isEqualTo(4L);
+        assertThat(orderedSections.get(0).getDistance()).isEqualTo(10);
+        assertThat(orderedSections.get(1).getUpStationId()).isEqualTo(2L);
+        assertThat(orderedSections.get(1).getDownStationId()).isEqualTo(3L);
+        assertThat(orderedSections.get(1).getDistance()).isEqualTo(10);
+    }
+
+    @DisplayName("노선에서 하행 종점 section이 삭제한다.")
+    @Test
+    void deleteSuccess_DownTerminalSection() {
+        Section section1 = Section.of(1L, 1L, 2L, 10);
+        Section section2 = Section.of(1L, 2L, 3L, 10);
+        Section section3 = Section.of(1L, 3L, 4L, 10);
+        Sections sections = new Sections(List.of(section1, section2, section3));
+
+        sections.delete(4L);
+
+        List<Section> orderedSections = sections.getSections();
+        assertThat(orderedSections.size()).isEqualTo(2);
+        assertThat(orderedSections.get(0).getUpStationId()).isEqualTo(2L);
+        assertThat(orderedSections.get(0).getDownStationId()).isEqualTo(3L);
+        assertThat(orderedSections.get(0).getDistance()).isEqualTo(10);
+        assertThat(orderedSections.get(1).getUpStationId()).isEqualTo(1L);
+        assertThat(orderedSections.get(1).getDownStationId()).isEqualTo(2L);
+        assertThat(orderedSections.get(1).getDistance()).isEqualTo(10);
+    }
 }

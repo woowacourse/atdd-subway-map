@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Sections implements Iterable<Section> {
 
@@ -123,5 +124,30 @@ public class Sections implements Iterable<Section> {
     @Override
     public Iterator<Section> iterator() {
         return sections.iterator();
+    }
+
+    public void delete(Long stationId) {
+        validateAbleToDelete();
+
+        List<Section> deleteCandidates = sections.stream()
+                .filter(it -> it.hasStation(stationId))
+                .collect(Collectors.toList());
+        System.out.println("@@@@@@@@@deleteCandidates");
+        System.out.println(deleteCandidates.size());
+        deleteCandidates.forEach(it -> sections.remove(it));
+        if (deleteCandidates.size() == 2) {
+            Section section1 = deleteCandidates.get(0);
+            Section section2 = deleteCandidates.get(1);
+            Section newSection = section1.merge(section2);
+            sections.add(newSection);
+        }
+        System.out.println("@@@@@@@@before delete sort");
+        sortDownToUp();
+    }
+
+    private void validateAbleToDelete() {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException("해당 역을 삭제할 수 없습니다. 노선에 역은 최소 2개는 존재해야 합니다.");
+        }
     }
 }
