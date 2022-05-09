@@ -24,10 +24,10 @@ public class SectionEntity {
         this.distance = distance;
     }
 
-    public SectionEntity(final Section section) {
+    public SectionEntity(final Section section, final Long lineId) {
         this(
                 section.getId(),
-                section.getLine().getId(),
+                lineId,
                 section.getUpStation().getId(),
                 section.getDownStation().getId(),
                 section.getDistance()

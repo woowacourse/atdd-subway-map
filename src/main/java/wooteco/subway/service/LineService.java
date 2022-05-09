@@ -59,8 +59,8 @@ public class LineService {
         final Station upStation = new Station(upStationId, upStationEntity.getName());
         final Station downStation = new Station(downStationId, downStationEntity.getName());
 
-        final Section section = Section.createWithoutId(line, upStation, downStation, distance);
-        sectionDao.save(new SectionEntity(section));
+        final Section section = Section.createWithoutId(upStation, downStation, distance);
+        sectionDao.save(new SectionEntity(section, line.getId()));
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED, readOnly = true)
