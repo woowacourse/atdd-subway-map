@@ -10,4 +10,6 @@ public interface SectionDao {
     boolean existByLineIdAndStationId(long lineId, long stationId);
 
     Optional<Integer> findDistanceByLineIdAndUpStationId(long lineId, long stationId);
+
+    Optional<Integer> findDistanceByLineIdAndDownStationId(long lineId, long stationId);
 }

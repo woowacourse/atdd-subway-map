@@ -105,4 +105,38 @@ class JdbcSectionDaoTest {
         // then
         assertThat(distance).isNotPresent();
     }
+
+    @Test
+    @DisplayName("지하철 역이 대상 노선에 하행으로 존재하면 해당 구간의 거리를 가져온다.")
+    void findDistanceByLineIdAndDownStationId() {
+        // given
+        Section givenSection = new Section(
+                new Line(1L, "신분당선", "yellow"),
+                new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
+                6, 1L);
+        Long savedSectionId = sectionDao.save(givenSection);
+
+        // when
+        Optional<Integer> distance = sectionDao.findDistanceByLineIdAndDownStationId(1L, 2L);
+
+        // then
+        assertThat(distance.get()).isEqualTo(6);
+    }
+
+    @Test
+    @DisplayName("지하철 역이 대상 노선에 하행으로 존재하지 않으면 해당 구간의 거리를 null로 가져온다.")
+    void findNullDistanceByLineIdAndDownStationId() {
+        // given
+        Section givenSection = new Section(
+                new Line(1L, "신분당선", "yellow"),
+                new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
+                6, 1L);
+        Long savedSectionId = sectionDao.save(givenSection);
+
+        // when
+        Optional<Integer> distance = sectionDao.findDistanceByLineIdAndDownStationId(1L, 1L);
+
+        // then
+        assertThat(distance).isNotPresent();
+    }
 }
