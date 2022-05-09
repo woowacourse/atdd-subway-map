@@ -2,7 +2,9 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import wooteco.subway.domain.Section;
@@ -11,6 +13,14 @@ public class JdbcSectionDao {
 
     public static final int FUNCTION_SUCCESS = 1;
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Section> rowMapper = (rs, rowNum) ->
+            new Section(
+                    rs.getLong("id"),
+                    rs.getLong("line_id"),
+                    rs.getLong("up_station_id"),
+                    rs.getLong("down_station_id"),
+                    rs.getInt("distance")
+            );
 
     public JdbcSectionDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -37,5 +47,10 @@ public class JdbcSectionDao {
     public boolean deleteByLineIdAndStationId(Long lineId, Long stationId) {
         String sql = "delete from section where line_id = ? and (up_station_id = ? or down_station_id = ?)";
         return jdbcTemplate.update(sql, lineId, stationId, stationId) == FUNCTION_SUCCESS;
+    }
+
+    public List<Section> findByLineId(Long lineId) {
+        String sql = "select * from section where line_id = ?";
+        return jdbcTemplate.query(sql, rowMapper, lineId);
     }
 }
