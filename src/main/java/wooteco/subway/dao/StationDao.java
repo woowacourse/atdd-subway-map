@@ -1,30 +1,55 @@
 package wooteco.subway.dao;
 
-import org.springframework.util.ReflectionUtils;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.sql.DataSource;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-
+@Repository
 public class StationDao {
-    private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
 
-    public static Station save(Station station) {
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+    private static final int NO_ROW_AFFECTED = 0;
+    private static final String STATION_DUPLICATED = "이미 존재하는 지하철역입니다. ";
+    private static final String STATION_NOT_FOUND = "요청한 지하철 역이 존재하지 않습니다. ";
+
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final SimpleJdbcInsert simpleInsert;
+
+    public StationDao(final NamedParameterJdbcTemplate namedParameterJdbcTemplate, final DataSource dataSource) {
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+        this.simpleInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("STATION")
+                .usingGeneratedKeyColumns("id");
     }
 
-    public static List<Station> findAll() {
-        return stations;
+    public Station save(final Station station) {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("name", station.getName());
+        try {
+            final Long id = simpleInsert.executeAndReturnKey(params).longValue();
+            return new Station(id, station.getName());
+        } catch (DuplicateKeyException e) {
+            throw new IllegalStateException(STATION_DUPLICATED + station);
+        }
     }
 
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+    public List<Station> findAll() {
+        final String sql = "select id, name from STATION";
+        return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) -> {
+            return new Station(resultSet.getLong("id"), resultSet.getString("name"));
+        });
+    }
+
+    public void deleteById(final Long id) {
+        final String sql = "delete from STATION where id = :id";
+        final int theNumberOfAffectedRow = namedParameterJdbcTemplate.update(sql, Map.of("id", id));
+        if (theNumberOfAffectedRow == NO_ROW_AFFECTED) {
+            throw new IllegalStateException(STATION_NOT_FOUND + "id=" + id);
+        }
     }
 }

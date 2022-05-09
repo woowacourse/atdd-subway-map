@@ -1,29 +1,22 @@
 package wooteco.subway.domain;
 
-import java.util.Objects;
-
-public class Station {
-
-    private static final  long EMPTY_ID = 0;
-    private static final String EMPTY_NAME = "";
+public class Line {
 
     private final Long id;
     private final String name;
+    private final String color;
 
-    public Station() {
-        this(EMPTY_ID, EMPTY_NAME);
-    }
-
-    public Station(final Long id, final String name) {
+    public Line(final Long id, final String name, final String color) {
         this.id = id;
         this.name = name;
+        this.color = color;
     }
 
-    public Station(final String name) {
-        this(EMPTY_ID, name);
+    public Line(final String name, final String color) {
+        this(null, name, color);
     }
 
-    public boolean isSameId(final long id) {
+    public boolean isSameId(final Long id) {
         return this.id.equals(id);
     }
 
@@ -35,28 +28,33 @@ public class Station {
         return name;
     }
 
+    public String getColor() {
+        return color;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Station)) {
+        if (!(o instanceof Line)) {
             return false;
         }
-        Station station = (Station) o;
-        return id.equals(station.id);
+
+        Line line = (Line) o;
+        return id.equals(line.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return id.hashCode();
     }
 
     @Override
     public String toString() {
-        return "Station{" +
+        return "Line{" +
                 "name='" + name + '\'' +
+                ", color='" + color + '\'' +
                 '}';
     }
 }
-
