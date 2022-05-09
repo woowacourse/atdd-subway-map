@@ -61,20 +61,13 @@ public class SectionDao {
         return jdbcTemplate.queryForObject(sql, SECTION_ROW_MAPPER, downStationId, lineId);
     }
 
-    public boolean hasUpStationId(Section section) {
-        final String sql = "SELECT EXISTS (SELECT * FROM section WHERE upStationId = ? AND lineId = ?);";
-        return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, section.getUpStationId(), section.getLineId()));
-    }
-
-    public boolean hasDownStationId(Section section) {
-        final String sql = "SELECT EXISTS (SELECT * FROM section WHERE downStationId = ? AND lineId = ?);";
-        return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, section.getDownStationId(), section.getLineId()));
-    }
-
     public void delete(Long id) {
         final String sql = "DELETE FROM section WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public void deleteAllByLineId(Long lineId) {
+        final String sql = "DELETE FROM section WHERE lineId = ?";
+        jdbcTemplate.update(sql, lineId);
     }
 }

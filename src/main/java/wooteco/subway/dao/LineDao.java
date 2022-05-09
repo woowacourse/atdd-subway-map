@@ -57,7 +57,7 @@ public class LineDao {
     }
 
     public void update(Long id, Line line) {
-        final String sql = "UPDATE line SET name = ?, color = ?WHERE id = ?";
+        final String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 

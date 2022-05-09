@@ -1,24 +1,45 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.SectionWithStation;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 
 @Service
 public class StationService {
     private static final String ALREADY_IN_STATION_ERROR_MESSAGE = "이미 해당 이름의 역이 있습니다.";
     private static final String NO_ID_ERROR_MESSAGE = "해당 아이디의 역이 없습니다.";
+    private static final String ALREADY_IN_LINE_ERROR_MESSAGE = "지하철 노선에 해당 역이 등록되어있어 역을 삭제할 수 없습니다.";
 
+
+    private final SectionDao sectionDao;
     private final StationDao stationDao;
+    private final LineDao lineDao;
 
-    public StationService(StationDao stationDao) {
+    public StationService(SectionDao sectionDao, StationDao stationDao, LineDao lineDao) {
+        this.sectionDao = sectionDao;
         this.stationDao = stationDao;
+        this.lineDao = lineDao;
     }
 
     public Station save(Station station) {
         validateUniqueName(station.getName());
         Long id = stationDao.save(station);
+        return stationDao.findById(id);
+    }
+
+    private void validateUniqueName(String name) {
+        if (stationDao.hasStation(name)) {
+            throw new IllegalArgumentException(ALREADY_IN_STATION_ERROR_MESSAGE);
+        }
+    }
+
+    public Station findById(Long id) {
         return stationDao.findById(id);
     }
 
@@ -28,22 +49,31 @@ public class StationService {
 
     public void delete(Long id) {
         validateID(id);
+        validateStationNotLinked(id);
         stationDao.delete(id);
     }
 
-    private void validateUniqueName(String name) {
-        if (stationDao.hasStation(name)) {
-            throw new IllegalArgumentException(ALREADY_IN_STATION_ERROR_MESSAGE);
+    private void validateStationNotLinked(Long stationId) {
+        boolean isLinked = lineDao.findAll().stream()
+                .map(line -> getSections(line.getId()))
+                .anyMatch(sections -> sections.calculateStations().contains(stationDao.findById(stationId)));
+        if (isLinked) {
+            throw new IllegalArgumentException(ALREADY_IN_LINE_ERROR_MESSAGE);
         }
+    }
+
+    private Sections getSections(Long lineId) {
+        return new Sections(sectionDao.findAllByLineId(lineId).stream()
+                .map(section -> SectionWithStation.of(section,
+                        stationDao.findById(section.getUpStationId()),
+                        stationDao.findById(section.getDownStationId())))
+                .collect(Collectors.toList())
+        );
     }
 
     private void validateID(Long id) {
         if (!stationDao.hasStation(id)) {
             throw new IllegalArgumentException(NO_ID_ERROR_MESSAGE);
         }
-    }
-
-    public Station findById(Long id) {
-        return stationDao.findById(id);
     }
 }

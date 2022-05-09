@@ -20,5 +20,8 @@ create table if not exists SECTION
     upStationId bigint not null,
     downStationId bigint not null,
     distance int,
-    primary key(id)
+    primary key(id),
+    foreign key (lineId) references LINE(id),
+    foreign key (upStationId) references STATION(id),
+    foreign key (downStationId) references STATION(id)
 );

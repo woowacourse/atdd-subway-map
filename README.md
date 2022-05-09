@@ -49,10 +49,13 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 ### 지하철 역 관리 API 기능 완성하기
 
 - [x] StationDao를 활용하여 지하철 역 정보를 관리
-- [x] 지하철 역 등록
-    - [x] [예외] 지하철역 생성 시 이미 등록된 이름으로 요청한다면 에러를 응답
 - [x] 지하철역 db 생성 및 데이터 연결
 - [x] static 객체를 스프링 빈으로 변경
+- [x] 지하철 역 등록
+    - [x] [예외] 지하철역 생성 시 이미 등록된 이름으로 요청한다면 에러를 응답
+- [x] 지하철 역 삭제
+    - [x] [예외] 해당 지하철 역이 구간안에 존재할 시 에러를 응답
+- [x] 지하철 역 목록
 
 ### 지하철 노선 관리 API 구현하기
 
@@ -65,8 +68,9 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
             - [x] distance: 두 종점간의 거리
 - [x] 지하철 노선 목록
 - [x] 지하철 노선 조회
-- [x] 지하철 노선 수정
+- [x] 지하철 노선 (이름, 컬러) 수정
 - [x] 지하철 노선 삭제
+    - [x] 해당 노선괴 연결된 모든 구간들 삭제
 - [x] 지하철 노선 db 생성 및 데이터 연결
 
 ### 구간 관리 API 구현
@@ -92,7 +96,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 
 ### End to End 테스트 작성하기
 
-- [ ] 노선 기능에 대한 E2E 테스트를 작성
+- [x] 노선 기능에 대한 E2E 테스트를 작성
 
 ## TODO
 
@@ -100,8 +104,8 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] vo 동등성 기준 변경
 - [x] Line 테이블에 상/하행/거리 정보가 제외되도록 변경
 - [x] station이 포함된 Section 클래스 생성
-- [ ] 지하철역 삭제 후 어떻게?
-    - [ ] 외래키로 이어서 같이 삭제되게 하는건 어떨까?
+- [x] 지하철역 삭제 후처리
+    - [x] section 외래키로 잇기, 연결된 section 먼저 삭제
 - [ ] MockMVC 사용해 컨트롤러/서비스단 수정
 - [ ] 예외처리 꼼꼼하게~ 수정^^ CustomException 써보거나 기존 쓸만한 Exception 적용
 

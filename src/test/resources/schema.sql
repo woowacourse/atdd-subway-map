@@ -1,6 +1,6 @@
-drop table if exists station;
-drop table if exists line;
-drop table if exists section;
+drop table if exists SECTION;
+drop table if exists LINE;
+drop table if exists STATION;
 
 create table if not exists STATION
 (
@@ -24,5 +24,8 @@ create table if not exists SECTION
     upStationId bigint not null,
     downStationId bigint not null,
     distance int,
-    primary key(id)
+    primary key(id),
+    foreign key (lineId) references LINE(id),
+    foreign key (upStationId) references STATION(id),
+    foreign key (downStationId) references STATION(id)
 );

@@ -14,12 +14,10 @@ public class LineService {
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
-    private final StationDao stationDao;
 
-    public LineService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
+    public LineService(LineDao lineDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
-        this.stationDao = stationDao;
     }
 
     public Line save(Line line) {
@@ -44,6 +42,7 @@ public class LineService {
 
     public void delete(Long id) {
         validateID(id);
+        sectionDao.deleteAllByLineId(id);
         lineDao.delete(id);
     }
 
