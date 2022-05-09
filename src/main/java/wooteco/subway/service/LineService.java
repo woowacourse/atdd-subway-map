@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
@@ -10,6 +11,7 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.ExceptionMessage;
 import wooteco.subway.exception.InternalServerException;
+import wooteco.subway.exception.NotFoundException;
 
 @Service
 public class LineService {
@@ -39,8 +41,12 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        Line line = lineDao.findById(id);
-        return LineResponse.of(line);
+        try {
+            Line line = lineDao.findById(id);
+            return LineResponse.of(line);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException(ExceptionMessage.NOT_FOUND_LINE_BY_ID.getContent());
+        }
     }
 
     public void updateById(final Long id, final LineRequest request) {

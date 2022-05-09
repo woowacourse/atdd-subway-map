@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.NotFoundException;
 
 @JdbcTest
 public class LineDaoTest {
@@ -72,14 +70,6 @@ public class LineDaoTest {
 
         // then
         assertThat(actual).isEqualTo(persistLine);
-    }
-
-    @Test
-    @DisplayName("존재하지 않은 id로 노선을 조회하면 예외가 발생한다.")
-    void findById_invalidId() {
-        assertThatThrownBy(() -> lineDao.findById(1L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("해당 ID에 맞는 노선을 찾지 못했습니다.");
     }
 
     @Test

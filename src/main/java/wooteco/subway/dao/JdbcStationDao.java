@@ -36,6 +36,13 @@ public class JdbcStationDao implements StationDao {
         return setId(station, savedId);
     }
 
+    private Station setId(Station station, long id) {
+        Field field = ReflectionUtils.findField(Station.class, COLUMN_ID);
+        Objects.requireNonNull(field).setAccessible(true);
+        ReflectionUtils.setField(field, station, id);
+        return station;
+    }
+
     @Override
     public List<Station> findAll() {
         String sql = "SELECT * FROM station";
@@ -48,13 +55,6 @@ public class JdbcStationDao implements StationDao {
             long id = resultSet.getLong(COLUMN_ID);
             return setId(new Station(name), id);
         };
-    }
-
-    private Station setId(Station station, long id) {
-        Field field = ReflectionUtils.findField(Station.class, COLUMN_ID);
-        Objects.requireNonNull(field).setAccessible(true);
-        ReflectionUtils.setField(field, station, id);
-        return station;
     }
 
     @Override

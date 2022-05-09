@@ -4,15 +4,12 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.ExceptionMessage;
-import wooteco.subway.exception.NotFoundException;
 
 @Repository
 public class JdbcLineDao implements LineDao {
@@ -63,12 +60,8 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public Line findById(Long id) {
-        try {
-            final String sql = "SELECT * FROM line WHERE id = ?";
-            return jdbcTemplate.queryForObject(sql, getRowMapper(), id);
-        } catch (EmptyResultDataAccessException exception) {
-            throw new NotFoundException(ExceptionMessage.NOT_FOUND_LINE_BY_ID.getContent());
-        }
+        final String sql = "SELECT * FROM line WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, getRowMapper(), id);
     }
 
     @Override
