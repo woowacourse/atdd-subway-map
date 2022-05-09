@@ -23,8 +23,18 @@ public class SectionsTest {
     }
 
     @Test
-    @DisplayName("올바른 구간을 등록한다.")
-    void saveSection() {
+    @DisplayName("상행역 종점 구간을 등록한다.")
+    void saveUpStationSection() {
+        final Section section = new Section(5L, 1L, 20);
+
+        sections.add(section);
+
+        assertThat(sections.hasSection(section)).isTrue();
+    }
+
+    @Test
+    @DisplayName("하행역 종점 구간을 등록한다.")
+    void saveDownStationSection() {
         final Section section = new Section(4L, 6L, 30);
 
         sections.add(section);

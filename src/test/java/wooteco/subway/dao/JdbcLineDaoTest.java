@@ -92,7 +92,6 @@ public class JdbcLineDaoTest {
     @Test
     @DisplayName("지하철 노선을 삭제한다.")
     void delete() {
-        final Line line3 = new Line("다른분당선", "bg-blue-600");
         final long lineId = lineDao.save(
                 new LineRequest("다른분당선", "bg-blue-600", 3L, 4L, 10)
         );
