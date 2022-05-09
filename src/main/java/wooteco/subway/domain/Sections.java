@@ -12,10 +12,15 @@ public class Sections {
         this.value = value;
     }
 
-
     public void add(final Section section) {
         validateExist(section);
         validateSection(section);
+    }
+
+    public boolean isBranched(final Section other) {
+        final Optional<Section> upSection = findUpSection(other);
+        final Optional<Section> downSection = findDownSection(other);
+        return upSection.isPresent() || downSection.isPresent();
     }
 
     private void validateSection(final Section other) {
@@ -24,19 +29,27 @@ public class Sections {
     }
 
     private void validateDownSection(final Section other) {
-        final Optional<Section> downSection = value.stream()
-                .filter(it -> it.getDownStation().equals(other.getDownStation()))
-                .findAny();
+        final Optional<Section> downSection = findDownSection(other);
 
         downSection.ifPresent(it -> validateDistance(it, other));
     }
 
-    private void validateUpSection(final Section other) {
-        final Optional<Section> upSection = value.stream()
-                .filter(it -> it.getUpStation().equals(other.getUpStation()))
+    private Optional<Section> findDownSection(final Section other) {
+        return value.stream()
+                .filter(it -> it.getDownStation().equals(other.getDownStation()))
                 .findAny();
+    }
+
+    private void validateUpSection(final Section other) {
+        final Optional<Section> upSection = findUpSection(other);
 
         upSection.ifPresent(it -> validateDistance(it, other));
+    }
+
+    private Optional<Section> findUpSection(final Section other) {
+        return value.stream()
+                .filter(it -> it.getUpStation().equals(other.getUpStation()))
+                .findAny();
     }
 
     private void validateDistance(final Section section, final Section other) {
@@ -62,5 +75,4 @@ public class Sections {
             throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
         }
     }
-
 }
