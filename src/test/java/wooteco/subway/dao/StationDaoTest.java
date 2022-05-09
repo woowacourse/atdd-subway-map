@@ -22,12 +22,13 @@ class StationDaoTest {
     void save() {
         // given
         Station station = new Station("정자역");
+        Long expected = stationDao.findAll().size() + 1L;
 
         // when
         Long id = stationDao.save(station);
 
         // then
-        assertThat(id).isEqualTo(2L);
+        assertThat(id).isEqualTo(expected);
     }
 
     @DisplayName("역 이름으로 개수 검색")
@@ -51,7 +52,7 @@ class StationDaoTest {
         List<Station> stations = stationDao.findAll();
 
         // then
-        assertThat(stations.size()).isEqualTo(1);
+        assertThat(stations.size()).isEqualTo(2);
     }
 
     @DisplayName("역 삭제")
