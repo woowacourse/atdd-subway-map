@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.controller.dto.ControllerDtoAssembler;
 import wooteco.subway.controller.dto.station.StationRequest;
 import wooteco.subway.controller.dto.station.StationResponse;
+import wooteco.subway.repository.exception.DuplicateStationNameException;
 import wooteco.subway.service.StationService;
 
 @RestController
@@ -53,7 +54,7 @@ public class StationController {
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> handle(IllegalArgumentException exception) {
+    public ResponseEntity<String> handle(DuplicateStationNameException exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 }

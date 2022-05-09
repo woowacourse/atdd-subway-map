@@ -2,7 +2,7 @@ package wooteco.subway.repository.dao;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import wooteco.subway.domain.station.Station;
 
@@ -24,11 +24,10 @@ public class FakeStationDao implements StationDao {
     }
 
     @Override
-    public Station findById(Long id) {
+    public Optional<Station> findById(Long id) {
         return stations.stream()
                 .filter(station -> station.getId().equals(id))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("해당 id에 맞는 지하철 역이 없습니다."));
+                .findAny();
     }
 
     @Override
@@ -39,6 +38,6 @@ public class FakeStationDao implements StationDao {
 
     @Override
     public void remove(Long id) {
-        stations.remove(findById(id));
+        stations.remove(findById(id).get());
     }
 }

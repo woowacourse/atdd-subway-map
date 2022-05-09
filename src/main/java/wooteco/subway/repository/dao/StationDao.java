@@ -1,6 +1,7 @@
 package wooteco.subway.repository.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import wooteco.subway.domain.station.Station;
 
@@ -10,7 +11,7 @@ public interface StationDao {
 
     List<Station> findAll();
 
-    Station findById(Long id);
+    Optional<Station> findById(Long id);
 
     Boolean existsByName(String name);
 

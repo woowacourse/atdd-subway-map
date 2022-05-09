@@ -1,10 +1,10 @@
 package wooteco.subway.repository.dao.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,18 +53,20 @@ class JdbcStationDaoTest {
     @Test
     void findById() {
         Long stationId = stationDao.save(new Station("강남역"));
-        Station station = stationDao.findById(stationId);
+        Optional<Station> station = stationDao.findById(stationId);
 
-        assertThat(station.getId()).isEqualTo(stationId);
-        assertThat(station.getName()).isEqualTo("강남역");
+        assertAll(() -> {
+            assertThat(station.isPresent()).isTrue();
+            assertThat(station.get().getId()).isEqualTo(stationId);
+            assertThat(station.get().getName()).isEqualTo("강남역");
+        });
     }
 
     @DisplayName("존재하지 않는 지하철역을 조회한다.")
     @Test
     void findWithNonexistentId() {
-        assertThatThrownBy(() -> stationDao.findById(1L))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("해당 id에 맞는 지하철 역이 없습니다.");
+        Optional<Station> station = stationDao.findById(1L);
+        assertThat(station.isEmpty()).isTrue();
     }
 
     @DisplayName("해당 이름의 지하철역이 존재하는지 확인한다.")
@@ -79,8 +81,6 @@ class JdbcStationDaoTest {
     void remove() {
         Long stationId = stationDao.save(new Station("강남역"));
         stationDao.remove(stationId);
-        List<Station> stations = stationDao.findAll();
-
-        assertThat(stations).isEmpty();
+        assertThat(stationDao.findAll()).isEmpty();
     }
 }

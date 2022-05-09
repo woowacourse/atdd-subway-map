@@ -4,42 +4,38 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.repository.dao.StationDao;
+import wooteco.subway.repository.StationRepository;
 import wooteco.subway.service.dto.ServiceDtoAssembler;
 import wooteco.subway.service.dto.station.StationResponseDto;
 
 @Service
 public class StationService {
 
-    private final StationDao stationDao;
+    private final StationRepository stationRepository;
 
-    public StationService(StationDao stationDao) {
-        this.stationDao = stationDao;
+    public StationService(StationRepository stationRepository) {
+        this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public StationResponseDto create(String name) {
-        validateNameNotDuplicated(name);
-        Long stationId = stationDao.save(new Station(name));
-        Station station = stationDao.findById(stationId);
+        Long stationId = stationRepository.save(new Station(name));
+        Station station = stationRepository.findById(stationId);
         return ServiceDtoAssembler.stationResponseDto(station);
     }
 
-    private void validateNameNotDuplicated(String name) {
-        if (stationDao.existsByName(name)) {
-            throw new IllegalArgumentException("해당 이름의 지하철 역이 이미 존재합니다.");
-        }
-    }
-
     public List<StationResponseDto> findAll() {
-        return stationDao.findAll()
+        return stationRepository.findAll()
                 .stream()
                 .map(ServiceDtoAssembler::stationResponseDto)
                 .collect(Collectors.toUnmodifiableList());
     }
 
+    @Transactional
     public void remove(Long id) {
-        stationDao.remove(id);
+        stationRepository.remove(id);
     }
 }

@@ -1,7 +1,7 @@
 package wooteco.subway.repository.dao.jdbc;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
@@ -19,13 +19,14 @@ import wooteco.subway.repository.dao.StationDao;
 @Repository
 public class JdbcStationDao implements StationDao {
 
-    private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert jdbcInsert;
-    private final RowMapper<Station> stationRowMapper =
+    private static final RowMapper<Station> stationRowMapper =
             (resultSet, rowNum) -> new Station(
                     resultSet.getLong("id"),
                     resultSet.getString("name")
             );
+
+    private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     public JdbcStationDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -48,13 +49,13 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Station findById(Long id) {
+    public Optional<Station> findById(Long id) {
         String query = "SELECT id, name from Station WHERE id=(:id)";
         try {
             SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-            return jdbcTemplate.queryForObject(query, parameters, stationRowMapper);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query, parameters, stationRowMapper));
         } catch (EmptyResultDataAccessException e) {
-            throw new NoSuchElementException("해당 id에 맞는 지하철 역이 없습니다.");
+            return Optional.empty();
         }
     }
 
