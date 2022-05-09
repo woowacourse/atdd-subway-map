@@ -94,10 +94,4 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
-
-    private ExtractableResponse<Response> createStation(String name) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        return post("/stations", params);
-    }
 }

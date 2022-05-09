@@ -33,6 +33,11 @@ public class StationService {
         return stationDao.findAll();
     }
 
+    public Station findById(Long id) {
+        Optional<Station> station = stationDao.findById(id);
+        return station.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+    }
+
     public void deleteById(Long id) {
         stationDao.deleteById(id);
     }

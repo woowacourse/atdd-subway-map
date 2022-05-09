@@ -9,6 +9,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -56,5 +57,11 @@ public class AcceptanceTest {
                 .put(uri)
                 .then().log().all()
                 .extract();
+    }
+
+    public ExtractableResponse<Response> createStation(String name) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        return post("/stations", params);
     }
 }

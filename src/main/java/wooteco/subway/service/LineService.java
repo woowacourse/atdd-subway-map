@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
@@ -30,7 +31,9 @@ public class LineService {
         validateDuplicateName(line);
         Line savedLine = lineDao.save(line);
         Section section = sectionService.save(Section.of(savedLine, lineRequest));
-        return LineResponse.from(savedLine);
+        Station upStation = stationService.findById(section.getUpStationId());
+        Station downStation = stationService.findById(section.getDownStationId());
+        return LineResponse.of(savedLine, List.of(upStation, downStation));
     }
 
     private void validateDuplicateName(Line line) {

@@ -2,13 +2,12 @@ package wooteco.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.*;
 import org.springframework.http.HttpStatus;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationRequest;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,6 +22,22 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    Station station1;
+    Station station2;
+    Station station3;
+    Station station4;
+    Station station5;
+
+    @BeforeEach
+    void setUpData() {
+
+        station1 = createStation("강남역").as(Station.class);
+        station2 = createStation("선릉역").as(Station.class);
+        station3 = createStation("잠실역").as(Station.class);
+        station4 = createStation("걸포역").as(Station.class);
+        station5 = createStation("사우역").as(Station.class);
+    }
+
 
     @DisplayName("노선 생성을 관리한다")
     @TestFactory
@@ -30,7 +45,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return Stream.of(
                 dynamicTest("새로운 노선 이름으로 노선을 생성한다.", () -> {
                     // when
-                    ExtractableResponse<Response> response = createLine("2호선", "green",1L, 2L, 10);
+                    ExtractableResponse<Response> response = createLine("2호선", "green",station1.getId(), station2.getId(), 10);
 
                     // then
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -39,7 +54,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
                 dynamicTest("기존의 노선 이름으로 노선을 생성시 실패한다.", () -> {
                     // when
-                    ExtractableResponse<Response> response = createLine("2호선", "green",2L, 3L, 10);
+                    ExtractableResponse<Response> response = createLine("2호선", "green",station2.getId(), station3.getId(), 10);
 
                     // then
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -47,7 +62,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
                 dynamicTest("기존과 동일한 구간을 갖는 노선 추가 시 실패한다.", () -> {
                     //when
-                    ExtractableResponse<Response> response = createLine("3호선", "orange",1L, 2L, 10);
+                    ExtractableResponse<Response> response = createLine("3호선", "orange",station1.getId(), station2.getId(), 10);
 
                     // then
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -70,8 +85,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        ExtractableResponse<Response> createResponse1 = createLine("2호선", "green",1L, 2L, 10);
-        ExtractableResponse<Response> createResponse2 = createLine("3호선", "orange",11L, 21L, 10);
+        ExtractableResponse<Response> createResponse1 = createLine("2호선", "green",station1.getId(), station2.getId(), 10);
+        ExtractableResponse<Response> createResponse2 = createLine("3호선", "orange",station4.getId(), station5.getId(), 10);
 
         // when
         ExtractableResponse<Response> response = get("/lines");
@@ -93,7 +108,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         /// given
-        ExtractableResponse<Response> createResponse = createLine("2호선", "green",1L, 2L, 10);
+        ExtractableResponse<Response> createResponse = createLine("2호선", "green",station1.getId(), station2.getId(), 10);
 
         // when
         long expectedLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
@@ -110,7 +125,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         //given
-        ExtractableResponse<Response> response = createLine("2호선", "green",1L, 2L, 10);
+        ExtractableResponse<Response> response = createLine("2호선", "green",station1.getId(), station2.getId(), 10);
         long savedLineId = Long.parseLong(response.header("Location").split("/")[2]);
 
         //when
@@ -128,7 +143,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = createLine("2호선", "green",1L, 2L, 10);
+        ExtractableResponse<Response> createResponse = createLine("2호선", "green",station1.getId(), station2.getId(), 10);
 
         // when
         String uri = createResponse.header("Location");
@@ -141,7 +156,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteNotExistLine() {
         // given
-        ExtractableResponse<Response> createResponse = createLine("2호선", "green",1L, 2L, 10);
+        ExtractableResponse<Response> createResponse = createLine("2호선", "green",station1.getId(), station2.getId(), 10);
         String uri = createResponse.header("Location");
         delete(uri);
 
