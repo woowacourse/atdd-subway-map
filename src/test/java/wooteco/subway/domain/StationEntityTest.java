@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-class StationTest {
+class StationEntityTest {
 
     @ParameterizedTest
     @CsvSource(value = {"라:1", "라:30"}, delimiter = ':')
@@ -17,7 +17,7 @@ class StationTest {
         String stationName = name.repeat(repeatCount);
 
         //when
-        Station station = new Station(stationName);
+        StationEntity station = new StationEntity(stationName);
 
         //then
         assertThat(station.getName()).isEqualTo(stationName);
@@ -31,7 +31,7 @@ class StationTest {
         String stationName = name.repeat(repeatCount);
 
         //when, then
-        assertThatThrownBy(() -> new Station(stationName))
+        assertThatThrownBy(() -> new StationEntity(stationName))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("이름은 1~30 자 이내여야 합니다.");
     }
@@ -39,7 +39,7 @@ class StationTest {
     @Test
     @DisplayName("이름을 null 값으로 Station 을 생성할 경우 예외를 던진다.")
     void createStationWithNull() {
-        assertThatThrownBy(() -> new Station(null))
+        assertThatThrownBy(() -> new StationEntity(null))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("이름은 Null 일 수 없습니다.");
     }

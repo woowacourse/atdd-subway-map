@@ -2,7 +2,7 @@ package wooteco.subway.ui.response;
 
 import java.util.Objects;
 
-import wooteco.subway.domain.Line;
+import wooteco.subway.domain.LineEntity;
 
 public class LineResponse {
 
@@ -19,7 +19,7 @@ public class LineResponse {
         this.color = color;
     }
 
-    public LineResponse(Line line) {
+    public LineResponse(LineEntity line) {
         this(line.getId(), line.getName(), line.getColor());
     }
 

@@ -2,18 +2,18 @@ package wooteco.subway.domain;
 
 import java.util.Objects;
 
-public class Station {
+public class StationEntity {
 
     private final Long id;
     private final String name;
 
-    public Station(Long id, String name) {
+    public StationEntity(Long id, String name) {
         validateName(name);
         this.id = id;
         this.name = name;
     }
 
-    public Station(String name) {
+    public StationEntity(String name) {
         this(null, name);
     }
 

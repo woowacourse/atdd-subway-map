@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.StationEntity;
 import wooteco.subway.exception.DataDuplicationException;
 import wooteco.subway.exception.DataNotExistException;
 
@@ -21,20 +21,20 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station createStation(Station station) {
-        Optional<Station> foundStation = stationDao.findByName(station.getName());
+    public StationEntity createStation(StationEntity station) {
+        Optional<StationEntity> foundStation = stationDao.findByName(station.getName());
         if (foundStation.isPresent()) {
             throw new DataDuplicationException("이미 등록된 역입니다.");
         }
         return stationDao.save(station);
     }
 
-    public Station findById(Long id) {
+    public StationEntity findById(Long id) {
         return stationDao.findById(id)
             .orElseThrow(() -> new DataNotExistException("존재하지 않는 역입니다."));
     }
 
-    public List<Station> findAll() {
+    public List<StationEntity> findAll() {
         return stationDao.findAll();
     }
 

@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.domain.Line;
+import wooteco.subway.domain.LineEntity;
 import wooteco.subway.exception.DataDuplicationException;
 import wooteco.subway.exception.DataNotExistException;
 
@@ -21,25 +21,25 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line createLine(Line line) {
-        Optional<Line> foundLine = lineDao.findByName(line.getName());
+    public LineEntity createLine(LineEntity line) {
+        Optional<LineEntity> foundLine = lineDao.findByName(line.getName());
         if (foundLine.isPresent()) {
             throw new DataDuplicationException("이미 등록된 노선입니다.");
         }
         return lineDao.save(line);
     }
 
-    public List<Line> findAll() {
+    public List<LineEntity> findAll() {
         return lineDao.findAll();
     }
 
-    public Line findById(Long id) {
+    public LineEntity findById(Long id) {
         return lineDao.findById(id)
             .orElseThrow(() -> new DataNotExistException("존재하지 않는 노선입니다."));
     }
 
-    public void update(Line line) {
-        Optional<Line> foundLine = lineDao.findByName(line.getName());
+    public void update(LineEntity line) {
+        Optional<LineEntity> foundLine = lineDao.findByName(line.getName());
         if (foundLine.isPresent() && !line.hasSameId(foundLine.get())) {
             throw new DataDuplicationException("이미 등록된 노선입니다.");
         }

@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.StationEntity;
 
 @JdbcTest
 class JdbcStationDaoTest {
@@ -31,10 +31,10 @@ class JdbcStationDaoTest {
     @DisplayName("Station 을 저장한다.")
     void save() {
         //given
-        Station station = new Station("lala");
+        StationEntity station = new StationEntity("lala");
 
         //when
-        Station actual = stationDao.save(station);
+        StationEntity actual = stationDao.save(station);
 
         //then
         assertThat(actual.getName()).isEqualTo(station.getName());
@@ -44,13 +44,13 @@ class JdbcStationDaoTest {
     @DisplayName("모든 Station 을 검색한다.")
     void findAll() {
         //given
-        Station station1 = new Station("lala");
-        Station station2 = new Station("sojukang");
+        StationEntity station1 = new StationEntity("lala");
+        StationEntity station2 = new StationEntity("sojukang");
         stationDao.save(station1);
         stationDao.save(station2);
 
         //when
-        List<Station> actual = stationDao.findAll();
+        List<StationEntity> actual = stationDao.findAll();
 
         //then
         assertAll(
@@ -64,10 +64,10 @@ class JdbcStationDaoTest {
     void findByName() {
         //given
         String name = "lala";
-        stationDao.save(new Station(name));
+        stationDao.save(new StationEntity(name));
 
         //when
-        Station actual = stationDao.findByName(name).get();
+        StationEntity actual = stationDao.findByName(name).get();
 
         //then
         assertThat(actual.getName()).isEqualTo(name);
@@ -78,10 +78,10 @@ class JdbcStationDaoTest {
     void findByNameNotExists() {
         //given
         String name = "lala";
-        stationDao.save(new Station(name));
+        stationDao.save(new StationEntity(name));
 
         //when
-        Optional<Station> actual = stationDao.findByName("sojukang");
+        Optional<StationEntity> actual = stationDao.findByName("sojukang");
 
         //then
         assertThat(actual).isEmpty();
@@ -91,10 +91,10 @@ class JdbcStationDaoTest {
     @DisplayName("id로 station 을 조회한다.")
     void findById() {
         //given
-        Station station = stationDao.save(new Station("lala"));
+        StationEntity station = stationDao.save(new StationEntity("lala"));
 
         //when
-        Station actual = stationDao.findById(station.getId()).get();
+        StationEntity actual = stationDao.findById(station.getId()).get();
 
         //then
         assertThat(actual.getName()).isEqualTo(station.getName());
@@ -105,7 +105,7 @@ class JdbcStationDaoTest {
     void deleteById() {
         //given
         String name = "lala";
-        Station savedStation = stationDao.save(new Station(name));
+        StationEntity savedStation = stationDao.save(new StationEntity(name));
 
         //when
         stationDao.deleteById(savedStation.getId());

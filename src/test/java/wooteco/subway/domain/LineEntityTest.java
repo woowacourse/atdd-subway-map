@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-class LineTest {
+class LineEntityTest {
 
     @ParameterizedTest
     @CsvSource(value = {"라:1", "라:30"}, delimiter = ':')
@@ -17,7 +17,7 @@ class LineTest {
         String lineName = name.repeat(repeatCount);
 
         //when
-        Line line = new Line(lineName, "loopy");
+        LineEntity line = new LineEntity(lineName, "loopy");
 
         //then
         assertThat(line.getName()).isEqualTo(lineName);
@@ -31,7 +31,7 @@ class LineTest {
         String lineName = name.repeat(repeatCount);
 
         //when, then
-        assertThatThrownBy(() -> new Line(lineName, "loopy"))
+        assertThatThrownBy(() -> new LineEntity(lineName, "loopy"))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("이름은 1~30 자 이내여야 합니다.");
     }
@@ -39,7 +39,7 @@ class LineTest {
     @Test
     @DisplayName("이름을 null 값으로 Line 을 생성할 경우 예외를 던진다.")
     void createLineWithNullName() {
-        assertThatThrownBy(() -> new Line(null, "loopy"))
+        assertThatThrownBy(() -> new LineEntity(null, "loopy"))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("이름은 Null 일 수 없습니다.");
     }
@@ -52,7 +52,7 @@ class LineTest {
         String lineColor = color.repeat(repeatCount);
 
         //when
-        Line line = new Line("loopy", lineColor);
+        LineEntity line = new LineEntity("loopy", lineColor);
 
         //then
         assertThat(line.getColor()).isEqualTo(lineColor);
@@ -66,7 +66,7 @@ class LineTest {
         String lineColor = color.repeat(repeatCount);
 
         //when, then
-        assertThatThrownBy(() -> new Line("loopy", lineColor))
+        assertThatThrownBy(() -> new LineEntity("loopy", lineColor))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("색상은 1~20 자 이내여야 합니다.");
     }
@@ -74,7 +74,7 @@ class LineTest {
     @Test
     @DisplayName("색상을 null 값으로 Line 을 생성할 경우 예외를 던진다.")
     void createLineWithNullColor() {
-        assertThatThrownBy(() -> new Line("loopy", null))
+        assertThatThrownBy(() -> new LineEntity("loopy", null))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("색상은 Null 일 수 없습니다.");
     }
@@ -84,8 +84,8 @@ class LineTest {
     @DisplayName("같은 id 를 가지고 있는지 확인한다.")
     void hasSameId(Long id, boolean expected) {
         //given
-        Line line1 = new Line(3L, "2호선", "green");
-        Line line2 = new Line(id, "2호선", "green");
+        LineEntity line1 = new LineEntity(3L, "2호선", "green");
+        LineEntity line2 = new LineEntity(id, "2호선", "green");
 
         //when, then
         assertThat(line1.hasSameId(line2)).isEqualTo(expected);
