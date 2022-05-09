@@ -18,6 +18,11 @@ import wooteco.subway.domain.Station;
 @Sql("/sectionDaoTestSchema.sql")
 class JdbcSectionDaoTest {
 
+    public static final Section GIVEN_SECTION = new Section(
+            new Line(1L, "신분당선", "yellow"),
+            new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
+            6, 1L);
+
     private final SectionDao sectionDao;
 
     @Autowired
@@ -28,10 +33,7 @@ class JdbcSectionDaoTest {
     @Test
     @DisplayName("Section을 저장한다.")
     void saveSection() {
-        Section section = new Section(
-                new Line(1L, "신분당선", "yellow"),
-                new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
-                6, 1L);
+        Section section = GIVEN_SECTION;
 
         Long id = sectionDao.save(section);
 
@@ -42,11 +44,7 @@ class JdbcSectionDaoTest {
     @DisplayName("지하철 역이 대상 노선에 존재하는지 확인한다.")
     void existByStationIdAndLineId() {
         // given
-        Section givenSection = new Section(
-                new Line(1L, "신분당선", "yellow"),
-                new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
-                6, 1L);
-        Long id = sectionDao.save(givenSection);
+        Long id = sectionDao.save(GIVEN_SECTION);
 
         // when
         boolean result = sectionDao.existByLineIdAndStationId(1L, 1L);
@@ -59,11 +57,7 @@ class JdbcSectionDaoTest {
     @DisplayName("지하철 역이 대상 노선에 존재하지 않는 지 확인한다.")
     void notExistByStationId() {
         // given
-        Section givenSection = new Section(
-                new Line(1L, "신분당선", "yellow"),
-                new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
-                6, 1L);
-        Long id = sectionDao.save(givenSection);
+        Long id = sectionDao.save(GIVEN_SECTION);
 
         // when
         boolean result = sectionDao.existByLineIdAndStationId(1L, 3L);
@@ -76,11 +70,7 @@ class JdbcSectionDaoTest {
     @DisplayName("지하철 역이 대상 노선에 상행으로 존재하면 해당 구간의 id를 가져온다.")
     void findIdByLineIdAndUpStationId() {
         // given
-        Section givenSection = new Section(
-                new Line(1L, "신분당선", "yellow"),
-                new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
-                6, 1L);
-        sectionDao.save(givenSection);
+        sectionDao.save(GIVEN_SECTION);
 
         // when
         Optional<Long> id = sectionDao.findIdByLineIdAndUpStationId(1L, 1L);
@@ -93,11 +83,7 @@ class JdbcSectionDaoTest {
     @DisplayName("지하철 역이 대상 노선에 상행으로 존재하지 않으면 해당 구간의 id를 null로 가져온다.")
     void findNullIdByLineIdAndUpStationId() {
         // given
-        Section givenSection = new Section(
-                new Line(1L, "신분당선", "yellow"),
-                new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
-                6, 1L);
-        sectionDao.save(givenSection);
+        sectionDao.save(GIVEN_SECTION);
 
         // when
         Optional<Long> distance = sectionDao.findIdByLineIdAndUpStationId(1L, 2L);
@@ -110,11 +96,7 @@ class JdbcSectionDaoTest {
     @DisplayName("지하철 역이 대상 노선에 하행으로 존재하면 해당 구간의 id를 가져온다.")
     void findIdByLineIdAndDownStationId() {
         // given
-        Section givenSection = new Section(
-                new Line(1L, "신분당선", "yellow"),
-                new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
-                6, 1L);
-        sectionDao.save(givenSection);
+        sectionDao.save(GIVEN_SECTION);
 
         // when
         Optional<Long> sectionId = sectionDao.findIdByLineIdAndDownStationId(1L, 2L);
@@ -127,11 +109,7 @@ class JdbcSectionDaoTest {
     @DisplayName("지하철 역이 대상 노선에 하행으로 존재하지 않으면 해당 구간의 id를 null로 가져온다.")
     void findNullIdByLineIdAndDownStationId() {
         // given
-        Section givenSection = new Section(
-                new Line(1L, "신분당선", "yellow"),
-                new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
-                6, 1L);
-        sectionDao.save(givenSection);
+        sectionDao.save(GIVEN_SECTION);
 
         // when
         Optional<Long> id = sectionDao.findIdByLineIdAndDownStationId(1L, 1L);
@@ -144,11 +122,7 @@ class JdbcSectionDaoTest {
     @DisplayName("id를 이용해서 거리를 가져온다.")
     void findDistanceById() {
         // given
-        Section givenSection = new Section(
-                new Line(1L, "신분당선", "yellow"),
-                new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
-                6, 1L);
-        sectionDao.save(givenSection);
+        sectionDao.save(GIVEN_SECTION);
 
         // when
         int distance = sectionDao.findDistanceById(1L);
@@ -161,11 +135,7 @@ class JdbcSectionDaoTest {
     @DisplayName("id를 이용해서 lineOrder를 가져온다.")
     void findLineOrderById() {
         // given
-        Section givenSection = new Section(
-                new Line(1L, "신분당선", "yellow"),
-                new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
-                6, 1L);
-        sectionDao.save(givenSection);
+        sectionDao.save(GIVEN_SECTION);
 
         // when
         Long lineOrder = sectionDao.findLineOrderById(1L);
@@ -178,11 +148,7 @@ class JdbcSectionDaoTest {
     @DisplayName("입력으로 들어온 값보다 lineOrder 값이 같거나 큰 구간들의 lineOrder 값을 1 증가시킨다.")
     void updateLineOrderById() {
         // given
-        Section givenSection = new Section(
-                new Line(1L, "신분당선", "yellow"),
-                new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
-                6, 1L);
-        Long givenSectionId = sectionDao.save(givenSection);
+        Long givenSectionId = sectionDao.save(GIVEN_SECTION);
 
         // when
         sectionDao.updateLineOrder(1L, 1L);
@@ -195,11 +161,7 @@ class JdbcSectionDaoTest {
     @DisplayName("입력으로 들어온 값보다 lineOrder 값이 작은 구간들의 lineOrder 값은 변화하지 않는다.")
     void notUpdateLineOrderById() {
         // given
-        Section givenSection = new Section(
-                new Line(1L, "신분당선", "yellow"),
-                new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
-                6, 1L);
-        Long givenSectionId = sectionDao.save(givenSection);
+        Long givenSectionId = sectionDao.save(GIVEN_SECTION);
 
         // when
         sectionDao.updateLineOrder(1L, 2L);
