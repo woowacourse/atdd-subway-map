@@ -17,6 +17,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -25,9 +26,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "초록색");
+        String paramName = "2호선";
+        String paramColor = "초록색";
+        Long paramUpStationId = 1L;
+        Long paramDownStationId = 2L;
+        int paramDistance = 10;
+        LineRequest params =
+                new LineRequest(paramName, paramColor, paramUpStationId, paramDownStationId, paramDistance);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -50,9 +55,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 이름의 길이를 1 이상 255 이하로 생성할 수 있다.")
     void createLineWithValidName(int count) {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "a".repeat(count));
-        params.put("color", "초록색");
+        String paramName = "a".repeat(count);
+        String paramColor = "초록색";
+        Long paramUpStationId = 1L;
+        Long paramDownStationId = 2L;
+        int paramDistance = 10;
+        LineRequest params = new LineRequest(paramName, paramColor, paramUpStationId, paramDownStationId,
+                paramDistance);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -75,9 +84,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 이름의 길이를 1 이상 255 이하가 아니면 생성할 수 없다.")
     void createLineWithNonValidName(int count) {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "a".repeat(count));
-        params.put("color", "초록색");
+        String paramName = "a".repeat(count);
+        String paramColor = "초록색";
+        Long paramUpStationId = 1L;
+        Long paramDownStationId = 2L;
+        int paramDistance = 10;
+        LineRequest params = new LineRequest(paramName, paramColor, paramUpStationId, paramDownStationId,
+                paramDistance);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -101,9 +114,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 색의 길이를 1 이상 20 이하가 아니면 생성할 수 없다.")
     void createLineWithNonValidColor(String color) {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", color);
+        String paramName = "2호선";
+        String paramColor = color;
+        Long paramUpStationId = 1L;
+        Long paramDownStationId = 2L;
+        int paramDistance = 10;
+        LineRequest params = new LineRequest(paramName, paramColor, paramUpStationId, paramDownStationId,
+                paramDistance);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -126,12 +143,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "2호선");
-        params1.put("color", "초록색");
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "2호선");
-        params2.put("color", "빨간색");
+        String paramName = "2호선";
+        String paramColor = "초록색";
+        Long paramUpStationId = 1L;
+        Long paramDownStationId = 2L;
+        int paramDistance = 10;
+        LineRequest params1 =
+                new LineRequest(paramName, paramColor, paramUpStationId, paramDownStationId, paramDistance);
         RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -141,6 +159,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // when
+        paramName = "2호선";
+        paramColor = "빨간색";
+        paramUpStationId = 1L;
+        paramDownStationId = 2L;
+        paramDistance = 10;
+        LineRequest params2 =
+                new LineRequest(paramName, paramColor, paramUpStationId, paramDownStationId, paramDistance);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -162,12 +187,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateColor() {
         // given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "2호선");
-        params1.put("color", "초록색");
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "3호선");
-        params2.put("color", "초록색");
+        String paramName1 = "2호선";
+        String paramColor1 = "초록색";
+        Long paramUpStationId1 = 1L;
+        Long paramDownStationId1 = 2L;
+        int paramDistance1 = 10;
+        LineRequest params1 =
+                new LineRequest(paramName1, paramColor1, paramUpStationId1, paramDownStationId1, paramDistance1);
         RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -177,8 +203,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // when
+        String paramName2 = "3호선";
+        String paramColor2 = "초록색";
+        Long paramUpStationId2 = 1L;
+        Long paramDownStationId2 = 2L;
+        int paramDistance2 = 10;
+        LineRequest params2 =
+                new LineRequest(paramName2, paramColor2, paramUpStationId2, paramDownStationId2, paramDistance2);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params1)
+                .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -198,9 +231,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "2호선");
-        params1.put("color", "초록색");
+        String paramName1 = "2호선";
+        String paramColor1 = "초록색";
+        Long paramUpStationId1 = 1L;
+        Long paramDownStationId1 = 2L;
+        int paramDistance1 = 10;
+        LineRequest params1 =
+                new LineRequest(paramName1, paramColor1, paramUpStationId1, paramDownStationId1, paramDistance1);
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -209,9 +246,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "5호선");
-        params2.put("color", "보라색");
+        String paramName2 = "5호선";
+        String paramColor2 = "보라색";
+        Long paramUpStationId2 = 1L;
+        Long paramDownStationId2 = 2L;
+        int paramDistance2 = 10;
+        LineRequest params2 =
+                new LineRequest(paramName2, paramColor2, paramUpStationId2, paramDownStationId2, paramDistance2);
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -242,9 +283,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "2호선");
-        params1.put("color", "초록색");
+        String paramName1 = "2호선";
+        String paramColor1 = "초록색";
+        Long paramUpStationId1 = 1L;
+        Long paramDownStationId1 = 2L;
+        int paramDistance1 = 10;
+        LineRequest params1 =
+                new LineRequest(paramName1, paramColor1, paramUpStationId1, paramDownStationId1, paramDistance1);
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -293,9 +338,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "초록색");
+        String paramName = "2호선";
+        String paramColor = "초록색";
+        Long paramUpStationId = 1L;
+        Long paramDownStationId = 2L;
+        int paramDistance = 10;
+        LineRequest params = new LineRequest(paramName, paramColor, paramUpStationId, paramDownStationId,
+                paramDistance);
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -306,9 +355,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String uri = createResponse.header("Location");
 
         // when
-        Map<String, String> updateParam = new HashMap<>();
-        updateParam.put("name", "1호선");
-        updateParam.put("color", "파란색");
+        String paramName2 = "1호선";
+        String paramColor2 = "파란색";
+        Long paramUpStationId2 = 1L;
+        Long paramDownStationId2 = 2L;
+        int paramDistance2 = 10;
+        LineRequest updateParam =
+                new LineRequest(paramName2, paramColor2, paramUpStationId2, paramDownStationId2, paramDistance2);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(updateParam)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -338,9 +391,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 이름의 길이를 1 이상 255 이하가 아니면 수정할 수 없다.")
     void updateLineNameFail(int count) {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "초록색");
+        String paramName = "2호선";
+        String paramColor = "초록색";
+        Long paramUpStationId = 1L;
+        Long paramDownStationId = 2L;
+        int paramDistance = 10;
+        LineRequest params = new LineRequest(paramName, paramColor, paramUpStationId, paramDownStationId,
+                paramDistance);
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -351,9 +408,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String uri = createResponse.header("Location");
 
         // when
-        Map<String, String> updateParam = new HashMap<>();
-        updateParam.put("name", "a".repeat(count));
-        updateParam.put("color", "파란색");
+        String paramName2 = "a".repeat(count);
+        String paramColor2 = "파란색";
+        Long paramUpStationId2 = 1L;
+        Long paramDownStationId2 = 2L;
+        int paramDistance2 = 10;
+        LineRequest updateParam =
+                new LineRequest(paramName2, paramColor2, paramUpStationId2, paramDownStationId2, paramDistance2);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(updateParam)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -375,9 +436,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 색의 길이를 1 이상 20 이하가 아니면 수정할 수 없다.")
     void updateLineColorFail(String color) {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "초록색");
+        String paramName = "2호선";
+        String paramColor = "초록색";
+        Long paramUpStationId = 1L;
+        Long paramDownStationId = 2L;
+        int paramDistance = 10;
+        LineRequest params = new LineRequest(paramName, paramColor, paramUpStationId, paramDownStationId,
+                paramDistance);
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -388,9 +453,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String uri = createResponse.header("Location");
 
         // when
-        Map<String, String> updateParam = new HashMap<>();
-        updateParam.put("name", "2호선");
-        updateParam.put("color", color);
+        String paramName2 = "2호선";
+        String paramColor2 = color;
+        Long paramUpStationId2 = 1L;
+        Long paramDownStationId2 = 2L;
+        int paramDistance2 = 10;
+        LineRequest updateParam =
+                new LineRequest(paramName2, paramColor2, paramUpStationId2, paramDownStationId2, paramDistance2);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(updateParam)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -411,9 +480,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineWithDuplicateName() {
         // given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "1호선");
-        params1.put("color", "파란색");
+        String paramName1 = "1호선";
+        String paramColor1 = "파란색";
+        Long paramUpStationId1 = 1L;
+        Long paramDownStationId1 = 2L;
+        int paramDistance1 = 10;
+        LineRequest params1 =
+                new LineRequest(paramName1, paramColor1, paramUpStationId1, paramDownStationId1, paramDistance1);
         RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -421,9 +494,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .post("/lines")
                 .then().log().all()
                 .extract();
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "2호선");
-        params2.put("color", "초록색");
+        String paramName2 = "2호선";
+        String paramColor2 = "초록색";
+        Long paramUpStationId2 = 1L;
+        Long paramDownStationId2 = 2L;
+        int paramDistance2 = 10;
+        LineRequest params2 =
+                new LineRequest(paramName2, paramColor2, paramUpStationId2, paramDownStationId2, paramDistance2);
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -434,9 +511,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String uri = createResponse.header("Location");
 
         // when
-        Map<String, String> updateParam = new HashMap<>();
-        updateParam.put("name", "1호선");
-        updateParam.put("color", "초록색");
+        String paramName3 = "1호선";
+        String paramColor3 = "초록색";
+        Long paramUpStationId3 = 1L;
+        Long paramDownStationId3 = 2L;
+        int paramDistance3 = 10;
+        LineRequest updateParam =
+                new LineRequest(paramName3, paramColor3, paramUpStationId3, paramDownStationId3, paramDistance3);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(updateParam)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -457,9 +538,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineWithDuplicateColor() {
         // given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "1호선");
-        params1.put("color", "파란색");
+        String paramName1 = "1호선";
+        String paramColor1 = "파란색";
+        Long paramUpStationId1 = 1L;
+        Long paramDownStationId1 = 2L;
+        int paramDistance1 = 10;
+        LineRequest params1 =
+                new LineRequest(paramName1, paramColor1, paramUpStationId1, paramDownStationId1, paramDistance1);
         RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -467,9 +552,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .post("/lines")
                 .then().log().all()
                 .extract();
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "2호선");
-        params2.put("color", "초록색");
+        String paramName2 = "2호선";
+        String paramColor2 = "초록색";
+        Long paramUpStationId2 = 1L;
+        Long paramDownStationId2 = 2L;
+        int paramDistance2 = 10;
+        LineRequest params2 =
+                new LineRequest(paramName2, paramColor2, paramUpStationId2, paramDownStationId2, paramDistance2);
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -480,9 +569,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String uri = createResponse.header("Location");
 
         // when
-        Map<String, String> updateParam = new HashMap<>();
-        updateParam.put("name", "2호선");
-        updateParam.put("color", "파란색");
+        String paramName3 = "2호선";
+        String paramColor3 = "파란색";
+        Long paramUpStationId3 = 1L;
+        Long paramDownStationId3 = 2L;
+        int paramDistance3 = 10;
+        LineRequest updateParam =
+                new LineRequest(paramName3, paramColor3, paramUpStationId3, paramDownStationId3, paramDistance3);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(updateParam)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -503,9 +596,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateNonExistLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "초록색");
+        String paramName = "2호선";
+        String paramColor = "초록색";
+        Long paramUpStationId = 1L;
+        Long paramDownStationId = 2L;
+        int paramDistance = 10;
+        LineRequest params = new LineRequest(paramName, paramColor, paramUpStationId, paramDownStationId,
+                paramDistance);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -528,9 +625,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteById() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "초록색");
+        String paramName = "2호선";
+        String paramColor = "초록색";
+        Long paramUpStationId = 1L;
+        Long paramDownStationId = 2L;
+        int paramDistance = 10;
+        LineRequest params = new LineRequest(paramName, paramColor, paramUpStationId, paramDownStationId,
+                paramDistance);
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

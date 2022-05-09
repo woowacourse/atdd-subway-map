@@ -1,5 +1,6 @@
 package wooteco.subway.dto;
 
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 public class LineRequest {
@@ -7,13 +8,22 @@ public class LineRequest {
     private String name;
     @Size(min = 1, max = 20, message = "노선 색의 길이는 1 이상 20 이하여야 합니다.")
     private String color;
+    @Positive(message = "상행 종점 id는 양수여야 합니다.")
+    private Long upStationId;
+    @Positive(message = "하행 종점 id는 양수여야 합니다.")
+    private Long downStationId;
+    @Positive(message = "두 종점간의 거리는 양수여야 합니다.")
+    private int distance;
 
     public LineRequest() {
     }
 
-    public LineRequest(String name, String color) {
+    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.color = color;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
     }
 
     public String getName() {
@@ -22,5 +32,17 @@ public class LineRequest {
 
     public String getColor() {
         return color;
+    }
+
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }
