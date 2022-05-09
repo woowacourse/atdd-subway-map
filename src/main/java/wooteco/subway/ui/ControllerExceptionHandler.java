@@ -16,14 +16,14 @@ public class ControllerExceptionHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @ExceptionHandler({IllegalArgumentException.class})
+    @ExceptionHandler
     public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException exception) {
         Map<String, String> body = new HashMap<>();
         body.put("message", exception.getMessage());
         return ResponseEntity.badRequest().body(body);
     }
 
-    @ExceptionHandler({EmptyResultDataAccessException.class})
+    @ExceptionHandler
     public ResponseEntity<Map<String, String>> handleEmptyResultException(EmptyResultDataAccessException exception) {
         logger.error(exception.getMessage());
         Map<String, String> body = new HashMap<>();
@@ -31,7 +31,7 @@ public class ControllerExceptionHandler {
         return ResponseEntity.badRequest().body(body);
     }
 
-    @ExceptionHandler({DuplicateKeyException.class})
+    @ExceptionHandler
     public ResponseEntity<Map<String, String>> handleSqlException(DuplicateKeyException exception) {
         logger.error(exception.getMessage());
         Map<String, String> body = new HashMap<>();
@@ -39,7 +39,7 @@ public class ControllerExceptionHandler {
         return ResponseEntity.badRequest().body(body);
     }
 
-    @ExceptionHandler({Exception.class})
+    @ExceptionHandler
     public ResponseEntity<Map<String, String>> handleException(Exception exception) {
         logger.error(exception.getMessage());
         Map<String, String> body = new HashMap<>();
