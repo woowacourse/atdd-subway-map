@@ -1,4 +1,6 @@
-package wooteco.subway.dto;
+package wooteco.subway.dto.section;
+
+import wooteco.subway.dto.line.LineCreateRequest;
 
 public class SectionRequest {
     private Long upStationId;
@@ -12,6 +14,12 @@ public class SectionRequest {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public SectionRequest(LineCreateRequest lineCreateRequest) {
+        this(lineCreateRequest.getUpStationId(),
+                lineCreateRequest.getDownStationId(),
+                lineCreateRequest.getDistance());
     }
 
     public Long getUpStationId() {

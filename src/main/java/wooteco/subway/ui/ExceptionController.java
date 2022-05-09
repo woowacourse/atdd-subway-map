@@ -15,7 +15,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException() {
+    public ResponseEntity<String> handleException(Exception e) {
         return ResponseEntity.internalServerError()
                 .body("예기치 못한 문제가 발생했습니다.");
     }

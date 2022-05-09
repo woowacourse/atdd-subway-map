@@ -3,8 +3,9 @@ package wooteco.subway.ui;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.line.LineCreateRequest;
+import wooteco.subway.dto.line.LineRequest;
+import wooteco.subway.dto.line.LineResponse;
 import wooteco.subway.service.LineService;
 
 import java.net.URI;
@@ -15,35 +16,36 @@ import java.util.List;
 @RequestMapping("/lines")
 public class LineController {
 
-    private final LineService service;
+    private final LineService lineService;
 
-    public LineController(LineService service) {
-        this.service = service;
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse lineResponse = service.save(lineRequest);
-        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineCreateRequest lineCreateRequest) {
+        Long lineId = lineService.save(lineCreateRequest);
+        LineResponse lineResponse = lineService.findById(lineId);
+        return ResponseEntity.created(URI.create("/lines/" + lineId)).body(lineResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<LineResponse> showLines() {
-        return service.findAll();
+        return lineService.findAll();
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public LineResponse showLine(@PathVariable Long id) {
-        return service.findById(id);
+        return lineService.findById(id);
     }
 
     @DeleteMapping(value = "/{id}")
     public void deleteLine(@PathVariable Long id) {
-        service.deleteById(id);
+        lineService.deleteById(id);
     }
 
     @PutMapping(value = "/{id}")
-    public void updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        service.update(id, lineRequest);
+    public void updateLine(@PathVariable Long id, @RequestBody LineRequest LineRequest) {
+        lineService.update(id, LineRequest);
     }
 }

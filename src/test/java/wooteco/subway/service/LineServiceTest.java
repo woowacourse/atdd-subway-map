@@ -5,9 +5,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.domain.Station;
+import wooteco.subway.dto.line.LineCreateRequest;
+import wooteco.subway.dto.line.LineRequest;
+import wooteco.subway.dto.line.LineResponse;
+import wooteco.subway.dto.station.StationResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,35 +22,37 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.BDDMockito.given;
 
 class LineServiceTest {
-    LineDao lineDao;
     LineService lineService;
+    SectionService sectionService;
+    LineDao lineDao;
+    StationDao stationDao;
 
     @BeforeEach
     public void setUp() {
+        sectionService = Mockito.mock(SectionService.class);
+        stationDao = Mockito.mock(StationDao.class);
         lineDao = Mockito.mock(LineDao.class);
-        lineService = new LineService(lineDao);
+        lineService = new LineService(sectionService, lineDao, stationDao);
     }
 
     @Test
     @DisplayName("지하철 노선 이름이 중복되지 않는다면 등록할 수 있다.")
     void save() {
-        LineRequest lineRequest = new LineRequest("name", "red");
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("name", "red", 1L, 2L, 3);
         given(lineDao.isExistName("name")).willReturn(false);
         given(lineDao.save("name", "red")).willReturn(new Line(1L, "name", "red"));
 
-        assertThat(lineService.save(lineRequest).getId()).isEqualTo(1L);
-        assertThat(lineService.save(lineRequest).getName()).isEqualTo("name");
-        assertThat(lineService.save(lineRequest).getColor()).isEqualTo("red");
+        assertThat(lineService.save(lineCreateRequest)).isEqualTo(1L);
     }
 
     @Test
     @DisplayName("지하철 노선 이름이 중복된다면 등록할 수 없다.")
     void saveDuplicate() {
-        LineRequest lineRequest = new LineRequest("name", "red");
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("name", "red", 1L, 2L, 3);
         given(lineDao.isExistName("name")).willReturn(true);
         given(lineDao.save("name", "red")).willReturn(new Line(1L, "name", "red"));
 
-        assertThatThrownBy(() -> lineService.save(lineRequest))
+        assertThatThrownBy(() -> lineService.save(lineCreateRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지하철 노선 이름이 중복될 수 없습니다.");
     }
@@ -55,34 +61,55 @@ class LineServiceTest {
     @DisplayName("지하철 노선 목록을 조회할 수 있다.")
     void findAll() {
         given(lineDao.findAll()).willReturn(List.of(new Line(1L, "name", "red"), new Line(2L, "name2", "blue")));
+        given(stationDao.findByLineId(1L)).willReturn(List.of(new Station(1L, "name1"), new Station(2L, "name2")));
+        given(stationDao.findByLineId(2L)).willReturn(List.of(new Station(3L, "name3"), new Station(4L, "name4")));
 
-        List<Long> ids = lineService.findAll().stream()
+        List<LineResponse> lineResponse = lineService.findAll();
+
+        List<Long> ids = lineResponse.stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
 
-        List<String> names = lineService.findAll().stream()
+        List<String> lineNames = lineResponse.stream()
                 .map(LineResponse::getName)
                 .collect(Collectors.toList());
 
-        List<String> colors = lineService.findAll().stream()
+        List<String> colors = lineResponse.stream()
                 .map(LineResponse::getColor)
                 .collect(Collectors.toList());
 
+        List<String> stationNames = lineResponse.stream()
+                .flatMap(s -> s.getStations().stream())
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+
+
         assertThat(ids).containsOnly(1L, 2L);
-        assertThat(names).containsOnly("name", "name2");
+        assertThat(lineNames).containsOnly("name", "name2");
         assertThat(colors).containsOnly("red", "blue");
+        assertThat(stationNames).containsOnly("name1", "name2", "name3", "name4");
     }
 
     @Test
     @DisplayName("지하철 노선을 조회할 수 있다.")
     void findById() {
         given(lineDao.findById(1L)).willReturn(new Line(1L, "name", "red"));
+        given(stationDao.findByLineId(1L)).willReturn(List.of(new Station(1L, "name1"), new Station(2L, "name2")));
 
         LineResponse response = lineService.findById(1L);
+
+        List<Long> stationIds = response.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+        List<String> stationNames = response.getStations().stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
 
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getName()).isEqualTo("name");
         assertThat(response.getColor()).isEqualTo("red");
+        assertThat(stationIds).containsOnly(1L, 2L);
+        assertThat(stationNames).containsOnly("name1", "name2");
     }
 
 

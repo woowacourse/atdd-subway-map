@@ -135,7 +135,7 @@ public class LineDaoTest {
     }
 
     @Test
-    @DisplayName("자신읠 제외하고 존재하지 않는 이름인 경우 false 반환")
+    @DisplayName("자신을 제외하고 존재하지 않는 이름인 경우 false 반환")
     void isExistNameWithoutItselfWhenFalse() {
         Line saveLine = dao.save("선릉역", "green");
         assertThat(dao.isExistNameWithoutItself(saveLine.getId(), "선릉역")).isFalse();

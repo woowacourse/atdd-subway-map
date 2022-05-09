@@ -6,7 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.station.StationResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -88,5 +88,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(200);
+    }
+
+    @DisplayName("존재하지 않는 지하철역을 제거한다.")
+    @Test
+    void deleteStationWithWrongId() {
+        // given
+
+        // when
+        ExtractableResponse<Response> response = delete("/stations/1");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(400);
     }
 }
