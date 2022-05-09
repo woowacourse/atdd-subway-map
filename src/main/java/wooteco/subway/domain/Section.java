@@ -44,7 +44,7 @@ public class Section {
         return this.down.equals(section.up);
     }
 
-    public boolean isAlreadyIn(Set<Station> stations) {
+    public boolean isAlreadyIn(List<Station> stations) {
         return stations.containsAll(List.of(up, down));
     }
 

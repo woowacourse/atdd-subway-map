@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -153,7 +154,7 @@ class SectionTest {
     @DisplayName("이미 모든 역이 포함된 경우 확인")
     @Test
     void 모든_구간_포함_TRUE() {
-        Set<Station> stations = Set.of(new Station("합정역"), new Station("홍대입구역"), new Station("신촌역"));
+        List<Station> stations = List.of(new Station("합정역"), new Station("홍대입구역"), new Station("신촌역"));
         Section section = new Section(new Station("합정역"), new Station("홍대입구역"), 2);
 
         assertThat(section.isAlreadyIn(stations)).isTrue();
@@ -162,7 +163,7 @@ class SectionTest {
     @DisplayName("모든 역이 포함되지 않은 경우 확인")
     @Test
     void 모든_구간_포함_FALSE() {
-        Set<Station> stations = Set.of(new Station("합정역"), new Station("홍대입구역"), new Station("신촌역"));
+        List<Station> stations = List.of(new Station("합정역"), new Station("홍대입구역"), new Station("신촌역"));
         Section section = new Section(new Station("신촌역"), new Station("이대역"), 2);
 
         assertThat(section.isAlreadyIn(stations)).isFalse();

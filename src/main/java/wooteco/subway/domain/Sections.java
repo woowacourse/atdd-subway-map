@@ -2,11 +2,10 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Sections {
 
@@ -24,7 +23,7 @@ public class Sections {
     public static Sections from(ArrayList<Section> mixedSections) {
         LinkedList<Section> sections = new LinkedList<>(List.of(mixedSections.remove(0)));
         while (!mixedSections.isEmpty()) {
-            for (int i = 0; i < mixedSections.size(); i ++) {
+            for (int i = 0; i < mixedSections.size(); i++) {
                 Section section = mixedSections.get(i);
                 if (sections.getFirst().canUpExtendBy(section)) {
                     sections.addFirst(mixedSections.remove(i));
@@ -100,12 +99,10 @@ public class Sections {
         return Collections.unmodifiableList(sections);
     }
 
-    public Set<Station> getStations() {
-        Set<Station> stations = new HashSet<>();
-        for (Section section : sections) {
-            stations.add(section.getUp());
-            stations.add(section.getDown());
-        }
+    public List<Station> getStations() {
+        List<Station> stations = sections.stream()
+                .map(Section::getUp).collect(Collectors.toList());
+        stations.add(sections.getLast().getDown());
         return stations;
     }
 

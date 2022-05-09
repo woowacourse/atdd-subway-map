@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -47,7 +48,7 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return sections.getStations().stream().collect(Collectors.toList());
+        return sections.getStations();
     }
 
     public void add(Section section) {
