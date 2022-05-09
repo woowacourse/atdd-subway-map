@@ -64,4 +64,24 @@ public class SectionDaoTest {
                 () -> assertThat(savedSection.getDistance()).isEqualTo(distance)
         );
     }
+
+    @DisplayName("구간 아이디를 통해 구간 정보를 읽어온다.")
+    @Test
+    void findById() {
+        Section savedSection = sectionDao.insert(new Section(savedLine1.getId(), savedStation1.getId(), savedStation2.getId(), 10));
+        Section foundSection = sectionDao.findById(savedSection.getId());
+
+        assertThat(savedSection).isEqualTo(foundSection);
+    }
+
+    @DisplayName("구간 정보를 업데이트한다.")
+    @Test
+    void update() {
+        Section savedSection = sectionDao.insert(new Section(savedLine1.getId(), savedStation1.getId(), savedStation2.getId(), 10));
+        Section changedSection = new Section(savedSection.getId(), savedSection.getLineId(), savedStation3.getId(), savedSection.getDownStationId(), 10);
+        sectionDao.update(changedSection);
+
+        Section updatedSection = sectionDao.findById(savedSection.getId());
+        assertThat(changedSection).isEqualTo(updatedSection);
+    }
 }

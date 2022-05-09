@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
+
 public class Section {
 
     private final Long id;
@@ -38,5 +40,18 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return getDistance() == section.getDistance() && Objects.equals(getId(), section.getId()) && Objects.equals(getLineId(), section.getLineId()) && Objects.equals(getUpStationId(), section.getUpStationId()) && Objects.equals(getDownStationId(), section.getDownStationId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getLineId(), getUpStationId(), getDownStationId(), getDistance());
     }
 }
