@@ -54,6 +54,11 @@ public class MemoryStationDao implements StationDao {
                 .anyMatch(station -> station.isSameName(name));
     }
 
+    @Override
+    public Station findById(Long id) {
+        return stations.get(id);
+    }
+
     public void clear() {
         stations.clear();
     }

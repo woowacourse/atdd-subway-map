@@ -14,24 +14,30 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.SectionService;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
-        Line line = lineService.create(new Line(lineRequest.getName(), lineRequest.getColor()));
+        Line line = lineService.create(new Line(lineRequest.getName(), lineRequest.getColor()),
+                new Section(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance()));
 
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
+        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStations());
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
     }
 
@@ -62,4 +68,11 @@ public class LineController {
         lineService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+//    @PostMapping("/{id}/sections")
+//    public ResponseEntity<Void> createSection(@PathVariable Long id,
+//                                              @RequestBody @Valid SectionRequest sectionRequest) {
+//        sectionService.create(new Section(id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+//                sectionRequest.getDistance()));
+//    }
 }

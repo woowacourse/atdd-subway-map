@@ -8,6 +8,8 @@ public interface StationDao {
 
     boolean existByName(String name);
 
+    Station findById(Long id);
+
     List<Station> findAll();
 
     int delete(Long id);
