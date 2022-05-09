@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,7 +44,7 @@ public class StationServiceTest {
         final Long invalidStationId = stationResponse.getId() + 1L;
 
         Assertions.assertThatThrownBy(() -> stationService.deleteStation(invalidStationId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("해당하는 역이 존재하지 않습니다.");
     }
 }
