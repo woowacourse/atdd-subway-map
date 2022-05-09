@@ -14,10 +14,18 @@ public class Sections {
     public void add(Section section) {
         if (getUpDestination().equals(section.getDownStation())) {
             values.add(0, section);
+            return;
+        }
+        if (getDownDestination().equals(section.getUpStation())) {
+            values.add(section);
         }
     }
 
     public Station getUpDestination() {
         return values.get(0).getUpStation();
+    }
+
+    public Station getDownDestination() {
+        return values.get(values.size() - 1).getDownStation();
     }
 }
