@@ -33,19 +33,24 @@ public class SubwayService {
 
     public LineResponse addLine(LineRequest lineRequest) {
         Line line = saveLine(lineRequest);
-        SectionRequest sectionRequest = toSectionRequest(lineRequest);
-        saveSection(line.getId(), sectionRequest);
+        saveSection(line.getId(), lineRequest);
         return toLineResponse(line);
+    }
+
+    private Line saveLine(LineRequest lineRequest) {
+        Line line = convertToLine(lineRequest);
+        return lineDao.save(line);
+    }
+
+    private void saveSection(Long lineId, LineRequest lineRequest) {
+        SectionRequest sectionRequest = toSectionRequest(lineRequest);
+        Section section = sectionRequest.toEntity(lineId);
+        sectionDao.save(section);
     }
 
     private SectionRequest toSectionRequest(LineRequest lineRequest) {
         return new SectionRequest(lineRequest.getUpStationId(), lineRequest.getDownStationId(),
                 lineRequest.getDistance());
-    }
-
-    private void saveSection(Long lineId, SectionRequest sectionRequest) {
-        Section section = sectionRequest.toEntity(lineId);
-        sectionDao.save(section);
     }
 
     private LineResponse toLineResponse(Line line) {
@@ -61,11 +66,6 @@ public class SubwayService {
         return stations.stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
-    }
-
-    private Line saveLine(LineRequest lineRequest) {
-        Line line = convertToLine(lineRequest);
-        return lineDao.save(line);
     }
 
     public List<LineResponse> getLines() {
@@ -127,13 +127,16 @@ public class SubwayService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         sections.add(sectionRequest.toEntity(lineId));
-        sectionDao.delete(lineId);
-        sections.forEach(sectionDao::save);
+        updateSections(lineId, sections);
     }
 
     public void deleteSection(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         sections.delete(stationId);
+        updateSections(lineId, sections);
+    }
+
+    private void updateSections(Long lineId, Sections sections) {
         sectionDao.delete(lineId);
         sections.forEach(sectionDao::save);
     }
