@@ -32,7 +32,7 @@ public class SectionTest {
     @ParameterizedTest(name = "{index} {displayName} newStation={0} distance={1} expectedResult={2}")
     @MethodSource("provideStationAndDistanceCompareResult")
     void compare_Distance(final Section newSection, final int distance, final boolean expectedResult) {
-        final Section section = new Section(new Station(1L, "a"), new Station(2L, "b"), distance);
+        final Section section = new Section(StationFactory.from("a"), StationFactory.from("b"), distance);
         assertThat(section.isDistanceLongerThan(newSection)).isEqualTo(expectedResult);
     }
     private static Stream<Arguments> provideStationAndDistanceCompareResult() {
