@@ -108,20 +108,7 @@ class LineServiceTest {
     @DisplayName("등록된 노선을 삭제한다.")
     @Test
     void delete() {
-
-        given(lineDao.existById(1L)).willReturn(true);
-
         lineService.delete(1L);
         verify(lineDao, times(1)).deleteById(1L);
-    }
-
-    @DisplayName("삭제하려는 노선 ID가 존재하지 않을 경우 예외를 발생한다.")
-    @Test
-    void delete_throwsExceptionIfLineIdIsNotExisting() {
-        given(lineDao.existById(1L)).willReturn(false);
-
-        assertThatThrownBy(() -> lineService.delete(1L))
-                .isInstanceOf(DataNotFoundException.class)
-                .hasMessage("대상 노선 ID가 존재하지 않습니다.");
     }
 }
