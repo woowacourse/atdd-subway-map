@@ -19,7 +19,7 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("노선 관련 기능")
-@Sql("classpath:initStation.sql")
+@Sql("classpath:setUp_test_db.sql")
 class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
@@ -46,9 +46,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
     void createLineWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        LineRequest params = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+
         RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -115,9 +114,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 조회한다.")
     void getLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        LineRequest params = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
 
         ExtractableResponse<Response> param = RestAssured.given().log().all()
                 .body(params)
@@ -146,9 +143,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존 노선의 이름과 색상을 변경할 수 있다.")
     void updateById() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        LineRequest params = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
 
         ExtractableResponse<Response> param = RestAssured.given().log().all()
                 .body(params)
@@ -181,9 +176,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존 노선을 삭제할 수 있다.")
     void deleteById() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        LineRequest params = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
 
         ExtractableResponse<Response> param = RestAssured.given().log().all()
                 .body(params)

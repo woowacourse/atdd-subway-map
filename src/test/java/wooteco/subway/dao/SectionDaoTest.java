@@ -9,13 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
 @JdbcTest
-@Sql("classpath:initStation.sql")
 class SectionDaoTest {
 
     @Autowired
@@ -35,6 +33,8 @@ class SectionDaoTest {
     @DisplayName("구간을 등록할 수 있다.")
     void save() {
         // given
+        stationDao.save(new Station("지하철역이름"));
+        stationDao.save(new Station("새로운지하철역이름"));
         final List<Station> stations = stationDao.findAll();
         final Long lineSaveID = lineDao.save(new Line("신분당선", "bg-red-600"));
         final Section section = new Section(lineSaveID, stations.get(0).getId(), stations.get(1).getId(), 10);
