@@ -42,5 +42,9 @@ public class Station {
     public int hashCode() {
         return Objects.hash(id, name);
     }
+
+    public boolean isSameName(Station other) {
+        return name == other.name;
+    }
 }
 

@@ -12,6 +12,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.SectionAddManager;
 import wooteco.subway.domain.Station;
+import wooteco.subway.domain.Stations;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
@@ -103,6 +104,8 @@ public class SubwayService {
 
     public StationResponse saveStation(StationRequest stationRequest) {
         Station station = stationRequest.toEntity();
+        Stations stations = new Stations(stationDao.findAll());
+        stations.checkAbleToAdd(station);
         Station newStation = stationDao.save(station);
         return new StationResponse(newStation);
     }
