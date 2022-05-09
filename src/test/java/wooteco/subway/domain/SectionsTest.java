@@ -70,4 +70,20 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.addSection(section))
                 .isInstanceOf(IllegalSectionException.class);
     }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 추가할 수 없다.")
+    @Test
+    public void IllegalAddSection() {
+        // given
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(new Section(1L, 1L, 2L, 3L, 4));
+        sectionList.add(new Section(1L, 1L, 1L, 2L, 3));
+        final Sections sections = new Sections(sectionList);
+
+        // when & then
+        final Section section = new Section(2L, 1L, 4L, 5L, 7);
+        assertThatThrownBy(() -> sections.addSection(section))
+                .isInstanceOf(IllegalSectionException.class);
+        assertThat(sections.getSections().size()).isEqualTo(2);
+    }
 }
