@@ -3,17 +3,17 @@ package wooteco.subway.dao;
 import java.util.List;
 import java.util.Optional;
 
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.StationEntity;
 
 public interface StationDao {
 
-    Station save(Station station);
+    StationEntity save(StationEntity station);
 
-    Optional<Station> findByName(String name);
+    Optional<StationEntity> findByName(String name);
 
-    Optional<Station> findById(Long id);
+    Optional<StationEntity> findById(Long id);
 
-    List<Station> findAll();
+    List<StationEntity> findAll();
 
     int deleteById(Long id);
 }

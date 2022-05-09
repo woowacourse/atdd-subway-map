@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.StationEntity;
 import wooteco.subway.exception.DataDuplicationException;
 import wooteco.subway.exception.DataNotExistException;
 
@@ -26,10 +26,10 @@ class StationServiceTest {
     @DisplayName("station 을 저장한다.")
     void create() {
         //given
-        Station station = new Station("lala");
+        StationEntity station = new StationEntity("lala");
 
         //when
-        Station actual = stationService.createStation(station);
+        StationEntity actual = stationService.createStation(station);
 
         //then
         assertThat(actual.getName()).isEqualTo(station.getName());
@@ -39,7 +39,7 @@ class StationServiceTest {
     @DisplayName("중복된 역을 저장할 수 없다.")
     void createDuplicateName() {
         //given
-        Station station = new Station("lala");
+        StationEntity station = new StationEntity("lala");
         stationService.createStation(station);
 
         //then
@@ -52,13 +52,13 @@ class StationServiceTest {
     @DisplayName("모든 station 목록을 조회한다.")
     void findAll() {
         //given
-        Station station1 = new Station("lala");
-        Station station2 = new Station("sojukang");
+        StationEntity station1 = new StationEntity("lala");
+        StationEntity station2 = new StationEntity("sojukang");
         stationService.createStation(station1);
         stationService.createStation(station2);
 
         //when
-        List<Station> actual = stationService.findAll();
+        List<StationEntity> actual = stationService.findAll();
 
         //then
         assertAll(
@@ -71,11 +71,11 @@ class StationServiceTest {
     @DisplayName("id 로 Line 을 조회한다.")
     void findById() {
         //given
-        Station station = new Station("lala");
+        StationEntity station = new StationEntity("lala");
         Long id = stationService.createStation(station).getId();
 
         //when
-        Station actual = stationService.findById(id);
+        StationEntity actual = stationService.findById(id);
 
         //then
         assertThat(actual.getName()).isEqualTo(station.getName());
@@ -85,7 +85,7 @@ class StationServiceTest {
     @DisplayName("존재하지 않는 id 로 조회할 경우 예외를 던진다.")
     void findByIdNotExist() {
         //given
-        Station station = new Station("lala");
+        StationEntity station = new StationEntity("lala");
         Long id = stationService.createStation(station).getId();
 
         //then
@@ -98,8 +98,8 @@ class StationServiceTest {
     @DisplayName("Station 을 삭제한다.")
     void deleteById() {
         //given
-        Station station = new Station("이수");
-        Station createdStation = stationService.createStation(station);
+        StationEntity station = new StationEntity("이수");
+        StationEntity createdStation = stationService.createStation(station);
         stationService.deleteById(createdStation.getId());
 
         //then

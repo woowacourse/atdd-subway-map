@@ -1,6 +1,6 @@
 package wooteco.subway.ui.request;
 
-import wooteco.subway.domain.Line;
+import wooteco.subway.domain.LineEntity;
 
 public class LineRequest {
 
@@ -15,12 +15,12 @@ public class LineRequest {
         this.color = color;
     }
 
-    public Line toEntity() {
-        return new Line(name, color);
+    public LineEntity toEntity() {
+        return new LineEntity(name, color);
     }
 
-    public Line toEntity(Long id) {
-        return new Line(id, name, color);
+    public LineEntity toEntity(Long id) {
+        return new LineEntity(id, name, color);
     }
 
     public String getName() {

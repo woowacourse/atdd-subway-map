@@ -2,13 +2,13 @@ package wooteco.subway.domain;
 
 import java.util.Objects;
 
-public class Line {
+public class LineEntity {
 
     private final Long id;
     private final String name;
     private final String color;
 
-    public Line(Long id, String name, String color) {
+    public LineEntity(Long id, String name, String color) {
         validateName(name);
         validateColor(color);
         this.id = id;
@@ -16,7 +16,7 @@ public class Line {
         this.color = color;
     }
 
-    public Line(String name, String color) {
+    public LineEntity(String name, String color) {
         this(null, name, color);
     }
 
@@ -44,7 +44,7 @@ public class Line {
         }
     }
 
-    public boolean hasSameId(Line line) {
+    public boolean hasSameId(LineEntity line) {
         return id.equals(line.getId());
     }
 
