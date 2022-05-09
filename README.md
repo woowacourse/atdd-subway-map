@@ -96,7 +96,8 @@
   - downStationId: 하행 종점
   - distance: 두 종점간의 거리
 - [ ] 두 종점간의 연결 정보를 이용하여 노선 추가 시 구간(Section) 정보도 함께 등록
-  - [ ] SectionDao를 만들어 값을 처리하는 기능 추가
+  - [x] SectionDao를 만들어 값을 처리하는 기능 추가
+  - [x] 적절한 Response를 응답하는지 확인
   - [ ] 상행, 하행 역이 있어야 등록 가능
 
 * 구간 관리 API 구현
@@ -105,6 +106,7 @@
 - [ ] 노선에 구간을 추가
 - [ ] 노선에 포함된 구간 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답
 - [ ] 구간 제거
+  - [ ] 역 제거시 노선 어딘가에 포함되어 있다면 그 역을 제거하면서 구간에서도 삭제되어야함
 
 # 체크리스트
 
@@ -121,6 +123,7 @@
 * LineDao와 StationDao 사이의 중복??
 * LineAcceptanceTest에서 존재하지 않는 노선의 ID로 조회하는 것이 사용자 입장에서 가능한가?
   * 사용자가 어떤 노선 ID에 대해 존재하는지 존재하지 않는지 알 수 있을까?
+* 외래키 설정이 되어있는 경우 참조되는 테이블의 데이터를 지울 때 참조하는 데이터가 있다면 `DataIntegrityViolationException` 발생
 
 # 제약사항
 
@@ -168,6 +171,8 @@
   - `@Transactional`가 설정되면 이 메서드가 끝까지 실행된 후 에러가 발생하지 않았을 때 Commit, 에러가 발생시 Rollback하여 원자성, 독립성 등을 만족할 수 있습니다.
   - Spring Test에서 `@Transactional`를 사용하면 마지막까지 실행된 뒤 자동으로 rollback 하도록 되어있습니다.
   - `@BeforeEach`, `@AfterEach`를 사용하여 매번 저장된 데이터를 지우는 것 보다 간단하게 이전 테스트가 rollback되어 다른 테스트에 영향을 주지 않는게 좋다고 생각하여 사용했습니다.
+  - 하지만 `@Transactional`는 auto_increment 까지 롤백되지 않는 문제가 있습니다.
+  - 그러면 `@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)`를 사용할 수 있습니다.
 - [x] Controller 공통 URI prefix 추가
 
 <br>

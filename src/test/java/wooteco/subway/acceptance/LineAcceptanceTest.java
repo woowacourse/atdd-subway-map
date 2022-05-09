@@ -7,9 +7,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,11 +15,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    @Sql(value = "/sql/InsertTwoStation.sql")
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -44,12 +45,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
+        List<Station> stations = response.body().jsonPath().getList("stations", Station.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(response.header("Location")).isNotBlank()
+                () -> assertThat(response.header("Location")).isNotBlank(),
+                () -> assertThat(stations).hasSize(2),
+                () -> assertThat(stations.get(0).getId()).isEqualTo(1L),
+                () -> assertThat(stations.get(1).getId()).isEqualTo(2L)
         );
     }
 
+    @Sql(value = "/sql/InsertTwoStation.sql")
     @ParameterizedTest(name = "{displayName} : {arguments}")
     @ValueSource(ints = {1, 255})
     @DisplayName("지하철 노선 이름의 길이를 1 이상 255 이하로 생성할 수 있다.")
@@ -73,12 +79,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
+        List<Station> stations = response.body().jsonPath().getList("stations", Station.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(response.header("Location")).isNotBlank()
+                () -> assertThat(response.header("Location")).isNotBlank(),
+                () -> assertThat(stations).hasSize(2),
+                () -> assertThat(stations.get(0).getId()).isEqualTo(1L),
+                () -> assertThat(stations.get(1).getId()).isEqualTo(2L)
         );
     }
 
+    @Sql(value = "/sql/InsertTwoStation.sql")
     @ParameterizedTest(name = "{displayName} : {arguments}")
     @ValueSource(ints = {0, 256})
     @DisplayName("지하철 노선 이름의 길이를 1 이상 255 이하가 아니면 생성할 수 없다.")
@@ -109,6 +120,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @Sql(value = "/sql/InsertTwoStation.sql")
     @ParameterizedTest(name = "{displayName} : {arguments}")
     @ValueSource(strings = {"", "123456789012345678901"})
     @DisplayName("지하철 노선 색의 길이를 1 이상 20 이하가 아니면 생성할 수 없다.")
@@ -139,6 +151,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @Sql(value = "/sql/InsertTwoStation.sql")
     @DisplayName("기존에 존재하는 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLineWithDuplicateName() {
@@ -183,6 +196,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @Sql(value = "/sql/InsertTwoStation.sql")
     @DisplayName("기존에 존재하는 노선 색깔로 지하철 노선을 생성한다.")
     @Test
     void createLineWithDuplicateColor() {
@@ -227,6 +241,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @Sql(value = "/sql/InsertTwoStation.sql")
     @DisplayName("지하철노선 목록을 조회한다.")
     @Test
     void getLines() {
@@ -279,6 +294,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
+    @Sql(value = "/sql/InsertTwoStation.sql")
     @DisplayName("단건의 지하철 노선을 조회한다.")
     @Test
     void getLine() {
@@ -308,14 +324,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
+        List<Station> stations = response.body().jsonPath().getList("stations", Station.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.body().jsonPath().getLong("id")).isEqualTo(createdId),
                 () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("2호선"),
-                () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo("초록색")
+                () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo("초록색"),
+                () -> assertThat(stations).hasSize(2),
+                () -> assertThat(stations.get(0).getId()).isEqualTo(1L),
+                () -> assertThat(stations.get(1).getId()).isEqualTo(2L)
         );
     }
 
+    @Sql(value = "/sql/InsertTwoStation.sql")
     @DisplayName("존재하지 않는 노선을 조회한다.")
     @Test
     void getNonExistLine() {
@@ -334,6 +355,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @Sql(value = "/sql/InsertTwoStation.sql")
     @DisplayName("노선 정보를 수정한다.")
     @Test
     void updateLine() {
@@ -386,6 +408,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @Sql(value = "/sql/InsertTwoStation.sql")
     @ParameterizedTest(name = "{displayName} : {arguments}")
     @ValueSource(ints = {0, 256})
     @DisplayName("지하철 노선 이름의 길이를 1 이상 255 이하가 아니면 수정할 수 없다.")
@@ -431,6 +454,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @Sql(value = "/sql/InsertTwoStation.sql")
     @ParameterizedTest(name = "{displayName} : {arguments}")
     @ValueSource(strings = {"", "123456789012345678901"})
     @DisplayName("지하철 노선 색의 길이를 1 이상 20 이하가 아니면 수정할 수 없다.")
@@ -476,6 +500,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @Sql(value = "/sql/InsertTwoStation.sql")
     @DisplayName("기존에 존재하는 노선 이름으로 지하철 노선을 수정한다.")
     @Test
     void updateLineWithDuplicateName() {
@@ -534,6 +559,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @Sql(value = "/sql/InsertTwoStation.sql")
     @DisplayName("기존에 존재하는 노선 색깔로 지하철 노선을 수정한다.")
     @Test
     void updateLineWithDuplicateColor() {
@@ -592,6 +618,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @Sql(value = "/sql/InsertTwoStation.sql")
     @DisplayName("존재하지 않는 노선을 수정한다.")
     @Test
     void updateNonExistLine() {
@@ -621,6 +648,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @Sql(value = "/sql/InsertTwoStation.sql")
     @DisplayName("노선을 제거한다")
     @Test
     void deleteById() {
