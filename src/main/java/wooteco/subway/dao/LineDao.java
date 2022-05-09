@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.Optional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -47,28 +48,22 @@ public class LineDao {
         };
     }
 
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String SQL = "select * from line where id = ?;";
         try {
-            return jdbcTemplate.queryForObject(SQL, rowMapper(), id);
+            return Optional.of(jdbcTemplate.queryForObject(SQL, rowMapper(), id));
         } catch (DataAccessException e) {
-            throw new NotFoundException(id + "에 해당하는 지하철 노선을 찾을 수 없습니다.");
+            return Optional.empty();
         }
     }
 
     public void update(Line line) {
         String SQL = "update line set name = ?, color = ? where id = ?;";
-        validateExistById(jdbcTemplate.update(SQL, line.getName(), line.getColor(), line.getId()), line.getId());
+        jdbcTemplate.update(SQL, line.getName(), line.getColor(), line.getId());
     }
 
     public void delete(Long id) {
         String SQL = "delete from line where id = ?";
-        validateExistById(jdbcTemplate.update(SQL, id), id);
-    }
-
-    private void validateExistById(int updateQueryResult, Long id) {
-        if (updateQueryResult == UPDATE_QUERY_EMPTY_RESULT) {
-            throw new NotFoundException(id + "에 해당하는 지하철 노선을 찾을 수 없습니다.");
-        }
+        jdbcTemplate.update(SQL, id);
     }
 }

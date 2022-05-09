@@ -7,13 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.NotFoundException;
 
 import javax.sql.DataSource;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 public class LineDaoTest {
@@ -55,17 +53,13 @@ public class LineDaoTest {
     void findById() {
         Line expected = lineDao.save(line);
 
-        Line actual = lineDao.findById(expected.getId());
-
-        assertThat(actual).isEqualTo(expected);
+        assertThat(lineDao.findById(expected.getId()).get()).isEqualTo(expected);
     }
 
-    @DisplayName("id에 맞는 노선이 없을 경우 예외를 발생시킨다.")
+    @DisplayName("id에 맞는 노선이 없을 경우 빈 Optional을 반환한다.")
     @Test
     void findByIdException() {
-        assertThatThrownBy(() -> lineDao.findById(1L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessageMatching(1L + "에 해당하는 지하철 노선을 찾을 수 없습니다.");
+        assertThat(lineDao.findById(1L).isEmpty()).isTrue();
     }
 
     @DisplayName("노선의 이름과 색깔을 수정한다.")
@@ -75,18 +69,9 @@ public class LineDaoTest {
         Line expected = new Line(saveLine.getId(), "다른 분당선", "green");
 
         lineDao.update(expected);
-        Line actual = lineDao.findById(saveLine.getId());
+        Line actual = lineDao.findById(saveLine.getId()).get();
 
         assertThat(actual).isEqualTo(expected);
-    }
-
-    @DisplayName("노선의 이름과 색깔을 수정할 때 id에 맞는 노선이 없으면 예외를 발생시킨다.")
-    @Test
-    void updateException() {
-        Line expected = new Line(1L, "다른 분당선", "green");
-
-        assertThatThrownBy(() -> lineDao.update(expected))
-                .isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("노선을 삭제한다.")
@@ -96,15 +81,6 @@ public class LineDaoTest {
 
         lineDao.delete(saveLine.getId());
 
-        assertThatThrownBy(() -> lineDao.findById(saveLine.getId()))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessageMatching(saveLine.getId() + "에 해당하는 지하철 노선을 찾을 수 없습니다.");
-    }
-
-    @DisplayName("노선을 삭제할 때 id에 맞는 노선이 없으면 예외를 발생시킨다.")
-    @Test
-    void deleteException() {
-        assertThatThrownBy(() -> lineDao.delete(1L))
-                .isInstanceOf(NotFoundException.class);
+        assertThat(lineDao.findById(saveLine.getId()).isEmpty()).isTrue();
     }
 }

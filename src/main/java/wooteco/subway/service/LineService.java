@@ -9,6 +9,7 @@ import wooteco.subway.exception.DuplicateNameException;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import wooteco.subway.exception.NotFoundException;
 
 @Service
 public class LineService {
@@ -36,11 +37,12 @@ public class LineService {
     }
 
     public LineResponse findById(Long lineId) {
-        Line line = lineDao.findById(lineId);
+        Line line = findOrThrowException(lineId);
         return new LineResponse(line.getId(), line.getName(), line.getColor(), null);
     }
 
     public void update(Long lineId, String name, String color) {
+        findOrThrowException(lineId);
         try {
             lineDao.update(new Line(lineId, name, color));
         } catch (DuplicateKeyException e) {
@@ -49,6 +51,12 @@ public class LineService {
     }
 
     public void delete(Long lineId) {
+        findOrThrowException(lineId);
         lineDao.delete(lineId);
+    }
+
+    private Line findOrThrowException(Long lineId) {
+        return lineDao.findById(lineId)
+                .orElseThrow(() -> new NotFoundException(lineId + "에 해당하는 지하철 노선을 찾을 수 없습니다."));
     }
 }

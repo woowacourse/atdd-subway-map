@@ -117,7 +117,7 @@ class LineControllerTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        Line updatedLine = lineDao.findById(line.getId());
+        Line updatedLine = lineDao.findById(line.getId()).get();
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(updatedLine.getName()).isEqualTo("다른분당선"),
@@ -167,12 +167,7 @@ class LineControllerTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
-                () -> assertThatThrownBy(() -> lineDao.findById(line.getId()))
-                        .isInstanceOf(NotFoundException.class)
-                        .hasMessageMatching(line.getId() + "에 해당하는 지하철 노선을 찾을 수 없습니다.")
-        );
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     @DisplayName("지하철 노선을 삭제할 때 id에 맞는 노선이 없으면 404 상태코드로 응답한다.")
