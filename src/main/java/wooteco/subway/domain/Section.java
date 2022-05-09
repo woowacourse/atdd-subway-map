@@ -2,6 +2,8 @@ package wooteco.subway.domain;
 
 public class Section {
 
+    private static final int DISTANCE_MINIMUM = 0;
+
     private Long id;
     private Long lineId;
     private Long upStationId;
@@ -19,6 +21,12 @@ public class Section {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    private void validateDistance(int distance) {
+        if (distance <= DISTANCE_MINIMUM) {
+            throw new IllegalArgumentException("거리는 0이하의 값을 설정할 수 없습니다.");
+        }
     }
 
     public Long getId() {

@@ -6,6 +6,7 @@ public class Sections {
 
     private static final int FIRST_STATION = 0;
     private static final int FIRST_STATION_INDEX = 0;
+    private static final int DISTANCE_MINIMUM = 0;
 
     private final List<Section> sections;
 
@@ -15,7 +16,12 @@ public class Sections {
 
     public void add(Section requestSection) {
         validateSection(requestSection);
-        saveFinalSection(requestSection);
+        if (validateFinalSection(requestSection)) {
+            saveFinalSection(requestSection);
+            return;
+        }
+        saveMiddleSection(requestSection);
+
     }
 
     private void validateSection(Section requestSection) {
@@ -35,12 +41,81 @@ public class Sections {
         }
     }
 
+    private boolean validateFinalSection(Section requestSection) {
+        return (sections.get(FIRST_STATION).getUpStationId().equals(requestSection.getDownStationId())
+                || sections.get(sections.size() - 1).getDownStationId().equals(requestSection.getUpStationId()));
+    }
+
     private void saveFinalSection(Section requestSection) {
         if (sections.get(FIRST_STATION).getUpStationId().equals(requestSection.getDownStationId())) {
             sections.add(FIRST_STATION_INDEX, requestSection);
             return;
         }
         sections.add(requestSection);
+    }
+
+    private void saveMiddleSection(Section requestSection) {
+        if (isMiddleUpSection(requestSection)) {
+            saveMiddleDownSection(requestSection);
+            return;
+        }
+        if (isMiddleDownSection(requestSection)) {
+            saveMiddleUpSection(requestSection);
+            return;
+        }
+
+        throw new IllegalArgumentException("기존 노선에 등록할 수 없는 구간입니다.");
+    }
+
+    private boolean isMiddleUpSection(Section requestSection) {
+        return sections.stream()
+                .anyMatch(section -> section.getUpStationId().equals(requestSection.getUpStationId()));
+    }
+
+    private boolean isMiddleDownSection(Section requestSection) {
+        return sections.stream()
+                .anyMatch(section -> section.getDownStationId().equals(requestSection.getDownStationId()));
+    }
+
+    private void saveMiddleUpSection(Section requestSection) {
+        final Section findSection = findIncludedSection(requestSection);
+        final int index = sections.indexOf(findSection);
+        final int changeDistance = findSection.getDistance() - requestSection.getDistance();
+        validateDistance(changeDistance);
+
+        final Section upSection = new Section(
+                findSection.getLineId(), findSection.getUpStationId(), requestSection.getUpStationId(), changeDistance);
+        sections.remove(index);
+        sections.add(index, upSection);
+        sections.add(index + 1, requestSection);
+    }
+
+    private void saveMiddleDownSection(Section requestSection) {
+        final Section findSection = findIncludedSection(requestSection);
+        final int index = sections.indexOf(findSection);
+        final int changeDistance = findSection.getDistance() - requestSection.getDistance();
+        validateDistance(changeDistance);
+
+        final Section downSection = new Section(
+                findSection.getLineId(), requestSection.getDownStationId(), findSection.getDownStationId(), changeDistance);
+        sections.remove(index);
+        sections.add(index, requestSection);
+        sections.add(index + 1, downSection);
+    }
+
+    private void validateDistance(int changeDistance) {
+        if (changeDistance <= DISTANCE_MINIMUM) {
+            throw new IllegalArgumentException("등록할 수 없는 거리 입니다.");
+        }
+    }
+
+    private Section findIncludedSection(Section requestSection) {
+        final Section findSection = sections.stream()
+                .filter(section -> section.getDownStationId().equals(requestSection.getDownStationId())
+                        || section.getUpStationId().equals(requestSection.getUpStationId()))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구역입니다."));
+        return findSection;
     }
 
     public List<Section> getSections() {

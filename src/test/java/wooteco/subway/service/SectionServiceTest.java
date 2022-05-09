@@ -60,4 +60,40 @@ class SectionServiceTest {
         assertThat(response.getStations()).extracting("name")
                         .containsExactly("강남역", "역삼역", "선릉역");
     }
+
+    @Test
+    @DisplayName("중간구간에 상행구간을 등록할 수 있다.")
+    void addUpMiddleSection() {
+        // given
+        Long stationSaveId1 = stationDao.save(new Station("강남역"));
+        Long stationSaveId2 = stationDao.save(new Station("역삼역"));
+        Long stationSaveId3 = stationDao.save(new Station("선릉역"));
+        Long lineId = lineService.save(new LineRequest("신분당선", "bg-red-600", stationSaveId1, stationSaveId2, 10));
+
+        // when
+        sectionService.addSection(lineId, new SectionRequest(stationSaveId3, stationSaveId2, 4));
+
+        // then
+        assertThat(lineService.findById(lineId).getStations()).hasSize(3)
+                .extracting("name")
+                .containsExactly("강남역", "선릉역", "역삼역");
+    }
+
+    @Test
+    @DisplayName("중간구간에 하행구간을 등록할 수 있다.")
+    void addDownMiddleSection() {
+        // given
+        Long stationSaveId1 = stationDao.save(new Station("강남역"));
+        Long stationSaveId2 = stationDao.save(new Station("역삼역"));
+        Long stationSaveId3 = stationDao.save(new Station("선릉역"));
+        Long lineId = lineService.save(new LineRequest("신분당선", "bg-red-600", stationSaveId1, stationSaveId2, 10));
+
+        // when
+        sectionService.addSection(lineId, new SectionRequest(stationSaveId1, stationSaveId3, 4));
+
+        // then
+        assertThat(lineService.findById(lineId).getStations()).hasSize(3)
+                .extracting("name")
+                .containsExactly("강남역", "선릉역", "역삼역");
+    }
 }
