@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.request.LineRequest;
-import wooteco.subway.dto.request.LineSaveRequest;
 import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.entity.LineEntity;
 
 @Service
 public class LineService {
@@ -25,12 +25,12 @@ public class LineService {
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
-        LineSaveRequest lineSaveRequest = LineSaveRequest.of(lineRequest.getName(), lineRequest.getColor());
+        LineEntity lineEntity = lineRequest.toEntity();
         Optional<Line> wrappedStation = lineDao.findByName(lineRequest.getName());
         if (wrappedStation.isPresent()) {
             throw new DuplicateKeyException(DUPLICATE_NAME_ERROR);
         }
-        Line savedLine = lineDao.save(lineSaveRequest);
+        Line savedLine = lineDao.save(lineEntity);
         return LineResponse.of(savedLine);
     }
 
@@ -49,8 +49,8 @@ public class LineService {
 
     public void updateLine(Long id, LineRequest lineRequest) {
         checkLineExist(lineDao.findById(id));
-        LineSaveRequest lineSaveRequest = LineSaveRequest.of(lineRequest.getName(), lineRequest.getColor());
-        lineDao.update(id, lineSaveRequest);
+        LineEntity lineEntity = lineRequest.toEntity();
+        lineDao.update(id, lineEntity);
     }
 
     public void deleteLine(Long id) {

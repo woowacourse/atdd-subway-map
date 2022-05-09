@@ -1,5 +1,7 @@
 package wooteco.subway.dto.request;
 
+import wooteco.subway.entity.LineEntity;
+
 public class LineRequest {
 
     private String name;
@@ -19,5 +21,9 @@ public class LineRequest {
 
     public String getColor() {
         return color;
+    }
+
+    public LineEntity toEntity() {
+        return LineEntity.of(name, color);
     }
 }

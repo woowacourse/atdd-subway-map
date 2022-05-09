@@ -12,7 +12,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.request.LineSaveRequest;
+import wooteco.subway.entity.LineEntity;
 
 @Repository
 public class LineDao {
@@ -23,17 +23,17 @@ public class LineDao {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    public Line save(LineSaveRequest lineSaveRequest) {
+    public Line save(LineEntity lineEntity) {
         String sql = "insert into LINE (name, color) values (:name, :color)";
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", lineSaveRequest.getName());
-        params.put("color", lineSaveRequest.getColor());
+        params.put("name", lineEntity.getName());
+        params.put("color", lineEntity.getColor());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder);
-        return new Line(Objects.requireNonNull(keyHolder.getKey()).longValue(), lineSaveRequest.getName(),
-                lineSaveRequest.getColor());
+        return new Line(Objects.requireNonNull(keyHolder.getKey()).longValue(), lineEntity.getName(),
+                lineEntity.getColor());
     }
 
     public List<Line> findAll() {
@@ -67,13 +67,13 @@ public class LineDao {
         return Optional.ofNullable(DataAccessUtils.singleResult(queryResult));
     }
 
-    public int update(Long id, LineSaveRequest lineSaveRequest) {
+    public int update(Long id, LineEntity lineEntity) {
         String sql = "update LINE set name = :name, color = :color where id = :id";
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
-        params.put("name", lineSaveRequest.getName());
-        params.put("color", lineSaveRequest.getColor());
+        params.put("name", lineEntity.getName());
+        params.put("color", lineEntity.getColor());
 
         return namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params));
     }
