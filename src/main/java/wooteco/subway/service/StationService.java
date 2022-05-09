@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,11 @@ public class StationService {
             .ifPresent(station -> {
                 throw new IllegalStateException(ALREADY_IN_STATION_ERROR_MESSAGE);
             });
+    }
+
+    public Station findById(Long id) {
+        Optional<Station> station = stationDao.findById(id);
+        return station.orElseThrow(() -> new NoSuchElementException(NOT_EXIST_STATION_ID_ERROR_MESSAGE));
     }
 
     public List<Station> findAll() {

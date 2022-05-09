@@ -6,7 +6,9 @@ import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 
 @Service
 public class LineService {
@@ -15,14 +17,20 @@ public class LineService {
     private static final String NOT_EXIST_LINE_ID_ERROR_MESSAGE = "해당 아이디의 노선이 없습니다.";
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
     public Line save(Line line) {
         validateDuplicatedName(line.getName());
-        return lineDao.save(line);
+        Line savedLine = lineDao.save(line);
+        Section section = new Section(savedLine.getId(), line.getUpStationId(), line.getDownStationId(),
+            line.getDistance());
+        sectionDao.save(section);
+        return savedLine;
     }
 
     private void validateDuplicatedName(String name) {

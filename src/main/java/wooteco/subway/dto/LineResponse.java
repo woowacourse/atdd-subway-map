@@ -1,8 +1,10 @@
 package wooteco.subway.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 
 public class LineResponse {
     private Long id;
@@ -28,6 +30,13 @@ public class LineResponse {
 
     public static LineResponse from(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor());
+    }
+
+    public static LineResponse of(Line line, Station upStation, Station downStation) {
+        List<StationResponse> stations = new ArrayList<>();
+        stations.add(StationResponse.from(upStation));
+        stations.add(StationResponse.from(downStation));
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }
 
     public Long getId() {

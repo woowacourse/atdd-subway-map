@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
 
 @JdbcTest
@@ -26,13 +27,14 @@ class LineServiceTest {
     @BeforeEach
     void setUp() {
         LineDao lineDao = new LineDao(jdbcTemplate);
-        lineService = new LineService(lineDao);
+        SectionDao sectionDao = new SectionDao(jdbcTemplate);
+        lineService = new LineService(lineDao, sectionDao);
     }
 
     @DisplayName("지하철 노선을 중복 생성한다.")
     @Test
     void save() {
-        Line line = new Line("신분당선", "red");
+        Line line = new Line("신분당선", "red", 1L, 2L, 10);
         lineService.save(line);
 
         assertThatThrownBy(() -> lineService.save(line))
@@ -43,8 +45,8 @@ class LineServiceTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void findAll() {
-        Line line = new Line("신분당선", "red");
-        Line line2 = new Line("분당선", "green");
+        Line line = new Line("신분당선", "red", 1L, 2L, 10);
+        Line line2 = new Line("분당선", "green", 1L, 2L, 10);
         lineService.save(line);
         lineService.save(line2);
 
@@ -54,8 +56,8 @@ class LineServiceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void update() {
-        Line line = new Line("신분당선", "red");
-        Line line2 = new Line("분당선", "green");
+        Line line = new Line("신분당선", "red", 1L, 2L, 10);
+        Line line2 = new Line("분당선", "green", 1L, 2L, 10);
 
         Line newLine = lineService.save(line);
         lineService.update(newLine.getId(), line2);
@@ -68,7 +70,7 @@ class LineServiceTest {
     @DisplayName("없는 지하철 노선을 수정한다.")
     @Test
     void updateNotExistLine() {
-        Line line = new Line("신분당선", "red");
+        Line line = new Line("신분당선", "red", 1L, 2L, 10);
 
         assertThatThrownBy(() -> lineService.update(0L, line))
             .isInstanceOf(NoSuchElementException.class)
@@ -78,7 +80,7 @@ class LineServiceTest {
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void delete() {
-        Line line = new Line("신분당선", "red");
+        Line line = new Line("신분당선", "red", 1L, 2L, 10);
 
         Line newLine = lineService.save(line);
         lineService.delete(newLine.getId());
