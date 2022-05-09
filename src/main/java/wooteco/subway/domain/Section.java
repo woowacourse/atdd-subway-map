@@ -69,6 +69,14 @@ public class Section {
                 && !(isSameUpStation(section.getUpStation()) && isSameDownStation(section.getDownStation()));
     }
 
+    public Section merge(Section section) {
+        int sumDistance = distance + section.distance;
+        if (isSameDownStation(section.upStation)) {
+            return new Section(lineId, upStation, section.downStation, sumDistance);
+        }
+        return new Section(lineId, section.downStation, upStation, sumDistance);
+    }
+
     public Long getId() {
         return id;
     }

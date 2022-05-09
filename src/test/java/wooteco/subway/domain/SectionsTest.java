@@ -139,7 +139,6 @@ public class SectionsTest {
                     .isInstanceOf(SectionCreateException.class)
                     .hasMessageContaining("더이상 구간을 삭제할 수 없습니다.");
         }
-
     }
 
     private List<Section> getSections() {

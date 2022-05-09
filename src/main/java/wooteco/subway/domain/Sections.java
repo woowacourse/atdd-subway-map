@@ -15,9 +15,7 @@ public class Sections {
     private static final String SECTION_NOT_CONNECT_MESSAGE = "구간이 연결되지 않습니다";
     private static final String SECTION_MUST_SHORTER_MESSAGE = "기존의 구간보다 긴 구간은 넣을 수 없습니다.";
     private static final String SECTION_CAN_NOT_DELETE_MESSAGE = "더이상 구간을 삭제할 수 없습니다.";
-    private static final int END_STATION = 1;
     private static final int MIN_SIZE = 1;
-    private static final int MID_SECTION = 2;
 
 
     private List<Section> values;

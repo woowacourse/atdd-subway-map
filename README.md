@@ -64,6 +64,6 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] 상행 or 하행 to ? 의 길이와 새로운 섹션의 길이 비교
     - [x] 기존 데이터 업데이트, 새로운 노선은 추가
 - [ ] 구간 삭제
-    - [ ] 전체 Section이 하나일 경우 예외 
-    - [ ] stationId를 포함한 Section을 모두 가져온다.
-    - [ ] 삭제 할 Section들 반환
+    - [x] 전체 Section이 하나일 경우 예외 
+    - [x] stationId를 포함한 Section을 모두 가져온다.
+    - [x] 삭제 할 Section들 반환
