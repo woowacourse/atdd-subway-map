@@ -16,7 +16,7 @@ import wooteco.subway.domain.Line;
 @Repository
 public class LineDao {
 
-    private static final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<Line> ROW_MAPPER = (resultSet, rowNum) ->
             new Line(resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("color"));
@@ -30,7 +30,7 @@ public class LineDao {
     public List<Line> findAll() {
         final String sql = "SELECT * FROM line";
 
-        return jdbcTemplate.query(sql, new EmptySqlParameterSource(), lineRowMapper);
+        return jdbcTemplate.query(sql, new EmptySqlParameterSource(), ROW_MAPPER);
     }
 
     public Optional<Line> findById(Long id) {
@@ -38,7 +38,7 @@ public class LineDao {
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("id", id);
 
-        return jdbcTemplate.query(sql, paramSource, lineRowMapper)
+        return jdbcTemplate.query(sql, paramSource, ROW_MAPPER)
                 .stream()
                 .findFirst();
     }
@@ -48,7 +48,7 @@ public class LineDao {
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("name", name);
 
-        return jdbcTemplate.query(sql, paramSource, lineRowMapper)
+        return jdbcTemplate.query(sql, paramSource, ROW_MAPPER)
                 .stream()
                 .findFirst();
     }

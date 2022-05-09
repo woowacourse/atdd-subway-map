@@ -16,7 +16,7 @@ import wooteco.subway.domain.Station;
 @Repository
 public class StationDao {
 
-    private static final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<Station> ROW_MAPPER = (resultSet, rowNum) ->
             new Station(resultSet.getLong("id"),
                     resultSet.getString("name"));
 
@@ -29,7 +29,7 @@ public class StationDao {
     public List<Station> findAll() {
         final String sql = "SELECT * FROM station";
 
-        return jdbcTemplate.query(sql, new EmptySqlParameterSource(), stationRowMapper);
+        return jdbcTemplate.query(sql, new EmptySqlParameterSource(), ROW_MAPPER);
     }
 
     public Optional<Station> findById(Long id) {
@@ -37,7 +37,7 @@ public class StationDao {
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("id", id);
 
-        return jdbcTemplate.query(sql, paramSource, stationRowMapper)
+        return jdbcTemplate.query(sql, paramSource, ROW_MAPPER)
                 .stream()
                 .findFirst();
     }
@@ -47,7 +47,7 @@ public class StationDao {
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("name", name);
 
-        return jdbcTemplate.query(sql, paramSource, stationRowMapper)
+        return jdbcTemplate.query(sql, paramSource, ROW_MAPPER)
                 .stream()
                 .findFirst();
     }
