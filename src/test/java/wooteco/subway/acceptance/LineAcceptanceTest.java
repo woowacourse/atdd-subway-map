@@ -218,23 +218,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("노선을 업데이트 한다.")
-    void updateLine() {
+    void update() {
         // given
-        final Map<String, String> createParams = new HashMap<>();
-        createParams.put("name", "신분당선");
-        createParams.put("color", "bg-red-600");
+        final Long upStationId = createStation(HYEHWA);
+        final Long downStationId = createStation(SINSA);
+
+        final Map<String, Object> saveParams = new HashMap<>();
+        saveParams.put("name", LINE_2);
+        saveParams.put("color", RED);
+        saveParams.put("upStationId", upStationId);
+        saveParams.put("downStationId", downStationId);
+        saveParams.put("distance", 10);
         final long id = Long.parseLong(RestAssured.given().log().all()
-                .body(createParams)
+                .body(saveParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
                 .extract()
-                .header("Location")
-                .split("/")[2]);
+                .header("Location").split("/")[2]);
+
         final Map<String, String> params = new HashMap<>();
-        params.put("name", "분당선");
-        params.put("color", "bg-blue-500");
+        params.put("name", LINE_4);
+        params.put("color", BLUE);
 
         // when
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -273,24 +279,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("지하철 노선을 삭제한다.")
-    void deleteLine() {
+    void delete() {
         // given
-        final Map<String, String> createParams = new HashMap<>();
-        createParams.put("name", "신분당선");
-        createParams.put("color", "bg-red-600");
-        final ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(createParams)
+        final Long upStationId = createStation(HYEHWA);
+        final Long downStationId = createStation(SINSA);
+
+        final Map<String, Object> saveParams = new HashMap<>();
+        saveParams.put("name", LINE_2);
+        saveParams.put("color", RED);
+        saveParams.put("upStationId", upStationId);
+        saveParams.put("downStationId", downStationId);
+        saveParams.put("distance", 10);
+        final long id = Long.parseLong(RestAssured.given().log().all()
+                .body(saveParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
-                .extract();
+                .extract()
+                .header("Location").split("/")[2]);
 
         // when
-        final String uri = createResponse.header("Location");
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .delete(uri)
+                .delete("/lines/" + id)
                 .then().log().all()
                 .extract();
 
