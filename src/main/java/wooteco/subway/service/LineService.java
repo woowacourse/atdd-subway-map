@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
@@ -52,10 +53,10 @@ public class LineService {
     }
 
     private Line checkExistLine(Long id) {
-        final Line line = lineDao.findById(id);
-        if (line == null) {
+        try {
+            return lineDao.findById(id);
+        } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("해당하는 노선이 존재하지 않습니다.");
         }
-        return line;
     }
 }

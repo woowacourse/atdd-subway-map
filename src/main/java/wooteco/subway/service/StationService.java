@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
@@ -35,16 +36,23 @@ public class StationService {
                 .collect(Collectors.toUnmodifiableList());
     }
 
+    @Transactional(readOnly = true)
+    public StationResponse findStation(Long id) {
+        checkExistStation(id);
+        final Station station = stationDao.findById(id);
+        return new StationResponse(station.getId(), station.getName());
+    }
+
     public void deleteStation(Long id) {
         checkExistStation(id);
         stationDao.deleteById(id);
     }
 
     private Station checkExistStation(Long id) {
-        final Station station = stationDao.findById(id);
-        if (station == null) {
+        try {
+            return stationDao.findById(id);
+        } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("해당하는 역이 존재하지 않습니다.");
         }
-        return station;
     }
 }
