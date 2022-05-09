@@ -12,14 +12,13 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("지하철 노선 테스트")
 @JdbcTest
 class LineDaoTest {
 
-    private LineDao lineDao;
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    private LineDao lineDao;
 
     @BeforeEach
     void setUp() {

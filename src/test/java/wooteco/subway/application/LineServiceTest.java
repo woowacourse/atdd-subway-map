@@ -1,12 +1,13 @@
 package wooteco.subway.application;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.constant.BlankArgumentException;
@@ -16,15 +17,21 @@ import wooteco.subway.exception.constant.NotExistException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-@Transactional
+@JdbcTest
 public class LineServiceTest {
 
     @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private LineDao lineDao;
+
     private LineService lineService;
 
-    @Autowired
-    private LineDao lineDao;
+    @BeforeEach
+    void setUp() {
+        lineDao = new LineDao(jdbcTemplate);
+        lineService = new LineService(lineDao);
+    }
 
     @DisplayName("지하철 노선 저장")
     @Test
@@ -34,7 +41,7 @@ public class LineServiceTest {
         assertThat(lineDao.findById(saveLine.getId())).isNotEmpty();
     }
 
-    @DisplayName("지하철 노선 빈 이름으로 저장")
+    @DisplayName("지하철 노선 빈 이름으로 저장하면 예외를 반환한다")
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void saveLineWithEmptyName(String name) {
@@ -42,7 +49,7 @@ public class LineServiceTest {
             .isInstanceOf(BlankArgumentException.class);
     }
 
-    @DisplayName("지하철 노선 빈 색깔로 저장")
+    @DisplayName("지하철 노선 빈 색깔로 저장하면 예외를 반환한다")
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void saveLineWithEmptyColor(String color) {

@@ -1,30 +1,37 @@
 package wooteco.subway.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.constant.BlankArgumentException;
 import wooteco.subway.exception.constant.DuplicateException;
 import wooteco.subway.exception.constant.NotExistException;
 
-@SpringBootTest
-@Transactional
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+@JdbcTest
 class StationServiceTest {
 
     @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private StationDao stationDao;
+
     private StationService stationService;
 
-    @Autowired
-    private StationDao stationDao;
+    @BeforeEach
+    void setUp() {
+        stationDao = new StationDao(jdbcTemplate);
+        stationService = new StationService(stationDao);
+    }
 
     @DisplayName("지하철역 저장")
     @Test

@@ -20,7 +20,7 @@ public class LineService {
     }
 
     public Line saveAndGet(String name, String color) {
-        if (lineDao.existByName(name) || lineDao.existByName(name)) {
+        if (lineDao.existByName(name) || lineDao.existByColor(name)) {
             throw new DuplicateException();
         }
         long savedLineId = lineDao.save(new Line(name, color));
