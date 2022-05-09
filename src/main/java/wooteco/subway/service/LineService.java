@@ -10,6 +10,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.error.exception.NotFoundException;
 
 @Transactional(readOnly = true)
 @Service
@@ -45,6 +46,7 @@ public class LineService {
 
     @Transactional
     public LineResponse update(Long id, LineRequest lineRequest) {
+        getLine(id);
         try {
             updateOrSave(id, lineRequest);
         } catch (DuplicateKeyException e) {
@@ -64,11 +66,12 @@ public class LineService {
 
     @Transactional
     public void deleteById(Long id) {
+        getLine(id);
         lineDao.deleteById(id);
     }
 
     private Line getLine(Long id) {
         return lineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(id + " 의 노선은 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException(id + " 의 노선은 존재하지 않습니다."));
     }
 }

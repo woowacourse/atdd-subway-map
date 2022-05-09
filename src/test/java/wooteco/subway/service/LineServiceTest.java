@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.error.exception.NotFoundException;
 
 @SpringBootTest
 @Sql("/truncate.sql")
@@ -72,7 +73,7 @@ class LineServiceTest {
     @Test
     void 존재하지_않는_노선_조회_예외발생() {
         assertThatThrownBy(() -> lineService.findById(0L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("다수의 노선을 조회한다.")
@@ -103,18 +104,15 @@ class LineServiceTest {
         );
     }
 
-    @DisplayName("존재하지 않는 노선을 수정하는 경우 새롭게 생성한다.")
+    @DisplayName("존재하지 않는 노선을 수정하는 경우 예외를 던진다.")
     @Test
     void 존재하지_않는_노선_수정() {
         String name = "2호선";
         String updateColor = "bg-blue-600";
         LineRequest updateRequest = new LineRequest(name, updateColor);
-        LineResponse lineResponse = lineService.update(0L, updateRequest);
 
-        assertAll(
-                () -> assertThat(lineResponse.getName()).isEqualTo(name),
-                () -> assertThat(lineResponse.getColor()).isEqualTo(updateColor)
-        );
+        assertThatThrownBy(() -> lineService.update(0L, updateRequest))
+                .isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("중복된 이름을 가진 노선으로 수정할 경우 예외를 던진다.")

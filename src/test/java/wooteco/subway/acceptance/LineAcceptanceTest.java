@@ -117,7 +117,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("존재하지 않는 노선을 수정할 경우 해당 id와 body 를 통해 노선을 생성한다.")
+    @DisplayName("존재하지 않는 노선을 수정할 경우 404를 반환한다.")
     @Test
     void updateLineWithNoneId() {
         Long id = 10L;
@@ -132,7 +132,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("중복된 이름을 가진 노선으로 수정할 경우 예외를 던진다.")
@@ -168,7 +168,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("존재하지 않는 노선의 id를 삭제할 경우 동일하게 204를 반환한다.")
+    @DisplayName("존재하지 않는 노선의 id를 삭제할 경우 잘못된 요청이므로 404를 반환한다.")
     @Test
     void deleteLineWithNoneId() {
         Long id = 10L;
@@ -179,7 +179,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private ExtractableResponse<Response> generateLine(String name, String color) {
