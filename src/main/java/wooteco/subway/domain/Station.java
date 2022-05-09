@@ -28,4 +28,11 @@ public class Station {
     public int hashCode() {
         return Objects.hash(name);
     }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+            "name='" + name + '\'' +
+            '}';
+    }
 }

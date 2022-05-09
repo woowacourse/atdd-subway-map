@@ -11,13 +11,32 @@ public class Sections {
         values.add(section);
     }
 
-    public void add(Section section) {
-        if (getUpDestination().equals(section.getDownStation())) {
-            values.add(0, section);
+    public void add(Section newSection) {
+        if (getUpDestination().equals(newSection.getDownStation())) {
+            values.add(0, newSection);
             return;
         }
-        if (getDownDestination().equals(section.getUpStation())) {
-            values.add(section);
+
+        if (getDownDestination().equals(newSection.getUpStation())) {
+            values.add(newSection);
+            return;
+        }
+
+        for (Section section : values) {
+            if (section.getUpStation().equals(newSection.getUpStation())) {
+                int index = values.indexOf(section);
+                values.set(index, newSection);
+                values.add(index + 1, new Section(newSection.getDownStation(), section.getDownStation(),
+                    section.getDistance() - newSection.getDistance()));
+                return;
+            }
+            if (section.getDownStation().equals(newSection.getDownStation())) {
+                int index = values.indexOf(section);
+                values.set(index, new Section(section.getUpStation(), newSection.getUpStation(),
+                    section.getDistance() - newSection.getDistance()));
+                values.add(index + 1, newSection);
+                return;
+            }
         }
     }
 
@@ -27,5 +46,9 @@ public class Sections {
 
     public Station getDownDestination() {
         return values.get(values.size() - 1).getDownStation();
+    }
+
+    public List<Section> getValues() {
+        return List.copyOf(values);
     }
 }
