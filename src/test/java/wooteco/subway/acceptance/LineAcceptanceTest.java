@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -17,22 +18,63 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
+    private Long stationId1;
+    private Long stationId2;
+
+    @BeforeEach
+    public void setUp() {
+        RestAssured.port = port;
+
+        clearAllStations();
+        clearAllLines();
+        createStations();
+    }
+
+    private void createStations() {
+        Map<String, String> params = new HashMap<>();
+
+        params.put("name", "선릉역");
+        ExtractableResponse<Response> response1 = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+        String location1 = response1.header("Location"); // "/stations/1"
+        stationId1 = Long.parseLong(location1.split("/")[2]);
+
+        params.put("name", "강남역");
+        ExtractableResponse<Response> response2 = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+        String location2 = response2.header("Location");
+        stationId2 = Long.parseLong(location2.split("/")[2]);
+    }
 
     @Test
     @DisplayName("존재하지 않는 노선을 생성한다.")
     void createLine() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "3호선");
-        params.put("color", "bg-orange-600");
+        LineRequest lineRequest = new LineRequest(
+            "3호선",
+            "bg-orange-600",
+            stationId1,
+            stationId2,
+            10
+        );
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -48,11 +90,16 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("이미 존재하는 노선을 생성할 수 없다.")
     void createLineWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "4호선");
-        params.put("color", "bg-blue-600");
+        LineRequest lineRequest = new LineRequest(
+            "3호선",
+            "bg-orange-600",
+            stationId1,
+            stationId2,
+            10
+        );
+
         RestAssured.given().log().all()
-            .body(params)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -61,7 +108,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -77,11 +124,16 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하는 노선을 조회한다. 상태코드는 200이어야 한다.")
     void findLine() {
         // given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "1호선");
-        params1.put("color", "bg-red-600");
+        LineRequest lineRequest = new LineRequest(
+            "1호선",
+            "bg-red-600",
+            stationId1,
+            stationId2,
+            10
+        );
+
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-            .body(params1)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -123,22 +175,32 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선들을 조회한다.")
     void getLines() {
         // given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "1호선");
-        params1.put("color", "bg-blue-600");
+        LineRequest lineRequest1 = new LineRequest(
+            "1호선",
+            "bg-red-600",
+            stationId1,
+            stationId2,
+            10
+        );
+
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-            .body(params1)
+            .body(lineRequest1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
             .then().log().all()
             .extract();
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "2호선");
-        params2.put("color", "bg-green-600");
+        LineRequest lineRequest2 = new LineRequest(
+            "3호선",
+            "bg-orange-600",
+            stationId1,
+            stationId2,
+            10
+        );
+
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-            .body(params2)
+            .body(lineRequest2)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -167,11 +229,16 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하는 노선을 제거한다. 상태코드는 200 이어야 한다.")
     void deleteStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "1호선");
-        params.put("color", "bg-blue-600");
+        LineRequest lineRequest = new LineRequest(
+            "1호선",
+            "bg-red-600",
+            stationId1,
+            stationId2,
+            10
+        );
+
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-            .body(params)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -204,11 +271,16 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하는 노선을 수정한다. 상태코드는 200이어야 한다.")
     void updateLine() {
         // given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "1호선");
-        params1.put("color", "bg-red-600");
+        LineRequest lineRequest = new LineRequest(
+            "1호선",
+            "bg-red-600",
+            stationId1,
+            stationId2,
+            10
+        );
+
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-            .body(params1)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -236,13 +308,17 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하지 않는 노선을 수정한다. 상태코드는 204이어야 한다.")
     void updateNonLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "1호선");
-        params.put("color", "bg-red-600");
+        LineRequest lineRequest = new LineRequest(
+            "1호선",
+            "bg-red-600",
+            stationId1,
+            stationId2,
+            10
+        );
 
         RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(params)
+            .body(lineRequest)
             .when()
             .put("/lines/1")
             .then().log().all()

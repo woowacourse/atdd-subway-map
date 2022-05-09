@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.dao.DuplicateKeyException;
 
 import wooteco.subway.dao.FakeLineDao;
+import wooteco.subway.dao.FakeSectionDao;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -19,7 +21,8 @@ import wooteco.subway.dto.LineResponse;
 class LineServiceTest {
 
     private final LineDao lineDao = new FakeLineDao();
-    private final LineService lineService = new LineService(lineDao);
+    private final SectionDao sectionDao = new FakeSectionDao();
+    private final LineService lineService = new LineService(lineDao, sectionDao);
 
     @BeforeEach
     void setUp() {

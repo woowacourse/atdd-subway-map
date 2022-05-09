@@ -6,21 +6,26 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 @Service
 public class LineService {
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
     public LineResponse save(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Long savedId = lineDao.save(line);
+        sectionDao.save(Section.from(savedId, lineRequest));
         return LineResponse.from(savedId, line);
     }
 
