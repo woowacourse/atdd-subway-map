@@ -30,7 +30,7 @@ public class AcceptanceTest {
                 .extract();
     }
 
-    protected ExtractableResponse<Response> post(String uri, Map<String, String> params) {
+    protected ExtractableResponse<Response> post(String uri, Map<String, Object> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

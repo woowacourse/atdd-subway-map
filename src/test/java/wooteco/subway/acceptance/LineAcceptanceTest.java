@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 import java.util.Arrays;
@@ -29,7 +30,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return Stream.of(
                 dynamicTest("새로운 노선 이름으로 노선을 생성한다.", () -> {
                     // when
-                    ExtractableResponse<Response> response = createLine("2호선", "green");
+                    ExtractableResponse<Response> response = createLine("2호선", "green",1L, 2L, 10);
 
                     // then
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -38,7 +39,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
                 dynamicTest("기존의 노선 이름으로 노선을 생성한다", () -> {
                     // when
-                    ExtractableResponse<Response> response = createLine("2호선", "green");
+                    ExtractableResponse<Response> response = createLine("2호선", "green",1L, 2L, 10);
 
                     // then
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -50,8 +51,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        ExtractableResponse<Response> createResponse1 = createLine("2호선", "green");
-        ExtractableResponse<Response> createResponse2 = createLine("3호선", "orange");
+        ExtractableResponse<Response> createResponse1 = createLine("2호선", "green",1L, 2L, 10);
+        ExtractableResponse<Response> createResponse2 = createLine("3호선", "orange",11L, 21L, 10);
 
         // when
         ExtractableResponse<Response> response = get("/lines");
@@ -73,7 +74,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         /// given
-        ExtractableResponse<Response> createResponse = createLine("2호선", "green");
+        ExtractableResponse<Response> createResponse = createLine("2호선", "green",1L, 2L, 10);
 
         // when
         long expectedLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
@@ -90,7 +91,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         //given
-        ExtractableResponse<Response> response = createLine("2호선", "green");
+        ExtractableResponse<Response> response = createLine("2호선", "green",1L, 2L, 10);
         long savedLineId = Long.parseLong(response.header("Location").split("/")[2]);
 
         //when
@@ -108,7 +109,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = createLine("2호선", "green");
+        ExtractableResponse<Response> createResponse = createLine("2호선", "green",1L, 2L, 10);
 
         // when
         String uri = createResponse.header("Location");
@@ -121,7 +122,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteNotExistLine() {
         // given
-        ExtractableResponse<Response> createResponse = createLine("2호선", "green");
+        ExtractableResponse<Response> createResponse = createLine("2호선", "green",1L, 2L, 10);
         String uri = createResponse.header("Location");
         delete(uri);
 
@@ -131,10 +132,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private ExtractableResponse<Response> createLine(String name, String color) {
-        Map<String, String> params = new HashMap<>();
+    private ExtractableResponse<Response> createLine(String name, String color, Long upStationId, Long downStationId, int distance) {
+        Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
 
         return post("/lines", params);
     }

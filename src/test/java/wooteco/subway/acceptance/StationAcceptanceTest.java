@@ -96,7 +96,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> createStation(String name) {
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         return post("/stations", params);
     }
