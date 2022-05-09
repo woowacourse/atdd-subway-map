@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.mockito.Mockito;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import wooteco.subway.domain.Line;
 
@@ -20,19 +19,9 @@ public class FakeLineDao extends LineDao {
 
     @Override
     public Line save(Line line) {
-        validateUnique(line);
         Line persistLine = new Line(++seq, line.getName(), line.getColor());
         lines.put(seq, persistLine);
         return persistLine;
-    }
-
-    private void validateUnique(Line line) {
-        if (lines.values()
-                .stream()
-                .anyMatch(savedLine -> savedLine.getName().equals(line.getName()) || savedLine.getColor()
-                        .equals(line.getColor()))) {
-            throw new DuplicateKeyException("");
-        }
     }
 
     @Override
@@ -54,15 +43,35 @@ public class FakeLineDao extends LineDao {
 
     @Override
     public void updateById(Long id, Line line) {
-        validateExist(id);
         Line updateLine = new Line(id, line.getName(), line.getColor());
-        validateUnique(updateLine);
         lines.put(id, updateLine);
     }
 
     @Override
     public void deleteById(Long id) {
-        validateExist(id);
         lines.remove(id);
+    }
+
+    @Override
+    public boolean existsId(Long id) {
+        return lines.values()
+                .stream()
+                .anyMatch(line -> line.getId().equals(id));
+    }
+
+    @Override
+    public boolean existsName(Line line) {
+        return lines.values()
+                .stream()
+                .filter(savedLine -> !savedLine.getId().equals(line.getId()))
+                .anyMatch(savedLine -> savedLine.getName().equals(line.getName()));
+    }
+
+    @Override
+    public boolean existsColor(Line line) {
+        return lines.values()
+                .stream()
+                .filter(savedLine -> !savedLine.getId().equals(line.getId()))
+                .anyMatch(savedLine -> savedLine.getColor().equals(line.getColor()));
     }
 }

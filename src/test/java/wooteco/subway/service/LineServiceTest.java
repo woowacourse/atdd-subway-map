@@ -7,11 +7,11 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import wooteco.subway.dao.FakeLineDao;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.DuplicateLineException;
 
 class LineServiceTest {
 
@@ -43,11 +43,11 @@ class LineServiceTest {
         lineService.create(lineRequest);
 
         assertThatThrownBy(() -> lineService.create(duplicateRequest))
-                .isInstanceOf(DuplicateKeyException.class)
-                .hasMessage("이미 존재하는 노선입니다.");
+                .isInstanceOf(DuplicateLineException.class)
+                .hasMessage("이미 존재하는 노선 이름입니다.");
     }
 
-    @DisplayName("이미 저장된 노선과 중복된 이름의 노선을 저장하려 하면 예외가 발생한다.")
+    @DisplayName("이미 저장된 노선과 중복된 색상의 노선을 저장하려 하면 예외가 발생한다.")
     @Test
     void createDuplicateColor() {
         LineRequest lineRequest = new LineRequest("2호선", "초록색");
@@ -56,8 +56,8 @@ class LineServiceTest {
         lineService.create(lineRequest);
 
         assertThatThrownBy(() -> lineService.create(duplicateRequest))
-                .isInstanceOf(DuplicateKeyException.class)
-                .hasMessage("이미 존재하는 노선입니다.");
+                .isInstanceOf(DuplicateLineException.class)
+                .hasMessage("이미 존재하는 노선 색상입니다.");
     }
 
     @DisplayName("저장된 노선을 모두 조회한다.")
@@ -89,7 +89,7 @@ class LineServiceTest {
     @Test
     void showNotExist() {
         assertThatThrownBy(() -> lineService.show(Long.MAX_VALUE))
-                .isInstanceOf(EmptyResultDataAccessException.class)
+                .isInstanceOf(DataNotFoundException.class)
                 .hasMessage("존재하지 않는 노선입니다.");
     }
 
@@ -113,22 +113,38 @@ class LineServiceTest {
         LineRequest updateRequest = new LineRequest("2호선", "초록색");
 
         assertThatThrownBy(() -> lineService.update(Long.MAX_VALUE, updateRequest))
-                .isInstanceOf(EmptyResultDataAccessException.class)
+                .isInstanceOf(DataNotFoundException.class)
                 .hasMessage("존재하지 않는 노선입니다.");
     }
 
-    @DisplayName("이미 존재하는 노선의 이름이나 색상으로 수정하려고 하면 예외가 발생한다.")
+    @DisplayName("이미 존재하는 노선의 이름으로 수정하려고 하면 예외가 발생한다.")
     @Test
-    void updateToDuplicateNameOrColor() {
+    void updateToDuplicateName() {
         LineRequest lineRequest = new LineRequest("2호선", "초록색");
         Long id = lineService.create(lineRequest).getId();
+        lineRequest = new LineRequest("8호선", "분홍색");
+        lineService.create(lineRequest);
 
-        LineRequest updateRequest = new LineRequest("8호선", "분홍색");
-        lineService.create(updateRequest);
+        LineRequest updateRequest = new LineRequest("8호선", "초록색");
 
         assertThatThrownBy(() -> lineService.update(id, updateRequest))
-                .isInstanceOf(DuplicateKeyException.class)
-                .hasMessage("이미 존재하는 노선 이름이나 색상으로 변경할 수 없습니다.");
+                .isInstanceOf(DuplicateLineException.class)
+                .hasMessage("이미 존재하는 노선 이름입니다.");
+    }
+
+    @DisplayName("이미 존재하는 노선의 색상으로 수정하려고 하면 예외가 발생한다.")
+    @Test
+    void updateToDuplicateColor() {
+        LineRequest lineRequest = new LineRequest("2호선", "초록색");
+        Long id = lineService.create(lineRequest).getId();
+        lineRequest = new LineRequest("8호선", "분홍색");
+        lineService.create(lineRequest);
+
+        LineRequest updateRequest = new LineRequest("2호선", "분홍색");
+
+        assertThatThrownBy(() -> lineService.update(id, updateRequest))
+                .isInstanceOf(DuplicateLineException.class)
+                .hasMessage("이미 존재하는 노선 색상입니다.");
     }
 
     @DisplayName("지정한 id에 해당하는 노선을 삭제한다.")
@@ -147,7 +163,7 @@ class LineServiceTest {
     @Test
     void deleteNotExist() {
         assertThatThrownBy(() -> lineService.delete(Long.MAX_VALUE))
-                .isInstanceOf(EmptyResultDataAccessException.class)
+                .isInstanceOf(DataNotFoundException.class)
                 .hasMessage("존재하지 않는 노선입니다.");
     }
 

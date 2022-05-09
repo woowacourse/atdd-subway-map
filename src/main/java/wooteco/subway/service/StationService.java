@@ -2,8 +2,6 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
@@ -25,11 +23,14 @@ public class StationService {
     @Transactional
     public StationResponse create(StationRequest stationRequest) {
         Station station = stationRequest.toEntity();
-        try {
-            Station newStation = stationDao.save(station);
-            return new StationResponse(newStation);
-        } catch (DuplicateKeyException e) {
-            throw new DuplicateStationException("이미 존재하는 역입니다.");
+        validateUnique(station);
+        Station newStation = stationDao.save(station);
+        return new StationResponse(newStation);
+    }
+
+    private void validateUnique(Station station) {
+        if (stationDao.existsName(station)) {
+            throw new DuplicateStationException("이미 존재하는 역 이름입니다.");
         }
     }
 
@@ -47,9 +48,7 @@ public class StationService {
     }
 
     private void validateExist(Long id) {
-        try {
-            stationDao.findById(id);
-        } catch (EmptyResultDataAccessException e) {
+        if (!stationDao.existsId(id)) {
             throw new DataNotFoundException("존재하지 않는 역입니다.");
         }
     }

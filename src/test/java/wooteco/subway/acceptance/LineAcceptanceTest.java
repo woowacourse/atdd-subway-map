@@ -50,7 +50,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = requestPost(params);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo("이미 존재하는 노선입니다.");
+        assertThat(response.body().asString()).isEqualTo("이미 존재하는 노선 이름입니다.");
     }
 
     @DisplayName("기존에 존재하는 노선 색상으로 노선을 생성한다.")
@@ -67,7 +67,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = requestPost(params);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo("이미 존재하는 노선입니다.");
+        assertThat(response.body().asString()).isEqualTo("이미 존재하는 노선 색상입니다.");
     }
 
     @DisplayName("전체 지하철 노선을 조회한다.")

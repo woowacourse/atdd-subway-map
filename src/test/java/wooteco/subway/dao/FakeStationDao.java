@@ -57,4 +57,18 @@ public class FakeStationDao extends StationDao {
         stations.remove(id);
     }
 
+    @Override
+    public boolean existsId(Long id) {
+        return stations.values()
+                .stream()
+                .anyMatch(station -> station.getId().equals(id));
+    }
+
+    @Override
+    public boolean existsName(Station station) {
+        return stations.values()
+                .stream()
+                .filter(savedStation -> !savedStation.getId().equals(station.getId()))
+                .anyMatch(savedStation -> savedStation.getName().equals(station.getName()));
+    }
 }

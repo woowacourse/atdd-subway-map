@@ -61,4 +61,29 @@ public class LineDao {
         jdbcTemplate.update(sql, parameters);
     }
 
+    public boolean existsId(Long id) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM LINE WHERE id = :id)";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        return Integer.valueOf(1).equals(jdbcTemplate.queryForObject(sql, parameters, Integer.class));
+    }
+
+    public boolean existsName(Line line) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM LINE WHERE name = :name AND id != :id)";
+        SqlParameterSource parameters = decideParametersForExists(line);
+        return Integer.valueOf(1).equals(jdbcTemplate.queryForObject(sql, parameters, Integer.class));
+    }
+
+    public boolean existsColor(Line line) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM LINE WHERE color = :color AND id != :id)";
+        SqlParameterSource parameters = decideParametersForExists(line);
+        return Integer.valueOf(1).equals(jdbcTemplate.queryForObject(sql, parameters, Integer.class));
+    }
+
+    private SqlParameterSource decideParametersForExists(Line line) {
+        if (line.getId() == null) {
+            return new BeanPropertySqlParameterSource(new Line(0L, line.getName(), line.getColor()));
+        }
+        return new BeanPropertySqlParameterSource(line);
+    }
+
 }

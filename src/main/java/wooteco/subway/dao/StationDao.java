@@ -52,4 +52,23 @@ public class StationDao {
         jdbcTemplate.update(sql, parameters);
     }
 
+    public boolean existsId(Long id) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM STATION WHERE id = :id)";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        return Integer.valueOf(1).equals(jdbcTemplate.queryForObject(sql, parameters, Integer.class));
+    }
+
+    public boolean existsName(Station station) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM STATION WHERE name = :name AND id != :id)";
+        SqlParameterSource parameters = decideParametersForExists(station);
+        return Integer.valueOf(1).equals(jdbcTemplate.queryForObject(sql, parameters, Integer.class));
+    }
+
+    private SqlParameterSource decideParametersForExists(Station station) {
+        if (station.getId() == null) {
+            return new BeanPropertySqlParameterSource(new Station(0L, station.getName()));
+        }
+        return new BeanPropertySqlParameterSource(station);
+    }
+
 }

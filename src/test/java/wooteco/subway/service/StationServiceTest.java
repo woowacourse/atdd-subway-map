@@ -35,7 +35,7 @@ class StationServiceTest {
 
         assertThatThrownBy(() -> stationService.create(stationRequest))
                 .isInstanceOf(DuplicateStationException.class)
-                .hasMessage("이미 존재하는 역입니다.");
+                .hasMessage("이미 존재하는 역 이름입니다.");
     }
 
     @DisplayName("저장된 역을 모두 조회한다.")

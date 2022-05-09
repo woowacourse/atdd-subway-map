@@ -110,6 +110,50 @@ class LineDaoTest {
         assertThat(lineDao.findAll()).isEmpty();
     }
 
+    @DisplayName("id 값이 저장되어 있는지 확인한다.")
+    @Test
+    void checkExistsId() {
+        Line line = new Line("2호선", "초록색");
+        Long id = lineDao.save(line).getId();
+
+        boolean actual = lineDao.existsId(id);
+
+        assertThat(actual).isTrue();
+    }
+
+    @DisplayName("이름이 저장되어 있는지 확인한다.")
+    @Test
+    void checkExistsName() {
+        Line line = new Line("2호선", "초록색");
+        lineDao.save(line);
+
+        boolean actual = lineDao.existsName(line);
+
+        assertThat(actual).isTrue();
+    }
+
+    @DisplayName("색상이 저장되어 있는지 확인한다.")
+    @Test
+    void checkExistsColor() {
+        Line line = new Line("2호선", "초록색");
+        lineDao.save(line);
+
+        boolean actual = lineDao.existsColor(line);
+
+        assertThat(actual).isTrue();
+    }
+
+    @DisplayName("id가 같은 값에 대해서는 저장되어 있는지 검사를 하지 않는다.")
+    @Test
+    void notCheckExists() {
+        Line line = new Line("2호선", "초록색");
+        Long id = lineDao.save(line).getId();
+        Line checkLine = new Line(id, line.getName(), line.getColor());
+
+        assertThat(lineDao.existsName(checkLine)).isFalse();
+        assertThat(lineDao.existsColor(checkLine)).isFalse();
+    }
+
     private void assertEquals(Line expected, Line actual) {
         assertThat(expected.getId()).isEqualTo(actual.getId());
         assertThat(expected.getName()).isEqualTo(actual.getName());
