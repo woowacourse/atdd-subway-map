@@ -40,13 +40,12 @@ public class LineService {
     }
 
     public LineResponse showLine(final Long id) {
-        final Line line = lineDao.findById(id)
+        return lineDao.findById(id)
+            .map(LineResponse::from)
             .orElseThrow(() -> new NoSuchElementException("해당 노선 ID가 존재하지 않습니다."));
-        return LineResponse.from(line);
     }
 
     public void updateLine(final Long id, final LineRequest lineRequest) {
-        validateExist(id);
         Line line = lineDao.findById(id)
             .orElseThrow(() -> new NoSuchElementException("해당 노선 ID가 존재하지 않습니다."));
         line.updateName(lineRequest.getName());
@@ -55,13 +54,6 @@ public class LineService {
     }
 
     public void deleteLine(final Long id) {
-        validateExist(id);
         lineDao.deleteById(id);
-    }
-
-    private void validateExist(final Long id) {
-        if (!lineDao.existsById(id)) {
-            throw new NoSuchElementException("해당 노선 ID가 존재하지 않습니다.");
-        }
     }
 }

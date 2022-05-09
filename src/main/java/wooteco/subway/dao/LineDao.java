@@ -34,6 +34,11 @@ public class LineDao {
         return new Line(id, line.getName(), line.getColor());
     }
 
+    public boolean existsByName(final String name) {
+        final String sql = "select exists(select * from LINE where name = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
+    }
+
     public List<Line> findAll() {
         final String sql = "select id, name, color from LINE";
         return jdbcTemplate.query(sql, rowMapper());
@@ -56,11 +61,6 @@ public class LineDao {
         );
     }
 
-    public boolean existsByName(final String name) {
-        final String sql = "select exists(select * from LINE where name = ?)";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
-    }
-
     public void update(final Long id, final Line line) {
         final String sql = "update LINE set name = ?, color = ? where id = ?";
         jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
@@ -69,10 +69,5 @@ public class LineDao {
     public void deleteById(final Long id) {
         final String sql = "delete from LINE where id = ?";
         jdbcTemplate.update(sql, id);
-    }
-
-    public boolean existsById(final Long id) {
-        final String sql = "select exists(select * from LINE where id = ?)";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
     }
 }

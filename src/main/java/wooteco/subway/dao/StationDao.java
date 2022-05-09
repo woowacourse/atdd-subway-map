@@ -34,6 +34,11 @@ public class StationDao {
         return new Station(id, station.getName());
     }
 
+    public boolean existsByName(final String name) {
+        final String sql = "select exists(select * from STATION where name = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
+    }
+
     public List<Station> findAll() {
         final String sql = "select id, name from STATION";
         return jdbcTemplate.query(sql, rowMapper());
@@ -53,11 +58,6 @@ public class StationDao {
             resultSet.getLong("id"),
             resultSet.getString("name")
         );
-    }
-
-    public boolean existsByName(final String name) {
-        final String sql = "select exists(select * from STATION where name = ?)";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
     }
 
     public void deleteById(final Long id) {

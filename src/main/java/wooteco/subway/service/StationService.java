@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -40,14 +39,6 @@ public class StationService {
     }
 
     public void deleteStation(final Long id) {
-        validateExist(id);
         stationDao.deleteById(id);
-    }
-
-    private void validateExist(final Long id) {
-        stationDao.findById(id)
-            .orElseThrow(() -> {
-                throw new NoSuchElementException("해당 지하철역 ID가 존재하지 않습니다.");
-            });
     }
 }
