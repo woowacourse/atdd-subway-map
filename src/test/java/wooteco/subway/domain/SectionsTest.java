@@ -77,4 +77,20 @@ public class SectionsTest {
                 new Section(new Station("서초"), new Station("강남"), 3))
         );
     }
+
+    @Test
+    @DisplayName("추가하려는 구간 길이가 추가할 구간 사이 길이보다 크거나 같으면 예외를 던진다.")
+    void addSectionWithOverDistanceException() {
+        //given
+        Section section = new Section(new Station("역삼"), new Station("강남"), 5);
+        Sections sections = new Sections(section);
+
+        //when
+        Section newSection = new Section(new Station("역삼"), new Station("서초"), 5);
+
+        //then
+        assertThatThrownBy(() -> sections.add(newSection))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("거리는 0보다 작을 수 없습니다.");
+    }
 }

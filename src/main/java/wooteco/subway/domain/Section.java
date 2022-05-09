@@ -9,9 +9,16 @@ public class Section {
     private final int distance;
 
     public Section(Station upStation, Station downStation, int distance) {
+        validateDistance(distance);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void validateDistance(int distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException("거리는 0보다 작을 수 없습니다.");
+        }
     }
 
     public Station getUpStation() {
