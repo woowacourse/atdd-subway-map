@@ -24,7 +24,7 @@ class SpringStationServiceTest {
     private static final StationRequest STATION_FIXTURE3 = new StationRequest("역삼역");
 
     @Autowired
-    private CommonStationService stationService;
+    private StationService stationService;
 
     @Nested
     @DisplayName("새로운 역을 저장할 때")

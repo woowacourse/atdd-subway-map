@@ -8,7 +8,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 
 @Service
-public class LineService implements CommonLineService {
+public class LineService {
 
     private final LineDao lineDao;
 
@@ -16,32 +16,27 @@ public class LineService implements CommonLineService {
         this.lineDao = lineDao;
     }
 
-    @Override
     @Transactional
     public Line save(final LineRequest lineRequest) {
         final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         return lineDao.save(line);
     }
 
-    @Override
     @Transactional(readOnly = true)
     public Line findById(final Long id) {
         return lineDao.findById(id);
     }
 
-    @Override
     @Transactional(readOnly = true)
     public List<Line> findAll() {
         return lineDao.findAll();
     }
 
-    @Override
     @Transactional
     public void update(final Long id, final LineRequest lineRequest) {
         lineDao.update(id, new Line(lineRequest.getName(), lineRequest.getColor()));
     }
 
-    @Override
     @Transactional
     public void deleteById(final Long id) {
         lineDao.deleteById(id);

@@ -8,7 +8,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 
 @Service
-public class StationService implements CommonStationService {
+public class StationService {
 
     private final StationDao stationDao;
 
@@ -17,7 +17,6 @@ public class StationService implements CommonStationService {
     }
 
     @Transactional
-    @Override
     public Station save(final StationRequest stationRequest) {
         final Station station = new Station(stationRequest.getName());
         return stationDao.save(station);
@@ -25,14 +24,12 @@ public class StationService implements CommonStationService {
 
 
     @Transactional(readOnly = true)
-    @Override
     public List<Station> findAll() {
         return stationDao.findAll();
     }
 
 
     @Transactional
-    @Override
     public void deleteById(final Long id) {
         stationDao.deleteById(id);
     }

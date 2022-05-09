@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.service.CommonLineService;
+import wooteco.subway.service.LineService;
 
 @RestController
 public class LineController {
 
-    private final CommonLineService lineService;
+    private final LineService lineService;
 
-    public LineController(final CommonLineService lineService) {
+    public LineController(final LineService lineService) {
         this.lineService = lineService;
     }
 
