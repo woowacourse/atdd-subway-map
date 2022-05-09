@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.service.StationService;
+import wooteco.subway.utils.exceptions.StationNotFoundException;
 
 @RestController
 @RequestMapping("/stations")
@@ -51,8 +52,8 @@ public class StationController {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler({EmptyResultDataAccessException.class})
+    @ExceptionHandler({StationNotFoundException.class})
     public ResponseEntity<StationResponse> handleNoContent() {
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.badRequest().build();
     }
 }
