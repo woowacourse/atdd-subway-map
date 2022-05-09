@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.StationResponse;
@@ -39,6 +41,53 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+    }
+
+    @ParameterizedTest(name = "{displayName} : {arguments}")
+    @ValueSource(strings = {"a", "1234567890"})
+    @DisplayName("지하철 역 이름의 길이를 1 이상 10 이하로 생성할 수 있다.")
+    void createStationWithValidName(String name) {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+    }
+
+    @ParameterizedTest(name = "{displayName} : {arguments}")
+    @ValueSource(strings = {"", "12345678901"})
+    @DisplayName("지하철 역 이름의 길이를 1 이상 10 이하로 생성할 수 있다.")
+    void createStationWithNonValidName(String name) {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message"))
+                        .isEqualTo("역 이름의 길이는 1 이상 10 이하여야 합니다.")
+        );
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
