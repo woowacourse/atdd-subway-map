@@ -1,6 +1,8 @@
 package wooteco.subway.domain;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import wooteco.subway.utils.exception.SectionCreateException;
 
 public class Sections {
@@ -17,6 +19,23 @@ public class Sections {
     public void add(final Section section) {
         validateDuplicateSection(section);
         validateSectionConnect(section);
+        validateExistSection(section.getUpStation(), section.getDownStation());
+        values.add(section);
+    }
+
+    private void validateExistSection(final Station upStation, final Station downStation) {
+        Map<Station, Station> upToDownStations = values.stream()
+                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
+        if (isSectionConnected(upToDownStations, upStation, downStation)
+                || isSectionConnected(upToDownStations, downStation, upStation)) {
+            throw new SectionCreateException(SECTION_ALREADY_EXIST_MESSAGE);
+        }
+    }
+
+    private boolean isSectionConnected(final Map<Station, Station> upToDownStations,
+                                       final Station upStation,
+                                       final Station downStation) {
+        return upToDownStations.containsKey(upStation) && upToDownStations.containsValue(downStation);
     }
 
     private void validateDuplicateSection(final Section section) {
@@ -33,5 +52,9 @@ public class Sections {
                 .filter(value -> value.haveStation(section.getUpStation(), section.getDownStation()))
                 .findAny()
                 .orElseThrow(() -> new SectionCreateException(SECTION_NOT_CONNECT_MESSAGE));
+    }
+
+    public List<Section> getValues() {
+        return List.copyOf(values);
     }
 }
