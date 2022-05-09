@@ -20,8 +20,7 @@ public class StationService {
     }
 
     private void validateDuplicationName(Station station) {
-        List<Station> stations = stationDao.findAll();
-        if (stations.contains(station)) {
+        if (stationDao.exists(station)) {
             throw new IllegalArgumentException("중복된 이름이 존재합니다.");
         }
     }

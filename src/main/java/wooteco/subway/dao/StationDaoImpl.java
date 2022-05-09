@@ -51,4 +51,10 @@ public class StationDaoImpl implements StationDao{
         int updateSize = jdbcTemplate.update(sql, id);
         return updateSize != 0;
     }
+
+    @Override
+    public boolean exists(Station station) {
+        final String sql = "SELECT EXISTS (SELECT * FROM station WHERE name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, station.getName());
+    }
 }

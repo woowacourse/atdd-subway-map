@@ -29,4 +29,9 @@ public class FakeStationDao implements StationDao{
     public boolean deleteById(Long id) {
         return stations.removeIf(it -> it.getId().equals(id));
     }
+
+    @Override
+    public boolean exists(Station station) {
+        return stations.contains(station);
+    }
 }
