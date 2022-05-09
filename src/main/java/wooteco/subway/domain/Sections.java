@@ -4,6 +4,7 @@ import java.util.List;
 
 public class Sections {
 
+    public final int limitSectionSize = 1;
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -11,10 +12,10 @@ public class Sections {
     }
 
     public boolean hasOneStation(Long stationId) {
-        Long count = sections.stream()
+        long count = sections.stream()
                 .filter(it -> it.getUpStationId().equals(stationId) || it.getDownStationId().equals(stationId))
                 .count();
-        return stationId.equals(count);
+        return count == 1;
     }
 
     public Long getSectionId(Long stationId) {
@@ -105,5 +106,15 @@ public class Sections {
                 .filter(it -> it.getDownStationId().equals(downStationId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 대상이 존재하지 않습니다."));
+    }
+
+    public void validateSize() {
+        if (sections.size() == limitSectionSize) {
+            throw new IllegalArgumentException("[ERROR] 더 이상 삭제할 수 없습니다.");
+        }
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }

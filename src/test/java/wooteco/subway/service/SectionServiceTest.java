@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.jdbc.JdbcSectionDao;
 import wooteco.subway.service.dto.section.SectionRequestDto;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 class SectionServiceTest {
 
     private SectionService sectionService;
-    private SectionDao sectionDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -26,13 +25,14 @@ class SectionServiceTest {
     @BeforeEach
     void setUp() {
         sectionService = new SectionService(new JdbcSectionDao(jdbcTemplate));
-        sectionDao = new JdbcSectionDao(jdbcTemplate);
     }
 
     @Test
     @DisplayName("구간을 추가한다")
     void createSection() {
         assertDoesNotThrow(() -> sectionService.create(new SectionRequestDto(1L, 1L, 2L, 10)));
+
+        assertThat(sectionService.findAllByLineId(1L).getSections()).hasSize(1);
     }
 
     @Test
@@ -53,6 +53,7 @@ class SectionServiceTest {
     @DisplayName("등록된 지하철역 구간을 재입력할 수 없다.")
     void createSectionFailCase3() {
         sectionService.create(new SectionRequestDto(1L, 2L, 3L, 10));
+
         assertThatThrownBy(() -> sectionService.create(new SectionRequestDto(1L, 2L, 3L, 10)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -65,7 +66,8 @@ class SectionServiceTest {
 
         assertAll(
                 () -> assertDoesNotThrow(() -> sectionService.create(new SectionRequestDto(1L, 1L, 2L, 10))),
-                () -> assertDoesNotThrow(() -> sectionService.create(new SectionRequestDto(1L, 4L, 5L, 10)))
+                () -> assertDoesNotThrow(() -> sectionService.create(new SectionRequestDto(1L, 4L, 5L, 10))),
+                () -> assertThat(sectionService.findAllByLineId(1L).getSections()).hasSize(4)
         );
     }
 
@@ -76,7 +78,8 @@ class SectionServiceTest {
 
         assertAll(
                 () -> assertDoesNotThrow(() -> sectionService.create(new SectionRequestDto(1L, 1L, 2L, 3))),
-                () -> assertDoesNotThrow(() -> sectionService.create(new SectionRequestDto(1L, 3L, 4L, 3)))
+                () -> assertDoesNotThrow(() -> sectionService.create(new SectionRequestDto(1L, 3L, 4L, 3))),
+                () -> assertThat(sectionService.findAllByLineId(1L).getSections()).hasSize(3)
         );
     }
 
@@ -109,7 +112,10 @@ class SectionServiceTest {
         sectionService.create(new SectionRequestDto(1L, 2L, 3L, 10));
         sectionService.create(new SectionRequestDto(1L, 3L, 4L, 10));
 
-        assertDoesNotThrow(() -> sectionService.delete(1L, 1L));
+        assertAll(
+                () -> assertDoesNotThrow(() -> sectionService.delete(1L, 1L)),
+                () -> assertThat(sectionService.findAllByLineId(1L).getSections()).hasSize(2)
+        );
     }
 
     @Test
@@ -119,6 +125,10 @@ class SectionServiceTest {
         sectionService.create(new SectionRequestDto(1L, 2L, 3L, 10));
         sectionService.create(new SectionRequestDto(1L, 3L, 4L, 10));
 
-        assertDoesNotThrow(() -> sectionService.delete(1L, 2L));
+        assertAll(
+                () -> assertDoesNotThrow(() -> sectionService.delete(1L, 2L)),
+                () -> assertDoesNotThrow(() -> sectionService.delete(1L, 3L)),
+                () -> assertThat(sectionService.findAllByLineId(1L).getSections()).hasSize(1)
+        );
     }
 }

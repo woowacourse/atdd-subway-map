@@ -18,7 +18,7 @@ public class SectionService {
 
     public Long create(SectionRequestDto sectionRequestDto) {
         Section newSection = ServiceDtoAssembler.Section(sectionRequestDto);
-        Sections sections = new Sections(sectionDao.findAllByLineId(newSection.getLineId()));
+        Sections sections = findAllByLineId(newSection.getLineId());
         sections.validateAddNewSection(newSection);
 
         if (sections.isUpStationId(newSection.getUpStationId())) {
@@ -29,6 +29,10 @@ public class SectionService {
         }
 
         return sectionDao.create(newSection).getId();
+    }
+
+    public Sections findAllByLineId(Long lineId){
+        return new Sections(sectionDao.findAllByLineId(lineId));
     }
 
     private void updateUpStationId(Sections sections, Section newSection) {
@@ -60,7 +64,8 @@ public class SectionService {
     }
 
     public void delete(Long lineId, Long stationId) {
-        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        Sections sections = findAllByLineId(lineId);
+        sections.validateSize();
 
         if (sections.hasOneStation(stationId)) {
             deleteOneStation(sections, stationId);
