@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.FakeLineDao;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.service.dto.line.LineFindResponse;
+import wooteco.subway.service.dto.line.LineSaveRequest;
+import wooteco.subway.service.dto.line.LineSaveResponse;
 
 class LineServiceTest {
 
@@ -31,11 +34,11 @@ class LineServiceTest {
     @Test
     void save() {
         // given
-        Line line = new Line("1호선", "bg-red-600");
+        LineSaveRequest line = new LineSaveRequest("1호선", "bg-red-600");
 
         // when
-        Long savedId = lineService.save(line);
-        Line line1 = lineDao.findById(savedId).get();
+        LineSaveResponse savedLine = lineService.save(line);
+        Line line1 = lineDao.findById(savedLine.getId()).get();
 
         // then
         assertThat(line.getName()).isEqualTo(line1.getName());
@@ -44,8 +47,8 @@ class LineServiceTest {
     @Test
     void validateDuplication() {
         // given
-        Line line1 = new Line("1호선", "bg-red-600");
-        Line line2 = new Line("1호선", "bg-red-600");
+        LineSaveRequest line1 = new LineSaveRequest("1호선", "bg-red-600");
+        LineSaveRequest line2 = new LineSaveRequest("1호선", "bg-red-600");
 
         // when
         lineService.save(line1);
@@ -59,8 +62,8 @@ class LineServiceTest {
     @Test
     void findAll() {
         // given
-        Line line1 = new Line("1호선", "bg-red-600");
-        Line line2 = new Line("2호선", "bg-green-600");
+        LineSaveRequest line1 = new LineSaveRequest("1호선", "bg-red-600");
+        LineSaveRequest line2 = new LineSaveRequest("2호선", "bg-green-600");
 
         // when
         lineService.save(line1);
@@ -69,7 +72,7 @@ class LineServiceTest {
         // then
         List<String> names = lineService.findAll()
             .stream()
-            .map(Line::getName)
+            .map(LineFindResponse::getName)
             .collect(Collectors.toList());
 
         assertThat(names)
@@ -80,33 +83,33 @@ class LineServiceTest {
     @Test
     void delete() {
         // given
-        Line line = new Line("1호선", "bg-red-600");
-        Long savedId = lineService.save(line);
+        LineSaveRequest line = new LineSaveRequest("1호선", "bg-red-600");
+        LineSaveResponse savedLine = lineService.save(line);
 
         // when
-        lineService.deleteById(savedId);
+        lineService.deleteById(savedLine.getId());
 
         // then
         List<Long> lineIds = lineService.findAll()
             .stream()
-            .map(Line::getId)
+            .map(LineFindResponse::getId)
             .collect(Collectors.toList());
 
         assertThat(lineIds)
             .hasSize(0)
-            .doesNotContain(savedId);
+            .doesNotContain(savedLine.getId());
     }
 
     @Test
     void update() {
         // given
-        Line originLine = new Line("1호선", "bg-red-600");
-        Long savedId = lineService.save(originLine);
+        LineSaveRequest originLine = new LineSaveRequest("1호선", "bg-red-600");
+        LineSaveResponse savedLine = lineService.save(originLine);
 
         // when
         Line newLine = new Line("2호선", "bg-green-600");
-        lineService.updateById(savedId, newLine);
-        Line line = lineDao.findById(savedId).get();
+        lineService.updateById(savedLine.getId(), newLine);
+        Line line = lineDao.findById(savedLine.getId()).get();
 
         // then
         assertThat(line).isEqualTo(newLine);

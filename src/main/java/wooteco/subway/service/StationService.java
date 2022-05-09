@@ -21,8 +21,8 @@ public class StationService {
     public StationSaveResponse save(StationSaveRequest stationSaveRequest) {
         Station station = new Station(stationSaveRequest.getName());
         validateDuplicationName(station);
-        stationDao.save(station);
-        return new StationSaveResponse(station.getId(), station.getName());
+        Station savedStation = stationDao.save(station);
+        return new StationSaveResponse(savedStation.getId(), savedStation.getName());
     }
 
     private void validateDuplicationName(Station station) {

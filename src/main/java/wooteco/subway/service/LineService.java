@@ -1,21 +1,28 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.service.dto.line.LineFindResponse;
+import wooteco.subway.service.dto.line.LineSaveRequest;
+import wooteco.subway.service.dto.line.LineSaveResponse;
 
 @Service
 public class LineService {
+
     private final LineDao lineDao;
 
     public LineService(LineDao lineDao) {
         this.lineDao = lineDao;
     }
 
-    public Long save(Line line) {
+    public LineSaveResponse save(LineSaveRequest lineSaveRequest) {
+        Line line = new Line(lineSaveRequest.getName(), lineSaveRequest.getColor());
         validateDuplicationName(line);
-        return lineDao.save(line);
+        Long savedId = lineDao.save(line);
+        return new LineSaveResponse(savedId, line.getName(), line.getColor());
     }
 
     private void validateDuplicationName(Line line) {
@@ -24,8 +31,11 @@ public class LineService {
         }
     }
 
-    public List<Line> findAll() {
-        return lineDao.findAll();
+    public List<LineFindResponse> findAll() {
+        List<Line> lines = lineDao.findAll();
+        return lines.stream()
+            .map(i -> new LineFindResponse(i.getId(), i.getName(), i.getColor()))
+            .collect(Collectors.toList());
     }
 
     public boolean deleteById(Long id) {

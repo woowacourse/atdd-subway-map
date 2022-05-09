@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.dto.line.LineFindResponse;
+import wooteco.subway.service.dto.line.LineSaveRequest;
+import wooteco.subway.service.dto.line.LineSaveResponse;
 import wooteco.subway.ui.dto.LineRequest;
 import wooteco.subway.ui.dto.LineResponse;
 
@@ -29,16 +32,18 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@Valid @RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Long savedId = lineService.save(line);
-        LineResponse lineResponse = new LineResponse(savedId, line.getName(), line.getColor(),
+        LineSaveResponse lineSaveResponse = lineService.save(
+            new LineSaveRequest(lineRequest.getName(), lineRequest.getColor()));
+        LineResponse lineResponse = new LineResponse(lineSaveResponse.getId(),
+            lineSaveResponse.getName(), lineSaveResponse.getColor(),
             new ArrayList<>());
-        return ResponseEntity.created(URI.create("/lines/" + savedId)).body(lineResponse);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
+            .body(lineResponse);
     }
 
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineService.findAll();
+        List<LineFindResponse> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
             .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), new ArrayList<>()))
             .collect(Collectors.toList());
