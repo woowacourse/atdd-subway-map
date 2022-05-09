@@ -14,7 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 
 import javax.sql.DataSource;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.domain.Line;
+import wooteco.subway.domain.line.Line;
 
 @JdbcTest
 class JdbcLineDaoTest {

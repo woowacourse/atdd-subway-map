@@ -2,8 +2,8 @@ package wooteco.subway.service.dto;
 
 import java.util.Collections;
 
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.service.dto.line.LineResponseDto;
 import wooteco.subway.service.dto.station.StationResponseDto;
 

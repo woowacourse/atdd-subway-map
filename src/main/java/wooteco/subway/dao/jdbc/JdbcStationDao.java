@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.station.Station;
 
 @Repository
 public class JdbcStationDao implements StationDao {

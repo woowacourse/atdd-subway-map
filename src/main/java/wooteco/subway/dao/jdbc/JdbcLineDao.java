@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.domain.Line;
+import wooteco.subway.domain.line.Line;
 
 @Repository
 public class JdbcLineDao implements LineDao {
