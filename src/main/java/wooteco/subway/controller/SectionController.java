@@ -1,5 +1,6 @@
 package wooteco.subway.controller;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -26,7 +27,7 @@ public class SectionController {
 
     @PostMapping
     public ResponseEntity<Void> saveSection(@PathVariable @Positive(message = "노선의 id는 양수 값만 들어올 수 있습니다.") long lineId,
-                                            @RequestBody SectionSaveRequest sectionSaveRequest) {
+                                            @RequestBody @Valid SectionSaveRequest sectionSaveRequest) {
         sectionService.save(lineId, sectionSaveRequest);
         return ResponseEntity.ok().build();
     }
