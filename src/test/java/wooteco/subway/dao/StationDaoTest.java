@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
@@ -54,8 +55,7 @@ class StationDaoTest {
         void save_Fail_If_Exists() {
             stationDao.save(STATION_FIXTURE);
             assertThatThrownBy(() -> stationDao.save(STATION_FIXTURE))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("이미 존재하는 지하철역입니다. Station{name='선릉역'}");
+                    .isInstanceOf(DuplicateKeyException.class);
         }
     }
 
@@ -70,29 +70,16 @@ class StationDaoTest {
         assertThat(stationDao.findAll()).isEqualTo(List.of(STATION_FIXTURE, STATION_FIXTURE2, STATION_FIXTURE3));
     }
 
-    @Nested
-    @DisplayName("아이디로 지하철역을 삭제할 떄")
-    class DeleteStationTest {
+    @Test
+    @DisplayName("아이디가 존재하면 아이디로 지하철역을 삭제할 수 있다")
+    void deleteById() {
+        final Station station = stationDao.save(STATION_FIXTURE);
+        final List<Station> stations = stationDao.findAll();
+        stationDao.deleteById(station.getId());
+        final List<Station> afterDelete = stationDao.findAll();
 
-        @Test
-        @DisplayName("아이디가 존재하면 아이디로 지하철역을 삭제할 수 있다")
-        void deleteById() {
-            final Station station = stationDao.save(STATION_FIXTURE);
-            final List<Station> stations = stationDao.findAll();
-            stationDao.deleteById(station.getId());
-            final List<Station> afterDelete = stationDao.findAll();
-
-            assertThat(stations).isNotEmpty();
-            assertThat(afterDelete).isEmpty();
-        }
-
-        @Test
-        @DisplayName("아이디가 존재하지 않으면 예외를 던진다.")
-        void delete_By_Id_Fail() {
-            assertThatThrownBy(() -> stationDao.deleteById(1L))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("요청한 지하철 역이 존재하지 않습니다. id=1");
-        }
+        assertThat(stations).isNotEmpty();
+        assertThat(afterDelete).isEmpty();
     }
 
 }
