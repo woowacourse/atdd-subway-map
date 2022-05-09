@@ -18,4 +18,6 @@ public interface SectionDao {
     Long findLineOrderById(Long id);
 
     void updateLineOrder(Long lineId, Long lineOrder);
+
+    boolean existByLineId(Long lineId);
 }

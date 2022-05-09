@@ -166,4 +166,29 @@ class JdbcSectionDaoTest {
         // then
         assertThat(sectionDao.findLineOrderById(givenSectionId)).isEqualTo(1L);
     }
+
+    @Test
+    @DisplayName("입력받은 lineId가 SECTION에 존재하는 지 확인한다")
+    void hasLineId() {
+        // given
+        sectionDao.save(GIVEN_SECTION);
+
+        // when
+        boolean result = sectionDao.existByLineId(GIVEN_SECTION.getLineId());
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("입력받은 lineId가 SECTION에 존재하지 않는 것을 확인한다")
+    void hasNotLineId() {
+        // given
+        
+        // when
+        boolean result = sectionDao.existByLineId(2L);
+
+        // then
+        assertThat(result).isFalse();
+    }
 }
