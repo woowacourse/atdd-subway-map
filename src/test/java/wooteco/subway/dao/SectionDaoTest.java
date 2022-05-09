@@ -25,14 +25,11 @@ public class SectionDaoTest {
     @Autowired
     private DataSource dataSource;
 
-    private StationDao stationDao;
-    private LineDao lineDao;
     private SectionDao sectionDao;
 
     private Station savedStation1;
     private Station savedStation2;
     private Station savedStation3;
-    private Station savedStation4;
 
     private Line savedLine1;
 
@@ -40,14 +37,13 @@ public class SectionDaoTest {
 
     @BeforeEach
     void setUp() {
-        stationDao = new StationDao(jdbcTemplate, dataSource);
-        lineDao = new LineDao(jdbcTemplate, dataSource);
+        StationDao stationDao = new StationDao(jdbcTemplate, dataSource);
+        LineDao lineDao = new LineDao(jdbcTemplate, dataSource);
         sectionDao = new SectionDao(jdbcTemplate, dataSource);
 
         savedStation1 = stationDao.save(new Station("선릉역"));
         savedStation2 = stationDao.save(new Station("선정릉역"));
         savedStation3 = stationDao.save(new Station("한티역"));
-        savedStation4 = stationDao.save(new Station("도곡역"));
 
         savedLine1 = lineDao.save(new Line("분당선", "yellow"));
     }
@@ -96,5 +92,17 @@ public class SectionDaoTest {
         List<Section> sections = sectionDao.findAllByLineId(savedLine1.getId());
 
         assertThat(sections).containsExactly(savedSection1, savedSection2);
+    }
+
+    @DisplayName("노선 id에 해당하는 모든 구간 정보를 삭제한다.")
+    @Test
+    void deleteAllByLineId() {
+        sectionDao.insert(new Section(savedLine1.getId(), savedStation1.getId(), savedStation2.getId(), 10));
+        sectionDao.insert(new Section(savedLine1.getId(), savedStation2.getId(), savedStation3.getId(), 10));
+
+        sectionDao.deleteAllByLineId(savedLine1.getId());
+        List<Section> sections = sectionDao.findAllByLineId(savedLine1.getId());
+
+        assertThat(sections).isEmpty();
     }
 }
