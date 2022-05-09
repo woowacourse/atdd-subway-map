@@ -22,6 +22,10 @@ public class SectionWithStation {
         validateDistinctStation();
     }
 
+    public SectionWithStation(Long lineId, Station upStation, Station downStation, int distance) {
+        this(0L, lineId, upStation, downStation, distance);
+    }
+
     public static SectionWithStation of(Section section, Station upStation, Station downStation) {
         return new SectionWithStation(section.getId(), section.getLineId(), upStation, downStation,
                 section.getDistance());
@@ -31,10 +35,6 @@ public class SectionWithStation {
         if (upStation.equals(downStation)) {
             throw new IllegalArgumentException(SAME_STATION_ERROR_MESSAGE);
         }
-    }
-
-    public SectionWithStation(Long lineId, Station upStation, Station downStation, int distance) {
-        this(0L, lineId, upStation, downStation, distance);
     }
 
     public Long getId() {

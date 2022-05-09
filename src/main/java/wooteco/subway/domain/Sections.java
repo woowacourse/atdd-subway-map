@@ -57,7 +57,7 @@ public class Sections {
     private SectionWithStation getFirstSection() {
         return sections.stream()
                 .filter(section -> isFirstUpStation(section.getUpStation()))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("모든 상행과 하행이 연결됩니다."));
+                .findFirst().orElse(sections.get(0));
     }
 
     public boolean isFirstUpStation(Station station) {

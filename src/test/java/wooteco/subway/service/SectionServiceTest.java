@@ -170,7 +170,7 @@ class SectionServiceTest extends ServiceTest {
         sectionService.save(SECTION_4);
 
         //when
-        sectionService.deleteSection(saveLine.getId(),saveStation.getId());
+        sectionService.deleteSection(saveLine.getId(), saveStation.getId());
 
         //then
         assertThat(sectionService.findStationsOfLine(saveLine.getId()))
@@ -191,11 +191,11 @@ class SectionServiceTest extends ServiceTest {
         sectionService.save(SECTION_4);
 
         //when
-        sectionService.deleteSection(saveLine.getId(),saveStation4.getId());
+        sectionService.deleteSection(saveLine.getId(), saveStation4.getId());
 
         //then
         assertThat(sectionService.findStationsOfLine(saveLine.getId()))
-                .containsExactly(saveStation,saveStation2, saveStation3);
+                .containsExactly(saveStation, saveStation2, saveStation3);
     }
 
     @DisplayName("노선의 중간 역을 지울 수 있다.")
@@ -212,11 +212,11 @@ class SectionServiceTest extends ServiceTest {
         sectionService.save(SECTION_4);
 
         //when
-        sectionService.deleteSection(saveLine.getId(),saveStation2.getId());
+        sectionService.deleteSection(saveLine.getId(), saveStation2.getId());
 
         //then
         assertThat(sectionService.findStationsOfLine(saveLine.getId()))
-                .containsExactly(saveStation,saveStation3, saveStation4);
+                .containsExactly(saveStation, saveStation3, saveStation4);
         assertThat(sectionService.findById(4L).getDistance())
                 .isEqualTo(15);
     }
@@ -231,7 +231,7 @@ class SectionServiceTest extends ServiceTest {
         sectionService.save(SECTION);
 
         //when then
-        assertThatThrownBy(() -> sectionService.deleteSection(saveLine.getId(),saveStation.getId()))
+        assertThatThrownBy(() -> sectionService.deleteSection(saveLine.getId(), saveStation.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 지하철 노선은 1개 이하의 구간을 가지고 있어 역을 삭제할 수 없습니다.");
     }

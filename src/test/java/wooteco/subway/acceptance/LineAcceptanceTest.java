@@ -1,9 +1,6 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.Fixtures.LINE;
-import static wooteco.subway.Fixtures.STATION;
-import static wooteco.subway.Fixtures.STATION_2;
 import static wooteco.subway.Fixtures.getStation;
 
 import io.restassured.response.ExtractableResponse;
@@ -14,7 +11,6 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationRequest;
@@ -118,7 +114,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(createLine)
                 .isEqualTo(lineResponse);
         assertThat(response.body().asString())
-                .contains("{\"id\":1,\"name\":\"신분당선\",\"color\":\"red\",\"stations\":[{\"id\":1,\"name\":\"강남역\"},{\"id\":2,\"name\":\"선릉역\"}]}");
+                .contains(
+                        "{\"id\":1,\"name\":\"신분당선\",\"color\":\"red\",\"stations\":[{\"id\":1,\"name\":\"강남역\"},{\"id\":2,\"name\":\"선릉역\"}]}");
     }
 
     @DisplayName("지하철 노선을 수정한다.")

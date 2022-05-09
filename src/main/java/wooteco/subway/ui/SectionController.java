@@ -21,7 +21,6 @@ public class SectionController {
     }
 
 
-
     @PostMapping("/{id}/sections")
     public ResponseEntity<Void> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
         sectionService.save(sectionRequest.toEntity(id));

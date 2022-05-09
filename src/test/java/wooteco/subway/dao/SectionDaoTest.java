@@ -3,7 +3,6 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static wooteco.subway.Fixtures.LINE;
-import static wooteco.subway.Fixtures.SECTION;
 import static wooteco.subway.Fixtures.STATION;
 import static wooteco.subway.Fixtures.STATION_2;
 import static wooteco.subway.Fixtures.STATION_3;
