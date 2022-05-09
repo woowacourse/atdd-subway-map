@@ -17,6 +17,7 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.utils.exceptions.LineNotFoundException;
+import wooteco.subway.utils.exceptions.StationNotFoundException;
 
 @Service
 public class LineService {
@@ -73,11 +74,13 @@ public class LineService {
         Set<StationResponse> stations = new LinkedHashSet<>();
 
         for (Section section : sections) {
-            Station upStation = stationDao.findById(section.getUpStationId());
-            Station downStation = stationDao.findById(section.getDownStationId());
+            Station upStation = stationDao.findById(section.getUpStationId())
+                    .orElseThrow(() -> new StationNotFoundException(section.getUpStationId()));
+            Station downStation = stationDao.findById(section.getDownStationId())
+                    .orElseThrow(() -> new StationNotFoundException(section.getDownStationId()));
             stations.add(new StationResponse(upStation));
             stations.add(new StationResponse(downStation));
         }
-        return new ArrayList<StationResponse>(stations);
+        return new ArrayList<>(stations);
     }
 }
