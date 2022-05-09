@@ -10,7 +10,7 @@ import wooteco.subway.domain.repository.StationRepository;
 import wooteco.subway.domain.repository.StationRepositoryImpl;
 import wooteco.subway.service.dto.StationRequest;
 import wooteco.subway.service.dto.StationResponse;
-import wooteco.subway.utils.exception.NameDuplicatedException;
+import wooteco.subway.utils.exception.DuplicatedException;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -48,7 +48,7 @@ class StationServiceTest {
         stationRepository.save(new Station("신림역"));
         assertThatThrownBy(
                 () -> stationService.save(new StationRequest("신림역"))
-        ).isInstanceOf(NameDuplicatedException.class);
+        ).isInstanceOf(DuplicatedException.class);
     }
 
     @DisplayName("모든 역을 조회한다.")

@@ -11,7 +11,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.domain.repository.*;
 import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.LineResponse;
-import wooteco.subway.utils.exception.NameDuplicatedException;
+import wooteco.subway.utils.exception.DuplicatedException;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -63,7 +63,7 @@ public class LineServiceTest {
     void createDuplicateName() {
         lineRepository.save(new Line("분당선", "bg-red-600"));
         assertThatThrownBy(() -> lineService.create(new LineRequest("분당선", "bg-red-600")))
-                .isInstanceOf(NameDuplicatedException.class);
+                .isInstanceOf(DuplicatedException.class);
     }
 
     @DisplayName("모든 노선을 조회한다.")

@@ -6,7 +6,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.domain.repository.StationRepository;
 import wooteco.subway.service.dto.StationRequest;
 import wooteco.subway.service.dto.StationResponse;
-import wooteco.subway.utils.exception.NameDuplicatedException;
+import wooteco.subway.utils.exception.DuplicatedException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +30,7 @@ public class StationService {
 
     private void validateDuplicateName(StationRequest stationRequest) {
         if (stationRepository.existByName(stationRequest.getName())) {
-            throw new NameDuplicatedException("[ERROR] 이미 존재하는 역의 이름입니다.");
+            throw new DuplicatedException("[ERROR] 이미 존재하는 역의 이름입니다.");
         }
     }
 

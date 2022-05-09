@@ -7,7 +7,10 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.domain.repository.SectionRepository;
 import wooteco.subway.domain.repository.StationRepository;
 import wooteco.subway.service.dto.SectionRequest;
+import wooteco.subway.utils.exception.DuplicatedException;
 import wooteco.subway.utils.exception.NotFoundException;
+
+import java.util.List;
 
 @Transactional
 @Service
@@ -23,14 +26,24 @@ public class SectionService {
     }
 
     public Section create(Long lineId, SectionRequest sectionRequest) {
+        //TODO: validateExist >> 노선에 해당 section이 있다면 추가 불가능
+        List<Section> sections = sectionRepository.findAllByLineId(lineId);
+        validateDuplicate(sectionRequest, sections);
 
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
                 .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, sectionRequest.getUpStationId())));
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
                 .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_STATION_MESSAGE, sectionRequest.getDownStationId())));
-
         Section section = Section.create(lineId, upStation, downStation, sectionRequest.getDistance());
         return sectionRepository.save(section);
     }
 
+    private void validateDuplicate(SectionRequest sectionRequest, List<Section> sections) {
+        sections.stream()
+                .filter(section -> section.getDownStation().getId().equals(sectionRequest.getDownStationId()) &&
+                        section.getUpStation().getId().equals(sectionRequest.getUpStationId()))
+                .forEach(section -> {
+                    throw new DuplicatedException("[ERROR] 이미 노선에 존재하는 구간입니다.");
+                });
+    }
 }

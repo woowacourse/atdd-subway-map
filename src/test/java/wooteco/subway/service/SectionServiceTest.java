@@ -11,10 +11,12 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.domain.repository.*;
 import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.SectionRequest;
+import wooteco.subway.utils.exception.DuplicatedException;
 
 import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
@@ -59,5 +61,29 @@ class SectionServiceTest {
                 () -> assertThat(section.getDistance()).isEqualTo(5),
                 () -> assertThat(section.getUpStation().getName()).isEqualTo("신림역")
         );
+    }
+
+    @DisplayName("이미 존재하는 구간을 추가할 때 예외가 발생한다.")
+    @Test
+    void createFailureWhenDuplicate() {
+        Station upStation = stationRepository.save(new Station("신림역"));
+        Station downStation = stationRepository.save(new Station("신도림역"));
+        LineRequest lineRequest = new LineRequest(
+                "분당선",
+                "bg-red-600",
+                upStation.getId(),
+                downStation.getId(),
+                5
+        );
+
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        Line savedLine = lineRepository.save(line);
+        SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), 5);
+
+        sectionService.create(savedLine.getId(), sectionRequest);
+        assertThatThrownBy(
+                () -> sectionService.create(savedLine.getId(), sectionRequest)
+        ).isInstanceOf(DuplicatedException.class);
+
     }
 }
