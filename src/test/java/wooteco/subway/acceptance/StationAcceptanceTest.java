@@ -44,12 +44,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     @ParameterizedTest(name = "{displayName} : {arguments}")
-    @ValueSource(strings = {"a", "1234567890"})
-    @DisplayName("지하철 역 이름의 길이를 1 이상 10 이하로 생성할 수 있다.")
-    void createStationWithValidName(String name) {
+    @ValueSource(ints = {1, 255})
+    @DisplayName("지하철 역 이름의 길이를 1 이상 255 이하로 생성할 수 있다.")
+    void createStationWithValidName(int count) {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", name);
+        params.put("name", "a".repeat(count));
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -66,12 +66,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     @ParameterizedTest(name = "{displayName} : {arguments}")
-    @ValueSource(strings = {"", "12345678901"})
-    @DisplayName("지하철 역 이름의 길이를 1 이상 10 이하로 생성할 수 있다.")
-    void createStationWithNonValidName(String name) {
+    @ValueSource(ints = {0, 256})
+    @DisplayName("지하철 역 이름의 길이가 1 이상 255 이하가 아니면 생성할 수 없다.")
+    void createStationWithNonValidName(int count) {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", name);
+        params.put("name", "a".repeat(count));
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -86,7 +86,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(response.body().jsonPath().getString("message"))
-                        .isEqualTo("역 이름의 길이는 1 이상 10 이하여야 합니다.")
+                        .isEqualTo("역 이름의 길이는 1 이상 255 이하여야 합니다.")
         );
     }
 

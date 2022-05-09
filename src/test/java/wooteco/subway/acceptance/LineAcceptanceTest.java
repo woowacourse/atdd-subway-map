@@ -46,12 +46,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @ParameterizedTest(name = "{displayName} : {arguments}")
-    @ValueSource(strings = {"a", "1234567890"})
-    @DisplayName("지하철 노선 이름의 길이를 1 이상 10 이하로 생성할 수 있다.")
-    void createLineWithValidName(String name) {
+    @ValueSource(ints = {1, 255})
+    @DisplayName("지하철 노선 이름의 길이를 1 이상 255 이하로 생성할 수 있다.")
+    void createLineWithValidName(int count) {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", name);
+        params.put("name", "a".repeat(count));
         params.put("color", "초록색");
 
         // when
@@ -71,12 +71,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @ParameterizedTest(name = "{displayName} : {arguments}")
-    @ValueSource(strings = {"", "12345678901"})
-    @DisplayName("지하철 노선 이름의 길이를 1 이상 10 이하가 아니면 생성할 수 없다.")
-    void createLineWithNonValidName(String name) {
+    @ValueSource(ints = {0, 256})
+    @DisplayName("지하철 노선 이름의 길이를 1 이상 255 이하가 아니면 생성할 수 없다.")
+    void createLineWithNonValidName(int count) {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", name);
+        params.put("name", "a".repeat(count));
         params.put("color", "초록색");
 
         // when
@@ -92,7 +92,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(response.body().jsonPath().getString("message"))
-                        .isEqualTo("노선 이름의 길이는 1 이상 10 이하여야 합니다.")
+                        .isEqualTo("노선 이름의 길이는 1 이상 255 이하여야 합니다.")
         );
     }
 
@@ -334,9 +334,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @ParameterizedTest(name = "{displayName} : {arguments}")
-    @ValueSource(strings = {"", "12345678901"})
-    @DisplayName("지하철 노선 이름의 길이를 1 이상 10 이하가 아니면 수정할 수 없다.")
-    void updateLineNameFail(String name) {
+    @ValueSource(ints = {0, 256})
+    @DisplayName("지하철 노선 이름의 길이를 1 이상 255 이하가 아니면 수정할 수 없다.")
+    void updateLineNameFail(int count) {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
@@ -352,7 +352,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         Map<String, String> updateParam = new HashMap<>();
-        updateParam.put("name", name);
+        updateParam.put("name", "a".repeat(count));
         updateParam.put("color", "파란색");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(updateParam)
@@ -366,7 +366,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(response.body().jsonPath().getString("message"))
-                        .isEqualTo("노선 이름의 길이는 1 이상 10 이하여야 합니다.")
+                        .isEqualTo("노선 이름의 길이는 1 이상 255 이하여야 합니다.")
         );
     }
 
