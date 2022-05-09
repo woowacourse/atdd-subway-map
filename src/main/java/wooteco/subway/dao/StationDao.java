@@ -35,7 +35,7 @@ public class StationDao {
     }
 
     public Optional<Station> findById(Long id) {
-        String sql = "select * from station where id = :id";
+        String sql = "select id, name from station where id = :id";
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
         try {
             Station station = jdbcTemplate.queryForObject(sql, namedParameters, rowMapper());
@@ -46,7 +46,7 @@ public class StationDao {
     }
 
     public Optional<Station> findByName(String name) {
-        String sql = "select * from station where name = :name";
+        String sql = "select id, name from station where name = :name";
         SqlParameterSource namedParameters = new MapSqlParameterSource("name", name);
         try {
             Station station = jdbcTemplate.queryForObject(sql, namedParameters, rowMapper());
@@ -57,7 +57,7 @@ public class StationDao {
     }
 
     public List<Station> findAll() {
-        String sql = "select * from station";
+        String sql = "select id, name from station";
         return jdbcTemplate.query(sql, rowMapper());
     }
 
@@ -69,8 +69,7 @@ public class StationDao {
 
     private RowMapper<Station> rowMapper() {
         return (rs, rowNum) ->
-                new Station(
-                        rs.getLong("id"),
+                new Station(rs.getLong("id"),
                         rs.getString("name"));
     }
 }
