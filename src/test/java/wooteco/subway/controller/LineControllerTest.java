@@ -3,13 +3,16 @@ package wooteco.subway.controller;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
@@ -22,6 +25,21 @@ class LineControllerTest extends AcceptanceTest {
 
     @Autowired
     private LineDao lineDao;
+    @Autowired
+    private StationDao stationDao;
+
+    private Station savedStation1;
+    private Station savedStation2;
+    private Station savedStation3;
+
+    private Line savedLine1;
+
+    @BeforeEach
+    void setUpStations() {
+        savedStation1 = stationDao.save(new Station("선릉역"));
+        savedStation2 = stationDao.save(new Station("선정릉역"));
+        savedStation3 = stationDao.save(new Station("한티역"));
+    }
 
     @DisplayName("지하철 노선을 등록한다.")
     @Test

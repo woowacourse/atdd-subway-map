@@ -58,4 +58,10 @@ public class StationDao {
         String SQL = "select * from station where id = ?;";
         return jdbcTemplate.queryForObject(SQL, rowMapper(), id);
     }
+
+    public List<Station> findAllByLineId(Long id) {
+        String SQL = "select * from station join section on station.id = section.up_station_id " +
+                "or station.id = section.down_station_id where line_id = ?";
+        return jdbcTemplate.query(SQL, rowMapper(), id);
+    }
 }

@@ -1,10 +1,16 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.AccessNoneDataException;
 import wooteco.subway.exception.DataLengthException;
 
@@ -15,16 +21,34 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
+    private final StationDao stationDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
+        this.stationDao = stationDao;
     }
 
+    @Transactional
     public LineResponse create(LineRequest request) {
         validateDataSize(request.getName(), request.getColor());
         Line line = new Line(request.getName(), request.getColor());
         Line savedLine = lineDao.save(line);
-        return LineResponse.of(savedLine);
+
+        Section section = new Section(savedLine.getId(),
+                request.getUpStationId(), request.getDownStationId(), request.getDistance());
+        sectionDao.insert(section);
+
+        List<StationResponse> stationResponses = findStationByLineId(savedLine);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
+    }
+
+    private List<StationResponse> findStationByLineId(Line savedLine) {
+        List<Station> stations = stationDao.findAllByLineId(savedLine.getId());
+        return stations.stream()
+                .map(s -> new StationResponse(s.getId(), s.getName()))
+                .collect(Collectors.toList());
     }
 
     private void validateDataSize(String name, String color) {
