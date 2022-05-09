@@ -45,6 +45,14 @@ public class SectionMockDao implements SectionDao {
         return sectionIds.contains(id);
     }
 
+    @Override
+    public boolean existSectionByLineIdAndStationId(Long lineId, Long stationId) {
+        return sections.stream()
+                .filter(section -> section.getId().equals(lineId))
+                .anyMatch(section -> section.getDownStationId().equals(stationId)
+                        || section.getUpStationId().equals(stationId));
+    }
+
     public void clear() {
         sections.clear();
     }

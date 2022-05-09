@@ -12,4 +12,6 @@ public interface SectionDao {
     void delete(Long id);
 
     boolean existSectionById(Long id);
+
+    boolean existSectionByLineIdAndStationId(Long lineId, Long stationId);
 }

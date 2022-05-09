@@ -57,11 +57,19 @@ public class SectionDaoTest {
         assertThat(sectionDao.existSectionById(sectionId)).isFalse();
     }
 
-    @DisplayName("해당 id의 지하철 노선이 있다면 true를 반환한다.")
+    @DisplayName("해당 id의 지하철 구간이 있다면 true를 반환한다.")
     @Test
     void existSectionById() {
         long sectionId = sectionDao.save(SECTION);
 
         assertThat(sectionDao.existSectionById(sectionId)).isTrue();
+    }
+
+    @DisplayName("해당 line id와 station id의 지하철 구간이 있다면 true를 반환한다.")
+    @Test
+    void existSectionByLineIdAndStationId() {
+        sectionDao.save(SECTION);
+
+        assertThat(sectionDao.existSectionByLineIdAndStationId(1L, 1L)).isTrue();
     }
 }
