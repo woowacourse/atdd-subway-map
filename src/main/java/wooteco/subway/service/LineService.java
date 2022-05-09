@@ -47,6 +47,7 @@ public class LineService {
     @Transactional
     public LineResponse update(Long id, LineRequest lineRequest) {
         getLine(id);
+
         try {
             lineDao.update(id, new Line(lineRequest.getName(), lineRequest.getColor()));
         } catch (DuplicateKeyException e) {

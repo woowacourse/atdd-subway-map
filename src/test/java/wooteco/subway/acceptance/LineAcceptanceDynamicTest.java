@@ -1,5 +1,6 @@
 package wooteco.subway.acceptance;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
@@ -8,65 +9,67 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.response.ResponseBodyExtractionOptions;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineResponse;
 
+@DisplayName("노선 관련 기능")
 public class LineAcceptanceDynamicTest extends AcceptanceTest {
+
+    @DisplayName("노선을 생성한다.")
+    @Test
+    void createLine() {
+        String name = "2호선";
+        String color = "bg-green-600";
+
+        ExtractableResponse<Response> response = generateLine(name, color);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+    }
 
     @DisplayName("노선을 관리한다.")
     @TestFactory
-    Stream<DynamicTest> dynamicTestFromStream() {
-        String name1 = "2호선";
-        String color1 = "bg-green-600";
-
-        String name2 = "신분당선";
-        String color2 = "bg-red-600";
-
-        String name3 = "1호선";
-        String color3 = "bg-blue-600";
+    Stream<DynamicTest> dynamicTestStream() {
+        ExtractableResponse<Response> createdResponse1 = generateLine("1호선", "bg-blue-600");
+        ExtractableResponse<Response> createdResponse2 = generateLine("2호선", "bg-green-600");
 
         return Stream.of(
-                dynamicTest("노선을 생성한다.", () -> {
-                    ExtractableResponse<Response> response = generateLine(name1, color1);
-
-                    assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-                    assertThat(response.header("Location")).isNotBlank();
-                }),
-
-                dynamicTest("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.", () -> {
-                    ExtractableResponse<Response> response = generateLine(name1, color1);
-
-                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-                }),
-
                 dynamicTest("노선을 조회한다.", () -> {
-                    generateLine(name2, color2);
-
                     ExtractableResponse<Response> response = RestAssured.given().log().all()
                             .when()
                             .get("/lines")
                             .then().log().all()
                             .extract();
 
+                    List<Long> expectedLineIds = List.of(createdResponse1, createdResponse2)
+                            .stream()
+                            .map(ExtractableResponse::response)
+                            .map(ResponseBodyExtractionOptions::jsonPath)
+                            .map(it -> it.getLong("id"))
+                            .collect(toList());
+                    List<Long> resultLineIds = response.jsonPath()
+                            .getList(".", LineResponse.class)
+                            .stream()
+                            .map(it -> it.getId())
+                            .collect(toList());
                     assertAll(
                             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                            () -> {
-                                int size = response.jsonPath().getList(".", LineResponse.class).size();
-                                assertThat(size).isEqualTo(2);
-                            }
+                            () -> assertThat(resultLineIds).containsAll(expectedLineIds)
                     );
                 }),
 
                 dynamicTest("단일 노선을 조회한다.", () -> {
-                    ExtractableResponse<Response> createdResponse = generateLine(name3, color3);
-                    JsonPath createdResponseJsonPath = createdResponse.body().jsonPath();
+                    JsonPath createdResponseJsonPath = createdResponse1.body().jsonPath();
                     Long id = createdResponseJsonPath.getLong("id");
                     String name = createdResponseJsonPath.getString("name");
                     String color = createdResponseJsonPath.getString("color");
@@ -87,11 +90,10 @@ public class LineAcceptanceDynamicTest extends AcceptanceTest {
                 }),
 
                 dynamicTest("노선을 수정한다.", () -> {
-                    ExtractableResponse<Response> createdResponse = generateLine("3호선", "bg-orange-600");
-                    Long id = createdResponse.body().jsonPath().getLong("id");
+                    Long id = createdResponse1.body().jsonPath().getLong("id");
 
-                    String updateName = "3호선";
-                    String updateColor = "bg-blue-600";
+                    String updateName = "1호선";
+                    String updateColor = "bg-green-600";
                     ExtractableResponse<Response> response = RestAssured.given().log().all()
                             .body(Map.of("name", updateName, "color", updateColor))
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -103,10 +105,10 @@ public class LineAcceptanceDynamicTest extends AcceptanceTest {
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
                 }),
 
-                dynamicTest("존재하지 않는 노선을 수정할 경우 해당 404를 반환한다.", () -> {
+                dynamicTest("존재하지 않는 노선을 수정할 경우 404를 반환한다.", () -> {
                     Long id = 10L;
-                    String name = "4호선";
-                    String color = "bg-skyblue-600";
+                    String name = "2호선";
+                    String color = "bg-blue-600";
 
                     ExtractableResponse<Response> response = RestAssured.given().log().all()
                             .body(Map.of("name", name, "color", color))
@@ -120,8 +122,7 @@ public class LineAcceptanceDynamicTest extends AcceptanceTest {
                 }),
 
                 dynamicTest("중복된 이름을 가진 노선으로 수정할 경우 예외를 던진다.", () -> {
-                    ExtractableResponse<Response> createdResponse = generateLine("5호선", "bg-purple-600");
-                    Long id = createdResponse.body().jsonPath().getLong("id");
+                    Long id = createdResponse1.body().jsonPath().getLong("id");
 
                     ExtractableResponse<Response> response = RestAssured.given().log().all()
                             .body(Map.of("name", "2호선", "color", "bg-green-600"))
@@ -135,8 +136,7 @@ public class LineAcceptanceDynamicTest extends AcceptanceTest {
                 }),
 
                 dynamicTest("노선을 삭제한다.", () -> {
-                    ExtractableResponse<Response> createdResponse = generateLine("6호선", "bg-ocher-600");
-                    Long id = createdResponse.body().jsonPath().getLong("id");
+                    Long id = createdResponse1.body().jsonPath().getLong("id");
 
                     ExtractableResponse<Response> response = RestAssured.given().log().all()
                             .when()
@@ -148,7 +148,7 @@ public class LineAcceptanceDynamicTest extends AcceptanceTest {
                 }),
 
                 dynamicTest("존재하지 않는 노선의 id를 삭제할 경우 잘못된 요청이므로 404를 반환한다.", () -> {
-                    Long id = 10L;
+                    Long id = createdResponse1.body().jsonPath().getLong("id");
 
                     ExtractableResponse<Response> response = RestAssured.given().log().all()
                             .when()
