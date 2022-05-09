@@ -26,7 +26,7 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Station save(Station station) {
+    public long save(Station station) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -36,8 +36,8 @@ public class StationDao {
             return ps;
         }, keyHolder);
 
-        Long id = keyHolder.getKey().longValue();
-        return new Station(id, station.getName());
+        long savedStationId = keyHolder.getKey().longValue();
+        return savedStationId;
     }
 
     public List<Station> findAll() {

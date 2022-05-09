@@ -20,4 +20,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
+    @ExceptionHandler(Exception.class)
+    private ResponseEntity<Void> handleExceptionToInternalServerError() {
+        return ResponseEntity.internalServerError().build();
+    }
 }

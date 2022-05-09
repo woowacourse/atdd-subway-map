@@ -30,7 +30,7 @@ class StationServiceTest {
     @Test
     void saveByName() {
         String stationName = "something";
-        Station station = stationService.save(stationName);
+        Station station = stationService.saveAndGet(stationName);
         assertThat(stationDao.findById(station.getId())).isNotEmpty();
     }
 
@@ -38,9 +38,9 @@ class StationServiceTest {
     @Test
     void saveByDuplicateName() {
         String stationName = "something";
-        stationService.save(stationName);
+        stationService.saveAndGet(stationName);
 
-        assertThatThrownBy(() -> stationService.save(stationName))
+        assertThatThrownBy(() -> stationService.saveAndGet(stationName))
             .isInstanceOf(DuplicateException.class);
     }
 
@@ -48,14 +48,14 @@ class StationServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "  ", "     "})
     void saveByEmptyName(String stationName) {
-        assertThatThrownBy(() -> stationService.save(stationName))
+        assertThatThrownBy(() -> stationService.saveAndGet(stationName))
             .isInstanceOf(BlankArgumentException.class);
     }
 
     @DisplayName("지하철 역 삭제")
     @Test
     void deleteById() {
-        Station station = stationService.save("강남역");
+        Station station = stationService.saveAndGet("강남역");
 
         stationService.deleteById(station.getId());
 

@@ -27,19 +27,20 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(
-        @RequestBody StationRequest stationRequest) {
-        Station station = stationService.save(stationRequest.getName());
-        StationResponse stationResponse = new StationResponse(station.getId(), station.getName());
+            @RequestBody StationRequest stationRequest) {
+        Station station = stationService.saveAndGet(stationRequest.getName());
+        StationResponse stationResponse = new StationResponse(station);
         return ResponseEntity.created(URI.create("/stations/" + station.getId()))
-            .body(stationResponse);
+                .body(stationResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
         List<Station> stations = stationDao.findAll();
-        List<StationResponse> stationResponses = stations.stream()
-            .map(it -> new StationResponse(it.getId(), it.getName()))
-            .collect(Collectors.toList());
+        List<StationResponse> stationResponses =
+                stations.stream()
+                        .map(station -> new StationResponse(station))
+                        .collect(Collectors.toList());
         return ResponseEntity.ok().body(stationResponses);
     }
 

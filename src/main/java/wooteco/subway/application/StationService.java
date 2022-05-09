@@ -17,11 +17,12 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station save(String name) {
+    public Station saveAndGet(String name) {
         if (stationDao.existByName(name)) {
             throw new DuplicateException();
         }
-        return stationDao.save(new Station(name));
+        long savedStationId = stationDao.save(new Station(name));
+        return new Station(savedStationId, name);
     }
 
     public void deleteById(Long id) {

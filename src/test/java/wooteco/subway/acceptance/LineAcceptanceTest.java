@@ -230,14 +230,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void canNotUpdateByDuplicationName() {
         // given
-        ExtractableResponse<Response> response = requestCreateLine("신분당선", "bg-red-600");
-        requestCreateLine("1호선", "bg-red-600");
+        ExtractableResponse<Response> firstResponse = requestCreateLine("신분당선", "bg-yellow-600");
+        requestCreateLine("1호선", "bg-blue-600");
 
-        long createdId = response.jsonPath().getLong("id");
+        long createdId = firstResponse.jsonPath().getLong("id");
 
         // when
         RestAssured.given().log().all()
-                .body(Map.of("name", "1호선", "color", "bg-red-600"))
+                .body(Map.of("name", "1호선", "color", "bg-blue-600"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put("/lines/" + createdId)

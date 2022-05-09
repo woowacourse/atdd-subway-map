@@ -66,6 +66,12 @@ public class LineDao {
             Boolean.class, name);
     }
 
+    public boolean existByColor(String color) {
+        return jdbcTemplate.queryForObject(
+                "SELECT EXISTS (SELECT color FROM LINE WHERE name = ? LIMIT 1 ) AS `exists`",
+                Boolean.class, color);
+    }
+
     public Line update(Line line) {
         jdbcTemplate.update("UPDATE LINE SET name = ?, color = ? WHERE id = ?",
                 line.getName(),
