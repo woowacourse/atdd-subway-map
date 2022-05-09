@@ -1,10 +1,6 @@
 package wooteco.subway.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,12 +9,12 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
 import wooteco.subway.exception.line.DuplicateLineException;
 import wooteco.subway.exception.line.NoSuchLineException;
-import wooteco.subway.exception.section.NoSuchSectionException;
 import wooteco.subway.exception.station.NoSuchStationException;
 
 @Service
@@ -77,62 +73,9 @@ public class LineService {
     }
 
     private List<Station> findSortedStationsByLineId(final Long lineId) {
-        final List<Section> sections = sectionDao.findAllByLineId(lineId);
-
-        final List<Long> endStationIds = findEnsStationIds(sections);
-        Long upStationId = findEndUpStation(sections, endStationIds);
-
-        final List<Long> sortedStationIds = new ArrayList<>();
-        sortedStationIds.add(upStationId);
-        while (sortedStationIds.size() != sections.size() + 1) {
-            final Section section = findSectionByUpStationId(upStationId, sections);
-            upStationId = section.getDownStationId();
-            sortedStationIds.add(upStationId);
-        }
-        return toStations(sortedStationIds);
-    }
-
-    private List<Long> findEnsStationIds(final List<Section> sections) {
-        return toCountByStationId(sections)
-                .entrySet()
-                .stream()
-                .filter(it -> it.getValue().equals(1))
-                .map(Entry::getKey)
-                .collect(Collectors.toList());
-    }
-
-    private Map<Long, Integer> toCountByStationId(final List<Section> sections) {
-        final Map<Long, Integer> countByStationId = new HashMap<>();
-        for (Section section : sections) {
-            final Long upStationId = section.getUpStationId();
-            countByStationId.put(upStationId, countByStationId.getOrDefault(upStationId, 0) + 1);
-
-            final Long downStationId = section.getDownStationId();
-            countByStationId.put(downStationId, countByStationId.getOrDefault(downStationId, 0) + 1);
-        }
-        return countByStationId;
-    }
-
-    private Long findEndUpStation(final List<Section> sections, final List<Long> endStationIds) {
-        return sections
-                .stream()
-                .map(Section::getUpStationId)
-                .filter(endStationIds::contains)
-                .findFirst()
-                .orElseThrow(NoSuchStationException::new);
-    }
-
-    private Section findSectionByUpStationId(final Long upStationId, final List<Section> sections) {
-        return sections
-                .stream()
-                .filter(it -> it.getUpStationId().equals(upStationId))
-                .findFirst()
-                .orElseThrow(NoSuchSectionException::new);
-    }
-
-    private List<Station> toStations(final List<Long> stationIds) {
-        return stationIds
-                .stream()
+        final Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        final List<Long> stationIds = sections.toStations();
+        return stationIds.stream()
                 .map(it -> stationDao.findById(it).orElseThrow(NoSuchStationException::new))
                 .collect(Collectors.toList());
     }
