@@ -1,8 +1,8 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
@@ -10,55 +10,47 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("지하철역을 생성한다.")
-    @Test
-    void createStation() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+    @DisplayName("지하철 역 생성을 관리한다")
+    @TestFactory
+    Stream<DynamicTest> dynamicTestsFromCollection() {
+        return Stream.of(
+                dynamicTest("새로운 역 이름으로 역을 생성한다.", () -> {
+                    // when
+                    ExtractableResponse<Response> response = createStation("강남역");
 
-        // when
-        ExtractableResponse<Response> response = post("/stations", params);
+                    // then
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+                    assertThat(response.header("Location")).isNotBlank();
+                }),
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
-    }
+                dynamicTest("기존의 역 이름으로 역을 생성한다", () -> {
+                    // when
+                    ExtractableResponse<Response> response = createStation("강남역");
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
-    @Test
-    void createStationWithDuplicateName() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        post("/stations", params);
-
-        // when
-        ExtractableResponse<Response> response = post("/stations", params);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                    // then
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                })
+        );
     }
 
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
-        ExtractableResponse<Response> createResponse1 = post("/stations", params1);
-
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
-        ExtractableResponse<Response> createResponse2 = post("/stations", params2);
+        ExtractableResponse<Response> createResponse1 = createStation("강남역");
+        ExtractableResponse<Response> createResponse2 = createStation("역삼역");
 
         // when
         ExtractableResponse<Response> response = get("/stations");
@@ -78,12 +70,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        ExtractableResponse<Response> createResponse = post("/stations", params);
+        ExtractableResponse<Response> createResponse = createStation("강남역");
+        String uri = createResponse.header("Location");
 
         // when
-        String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = delete(uri);
 
         // then
@@ -94,10 +84,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteNotExistStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        ExtractableResponse<Response> createResponse = post("/stations", params);
-
+        ExtractableResponse<Response> createResponse = createStation("강남역");
         String uri = createResponse.header("Location");
         delete(uri);
 
@@ -106,5 +93,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> createStation(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        return post("/stations", params);
     }
 }
