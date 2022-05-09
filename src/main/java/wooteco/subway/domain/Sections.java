@@ -1,6 +1,8 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -69,28 +71,29 @@ public class Sections {
 
 	public List<Station> sortStations() {
 		LinkedList<Station> sortedStations = new LinkedList<>();
-		Section section = values.get(0);
-		sortUpStream(sortedStations, section);
-		sortDownStream(sortedStations, section);
+		Deque<Section> sections = new ArrayDeque<>(values);
+		Section section = sections.pop();
+		sortUpStream(sortedStations, section, sections);
+		sortDownStream(sortedStations, section, sections);
 		return sortedStations;
 	}
 
-	private void sortUpStream(LinkedList<Station> sortedStations, Section pickedSection) {
-		Station upStation = pickedSection.getUpStation();
+	private void sortUpStream(LinkedList<Station> sortedStations, Section section, Deque<Section> sections) {
+		Station upStation = section.getUpStation();
 		sortedStations.addFirst(upStation);
-		values.stream()
-			.filter(section -> section.isDownStation(upStation))
+		sections.stream()
+			.filter(each -> each.isDownStation(upStation))
 			.findAny()
-			.ifPresent(section -> sortUpStream(sortedStations, section));
+			.ifPresent(each -> sortUpStream(sortedStations, each, sections));
 	}
 
-	private void sortDownStream(LinkedList<Station> sortedStations, Section pickedSection) {
+	private void sortDownStream(LinkedList<Station> sortedStations, Section pickedSection, Deque<Section> sections) {
 		Station downStation = pickedSection.getDownStation();
 		sortedStations.addLast(downStation);
-		values.stream()
-			.filter(section -> section.isUpStation(downStation))
+		sections.stream()
+			.filter(each -> each.isUpStation(downStation))
 			.findAny()
-			.ifPresent(section -> sortDownStream(sortedStations, section));
+			.ifPresent(each -> sortDownStream(sortedStations, each, sections));
 	}
 
 	public void executeEach(Consumer<Section> consumer) {
@@ -113,7 +116,7 @@ public class Sections {
 
 	private void addUpdatedSection(Sections resultSections) {
 		Section newSection = resultSections.sum();
-		if (!isExist(newSection)) {
+		if (isNotExist(newSection)) {
 			values.add(newSection);
 		}
 	}
@@ -139,9 +142,9 @@ public class Sections {
 			.sum();
 	}
 
-	public boolean isExist(Section section) {
+	public boolean isNotExist(Section section) {
 		return values.stream()
-			.anyMatch(
+			.noneMatch(
 				each -> each.hasSameUpStation(section)
 					&& each.hasSameDownStation(section));
 	}
