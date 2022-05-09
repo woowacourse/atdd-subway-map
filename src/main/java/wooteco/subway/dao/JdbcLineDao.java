@@ -2,7 +2,6 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -13,7 +12,7 @@ import wooteco.subway.domain.Line;
 @Repository
 public class JdbcLineDao implements LineDao {
 
-    private static final RowMapper<Line> LINE_ROW_MAPPER = (resultSet, rowNum) -> {
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> {
         return new Line(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
@@ -63,13 +62,13 @@ public class JdbcLineDao implements LineDao {
     @Override
     public List<Line> findAll() {
         final String sql = "select id, name, color from LINE";
-        return jdbcTemplate.query(sql, LINE_ROW_MAPPER);
+        return jdbcTemplate.query(sql, lineRowMapper);
     }
 
     @Override
     public Line findById(Long id) {
         final String sql = "select id, name, color from LINE where id = ?";
-        return jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id);
+        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
 
     @Override
