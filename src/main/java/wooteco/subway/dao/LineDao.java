@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
 
 @Repository
 public class LineDao {
@@ -35,10 +36,16 @@ public class LineDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Line save(String name, String color) {
+    public Line save(LineRequest lineRequest) {
+
+        String name = lineRequest.getName();
+        String color = lineRequest.getColor();
+        int distance = lineRequest.getDistance();
+
         checkDuplicateName(name);
         SqlParameterSource parameters = new MapSqlParameterSource("name", name)
                 .addValue("color", color);
+
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Line(id, name, color);
     }
