@@ -26,7 +26,6 @@ public class StationService {
     }
 
     public void delete(final Long id) {
-        validateExist(id);
         stationDao.deleteById(id);
     }
 

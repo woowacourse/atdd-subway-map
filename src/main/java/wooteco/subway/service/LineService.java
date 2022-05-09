@@ -39,7 +39,6 @@ public class LineService {
     }
 
     public void delete(final Long id) {
-        validateExist(id);
         lineDao.deleteById(id);
     }
 
