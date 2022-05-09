@@ -4,6 +4,7 @@ spring:
     url: jdbc:h2:mem:testdb
     username: sa
     password:
+
   h2:
     console:
       enabled: true     # h2 console 설정
