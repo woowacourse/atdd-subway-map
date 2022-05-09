@@ -27,7 +27,7 @@ class StationServiceTest {
     void save() {
         stationService.save(STATION);
 
-        assertThat(stationService.findAll().size()).isEqualTo(1);
+        assertThat(stationService.findAll()).hasSize(1);
     }
 
     @DisplayName("중복된 지하철역을 생성할 경우 예외를 발생시킨다.")

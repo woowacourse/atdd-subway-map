@@ -60,7 +60,7 @@ class StationDaoTest {
 
         List<Station> stations = stationDao.findAll();
 
-        assertThat(stations.size()).isEqualTo(2);
+        assertThat(stations).hasSize(2);
     }
 
     @DisplayName("지하철역을 삭제한다.")

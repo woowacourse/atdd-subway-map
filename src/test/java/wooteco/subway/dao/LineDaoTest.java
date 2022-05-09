@@ -68,7 +68,7 @@ class LineDaoTest {
 
         List<Line> lines = lineDao.findAll();
 
-        assertThat(lines.size()).isEqualTo(2);
+        assertThat(lines).hasSize(2);
     }
 
     @DisplayName("지하철 노선을 조회한다.")

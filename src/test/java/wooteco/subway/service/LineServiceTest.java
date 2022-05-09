@@ -27,7 +27,7 @@ class LineServiceTest {
     void save() {
         lineService.save(LINE);
 
-        assertThat(lineService.findAll().size()).isEqualTo(1);
+        assertThat(lineService.findAll()).hasSize(1);
     }
 
     @DisplayName("중복된 이름의 지하철 노선을 생성할 경우 예외를 발생시킨다.")
