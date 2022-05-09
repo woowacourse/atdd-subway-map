@@ -32,16 +32,16 @@ public class StationDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public int countByName(String name) {
-        String selectSql = "select count(*) from STATION where name = :name";
+    public boolean existsByName(String name) {
+        String selectSql = "select exists (select 1 from STATION where name = :name)";
         SqlParameterSource source = new MapSqlParameterSource("name", name);
-        return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Integer.class));
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Boolean.class));
     }
 
-    public int countById(Long id) {
-        String selectSql = "select count(*) from STATION where id = :id";
+    public boolean existsById(Long id) {
+        String selectSql = "select exists (select 1 from STATION where id = :id)";
         SqlParameterSource source = new MapSqlParameterSource("id", id);
-        return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Integer.class));
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Boolean.class));
     }
 
     public Station findById(Long id) {

@@ -34,17 +34,17 @@ class LineDaoTest {
         assertThat(id).isEqualTo(3L);
     }
 
-    @DisplayName("노선 이름으로 개수 검색")
+    @DisplayName("노선 이름이 존재하는지 확인")
     @Test
     void countByName() {
         // given
         String name = "신분당선";
 
         // when
-        int count = lineDao.countByName(name);
+        boolean result = lineDao.existsByName(name);
 
         // then
-        assertThat(count).isEqualTo(1);
+        assertThat(result).isTrue();
     }
 
     @DisplayName("노선 이름으로 검색")

@@ -27,7 +27,7 @@ public class StationService {
     }
 
     private void validDuplicatedName(StationRequest stationRequest) {
-        if (stationDao.countByName(stationRequest.getName()) > 0) {
+        if (stationDao.existsByName(stationRequest.getName())) {
             throw new IllegalArgumentException(DUPLICATED_NAME_ERROR_MESSAGE);
         }
     }

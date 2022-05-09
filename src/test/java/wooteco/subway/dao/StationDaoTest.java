@@ -31,16 +31,28 @@ class StationDaoTest {
         assertThat(id).isEqualTo(expected);
     }
 
-    @DisplayName("역 이름으로 개수 검색")
+    @DisplayName("역 이름 존재하는지 확인")
     @Test
     void countByName() {
         // given
 
         // when
-        int count = stationDao.countByName("강남역");
+        boolean result = stationDao.existsByName("강남역");
 
         // then
-        assertThat(count).isEqualTo(1);
+        assertThat(result).isTrue();
+    }
+
+    @DisplayName("역 id 존재하는지 확인")
+    @Test
+    void countById() {
+        // given
+
+        // when
+        boolean result = stationDao.existsById(1L);
+
+        // then
+        assertThat(result).isTrue();
     }
 
     @DisplayName("역 전체 조회")

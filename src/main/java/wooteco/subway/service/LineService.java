@@ -58,8 +58,7 @@ public class LineService {
     }
 
     private void validStation(Long id) {
-        int count = stationDao.countById(id);
-        if (count < 1) {
+        if (!stationDao.existsById(id)) {
             throw new IllegalArgumentException(NONE_SECTION_ERROR_MESSAGE);
         }
     }
@@ -76,7 +75,7 @@ public class LineService {
     }
 
     private void validDuplicatedName(String name) {
-        if (lineDao.countByName(name) > 0) {
+        if (lineDao.existsByName(name)) {
             throw new IllegalArgumentException(DUPLICATED_NAME_ERROR_MESSAGE);
         }
     }
