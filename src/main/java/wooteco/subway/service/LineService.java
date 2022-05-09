@@ -60,7 +60,7 @@ public class LineService {
     }
 
     private void validateExist(final Long id) {
-        if (lineDao.existsById(id)) {
+        if (!lineDao.existsById(id)) {
             throw new NoSuchElementException("해당 노선 ID가 존재하지 않습니다.");
         }
     }
