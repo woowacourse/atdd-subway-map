@@ -31,7 +31,7 @@ public class Station {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Station station = (Station) o;
+        Station station = (Station)o;
         return name.equals(station.name);
     }
 
