@@ -1,7 +1,5 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.exception.Validator;
-
 public class Line {
 
     private Long id;
@@ -9,8 +7,6 @@ public class Line {
     private String color;
 
     public Line(final Long id, final String name, final String color) {
-        Validator.requireNonNull(name);
-        Validator.requireNonNull(color);
         this.id = id;
         this.name = name;
         this.color = color;

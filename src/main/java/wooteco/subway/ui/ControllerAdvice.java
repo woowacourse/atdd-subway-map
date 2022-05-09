@@ -1,9 +1,12 @@
 package wooteco.subway.ui;
 
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.exception.ClientRuntimeException;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ControllerAdvice {
@@ -11,6 +14,16 @@ public class ControllerAdvice {
     @ExceptionHandler(ClientRuntimeException.class)
     public ResponseEntity<String> handleDataNotFoundException(final ClientRuntimeException e) {
         return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
+        final String errorMessage = e.getBindingResult()
+                .getAllErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(","));
+        return ResponseEntity.badRequest().body(errorMessage);
     }
 
     @ExceptionHandler(Exception.class)

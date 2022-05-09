@@ -16,6 +16,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.service.StationService;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/stations")
@@ -28,7 +29,7 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(@RequestBody final StationRequest stationRequest) {
+    public ResponseEntity<StationResponse> createStation(@Valid @RequestBody final StationRequest stationRequest) {
         final Station station = stationRequest.toEntity();
         final Station newStation = stationService.createStation(station);
         final StationResponse stationResponse = StationResponse.from(newStation);
