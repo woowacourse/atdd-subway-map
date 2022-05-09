@@ -49,4 +49,12 @@ class JdbcStationDaoTest {
         boolean isDeleted = jdbcStationDao.deleteById(id);
         assertThat(isDeleted).isTrue();
     }
+
+    @DisplayName("지하철역을 Id로 조회한다.")
+    @Test
+    void findById() {
+        Long id = jdbcStationDao.save(new Station("강남역"));
+        Station station = jdbcStationDao.findById(id);
+        assertThat(station.getName()).isEqualTo("강남역");
+    }
 }
