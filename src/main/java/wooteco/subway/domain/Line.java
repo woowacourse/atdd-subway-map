@@ -22,10 +22,18 @@ public class Line {
 
     public Line(Long id, String name, String color) {
         validateName(name);
-
+        validateColor(color);
         this.id = id;
         this.name = name;
         this.color = color;
+    }
+
+    private void validateColor(final String color) {
+        checkNullOrEmpty(color);
+        Objects.requireNonNull(color, ERROR_NULL_OR_EMPTY);
+        if (color.trim().isEmpty()) {
+            throw new IllegalArgumentException(ERROR_NULL_OR_EMPTY);
+        }
     }
 
     private void validateName(final String name) {

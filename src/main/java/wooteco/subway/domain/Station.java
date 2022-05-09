@@ -20,7 +20,6 @@ public class Station {
 
     public Station(final Long id, String name) {
         validateName(name);
-
         this.id = id;
         this.name = name;
     }
