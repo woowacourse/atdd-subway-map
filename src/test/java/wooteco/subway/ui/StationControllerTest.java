@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import wooteco.subway.domain.Station;
@@ -50,6 +51,20 @@ class StationControllerTest {
                 .andExpect(header().exists("Location"))
                 .andExpect(jsonPath("id").value(1))
                 .andExpect(jsonPath("name").value("선릉역"))
+                .andDo(print());
+    }
+
+    @DisplayName("이미 존재하는 역 생성 시 400처리")
+    @Test
+    void 존재하는_역_생성_400예외() throws Exception {
+        given(stationService.save(any(Station.class))).willThrow(DuplicateKeyException.class);
+
+        StationRequest request = new StationRequest("선릉역");
+
+        mockMvc.perform(post("/stations")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 
