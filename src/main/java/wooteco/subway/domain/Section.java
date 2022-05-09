@@ -9,14 +9,11 @@ public class Section {
     private int distance;
 
     public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
-        this.id = null;
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+        this(null, lineId, upStationId, downStationId, distance);
     }
 
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+        validateDistance(distance);
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
@@ -42,5 +39,16 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", lineId=" + lineId +
+                ", upStationId=" + upStationId +
+                ", downStationId=" + downStationId +
+                ", distance=" + distance +
+                '}';
     }
 }
