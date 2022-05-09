@@ -305,7 +305,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 노선을 수정한다. 상태코드는 204이어야 한다.")
+    @DisplayName("존재하지 않는 노선을 수정하면 not found 예외를 반환해야 한다.")
     void updateNonLine() {
         // given
         LineRequest lineRequest = new LineRequest(
@@ -322,6 +322,6 @@ class LineAcceptanceTest extends AcceptanceTest {
             .when()
             .put("/lines/1")
             .then().log().all()
-            .statusCode(HttpStatus.NO_CONTENT.value());
+            .statusCode(HttpStatus.NOT_FOUND.value());
     }
 }
