@@ -12,9 +12,11 @@ import java.util.List;
 @Repository
 public class StationDao {
     private final JdbcTemplate jdbcTemplate;
+    private final StationMapper stationMapper;
 
     public StationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.stationMapper = new StationMapper();
     }
 
     public Station save(Station station) {
@@ -45,7 +47,12 @@ public class StationDao {
         jdbcTemplate.update(sql, id);
     }
 
-    private static final class StationMapper implements RowMapper {
+    public Station findById(Long id) {
+        String sql = "select * from Station where id = ?";
+        return jdbcTemplate.queryForObject(sql, stationMapper, id);
+    }
+
+    private static final class StationMapper implements RowMapper<Station> {
         public Station mapRow(ResultSet rs, int rowCnt) throws SQLException {
             return new Station(rs.getLong("id"), rs.getString("name"));
         }

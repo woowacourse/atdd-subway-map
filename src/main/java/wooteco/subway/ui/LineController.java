@@ -3,12 +3,14 @@ package wooteco.subway.ui;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.exception.NameDuplicationException;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.SectionService;
+import wooteco.subway.service.StationService;
 
 import java.net.URI;
 import java.util.List;
@@ -18,23 +20,28 @@ import java.util.stream.Collectors;
 @RestController
 public class LineController {
     private final LineService lineService;
+    private final StationService stationService;
+    private final SectionService sectionService;
 
-    public LineController(final LineService lineService) {
+    public LineController(final LineService lineService, StationService stationService, SectionService sectionService) {
         this.lineService = lineService;
+        this.stationService = stationService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
         final Line newLine = lineService.create(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId()))
-                .body(new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor()));
+                .body(new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(),
+                        sectionService.getBothOfStations(newLine.getSection())));
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         final List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), sectionService.getBothOfStations(it.getSection())))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
@@ -42,7 +49,7 @@ public class LineController {
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> searchLine(@PathVariable final Long id) {
         final Line line = lineService.findById(id);
-        return ResponseEntity.ok().body(new LineResponse(line.getId(), line.getName(), line.getColor()));
+        return ResponseEntity.ok().body(new LineResponse(line.getId(), line.getName(), line.getColor(), sectionService.getBothOfStations(line.getSection())));
     }
 
     @PutMapping("/lines/{id}")

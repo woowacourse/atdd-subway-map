@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.exception.NameDuplicationException;
 
@@ -18,7 +19,8 @@ public class LineService {
 
     public Line create(final LineRequest lineRequest) {
         checkDuplication(lineRequest.getName());
-        final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        final Line line = new Line(lineRequest.getName(), lineRequest.getColor(), new Section(lineRequest.getUpStationId(),
+                lineRequest.getDownStationId(), lineRequest.getDistance()));
         return lineDao.save(line);
     }
 
@@ -37,7 +39,8 @@ public class LineService {
     }
 
     public void edit(final Long id, final LineRequest lineRequest) {
-        lineDao.edit(id, lineRequest.getName(), lineRequest.getColor());
+        lineDao.edit(id, lineRequest.getName(), lineRequest.getColor(),
+                lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
     }
 
     public void deleteById(final Long id) {

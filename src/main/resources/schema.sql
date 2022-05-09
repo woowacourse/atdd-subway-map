@@ -10,6 +10,9 @@ create table if not exists Line
     id bigint auto_increment not null,
     name varchar(255) not null unique,
     color varchar(20) not null,
+    upStationId int not null,
+    downStationId int not null,
+    distance int not null,
     primary key(id)
     );
 

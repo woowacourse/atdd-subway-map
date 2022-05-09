@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 
 import java.util.List;
@@ -67,6 +68,16 @@ public class StationDaoTest {
         final int actual = stations.size();
 
         assertThat(actual).isEqualTo(3);
+    }
+
+    @DisplayName("인자로 전달된 id를 가지는 Station을 가져오는 것을 확인한다.")
+    @Test
+    void findById() {
+        jdbcTemplate.update("insert into Station (name) values (?)", "강남역");
+        final Station station = stationDao.findById(1L);
+        final String actual = station.getName();
+
+        assertThat(actual).isEqualTo("강남역");
     }
 
     @DisplayName("인자로 전달된 id를 가지는 레코드가 삭제되는 것을 확인한다.")
