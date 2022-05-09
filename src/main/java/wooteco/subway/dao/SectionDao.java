@@ -16,4 +16,6 @@ public interface SectionDao {
     int findDistanceById(Long id);
 
     Long findLineOrderById(Long id);
+
+    void updateLineOrder(Long lineId, Long lineOrder);
 }

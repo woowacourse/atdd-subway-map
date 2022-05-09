@@ -76,4 +76,10 @@ public class JdbcSectionDao implements SectionDao {
         String sql = "SELECT line_order FROM \"SECTION\" WHERE id = (?)";
         return jdbcTemplate.queryForObject(sql, Long.class, id);
     }
+
+    @Override
+    public void updateLineOrder(Long lineId, Long lineOrder) {
+        String sql = "UPDATE \"SECTION\" SET line_order = line_order + 1 WHERE line_id = (?) AND line_order >= (?)";
+        jdbcTemplate.update(sql, lineId, lineOrder);
+    }
 }

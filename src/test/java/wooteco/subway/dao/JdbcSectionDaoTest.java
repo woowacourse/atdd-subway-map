@@ -173,4 +173,38 @@ class JdbcSectionDaoTest {
         // then
         assertThat(lineOrder).isEqualTo(1L);
     }
+
+    @Test
+    @DisplayName("입력으로 들어온 값보다 lineOrder 값이 같거나 큰 구간들의 lineOrder 값을 1 증가시킨다.")
+    void updateLineOrderById() {
+        // given
+        Section givenSection = new Section(
+                new Line(1L, "신분당선", "yellow"),
+                new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
+                6, 1L);
+        Long givenSectionId = sectionDao.save(givenSection);
+
+        // when
+        sectionDao.updateLineOrder(1L, 1L);
+
+        // then
+        assertThat(sectionDao.findLineOrderById(givenSectionId)).isEqualTo(2L);
+    }
+
+    @Test
+    @DisplayName("입력으로 들어온 값보다 lineOrder 값이 작은 구간들의 lineOrder 값은 변화하지 않는다.")
+    void notUpdateLineOrderById() {
+        // given
+        Section givenSection = new Section(
+                new Line(1L, "신분당선", "yellow"),
+                new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
+                6, 1L);
+        Long givenSectionId = sectionDao.save(givenSection);
+
+        // when
+        sectionDao.updateLineOrder(1L, 2L);
+
+        // then
+        assertThat(sectionDao.findLineOrderById(givenSectionId)).isEqualTo(1L);
+    }
 }
