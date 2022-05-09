@@ -19,7 +19,7 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 public class LineAcceptanceTest extends AcceptanceTest {
-
+/*
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLines() {
@@ -170,4 +170,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(newResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+ */
 }

@@ -5,9 +5,14 @@ import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.DuplicateNameException;
 
@@ -15,16 +20,35 @@ import wooteco.subway.exception.DuplicateNameException;
 public class LineService {
 
     private final LineDao lineDao;
+    private final StationDao stationDao;
+    private final SectionDao sectionDao;
 
-    public LineService(final LineDao lineDao) {
+    public LineService(final LineDao lineDao, final StationDao stationDao, final SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
     }
 
     public LineResponse createLine(final LineRequest lineRequest) {
         validateDuplicate(lineRequest);
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = lineDao.save(line);
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        final Line newLine = lineDao.save(line);
+        saveSection(newLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(),
+                lineRequest.getDistance());
+
+        final Station upStation = stationDao.findById(lineRequest.getUpStationId());
+        final Station downStation = stationDao.findById(lineRequest.getDownStationId());
+        final StationResponse upStationResponse = new StationResponse(upStation.getId(), upStation.getName());
+        final StationResponse downStationResponse = new StationResponse(downStation.getId(), downStation.getName());
+
+        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(),
+                List.of(upStationResponse, downStationResponse));
+    }
+
+    private void saveSection(final Long lineId, final Long upStationId, final Long downStationId,
+                             final int distance) {
+        final Section section = new Section(lineId, upStationId, downStationId, distance);
+        sectionDao.save(section);
     }
 
     public int updateLine(final Long id, final LineRequest lineRequest) {
@@ -45,9 +69,10 @@ public class LineService {
                 .stream()
                 .anyMatch(line -> line.getName().equals(lineRequest.getName()));
     }
-
+/*
     public List<LineResponse> findLines() {
         final List<Line> lines = lineDao.findAll();
+
         return lines.stream()
                 .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
                 .collect(Collectors.toList());
@@ -61,7 +86,7 @@ public class LineService {
             throw new DataNotFoundException("존재하지 않는 노선입니다.");
         }
     }
-
+*/
     public int deleteLine(final Long id) {
         validateExist(id);
         return lineDao.delete(id);
