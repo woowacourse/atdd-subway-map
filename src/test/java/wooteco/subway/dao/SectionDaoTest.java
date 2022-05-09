@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,17 @@ public class SectionDaoTest {
         Integer count = jdbcTemplate.queryForObject("select count(*) from SECTION", Integer.class);
 
         assertThat(count).isEqualTo(1);
+    }
+
+    @DisplayName("지하철 구간의 전체 목록을 조회한다.")
+    @Test
+    void findAll() {
+        sectionDao.save(SECTION);
+        sectionDao.save(new Section(2L, 2L, 3L, 2));
+
+        List<Section> sections = sectionDao.findAll();
+
+        assertThat(sections).hasSize(2);
     }
 
     @DisplayName("지하철 구간을 삭제한다.")

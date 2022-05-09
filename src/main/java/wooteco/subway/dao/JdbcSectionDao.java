@@ -1,7 +1,9 @@
 package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -9,6 +11,16 @@ import wooteco.subway.domain.Section;
 
 @Repository
 public class JdbcSectionDao implements SectionDao {
+
+    private final RowMapper<Section> sectionRowMapper = (resultSet, rowNum) -> {
+        return new Section(
+                resultSet.getLong("id"),
+                resultSet.getLong("line_id"),
+                resultSet.getLong("up_station_id"),
+                resultSet.getLong("down_station_id"),
+                resultSet.getInt("distance")
+        );
+    };
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -31,6 +43,12 @@ public class JdbcSectionDao implements SectionDao {
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
+    }
+
+    @Override
+    public List<Section> findAll() {
+        final String sql = "select id, line_id, up_station_id, down_station_id, distance from SECTION";
+        return jdbcTemplate.query(sql, sectionRowMapper);
     }
 
     @Override
