@@ -1,8 +1,8 @@
 package wooteco.subway.ui;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -74,8 +74,10 @@ class StationControllerTest {
 
     }
 
-
+    @DisplayName("단일 역 삭제")
     @Test
-    void deleteStation() {
+    void 단일_역_삭제() throws Exception {
+        mockMvc.perform(delete("/stations/1"))
+                .andExpect(status().isNoContent());
     }
 }
