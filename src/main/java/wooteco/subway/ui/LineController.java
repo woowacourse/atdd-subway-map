@@ -19,7 +19,7 @@ public class LineController {
     private final LineService lineService;
     private final SectionService sectionService;
 
-    public LineController(final LineService lineService, SectionService sectionService) {
+    public LineController(final LineService lineService, final SectionService sectionService) {
         this.lineService = lineService;
         this.sectionService = sectionService;
     }
@@ -35,7 +35,7 @@ public class LineController {
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         final List<Line> lines = lineService.findAll();
-        List<LineResponse> lineResponses = lines.stream()
+        final List<LineResponse> lineResponses = lines.stream()
                 .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), sectionService.getBothOfStations(it.getSection())))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);

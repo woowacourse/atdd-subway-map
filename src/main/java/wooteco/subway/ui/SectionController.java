@@ -9,18 +9,18 @@ import wooteco.subway.service.SectionService;
 public class SectionController {
     private final SectionService sectionService;
 
-    public SectionController(SectionService sectionService) {
+    public SectionController(final SectionService sectionService) {
         this.sectionService = sectionService;
     }
 
     @PostMapping("/lines/{lineId}/sections")
-    public ResponseEntity<Void> create(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+    public ResponseEntity<Void> create(@PathVariable final Long lineId, @RequestBody final SectionRequest sectionRequest) {
         sectionService.create(lineId, sectionRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{lineId}/sections")
-    public ResponseEntity<Void> delete(@PathVariable Long lineId, @RequestParam Long stationId) {
+    public ResponseEntity<Void> delete(@PathVariable final Long lineId, @RequestParam final Long stationId) {
         sectionService.deleteSectionByStationIdInLineId(lineId, stationId);
         return ResponseEntity.ok().build();
     }

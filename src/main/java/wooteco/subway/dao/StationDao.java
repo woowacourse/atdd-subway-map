@@ -14,46 +14,45 @@ public class StationDao {
     private final JdbcTemplate jdbcTemplate;
     private final StationMapper stationMapper;
 
-    public StationDao(JdbcTemplate jdbcTemplate) {
+    public StationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.stationMapper = new StationMapper();
     }
 
-    public Station save(Station station) {
-        String sql = "insert into Station (name) values (?)";
+    public Station save(final Station station) {
+        final String sql = "insert into Station (name) values (?)";
         jdbcTemplate.update(sql, station.getName());
-
         return includeIdIn(station);
     }
 
-    private Station includeIdIn(Station station) {
-        String sql = "select max(id) from Station";
-        Long id = jdbcTemplate.queryForObject(sql, Long.class);
+    private Station includeIdIn(final Station station) {
+        final String sql = "select max(id) from Station";
+        final Long id = jdbcTemplate.queryForObject(sql, Long.class);
         return new Station(id, station.getName());
     }
 
-    public int counts(String name) {
-        String sql = String.format("select count(*) from Station where name = '%s'", name);
+    public int counts(final String name) {
+        final String sql = String.format("select count(*) from Station where name = '%s'", name);
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
     public List<Station> findAll() {
-        String sql = "select * from Station";
+        final String sql = "select * from Station";
         return jdbcTemplate.query(sql, new StationMapper());
     }
 
-    public void deleteById(Long id) {
-        String sql = "delete from Station where id = ?";
+    public void deleteById(final Long id) {
+        final String sql = "delete from Station where id = ?";
         jdbcTemplate.update(sql, id);
     }
 
-    public Station findById(Long id) {
-        String sql = "select * from Station where id = ?";
+    public Station findById(final Long id) {
+        final String sql = "select * from Station where id = ?";
         return jdbcTemplate.queryForObject(sql, stationMapper, id);
     }
 
     private static final class StationMapper implements RowMapper<Station> {
-        public Station mapRow(ResultSet rs, int rowCnt) throws SQLException {
+        public Station mapRow(final ResultSet rs, final int rowCnt) throws SQLException {
             return new Station(rs.getLong("id"), rs.getString("name"));
         }
     }

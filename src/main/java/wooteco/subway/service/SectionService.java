@@ -14,21 +14,21 @@ public class SectionService {
     private final StationDao stationDao;
     private final SectionDao sectionDao;
 
-    public SectionService(StationDao stationDao, SectionDao sectionDao) {
+    public SectionService(final StationDao stationDao, final SectionDao sectionDao) {
         this.stationDao = stationDao;
         this.sectionDao = sectionDao;
     }
 
-    public List<Station> getBothOfStations(Section section) {
+    public List<Station> getBothOfStations(final Section section) {
         return List.of(stationDao.findById(section.getUpStationId()), stationDao.findById(section.getDownStationId()));
     }
 
-    public void create(Long id, SectionRequest sectionRequest) {
+    public void create(final Long id, final SectionRequest sectionRequest) {
         final Section section = new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         sectionDao.save(id, section);
     }
 
-    public void deleteSectionByStationIdInLineId(Long lineId, Long stationId) {
+    public void deleteSectionByStationIdInLineId(final Long lineId, final Long stationId) {
         sectionDao.delete(lineId, stationId);
     }
 }

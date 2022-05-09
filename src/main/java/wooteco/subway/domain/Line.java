@@ -9,11 +9,11 @@ public class Line {
     private String color;
     private Section section;
 
-    public Line(String name, String color, Section section) {
+    public Line(final String name, final String color, final Section section) {
         this(null, name, color, section);
     }
 
-    public Line(Long id, String name, String color, Section section) {
+    public Line(final Long id, final String name, final String color, final Section section) {
         this.id = id;
         this.name = name;
         this.color = color;
