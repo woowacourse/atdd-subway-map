@@ -1,30 +1,54 @@
 package wooteco.subway.dao;
 
-import org.springframework.util.ReflectionUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
+@Repository
 public class StationDao {
-    private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
 
-    public static Station save(Station station) {
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public static List<Station> findAll() {
-        return stations;
+    public Station save(Station station) {
+        String sql = "insert into Station (name) values (?)";
+        jdbcTemplate.update(sql, station.getName());
+
+        return includeIdIn(station);
     }
 
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+    private Station includeIdIn(Station station) {
+        String sql = "select max(id) from Station";
+        Long id = jdbcTemplate.queryForObject(sql, Long.class);
+        return new Station(id, station.getName());
+    }
+
+    public int counts(String name) {
+        String sql = String.format("select count(*) from Station where name = '%s'", name);
+        return jdbcTemplate.queryForObject(sql, Integer.class);
+    }
+
+    public List<Station> findAll() {
+        String sql = "select * from Station";
+        return jdbcTemplate.query(sql, new StationMapper());
+    }
+
+    public void deleteById(Long id) {
+        String sql = "delete from Station where id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    private static final class StationMapper implements RowMapper {
+        public Station mapRow(ResultSet rs, int rowCnt) throws SQLException {
+            return new Station(rs.getLong("id"), rs.getString("name"));
+        }
+
     }
 }
