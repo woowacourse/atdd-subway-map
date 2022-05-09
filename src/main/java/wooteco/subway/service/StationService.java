@@ -3,10 +3,12 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.StationRequestDto;
 import wooteco.subway.exception.DuplicateStationNameException;
+import wooteco.subway.exception.NoSuchStationException;
 import wooteco.subway.repository.dao.StationDao;
 import wooteco.subway.repository.entity.StationEntity;
 
@@ -26,6 +28,16 @@ public class StationService {
             return savedStationEntity.generateStation();
         } catch (DuplicateKeyException exception) {
             throw new DuplicateStationNameException();
+        }
+    }
+
+    public Station searchById(final Long id) {
+        try {
+            return stationDao.findById(id)
+                    .orElseThrow(() -> new NoSuchStationException())
+                    .generateStation();
+        } catch (EmptyResultDataAccessException exception) {
+            throw new NoSuchStationException();
         }
     }
 
