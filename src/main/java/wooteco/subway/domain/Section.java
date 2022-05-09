@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.utils.exception.NotValidSectionCreateException;
+import java.util.Objects;
+import wooteco.subway.utils.exception.SectionCreateException;
 
 public class Section {
 
@@ -13,7 +14,12 @@ public class Section {
     private Station downStation;
     private int distance;
 
-    public Section(Long id, Long lineId, Station upStation, Station downStation, int distance) {
+    public Section(final Long id,
+                   final Long lineId,
+                   final Station upStation,
+                   final Station downStation,
+                   final int distance
+    ) {
         validateDistance(distance);
         this.id = id;
         this.lineId = lineId;
@@ -22,13 +28,51 @@ public class Section {
         this.distance = distance;
     }
 
-    private void validateDistance(int distance) {
+    public Section(final Long lineId, final Station upStation, final Station downStation, final int distance) {
+        this(null, lineId, upStation, downStation, distance);
+    }
+
+    private void validateDistance(final int distance) {
         if (distance <= DISTANCE_STANDARD) {
-            throw new NotValidSectionCreateException(DISTANCE_FAIL_MESSAGE);
+            throw new SectionCreateException(DISTANCE_FAIL_MESSAGE);
         }
     }
 
-    public Section(Long lineId, Station upStation, Station downStation, int distance) {
-        this(null, lineId, upStation, downStation, distance);
+    public Long getId() {
+        return id;
+    }
+
+    public Long getLineId() {
+        return lineId;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(lineId, section.lineId) && Objects.equals(upStation, section.upStation)
+                && Objects.equals(downStation, section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(lineId, upStation, downStation);
     }
 }
