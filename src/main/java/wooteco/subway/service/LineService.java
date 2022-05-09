@@ -14,6 +14,8 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.dto.request.CreateSectionRequest;
+import wooteco.subway.exception.NotFoundException;
 
 @Transactional
 @Service
@@ -59,13 +61,37 @@ public class LineService {
         return findStations(line);
     }
 
-    public void updateLine(final long id, final LineRequest request) {
+    public void updateLine(final Long id, final LineRequest request) {
         lineDao.find(id);
         lineDao.update(id, request.getName(), request.getColor());
     }
 
-    public void deleteLine(final long id) {
+    public void deleteLine(final Long id) {
         lineDao.find(id);
         lineDao.delete(id);
+    }
+
+    public void createSection(final Long lineId, final CreateSectionRequest request) {
+        validateNotExistLine(lineId);
+        validateNotExistStation(request.getUpStationId());
+        validateNotExistStation(request.getDownStationId());
+        final Sections sections = sectionDao.findAllByLineId(lineId);
+        sections.add(new Section(lineId, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+        sectionDao.deleteAllByLineId(lineId);
+        for (Section section : sections.getSections()) {
+            sectionDao.save(section);
+        }
+    }
+
+    private void validateNotExistLine(final Long id) {
+        if (!lineDao.existsById(id)) {
+            throw new NotFoundException("존재하지 않는 노선(ID: " + id + ")입니다.");
+        }
+    }
+
+    private void validateNotExistStation(final Long id) {
+        if (!stationDao.existsById(id)) {
+            throw new NotFoundException("존재하지 않는 역(ID: " + id + ")입니다.");
+        }
     }
 }

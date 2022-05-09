@@ -52,6 +52,11 @@ public class LineDao {
         jdbcTemplate.update(sql, id);
     }
 
+    public boolean existsById(final Long id) {
+        final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
+    }
+
     private RowMapper<Line> rowMapper() {
         return (resultSet, rowNum) -> new Line(
                 resultSet.getLong("id"),

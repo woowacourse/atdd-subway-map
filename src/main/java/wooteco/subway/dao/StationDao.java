@@ -46,6 +46,11 @@ public class StationDao {
         jdbcTemplate.update(sql, id);
     }
 
+    public boolean existsById(final Long id) {
+        final String sql = "SELECT EXISTS (SELECT * FROM STATION WHERE id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
+    }
+
     private RowMapper<Station> rowMapper() {
         return (resultSet, rowNum) -> new Station(
                 resultSet.getLong("id"),

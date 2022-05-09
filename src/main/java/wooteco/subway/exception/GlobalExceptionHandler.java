@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }
 
-    @ExceptionHandler(EmptyResultDataAccessException.class)
+    @ExceptionHandler({EmptyResultDataAccessException.class, NotFoundException.class})
     public ResponseEntity<Void> emptyResultException() {
         return ResponseEntity.notFound().build();
     }

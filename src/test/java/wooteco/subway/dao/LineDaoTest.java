@@ -3,6 +3,8 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static wooteco.subway.Fixtures.LINE_2;
+import static wooteco.subway.Fixtures.RED;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -126,5 +128,19 @@ public class LineDaoTest {
         lineDao.delete(id);
 
         assertThat(lineDao.findAll()).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("ID를 이용해 지하철 노선이 있는지 확인한다.")
+    void existsById() {
+        // given
+        final Line line = new Line(LINE_2, RED);
+        final Long id = lineDao.save(line);
+
+        // when
+        final boolean actual = lineDao.existsById(id);
+
+        // then
+        assertThat(actual).isTrue();
     }
 }

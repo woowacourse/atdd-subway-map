@@ -19,6 +19,7 @@ import static wooteco.subway.Fixtures.SINSA;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -26,12 +27,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import wooteco.subway.domain.Line;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.dto.request.CreateLineRequest;
+import wooteco.subway.dto.request.CreateSectionRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.service.LineService;
 
+@Nested
 @WebMvcTest(LineController.class)
 public class LineControllerTest {
 
@@ -123,5 +125,21 @@ public class LineControllerTest {
                 .andExpect(jsonPath("stations[0].name").value(HYEHWA))
                 .andExpect(jsonPath("stations[1].id").value(2L))
                 .andExpect(jsonPath("stations[1].name").value(SINSA));
+    }
+
+    @Test
+    @DisplayName("지하철 구간을 등록한다. - 성공 200")
+    void createSection_ok() throws Exception {
+        // given
+        final long lineId = 1L;
+        final CreateSectionRequest request = new CreateSectionRequest(2L, 3L, 5);
+        final String requestContent = objectMapper.writeValueAsString(request);
+
+        // when
+        mockMvc.perform(post("/lines/" + lineId + "/sections")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestContent))
+                // then
+                .andExpect(status().isOk());
     }
 }

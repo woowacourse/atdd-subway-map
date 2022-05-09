@@ -30,6 +30,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.dto.request.CreateLineRequest;
+import wooteco.subway.dto.request.CreateSectionRequest;
 import wooteco.subway.dto.response.LineResponse;
 
 @ExtendWith(MockitoExtension.class)
@@ -167,5 +168,25 @@ class LineServiceTest {
 
         // then
         verify(lineDao).delete(id);
+    }
+
+    @Test
+    @DisplayName("지하철 구간을 등록한다.")
+    void createSection() {
+        // given
+        final long lineId = 1L;
+
+        // mocking
+        given(lineDao.existsById(any(Long.class))).willReturn(true);
+        given(stationDao.existsById(any(Long.class))).willReturn(true);
+        given(sectionDao.findAllByLineId(lineId)).willReturn(new Sections(List.of(new Section(1L, 1L, 1L, 2L, 10))));
+
+        // when
+        lineService.createSection(lineId, new CreateSectionRequest(2L, 3L, 10));
+
+        // then
+        verify(sectionDao).deleteAllByLineId(lineId);
+        verify(sectionDao).save(new Section(1L, 1L, 1L, 2L, 10));
+        verify(sectionDao).save(new Section(2L, 1L, 2L, 3L, 10));
     }
 }

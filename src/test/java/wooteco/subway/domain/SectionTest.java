@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static wooteco.subway.Fixtures.ID_1;
 import static wooteco.subway.Fixtures.ID_2;
@@ -26,5 +27,33 @@ public class SectionTest {
         assertThatThrownBy(() -> new Section(ID_1, ID_1, ID_2, distance))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간의 거리는 0보다 커야합니다.");
+    }
+
+    @Test
+    @DisplayName("같은 상행 역 ID를 가지는 지 확인한다. - 참")
+    void hasSameUpStationId_true() {
+        // givne
+        final Section section1 = new Section(1L, 1L, 3L, 10);
+        final Section section2 = new Section(1L, 1L, 2L, 10);
+
+        // when
+        final Boolean actual = section1.hasSameUpStationId(section2);
+
+        // then
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    @DisplayName("같은 상행 역 ID를 가지는 지 확인한다. - 거짓")
+    void hasSameUpStationId_false() {
+        // givne
+        final Section section1 = new Section(1L, 1L, 3L, 10);
+        final Section section2 = new Section(1L, 3L, 2L, 10);
+
+        // when
+        final Boolean actual = section1.hasSameUpStationId(section2);
+
+        // then
+        assertThat(actual).isFalse();
     }
 }
