@@ -97,10 +97,6 @@ public class Section {
         );
     }
 
-    public boolean contains(final Long stationId) {
-        return upStationId.equals(stationId) || downStationId.equals(stationId);
-    }
-
     private Long findDuplicateId(final Section section) {
         final Set<Long> stationIds = new HashSet<>();
         stationIds.add(upStationId);
@@ -109,6 +105,10 @@ public class Section {
             return section.upStationId;
         }
         return section.downStationId;
+    }
+
+    public boolean contains(final Long stationId) {
+        return upStationId.equals(stationId) || downStationId.equals(stationId);
     }
 
     public Long getId() {

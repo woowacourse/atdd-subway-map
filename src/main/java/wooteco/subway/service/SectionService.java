@@ -8,7 +8,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.Stations;
 import wooteco.subway.dto.section.SectionCreationRequest;
 import wooteco.subway.dto.section.SectionDeletionRequest;
 import wooteco.subway.exception.line.NoSuchLineException;
@@ -41,11 +41,8 @@ public class SectionService {
     }
 
     private void validateStationCount(final SectionCreationRequest request) {
-        final long stationCount = stationDao.findAllByLineId(request.getLineId())
-                .stream()
-                .map(Station::getId)
-                .filter(it -> it.equals(request.getUpStationId()) || it.equals(request.getDownStationId()))
-                .count();
+        final Stations stations = new Stations(stationDao.findAllByLineId(request.getLineId()));
+        final int stationCount = stations.calculateMatchCount(request.getUpStationId(), request.getDownStationId());
         if (stationCount != VALID_STATION_COUNT) {
             throw new IllegalArgumentException("상행역과 하행역 중 하나의 역만 노선에 포함되어 있어야 합니다.");
         }
