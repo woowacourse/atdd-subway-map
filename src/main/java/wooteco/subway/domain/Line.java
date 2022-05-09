@@ -5,11 +5,12 @@ import java.util.Objects;
 public class Line {
 
     private static final String ERROR_NULL_OR_EMPTY = "[ERROR] 이름에 빈칸 입력은 허용하지 않습니다.";
+    private static final String BLANK = " ";
     private static final String ERROR_INCLUDE_BLANK = "[ERROR] 이름은 내부에 공백이 포함될 수 없습니다.";
     private static final String ERROR_INVALID_LENGTH = "[ERROR] 이름은 2글자 이상이어야합니다.";
     private static final String REGEX_SPECIAL = "[가-힣\\w_]+";
     private static final String ERROR_SPECIAL = "[ERROR] 이름에 특수문자를 입력할 수 없습니다.";
-    
+
     private Long id;
     private String name;
     private String color;
@@ -42,7 +43,7 @@ public class Line {
     }
 
     private void checkIncludeBlank(final String name) {
-        if (name.trim().contains(" ")) {
+        if (name.trim().contains(BLANK)) {
             throw new IllegalArgumentException(ERROR_INCLUDE_BLANK);
         }
     }
