@@ -12,6 +12,8 @@ import wooteco.subway.domain.Station;
 
 import javax.sql.DataSource;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -83,5 +85,16 @@ public class SectionDaoTest {
 
         Section updatedSection = sectionDao.findById(savedSection.getId());
         assertThat(changedSection).isEqualTo(updatedSection);
+    }
+
+    @DisplayName("노선 id에 해당하는 모든 구간 정보를 불러온다.")
+    @Test
+    void findAll() {
+        Section savedSection1 = sectionDao.insert(new Section(savedLine1.getId(), savedStation1.getId(), savedStation2.getId(), 10));
+        Section savedSection2 = sectionDao.insert(new Section(savedLine1.getId(), savedStation2.getId(), savedStation3.getId(), 10));
+
+        List<Section> sections = sectionDao.findAllByLineId(savedLine1.getId());
+
+        assertThat(sections).containsExactly(savedSection1, savedSection2);
     }
 }

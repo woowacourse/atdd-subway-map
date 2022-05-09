@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Repository
 public class SectionDao {
@@ -32,6 +33,11 @@ public class SectionDao {
     public Section findById(Long id) {
         String SQL = "select * from section where id = ?";
         return jdbcTemplate.queryForObject(SQL, rowMapper(), id);
+    }
+
+    public List<Section> findAllByLineId(Long id) {
+        String SQL = "select * from section where line_id = ?";
+        return jdbcTemplate.query(SQL, rowMapper(), id);
     }
 
     public void update(Section section) {
