@@ -3,7 +3,6 @@ package wooteco.subway.ui;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.application.LineService;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -17,11 +16,9 @@ import java.util.stream.Collectors;
 public class LineController {
 
     private final LineService lineService;
-    private final LineDao lineDao;
 
-    public LineController(LineService lineService, LineDao lineDao) {
+    public LineController(LineService lineService) {
         this.lineService = lineService;
-        this.lineDao = lineDao;
     }
 
     @PostMapping
@@ -33,10 +30,7 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineDao.findAll();
-        List<LineResponse> lineResponses = lines.stream()
-            .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
-            .collect(Collectors.toList());
+        List<LineResponse> lineResponses = toLineResponses(lineService.findAll());
         return ResponseEntity.ok(lineResponses);
     }
 
@@ -59,5 +53,11 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private List<LineResponse> toLineResponses(List<Line> lines) {
+        return lines.stream()
+                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+                .collect(Collectors.toList());
     }
 }

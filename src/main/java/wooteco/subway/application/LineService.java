@@ -7,6 +7,8 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.exception.constant.DuplicateException;
 import wooteco.subway.exception.constant.NotExistException;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class LineService {
@@ -23,6 +25,10 @@ public class LineService {
         }
         long savedLineId = lineDao.save(new Line(name, color));
         return new Line(savedLineId, name, color);
+    }
+
+    public List<Line> findAll() {
+        return lineDao.findAll();
     }
 
     @Transactional(readOnly = true)

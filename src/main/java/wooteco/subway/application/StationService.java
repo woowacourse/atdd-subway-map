@@ -7,6 +7,8 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.exception.constant.DuplicateException;
 import wooteco.subway.exception.constant.NotExistException;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class StationService {
@@ -23,6 +25,10 @@ public class StationService {
         }
         long savedStationId = stationDao.save(new Station(name));
         return new Station(savedStationId, name);
+    }
+
+    public List<Station> findAll() {
+        return stationDao.findAll();
     }
 
     public void deleteById(Long id) {

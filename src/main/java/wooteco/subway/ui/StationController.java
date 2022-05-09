@@ -4,7 +4,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.application.StationService;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
@@ -18,11 +17,9 @@ import java.util.stream.Collectors;
 public class StationController {
 
     private final StationService stationService;
-    private final StationDao stationDao;
 
-    public StationController(StationService stationService, StationDao stationDao) {
+    public StationController(StationService stationService) {
         this.stationService = stationService;
-        this.stationDao = stationDao;
     }
 
     @PostMapping
@@ -36,11 +33,8 @@ public class StationController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = stationDao.findAll();
         List<StationResponse> stationResponses =
-                stations.stream()
-                        .map(station -> new StationResponse(station))
-                        .collect(Collectors.toList());
+                toStationResponses();
         return ResponseEntity.ok().body(stationResponses);
     }
 
@@ -48,5 +42,11 @@ public class StationController {
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private List<StationResponse> toStationResponses() {
+        return stationService.findAll().stream()
+                .map(station -> new StationResponse(station))
+                .collect(Collectors.toList());
     }
 }
