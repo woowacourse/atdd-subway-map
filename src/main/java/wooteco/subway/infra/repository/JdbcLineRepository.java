@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
 import wooteco.subway.infra.dao.LineDao;
 import wooteco.subway.infra.dao.SectionDao;
 import wooteco.subway.infra.entity.LineEntity;
@@ -34,9 +33,9 @@ public class JdbcLineRepository implements LineRepository {
                 .map(this::toLine)
                 .collect(Collectors.toList());
 
-        sectionDao.findAll()
-                .stream()
-                .map(entity -> new Section())
+//        sectionDao.findAll()
+//                .stream()
+//                .map(entity -> new Section())
 
         return null;
     }
