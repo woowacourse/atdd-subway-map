@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Sections {
 
@@ -12,6 +13,8 @@ public class Sections {
     }
 
     public void add(Section newSection) {
+        validateAddable(newSection);
+
         if (getUpDestination().equals(newSection.getDownStation())) {
             values.add(0, newSection);
             return;
@@ -39,6 +42,39 @@ public class Sections {
                 return;
             }
         }
+    }
+
+    private void validateAddable(Section section) {
+        List<Section> foundSections = findSectionsOverlapped(section);
+
+        if (isInvalid(section, foundSections)) {
+            throw new IllegalArgumentException("이미 포함된 두 역을 가진 Section 을 추가할 수 없습니다.");
+        }
+    }
+
+    private boolean isInvalid(Section section, List<Section> foundSections) {
+        return hasSameStations(section) ||
+            isContainStationsInMiddle(foundSections) || isSameWithDestinations(foundSections);
+    }
+
+    private boolean hasSameStations(Section newSection) {
+        return values.stream().anyMatch(section -> section.hasSameStations(newSection));
+    }
+
+    private List<Section> findSectionsOverlapped(Section newSection) {
+        return values.stream()
+            .filter(section ->
+                section.contains(newSection.getDownStation()) || section.contains(newSection.getUpStation()))
+            .collect(Collectors.toList());
+    }
+
+    private boolean isContainStationsInMiddle(List<Section> foundSections) {
+        return foundSections.size() > 2;
+    }
+
+    private boolean isSameWithDestinations(List<Section> foundSections) {
+        return foundSections.size() == 2 &&
+            foundSections.containsAll(List.of(values.get(0), values.get(values.size() - 1)));
     }
 
     public Station getUpDestination() {

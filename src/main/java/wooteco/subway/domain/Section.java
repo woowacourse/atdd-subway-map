@@ -33,6 +33,15 @@ public class Section {
         return distance;
     }
 
+    public boolean hasSameStations(Section section) {
+        return (downStation.equals(section.getDownStation()) && upStation.equals(section.getUpStation())) ||
+            (downStation.equals(section.getUpStation()) && upStation.equals(section.getDownStation()));
+    }
+
+    public boolean contains(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
