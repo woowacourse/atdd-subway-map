@@ -36,6 +36,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Station downStation = stationRepository.save(new Station("신도림"));
         request = new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
     }
+
     @DisplayName("노선을 생성하면 201 created를 반환하고 Location header에 url resource를 반환한다.")
     @Test
     void createLine() {

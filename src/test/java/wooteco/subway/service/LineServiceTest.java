@@ -6,10 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.repository.LineRepository;
-import wooteco.subway.domain.repository.LineRepositoryImpl;
-import wooteco.subway.domain.repository.SectionRepository;
-import wooteco.subway.domain.repository.SectionRepositoryImpl;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
+import wooteco.subway.domain.repository.*;
 import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.LineResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
@@ -31,12 +30,19 @@ public class LineServiceTest {
     private LineRepository lineRepository;
     private SectionService sectionService;
     private SectionRepository sectionRepository;
+    private StationRepository stationRepository;
+    private Station station1;
+    private Station station2;
 
     @BeforeEach
     void setUp() {
         lineRepository = new LineRepositoryImpl(dataSource);
         sectionRepository = new SectionRepositoryImpl(dataSource);
-        lineService = new LineService(lineRepository, sectionService);
+        lineService = new LineService(lineRepository, sectionService, sectionRepository);
+        stationRepository = new StationRepositoryImpl(dataSource);
+        station1 = stationRepository.save(new Station("홍대입구역"));
+        station2 = stationRepository.save(new Station("신촌역"));
+
     }
 
     @DisplayName("노선을 생성한다.")
@@ -63,11 +69,18 @@ public class LineServiceTest {
     @DisplayName("모든 노선을 조회한다.")
     @Test
     void showLines() {
-        lineRepository.save(new Line("분당선", "bg-red-600"));
-        lineRepository.save(new Line("신분당선", "bg-yellow-600"));
-
+        Line line1 = lineRepository.save(new Line("분당선", "bg-red-600"));
+        Line line2 = lineRepository.save(new Line("신분당선", "bg-yellow-600"));
+        Station station3 = stationRepository.save(new Station("잠실역"));
+        Station station4 = stationRepository.save(new Station("선릉역"));
+        sectionRepository.save(new Section(line1.getId(), station1, station2, 10));
+        sectionRepository.save(new Section(line2.getId(), station3, station4, 10));
         List<LineResponse> lineResponses = lineService.showLines();
-        assertThat(lineResponses).hasSize(2);
+        assertAll(
+                () -> assertThat(lineResponses).hasSize(2),
+                () -> assertThat(lineResponses.get(0).getStations()).hasSize(2),
+                () -> assertThat(lineResponses.get(1).getStations()).hasSize(2)
+        );
     }
 
     @DisplayName("노선을 조회한다.")

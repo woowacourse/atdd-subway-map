@@ -4,12 +4,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.domain.repository.LineRepository;
+import wooteco.subway.domain.repository.SectionRepository;
 import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.LineResponse;
 import wooteco.subway.utils.exception.NameDuplicatedException;
 import wooteco.subway.utils.exception.NotFoundException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,10 +23,12 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final SectionService sectionService;
+    private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, SectionService sectionService) {
+    public LineService(LineRepository lineRepository, SectionService sectionService, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.sectionService = sectionService;
+        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse create(final LineRequest lineRequest) {
@@ -43,8 +49,18 @@ public class LineService {
 
     public List<LineResponse> showLines() {
         List<Line> lines = lineRepository.findAll();
+
         return lines.stream()
-                .map(LineResponse::new)
+                .map(line -> {
+                    List<Section> sections = sectionRepository.findAllByLineId(line.getId());
+                    List<Station> stations = new ArrayList<>();
+                    for (Section section : sections) {
+                        stations.add(section.getUpStation());
+                        stations.add(section.getDownStation());
+                    }
+                    List<Station> collect = stations.stream().distinct().collect(Collectors.toList());
+                    return new LineResponse(line, collect);
+                })
                 .collect(Collectors.toList());
     }
 
