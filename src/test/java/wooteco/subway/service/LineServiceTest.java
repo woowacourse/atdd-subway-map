@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.mock.MemoryLineDao;
 import wooteco.subway.mock.MemorySectionDao;
 import wooteco.subway.mock.MemoryStationDao;
@@ -20,6 +21,11 @@ class LineServiceTest {
     @BeforeEach
     void beforeEach() {
         lineDao.clear();
+        stationDao.clear();
+        sectionDao.clear();
+
+        stationDao.save(new Station(1L, "첫번째역"));
+        stationDao.save(new Station(2L, "두번째역"));
     }
 
     @Test

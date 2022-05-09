@@ -61,5 +61,6 @@ public class MemoryStationDao implements StationDao {
 
     public void clear() {
         stations.clear();
+        seq = 0L;
     }
 }

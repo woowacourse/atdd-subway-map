@@ -62,5 +62,6 @@ public class MemoryLineDao implements LineDao {
 
     public void clear() {
         lines.clear();
+        seq = 0L;
     }
 }
