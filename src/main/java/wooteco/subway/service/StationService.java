@@ -22,13 +22,13 @@ public class StationService {
     public StationResponse save(StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
         Station newStation = stationDao.save(station);
-        return new StationResponse(newStation.getId(), newStation.getName());
+        return StationResponse.from(newStation);
     }
 
     public List<StationResponse> findAll() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()
-            .map(it -> new StationResponse(it.getId(), it.getName()))
+            .map(StationResponse::from)
             .collect(Collectors.toList());
     }
 
