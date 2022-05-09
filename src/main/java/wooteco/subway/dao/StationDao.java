@@ -25,34 +25,34 @@ public class StationDao {
     }
 
     public Long save(Station station) {
-        String insertSql = "insert into STATION (name) values (:name)";
+        String sql = "insert into STATION (name) values (:name)";
         SqlParameterSource source = new BeanPropertySqlParameterSource(station);
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(insertSql, source, keyHolder);
+        jdbcTemplate.update(sql, source, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     public boolean existsByName(String name) {
-        String selectSql = "select exists (select 1 from STATION where name = :name)";
+        String sql = "select exists (select 1 from STATION where name = :name)";
         SqlParameterSource source = new MapSqlParameterSource("name", name);
-        return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Boolean.class));
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, source, Boolean.class));
     }
 
     public boolean existsById(Long id) {
-        String selectSql = "select exists (select 1 from STATION where id = :id)";
+        String sql = "select exists (select 1 from STATION where id = :id)";
         SqlParameterSource source = new MapSqlParameterSource("id", id);
-        return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, Boolean.class));
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, source, Boolean.class));
     }
 
     public Station findById(Long id) {
-        String selectSql = "select * from STATION where id = :id";
+        String sql = "select * from STATION where id = :id";
         SqlParameterSource source = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.queryForObject(selectSql, source, eventRowMapper);
+        return jdbcTemplate.queryForObject(sql, source, eventRowMapper);
     }
 
     public List<Station> findAll() {
-        String selectSql = "select * from STATION";
-        return jdbcTemplate.query(selectSql, eventRowMapper);
+        String sql = "select * from STATION";
+        return jdbcTemplate.query(sql, eventRowMapper);
     }
 
     public void deleteById(Long id) {

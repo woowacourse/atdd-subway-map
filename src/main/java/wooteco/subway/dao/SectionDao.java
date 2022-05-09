@@ -37,11 +37,11 @@ public class SectionDao {
     }
 
     public Long save(SectionRequest section) {
-        String insertSql = "insert into SECTION (line_id, up_station_id, down_station_id, distance) "
+        String sql = "insert into SECTION (line_id, up_station_id, down_station_id, distance) "
                 + "values (:lineId, :upStationId, :downStationId, :distance)";
         SqlParameterSource source = new BeanPropertySqlParameterSource(section);
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(insertSql, source, keyHolder);
+        jdbcTemplate.update(sql, source, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 }
