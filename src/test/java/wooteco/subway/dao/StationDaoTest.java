@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.sql.DataSource;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,11 +23,14 @@ public class StationDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private DataSource dataSource;
+
     private StationDao stationDao;
 
     @BeforeEach
     void setUp() {
-        stationDao = new StationDao(jdbcTemplate);
+        stationDao = new StationDao(jdbcTemplate, dataSource);
     }
 
     @Test

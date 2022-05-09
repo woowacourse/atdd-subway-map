@@ -1,15 +1,16 @@
 package wooteco.subway.dao;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+
+import javax.sql.DataSource;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.Station;
@@ -18,24 +19,19 @@ import wooteco.subway.domain.Station;
 public class StationDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
-    public StationDao(final JdbcTemplate jdbcTemplate) {
+    public StationDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
+            .withTableName("STATION")
+            .usingGeneratedKeyColumns("id");
     }
 
     public Station save(final Station station) {
-        final String sql = "insert into Station (name) values (?)";
-        final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            statement.setString(1, station.getName());
-            return statement;
-        }, keyHolder);
-
-        return new Station(
-            Objects.requireNonNull(keyHolder.getKey()).longValue(),
-            station.getName()
-        );
+        final SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(station);
+        final Long id = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return new Station(id, station.getName());
     }
 
     public List<Station> findAll() {

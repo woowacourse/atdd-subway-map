@@ -1,16 +1,16 @@
 package wooteco.subway.dao;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+
+import javax.sql.DataSource;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.Line;
@@ -19,26 +19,19 @@ import wooteco.subway.domain.Line;
 public class LineDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
-    public LineDao(final JdbcTemplate jdbcTemplate) {
+    public LineDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
+            .withTableName("LINE")
+            .usingGeneratedKeyColumns("id");
     }
 
     public Line save(final Line line) {
-        final String sql = "insert into Line(name, color) values (?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, line.getName());
-            ps.setString(2, line.getColor());
-            return ps;
-        }, keyHolder);
-
-        return new Line(
-                Objects.requireNonNull(keyHolder.getKey()).longValue(),
-                line.getName(),
-                line.getColor()
-        );
+        final SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(line);
+        final Long id = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return new Line(id, line.getName(), line.getColor());
     }
 
     public List<Line> findAll() {
