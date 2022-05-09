@@ -28,6 +28,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // when
+        Station testStation1 = new Station("강남역");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(testStation1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

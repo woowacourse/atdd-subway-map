@@ -44,7 +44,7 @@ class StationControllerTest {
                     contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                     post("/stations").
-                then().
+                then().log().all().
                     extract();
 
         // then
