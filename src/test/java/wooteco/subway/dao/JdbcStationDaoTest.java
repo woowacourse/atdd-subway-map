@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,5 +55,16 @@ class JdbcStationDaoTest {
         Long id = jdbcStationDao.save("강남역");
         boolean isDeleted = jdbcStationDao.deleteById(id);
         assertThat(isDeleted).isTrue();
+    }
+
+    @DisplayName("지하철역을 단일 조회한다.")
+    @Test
+    void findById() {
+        Long id = jdbcStationDao.save("강남역");
+        Station station = jdbcStationDao.findById(id);
+        assertAll(
+                () -> station.getId().equals(id),
+                () -> station.getName().equals("강남역")
+        );
     }
 }
