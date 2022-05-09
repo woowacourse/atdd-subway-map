@@ -9,6 +9,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Lines;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.SectionAddManager;
 import wooteco.subway.domain.Station;
@@ -36,7 +37,6 @@ public class SubwayService {
         Line line = saveLine(lineRequest);
         SectionRequest sectionRequest = toSectionRequest(lineRequest);
         saveSection(line.getId(), sectionRequest);
-
         return makeLineResponse(line);
     }
 
@@ -78,6 +78,8 @@ public class SubwayService {
 
     private Line saveLine(LineRequest lineRequest) {
         Line line = lineRequest.toEntity();
+        Lines lines = new Lines(lineDao.findAll());
+        lines.checkAbleToAdd(line);
         return lineDao.save(line);
     }
 
