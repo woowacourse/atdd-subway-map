@@ -15,6 +15,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.section.SectionCreationRequest;
 import wooteco.subway.dto.section.SectionDeletionRequest;
@@ -193,11 +194,11 @@ class SectionServiceTest extends ServiceTest {
         given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(line));
 
-        final List<Section> sections = List.of(
+        final Sections sections = new Sections(List.of(
                 new Section(1L, line.getId(), 1L, 2L, 5),
                 new Section(2L, line.getId(), 2L, 3L, 7),
                 new Section(3L, line.getId(), 3L, 4L, 11)
-        );
+        ));
         given(sectionDao.findAllByLineId(any(Long.class)))
                 .willReturn(sections);
 
@@ -215,11 +216,11 @@ class SectionServiceTest extends ServiceTest {
         given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(line));
 
-        final List<Section> sections = List.of(
+        final Sections sections = new Sections(List.of(
                 new Section(1L, line.getId(), 1L, 2L, 5),
                 new Section(2L, line.getId(), 2L, 3L, 7),
                 new Section(3L, line.getId(), 3L, 4L, 11)
-        );
+        ));
         given(sectionDao.findAllByLineId(any(Long.class)))
                 .willReturn(sections);
 
@@ -237,11 +238,11 @@ class SectionServiceTest extends ServiceTest {
         given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(line));
 
-        final List<Section> sections = List.of(
+        final Sections sections = new Sections(List.of(
                 new Section(1L, line.getId(), 1L, 2L, 5),
                 new Section(2L, line.getId(), 2L, 3L, 7),
                 new Section(3L, line.getId(), 3L, 4L, 11)
-        );
+        ));
         given(sectionDao.findAllByLineId(any(Long.class)))
                 .willReturn(sections);
 
@@ -259,9 +260,9 @@ class SectionServiceTest extends ServiceTest {
         given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(line));
 
-        final List<Section> sections = List.of(
+        final Sections sections = new Sections(List.of(
                 new Section(1L, line.getId(), 1L, 2L, 10)
-        );
+        ));
         given(sectionDao.findAllByLineId(any(Long.class)))
                 .willReturn(sections);
 
@@ -280,11 +281,11 @@ class SectionServiceTest extends ServiceTest {
         given(lineDao.findById(any(Long.class)))
                 .willReturn(Optional.of(line));
 
-        final List<Section> sections = List.of(
+        final Sections sections = new Sections(List.of(
                 new Section(1L, line.getId(), 2L, 3L, 5),
                 new Section(2L, line.getId(), 3L, 4L, 7),
                 new Section(3L, line.getId(), 5L, 2L, 11)
-        );
+        ));
         given(sectionDao.findAllByLineId(any(Long.class)))
                 .willReturn(sections);
 

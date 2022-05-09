@@ -12,7 +12,7 @@ class SectionsTest {
 
     @Test
     @DisplayName("정렬된 역 아이디를 반환한다.")
-    void toStationIds() {
+    void ToStationIds_ShuffledSections_SortedStationIdsReturned() {
         // given
         final List<Section> shuffledSections = new ArrayList<>(List.of(
                 new Section(1L, 1L, 1L, 2L, 1),
@@ -27,7 +27,7 @@ class SectionsTest {
         final Sections sections = new Sections(shuffledSections);
 
         // when
-        final List<Long> actual = sections.toStations();
+        final List<Long> actual = sections.toStationIds();
 
         // then
         assertThat(actual).containsExactly(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L);
