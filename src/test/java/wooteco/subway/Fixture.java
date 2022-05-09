@@ -5,8 +5,13 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Map;
 import org.springframework.http.MediaType;
+import wooteco.subway.domain.Station;
+import wooteco.subway.mockDao.MockStationDao;
+import wooteco.subway.repository.entity.StationEntity;
 
 public class Fixture {
+
+    private static final MockStationDao stationDao = new MockStationDao();
 
     public static ExtractableResponse<Response> createLineRequest(final Map<String, String> params) {
         return RestAssured.given().log().all()
@@ -26,5 +31,11 @@ public class Fixture {
                 .post("/stations")
                 .then().log().all()
                 .extract();
+    }
+
+    public static Long saveStation(final String name) {
+        final Station station = Station.createWithoutId(name);
+        final StationEntity saved = stationDao.save(new StationEntity(station));
+        return saved.getId();
     }
 }
