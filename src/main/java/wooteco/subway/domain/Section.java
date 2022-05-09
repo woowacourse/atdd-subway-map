@@ -4,11 +4,11 @@ import wooteco.subway.exception.IllegalSectionException;
 
 public class Section {
 
-    private Long id;
-    private Long lineId;
-    private Long upStationId;
-    private Long downStationId;
-    private int distance;
+    private final Long id;
+    private final Long lineId;
+    private final Long upStationId;
+    private final Long downStationId;
+    private final int distance;
 
     public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
         this(null, lineId, upStationId, downStationId, distance);
@@ -59,5 +59,13 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean isContainStation(Long upStationId, Long downStationId) {
+        if (this.upStationId.equals(upStationId) || this.upStationId.equals(downStationId)) {
+            return true;
+        }
+
+        return this.downStationId.equals(upStationId) || this.downStationId.equals(downStationId);
     }
 }
