@@ -1,19 +1,22 @@
 package wooteco.subway.acceptance;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
-import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -67,6 +70,52 @@ class LineAcceptanceTest extends AcceptanceTest {
             .extract();
 
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("존재하는 노선을 조회한다. 상태코드는 200이어야 한다.")
+    void findLine() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "1호선");
+        params1.put("color", "bg-red-600");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(params1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        // when
+        String uri = createResponse.header("Location");
+
+        // then
+        RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get(uri)
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 노선을 조회할 수 없다. 상태코드는 bad request 이어야 한다.")
+    void findWrongLine() {
+        // given
+        String uri = URI.create("/lines/") + "0";
+
+        // when
+
+        // then
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get(uri)
+            .then().log().all()
+            .extract();
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 

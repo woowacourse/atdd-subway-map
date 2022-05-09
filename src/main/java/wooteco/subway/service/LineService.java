@@ -24,6 +24,11 @@ public class LineService {
         return LineResponse.from(savedId, line);
     }
 
+    public LineResponse findById(Long id) {
+        Line line = lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("조회 결과가 없습니다."));
+        return LineResponse.from(line);
+    }
+
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
