@@ -32,10 +32,26 @@ public class StationDao {
                     resultSet.getString("name")
             );
 
-
     public Station save(String name) {
         Long id = simpleJdbcInsert.executeAndReturnKey(Map.of("name", name)).longValue();
         return new Station(id, name);
+    }
+
+    public Station findById(Long id) {
+        try {
+            final String sql = "SELECT * FROM STATION WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EmptyResultDataAccessException(STATION_NOT_FOUND, 1);
+        }
+    }
+
+    public List<Station> findByLineId(Long lineId) {
+        final String sql = "SELECT * FROM STATION WHERE " +
+                "id IN ( SELECT up_station_id FROM SECTION WHERE line_id = ? ) OR " +
+                "id IN ( SELECT down_station_id FROM SECTION WHERE line_id = ? )";
+
+        return jdbcTemplate.query(sql, stationRowMapper, lineId, lineId);
     }
 
     public List<Station> findAll() {

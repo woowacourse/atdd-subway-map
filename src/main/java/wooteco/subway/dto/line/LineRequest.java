@@ -1,4 +1,4 @@
-package wooteco.subway.dto;
+package wooteco.subway.dto.line;
 
 public class LineRequest {
     private String name;
@@ -10,6 +10,10 @@ public class LineRequest {
     public LineRequest(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public LineRequest(LineCreateRequest lineCreateRequest){
+        this(lineCreateRequest.getName(), lineCreateRequest.getColor());
     }
 
     public String getName() {
