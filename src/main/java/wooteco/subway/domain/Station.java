@@ -6,6 +6,10 @@ public class Station {
     private final Long id;
     private final Name name;
 
+    public Station(String name) {
+        this(null, new Name(name));
+    }
+
     public Station(Long id, String name) {
         this(id, new Name(name));
     }
