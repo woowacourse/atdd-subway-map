@@ -53,4 +53,9 @@ public class JdbcSectionDao {
         final String sql = "SELECT * FROM section WHERE line_id = ?";
         return jdbcTemplate.query(sql, getRowMapper(), lineId);
     }
+
+    public int deleteById(Long id) {
+        final String sql = "DELETE FROM section WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
+    }
 }

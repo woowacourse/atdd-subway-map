@@ -36,7 +36,7 @@ public class SectionDaoTest {
 
         // then
         assertAll(() -> {
-            assertThat(savedSection.getId()).isOne();
+            assertThat(savedSection.getId()).isNotNull();
             assertThat(savedSection).isEqualTo(section);
         });
     }
@@ -53,5 +53,18 @@ public class SectionDaoTest {
         
         // then
         assertThat(sections).containsOnly(savedSection1, savedSection2);
+    }
+
+    @Test
+    @DisplayName("특정 노선 삭제하기")
+    void delete() {
+        // given
+        Section savedSection = sectionDao.save(new Section(null, 1L, 1L, 2L, 1));
+
+        // when
+        int deletedSections = sectionDao.deleteById(savedSection.getId());
+
+        // then
+        assertThat(deletedSections).isOne();
     }
 }
