@@ -27,16 +27,15 @@ public class StationService {
     }
 
     private void validateStationName(final String name) {
-        stationDao.findByName(name)
-            .ifPresent(station -> {
-                throw new IllegalStateException("이미 존재하는 지하철역입니다.");
-            });
+        if (stationDao.existsByName(name)) {
+            throw new IllegalStateException("이미 존재하는 지하철역입니다.");
+        }
     }
 
     public List<StationResponse> showStations() {
         return stationDao.findAll()
             .stream()
-            .map(station -> new StationResponse(station.getId(), station.getName()))
+            .map(StationResponse::from)
             .collect(Collectors.toList());
     }
 

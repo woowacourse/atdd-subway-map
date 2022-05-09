@@ -52,20 +52,16 @@ public class StationDao {
         }
     }
 
-    public Optional<Station> findByName(final String name) {
-        final String sql = "select id, name from Station where name = ?";
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), name));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
     private static RowMapper<Station> rowMapper() {
         return (resultSet, rowNum) -> new Station(
             resultSet.getLong("id"),
             resultSet.getString("name")
         );
+    }
+
+    public boolean existsByName(final String name) {
+        final String sql = "select count(*) > 0 from Station where name = ?";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
     }
 
     public void deleteById(final Long id) {

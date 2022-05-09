@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -28,28 +27,31 @@ public class LineService {
     }
 
     private void validateLineName(final String name) {
-        lineDao.findByName(name)
-            .ifPresent(line -> {
-                throw new IllegalStateException("이미 존재하는 노선입니다.");
-            });
+        if (lineDao.existsByName(name)) {
+            throw new IllegalStateException("이미 존재하는 노선입니다.");
+        }
     }
 
     public List<LineResponse> showLines() {
         return lineDao.findAll()
             .stream()
-            .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor(), Collections.emptyList()))
+            .map(LineResponse::from)
             .collect(Collectors.toList());
     }
 
     public LineResponse showLine(final Long id) {
         final Line line = lineDao.findById(id)
             .orElseThrow(() -> new NoSuchElementException("해당 노선 ID가 존재하지 않습니다."));
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), Collections.emptyList());
+        return LineResponse.from(line);
     }
 
     public void updateLine(final Long id, final LineRequest lineRequest) {
         validateExist(id);
-        lineDao.update(id, new Line(lineRequest.getName(), lineRequest.getColor()));
+        Line line = lineDao.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("해당 노선 ID가 존재하지 않습니다."));
+        line.updateName(lineRequest.getName());
+        line.updateColor(lineRequest.getColor());
+        lineDao.update(id, line);
     }
 
     public void deleteLine(final Long id) {
@@ -58,7 +60,8 @@ public class LineService {
     }
 
     private void validateExist(final Long id) {
-        lineDao.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("해당 노선 ID가 존재하지 않습니다."));
+        if (lineDao.existsById(id)) {
+            throw new NoSuchElementException("해당 노선 ID가 존재하지 않습니다.");
+        }
     }
 }

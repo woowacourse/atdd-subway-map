@@ -55,21 +55,17 @@ public class LineDao {
         }
     }
 
-    public Optional<Line> findByName(final String name) {
-        final String sql = "select id, name, color from Line where name = ?";
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), name));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
     private RowMapper<Line> rowMapper() {
         return (resultSet, rowNum) -> new Line(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("color")
         );
+    }
+
+    public boolean existsByName(final String name) {
+        final String sql = "select count(*) > 0 from Line where name = ?";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
     }
 
     public void update(final Long id, final Line line) {
@@ -80,5 +76,10 @@ public class LineDao {
     public void deleteById(final Long id) {
         final String sql = "delete from Line where id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public boolean existsById(final Long id) {
+        final String sql = "select count(*) > 0 from Line where id = ?";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
     }
 }

@@ -16,6 +16,14 @@ public class Line {
         this(null, name, color);
     }
 
+    public void updateName(final String name) {
+        this.name = name;
+    }
+
+    public void updateColor(final String color) {
+        this.color = color;
+    }
+
     public Long getId() {
         return id;
     }
