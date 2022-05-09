@@ -88,6 +88,6 @@ class StationServiceTest {
         // then
         assertThat(stations).filteredOn(
                 (station) -> station.getName().equals(savedStation.getName()))
-            .hasSize(1);
+            .hasSize(0);
     }
 }

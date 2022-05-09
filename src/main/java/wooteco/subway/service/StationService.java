@@ -19,14 +19,13 @@ public class StationService {
     }
 
     public StationSaveResponse save(StationSaveRequest stationSaveRequest) {
-        Station station = new Station(stationSaveRequest.getName());
-        validateDuplicationName(station);
-        Station savedStation = stationDao.save(station);
+        validateDuplicationName(stationSaveRequest.getName());
+        Station savedStation = stationDao.save(new Station(stationSaveRequest.getName()));
         return new StationSaveResponse(savedStation.getId(), savedStation.getName());
     }
 
-    private void validateDuplicationName(Station station) {
-        if (stationDao.exists(station)) {
+    private void validateDuplicationName(String name) {
+        if (stationDao.existsByName(name)) {
             throw new IllegalArgumentException("중복된 이름이 존재합니다.");
         }
     }

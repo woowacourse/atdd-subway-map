@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import wooteco.subway.domain.Station;
 
 public class FakeStationDao implements StationDao{
@@ -31,7 +32,10 @@ public class FakeStationDao implements StationDao{
     }
 
     @Override
-    public boolean exists(Station station) {
-        return stations.contains(station);
+    public boolean existsByName(String name) {
+        Optional<Station> station = stations.stream()
+            .filter(i -> i.getName().equals(name))
+            .findAny();
+        return station.isPresent();
     }
 }
