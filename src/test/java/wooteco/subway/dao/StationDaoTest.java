@@ -59,14 +59,14 @@ class StationDaoTest {
         stationDao.deleteById(station.getId());
 
         assertThatThrownBy(() -> stationDao.deleteById(station.getId()))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessageMatching(station.getId() + "id를 가진 지하철 역을 찾을 수 없습니다.");
+                .isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("역을 삭제할 때 id에 맞는 역이 없으면 예외를 발생시킨다.")
     @Test
     void deleteException() {
         assertThatThrownBy(() -> stationDao.deleteById(1L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("1에 해당하는 지하철 역을 찾을 수 없습니다.");
     }
 }

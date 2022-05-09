@@ -46,8 +46,12 @@ public class StationDao {
 
     public void deleteById(Long id) {
         String SQL = "delete from station where id = ?";
-        if(jdbcTemplate.update(SQL, id) == 0) {
-            throw new NotFoundException(id + "id를 가진 지하철 역을 찾을 수 없습니다.");
+        validateExistById(jdbcTemplate.update(SQL, id), id);
+    }
+
+    private void validateExistById(int updateQueryResult, Long id) {
+        if (updateQueryResult == 0) {
+            throw new NotFoundException(id + "에 해당하는 지하철 역을 찾을 수 없습니다.");
         }
     }
 }

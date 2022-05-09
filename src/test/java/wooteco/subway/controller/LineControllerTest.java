@@ -171,7 +171,7 @@ class LineControllerTest extends AcceptanceTest {
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
                 () -> assertThatThrownBy(() -> lineDao.findById(line.getId()))
                         .isInstanceOf(NotFoundException.class)
-                        .hasMessageMatching(line.getId() + "id를 가진 지하철 노선을 찾을 수 없습니다.")
+                        .hasMessageMatching(line.getId() + "에 해당하는 지하철 노선을 찾을 수 없습니다.")
         );
     }
 

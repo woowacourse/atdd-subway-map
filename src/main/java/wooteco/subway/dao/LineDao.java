@@ -51,22 +51,23 @@ public class LineDao {
         try {
             return jdbcTemplate.queryForObject(SQL, rowMapper(), id);
         } catch (DataAccessException e) {
-            throw new NotFoundException(id + "id를 가진 지하철 노선을 찾을 수 없습니다.");
+            throw new NotFoundException(id + "에 해당하는 지하철 노선을 찾을 수 없습니다.");
         }
     }
 
     public void update(Line line) {
         String SQL = "update line set name = ?, color = ? where id = ?;";
-        if (jdbcTemplate.update(SQL, line.getName(), line.getColor(), line.getId()) == 0) {
-            throw new NotFoundException(line.getId() + "id를 가진 지하철 노선을 찾을 수 없습니다.");
-        }
+        validateExistById(jdbcTemplate.update(SQL, line.getName(), line.getColor(), line.getId()), line.getId());
     }
 
     public void delete(Long id) {
-        findById(id);
         String SQL = "delete from line where id = ?";
-        if (jdbcTemplate.update(SQL, id) == 0) {
-            throw new NotFoundException(id + "id를 가진 지하철 노선을 찾을 수 없습니다.");
+        validateExistById(jdbcTemplate.update(SQL, id), id);
+    }
+
+    private void validateExistById(int updateQueryResult, Long id) {
+        if (updateQueryResult == 0) {
+            throw new NotFoundException(id + "에 해당하는 지하철 노선을 찾을 수 없습니다.");
         }
     }
 }

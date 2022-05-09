@@ -65,7 +65,7 @@ public class LineDaoTest {
     void findByIdException() {
         assertThatThrownBy(() -> lineDao.findById(1L))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessageMatching(1L + "id를 가진 지하철 노선을 찾을 수 없습니다.");
+                .hasMessageMatching(1L + "에 해당하는 지하철 노선을 찾을 수 없습니다.");
     }
 
     @DisplayName("노선의 이름과 색깔을 수정한다.")
@@ -98,7 +98,7 @@ public class LineDaoTest {
 
         assertThatThrownBy(() -> lineDao.findById(saveLine.getId()))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessageMatching(saveLine.getId() + "id를 가진 지하철 노선을 찾을 수 없습니다.");
+                .hasMessageMatching(saveLine.getId() + "에 해당하는 지하철 노선을 찾을 수 없습니다.");
     }
 
     @DisplayName("노선을 삭제할 때 id에 맞는 노선이 없으면 예외를 발생시킨다.")
