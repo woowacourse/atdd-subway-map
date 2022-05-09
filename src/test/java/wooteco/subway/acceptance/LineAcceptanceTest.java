@@ -26,13 +26,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 추가한다.")
     void createLine() {
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(LINE_REQUEST_신분당선)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = requestPostLine(LINE_REQUEST_신분당선, "/lines");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -43,28 +37,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("전체 노선 목록을 조회한다.")
     void findAllLine() {
         //given
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-            .body(LINE_REQUEST_신분당선)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> createResponse1 = requestPostLine(LINE_REQUEST_신분당선, "/lines");
 
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-            .body(LINE_REQUEST_분당선)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> createResponse2 = requestPostLine(LINE_REQUEST_분당선, "/lines");
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = requestGetLines("/lines");
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -81,21 +59,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("단일 노선을 조회한다.")
     void findLineById() {
         //given
-        RestAssured.given().log().all()
-            .body(LINE_REQUEST_신분당선)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        requestPostLine(LINE_REQUEST_신분당선, "/lines");
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get("/lines/1")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = requestGetLines("/lines/1");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -105,22 +72,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 수정한다.")
     void update() {
         //given
-        RestAssured.given().log().all()
-            .body(LINE_REQUEST_신분당선)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        requestPostLine(LINE_REQUEST_신분당선, "/lines");
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(LINE_REQUEST_1호선)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .put("/lines/1")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = requestPutLine(LINE_REQUEST_1호선, "/lines/1");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -130,23 +85,52 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 삭제한다.")
     void delete() {
         //given
-        RestAssured.given().log().all()
-            .body(LINE_REQUEST_신분당선)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        requestPostLine(LINE_REQUEST_신분당선, "/lines");
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .delete("/lines/1")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = requestDeleteLine("/lines/1");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> requestPostLine(final LineRequest requestBody, final String URI) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(requestBody)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post(URI)
+            .then().log().all()
+            .extract();
+        return response;
+    }
+
+    private ExtractableResponse<Response> requestGetLines(final String URI) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get(URI)
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> requestPutLine(final LineRequest requestBody, final String URI) {
+        return RestAssured.given().log().all()
+            .body(requestBody)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put(URI)
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> requestDeleteLine(final String URI) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete(URI)
+            .then().log().all()
+            .extract();
+        return response;
     }
 }

@@ -10,17 +10,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DuplicateKeyException;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.StationDuplicateException;
 
 @JdbcTest
 public class StationDaoTest {
 
     private static final Station STATION_선릉 = new Station("선릉역");
-    private final Station STATION_강남 = new Station("강남역");
+    private static final Station STATION_강남 = new Station("강남역");
+
     @Autowired
     private DataSource dataSource;
-
     private StationDao stationDao;
 
     @BeforeEach
@@ -51,8 +51,7 @@ public class StationDaoTest {
         final Station created = stationDao.save(STATION_선릉);
 
         assertThatThrownBy(() -> stationDao.save(created))
-            .isInstanceOf(StationDuplicateException.class)
-            .hasMessage("이미 존재하는 지하철역 이름입니다.");
+            .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
@@ -74,5 +73,3 @@ public class StationDaoTest {
         assertThat(stationDao.findAll()).isEmpty();
     }
 }
-
-

@@ -5,15 +5,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import javax.sql.DataSource;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DuplicateKeyException;
 import wooteco.subway.domain.Line;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.exception.LineDuplicateException;
+import wooteco.subway.dto.request.LineRequest;
 
 @JdbcTest
 public class LineDaoTest {
@@ -31,13 +30,6 @@ public class LineDaoTest {
         lineDao = new JdbcLineDao(dataSource);
     }
 
-    @AfterEach
-    void reset() {
-        for (final Line line : lineDao.findAll()) {
-            lineDao.delete(line);
-        }
-    }
-
     @Test
     @DisplayName("노선을 저장한다.")
     void save() {
@@ -46,27 +38,33 @@ public class LineDaoTest {
         String actualName = actual.getName();
 
         assertThat(actualName).isEqualTo(LINE_2호선_GREEN.getName());
+
+        lineDao.delete(actual);
     }
 
     @Test
     @DisplayName("중복된 노선을 저장할 경우 예외를 발생시킨다.")
     void save_duplicate() {
-        lineDao.save(LINE_2호선_GREEN);
+        final Line saved = lineDao.save(LINE_2호선_GREEN);
 
         assertThatThrownBy(() -> lineDao.save(LINE_2호선_GREEN))
-            .isInstanceOf(LineDuplicateException.class)
-            .hasMessage("이미 존재하는 노선입니다.");
+            .isInstanceOf(DuplicateKeyException.class);
+
+        lineDao.delete(saved);
     }
 
     @Test
     @DisplayName("모든 노선을 조회한다")
     void findAll() {
-        lineDao.save(LINE_2호선_GREEN);
-        lineDao.save(LINE_1호선_BLUE);
+        final Line line1 = lineDao.save(LINE_2호선_GREEN);
+        final Line line2 = lineDao.save(LINE_1호선_BLUE);
 
         List<Line> lines = lineDao.findAll();
 
         assertThat(lines).hasSize(2);
+
+        lineDao.delete(line1);
+        lineDao.delete(line2);
     }
 
     @Test
@@ -88,6 +86,9 @@ public class LineDaoTest {
 
         lineDao.update(updated);
 
-        assertThat(lineDao.findById(created.getId()).orElseThrow().getName()).isEqualTo(updated.getName());
+        final Line updateLine = lineDao.findById(created.getId()).orElseThrow();
+        assertThat(updateLine.getName()).isEqualTo(updateLine.getName());
+
+        lineDao.delete(updateLine);
     }
 }
