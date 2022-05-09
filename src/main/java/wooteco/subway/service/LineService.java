@@ -4,6 +4,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.line.DuplicatedLineNameException;
 import wooteco.subway.exception.line.InvalidLineIdException;
 
@@ -16,11 +18,17 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line save(Line line) {
+    public LineResponse save(LineRequest lineRequest) {
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        validateLineName(line);
+        final Line savedLine = lineDao.save(line);
+        return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(), null);
+    }
+
+    private void validateLineName(final Line line) {
         if (lineDao.exists(line)) {
             throw new DuplicatedLineNameException();
         }
-        return lineDao.save(line);
     }
 
     public List<Line> findAll() {
@@ -37,8 +45,9 @@ public class LineService {
         return lineDao.findById(id);
     }
 
-    public void update(Long id, Line updatingLine) {
+    public void update(Long id, LineRequest lineRequest) {
         validateId(id);
+        Line updatingLine = new Line(lineRequest.getName(), lineRequest.getColor());
         lineDao.update(id, updatingLine);
     }
 
