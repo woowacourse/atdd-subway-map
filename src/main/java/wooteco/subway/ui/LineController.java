@@ -4,13 +4,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.SectionService;
-import wooteco.subway.service.StationService;
 
 import java.net.URI;
 import java.util.List;
@@ -20,12 +17,10 @@ import java.util.stream.Collectors;
 @RestController
 public class LineController {
     private final LineService lineService;
-    private final StationService stationService;
     private final SectionService sectionService;
 
-    public LineController(final LineService lineService, StationService stationService, SectionService sectionService) {
+    public LineController(final LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
-        this.stationService = stationService;
         this.sectionService = sectionService;
     }
 

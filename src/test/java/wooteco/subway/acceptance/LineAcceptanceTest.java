@@ -241,9 +241,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, Object> editParams = new HashMap<>();
         editParams.put("name", "2호선");
         editParams.put("color", "blue");
-        editParams.put("upStationId", 1);
-        editParams.put("downStationId", 2);
-        editParams.put("distance", 12);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(editParams)

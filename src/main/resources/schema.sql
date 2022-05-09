@@ -10,13 +10,13 @@ create table if not exists Line
     id bigint auto_increment not null,
     name varchar(255) not null unique,
     color varchar(20) not null,
-    upStationId int not null,
-    downStationId int not null,
-    distance int not null,
+    upStationId bigint not null,
+    downStationId bigint not null,
+    distance bigint not null,
     primary key(id)
     );
 
-create table if not exists SECTION
+create table if not exists Section
 (
     id bigint auto_increment not null,
     line_id bigint not null,

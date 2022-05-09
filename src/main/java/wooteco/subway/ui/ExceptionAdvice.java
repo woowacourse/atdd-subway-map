@@ -11,9 +11,4 @@ public class ExceptionAdvice {
     public ResponseEntity<Void> duplicatedNameFound() {
         return ResponseEntity.badRequest().build();
     }
-
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Void> exception() {
-        return ResponseEntity.badRequest().build();
-    }
 }

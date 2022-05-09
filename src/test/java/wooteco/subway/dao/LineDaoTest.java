@@ -29,9 +29,9 @@ public class LineDaoTest {
                 "id bigint auto_increment not null,\n" +
                 "name varchar(255) not null unique,\n" +
                 "color varchar(20) not null,\n" +
-                "upStationId int not null,\n" +
-                "downStationId int not null,\n" +
-                "distance int not null,\n" +
+                "upStationId bigint not null,\n" +
+                "downStationId bigint not null,\n" +
+                "distance bigint not null,\n" +
                 "primary key(id))"
         );
     }
@@ -96,7 +96,7 @@ public class LineDaoTest {
     void edit() {
         jdbcTemplate.update("insert into Line (name, color, upStationId, downStationId, distance) values (?, ?, ?, ?, ?)",
                 "1호선", "#0052A4", 1L, 2L, 10);
-        lineDao.edit(1L, "2호선", "#009D3E", 1L, 2L, 12);
+        lineDao.edit(1L, "2호선", "#009D3E");
         final String actual = jdbcTemplate.queryForObject("SELECT name FROM Line WHERE id = 1", String.class);
 
         assertThat(actual).isEqualTo("2호선");

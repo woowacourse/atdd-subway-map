@@ -1,8 +1,5 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Section {
     private final Long upStationId;
     private final Long downStationId;

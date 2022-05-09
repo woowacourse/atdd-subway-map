@@ -39,8 +39,7 @@ public class LineService {
     }
 
     public void edit(final Long id, final LineRequest lineRequest) {
-        lineDao.edit(id, lineRequest.getName(), lineRequest.getColor(),
-                lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        lineDao.edit(id, lineRequest.getName(), lineRequest.getColor());
     }
 
     public void deleteById(final Long id) {
