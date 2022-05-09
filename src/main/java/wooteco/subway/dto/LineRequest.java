@@ -5,9 +5,6 @@ public class LineRequest {
     private String name;
     private String color;
 
-    public LineRequest() {
-    }
-
     public String getName() {
         return name;
     }
