@@ -2,9 +2,7 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -59,13 +57,9 @@ public class LineDaoImpl implements LineDao {
     }
 
     @Override
-    public Optional<Line> findById(Long id) {
+    public Line findById(Long id) {
         final String sql = "SELECT * FROM line WHERE id = ?";
-        try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, lineMapper(), id));
-        } catch (EmptyResultDataAccessException exception) {
-            return Optional.empty();
-        }
+        return jdbcTemplate.queryForObject(sql, lineMapper(), id);
     }
 
     @Override

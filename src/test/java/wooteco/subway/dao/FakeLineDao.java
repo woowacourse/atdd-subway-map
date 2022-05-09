@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.dao.DuplicateKeyException;
 
@@ -45,8 +44,8 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findById(Long id) {
-        return Optional.of(lines.get(id));
+    public Line findById(Long id) {
+        return lines.get(id);
     }
 
     @Override

@@ -3,7 +3,6 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import wooteco.subway.domain.Line;
@@ -45,7 +45,7 @@ class LineDaoImplTest {
 
         // when
         Long savedId = lineDao.save(line);
-        Line line1 = lineDao.findById(savedId).get();
+        Line line1 = lineDao.findById(savedId);
 
         // then
         assertThat(line.getName()).isEqualTo(line1.getName());
@@ -73,17 +73,17 @@ class LineDaoImplTest {
 
         // when
         Long saveId = lineDao.save(line);
-        Line findLine = lineDao.findById(saveId).get();
+        Line findLine = lineDao.findById(saveId);
 
         // then
         assertThat(findLine.getName()).isEqualTo(line.getName());
     }
 
     @Test
-    @DisplayName("없는 id값으로 조회할 경우 Optional.empty() 를 반환해야 한다.")
+    @DisplayName("없는 id값으로 조회할 경우 예외를 반환해야 한다.")
     void findByWrongId() {
-        Optional<Line> line = lineDao.findById(0L);
-        assertThat(line.isEmpty()).isTrue();
+        assertThatThrownBy(() -> lineDao.findById(0L))
+            .isInstanceOf(EmptyResultDataAccessException.class);
     }
 
     @Test
@@ -136,7 +136,7 @@ class LineDaoImplTest {
         // when
         Line newLine = new Line("2호선", "bg-green-600");
         lineDao.updateById(savedId, newLine);
-        Line line = lineDao.findById(savedId).get();
+        Line line = lineDao.findById(savedId);
 
         // then
         assertThat(line).isEqualTo(newLine);

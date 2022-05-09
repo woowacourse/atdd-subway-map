@@ -6,6 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,6 +20,14 @@ public class ControllerExceptionHandler {
     public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException exception) {
         Map<String, String> body = new HashMap<>();
         body.put("message", exception.getMessage());
+        return ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler({EmptyResultDataAccessException.class})
+    public ResponseEntity<Map<String, String>> handleEmptyResultException(EmptyResultDataAccessException exception) {
+        logger.error(exception.getMessage());
+        Map<String, String> body = new HashMap<>();
+        body.put("message", "조회 결과가 없습니다.");
         return ResponseEntity.badRequest().body(body);
     }
 
