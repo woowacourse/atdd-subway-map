@@ -35,6 +35,16 @@ public class SectionDaoTest {
         assertThat(count).isEqualTo(1);
     }
 
+    @DisplayName("지하철 구간을 삭제한다.")
+    @Test
+    void delete() {
+        long sectionId = sectionDao.save(SECTION);
+
+        sectionDao.delete(sectionId);
+
+        assertThat(sectionDao.existSectionById(sectionId)).isFalse();
+    }
+
     @DisplayName("해당 id의 지하철 노선이 있다면 true를 반환한다.")
     @Test
     void existSectionById() {
