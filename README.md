@@ -65,22 +65,50 @@
 ## 🚀 Getting Started
 ### Usage
 #### application 구동
+
 ```
 ./gradlew bootRun
 ```
-<br>
-
-## ✏️ Code Review Process
-[텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
-
-<br>
-
-## 🐞 Bug Report
-
-버그를 발견한다면, [Issues](https://github.com/woowacourse/atdd-subway-map/issues) 에 등록해주세요 :)
 
 <br>
 
 ## 📝 License
 
 This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master/LICENSE) licensed.
+
+## 추가 기능 목록
+
+### 지하철 노선 추가 기능
+
+    - upStationId: 상행 종점
+    - downStationId: 하행 종점
+    - distance: 두 종점간의 거리
+    - 두 종점간의 연결 정보를 이용하여 노선 추가시 구간(Section) 정보도 함께 등록
+
+### 구간 관리 기능
+
+    -  노선에 구간을 추가할 수 있다.
+    -  노선에 포함된 구간 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답할 수 있다.
+    -  구간을 제거할 수 있다. 
+
+### 구간 등록 기능
+
+    - 새로 등록할 구간의 상행역과 하행역 중 노선에 이미 등록되어 있는 역을 기준으로 새로운 구간을 추가한다.
+
+### 갈래길 방지 기능
+
+    - 새로운 구간이 추가되기 전에 갈래길이 생기지 않도록 기존 구간을 변경한다.
+    - 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록할 수 없다. (예외 발생)
+
+### 예외 목록
+
+    - 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.
+    - 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.
+
+### 구간 제거 기능
+
+    - 종점이 제거 될 경우 다음으로 오던 역이 종점이 된다.
+    - 중간역이 제거될 경우 재배치를 한다.
+        - A - B - C 역이 연결되어 있을 때 B역을 제거할 경우 A - C로 재배치 된다.
+    - 이 때 두 구간의 거리는 두 구간의 거리의 합이다. 
+    - 구간이 하나인 노선에서 마지막 구간을 제거하려고 하면 예외가 발생한다.
