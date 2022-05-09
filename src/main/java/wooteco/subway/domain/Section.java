@@ -39,8 +39,4 @@ public class Section {
     public Long getLineOrder() {
         return lineOrder;
     }
-
-    public void setLineOrder(Long lineOrder) {
-        this.lineOrder = lineOrder;
-    }
 }
