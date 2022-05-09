@@ -48,7 +48,7 @@ public class Station {
     }
 
     public boolean isSameName(Station other) {
-        return name == other.name;
+        return name.equals(other.name);
     }
 }
 

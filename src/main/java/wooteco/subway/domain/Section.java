@@ -45,7 +45,7 @@ public class Section {
     }
 
     private static void checkUpStationAndDownStationIsDifferent(Long upStationId, Long downStationId) {
-        if (upStationId == downStationId) {
+        if (upStationId.equals(downStationId)) {
             throw new IllegalArgumentException("상행 종점과 하행 종점은 같을 수 없습니다.");
         }
     }
@@ -71,23 +71,23 @@ public class Section {
     }
 
     public boolean isAbleToLinkOnUpStation(Section other) {
-        return upStationId == other.downStationId;
+        return upStationId.equals(other.downStationId);
     }
 
     public boolean isAbleToLinkOnDownStation(Section other) {
-        return downStationId == other.upStationId;
+        return downStationId.equals(other.upStationId);
     }
 
     public boolean hasStation(Long stationId) {
-        return (upStationId == stationId || downStationId == stationId);
+        return (upStationId.equals(stationId) || downStationId.equals(stationId));
     }
 
     public boolean isSameUpStation(Section other) {
-        return upStationId == other.upStationId;
+        return upStationId.equals(other.upStationId);
     }
 
     public boolean isSameDownStation(Section other) {
-        return downStationId == other.downStationId;
+        return downStationId.equals(other.downStationId);
     }
 
     public boolean ableToDivide(Section newSection) {

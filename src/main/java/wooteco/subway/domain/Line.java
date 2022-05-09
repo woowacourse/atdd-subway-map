@@ -35,10 +35,10 @@ public class Line {
     }
 
     public boolean isSameName(Line line) {
-        return name == line.name;
+        return name.equals(line.name);
     }
 
     public boolean isSameColor(Line line) {
-        return color == line.color;
+        return color.equals(line.color);
     }
 }
