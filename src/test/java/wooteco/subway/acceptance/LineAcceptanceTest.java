@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
@@ -239,7 +240,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> findLineResponse = RestAssured.given().log().all()
+                .body(updateParam)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(uri)
+                .then().log().all()
+                .extract();
+        LineResponse findLine = findLineResponse.body().jsonPath().getObject(".", LineResponse.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(findLine.getName()).isEqualTo("1호선"),
+                () -> assertThat(findLine.getColor()).isEqualTo("파란색")
+        );
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 지하철 노선을 수정한다.")
