@@ -75,4 +75,17 @@ public class Section {
     public int hashCode() {
         return Objects.hash(lineId, upStation, downStation);
     }
+
+    public boolean haveStation(final Station upStation, final Station downStation) {
+        return isSameUpStation(upStation, downStation) || isSameDownStation(upStation, downStation);
+
+    }
+
+    private boolean isSameUpStation(final Station upStation, final Station downStation) {
+        return this.upStation.equals(upStation) || this.upStation.equals(downStation);
+    }
+
+    private boolean isSameDownStation(final Station upStation, final Station downStation) {
+        return this.downStation.equals(upStation) || this.downStation.equals(downStation);
+    }
 }
