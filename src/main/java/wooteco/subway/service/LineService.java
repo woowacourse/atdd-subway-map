@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
@@ -20,12 +21,13 @@ public class LineService {
         this.sectionService = sectionService;
     }
 
+    @Transactional
     public Line save(LineRequest lineRequest) {
         Line line = lineRequest.toEntity();
         validateDuplicateName(line);
         Line savedLine = lineDao.save(line);
         sectionService.save(Section.of(savedLine, lineRequest));
-        return lineDao.save(line);
+        return savedLine;
     }
 
     private void validateDuplicateName(Line line) {
