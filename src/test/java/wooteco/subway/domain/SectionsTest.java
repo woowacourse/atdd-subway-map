@@ -21,4 +21,19 @@ public class SectionsTest {
         //then
         assertThat(sections.getUpDestination()).isEqualTo(new Station("선릉"));
     }
+
+    @Test
+    @DisplayName("하행 종점에 구간을 추가한다.")
+    void addDownDestination() {
+        //given
+        Section section = new Section(new Station("역삼"), new Station("강남"), 5);
+        Sections sections = new Sections(section);
+
+        //when
+        Section newSection = new Section(new Station("강남"), new Station("서초"), 6);
+        sections.add(newSection);
+
+        //then
+        assertThat(sections.getDownDestination()).isEqualTo(new Station("서초"));
+    }
 }
