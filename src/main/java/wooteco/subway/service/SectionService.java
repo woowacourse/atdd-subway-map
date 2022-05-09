@@ -27,4 +27,8 @@ public class SectionService {
         final Section section = new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         sectionDao.save(id, section);
     }
+
+    public void deleteSectionByStationIdInLineId(Long lineId, Long stationId) {
+        sectionDao.delete(lineId, stationId);
+    }
 }

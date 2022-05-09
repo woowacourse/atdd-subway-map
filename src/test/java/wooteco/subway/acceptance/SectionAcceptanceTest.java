@@ -14,11 +14,11 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("구간 관련 기능")
-public class SectionAcceptanceTest extends AcceptanceTest{
+public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("구간을 생성한다.")
     @Test
-    void createLine() {
+    void createSection() {
         // given
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", 1L);
@@ -30,7 +30,49 @@ public class SectionAcceptanceTest extends AcceptanceTest{
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/line/1/sections")
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("구간을 제거한다.")
+    @Test
+    void deleteSection() {
+        // given
+        Map<String, Object> params1 = new HashMap<>();
+        params1.put("upStationId", 1L);
+        params1.put("downStationId", 2L);
+        params1.put("distance", 10);
+
+        RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        Map<String, Object> params2 = new HashMap<>();
+        params2.put("upStationId", 2L);
+        params2.put("downStationId", 3L);
+        params2.put("distance", 10);
+
+        RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .queryParams("stationId", 2L)
+                .when()
+                .delete("/lines/1/sections")
                 .then().log().all()
                 .extract();
 
