@@ -53,7 +53,7 @@ public class LineService {
 
     private Section saveInitialSection(Long newLineId, Long upStationId, Long downStationId, int distance) {
         final Section section = new Section(newLineId, upStationId, downStationId, distance);
-        Long sectionId = sectionDao.save(section);
+        final Long sectionId = sectionDao.save(section);
         return new Section(sectionId, newLineId, upStationId, downStationId, distance);
     }
 
@@ -72,6 +72,12 @@ public class LineService {
         checkFinalSectionAndAdd(lineId, sectionRequest, section);
     }
 
+    private void validateLine(List<Section> sections) {
+        if (sections.isEmpty()) {
+            throw new NoSuchElementException("구간이 존재하지 않는 노선입니다. 오류가 발생했습니다.");
+        }
+    }
+
     private void checkFinalSectionAndAdd(Long lineId, SectionRequest sectionRequest, Section section) {
         final Optional<Section> upSection = sectionDao.findByDownStationId(lineId, section.getUpStationId());
         final Optional<Section> downSection = sectionDao.findByUpStationId(lineId, sectionRequest.getDownStationId());
@@ -87,7 +93,6 @@ public class LineService {
                 .orElseThrow(() -> new NoSuchElementException("구간이 존재하지 않습니다."));
         saveSplitSection(existSection, section);
         sectionDao.save(section);
-        return;
     }
 
     private void saveSplitSection(Section existSection, Section section) {
@@ -97,12 +102,6 @@ public class LineService {
             return;
         }
         sectionDao.updateDownStation(existSection.getId(), section.getUpStationId(), newDistance);
-    }
-
-    private void validateLine(List<Section> sections) {
-        if (sections.isEmpty()) {
-            throw new NoSuchElementException("구간이 존재하지 않는 노선입니다. 오류가 발생했습니다.");
-        }
     }
 
     @Transactional(readOnly = true)
@@ -127,7 +126,7 @@ public class LineService {
         final List<Station> stations = findStationsBySections(sections);
 
         final List<StationResponse> stationResponses = makeStationResponseByStation(stations);
-        Comparator<StationResponse> comparator = (o1, o2) -> Long.valueOf(o1.getId() - o2.getId()).intValue();
+        final Comparator<StationResponse> comparator = (o1, o2) -> Long.valueOf(o1.getId() - o2.getId()).intValue();
         stationResponses.sort(comparator);
 
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
@@ -136,8 +135,8 @@ public class LineService {
     private List<Station> findStationsBySections(List<Section> sections) {
         final List<Station> stations = new ArrayList<>();
         for (Section section : sections) {
-            Station upStation = findByStationId(section.getUpStationId());
-            Station downStation = findByStationId(section.getDownStationId());
+            final Station upStation = findByStationId(section.getUpStationId());
+            final Station downStation = findByStationId(section.getDownStationId());
             stations.add(upStation);
             stations.add(downStation);
         }
