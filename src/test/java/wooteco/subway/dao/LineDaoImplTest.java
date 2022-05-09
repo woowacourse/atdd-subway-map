@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,19 +22,19 @@ class LineDaoImplTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private LineDaoImpl lineDaoImpl;
+    private LineDao lineDao;
 
     @BeforeEach
     void setUp() {
-        lineDaoImpl = new LineDaoImpl(jdbcTemplate);
+        lineDao = new LineDaoImpl(jdbcTemplate);
 
-        List<Line> lines = lineDaoImpl.findAll();
+        List<Line> lines = lineDao.findAll();
         List<Long> lineIds = lines.stream()
             .map(Line::getId)
             .collect(Collectors.toList());
 
         for (Long lineId : lineIds) {
-            lineDaoImpl.deleteById(lineId);
+            lineDao.deleteById(lineId);
         }
     }
 
@@ -43,8 +44,8 @@ class LineDaoImplTest {
         Line line = new Line("1호선", "bg-red-600");
 
         // when
-        Long savedId = lineDaoImpl.save(line);
-        Line line1 = lineDaoImpl.findById(savedId).get();
+        Long savedId = lineDao.save(line);
+        Line line1 = lineDao.findById(savedId).get();
 
         // then
         assertThat(line.getName()).isEqualTo(line1.getName());
@@ -57,17 +58,32 @@ class LineDaoImplTest {
         Line line2 = new Line("1호선", "bg-red-600");
 
         // when
-        lineDaoImpl.save(line1);
+        lineDao.save(line1);
 
         // then
-        assertThatThrownBy(() -> lineDaoImpl.save(line2))
+        assertThatThrownBy(() -> lineDao.save(line2))
             .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
-    @DisplayName("없는 id값으로 조회할 경우 예외를 반환해야 한다.")
-    void findByWrongId() {
+    @DisplayName("id로 지하철 노선을 조회할 수 있어야 한다.")
+    void findById() {
+        // given
+        Line line = new Line("1호선", "bg-red-600");
 
+        // when
+        Long saveId = lineDao.save(line);
+        Line findLine = lineDao.findById(saveId).get();
+
+        // then
+        assertThat(findLine.getName()).isEqualTo(line.getName());
+    }
+
+    @Test
+    @DisplayName("없는 id값으로 조회할 경우 Optional.empty() 를 반환해야 한다.")
+    void findByWrongId() {
+        Optional<Line> line = lineDao.findById(0L);
+        assertThat(line.isEmpty()).isTrue();
     }
 
     @Test
@@ -77,11 +93,11 @@ class LineDaoImplTest {
         Line line2 = new Line("2호선", "bg-green-600");
 
         // when
-        lineDaoImpl.save(line1);
-        lineDaoImpl.save(line2);
+        lineDao.save(line1);
+        lineDao.save(line2);
 
         // then
-        List<String> names = lineDaoImpl.findAll()
+        List<String> names = lineDao.findAll()
             .stream()
             .map(Line::getName)
             .collect(Collectors.toList());
@@ -95,13 +111,13 @@ class LineDaoImplTest {
     void delete() {
         // given
         Line line = new Line("1호선", "bg-red-600");
-        Long savedId = lineDaoImpl.save(line);
+        Long savedId = lineDao.save(line);
 
         // when
-        lineDaoImpl.deleteById(savedId);
+        lineDao.deleteById(savedId);
 
         // then
-        List<Long> lineIds = lineDaoImpl.findAll()
+        List<Long> lineIds = lineDao.findAll()
             .stream()
             .map(Line::getId)
             .collect(Collectors.toList());
@@ -115,12 +131,12 @@ class LineDaoImplTest {
     void update() {
         // given
         Line originLine = new Line("1호선", "bg-red-600");
-        Long savedId = lineDaoImpl.save(originLine);
+        Long savedId = lineDao.save(originLine);
 
         // when
         Line newLine = new Line("2호선", "bg-green-600");
-        lineDaoImpl.updateById(savedId, newLine);
-        Line line = lineDaoImpl.findById(savedId).get();
+        lineDao.updateById(savedId, newLine);
+        Line line = lineDao.findById(savedId).get();
 
         // then
         assertThat(line).isEqualTo(newLine);
