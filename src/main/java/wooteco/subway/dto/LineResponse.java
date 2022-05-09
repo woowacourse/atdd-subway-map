@@ -47,7 +47,7 @@ public class LineResponse {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
-                ", stationResponses=" + stations +
+                ", stations=" + stations +
                 '}';
     }
 }
