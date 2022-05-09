@@ -17,6 +17,7 @@ import wooteco.subway.dto.StationResponse;
 import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
@@ -58,5 +59,41 @@ class LineServiceTest {
                 () -> assertThat(response.getColor()).isEqualTo(lineColor),
                 () -> assertThat(response.getStations()).hasSize(2)
         );
+    }
+
+    @DisplayName("존재하지 않는 역으로 노선을 생성하면 예외가 발생한다.")
+    @Test
+    void throwsExceptionWhenCreateLineWithNotExistsStation() {
+        String lineName = "신분당선";
+        String lineColor = "red";
+        int distance = 10;
+        LineRequest request = new LineRequest(lineName, lineColor, savedStation1.getId(), 100L, distance);
+
+        assertThatThrownBy(() -> lineService.create(request))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("상행,하행 중복된 역으로 노선을 생성하면 예외가 발생한다.")
+    @Test
+    void throwsExceptionWhenCreateLineWithDuplicateStation() {
+        String lineName = "신분당선";
+        String lineColor = "red";
+        int distance = 10;
+        LineRequest request = new LineRequest(lineName, lineColor, savedStation1.getId(), savedStation1.getId(), distance);
+
+        assertThatThrownBy(() -> lineService.create(request))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("거리가 0이하인 구간으로 노선을 생성하면 예외가 발생한다.")
+    @Test
+    void throwsExceptionWhenCreateLineWithZeroDistance() {
+        String lineName = "신분당선";
+        String lineColor = "red";
+        int distance = 0;
+        LineRequest request = new LineRequest(lineName, lineColor, savedStation1.getId(), savedStation1.getId(), distance);
+
+        assertThatThrownBy(() -> lineService.create(request))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

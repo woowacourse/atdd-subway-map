@@ -11,11 +11,19 @@ public class Section {
     private final int distance;
 
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+        validateHasSameStation(upStationId, downStationId);
+
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    private void validateHasSameStation(Long upStationId, Long downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new IllegalArgumentException("상행역, 하행역은 다른 역이어야 합니다.");
+        }
     }
 
     public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
