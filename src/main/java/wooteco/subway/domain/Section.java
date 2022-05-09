@@ -6,14 +6,22 @@ import wooteco.subway.exception.ExceptionMessage;
 
 public class Section {
 
-    private final long upStationId;
-    private final long downStationId;
-    private final int distance;
+    private Long id;
+    private Long line_id;
+    private Long upStationId;
+    private Long downStationId;
+    private int distance;
 
-    public Section(long upStationId, long downStationId, int distance) {
+    public Section(Long id, Long line_id, Long upStationId, Long downStationId, int distance) {
+        this.id = id;
+        this.line_id = line_id;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public Section(long upStationId, long downStationId, int distance) {
+        this(null, null, upStationId, downStationId, distance);
     }
 
     public List<Section> insert(Section other) {
@@ -66,6 +74,26 @@ public class Section {
         throw new IllegalArgumentException(ExceptionMessage.NOT_CONNECTED_SECTIONS.getContent());
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public Long getLine_id() {
+        return line_id;
+    }
+
+    public long getUpStationId() {
+        return upStationId;
+    }
+
+    public long getDownStationId() {
+        return downStationId;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -75,12 +103,13 @@ public class Section {
             return false;
         }
         Section section = (Section) o;
-        return upStationId == section.upStationId && downStationId == section.downStationId
-                && distance == section.distance;
+        return distance == section.distance && Objects.equals(line_id, section.line_id)
+                && Objects.equals(upStationId, section.upStationId) && Objects.equals(downStationId,
+                section.downStationId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(upStationId, downStationId, distance);
+        return Objects.hash(line_id, upStationId, downStationId, distance);
     }
 }
