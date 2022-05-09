@@ -5,9 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,11 +40,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void init() {
         jdbcTemplate.update("delete from LINE", new EmptySqlParameterSource());
 
-        savedId1 = insertData("신분당선", "bg-red-600");
-        savedId2 = insertData("분당선", "bg-green-600");
+        savedId1 = insertLine("신분당선", "bg-red-600");
+        savedId2 = insertLine("분당선", "bg-green-600");
+
+        insertSection(savedId1, 1L, 2L);
+        insertSection(savedId2, 1L, 2L);
     }
 
-    private Long insertData(String name, String color) {
+    private Long insertLine(String name, String color) {
         String insertSql = "insert into LINE (name, color) values (:name, :color)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -56,6 +57,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         jdbcTemplate.update(insertSql, source, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    private void insertSection(Long lineId, Long upStationId, Long downStationId) {
+        String insertSql = "insert into section (line_id, up_station_id, down_station_id, distance) "
+                + "values (:lineId, :upStationId, :downStationId, :distance)";
+
+        MapSqlParameterSource source = new MapSqlParameterSource();
+        source.addValue("lineId", lineId);
+        source.addValue("upStationId", upStationId);
+        source.addValue("downStationId", downStationId);
+        source.addValue("distance", 5);
+
+        jdbcTemplate.update(insertSql, source);
     }
 
     @DisplayName("지하철 노선 생성")

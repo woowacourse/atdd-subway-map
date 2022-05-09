@@ -21,8 +21,8 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public static LineResponse from(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>());
+    public static LineResponse from(Line line, List<StationResponse> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }
 
     public Long getId() {
