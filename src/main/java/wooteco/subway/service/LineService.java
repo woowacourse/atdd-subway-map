@@ -1,17 +1,11 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.SectionWithStation;
-import wooteco.subway.domain.Sections;
-import wooteco.subway.domain.Station;
 
 @Service
 public class LineService {
@@ -36,6 +30,10 @@ public class LineService {
 
     public List<Line> findAll() {
         return lineDao.findAll();
+    }
+
+    public Line findById(Long id) {
+        return lineDao.findById(id);
     }
 
     public Line update(Long id, Line line) {

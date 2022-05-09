@@ -1,12 +1,13 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.Fixtures.LINE;
+import static wooteco.subway.Fixtures.STATION;
+import static wooteco.subway.Fixtures.STATION_2;
 import static wooteco.subway.Fixtures.getStation;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,8 +22,8 @@ import wooteco.subway.dto.StationRequest;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private final LineRequest line = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
-    private final LineRequest line2 = new LineRequest("분당선", "bg-green-600", 3L, 4L, 10);
+    private final LineRequest line = new LineRequest("신분당선", "red", 1L, 2L, 10);
+    private final LineRequest line2 = new LineRequest("분당선", "green", 3L, 4L, 10);
 
     private final StationRequest station = new StationRequest("강남역");
     private final StationRequest station2 = new StationRequest("선릉역");
@@ -35,7 +36,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         setRequest().body(station).post("/stations");
         setRequest().body(station2).post("/stations");
-        LineResponse lineResponse = new LineResponse(1L, "신분당선", "bg-red-600",
+        LineResponse lineResponse = new LineResponse(1L, "신분당선", "red",
                 List.of(getStation(1L, station.toEntity()), getStation(2L, station2.toEntity())));
 
         //when
@@ -95,6 +96,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .isEqualTo(HttpStatus.OK.value());
         assertThat(resultLineIds)
                 .containsAll(expectedLineIds);
+    }
+
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void getLine() {
+        /// given
+        setRequest().body(station).post("/stations");
+        setRequest().body(station2).post("/stations");
+
+        LineResponse createLine = getResponse(setRequest().body(line).post("/lines")).body().as(LineResponse.class);
+        LineResponse lineResponse = new LineResponse(1L, "신분당선", "red",
+                List.of(getStation(1L, station.toEntity()), getStation(2L, station2.toEntity())));
+
+        // when
+        ExtractableResponse<Response> response = getResponse(setRequest().get("/lines"));
+
+        // then
+        assertThat(response.statusCode())
+                .isEqualTo(HttpStatus.OK.value());
+        assertThat(createLine)
+                .isEqualTo(lineResponse);
+        assertThat(response.body().asString())
+                .contains("{\"id\":1,\"name\":\"신분당선\",\"color\":\"red\",\"stations\":[{\"id\":1,\"name\":\"강남역\"},{\"id\":2,\"name\":\"선릉역\"}]}");
     }
 
     @DisplayName("지하철 노선을 수정한다.")

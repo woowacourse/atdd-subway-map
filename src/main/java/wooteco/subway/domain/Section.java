@@ -27,14 +27,18 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section calculateDownRemainSection(Section section) {
-        return new Section(section.getLineId(), section.getDownStationId(),
-                downStationId, distance - section.getDistance());
-    }
-
-    public Section calculateUpRemainSection(Section section) {
+    public Section calculateRemainSection(Section section, boolean isUpAttach) {
+        if (isUpAttach) {
+            return new Section(section.getLineId(), section.getDownStationId(),
+                    downStationId, distance - section.getDistance());
+        }
         return new Section(section.getLineId(), upStationId,
                 section.upStationId, distance - section.getDistance());
+    }
+
+    public Section getReverseSection() {
+        return new Section(lineId, downStationId, upStationId,
+                distance);
     }
 
     public Long getLineId() {

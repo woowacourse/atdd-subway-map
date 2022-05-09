@@ -50,6 +50,10 @@ public class Sections {
                 .orElseThrow(() -> new IllegalArgumentException("해당 하행과 상행으로 연결되는 구간이 없습니다."));
     }
 
+    public boolean isMiddleSection(Section inSection) {
+        return isMiddleUpAttachSection(inSection) || isMiddleDownAttachSection(inSection);
+    }
+
     public boolean isMiddleUpAttachSection(Section inSection) {
         return sections.stream()
                 .anyMatch(section -> section.getUpStation().getId().equals(inSection.getUpStationId()));

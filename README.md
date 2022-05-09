@@ -81,6 +81,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
         - [x] [예외] 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
     - [x] [예외] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
     - [x] [예외] 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
+    - [x] [예외] 상행역과 하행역이 동일할 수 없음
 - [x] 노선에 포함된 구간 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답
 - [ ] 구간 제거
     - [ ] 종점이 제거될 경우 다음으로 오던 역이 종점이 됨
@@ -99,6 +100,10 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] vo 동등성 기준 변경
 - [x] Line 테이블에 상/하행/거리 정보가 제외되도록 변경
 - [x] station이 포함된 Section 클래스 생성
+- [ ] 지하철역 삭제 후 어떻게?
+    - [ ] 외래키로 이어서 같이 삭제되게 하는건 어떨까?
+- [ ] MockMVC 사용해 컨트롤러/서비스단 수정
+- [ ] 예외처리 꼼꼼하게~ 수정^^ CustomException 써보거나 기존 쓸만한 Exception 적용
 
 ### 1단계 피드백
 

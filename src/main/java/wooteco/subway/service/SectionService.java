@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
@@ -27,66 +26,58 @@ public class SectionService {
 
     public Section save(Section section) {
         Sections sections = getSections(section.getLineId());
-        //상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
-        validateUniqueSection(section);
-        //상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
-        validateExistStation(section);
-        if (sections.isMiddleUpAttachSection(section)) {
-            //상행기준 새구간 추가
-            Section upStationSection = sectionDao.findByUpStationId(section.getLineId(), section.getUpStationId());
-            // 기존 역사이 길이보다 크거나 같으면 등록불가 : 검증
-            validateDistance(upStationSection.getDistance(), section.getDistance());
-            // 기존 상행 구간 삭제
-            sectionDao.delete(upStationSection.getId());
-            // 파라미터 구간 저장
-            Long id = sectionDao.save(section);
-            // 파라미터 구간의 하행-기존 상행 구간의 하행 저장
-            sectionDao.save(upStationSection.calculateDownRemainSection(section));
-            return sectionDao.findById(id);
-        }
-        if (sections.isMiddleDownAttachSection(section)) {
-            //하행기준 새구간 추가
-            Section downStationSection = sectionDao.findByDownStationId(section.getLineId(),
-                    section.getDownStationId());
-            // 기존 역 사이 길이보다 크거나 같으면 등록불가 : 검증
-            validateDistance(downStationSection.getDistance(), section.getDistance());
-            // 기존 하행 구간 삭제
-            sectionDao.delete(downStationSection.getId());
-            // 파라미터 구간 저장
-            Long id = sectionDao.save(section);
-            // 기존 상행 구간의 상행-파라미터 구간의 상행 저장
-            sectionDao.save(downStationSection.calculateUpRemainSection(section));
+        validateSection(section);
+        if (sections.isMiddleSection(section)) {
+            boolean isUpAttach = sections.isMiddleUpAttachSection(section);
+            Section baseSection = getBaseSection(section, isUpAttach);
+            Long id = executeMiddleSection(section, isUpAttach, baseSection);
             return sectionDao.findById(id);
         }
         Long id = sectionDao.save(section);
         return sectionDao.findById(id);
     }
 
-    private void validateExistStation(Section section) {
+    private Long executeMiddleSection(Section inSection, boolean isUpAttach, Section baseSection) {
+        validateDistance(baseSection.getDistance(), inSection.getDistance());
+        sectionDao.save(baseSection.calculateRemainSection(inSection, isUpAttach));
+        sectionDao.delete(baseSection.getId());
+        return sectionDao.save(inSection);
+    }
+
+    private Section getBaseSection(Section section, boolean isUpAttach) {
+        if (isUpAttach) {
+            return sectionDao.findByUpStationId(section.getLineId(), section.getUpStationId());
+        }
+        return sectionDao.findByDownStationId(section.getLineId(), section.getDownStationId());
+    }
+
+    private void validateSection(Section section) {
+        checkUniqueSection(section);
+        checkStationExist(section);
+        checkIsLinked(section);
+    }
+
+    private void checkUniqueSection(Section section) {
+        if (sectionDao.hasUpStationId(section) && sectionDao.hasDownStationId(section)) {
+            throw new IllegalArgumentException(DUPLICATED_SECTION_ERROR_MESSAGE);
+        }
+    }
+
+    private void checkStationExist(Section section) {
         if (!stationDao.hasStation(section.getUpStationId()) || !stationDao.hasStation(section.getDownStationId())) {
             throw new IllegalArgumentException(INVALID_STATION_ID_ERROR_MESSAGE);
         }
-        if (sectionDao.findAllByLineId(section.getLineId()).isEmpty()) {
-            return;
-        }
-        if (hasNoStationId(section) && hasNoStationId(getReverseSection(section))) {
+    }
+
+    private void checkIsLinked(Section section) {
+        if (sectionDao.findAllByLineId(section.getLineId()).size() != 0
+                && hasNoStationId(section) && hasNoStationId(section.getReverseSection())) {
             throw new IllegalArgumentException(LINK_FAILURE_ERROR_MESSAGE);
         }
     }
 
-    private Section getReverseSection(Section section) {
-        return new Section(section.getLineId(), section.getDownStationId(), section.getUpStationId(),
-                section.getDistance());
-    }
-
     private boolean hasNoStationId(Section section) {
         return !sectionDao.hasUpStationId(section) && !sectionDao.hasDownStationId(section);
-    }
-
-    private void validateUniqueSection(Section section) {
-        if (sectionDao.hasUpStationId(section) && sectionDao.hasDownStationId(section)) {
-            throw new IllegalArgumentException(DUPLICATED_SECTION_ERROR_MESSAGE);
-        }
     }
 
     private void validateDistance(int existingDistance, int sectionDistance) {
@@ -100,22 +91,15 @@ public class SectionService {
     }
 
     private Sections getSections(Long lineId) {
-        return new Sections(
-                sectionDao.findAllByLineId(lineId)
-                        .stream()
-                        .map(getSectionWithStation())
-                        .collect(Collectors.toList())
+        return new Sections(sectionDao.findAllByLineId(lineId).stream()
+                .map(this::getSectionWithStation)
+                .collect(Collectors.toList())
         );
     }
 
-    private Function<Section, SectionWithStation> getSectionWithStation() {
-        return section -> new SectionWithStation(
-                section.getId(),
-                section.getLineId(),
-                stationDao.findById(section.getUpStationId()),
-                stationDao.findById(section.getDownStationId()),
-                section.getDistance()
-        );
+    private SectionWithStation getSectionWithStation(Section section) {
+        return SectionWithStation.of(section, stationDao.findById(section.getUpStationId()),
+                stationDao.findById(section.getDownStationId()));
     }
 
     public void deleteSection(Long lineId, Long stationId) {

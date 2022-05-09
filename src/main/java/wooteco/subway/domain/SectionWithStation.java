@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import java.util.Objects;
 
 public class SectionWithStation {
+    private static final String SAME_STATION_ERROR_MESSAGE = "상행과 하행 역은 동일할 수 없습니다.";
     private Long id;
     private Long lineId;
     private Station upStation;
@@ -18,6 +19,18 @@ public class SectionWithStation {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+        validateDistinctStation();
+    }
+
+    public static SectionWithStation of(Section section, Station upStation, Station downStation) {
+        return new SectionWithStation(section.getId(), section.getLineId(), upStation, downStation,
+                section.getDistance());
+    }
+
+    private void validateDistinctStation() {
+        if (upStation.equals(downStation)) {
+            throw new IllegalArgumentException(SAME_STATION_ERROR_MESSAGE);
+        }
     }
 
     public SectionWithStation(Long lineId, Station upStation, Station downStation, int distance) {
