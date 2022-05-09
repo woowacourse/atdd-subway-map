@@ -44,7 +44,7 @@ public class Sections implements Iterable<Section> {
         Section upTerminalSection = orderedSections.get(orderedSections.size() - 1);
 
         Optional<Section> newUpTerminalSection = sections.stream()
-                .filter(it -> it.isLinkedToDownStation(upTerminalSection))
+                .filter(it -> it.isAbleToLinkOnDownStation(upTerminalSection))
                 .findAny();
 
         if (newUpTerminalSection.isPresent()) {
@@ -57,7 +57,7 @@ public class Sections implements Iterable<Section> {
         Section downTerminalSection = orderedSections.get(0);
 
         Optional<Section> newDownTerminalSection = sections.stream()
-                .filter(it -> it.isLinkedToUpStation(downTerminalSection))
+                .filter(it -> it.isAbleToLinkOnUpStation(downTerminalSection))
                 .findAny();
 
         if (newDownTerminalSection.isPresent()) {
@@ -75,8 +75,8 @@ public class Sections implements Iterable<Section> {
     }
 
     private boolean extendTerminalStationIfPossible(Section newSection) {
-        if (downTerminalStation().isLinkedToDownStation(newSection)
-                || upTerminalStation().isLinkedToUpStation(newSection)) {
+        if (downTerminalStation().isAbleToLinkOnDownStation(newSection)
+                || upTerminalStation().isAbleToLinkOnUpStation(newSection)) {
             sections.add(newSection);
             sortDownToUp();
             return true;

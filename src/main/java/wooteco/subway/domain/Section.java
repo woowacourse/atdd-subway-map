@@ -70,20 +70,16 @@ public class Section {
         return distance;
     }
 
-    public boolean isLinkedToUpStation(Section other) {
+    public boolean isAbleToLinkOnUpStation(Section other) {
         return upStationId == other.downStationId;
     }
 
-    public boolean isLinkedToDownStation(Section other) {
+    public boolean isAbleToLinkOnDownStation(Section other) {
         return downStationId == other.upStationId;
     }
 
     public boolean hasStation(Long stationId) {
         return (upStationId == stationId || downStationId == stationId);
-    }
-
-    public boolean ableToLink(Section newSection) {
-        return isLinkedToUpStation(newSection) || isLinkedToDownStation(newSection);
     }
 
     public boolean isSameUpStation(Section other) {
@@ -100,7 +96,7 @@ public class Section {
 
     public List<Section> divide(Section newSection) {
         List<Section> parts = new ArrayList<>();
-        if (upStationId == newSection.getUpStationId()) {
+        if (isSameUpStation(newSection)) {
             parts.add(Section.of(lineId, upStationId, newSection.downStationId, newSection.distance));
             parts.add(Section.of(lineId, newSection.downStationId, downStationId, distance - newSection.distance));
             return parts;
@@ -112,14 +108,14 @@ public class Section {
 
     public Section merge(Section other) {
         checkAbleToMerge(other);
-        if (downStationId == other.upStationId) {
+        if (isAbleToLinkOnDownStation(other)) {
             return new Section(null, lineId, upStationId, other.downStationId, distance + other.distance);
         }
         return new Section(null, lineId, other.upStationId, downStationId, distance + other.distance);
     }
 
     private void checkAbleToMerge(Section other) {
-        if (!(isLinkedToUpStation(other) || isLinkedToUpStation(other))) {
+        if (!(isAbleToLinkOnUpStation(other) || isAbleToLinkOnUpStation(other))) {
             throw new IllegalArgumentException("합칠 수 없는 section입니다.");
         }
     }
