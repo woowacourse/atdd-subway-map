@@ -33,6 +33,8 @@ public class ControllerExceptionHandler {
     @ExceptionHandler({Exception.class})
     public ResponseEntity<Map<String, String>> handleException(Exception exception) {
         logger.error(exception.getMessage());
-        return ResponseEntity.internalServerError().build();
+        Map<String, String> body = new HashMap<>();
+        body.put("message", "서버 에러가 발생했습니다.");
+        return ResponseEntity.internalServerError().body(body);
     }
 }
