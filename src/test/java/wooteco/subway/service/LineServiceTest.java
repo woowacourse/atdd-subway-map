@@ -10,9 +10,12 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 public class LineServiceTest extends ServiceTest {
 
@@ -35,16 +38,12 @@ public class LineServiceTest extends ServiceTest {
 
         given(lineDao.save(any()))
                 .willReturn(line);
-
         given(sectionService.save(any()))
                 .willReturn(section);
-
         given(stationService.findById(1L))
                 .willReturn(s1);
-
         given(stationService.findById(2L))
                 .willReturn(s2);
-
 
         //when
         LineResponse response = lineService.save(request);
@@ -53,4 +52,30 @@ public class LineServiceTest extends ServiceTest {
         assertThat(response.getStations().size()).isEqualTo(2);
     }
 
+    @DisplayName("line 목록을 조회한다.")
+    @Test
+    void findAll() {
+        Line line1 = new Line(1L, "1호선", "blue");
+        Line line2 = new Line(2L, "2호선", "green");
+        Station station1 = new Station(1L, "왕십리역");
+        Station station2 = new Station(2L, "시청역");
+        Station station3 = new Station(3L, "잠실역");
+        Station station4 = new Station(4L, "선릉역");
+
+        given(lineDao.findAll())
+                .willReturn(List.of(line1, line2));
+        given(stationService.findAll())
+                .willReturn(List.of(station1, station2, station3, station4));
+        when(sectionService.getStationIds(1L))
+                .thenReturn(List.of(1L, 2L));
+        when(sectionService.getStationIds(2L))
+                .thenReturn(List.of(2L, 3L, 4L));
+
+        //when
+        List<LineResponse> responses = lineService.findAll();
+
+        //then
+        assertThat(responses.size()).isEqualTo(2);
+        assertThat(responses.get(0).getStations()).isNotEmpty();
+    }
 }

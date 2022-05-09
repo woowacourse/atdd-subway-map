@@ -8,9 +8,11 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -43,8 +45,24 @@ public class LineService {
         }
     }
 
-    public List<Line> findAll() {
-        return lineDao.findAll();
+    public List<LineResponse> findAll() {
+        List<Line> lines = lineDao.findAll();
+        List<Station> stations = stationService.findAll();
+
+        return lines.stream()
+                .map(line -> getLineResponse(line, stations))
+                .collect(Collectors.toList());
+    }
+
+    private LineResponse getLineResponse(Line line, List<Station> allStations) {
+        Long lineId = line.getId();
+        List<Long> stationIds = sectionService.getStationIds(lineId);
+
+        List<Station> stations = allStations.stream()
+                .filter(station -> stationIds.contains(station.getId()))
+                .collect(Collectors.toList());
+
+        return LineResponse.of(line, stations);
     }
 
     public Line findById(Long id) {
