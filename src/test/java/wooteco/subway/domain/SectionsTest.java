@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.utils.exception.SectionCreateException;
@@ -72,14 +73,44 @@ public class SectionsTest {
                 .hasMessageContaining("기존의 구간보다 긴 구간은 넣을 수 없습니다.");
     }
 
+    @DisplayName("업데이트한 객체를 찾는다.")
+    @Test
+    void pickUpdate() {
+        Sections sections = new Sections(getSections());
+        sections.add(new Section(2L, 1L, new Station("동묘앞역"), new Station("창신역"), 2));
+
+        List<Section> foundSections = getSections();
+        Section section = sections.pickUpdate(foundSections).get();
+        assertAll(
+                () -> assertThat(section.getUpStation().getName()).isEqualTo("신당역"),
+                () -> assertThat(section.getDownStation().getName()).isEqualTo("동묘앞역")
+        );
+    }
+
+    @DisplayName("업데이트한 객체가 없을 경우 Optional empty를 반환한다")
+    @Test
+    void pickUpdateEmpty() {
+        Sections sections = new Sections(getSections());
+        sections.add(new Section(2L, 1L, new Station("창신역"), new Station("보문역"), 2));
+
+        List<Section> foundSections = getSections();
+        Optional<Section> section = sections.pickUpdate(foundSections);
+        assertThat(section.isEmpty()).isTrue();
+    }
+
+    private List<Section> getSections() {
+        List<Section> initialSections = new ArrayList<>();
+        initialSections.add(new Section(1L, 1L, new Station("신당역"), new Station("창신역"), 5));
+        return initialSections;
+    }
+
     private Section createSection(String upName, String downName, int distance) {
         return new Section(1L, new Station(1L, upName), new Station(2L, downName), distance);
     }
 
     private Sections createInitialSections(String upName, String downName) {
         List<Section> initialSections = new ArrayList<>();
-        Section section = createSection(upName, downName, 5);
-        initialSections.add(section);
+        initialSections.add(createSection(upName, downName, 5));
         return new Sections(initialSections);
     }
 }

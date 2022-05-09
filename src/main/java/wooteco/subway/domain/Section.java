@@ -64,6 +64,11 @@ public class Section {
         this.distance -= distance;
     }
 
+    public boolean isUpdate(final Section section) {
+        return id.equals(section.getId())
+                && !(isSameUpStation(section.getUpStation()) && isSameDownStation(section.getDownStation()));
+    }
+
     public Long getId() {
         return id;
     }

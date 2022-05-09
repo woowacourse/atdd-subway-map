@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import static java.util.stream.Collectors.toMap;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,7 +17,7 @@ public class Sections {
     private List<Section> values;
 
     public Sections(final List<Section> values) {
-        this.values = values;
+        this.values = new ArrayList<>(values);
     }
 
     public void add(final Section section) {
@@ -51,7 +52,7 @@ public class Sections {
                 });
     }
 
-    private void validateSectionConnect(Section section) {
+    private void validateSectionConnect(final Section section) {
         values.stream()
                 .filter(value -> value.haveStation(section.getUpStation(), section.getDownStation()))
                 .findAny()
@@ -70,7 +71,7 @@ public class Sections {
         }
     }
 
-    private void updateCutInSection(Section section, Section foundSection) {
+    private void updateCutInSection(final Section section, final Section foundSection) {
         if (foundSection.isSameUpStation(section.getUpStation())) {
             foundSection.updateStations(section.getDownStation(), foundSection.getDownStation());
         }
@@ -78,10 +79,22 @@ public class Sections {
         foundSection.subtractDistance(section.getDistance());
     }
 
-    private void validateCutInDistance(Section section, Section foundSection) {
+    private void validateCutInDistance(final Section section, final Section foundSection) {
         if (!foundSection.isLongerThan(section.getDistance())) {
             throw new SectionCreateException(SECTION_MUST_SHORTER_MESSAGE);
         }
+    }
+
+    public Optional<Section> pickUpdate(List<Section> sections) {
+        for (Section section : sections) {
+            Optional<Section> updateSection = values.stream()
+                    .filter(value -> value.isUpdate(section))
+                    .findFirst();
+            if (updateSection.isPresent()) {
+                return updateSection;
+            }
+        }
+        return Optional.empty();
     }
 
     public List<Section> getValues() {
