@@ -1,5 +1,6 @@
 package wooteco.subway.ui;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,4 +12,14 @@ public class ExceptionAdvice {
     public ResponseEntity<Void> duplicatedNameFound() {
         return ResponseEntity.badRequest().build();
     }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<Void> queryObjectExceptions() {
+        return ResponseEntity.badRequest().build();
+    }
+
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity<Void> exceptions() {
+//        return ResponseEntity.badRequest().build();
+//    }
 }
