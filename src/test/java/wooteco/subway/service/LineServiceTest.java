@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import wooteco.subway.dao.FakeLineDao;
-import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.line.DuplicatedLineNameException;
@@ -50,9 +49,13 @@ class LineServiceTest {
     @DisplayName("새로운 노선을 추가할 수 있다.")
     @Test
     void findLineById() {
-        Line actual = lineService.findLineById(1L);
+        LineResponse lineResponse = lineService.findLineById(1L);
 
-        assertThat(actual).isEqualTo(new Line(1L, "신분당선", "red"));
+        assertAll(
+                () -> assertThat(lineResponse.getId()).isEqualTo(1L),
+                () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("red")
+        );
     }
 
     @DisplayName("노선을 삭제할 수 있다.")
