@@ -13,34 +13,34 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.Line;
 
 @Repository
-public class StationDao {
+public class LineDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public StationDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public LineDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
-            .withTableName("STATION")
+            .withTableName("LINE")
             .usingGeneratedKeyColumns("id");
     }
 
-    public Station save(final Station station) {
-        final SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(station);
+    public Line save(final Line line) {
+        final SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(line);
         final Long id = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return new Station(id, station.getName());
+        return new Line(id, line.getName(), line.getColor());
     }
 
-    public List<Station> findAll() {
-        final String sql = "select id, name from Station";
+    public List<Line> findAll() {
+        final String sql = "select id, name, color from Line";
         return jdbcTemplate.query(sql, rowMapper());
     }
 
-    public Optional<Station> findById(final Long id) {
-        final String sql = "select id, name from Station where id = ?";
+    public Optional<Line> findById(final Long id) {
+        final String sql = "select id, name, color from Line where id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), id));
         } catch (EmptyResultDataAccessException e) {
@@ -48,20 +48,31 @@ public class StationDao {
         }
     }
 
-    private static RowMapper<Station> rowMapper() {
-        return (resultSet, rowNum) -> new Station(
+    private RowMapper<Line> rowMapper() {
+        return (resultSet, rowNum) -> new Line(
             resultSet.getLong("id"),
-            resultSet.getString("name")
+            resultSet.getString("name"),
+            resultSet.getString("color")
         );
     }
 
     public boolean existsByName(final String name) {
-        final String sql = "select count(*) > 0 from Station where name = ?";
+        final String sql = "select count(*) > 0 from Line where name = ?";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
     }
 
+    public void update(final Long id, final Line line) {
+        final String sql = "update Line set name = ?, color = ? where id = ?";
+        jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
+    }
+
     public void deleteById(final Long id) {
-        final String sql = "delete from Station where id = ?";
+        final String sql = "delete from Line where id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public boolean existsById(final Long id) {
+        final String sql = "select count(*) > 0 from Line where id = ?";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
     }
 }
