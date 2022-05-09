@@ -26,22 +26,21 @@ public class SectionDaoImplTest {
     @BeforeEach
     void setUp() {
         sectionDao = new SectionDaoImpl(dataSource);
-        section = sectionDao.save(new Section(1L, 1L, 2L, 10L));
+        section = sectionDao.save(new Section(1L, 1L, 2L, 10));
     }
-
 
     @DisplayName("새로운 구간을 추가한다.")
     @Test
     void save() {
         assertThatCode(() ->
-                sectionDao.save(new Section(2L, 2L, 3L, 5L)))
+                sectionDao.save(new Section(2L, 2L, 3L, 5)))
                 .doesNotThrowAnyException();
     }
 
     @DisplayName("lineId 값에 해당하는 모든 구간의 정보를 가져온다.")
     @Test
     void findByLineId() {
-        section = sectionDao.save(new Section(1L, 2L, 3L, 5L));
+        section = sectionDao.save(new Section(1L, 2L, 3L, 5));
         List<Section> sections = sectionDao.findByLineId(1L);
 
         assertThat(sections).hasSize(2);

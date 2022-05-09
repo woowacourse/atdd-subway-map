@@ -29,7 +29,7 @@ public class SectionDaoImpl implements SectionDao {
             resultSet.getLong("line_id"),
             resultSet.getLong("up_station_id"),
             resultSet.getLong("down_station_id"),
-            resultSet.getLong("distance")
+            resultSet.getInt("distance")
     );
 
     @Override
