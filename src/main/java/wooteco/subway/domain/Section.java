@@ -2,12 +2,14 @@ package wooteco.subway.domain;
 
 public class Section {
 
-    private Station upStation;
-    private Station downStation;
+    private final Station upStation;
+    private final Station downStation;
+    private final int distance;
 
-    public Section(Station upStation, Station downStation) {
+    public Section(Station upStation, Station downStation, final int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
+        this.distance = distance;
     }
 
     public MatchingResult match(final Section newSection) {
@@ -21,5 +23,9 @@ public class Section {
             return MatchingResult.SAME_DOWN_STATION;
         }
         return MatchingResult.NO_MATCHED;
+    }
+
+    public boolean isDistanceLongerThan(final Section newSection) {
+        return this.distance > newSection.distance;
     }
 }
