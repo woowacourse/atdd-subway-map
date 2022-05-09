@@ -1,8 +1,8 @@
 package wooteco.subway.domain;
 
 public enum MatchingResult {
-    SAME_UP_STATION,
-    SAME_DOWN_STATION,
+    ADD_TO_RIGHT,
+    ADD_TO_LEFT,
     SAME_SECTION,
     NO_MATCHED,
 }

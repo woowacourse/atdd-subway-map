@@ -21,8 +21,8 @@ public class SectionTest {
 
     private static Stream<Arguments> provideStationAndMatchingResult() {
         return Stream.of(
-                Arguments.of(SectionFactory.from("1a3c3"), MatchingResult.SAME_UP_STATION),
-                Arguments.of(SectionFactory.from("3c2b3"), MatchingResult.SAME_DOWN_STATION),
+                Arguments.of(SectionFactory.from("1a3c3"), MatchingResult.ADD_TO_RIGHT),
+                Arguments.of(SectionFactory.from("3c2b3"), MatchingResult.ADD_TO_LEFT),
                 Arguments.of(SectionFactory.from("1a2b3"), MatchingResult.SAME_SECTION),
                 Arguments.of(SectionFactory.from("3c4d3"), MatchingResult.NO_MATCHED)
         );
@@ -35,6 +35,7 @@ public class SectionTest {
         final Section section = new Section(StationFactory.from("a"), StationFactory.from("b"), distance);
         assertThat(section.isDistanceLongerThan(newSection)).isEqualTo(expectedResult);
     }
+
     private static Stream<Arguments> provideStationAndDistanceCompareResult() {
         return Stream.of(
                 Arguments.of(SectionFactory.from("1a3c3"), 4, true),

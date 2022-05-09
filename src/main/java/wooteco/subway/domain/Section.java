@@ -13,16 +13,31 @@ public class Section {
     }
 
     public MatchingResult match(final Section newSection) {
-        if (upStation.equals(newSection.upStation) && downStation.equals(newSection.downStation)) {
+        if (isSameSection(newSection)) {
             return MatchingResult.SAME_SECTION;
         }
-        if (upStation.equals(newSection.upStation)) {
-            return MatchingResult.SAME_UP_STATION;
+        if (canAddToLeft(newSection)) {
+            return MatchingResult.ADD_TO_LEFT;
         }
-        if (downStation.equals(newSection.downStation)) {
-            return MatchingResult.SAME_DOWN_STATION;
+        if (canAddToRight(newSection)) {
+            return MatchingResult.ADD_TO_RIGHT;
         }
         return MatchingResult.NO_MATCHED;
+    }
+
+    private boolean isSameSection(final Section newSection) {
+        return upStation.equals(newSection.upStation)
+                && downStation.equals(newSection.downStation);
+    }
+
+    private boolean canAddToLeft(final Section newSection) {
+        return upStation.equals(newSection.downStation)
+                ^ downStation.equals(newSection.downStation);
+    }
+
+    private boolean canAddToRight(final Section newSection) {
+        return upStation.equals(newSection.upStation)
+                ^ downStation.equals(newSection.upStation);
     }
 
     public boolean isDistanceLongerThan(final Section newSection) {
