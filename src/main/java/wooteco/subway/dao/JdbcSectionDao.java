@@ -37,7 +37,7 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public boolean existByLineIdAndStationId(long lineId, long stationId) {
+    public boolean existByLineIdAndStationId(Long lineId, Long stationId) {
         String sql = "SELECT EXISTS ("
                 + "SELECT * FROM \"SECTION\" WHERE line_id = (?) AND (up_station_id = (?) OR down_station_id = (?))"
                 + ")";
@@ -46,7 +46,7 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public Optional<Long> findIdByLineIdAndUpStationId(long lineId, long stationId) {
+    public Optional<Long> findIdByLineIdAndUpStationId(Long lineId, Long stationId) {
         String sql = "SELECT id FROM \"SECTION\" WHERE line_id = (?) AND up_station_id = (?)";
         List<Long> id = jdbcTemplate.query(sql,
                 (resultSet, rowMapper) -> resultSet.getLong("id"),
@@ -56,7 +56,7 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public Optional<Long> findIdByLineIdAndDownStationId(long lineId, long stationId) {
+    public Optional<Long> findIdByLineIdAndDownStationId(Long lineId, Long stationId) {
         String sql = "SELECT id FROM \"SECTION\" WHERE line_id = (?) AND down_station_id = (?)";
         List<Long> id = jdbcTemplate.query(sql,
                 (resultSet, rowMapper) -> resultSet.getLong("id"),
@@ -69,5 +69,11 @@ public class JdbcSectionDao implements SectionDao {
     public int findDistanceById(Long id) {
         String sql = "SELECT distance FROM \"SECTION\" WHERE id = (?)";
         return jdbcTemplate.queryForObject(sql, Integer.class, id);
+    }
+
+    @Override
+    public Long findLineOrderById(Long id) {
+        String sql = "SELECT line_order FROM \"SECTION\" WHERE id = (?)";
+        return jdbcTemplate.queryForObject(sql, Long.class, id);
     }
 }

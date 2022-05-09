@@ -156,4 +156,21 @@ class JdbcSectionDaoTest {
         // then
         assertThat(distance).isEqualTo(6);
     }
+
+    @Test
+    @DisplayName("id를 이용해서 lineOrder를 가져온다.")
+    void findLineOrderById() {
+        // given
+        Section givenSection = new Section(
+                new Line(1L, "신분당선", "yellow"),
+                new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
+                6, 1L);
+        sectionDao.save(givenSection);
+
+        // when
+        Long lineOrder = sectionDao.findLineOrderById(1L);
+
+        // then
+        assertThat(lineOrder).isEqualTo(1L);
+    }
 }

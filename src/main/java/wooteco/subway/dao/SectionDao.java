@@ -7,11 +7,13 @@ public interface SectionDao {
 
     Long save(Section section);
 
-    boolean existByLineIdAndStationId(long lineId, long stationId);
+    boolean existByLineIdAndStationId(Long lineId, Long stationId);
 
-    Optional<Long> findIdByLineIdAndDownStationId(long lineId, long stationId);
+    Optional<Long> findIdByLineIdAndDownStationId(Long lineId, Long stationId);
 
-    Optional<Long> findIdByLineIdAndUpStationId(long lineId, long stationId);
+    Optional<Long> findIdByLineIdAndUpStationId(Long lineId, Long stationId);
 
     int findDistanceById(Long id);
+
+    Long findLineOrderById(Long id);
 }
