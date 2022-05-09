@@ -1,9 +1,12 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.station.DuplicatedStationNameException;
 import wooteco.subway.exception.station.InvalidStationIdException;
 
@@ -16,11 +19,17 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station save(Station station) {
+    public StationResponse save(StationRequest stationRequest) {
+        Station station = new Station(stationRequest.getName());
+        validateStationName(station);
+        Station savedStation = stationDao.save(station);
+        return new StationResponse(savedStation.getId(), savedStation.getName());
+    }
+
+    private void validateStationName(final Station station) {
         if (stationDao.exists(station)) {
             throw new DuplicatedStationNameException();
         }
-        return stationDao.save(station);
     }
 
     public void deleteById(Long id) {
@@ -30,7 +39,10 @@ public class StationService {
         stationDao.deleteById(id);
     }
 
-    public List<Station> findAll() {
-        return stationDao.findAll();
+    public List<StationResponse> findAll() {
+        return stationDao.findAll()
+                .stream()
+                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .collect(Collectors.toUnmodifiableList());
     }
 }
