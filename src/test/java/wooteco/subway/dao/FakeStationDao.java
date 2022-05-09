@@ -13,6 +13,14 @@ public class FakeStationDao implements StationDao {
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
+    public static void init() {
+        seq = 0L;
+        stations = new ArrayList<>();
+        stations.add(new Station(++seq, "선릉역"));
+        stations.add(new Station(++seq, "잠실역"));
+        stations.add(new Station(++seq, "강남역"));
+    }
+
     @Override
     public Station save(Station station) {
         Station persistStation = createNewObject(station);

@@ -14,6 +14,11 @@ public class FakeLineDao implements LineDao {
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
 
+    public static void init() {
+        seq = 0L;
+        lines = new ArrayList<>();
+    }
+
     @Override
     public Line save(Line line) {
         Line persistLine = createNewObject(line);

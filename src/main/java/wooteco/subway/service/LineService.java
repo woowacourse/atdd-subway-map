@@ -33,14 +33,14 @@ public class LineService {
         validateDuplicate(lineRequest);
         final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         final Line newLine = lineDao.save(line);
-        saveSection(newLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(),
-                lineRequest.getDistance());
 
         final Station upStation = stationDao.findById(lineRequest.getUpStationId());
         final Station downStation = stationDao.findById(lineRequest.getDownStationId());
         final StationResponse upStationResponse = new StationResponse(upStation.getId(), upStation.getName());
         final StationResponse downStationResponse = new StationResponse(downStation.getId(), downStation.getName());
 
+        saveSection(newLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(),
+                lineRequest.getDistance());
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(),
                 List.of(upStationResponse, downStationResponse));
     }

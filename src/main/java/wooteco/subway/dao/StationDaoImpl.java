@@ -2,12 +2,14 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.DataNotFoundException;
 
 @Repository
 public class StationDaoImpl implements StationDao {
@@ -43,8 +45,12 @@ public class StationDaoImpl implements StationDao {
 
     @Override
     public Station findById(long id) {
-        final String sql = "select * from station where id = (?)";
-        return jdbcTemplate.queryForObject(sql, stationRowMapper(), id);
+        try {
+            final String sql = "select * from station where id = (?)";
+            return jdbcTemplate.queryForObject(sql, stationRowMapper(), id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new DataNotFoundException("존재하지 않는 역입니다.");
+        }
     }
 
     @Override
