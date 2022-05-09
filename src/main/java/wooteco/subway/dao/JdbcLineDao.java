@@ -44,12 +44,13 @@ public class JdbcLineDao implements LineDao {
         return new Line(id, line.getName(), line.getColor());
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public Optional<Line> findById(final Long id) {
         final String sql = "SELECT * FROM line WHERE id = :id";
         final MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
         try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, lineRowMapper));
+            return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameters, lineRowMapper));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

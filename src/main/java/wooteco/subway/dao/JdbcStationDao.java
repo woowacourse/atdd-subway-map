@@ -57,12 +57,13 @@ public class JdbcStationDao implements StationDao {
         namedParameterJdbcTemplate.update(sql, parameters);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public Optional<Station> findById(final Long id) {
         final String sql = "SELECT * FROM station WHERE id = :id";
         final MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
         try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, parameters, stationRowMapper));
+            return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameters, stationRowMapper));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
