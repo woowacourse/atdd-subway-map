@@ -18,6 +18,7 @@ import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
 import wooteco.subway.exception.line.DuplicateLineException;
 import wooteco.subway.exception.line.NoSuchLineException;
+import wooteco.subway.exception.section.NoSuchSectionException;
 import wooteco.subway.exception.station.NoSuchStationException;
 
 @Service
@@ -69,58 +70,71 @@ public class LineService {
     public LineResponse findById(final Long id) {
         final Line line = lineDao.findById(id)
                 .orElseThrow(NoSuchLineException::new);
-        final List<Section> sections = sectionDao.findAllByLineId(line.getId());
-        final Long upEndStationId = findUpEndStationId(sections);
-        return LineResponse.of(line, findAllStation(sections, upEndStationId));
+
+        final List<Station> stations = findSortedStationsByLineId(line.getId());
+
+        return LineResponse.of(line, stations);
     }
 
-    private Long findUpEndStationId(List<Section> s) {
-        final List<Section> sections = new ArrayList<>(s);
+    private List<Station> findSortedStationsByLineId(final Long lineId) {
+        final List<Section> sections = sectionDao.findAllByLineId(lineId);
+
+        final List<Long> endStationIds = findEnsStationIds(sections);
+        Long upStationId = findEndUpStation(sections, endStationIds);
+
+        final List<Long> sortedStationIds = new ArrayList<>();
+        sortedStationIds.add(upStationId);
+        while (sortedStationIds.size() != sections.size() + 1) {
+            final Section section = findSectionByUpStationId(upStationId, sections);
+            upStationId = section.getDownStationId();
+            sortedStationIds.add(upStationId);
+        }
+        return toStations(sortedStationIds);
+    }
+
+    private List<Long> findEnsStationIds(final List<Section> sections) {
+        return toCountByStationId(sections)
+                .entrySet()
+                .stream()
+                .filter(it -> it.getValue().equals(1))
+                .map(Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    private Map<Long, Integer> toCountByStationId(final List<Section> sections) {
         final Map<Long, Integer> countByStationId = new HashMap<>();
         for (Section section : sections) {
-            countByStationId.put(section.getUpStationId(), countByStationId.getOrDefault(section.getUpStationId(), 0) + 1);
-            countByStationId.put(section.getDownStationId(), countByStationId.getOrDefault(section.getDownStationId(), 0) + 1);
+            final Long upStationId = section.getUpStationId();
+            countByStationId.put(upStationId, countByStationId.getOrDefault(upStationId, 0) + 1);
+
+            final Long downStationId = section.getDownStationId();
+            countByStationId.put(downStationId, countByStationId.getOrDefault(downStationId, 0) + 1);
         }
-        Long result = null;
-        for (Entry<Long, Integer> entry : countByStationId.entrySet()) {
-            if (entry.getValue().equals(1)) {
-                for (Section section : sections) {
-                    if (!section.contains(entry.getKey())) {
-                        continue;
-                    }
-                    if (section.getUpStationId().equals(entry.getKey())) {
-                        result = entry.getKey();
-                        break;
-                    }
-                }
-            }
-        }
-        return result;
+        return countByStationId;
     }
 
-    private List<Station> findAllStation(final List<Section> sections, final Long firstStationId) {
-        final List<Station> stations = new ArrayList<>();
+    private Long findEndUpStation(final List<Section> sections, final List<Long> endStationIds) {
+        return sections
+                .stream()
+                .map(Section::getUpStationId)
+                .filter(endStationIds::contains)
+                .findFirst()
+                .orElseThrow(NoSuchStationException::new);
+    }
 
-        stations.add(stationDao.findById(firstStationId).orElseThrow(NoSuchStationException::new));
+    private Section findSectionByUpStationId(final Long upStationId, final List<Section> sections) {
+        return sections
+                .stream()
+                .filter(it -> it.getUpStationId().equals(upStationId))
+                .findFirst()
+                .orElseThrow(NoSuchSectionException::new);
+    }
 
-        Long targetStationId = null;
-        for (Section section : sections) {
-            if (section.getUpStationId().equals(firstStationId)) {
-                targetStationId = section.getDownStationId();
-                stations.add(stationDao.findById(section.getDownStationId()).orElseThrow(NoSuchStationException::new));
-                break;
-            }
-        }
-        while (stations.size() != sections.size() + 1) {
-            for (Section targetSection : sections) {
-                if (targetSection.getUpStationId().equals(targetStationId)) {
-                    stations.add(stationDao.findById(targetSection.getDownStationId()).orElseThrow(NoSuchStationException::new));
-                    targetStationId = targetSection.getDownStationId();
-                }
-            }
-        }
-
-        return stations;
+    private List<Station> toStations(final List<Long> stationIds) {
+        return stationIds
+                .stream()
+                .map(it -> stationDao.findById(it).orElseThrow(NoSuchStationException::new))
+                .collect(Collectors.toList());
     }
 
     public void updateById(final Long id, final LineRequest request) {
