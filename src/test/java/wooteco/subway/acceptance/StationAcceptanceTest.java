@@ -1,139 +1,116 @@
 package wooteco.subway.acceptance;
 
-import io.restassured.RestAssured;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import wooteco.subway.acceptance.AcceptanceTest;
-import wooteco.subway.dto.StationResponse;
-
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import wooteco.subway.dto.response.StationResponse;
+import wooteco.subway.test_utils.HttpMethod;
+import wooteco.subway.test_utils.HttpUtils;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-@DisplayName("지하철역 관련 기능")
+@SuppressWarnings("NonAsciiCharacters")
+@DisplayName("인수테스트 - /stations")
 public class StationAcceptanceTest extends AcceptanceTest {
-    @DisplayName("지하철역을 생성한다.")
-    @Test
-    void createStation() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
 
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+    @DisplayName("POST /stations - 지하철역 생성 테스트")
+    @Nested
+    class CreateStationTest extends AcceptanceTest {
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        @Test
+        void 성공시_201_CREATED() {
+            Map<String, String> params = jsonStationOf("강남역");
+
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", params);
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            assertThat(response.header("Location")).isNotBlank();
+        }
+
+        @Test
+        void 이름_정보가_담기지_않은_경우_400_BAD_REQUEST() {
+            Map<String, String> emptyParams = new HashMap<>();
+
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", emptyParams);
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @Test
+        void 이름_정보가_공백으로_구성된_경우_400_BAD_REQUEST() {
+            Map<String, String> blankParams = jsonStationOf("  ");
+
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", blankParams);
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @Test
+        void 중복되는_이름의_지하철역_생성_시도시_400_BAD_REQUEST() {
+            Map<String, String> params = jsonStationOf("강남역");
+            postStation(params);
+
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", params);
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("GET /stations - 지하철역 조회 테스트")
     @Test
-    void createStationWithDuplicateName() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+    void 성공시_200_OK() {
+        postStations("강남역", "역삼역");
 
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/stations");
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
+        List<StationResponse> responseBody = response.jsonPath()
+                .getList(".", StationResponse.class);
 
-    @DisplayName("지하철역을 조회한다.")
-    @Test
-    void getStations() {
-        /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(params1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
-
-        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertThat(responseBody).hasSize(2);
     }
 
-    @DisplayName("지하철역을 제거한다.")
-    @Test
-    void deleteStation() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+    @DisplayName("DELETE /stations/:id - 지하철역 제거 테스트")
+    @Nested
+    class DeleteStationTest extends AcceptanceTest {
 
-        // when
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
+        @Test
+        void 성공시_204_OK() {
+            postStations("강남역");
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.DELETE, "/stations/1");
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        }
+
+        @DisplayName("존재하지 않는 id로 지하철역을 제거하려는 경우 404 NOT FOUND")
+        @Test
+        void deleteNonExistingStation() {
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.DELETE, "/stations/999");
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        }
+    }
+
+    private HashMap<String, String> jsonStationOf(String name) {
+        return new HashMap<>() {{
+            put("name", name);
+        }};
+    }
+
+    private void postStations(String... names) {
+        for (String name : names) {
+            postStation(jsonStationOf(name));
+        }
+    }
+
+    private void postStation(Map<String, String> params) {
+        HttpUtils.send(HttpMethod.POST, "/stations", params);
     }
 }

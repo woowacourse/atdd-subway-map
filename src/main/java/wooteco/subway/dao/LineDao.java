@@ -11,29 +11,30 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.Line;
 
 @Repository
-public class StationDao {
+public class LineDao {
 
-    private static final RowMapper<Station> ROW_MAPPER = (resultSet, rowNum) ->
-            new Station(resultSet.getLong("id"),
-                    resultSet.getString("name"));
+    private static final RowMapper<Line> ROW_MAPPER = (resultSet, rowNum) ->
+            new Line(resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("color"));
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public StationDao(NamedParameterJdbcTemplate jdbcTemplate) {
+    public LineDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Station> findAll() {
-        final String sql = "SELECT * FROM station";
+    public List<Line> findAll() {
+        final String sql = "SELECT * FROM line";
 
         return jdbcTemplate.query(sql, new EmptySqlParameterSource(), ROW_MAPPER);
     }
 
-    public Optional<Station> findById(Long id) {
-        final String sql = "SELECT * FROM station WHERE id = :id";
+    public Optional<Line> findById(Long id) {
+        final String sql = "SELECT * FROM line WHERE id = :id";
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("id", id);
 
@@ -42,8 +43,8 @@ public class StationDao {
                 .findFirst();
     }
 
-    public Optional<Station> findByName(String name) {
-        final String sql = "SELECT * FROM station WHERE name = :name";
+    public Optional<Line> findByName(String name) {
+        final String sql = "SELECT * FROM line WHERE name = :name";
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("name", name);
 
@@ -52,18 +53,25 @@ public class StationDao {
                 .findFirst();
     }
 
-    public Station save(Station station) {
-        final String sql = "INSERT INTO station(name) VALUES (:name)";
+    public Line save(Line line) {
+        final String sql = "INSERT INTO line(name, color) VALUES(:name, :color)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        SqlParameterSource paramSource = new BeanPropertySqlParameterSource(station);
+        SqlParameterSource paramSource = new BeanPropertySqlParameterSource(line);
 
         jdbcTemplate.update(sql, paramSource, keyHolder);
         Number generatedId = keyHolder.getKey();
-        return new Station(generatedId.longValue(), station.getName());
+        return new Line(generatedId.longValue(), line.getName(), line.getColor());
+    }
+
+    public void update(Line line) {
+        final String sql = "UPDATE line SET name = :name, color = :color WHERE id = :id";
+        SqlParameterSource paramSource = new BeanPropertySqlParameterSource(line);
+
+        jdbcTemplate.update(sql, paramSource);
     }
 
     public void deleteById(Long id) {
-        final String sql = "DELETE FROM station WHERE id = :id";
+        final String sql = "DELETE FROM line WHERE id = :id";
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("id", id);
 

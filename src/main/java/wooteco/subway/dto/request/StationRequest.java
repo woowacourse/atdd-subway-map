@@ -1,6 +1,7 @@
-package wooteco.subway.dto;
+package wooteco.subway.dto.request;
 
 public class StationRequest {
+
     private String name;
 
     public StationRequest() {
@@ -12,5 +13,14 @@ public class StationRequest {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "StationRequest{" + "name='" + name + '\'' + '}';
     }
 }
