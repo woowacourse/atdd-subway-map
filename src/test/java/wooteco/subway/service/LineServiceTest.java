@@ -5,6 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static wooteco.subway.Fixtures.HYEHWA;
+import static wooteco.subway.Fixtures.ID_1;
+import static wooteco.subway.Fixtures.LINE_2;
+import static wooteco.subway.Fixtures.RED;
+import static wooteco.subway.Fixtures.SINSA;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -14,9 +19,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.request.CreateLineRequest;
+import wooteco.subway.dto.response.LineResponse;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
@@ -27,26 +39,40 @@ class LineServiceTest {
     @Mock
     private LineDao lineDao;
 
+    @Mock
+    private SectionDao sectionDao;
+
+    @Mock
+    private StationDao stationDao;
+
     @Test
-    @DisplayName("노선을 생성한다.")
-    void createLine() {
+    @DisplayName("지하철 노선을 생성한다. 이때 관련 구간을 같이 생성한다.")
+    void create() {
         // given
-        final long id = 1L;
-        final String name = "2호선";
-        final String color = "bg-red-600";
-        final Line savedLine = new Line(id, name, color);
+        final Line savedLine = new Line(1L, LINE_2, RED);
+        final CreateLineRequest request = new CreateLineRequest(LINE_2, RED, 1L, 2L, 10);
+        final Sections sections = new Sections(List.of(new Section(1L, 1L, 2L, 10)));
 
         // mocking
-        given(lineDao.save(any())).willReturn(id);
+        given(lineDao.save(any(Line.class))).willReturn(ID_1);
+        given(sectionDao.save(any(Section.class))).willReturn(ID_1);
+        given(lineDao.find(1L)).willReturn(savedLine);
+        given(sectionDao.findAllByLineId(1L)).willReturn(sections);
+        given(stationDao.find(1L)).willReturn(new Station(1L, HYEHWA));
+        given(stationDao.find(2L)).willReturn(new Station(2L, SINSA));
 
         // when
-        final LineRequest request = new LineRequest(name, color);
-        final LineResponse response = lineService.createLine(request);
+        final LineResponse response = lineService.create(request);
+        final List<StationResponse> stationResponses = response.getStations();
 
         // then
         assertAll(() -> {
             assertThat(response.getName()).isEqualTo(request.getName());
             assertThat(response.getColor()).isEqualTo(request.getColor());
+            assertThat(stationResponses.get(0).getId()).isEqualTo(1L);
+            assertThat(stationResponses.get(0).getName()).isEqualTo(HYEHWA);
+            assertThat(stationResponses.get(1).getId()).isEqualTo(2L);
+            assertThat(stationResponses.get(1).getName()).isEqualTo(SINSA);
         });
     }
 
@@ -69,22 +95,36 @@ class LineServiceTest {
 
     @Test
     @DisplayName("노선을 조회한다.")
-    void showLine() {
+    void show() {
         // given
         final long id = 1L;
         final String name = "2호선";
         final String color = "bg-red-600";
+        final long upStationId = 1L;
+        final long downStationId = 2L;
+        final int distance = 10;
 
         // mocking
         given(lineDao.find(id)).willReturn(new Line(id, name, color));
+        given(sectionDao.findAllByLineId(id)).willReturn(
+                new Sections(List.of(new Section(id, upStationId, downStationId, distance))));
+        given(stationDao.find(upStationId)).willReturn(new Station(upStationId, HYEHWA));
+        given(stationDao.find(downStationId)).willReturn(new Station(downStationId, SINSA));
 
         // when
-        final LineResponse response = lineService.showLine(id);
+        final LineResponse response = lineService.show(id);
+        final StationResponse stationResponse1 = response.getStations().get(0);
+        final StationResponse stationResponse2 = response.getStations().get(1);
 
         // then
         assertAll(() -> {
             assertThat(response.getName()).isEqualTo(name);
             assertThat(response.getColor()).isEqualTo(color);
+            assertThat(response.getStations()).hasSize(2);
+            assertThat(stationResponse1.getId()).isEqualTo(1L);
+            assertThat(stationResponse1.getName()).isEqualTo(HYEHWA);
+            assertThat(stationResponse2.getId()).isEqualTo(2L);
+            assertThat(stationResponse2.getName()).isEqualTo(SINSA);
         });
     }
 

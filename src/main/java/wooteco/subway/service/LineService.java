@@ -1,38 +1,58 @@
 package wooteco.subway.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.request.CreateLineRequest;
+import wooteco.subway.dto.response.LineResponse;
 
+@Transactional
 @Service
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
+    private final StationDao stationDao;
 
-    public LineService(final LineDao lineDao) {
+    public LineService(final LineDao lineDao, final SectionDao sectionDao, final StationDao stationDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
+        this.stationDao = stationDao;
     }
 
-    public LineResponse createLine(final LineRequest request) {
-        final Line line = new Line(request.getName(), request.getColor());
-        final Long id = lineDao.save(line);
-        return new LineResponse(id, request.getName(), request.getColor());
+    public LineResponse create(final CreateLineRequest request) {
+        final Long lineId = lineDao.save(request.toLine());
+        sectionDao.save(
+                new Section(lineId, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+        return show(lineId);
     }
 
     public List<LineResponse> showLines() {
         final List<Line> lines = lineDao.findAll();
         return lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), new ArrayList<>()))
                 .collect(Collectors.toList());
     }
 
-    public LineResponse showLine(final long id) {
+    @Transactional(readOnly = true)
+    public LineResponse show(final long id) {
         final Line line = lineDao.find(id);
-        return new LineResponse(id, line.getName(), line.getColor());
+        final Sections sections = sectionDao.findAllByLineId(id);
+        final List<Station> stations = sections.toSortedStationIds()
+                .stream()
+                .map(stationDao::find)
+                .collect(Collectors.toList());
+        return LineResponse.of(line, stations);
     }
 
     public void updateLine(final long id, final LineRequest request) {

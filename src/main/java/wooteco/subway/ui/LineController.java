@@ -12,26 +12,24 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.service.LineService;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
 
-    private final LineDao lineDao;
     private final LineService lineService;
 
-    public LineController(final LineService lineService, final LineDao lineDao) {
+    public LineController(final LineService lineService) {
         this.lineService = lineService;
-        this.lineDao = lineDao;
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@Valid @RequestBody final LineRequest lineRequest) {
-        final LineResponse lineResponse = lineService.createLine(lineRequest);
+    public ResponseEntity<LineResponse> createLine(@Valid @RequestBody final CreateLineRequest request) {
+        final LineResponse lineResponse = lineService.create(request);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
@@ -42,8 +40,9 @@ public class LineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
-        return ResponseEntity.ok().body(lineService.showLine(id));
+    public ResponseEntity<LineResponse> show(@PathVariable final Long id) {
+        final LineResponse response = lineService.show(id);
+        return ResponseEntity.ok().body(response);
     }
 
     @PutMapping("/{id}")

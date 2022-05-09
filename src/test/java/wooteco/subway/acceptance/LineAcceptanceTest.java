@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -14,18 +15,30 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.response.LineResponse;
 
-@DisplayName("지하철 노선 관련 기능")
+@DisplayName("지하철 노선 관리 API")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private static final String HYEHWA = "혜화역";
+    private static final String SINSA = "신사역";
+    private static final String LINE_2 = "2호선";
+    private static final String RED = "bg-red-600";
+
     @Test
-    @DisplayName("지하철 노선을 생성한다.")
-    void createLine() {
+    @DisplayName("지하철 노선을 등록한다.")
+    void create() {
         // given
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        final Long upStationId = createStation(HYEHWA);
+        final Long downStationId = createStation(SINSA);
+
+        final Map<String, Object> params = new HashMap<>();
+        params.put("name", LINE_2);
+        params.put("color", RED);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", 10);
 
         // when
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -35,19 +48,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .post("/lines")
                 .then().log().all()
                 .extract();
+        final List<StationResponse> stationResponses = response.body().jsonPath()
+                .getList("stations", StationResponse.class);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertAll(() -> {
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            assertThat(response.header("Location")).isNotBlank();
+            assertThat(response.body().jsonPath().getString("name")).isEqualTo(LINE_2);
+            assertThat(response.body().jsonPath().getString("color")).isEqualTo(RED);
+            assertThat(stationResponses).hasSize(2);
+            assertThat(stationResponses.get(0).getName()).isEqualTo(HYEHWA);
+            assertThat(stationResponses.get(1).getName()).isEqualTo(SINSA);
+        });
     }
 
     @Test
     @DisplayName("기존에 존재하는 노선 이름으로 생성하면, 예외를 발생한다.")
-    void createLineWithDuplicateName() {
+    void createWithDuplicateName() {
         // given
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        final Long upStationId = createStation(HYEHWA);
+        final Long downStationId = createStation(SINSA);
+
+        final Map<String, Object> params = new HashMap<>();
+        params.put("name", LINE_2);
+        params.put("color", RED);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", 10);
+
         RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -114,21 +143,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("지하철 노선을 조회한다.")
-    void getLine() {
+    @DisplayName("지하철 노선 ID로 노선을 조회한다.")
+    void show() {
         // given
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        final Long id = Long.parseLong(RestAssured.given().log().all()
+        final Long upStationId = createStation(HYEHWA);
+        final Long downStationId = createStation(SINSA);
+
+        final Map<String, Object> params = new HashMap<>();
+        params.put("name", LINE_2);
+        params.put("color", RED);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", 10);
+        final long id = Long.parseLong(RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
                 .extract()
-                .header("Location")
-                .split("/")[2]);
+                .header("Location").split("/")[2]);
 
         // when
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -136,19 +170,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .get("/lines/" + id)
                 .then().log().all()
                 .extract();
+        final List<StationResponse> stationResponses = response.body().jsonPath()
+                .getList("stations", StationResponse.class);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        final String name = response.body().jsonPath().getString("name");
-        assertThat(name).isEqualTo(params.get("name"));
-
-        final String color = response.body().jsonPath().getString("color");
-        assertThat(color).isEqualTo(params.get("color"));
+        assertAll(() -> {
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.body().jsonPath().getString("name")).isEqualTo(LINE_2);
+            assertThat(response.body().jsonPath().getString("color")).isEqualTo(RED);
+            assertThat(stationResponses).hasSize(2);
+            assertThat(stationResponses.get(0).getName()).isEqualTo(HYEHWA);
+            assertThat(stationResponses.get(1).getName()).isEqualTo(SINSA);
+        });
     }
 
     @Test
-    @DisplayName("존재하지 않는 ID로 조회한다면, 예외를 발생한다.")
+    @DisplayName("존재하지 않는 지하철 노선 ID로 조회한다면, 예외를 발생한다.")
     void getLineNotExistId() {
         // given
         final long id = 1L;
@@ -261,5 +298,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    private Long createStation(final String name) {
+        final Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract()
+                .body().jsonPath().getLong("id");
     }
 }
