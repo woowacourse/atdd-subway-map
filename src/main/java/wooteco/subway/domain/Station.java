@@ -9,13 +9,17 @@ public class Station {
     public Station() {
     }
 
-    public Station(Long id, String name) {
+    private Station(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Station(String name) {
-        this.name = name;
+    public static Station of(Long id, String name) {
+        return new Station(id, name);
+    }
+
+    public static Station of(String name) {
+        return Station.of(null, name);
     }
 
     public Long getId() {

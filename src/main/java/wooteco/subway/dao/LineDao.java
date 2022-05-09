@@ -13,7 +13,7 @@ import wooteco.subway.domain.Line;
 
 @Repository
 public class LineDao {
-    private static final RowMapper<Line> LINE_MAPPER = (resultSet, rowNum) -> new Line(
+    private static final RowMapper<Line> LINE_MAPPER = (resultSet, rowNum) -> Line.of(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("color")
@@ -33,7 +33,7 @@ public class LineDao {
     public Line save(Line line) {
         SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
         Long id = simpleInsert.executeAndReturnKey(parameters).longValue();
-        return new Line(id, line.getName(), line.getColor());
+        return Line.of(id, line.getName(), line.getColor());
     }
 
     public List<Line> findAll() {

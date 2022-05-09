@@ -10,11 +10,11 @@ public class StationsTest {
     @DisplayName("중복된 이름의 station을 추가하면 예외가 발생한다.")
     @Test
     void duplicatedName() {
-        Station station1 = new Station("강남역");
-        Station station2 = new Station("잠실역");
+        Station station1 = Station.of("강남역");
+        Station station2 = Station.of("잠실역");
         Stations stations = new Stations(Arrays.asList(station1, station2));
 
-        Station station = new Station("잠실역");
+        Station station = Station.of("잠실역");
         Assertions.assertThatThrownBy(() -> stations.checkAbleToAdd(station))
                 .isInstanceOf(IllegalArgumentException.class);
     }

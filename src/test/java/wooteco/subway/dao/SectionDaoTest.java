@@ -27,7 +27,7 @@ public class SectionDaoTest {
         lineDao = new LineDao(dataSource);
         sectionDao = new SectionDao(dataSource);
 
-        Line line = new Line("2호선", "초록색");
+        Line line = Line.of("2호선", "초록색");
         lineId = lineDao.save(line).getId();
     }
 

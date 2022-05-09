@@ -90,7 +90,7 @@ public class SubwayService {
     }
 
     private Line convertToLine(Long id, LineRequest lineRequest) {
-        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
+        Line line = Line.of(id, lineRequest.getName(), lineRequest.getColor());
         Lines lines = new Lines(lineDao.findAll());
         lines.checkAbleToAdd(line);
         return line;
@@ -107,7 +107,7 @@ public class SubwayService {
     }
 
     private Station convertToStation(StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
+        Station station = Station.of(stationRequest.getName());
         Stations stations = new Stations(stationDao.findAll());
         stations.checkAbleToAdd(station);
         return station;

@@ -12,7 +12,7 @@ public class Section {
     private Long downStationId;
     private Integer distance;
 
-    public Section(Long id, Long lineId, Long upStationId, Long downStationId, Integer distance) {
+    private Section(Long id, Long lineId, Long upStationId, Long downStationId, Integer distance) {
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
@@ -20,13 +20,17 @@ public class Section {
         this.distance = distance;
     }
 
+    public static Section of(Long id, Long lineId, Long upStationId, Long downStationId, Integer distance) {
+        return new Section(id, lineId, upStationId, downStationId, distance);
+    }
+
     public static Section of(Long id, Section other) {
-        return new Section(id, other.lineId, other.upStationId, other.downStationId, other.distance);
+        return Section.of(id, other.lineId, other.upStationId, other.downStationId, other.distance);
     }
 
     public static Section of(Long lineId, Long upStationId, Long downStationId, Integer distance) {
         validate(upStationId, downStationId, distance);
-        return new Section(null, lineId, upStationId, downStationId, distance);
+        return Section.of(null, lineId, upStationId, downStationId, distance);
     }
 
     private static void validate(Long upStationId, Long downStationId, Integer distance) {

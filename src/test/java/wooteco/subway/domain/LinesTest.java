@@ -10,11 +10,11 @@ class LinesTest {
     @DisplayName("중복된 line 이름이 들어오면 예외가 발생한다.")
     @Test
     void duplicatedName() {
-        Line line1 = new Line("2호선", "초록색");
-        Line line2 = new Line("1호선", "검은색");
+        Line line1 = Line.of("2호선", "초록색");
+        Line line2 = Line.of("1호선", "검은색");
         Lines lines = new Lines(List.of(line1, line2));
 
-        Line line = new Line("2호선", "파란색");
+        Line line = Line.of("2호선", "파란색");
         Assertions.assertThatThrownBy(() -> lines.checkAbleToAdd(line))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -22,11 +22,11 @@ class LinesTest {
     @DisplayName("중복된 line 색깔이 들어오면 예외가 발생한다.")
     @Test
     void duplicatedColor() {
-        Line line1 = new Line("2호선", "초록색");
-        Line line2 = new Line("1호선", "검은색");
+        Line line1 = Line.of("2호선", "초록색");
+        Line line2 = Line.of("1호선", "검은색");
         Lines lines = new Lines(List.of(line1, line2));
 
-        Line line = new Line("3호선", "검은색");
+        Line line = Line.of("3호선", "검은색");
         Assertions.assertThatThrownBy(() -> lines.checkAbleToAdd(line))
                 .isInstanceOf(IllegalArgumentException.class);
     }
