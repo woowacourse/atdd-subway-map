@@ -14,18 +14,19 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestConstructor.AutowireMode;
-import wooteco.subway.dao.entity.StationEntity;
+import wooteco.subway.infra.dao.StationDao;
+import wooteco.subway.infra.entity.StationEntity;
 
 @JdbcTest
 @TestConstructor(autowireMode = AutowireMode.ALL)
 @DisplayName("Station 레포지토리")
 class StationRepositoryTest {
 
-    private final StationRepository stationRepository;
+    private final StationDao stationRepository;
 
     public StationRepositoryTest(JdbcTemplate jdbcTemplate, DataSource dataSource,
                                  NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.stationRepository = new StationRepository(jdbcTemplate, dataSource, namedParameterJdbcTemplate);
+        this.stationRepository = new StationDao(jdbcTemplate, dataSource, namedParameterJdbcTemplate);
     }
 
     @Test

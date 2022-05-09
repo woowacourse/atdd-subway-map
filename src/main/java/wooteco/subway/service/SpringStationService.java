@@ -4,19 +4,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.StationRepository;
-import wooteco.subway.dao.entity.StationEntity;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.StationDeleteFailureException;
-import wooteco.subway.exception.StationDuplicateException;
+import wooteco.subway.exception.notfound.NotFoundStationException;
+import wooteco.subway.exception.unknown.StationDeleteFailureException;
+import wooteco.subway.exception.validation.StationNameDuplicateException;
+import wooteco.subway.infra.dao.StationDao;
+import wooteco.subway.infra.entity.StationEntity;
 import wooteco.subway.service.dto.StationServiceRequest;
 
 @Service
 public class SpringStationService implements StationService {
 
-    private final StationRepository stationRepository;
+    private final StationDao stationRepository;
 
-    public SpringStationService(StationRepository stationRepository) {
+    public SpringStationService(StationDao stationRepository) {
         this.stationRepository = stationRepository;
     }
 
@@ -33,7 +34,7 @@ public class SpringStationService implements StationService {
 
     private void validateDuplicateName(StationServiceRequest stationServiceRequest) {
         if (stationRepository.existsByName(stationServiceRequest.getName())) {
-            throw new StationDuplicateException(stationServiceRequest.getName());
+            throw new StationNameDuplicateException(stationServiceRequest.getName());
         }
     }
 
@@ -50,10 +51,20 @@ public class SpringStationService implements StationService {
     @Transactional
     @Override
     public void deleteById(Long id) {
+        validateExist(id);
+
         final long affectedRow = stationRepository.deleteById(id);
 
         if (affectedRow == 0) {
             throw new StationDeleteFailureException(id);
         }
+    }
+
+    private void validateExist(Long id) {
+        if (stationRepository.existsById(id)) {
+            return;
+        }
+
+        throw new NotFoundStationException();
     }
 }

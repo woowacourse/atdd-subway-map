@@ -1,21 +1,28 @@
-package wooteco.subway.dao;
+package wooteco.subway.infra.dao;
 
+import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.dao.entity.LineEntity;
+import wooteco.subway.infra.entity.LineEntity;
 
 @Repository
-public class LineRepository extends AbstractRepository<LineEntity, Long> {
+public class LineDao extends AbstractDao<LineEntity, Long> {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public LineRepository(JdbcTemplate jdbcTemplate, DataSource dataSource,
-                          NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public LineDao(JdbcTemplate jdbcTemplate, DataSource dataSource,
+                   NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super(jdbcTemplate, dataSource, namedParameterJdbcTemplate);
 
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public List<LineEntity> findAll() {
+        final String sql = "SELECT l.id, l.name, l.color, s.id, s.line_id, s.up_station_id, s.down_station_id, s.distance FROM line JOIN section ON line.id = section.line_id";
+        return null;
     }
 
     public boolean existsByName(String name) {

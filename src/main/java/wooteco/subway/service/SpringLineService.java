@@ -4,23 +4,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.LineRepository;
-import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.LineColorDuplicateException;
-import wooteco.subway.exception.LineDeleteFailureException;
-import wooteco.subway.exception.LineNameDuplicateException;
-import wooteco.subway.exception.LineUpdateFailureException;
-import wooteco.subway.exception.NotFoundLineException;
+import wooteco.subway.domain.Station;
+import wooteco.subway.exception.notfound.NotFoundLineException;
+import wooteco.subway.exception.unknown.LineDeleteFailureException;
+import wooteco.subway.exception.unknown.LineUpdateFailureException;
+import wooteco.subway.exception.validation.LineColorDuplicateException;
+import wooteco.subway.exception.validation.LineNameDuplicateException;
+import wooteco.subway.infra.dao.LineDao;
+import wooteco.subway.infra.entity.LineEntity;
 import wooteco.subway.service.dto.LineServiceRequest;
 
 @Service
+@Transactional(readOnly = true)
 public class SpringLineService implements LineService {
 
-    private final LineRepository lineRepository;
+    private final LineDao lineRepository;
+    private final StationService stationService;
 
-    public SpringLineService(LineRepository lineRepository) {
+    public SpringLineService(LineDao lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
+        this.stationService = stationService;
     }
 
     @Transactional
@@ -51,17 +55,20 @@ public class SpringLineService implements LineService {
         }
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<Line> findAll() {
-        final List<LineEntity> lineEntities = lineRepository.findAll();
+        final List<Line> lines = findAllLines();
+        final List<Station> stations = stationService.findAll();
+        return lines;
+    }
 
-        return lineEntities.stream()
+    private List<Line> findAllLines() {
+        return lineRepository.findAll()
+                .stream()
                 .map(entity -> new Line(entity.getId(), entity.getName(), entity.getColor()))
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Line findById(Long id) {
         final LineEntity lineEntity = lineRepository.findById(id)

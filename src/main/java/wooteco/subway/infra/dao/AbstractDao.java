@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.infra.dao;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -19,11 +19,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 
-@Repository
-public abstract class AbstractRepository<T, ID> {
+public abstract class AbstractDao<T, ID> {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -35,8 +33,8 @@ public abstract class AbstractRepository<T, ID> {
 
     // 클래스명은 XXEntity 여야만 한다
     // 테이블의 PK와 필드명은 "id" 여야만 한다
-    public AbstractRepository(JdbcTemplate jdbcTemplate, DataSource dataSource,
-                              NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public AbstractDao(JdbcTemplate jdbcTemplate, DataSource dataSource,
+                       NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         clazz = (Class<T>) getGenericClassType(0);

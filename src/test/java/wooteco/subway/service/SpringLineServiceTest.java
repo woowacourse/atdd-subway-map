@@ -15,10 +15,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestConstructor.AutowireMode;
-import wooteco.subway.dao.LineRepository;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.LineColorDuplicateException;
-import wooteco.subway.exception.LineNameDuplicateException;
+import wooteco.subway.exception.validation.LineColorDuplicateException;
+import wooteco.subway.exception.validation.LineNameDuplicateException;
+import wooteco.subway.infra.dao.LineDao;
+import wooteco.subway.infra.dao.StationDao;
 import wooteco.subway.service.dto.LineServiceRequest;
 
 @JdbcTest
@@ -35,7 +36,8 @@ class SpringLineServiceTest {
     public SpringLineServiceTest(JdbcTemplate jdbcTemplate, DataSource dataSource,
                                  NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.lineService = new SpringLineService(
-                new LineRepository(jdbcTemplate, dataSource, namedParameterJdbcTemplate));
+                new LineDao(jdbcTemplate, dataSource, namedParameterJdbcTemplate),
+                new SpringStationService(new StationDao(jdbcTemplate, dataSource, namedParameterJdbcTemplate)));
     }
 
     @Nested

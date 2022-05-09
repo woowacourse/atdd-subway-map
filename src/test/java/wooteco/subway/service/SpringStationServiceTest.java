@@ -15,9 +15,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestConstructor.AutowireMode;
-import wooteco.subway.dao.StationRepository;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.StationNameDuplicateException;
+import wooteco.subway.exception.validation.StationNameDuplicateException;
+import wooteco.subway.infra.dao.StationDao;
 import wooteco.subway.service.dto.StationServiceRequest;
 
 @JdbcTest
@@ -34,7 +34,7 @@ class SpringStationServiceTest {
     public SpringStationServiceTest(DataSource dataSource, JdbcTemplate jdbcTemplate,
                                     NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.stationService = new SpringStationService(
-                new StationRepository(jdbcTemplate, dataSource, namedParameterJdbcTemplate));
+                new StationDao(jdbcTemplate, dataSource, namedParameterJdbcTemplate));
     }
 
     @Nested

@@ -1,6 +1,7 @@
 package wooteco.subway.service.dto;
 
 public class StationServiceRequest {
+
     private Long id;
     private String name;
 
