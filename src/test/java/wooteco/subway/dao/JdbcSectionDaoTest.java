@@ -10,17 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
 
 @JdbcTest
-@Sql("/sectionDaoTestSchema.sql")
+@Sql("/sectionTestSchema.sql")
 class JdbcSectionDaoTest {
 
     public static final Section GIVEN_SECTION = new Section(
-            new Line(1L, "신분당선", "yellow"),
-            new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
+            1L, 1L, 2L,
             6, 1L);
 
     private final SectionDao sectionDao;

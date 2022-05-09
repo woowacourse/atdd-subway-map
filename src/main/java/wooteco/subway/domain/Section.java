@@ -2,30 +2,34 @@ package wooteco.subway.domain;
 
 public class Section {
 
-    private final Line line;
-    private final Station upStation;
-    private final Station downStation;
+    private final Long lineId;
+    private final Long upStationId;
+    private final Long downStationId;
     private final int distance;
-    private final Long lineOrder;
+    private Long lineOrder;
 
-    public Section(Line line, Station upStation, Station downStation, int distance, Long lineOrder) {
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
+    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
+        this(lineId, upStationId, downStationId, distance, null);
+    }
+
+    public Section(Long lineId, Long upStationId, Long downStationId, int distance, Long lineOrder) {
+        this.lineId = lineId;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
         this.distance = distance;
         this.lineOrder = lineOrder;
     }
 
-    public Line getLine() {
-        return line;
+    public Long getLineId() {
+        return lineId;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public Long getUpStationId() {
+        return upStationId;
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public Long getDownStationId() {
+        return downStationId;
     }
 
     public int getDistance() {
@@ -34,5 +38,9 @@ public class Section {
 
     public Long getLineOrder() {
         return lineOrder;
+    }
+
+    public void setLineOrder(Long lineOrder) {
+        this.lineOrder = lineOrder;
     }
 }

@@ -27,9 +27,9 @@ public class JdbcSectionDao implements SectionDao {
     @Override
     public Long save(Section section) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("line_id", section.getLine().getId());
-        parameters.put("up_station_id", section.getUpStation().getId());
-        parameters.put("down_station_id", section.getDownStation().getId());
+        parameters.put("line_id", section.getLineId());
+        parameters.put("up_station_id", section.getUpStationId());
+        parameters.put("down_station_id", section.getDownStationId());
         parameters.put("distance", section.getDistance());
         parameters.put("line_order", section.getLineOrder());
 
