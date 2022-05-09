@@ -241,6 +241,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("상하행 역이 없으면 지하철 노선을 생성할 수 없다.")
+    @Test
+    void createLineNotHasLine() {
+        // given
+        String paramName = "2호선";
+        String paramColor = "초록색";
+        Long paramUpStationId = 1L;
+        Long paramDownStationId = 2L;
+        int paramDistance = 10;
+        LineRequest params =
+                new LineRequest(paramName, paramColor, paramUpStationId, paramDownStationId, paramDistance);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
+                () -> assertThat(response.body().jsonPath().getString("message"))
+                        .isEqualTo("존재하지 않는 역입니다")
+        );
+    }
+
     @Sql(value = "/sql/InsertTwoStation.sql")
     @DisplayName("지하철노선 목록을 조회한다.")
     @Test

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
@@ -14,6 +15,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.NoSuchStationException;
 
 @Service
 public class LineService {
@@ -32,12 +34,29 @@ public class LineService {
 
     @Transactional
     public LineResponse save(LineRequest request) {
-        Line line = new Line(request.getName(), request.getColor());
+        String color = request.getColor();
+        String name = request.getName();
+        Long upStationId = request.getUpStationId();
+        Long downStationId = request.getDownStationId();
+        int distance = request.getDistance();
+
+        checkExistAllStations(upStationId, downStationId);
+
+        Line line = new Line(name, color);
         Long lineId = lineDao.save(line);
-        sectionDao.save(new Section(lineId, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+        sectionDao.save(new Section(lineId, upStationId, downStationId, distance));
         List<StationResponse> stations = getStationResponsesByLineId(lineId);
 
         return new LineResponse(lineId, line.getName(), line.getColor(), stations);
+    }
+
+    private void checkExistAllStations(Long upStationId, Long downStationId) {
+        try {
+            stationDao.findById(upStationId);
+            stationDao.findById(downStationId);
+        } catch (EmptyResultDataAccessException exception) {
+            throw new NoSuchStationException();
+        }
     }
 
     @Transactional(readOnly = true)

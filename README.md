@@ -95,10 +95,11 @@
   - upStationId: 상행 종점
   - downStationId: 하행 종점
   - distance: 두 종점간의 거리
-- [ ] 두 종점간의 연결 정보를 이용하여 노선 추가 시 구간(Section) 정보도 함께 등록
+- [x] 두 종점간의 연결 정보를 이용하여 노선 추가 시 구간(Section) 정보도 함께 등록
   - [x] SectionDao를 만들어 값을 처리하는 기능 추가
   - [x] 적절한 Response를 응답하는지 확인
-  - [ ] 상행, 하행 역이 있어야 등록 가능
+  - [x] 상행, 하행 역이 있어야 등록 가능하다.
+    - 없으면 DAO에서는 `NoSuchStationException`이 발생하고 Controller는 404와 에러 메시지를 응답한다.
 
 * 구간 관리 API 구현
 

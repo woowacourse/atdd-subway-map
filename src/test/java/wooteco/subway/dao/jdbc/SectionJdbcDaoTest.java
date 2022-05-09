@@ -1,7 +1,8 @@
 package wooteco.subway.dao.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,10 +10,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 
@@ -53,6 +54,40 @@ class SectionJdbcDaoTest {
                 () -> assertThat(actual.getDownStationId()).isEqualTo(downStationId),
                 () -> assertThat(actual.getDistance()).isEqualTo(distance)
         );
+    }
+
+    @Sql(value = "/sql/InsertOneLine.sql")
+    @DisplayName("상하행 역이 없으면 새로운 구간을 저장할 수 없다.")
+    @Test
+    void saveNotHasStation() {
+        // given
+        Long lineId = 1L;
+        Long upStationId = 1L;
+        Long downStationId = 2L;
+        int distance = 10;
+        Section section = new Section(lineId, upStationId, downStationId, distance);
+
+        // when
+        // then
+        assertThatThrownBy(() -> sectionDao.save(section))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Sql(value = "/sql/InsertTwoStation.sql")
+    @DisplayName("상하행 노선이 없으면 새로운 구간을 저장할 수 없다.")
+    @Test
+    void saveNotHasLine() {
+        // given
+        Long lineId = 1L;
+        Long upStationId = 1L;
+        Long downStationId = 2L;
+        int distance = 10;
+        Section section = new Section(lineId, upStationId, downStationId, distance);
+
+        // when
+        // then
+        assertThatThrownBy(() -> sectionDao.save(section))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Sql(value = "/sql/InsertTwoStationAndOneLine.sql")
