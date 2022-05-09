@@ -17,7 +17,7 @@ import wooteco.subway.dto.LineRequest;
 
 @SpringBootTest
 @Transactional
-class SpringLineServiceTest {
+class LineServiceTest {
 
     private static final LineRequest LINE_FIXTURE = new LineRequest("2호선", "bg-color-600");
     private static final LineRequest LINE_FIXTURE2 = new LineRequest("3호선", "bg-color-700");

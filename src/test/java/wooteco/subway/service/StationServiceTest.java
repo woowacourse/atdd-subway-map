@@ -17,7 +17,7 @@ import wooteco.subway.dto.StationRequest;
 @DisplayName("SpringStationService 는")
 @SpringBootTest
 @Transactional
-class SpringStationServiceTest {
+class StationServiceTest {
 
     private static final StationRequest STATION_FIXTURE = new StationRequest("선릉역");
     private static final StationRequest STATION_FIXTURE2 = new StationRequest("강남역");
