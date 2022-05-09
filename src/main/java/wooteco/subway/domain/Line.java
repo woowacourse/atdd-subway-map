@@ -1,10 +1,15 @@
 package wooteco.subway.domain;
 
 import java.util.Objects;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 public class Line {
+
     private Long id;
+    @Size(min = 1, max = 25)
     private final String name;
+    @NotBlank
     private final String color;
 
     public Line(String name, String color) {

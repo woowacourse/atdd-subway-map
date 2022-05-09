@@ -1,9 +1,11 @@
 package wooteco.subway.domain;
 
 import java.util.Objects;
+import javax.validation.constraints.Size;
 
 public class Station {
     private Long id;
+    @Size(min = 1, max = 25)
     private String name;
 
     public Station() {
