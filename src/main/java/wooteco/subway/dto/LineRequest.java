@@ -1,7 +1,6 @@
 package wooteco.subway.dto;
 
 import javax.validation.constraints.NotBlank;
-import wooteco.subway.domain.Line;
 
 public class LineRequest {
     private static final int TRASH_DISTANCE = -1;
@@ -30,14 +29,6 @@ public class LineRequest {
 
     public static LineRequest of(String name, String color, Long upStationId, Long downStationId, int distance) {
         return new LineRequest(name, color, upStationId, downStationId, distance);
-    }
-
-    public Line toEntity() {
-        return new Line(name, color);
-    }
-
-    public Line toEntity(Long id) {
-        return new Line(id, name, color);
     }
 
     public String getName() {

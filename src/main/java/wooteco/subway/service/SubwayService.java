@@ -36,7 +36,7 @@ public class SubwayService {
         Line line = saveLine(lineRequest);
         SectionRequest sectionRequest = toSectionRequest(lineRequest);
         saveSection(line.getId(), sectionRequest);
-        return makeLineResponse(line);
+        return toLineResponse(line);
     }
 
     private SectionRequest toSectionRequest(LineRequest lineRequest) {
@@ -49,7 +49,7 @@ public class SubwayService {
         sectionDao.save(section);
     }
 
-    private LineResponse makeLineResponse(Line line) {
+    private LineResponse toLineResponse(Line line) {
         Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
         List<Station> stations = sections.extractStationIds()
                 .stream()
@@ -65,27 +65,36 @@ public class SubwayService {
     }
 
     private Line saveLine(LineRequest lineRequest) {
-        Line line = lineRequest.toEntity();
-        Lines lines = new Lines(lineDao.findAll());
-        lines.checkAbleToAdd(line);
+        Line line = convertToLine(lineRequest);
         return lineDao.save(line);
     }
 
     public List<LineResponse> getLines() {
         return lineDao.findAll()
                 .stream()
-                .map(this::makeLineResponse)
+                .map(this::toLineResponse)
                 .collect(Collectors.toList());
     }
 
     public LineResponse getLine(Long id) {
         Line line = lineDao.findById(id);
-        return makeLineResponse(line);
+        return toLineResponse(line);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRequest.toEntity(id);
+        Line line = convertToLine(id, lineRequest);
         lineDao.update(line);
+    }
+
+    private Line convertToLine(LineRequest lineRequest) {
+        return convertToLine(null, lineRequest);
+    }
+
+    private Line convertToLine(Long id, LineRequest lineRequest) {
+        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
+        Lines lines = new Lines(lineDao.findAll());
+        lines.checkAbleToAdd(line);
+        return line;
     }
 
     public void deleteLine(Long id) {
@@ -93,11 +102,16 @@ public class SubwayService {
     }
 
     public StationResponse saveStation(StationRequest stationRequest) {
-        Station station = stationRequest.toEntity();
-        Stations stations = new Stations(stationDao.findAll());
-        stations.checkAbleToAdd(station);
+        Station station = convertToStation(stationRequest);
         Station newStation = stationDao.save(station);
         return new StationResponse(newStation);
+    }
+
+    private Station convertToStation(StationRequest stationRequest) {
+        Station station = new Station(stationRequest.getName());
+        Stations stations = new Stations(stationDao.findAll());
+        stations.checkAbleToAdd(station);
+        return station;
     }
 
     public List<StationResponse> getStations() {
