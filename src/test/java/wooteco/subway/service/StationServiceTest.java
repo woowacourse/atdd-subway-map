@@ -7,20 +7,28 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.FakeStationDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.entity.StationEntity;
+import wooteco.subway.dao.StationDaoImpl;
+import wooteco.subway.dao.entity.StationEntity;
 import wooteco.subway.service.dto.station.StationFindResponse;
 import wooteco.subway.service.dto.station.StationSaveRequest;
 import wooteco.subway.service.dto.station.StationSaveResponse;
 
-class StationEntityServiceTest {
+@JdbcTest
+class StationServiceTest {
 
-    private final StationDao stationDao = new FakeStationDao();
-    private final StationService stationService = new StationService(stationDao);
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    private StationService stationService;
 
     @BeforeEach
     void setUp() {
+        StationDao stationDao = new StationDaoImpl(jdbcTemplate);
+        stationService = new StationService(stationDao);
         List<StationEntity> stationEntities = stationDao.findAll();
         List<Long> stationIds = stationEntities.stream()
             .map(StationEntity::getId)
@@ -55,7 +63,8 @@ class StationEntityServiceTest {
         stationService.save(new StationSaveRequest(stationEntity1.getName()));
 
         // then
-        assertThatThrownBy(() -> stationService.save(new StationSaveRequest(stationEntity2.getName())))
+        assertThatThrownBy(
+            () -> stationService.save(new StationSaveRequest(stationEntity2.getName())))
             .hasMessage("중복된 이름이 존재합니다.")
             .isInstanceOf(IllegalArgumentException.class);
     }

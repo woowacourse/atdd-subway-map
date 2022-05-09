@@ -7,21 +7,31 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.FakeLineDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.LineDaoImpl;
+import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.domain.Line;
-import wooteco.subway.entity.LineEntity;
 import wooteco.subway.service.dto.line.LineFindResponse;
 import wooteco.subway.service.dto.line.LineSaveRequest;
 import wooteco.subway.service.dto.line.LineSaveResponse;
 
-class LineEntityServiceTest {
+@JdbcTest
+class LineServiceTest {
 
-    private final LineDao lineDao = new FakeLineDao();
-    private final LineService lineService = new LineService(lineDao);
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private LineDao lineDao;
+    private LineService lineService;
 
     @BeforeEach
     void setUp() {
+        lineDao = new LineDaoImpl(jdbcTemplate);
+        lineService = new LineService(lineDao);
+
         List<LineEntity> lineEntities = lineDao.findAll();
         List<Long> stationIds = lineEntities.stream()
             .map(LineEntity::getId)
