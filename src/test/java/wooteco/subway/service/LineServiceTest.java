@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import wooteco.subway.dao.FakeLineDao;
+import wooteco.subway.repository.dao.FakeLineDao;
 import wooteco.subway.service.dto.line.LineRequestDto;
 import wooteco.subway.service.dto.line.LineResponseDto;
 

@@ -1,4 +1,4 @@
-package wooteco.subway.dao.jdbc;
+package wooteco.subway.repository.dao.jdbc;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -13,8 +13,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.repository.dao.LineDao;
 
 @Repository
 public class JdbcLineDao implements LineDao {

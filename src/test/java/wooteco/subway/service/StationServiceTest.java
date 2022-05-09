@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import wooteco.subway.dao.FakeStationDao;
+import wooteco.subway.repository.dao.FakeStationDao;
 import wooteco.subway.service.dto.station.StationResponseDto;
 
 class StationServiceTest {

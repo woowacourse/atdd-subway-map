@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.repository.dao;
 
 import java.util.List;
 

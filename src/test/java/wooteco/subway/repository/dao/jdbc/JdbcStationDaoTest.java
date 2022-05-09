@@ -1,4 +1,4 @@
-package wooteco.subway.dao.jdbc;
+package wooteco.subway.repository.dao.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 
 import javax.sql.DataSource;
-import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.repository.dao.StationDao;
 
 @JdbcTest
 class JdbcStationDaoTest {
