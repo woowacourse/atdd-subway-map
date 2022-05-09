@@ -2,6 +2,8 @@ package wooteco.subway.domain;
 
 import wooteco.subway.dto.LineRequest;
 
+import java.util.List;
+
 public class Section {
     private Long id;
     private int distance;
@@ -48,4 +50,34 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public boolean isExistedIn(List<Section> sections) {
+        return isEquallyExistedIn(sections) || isLinearlyExistedIn(sections);
+    }
+
+    private boolean isEquallyExistedIn(List<Section> sections) {
+        long count = sections.stream()
+                .filter(section -> isUpStationIdEquals(section) && isDownStationIdEquals(section))
+                .count();
+
+        return count == 1;
+    }
+
+    private boolean isLinearlyExistedIn(List<Section> sections) {
+        long count = sections.stream()
+                .filter(section -> isUpStationIdEquals(section) || isDownStationIdEquals(section))
+                .count();
+
+        return count == 2;
+    }
+
+    private boolean isUpStationIdEquals(Section section) {
+        return section.upStationId.equals(this.upStationId);
+    }
+
+    private boolean isDownStationIdEquals(Section section) {
+        return section.downStationId.equals(this.downStationId);
+    }
+
+
 }
