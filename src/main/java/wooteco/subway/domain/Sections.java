@@ -129,20 +129,25 @@ public class Sections implements Iterable<Section> {
     public void delete(Long stationId) {
         validateAbleToDelete();
 
-        List<Section> deleteCandidates = sections.stream()
-                .filter(it -> it.hasStation(stationId))
-                .collect(Collectors.toList());
-        System.out.println("@@@@@@@@@deleteCandidates");
-        System.out.println(deleteCandidates.size());
-        deleteCandidates.forEach(it -> sections.remove(it));
-        if (deleteCandidates.size() == 2) {
-            Section section1 = deleteCandidates.get(0);
-            Section section2 = deleteCandidates.get(1);
+        List<Section> sectionsContainDeleteStation = getSectionsContainDeleteStation(stationId);
+        sectionsContainDeleteStation.forEach(it -> sections.remove(it));
+        mergeIfPossible(sectionsContainDeleteStation);
+        sortDownToUp();
+    }
+
+    private void mergeIfPossible(List<Section> sectionsContainDeleteStation) {
+        if (sectionsContainDeleteStation.size() == 2) {
+            Section section1 = sectionsContainDeleteStation.get(0);
+            Section section2 = sectionsContainDeleteStation.get(1);
             Section newSection = section1.merge(section2);
             sections.add(newSection);
         }
-        System.out.println("@@@@@@@@before delete sort");
-        sortDownToUp();
+    }
+
+    private List<Section> getSectionsContainDeleteStation(Long stationId) {
+        return sections.stream()
+                .filter(it -> it.hasStation(stationId))
+                .collect(Collectors.toList());
     }
 
     private void validateAbleToDelete() {
