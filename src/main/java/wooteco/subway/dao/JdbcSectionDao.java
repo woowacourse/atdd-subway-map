@@ -64,4 +64,10 @@ public class JdbcSectionDao implements SectionDao {
 
         return Optional.ofNullable(DataAccessUtils.singleResult(id));
     }
+
+    @Override
+    public int findDistanceById(Long id) {
+        String sql = "SELECT distance FROM \"SECTION\" WHERE id = (?)";
+        return jdbcTemplate.queryForObject(sql, Integer.class, id);
+    }
 }

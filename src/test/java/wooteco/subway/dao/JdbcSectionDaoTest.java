@@ -139,4 +139,21 @@ class JdbcSectionDaoTest {
         // then
         assertThat(id).isNotPresent();
     }
+
+    @Test
+    @DisplayName("id를 이용해서 거리를 가져온다.")
+    void findDistanceById() {
+        // given
+        Section givenSection = new Section(
+                new Line(1L, "신분당선", "yellow"),
+                new Station(1L, "신도림역"), new Station(2L, "왕십리역"),
+                6, 1L);
+        sectionDao.save(givenSection);
+
+        // when
+        int distance = sectionDao.findDistanceById(1L);
+
+        // then
+        assertThat(distance).isEqualTo(6);
+    }
 }

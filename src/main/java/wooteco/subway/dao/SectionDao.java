@@ -12,4 +12,6 @@ public interface SectionDao {
     Optional<Long> findIdByLineIdAndDownStationId(long lineId, long stationId);
 
     Optional<Long> findIdByLineIdAndUpStationId(long lineId, long stationId);
+
+    int findDistanceById(Long id);
 }
