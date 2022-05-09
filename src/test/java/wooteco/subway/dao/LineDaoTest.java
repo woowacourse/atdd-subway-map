@@ -4,56 +4,79 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.memory.LineMemoryDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.dao.jdbc.LineJdbcDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NoSuchLineException;
 
-public class LineDaoTest {
+@JdbcTest
+class LineDaoTest {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private LineDao dao;
 
     @BeforeEach
     void setUp() {
-        LineMemoryDao.deleteAll();
+        dao = new LineJdbcDao(jdbcTemplate);
     }
 
     @DisplayName("새로운 노선을 저장한다")
     @Test
     void saveLine() {
-        // given
-        Line line = new Line(1L, "line", "color");
+        Line savedLine = dao.save(new Line("line", "color"));
+        assertThat(savedLine).isNotNull();
+    }
 
-        // when
-        LineMemoryDao.save(line);
-
-        // then
-        List<Line> lines = LineMemoryDao.findAll();
-        assertThat(lines.get(0)).isEqualTo(line);
+    @DisplayName("null을 입력받는 경우 예외를 던진다")
+    @Test
+    void throwExceptionWhenSaveNull() {
+        assertThatThrownBy(() -> dao.save(null))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("같은 이름의 노선이 있는 경우 예외를 던진다")
     @Test
     void throwExceptionWhenHasDuplicateName() {
         // given
-        LineMemoryDao.save(new Line(1L, "line", "color"));
+        String name = "line";
+        dao.save(new Line(name, "color"));
 
         // when & then
-        assertThatThrownBy(() -> LineMemoryDao.save(new Line(2L, "line", "color2")))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("같은 이름");
+        assertThatThrownBy(() -> dao.save(new Line(name, "color2")))
+                .isInstanceOf(DuplicateLineException.class);
+    }
+
+    @DisplayName("같은 색깔의 노선이 있는 경우 예외를 던진다")
+    @Test
+    void throwExceptionWhenHasDuplicateColor() {
+        // given
+        String color = "red";
+        dao.save(new Line("test", color));
+
+        // when & then
+        assertThatThrownBy(() -> dao.save(new Line("line", color)))
+                .isInstanceOf(DuplicateLineException.class);
     }
 
     @DisplayName("노선 목록을 조회한다")
     @Test
     void findAll() {
         // given
-        LineMemoryDao.save(new Line(1L, "line1", "color1"));
-        LineMemoryDao.save(new Line(2L, "line2", "color2"));
-        LineMemoryDao.save(new Line(3L, "line3", "color3"));
+        dao.save(new Line("line1", "color1"));
+        dao.save(new Line("line2", "color2"));
+        dao.save(new Line("line3", "color3"));
 
         // when
-        List<Line> lines = LineMemoryDao.findAll();
+        List<Line> lines = dao.findAll();
 
         // then
         assertThat(lines).hasSize(3);
@@ -63,54 +86,70 @@ public class LineDaoTest {
     @Test
     void findById() {
         // given
-        LineMemoryDao.save(new Line(1L, "line1", "color1"));
-        Line line = new Line(2L, "line2", "color2");
-        Long savedId = LineMemoryDao.save(line);
+        Line savedLine = dao.save(new Line("line2", "color2"));
 
         // when
-        Line findLine = LineMemoryDao.findById(savedId);
+        Line findLine = dao.findById(savedLine.getId()).get();
 
         // then
-        assertThat(findLine).isEqualTo(line);
+        assertThat(findLine).isEqualTo(savedLine);
     }
 
-    @DisplayName("존재하지 않는 id로 노선을 조회하면 예외가 발생한다")
+    @DisplayName("존재하지 않는 id로 노선을 조회하면 빈 값을 반환한다")
     @Test
     void throwExceptionWhenTargetLineDoesNotExist() {
-        assertThatThrownBy(() -> LineMemoryDao.findById(1L))
-                .isInstanceOf(NoSuchLineException.class);
-    }
-
-    @DisplayName("모든 노선을 제거한다")
-    @Test
-    void deleteAll() {
-        // given
-        LineMemoryDao.save(new Line(1L, "line", "color"));
-
-        // when
-        LineMemoryDao.deleteAll();
-
-        // then
-        List<Line> lines = LineMemoryDao.findAll();
-        assertThat(lines).isEmpty();
+        Optional<Line> optionalLine = dao.findById(1L);
+        assertThat(optionalLine).isEqualTo(Optional.empty());
     }
 
     @DisplayName("노선 정보를 수정한다")
     @Test
     void update() {
-        Long savedId = LineMemoryDao.save(new Line(1L, "line", "color"));
+        // given
+        Line savedLine = dao.save(new Line("line", "color"));
 
-        Long updateId = LineMemoryDao.update(savedId, "changedName", "changedColor");
+        // when
+        dao.update(new Line(savedLine.getId(), "changedName", "changedColor"));
 
-        Line findLine = LineMemoryDao.findById(updateId);
+        // then
+        Line findLine = dao.findById(savedLine.getId()).get();
         assertThat(findLine.getName()).isEqualTo("changedName");
         assertThat(findLine.getColor()).isEqualTo("changedColor");
+    }
+
+    @DisplayName("기존에 존재하는 노선 이름으로 이름을 수정하면 예외가 발생한다")
+    @Test
+    void throwExceptionWhenUpdateToExistName() {
+        // given
+        String name = "line";
+        dao.save(new Line(name, "color"));
+        Line savedLine = dao.save(new Line("test", "test"));
+
+        //when, then
+        assertThatThrownBy(() -> dao.update(new Line(savedLine.getId(), name, "changedColor")))
+                .isInstanceOf(DuplicateLineException.class);
+    }
+
+    @DisplayName("기존에 존재하는 노선 색깔으로 색깔을 수정하면 예외가 발생한다")
+    @Test
+    void throwExceptionWhenUpdateToExistColor() {
+        // given
+        String color = "red";
+        dao.save(new Line("line", color));
+        Line savedLine = dao.save(new Line("test", "test"));
+
+        //when, then
+        assertThatThrownBy(() -> dao.update(new Line(savedLine.getId(), "changedName", color)))
+                .isInstanceOf(DuplicateLineException.class);
     }
 
     @DisplayName("없는 노선 정보를 변경하려 할 때, 예외를 던진다")
     @Test
     void throwExceptionWhenTryToUpdateNoLine() {
-        assertThatThrownBy(() -> LineMemoryDao.update(1L, "changedName", "changedColor"))
+        Line nonExistLine = dao.save(new Line("test", "test"));
+        dao.deleteById(nonExistLine.getId());
+
+        assertThatThrownBy(() -> dao.update(new Line(nonExistLine.getId(), "changedName", "changedColor")))
                 .isInstanceOf(NoSuchLineException.class);
     }
 
@@ -118,19 +157,12 @@ public class LineDaoTest {
     @Test
     void deleteById() {
         // given
-        Long savedId = LineMemoryDao.save(new Line(1L, "line", "color"));
+        Line savedLine = dao.save(new Line("line", "color"));
 
         // when
-        LineMemoryDao.deleteById(savedId);
+        dao.deleteById(savedLine.getId());
 
         // then
-        assertThat(LineMemoryDao.findAll()).isEmpty();
-    }
-
-    @DisplayName("존재하지 않는 노선을 제거하면 예외가 발생한다")
-    @Test
-    void throwExceptionWhenDeleteById() {
-        assertThatThrownBy(() -> LineMemoryDao.deleteById(1L))
-                .isInstanceOf(NoSuchLineException.class);
+        assertThat(dao.findById(savedLine.getId())).isEqualTo(Optional.empty());
     }
 }
