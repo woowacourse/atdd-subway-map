@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -46,5 +47,10 @@ public class JdbcSectionDao {
             int distance = resultSet.getInt("distance");
             return new Section(id, lineId, upStationId, downStationId, distance);
         };
+    }
+
+    public List<Section> findByLineId(Long lineId) {
+        final String sql = "SELECT * FROM section WHERE line_id = ?";
+        return jdbcTemplate.query(sql, getRowMapper(), lineId);
     }
 }
