@@ -16,7 +16,7 @@ public class ExceptionAdviser {
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<ErrorResponse> EmptyResultDataAccessExceptionHandler(EmptyResultDataAccessException e) {
-        return ResponseEntity.badRequest().body(new ErrorResponse("존재하지 않는 PK", e.getMessage()));
+        return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(RuntimeException.class)
