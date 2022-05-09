@@ -11,11 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.domain.Line;
-import wooteco.subway.entity.LineEntity;
 
 @JdbcTest
-class lineDaoImplTest {
+class LineDaoImplTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

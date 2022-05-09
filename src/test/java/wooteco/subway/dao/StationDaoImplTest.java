@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.dao.entity.StationEntity;
 import wooteco.subway.domain.Station;
-import wooteco.subway.entity.StationEntity;
 
 @JdbcTest
 class StationDaoImplTest {

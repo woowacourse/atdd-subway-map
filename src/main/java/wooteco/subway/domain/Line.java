@@ -1,7 +1,7 @@
 package wooteco.subway.domain;
 
 import java.util.ArrayList;
-import wooteco.subway.entity.StationEntity;
+import wooteco.subway.dao.entity.StationEntity;
 
 public class Line {
 

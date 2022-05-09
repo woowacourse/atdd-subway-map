@@ -8,8 +8,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.domain.Line;
-import wooteco.subway.entity.LineEntity;
 
 @Repository
 public class LineDaoImpl implements LineDao {

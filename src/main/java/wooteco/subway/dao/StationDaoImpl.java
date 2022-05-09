@@ -7,8 +7,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.dao.entity.StationEntity;
 import wooteco.subway.domain.Station;
-import wooteco.subway.entity.StationEntity;
 
 @Repository
 public class StationDaoImpl implements StationDao{

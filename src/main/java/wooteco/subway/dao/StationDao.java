@@ -1,8 +1,8 @@
 package wooteco.subway.dao;
 
 import java.util.List;
+import wooteco.subway.dao.entity.StationEntity;
 import wooteco.subway.domain.Station;
-import wooteco.subway.entity.StationEntity;
 
 public interface StationDao {
 

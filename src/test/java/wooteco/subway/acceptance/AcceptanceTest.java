@@ -10,8 +10,8 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import wooteco.subway.dao.LineDaoImpl;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.entity.LineEntity;
-import wooteco.subway.entity.StationEntity;
+import wooteco.subway.dao.entity.LineEntity;
+import wooteco.subway.dao.entity.StationEntity;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

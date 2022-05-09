@@ -1,4 +1,4 @@
-package wooteco.subway.entity;
+package wooteco.subway.dao.entity;
 
 import java.util.ArrayList;
 import java.util.Objects;
