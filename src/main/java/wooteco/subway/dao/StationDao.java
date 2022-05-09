@@ -1,9 +1,11 @@
 package wooteco.subway.dao;
 
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
 
 import java.util.List;
 
+@Repository
 public interface StationDao {
 
     Station save(Station station);
