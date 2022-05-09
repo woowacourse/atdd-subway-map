@@ -41,6 +41,19 @@ public class Section {
         }
     }
 
+    public boolean isContainStation(Section section) {
+        return upStationId.equals(section.getDownStationId()) || downStationId.equals(section.getUpStationId());
+    }
+
+    public boolean isFork(Section section) {
+        return upStationId.equals(section.getUpStationId()) || downStationId.equals(section.getDownStationId());
+    }
+
+    public boolean isSameSection(Section section) {
+        return (upStationId.equals(section.getUpStationId()) || upStationId.equals(section.getDownStationId()))
+                && (downStationId.equals(section.getUpStationId()) || downStationId.equals(section.getDownStationId()));
+    }
+
     public Long getId() {
         return id;
     }
@@ -59,13 +72,5 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    public boolean isContainStation(Section section) {
-        return upStationId.equals(section.downStationId) || downStationId.equals(section.upStationId);
-    }
-
-    public boolean isFork(Section section) {
-        return upStationId.equals(section.getUpStationId()) || downStationId.equals(section.getDownStationId());
     }
 }

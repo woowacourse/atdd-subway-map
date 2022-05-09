@@ -13,10 +13,23 @@ public class Sections {
     }
 
     public void addSection(Section section) {
+        checkContainsSameSection(section);
         preventFork(section);
         isPossibleRegistration(section);
 
         sections.add(section);
+    }
+
+    private void checkContainsSameSection(Section section) {
+        for (Section existingSection : sections) {
+            processSameSection(section, existingSection);
+        }
+    }
+
+    private void processSameSection(Section section, Section existingSection) {
+        if (existingSection.isSameSection(section)) {
+            throw new IllegalSectionException("이미 구간이 등록되어 있습니다.");
+        }
     }
 
     private void isPossibleRegistration(Section section) {

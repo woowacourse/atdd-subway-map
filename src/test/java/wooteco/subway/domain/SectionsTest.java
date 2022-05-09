@@ -15,7 +15,7 @@ class SectionsTest {
     @DisplayName("새로 등록할 구간의 상행역과 하행역 중 노선에 이미 등록되어있는 역을 기준으로 새로운 구간을 추가한다.")
     @Test
     public void addNewSection() {
-        //given
+        // given
         List<Section> sectionList = new ArrayList<>();
         sectionList.add(new Section(1L, 1L, 2L, 3L, 1));
         final Sections sections = new Sections(sectionList);
@@ -28,16 +28,16 @@ class SectionsTest {
     @DisplayName("하나의 노선에는 갈래길이 허용되지 않기 때문에 새로운 구간이 추가되기 전에 갈래길이 생기지 않도록 기존 구간을 변경한다.")
     @Test
     public void forkRode() {
-        //given
+        // given
         List<Section> sectionList = new ArrayList<>();
         sectionList.add(new Section(1L, 1L, 1L, 3L, 7));
         final Sections sections = new Sections(sectionList);
 
-        //when
+        // when
         final Section section = new Section(2L, 1L, 1L, 2L, 4);
         sections.addSection(section);
 
-        //then
+        // then
         assertThat(sections.getSections().size()).isEqualTo(2);
         assertThat(sections.getSections()).extracting("distance")
                 .containsExactlyInAnyOrder(4, 3);
@@ -46,7 +46,7 @@ class SectionsTest {
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
     @Test
     public void checkDistance() {
-        //given
+        // given
         List<Section> sectionList = new ArrayList<>();
         sectionList.add(new Section(1L, 1L, 1L, 3L, 7));
         final Sections sections = new Sections(sectionList);
@@ -55,5 +55,19 @@ class SectionsTest {
         final Section section = new Section(2L, 1L, 1L, 2L, 7);
         assertThatThrownBy(() -> sections.addSection(section))
                         .isInstanceOf(IllegalSectionException.class);
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
+    @Test
+    public void sameSection() {
+        // given
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(new Section(1L, 1L, 1L, 3L, 7));
+        final Sections sections = new Sections(sectionList);
+
+        // when & then
+        final Section section = new Section(2L, 1L, 1L, 3L, 7);
+        assertThatThrownBy(() -> sections.addSection(section))
+                .isInstanceOf(IllegalSectionException.class);
     }
 }
