@@ -23,6 +23,19 @@
 - [X] 지하철 노선 조회 기능
 - [X] 지하철 노선 삭제 기능
 - [X] 지하철 노선 수정 기능
+- API 스펙은 [API 문서 v1](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/d5c93e187919493da3280be44de0f17f#Line) 참고
+
+🛠추가된 요구사항
+- [ ] 노선 추가시 3가지 정보를 추가로 입력받기
+  - upStationId: 상행 종점
+  - downStationId: 하행 종점
+  - distance: 두 종점간의 거리
+- [ ] 두 종점간의 연결 정보를 이용하여 구간(Section) 정보도 함께 등록
+- [ ] 노선에 구간을 추가하기
+- [ ] 노선에 포함된 구간 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답하기
+- [ ] 구간 제거하기
+- 변경된 API 스펙은 [API 문서 v2](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/c682be69ae4e412c9e3905a59ef7b7ed) 참고
+
 
 
 ## 🚀 Getting Started
