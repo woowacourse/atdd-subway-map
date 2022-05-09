@@ -7,8 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
 import wooteco.subway.utils.exception.SectionCreateException;
 
 public class SectionsTest {
@@ -98,20 +101,45 @@ public class SectionsTest {
         assertThat(section.isEmpty()).isTrue();
     }
 
-    @DisplayName("Station을 받으면 구간을 삭제한다.")
-    @Test
-    void deleteSection() {
-        List<Section> rawSections = new ArrayList<>();
-        Station station1 = new Station(1L, "신당역");
-        Station station2 = new Station(2L, "동묘앞역");
-        Station station3 = new Station(3L, "창신역");
-        rawSections.add(new Section(1L, 1L, station1, station2, 5));
-        rawSections.add(new Section(2L, 1L, station2, station3, 3));
-        Sections sections = new Sections(rawSections);
+    @Nested
+    @DisplayName("삭제 기능")
+    class DeleteSections {
 
-        List<Section> deleteSections = sections.delete(station2);
-        assertThat(deleteSections).hasSize(2);
-        assertThat(sections.getValues()).hasSize(0);
+        private List<Section> rawSections;
+        private Station station1;
+        private Station station2;
+        private Station station3;
+
+        @BeforeEach
+        void setUp() {
+            rawSections = new ArrayList<>();
+            station1 = new Station(1L, "신당역");
+            station2 = new Station(2L, "동묘앞역");
+            station3 = new Station(3L, "창신역");
+        }
+
+        @DisplayName("Station을 받으면 구간을 삭제한다.")
+        @Test
+        void deleteSection() {
+            rawSections.add(new Section(1L, 1L, station1, station2, 5));
+            rawSections.add(new Section(2L, 1L, station2, station3, 3));
+            Sections sections = new Sections(rawSections);
+
+            List<Section> deletedSections = sections.delete(station2);
+            assertThat(deletedSections).hasSize(2);
+        }
+
+        @DisplayName("구간이 하나일 경우 삭제할 수 없다.")
+        @Test
+        void noDeleteSectionOnlyOne() {
+            rawSections.add(new Section(1L, 1L, station1, station2, 5));
+            Sections sections = new Sections(rawSections);
+
+            assertThatThrownBy(() -> sections.delete(station1))
+                    .isInstanceOf(SectionCreateException.class)
+                    .hasMessageContaining("더이상 구간을 삭제할 수 없습니다.");
+        }
+
     }
 
     private List<Section> getSections() {

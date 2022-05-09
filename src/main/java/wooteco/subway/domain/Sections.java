@@ -14,7 +14,11 @@ public class Sections {
     private static final String SECTION_ALREADY_EXIST_MESSAGE = "이미 존재하는 구간입니다.";
     private static final String SECTION_NOT_CONNECT_MESSAGE = "구간이 연결되지 않습니다";
     private static final String SECTION_MUST_SHORTER_MESSAGE = "기존의 구간보다 긴 구간은 넣을 수 없습니다.";
-    public static final int END_STATION = 1;
+    private static final String SECTION_CAN_NOT_DELETE_MESSAGE = "더이상 구간을 삭제할 수 없습니다.";
+    private static final int END_STATION = 1;
+    private static final int MIN_SIZE = 1;
+    private static final int MID_SECTION = 2;
+
 
     private List<Section> values;
 
@@ -100,19 +104,22 @@ public class Sections {
     }
 
     public List<Section> delete(final Station station) {
+        validateDelete();
         List<Section> sections = values.stream()
                 .filter(value -> value.isSameUpStation(station)
                         || value.isSameDownStation(station))
                 .collect(toList());
 
-        if (sections.size() == END_STATION) {
-            values.remove(sections.get(0));
-            return sections;
-        }
         for (Section section : sections) {
             values.remove(section);
         }
         return sections;
+    }
+
+    private void validateDelete() {
+        if (values.size() <= MIN_SIZE) {
+            throw new SectionCreateException(SECTION_CAN_NOT_DELETE_MESSAGE);
+        }
     }
 
     public List<Section> getValues() {
