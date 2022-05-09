@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -36,8 +37,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.header("Location")).isNotBlank()
+        );
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 지하철 노선을 생성한다.")
@@ -69,8 +72,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message"))
+                        .isEqualTo("같은 이름 혹은 색깔을 가진 노선이 이미 있습니다.")
+        );
     }
 
     @DisplayName("기존에 존재하는 노선 색깔로 지하철 노선을 생성한다.")
@@ -102,8 +108,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message"))
+                        .isEqualTo("같은 이름 혹은 색깔을 가진 노선이 이미 있습니다.")
+        );
     }
 
     @DisplayName("지하철노선 목록을 조회한다.")
@@ -175,10 +184,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getLong("id")).isEqualTo(createdId);
-        assertThat(response.body().jsonPath().getString("name")).isEqualTo("2호선");
-        assertThat(response.body().jsonPath().getString("color")).isEqualTo("초록색");
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.body().jsonPath().getLong("id")).isEqualTo(createdId),
+                () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("2호선"),
+                () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo("초록색")
+        );
     }
 
     @DisplayName("존재하지 않는 노선을 조회한다.")
@@ -192,8 +203,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
+                () -> assertThat(response.body().jsonPath().getString("message"))
+                        .isEqualTo("존재하지 않는 노선입니다")
+        );
     }
 
     @DisplayName("노선 정보를 수정한다.")
@@ -267,8 +281,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message"))
+                        .isEqualTo("같은 이름 혹은 색깔을 가진 노선이 이미 있습니다.")
+        );
     }
 
     @DisplayName("기존에 존재하는 노선 색깔로 지하철 노선을 수정한다.")
@@ -310,8 +327,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message"))
+                        .isEqualTo("같은 이름 혹은 색깔을 가진 노선이 이미 있습니다.")
+        );
     }
 
     @DisplayName("존재하지 않는 노선을 수정한다.")
@@ -332,8 +352,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-        assertThat(response.body().jsonPath().getString("message")).isNotBlank();
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
+                () -> assertThat(response.body().jsonPath().getString("message"))
+                        .isEqualTo("존재하지 않는 노선입니다")
+        );
     }
 
     @DisplayName("노선을 제거한다")
