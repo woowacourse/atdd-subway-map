@@ -22,4 +22,19 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public boolean canConnect(Section section) {
+        return section.downStation.equals(this.upStation)
+            || section.upStation.equals(this.downStation)
+            || isSameUpStation(section)
+            || isSameDownStation(section);
+    }
+
+    public boolean isSameUpStation(Section section) {
+        return section.upStation.equals(this.upStation);
+    }
+
+    public boolean isSameDownStation(Section section) {
+        return section.downStation.equals(this.downStation);
+    }
 }
