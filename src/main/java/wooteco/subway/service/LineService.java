@@ -19,8 +19,7 @@ public class LineService {
     }
 
     private void validateDuplicationName(Line line) {
-        List<Line> lines = lineDao.findAll();
-        if (lines.contains(line)) {
+        if (lineDao.exists(line)) {
             throw new IllegalArgumentException("중복된 이름이 존재합니다.");
         }
     }

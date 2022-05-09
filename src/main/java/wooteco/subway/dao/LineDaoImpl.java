@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
 @Repository
-public class LineDaoImpl implements LineDao{
+public class LineDaoImpl implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -66,5 +66,11 @@ public class LineDaoImpl implements LineDao{
         final String sql = "UPDATE line SET name = ?, color = ? where id = ?";
         int updateSize = jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
         return updateSize != 0;
+    }
+
+    @Override
+    public boolean exists(Line line) {
+        final String sql = "SELECT EXISTS (SELECT * FROM line WHERE name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, line.getName());
     }
 }

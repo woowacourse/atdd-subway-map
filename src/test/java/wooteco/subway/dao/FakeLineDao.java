@@ -55,4 +55,12 @@ public class FakeLineDao implements LineDao {
 
         return false;
     }
+
+    @Override
+    public boolean exists(Line line) {
+        Optional<Line> presentLine = lines.values().stream()
+            .filter(i -> i.getName().equals(line.getName()))
+            .findAny();
+        return presentLine.isPresent();
+    }
 }
