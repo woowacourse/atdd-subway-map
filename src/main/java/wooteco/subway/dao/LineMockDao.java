@@ -10,9 +10,6 @@ import wooteco.subway.domain.Line;
 
 public class LineMockDao implements LineDao {
 
-    private static final int TRUE = 1;
-    private static final int FALSE = 0;
-
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
 
@@ -32,10 +29,10 @@ public class LineMockDao implements LineDao {
 
     @Override
     public boolean existLineById(Long id) {
-        List<Long> lineNames = lines.stream()
+        List<Long> lineIds = lines.stream()
                 .map(Line::getId)
                 .collect(Collectors.toList());
-        return lineNames.contains(id);
+        return lineIds.contains(id);
     }
 
     @Override

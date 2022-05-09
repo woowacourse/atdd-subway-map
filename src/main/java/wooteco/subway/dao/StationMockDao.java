@@ -9,9 +9,6 @@ import wooteco.subway.domain.Station;
 
 public class StationMockDao implements StationDao {
 
-    private static final int TRUE = 1;
-    private static final int FALSE = 0;
-
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
@@ -31,10 +28,10 @@ public class StationMockDao implements StationDao {
 
     @Override
     public boolean existStationById(Long id) {
-        List<Long> stationNames = stations.stream()
+        List<Long> stationIds = stations.stream()
                 .map(Station::getId)
                 .collect(Collectors.toList());
-        return stationNames.contains(id);
+        return stationIds.contains(id);
     }
 
     @Override
