@@ -53,6 +53,19 @@ public class Section {
         return List.of(this, other);
     }
 
+    public Section merge(Section other) {
+        checkStationsNotSame(other);
+        int mergedDistance = this.distance + other.distance;
+
+        if (this.upStationId == other.downStationId) {
+            return new Section(other.upStationId, this.downStationId, mergedDistance);
+        }
+        if (this.downStationId == other.upStationId) {
+            return new Section(this.upStationId, other.downStationId, mergedDistance);
+        }
+        throw new IllegalArgumentException(ExceptionMessage.NOT_CONNECTED_SECTIONS.getContent());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
