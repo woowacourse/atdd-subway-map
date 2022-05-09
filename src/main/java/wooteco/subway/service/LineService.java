@@ -46,9 +46,6 @@ public class LineService {
     }
 
     private Line extractLine(Optional<Line> wrappedLine) {
-        if (wrappedLine.isEmpty()) {
-            throw new IllegalArgumentException("해당 노선이 존재하지 않습니다.");
-        }
-        return wrappedLine.get();
+        return wrappedLine.orElseThrow(() -> new IllegalArgumentException("해당 노선이 존재하지 않습니다."));
     }
 }

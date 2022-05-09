@@ -28,7 +28,7 @@ public class LineDao {
 
     public Line save(Line line) {
         String sql = "insert into LINE (name, color) values (:name, :color)";
-
+        
         Map<String, Object> params = new HashMap<>();
         params.put("name", line.getName());
         params.put("color", line.getColor());
