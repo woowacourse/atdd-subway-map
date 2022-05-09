@@ -3,11 +3,11 @@ package wooteco.subway.dao;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,19 +42,20 @@ class LineDaoTest {
         // given
         Line Line = new Line(LINE_NAME, LINE_COLOR);
         // when
-        final Line saved = dao.save(Line);
+        final Optional<Line> saved = dao.save(Line);
         // then
-        assertThat(saved.getId()).isNotNull();
+        assertThat(saved).isPresent();
     }
 
     @Test
-    @DisplayName("중복된 이름을 저장하는 경우 예외를 던진다.")
+    @DisplayName("중복된 이름을 저장하는 경우 빈 Optional을 돌려준다.")
     public void save_throwsExceptionWithDuplicatedName() {
-        // given & when
-        dao.save(new Line(LINE_NAME, LINE_COLOR));
+        // given
+        final Optional<Line> saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
+        // when
+        final Optional<Line> duplicated = dao.save(new Line(LINE_NAME, LINE_COLOR));
         // then
-        assertThatExceptionOfType(IllegalStateException.class)
-            .isThrownBy(() -> dao.save(new Line(LINE_NAME, LINE_COLOR)));
+        assertThat(duplicated).isEmpty();
     }
 
     @Test
@@ -81,69 +82,68 @@ class LineDaoTest {
     @DisplayName("ID 값으로 노선을 조회한다")
     public void findById() {
         // given
-        final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
+        final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR)).orElseThrow(IllegalStateException::new);
         // when
-        final Line found = dao.findById(saved.getId());
+        final Optional<Line> foundLine = dao.findById(saved.getId());
         // then
-        Assertions.assertAll(
-            () -> assertThat(found.getId()).isEqualTo(saved.getId()),
-            () -> assertThat(found.getName()).isEqualTo(saved.getName()),
-            () -> assertThat(found.getColor()).isEqualTo(saved.getColor())
-        );
+        assertThat(foundLine).isPresent();
     }
 
     @Test
-    @DisplayName("존재하지 않는 ID 값으로 노선을 조회하면 예외를 던진다")
+    @DisplayName("존재하지 않는 ID 값으로 노선을 조회하면 빈 Optional을 돌려준다.")
     public void findById_invalidID() {
-        // given & when
+        // given
         dao.save(new Line(LINE_NAME, LINE_COLOR));
+        // when
+        final Optional<Line> found = dao.findById(2L);
         // then
-        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> dao.findById(2L));
+        assertThat(found).isEmpty();
     }
 
     @Test
     @DisplayName("노선 정보를 수정한다.")
     public void update() {
-        // given & when
-        final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
+        // given
+        final Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR)).orElseThrow(IllegalStateException::new);
+        // when
+        final boolean isUpdated = dao.update(new Line(saved.getId(), "구분당선", LINE_COLOR));
         // then
-        assertThatNoException()
-            .isThrownBy(() -> dao.update(new Line(saved.getId(), "구분당선", LINE_COLOR)));
+        assertThat(isUpdated).isTrue();
     }
 
     @Test
-    @DisplayName("존재하지 않는 ID값을 수정하는 경우 예외를 던진다.")
+    @DisplayName("존재하지 않는 ID값을 수정하는 경우 False를 반환한다.")
     public void update_throwsExceptionWithInvalidId() {
         // given
         dao.save(new Line(LINE_NAME, LINE_COLOR));
-        // when
         Line updateLine = new Line(100L, "사랑이넘치는", "우테코");
+        // when
+        final boolean isUpdated = dao.update(updateLine);
         // then
-        assertThatExceptionOfType(IllegalStateException.class)
-            .isThrownBy(() -> dao.update(updateLine));
+        assertThat(isUpdated).isFalse();
     }
 
     @Test
     @DisplayName("ID값으로 노선을 삭제한다.")
     public void delete() {
-        // given & when
-        Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR));
-
+        // given
+        Line saved = dao.save(new Line(LINE_NAME, LINE_COLOR)).orElseThrow(IllegalStateException::new);
+        // when
+        final boolean isDeleted = dao.delete(saved.getId());
         // then
-        assertThatNoException()
-            .isThrownBy(() -> dao.delete(saved.getId()));
+        assertThat(isDeleted).isTrue();
     }
 
     @Test
-    @DisplayName("존재하지않는 ID값을 삭제하는 경우 예외를 던진다.")
+    @DisplayName("존재하지않는 ID값을 삭제하는 경우 False를 반환한다.")
     public void delete_throwsExceptionWithInvalidId() {
         // given
         dao.save(new Line(LINE_NAME, LINE_COLOR));
-        // when
         Long deleteId = 100L;
+        // when
+        final boolean isDeleted = dao.delete(deleteId);
         // then
-        assertThatExceptionOfType(IllegalStateException.class)
-            .isThrownBy(() -> dao.delete(deleteId));
+        assertThat(isDeleted).isFalse();
     }
 
     @AfterEach

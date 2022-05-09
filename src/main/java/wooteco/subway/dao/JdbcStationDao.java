@@ -1,7 +1,7 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
@@ -11,11 +11,8 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.RowDuplicatedException;
-import wooteco.subway.exception.RowNotFoundException;
 
 @Repository
 public class JdbcStationDao implements StationDao {
@@ -31,21 +28,14 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Station save(Station station) {
+    public Optional<Station> save(Station station) {
         SqlParameterSource param = new BeanPropertySqlParameterSource(station);
         try {
             final Long id = jdbcInsert.executeAndReturnKey(param).longValue();
-            return createNewObject(station, id);
+            return Optional.of(new Station(id, station.getName()));
         } catch (DuplicateKeyException ignored) {
-            throw new RowDuplicatedException("이미 존재하는 역 이름입니다.");
+            return Optional.empty();
         }
-    }
-
-    private Station createNewObject(Station station, Long id) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, id);
-        return station;
     }
 
     @Override
@@ -58,15 +48,13 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         final String sql = "DELETE FROM station WHERE id = ?";
         final int deletedCount = jdbcTemplate.update(sql, id);
-        validateRemoved(deletedCount);
+        return isUpdated(deletedCount);
     }
 
-    private void validateRemoved(int deletedCount) {
-        if (deletedCount == 0) {
-            throw new RowNotFoundException("삭제하고자 하는 역이 존재하지 않습니다.");
-        }
+    private boolean isUpdated(int updatedCount) {
+        return updatedCount == 1;
     }
 }

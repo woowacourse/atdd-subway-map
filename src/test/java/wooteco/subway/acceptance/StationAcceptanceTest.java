@@ -94,7 +94,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = Map.of("name", "강남역");
         ExtractableResponse<Response> createResponse = SimpleRestAssured.post("/stations", params);
         // when
-        final ExtractableResponse<Response> deleteResponse = SimpleRestAssured.delete("/lines/100");
+        final ExtractableResponse<Response> deleteResponse = SimpleRestAssured.delete("/stations/100");
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }

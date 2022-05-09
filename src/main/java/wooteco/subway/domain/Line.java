@@ -1,6 +1,5 @@
 package wooteco.subway.domain;
 
-
 public class Line {
 
     private final Long id;

@@ -1,7 +1,7 @@
 package wooteco.subway.dao;
 
-import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
@@ -13,11 +13,8 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.RowDuplicatedException;
-import wooteco.subway.exception.RowNotFoundException;
 
 @Repository
 public class JdbcLineDao implements LineDao {
@@ -39,21 +36,14 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Line save(Line line) {
+    public Optional<Line> save(Line line) {
         try {
             final SqlParameterSource param = new BeanPropertySqlParameterSource(line);
             final Long id = jdbcInsert.executeAndReturnKey(param).longValue();
-            return createNewObject(line, id);
+            return Optional.of(new Line(id, line.getName(), line.getColor()));
         } catch (DuplicateKeyException ignored) {
-            throw new RowDuplicatedException("이미 존재하는 노선 이름입니다.");
+            return Optional.empty();
         }
-    }
-
-    private Line createNewObject(Line line, Long id) {
-        final Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, id);
-        return line;
     }
 
     @Override
@@ -63,38 +53,30 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         final String sql = "SELECT * FROM line WHERE id = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
-            throw new RowNotFoundException("조회하고자 하는 노선이 존재하지 않습니다.");
+            return Optional.empty();
         }
     }
 
     @Override
-    public void update(Line line) {
+    public boolean update(Line line) {
         final String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         final int updatedCount = jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
-        validateUpdated(updatedCount);
+        return isUpdated(updatedCount);
     }
 
-    private void validateUpdated(int updatedCount) {
-        if (updatedCount == 0) {
-            throw new RowNotFoundException("수정하고자 하는 노선이 존재하지 않습니다.");
-        }
+    private boolean isUpdated(int updatedCount) {
+        return updatedCount == 1;
     }
 
     @Override
-    public void delete(Long id) {
+    public boolean delete(Long id) {
         final String sql = "DELETE FROM line WHERE id = ?";
         final int deletedCount = jdbcTemplate.update(sql, id);
-        validateDeleted(deletedCount);
-    }
-
-    private void validateDeleted(int deletedCount) {
-        if (deletedCount == 0) {
-            throw new RowNotFoundException("삭제하고자 하는 노선이 존재하지 않습니다.");
-        }
+        return isUpdated(deletedCount);
     }
 }
