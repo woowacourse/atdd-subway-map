@@ -48,20 +48,12 @@ public class LineService {
     public LineResponse update(Long id, LineRequest lineRequest) {
         getLine(id);
         try {
-            updateOrSave(id, lineRequest);
+            lineDao.update(id, new Line(lineRequest.getName(), lineRequest.getColor()));
         } catch (DuplicateKeyException e) {
             throw new IllegalArgumentException(lineRequest.getName() + "은 이미 존재하는 노선 이름입니다.");
         }
 
         return new LineResponse(getLine(id));
-    }
-
-    private void updateOrSave(Long id, LineRequest lineRequest) {
-        lineDao.findById(id)
-                .ifPresentOrElse(
-                        line -> lineDao.update(id, new Line(lineRequest.getName(), lineRequest.getColor())),
-                        () -> lineDao.saveWithId(id, new Line(lineRequest.getName(), lineRequest.getColor()))
-                );
     }
 
     @Transactional

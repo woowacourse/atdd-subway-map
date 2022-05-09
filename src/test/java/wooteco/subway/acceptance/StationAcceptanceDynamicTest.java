@@ -36,6 +36,7 @@ public class StationAcceptanceDynamicTest extends AcceptanceTest {
                             () -> assertThat(response.header("Location")).isNotBlank()
                     );
                 }),
+
                 dynamicTest("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.", () -> {
                     String name = "강남역";
 
@@ -43,6 +44,7 @@ public class StationAcceptanceDynamicTest extends AcceptanceTest {
 
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 }),
+
                 dynamicTest("지하철역을 조회한다.", () -> {
                     generateStation("역삼역");
 
@@ -60,6 +62,7 @@ public class StationAcceptanceDynamicTest extends AcceptanceTest {
                             }
                     );
                 }),
+
                 dynamicTest("지하철역을 제거한다.", () -> {
                     ExtractableResponse<Response> response = RestAssured.given().log().all()
                             .when()

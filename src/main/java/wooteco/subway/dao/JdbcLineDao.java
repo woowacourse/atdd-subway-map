@@ -35,13 +35,6 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Line saveWithId(Long id, Line line) {
-        String sql = "insert into LINE(id, name, color) values(:id, :name, :color)";
-        jdbcTemplate.update(sql, Map.of("id", id, "name", line.getName(), "color", line.getColor()));
-        return findById(id).get();
-    }
-
-    @Override
     public boolean existsByName(String name) {
         String sql = "select count(*) from LINE where name = :name";
         return 0 != jdbcTemplate.queryForObject(sql, Map.of("name", name), Integer.class);
