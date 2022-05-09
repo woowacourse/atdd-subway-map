@@ -17,8 +17,8 @@ public class SectionsTest {
     @Test
     void addSection() {
         Sections sections = createInitialSections("신당역", "동묘앞역");
-        sections.add(createSection("동묘앞역", "창신역", 1));
-        sections.add(createSection("창신역", "보문역", 1));
+        sections.add(createSection(2L, "동묘앞역", "창신역", 1));
+        sections.add(createSection(3L, "창신역", "보문역", 1));
 
         assertThat(sections.getValues()).hasSize(3);
     }
@@ -27,7 +27,7 @@ public class SectionsTest {
     @Test
     void duplicateSectionException() {
         Sections sections = createInitialSections("신당역", "동묘앞역");
-        assertThatThrownBy(() -> sections.add(createSection("신당역", "동묘앞역", 1)))
+        assertThatThrownBy(() -> sections.add(createSection(2L, "신당역", "동묘앞역", 1)))
                 .isInstanceOf(SectionCreateException.class)
                 .hasMessageContaining("이미 존재하는 구간입니다.");
     }
@@ -36,7 +36,7 @@ public class SectionsTest {
     @Test
     void stationNotExistException() {
         Sections sections = createInitialSections("신당역", "동묘앞역");
-        assertThatThrownBy(() -> sections.add(createSection("안암역", "보문역", 1)))
+        assertThatThrownBy(() -> sections.add(createSection(2L, "안암역", "보문역", 1)))
                 .isInstanceOf(SectionCreateException.class)
                 .hasMessageContaining("구간이 연결되지 않습니다");
     }
@@ -45,9 +45,9 @@ public class SectionsTest {
     @Test
     void sectionAlreadyExistException() {
         Sections sections = createInitialSections("신당역", "동묘앞역");
-        sections.add(createSection("동묘앞역", "창신역", 2));
+        sections.add(createSection(2L, "동묘앞역", "창신역", 2));
 
-        assertThatThrownBy(() -> sections.add(createSection("신당역", "창신역", 1)))
+        assertThatThrownBy(() -> sections.add(createSection(3L, "신당역", "창신역", 1)))
                 .isInstanceOf(SectionCreateException.class)
                 .hasMessageContaining("이미 존재하는 구간입니다.");
     }
@@ -56,11 +56,11 @@ public class SectionsTest {
     @Test
     void cutIntSection() {
         Sections sections = createInitialSections("신당역", "창신역");
-        sections.add(createSection("동묘앞역", "창신역", 2));
+        sections.add(createSection(2L, "동묘앞역", "창신역", 2));
 
         assertAll(
-                () -> assertThat(sections.getValues()).contains(createSection("신당역", "동묘앞역", 3)),
-                () -> assertThat(sections.getValues()).contains(createSection("동묘앞역", "창신역", 2))
+                () -> assertThat(sections.getValues()).contains(createSection(1L, "신당역", "동묘앞역", 3)),
+                () -> assertThat(sections.getValues()).contains(createSection(2L, "동묘앞역", "창신역", 2))
         );
     }
 
@@ -68,7 +68,7 @@ public class SectionsTest {
     @Test
     void cutInException() {
         Sections sections = createInitialSections("신당역", "창신역");
-        assertThatThrownBy(() -> sections.add(createSection("동묘앞역", "창신역", 6)))
+        assertThatThrownBy(() -> sections.add(createSection(2L, "동묘앞역", "창신역", 6)))
                 .isInstanceOf(SectionCreateException.class)
                 .hasMessageContaining("기존의 구간보다 긴 구간은 넣을 수 없습니다.");
     }
@@ -98,19 +98,35 @@ public class SectionsTest {
         assertThat(section.isEmpty()).isTrue();
     }
 
+    @DisplayName("Station을 받으면 구간을 삭제한다.")
+    @Test
+    void deleteSection() {
+        List<Section> rawSections = new ArrayList<>();
+        Station station1 = new Station(1L, "신당역");
+        Station station2 = new Station(2L, "동묘앞역");
+        Station station3 = new Station(3L, "창신역");
+        rawSections.add(new Section(1L, 1L, station1, station2, 5));
+        rawSections.add(new Section(2L, 1L, station2, station3, 3));
+        Sections sections = new Sections(rawSections);
+
+        List<Section> deleteSections = sections.delete(station2);
+        assertThat(deleteSections).hasSize(2);
+        assertThat(sections.getValues()).hasSize(0);
+    }
+
     private List<Section> getSections() {
         List<Section> initialSections = new ArrayList<>();
-        initialSections.add(new Section(1L, 1L, new Station("신당역"), new Station("창신역"), 5));
+        initialSections.add(createSection(1L, "신당역", "창신역", 5));
         return initialSections;
     }
 
-    private Section createSection(String upName, String downName, int distance) {
-        return new Section(1L, new Station(1L, upName), new Station(2L, downName), distance);
+    private Section createSection(Long id, String upName, String downName, int distance) {
+        return new Section(id, 1L, new Station(1L, upName), new Station(2L, downName), distance);
     }
 
     private Sections createInitialSections(String upName, String downName) {
         List<Section> initialSections = new ArrayList<>();
-        initialSections.add(createSection(upName, downName, 5));
+        initialSections.add(createSection(1L, upName, downName, 5));
         return new Sections(initialSections);
     }
 }

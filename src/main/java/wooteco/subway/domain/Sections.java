@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class Sections {
     private static final String SECTION_ALREADY_EXIST_MESSAGE = "이미 존재하는 구간입니다.";
     private static final String SECTION_NOT_CONNECT_MESSAGE = "구간이 연결되지 않습니다";
     private static final String SECTION_MUST_SHORTER_MESSAGE = "기존의 구간보다 긴 구간은 넣을 수 없습니다.";
+    public static final int END_STATION = 1;
 
     private List<Section> values;
 
@@ -95,6 +97,22 @@ public class Sections {
             }
         }
         return Optional.empty();
+    }
+
+    public List<Section> delete(final Station station) {
+        List<Section> sections = values.stream()
+                .filter(value -> value.isSameUpStation(station)
+                        || value.isSameDownStation(station))
+                .collect(toList());
+
+        if (sections.size() == END_STATION) {
+            values.remove(sections.get(0));
+            return sections;
+        }
+        for (Section section : sections) {
+            values.remove(section);
+        }
+        return sections;
     }
 
     public List<Section> getValues() {
