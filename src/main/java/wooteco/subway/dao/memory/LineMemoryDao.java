@@ -2,6 +2,7 @@ package wooteco.subway.dao.memory;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
@@ -26,7 +27,7 @@ public class LineMemoryDao {
     }
 
     public static List<Line> findAll() {
-        return lines;
+        return Collections.unmodifiableList(lines);
     }
 
     public static Line findById(final long id) {

@@ -2,6 +2,7 @@ package wooteco.subway.dao.memory;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
@@ -28,7 +29,7 @@ public class StationMemoryDao {
     }
 
     public static List<Station> findAll() {
-        return stations;
+        return Collections.unmodifiableList(stations);
     }
 
     private static Station createNewObject(Station station) {
