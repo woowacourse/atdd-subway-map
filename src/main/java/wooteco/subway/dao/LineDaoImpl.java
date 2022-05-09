@@ -22,7 +22,7 @@ public class LineDaoImpl implements LineDao {
 
     @Override
     public Long save(Line line) {
-        final String sql = "INSERT INTO line (name, color) VALUES (?, ?)";
+        final String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -37,7 +37,7 @@ public class LineDaoImpl implements LineDao {
 
     @Override
     public List<Line> findAll() {
-        final String sql = "SELECT id, name, color FROM line";
+        final String sql = "SELECT id, name, color FROM LINE";
         return jdbcTemplate.query(sql, lineMapper());
     }
 
@@ -51,20 +51,20 @@ public class LineDaoImpl implements LineDao {
 
     @Override
     public boolean deleteById(Long id) {
-        final String sql = "DELETE FROM line WHERE id = ?";
+        final String sql = "DELETE FROM LINE WHERE id = ?";
         int updateSize = jdbcTemplate.update(sql, id);
         return updateSize != 0;
     }
 
     @Override
     public Line findById(Long id) {
-        final String sql = "SELECT * FROM line WHERE id = ?";
+        final String sql = "SELECT id, name, color FROM LINE WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, lineMapper(), id);
     }
 
     @Override
     public boolean updateById(Long id, Line line) {
-        final String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
+        final String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
         int updateSize = jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
         return updateSize != 0;
     }
