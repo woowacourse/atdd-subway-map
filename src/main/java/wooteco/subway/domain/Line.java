@@ -1,26 +1,33 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.Objects;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 public class Line {
 
     private Long id;
-    @Size(min = 1, max = 25)
     private final String name;
-    @NotBlank
     private final String color;
+    private final ArrayList<Station> stations;
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+        this.stations = null;
     }
 
     public Line(Long id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
+        this.stations = null;
+    }
+
+    public Line(Long id, String name, String color, ArrayList<Station> stations) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.stations = stations;
     }
 
     public Long getId() {

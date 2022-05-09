@@ -19,14 +19,14 @@ public class LineService {
     }
 
     public LineSaveResponse save(LineSaveRequest lineSaveRequest) {
+        validateDuplicationName(lineSaveRequest.getName());
         Line line = new Line(lineSaveRequest.getName(), lineSaveRequest.getColor());
-        validateDuplicationName(line);
         Long savedId = lineDao.save(line);
         return new LineSaveResponse(savedId, line.getName(), line.getColor());
     }
 
-    private void validateDuplicationName(Line line) {
-        if (lineDao.exists(line)) {
+    private void validateDuplicationName(String name) {
+        if (lineDao.existsByName(name)) {
             throw new IllegalArgumentException("중복된 이름이 존재합니다.");
         }
     }

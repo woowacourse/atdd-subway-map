@@ -57,9 +57,9 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public boolean exists(Line line) {
+    public boolean existsByName(String name) {
         Optional<Line> presentLine = lines.values().stream()
-            .filter(i -> i.getName().equals(line.getName()))
+            .filter(i -> i.getName().equals(name))
             .findAny();
         return presentLine.isPresent();
     }

@@ -16,5 +16,5 @@ public interface LineDao {
 
     boolean updateById(Long id, Line line);
 
-    boolean exists(Line line);
+    boolean existsByName(String name);
 }
