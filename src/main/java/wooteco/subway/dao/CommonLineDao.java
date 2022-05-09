@@ -11,7 +11,7 @@ public interface CommonLineDao {
 
     Line findById(final Long id);
 
-    void update(final Long id, final Line line);
+    int update(final Long id, final Line line);
 
-    void deleteById(final Long id);
+    int deleteById(final Long id);
 }
