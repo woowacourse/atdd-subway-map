@@ -35,12 +35,12 @@ public class StationDao {
     }
 
     public List<Station> findAll() {
-        final String sql = "select id, name from Station";
+        final String sql = "select id, name from STATION";
         return jdbcTemplate.query(sql, rowMapper());
     }
 
     public Optional<Station> findById(final Long id) {
-        final String sql = "select id, name from Station where id = ?";
+        final String sql = "select id, name from STATION where id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), id));
         } catch (EmptyResultDataAccessException e) {
@@ -56,12 +56,12 @@ public class StationDao {
     }
 
     public boolean existsByName(final String name) {
-        final String sql = "select count(*) > 0 from Station where name = ?";
+        final String sql = "select exists(select * from STATION where name = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
     }
 
     public void deleteById(final Long id) {
-        final String sql = "delete from Station where id = ?";
+        final String sql = "delete from STATION where id = ?";
         jdbcTemplate.update(sql, id);
     }
 }

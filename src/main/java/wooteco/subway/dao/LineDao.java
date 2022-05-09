@@ -35,12 +35,12 @@ public class LineDao {
     }
 
     public List<Line> findAll() {
-        final String sql = "select id, name, color from Line";
+        final String sql = "select id, name, color from LINE";
         return jdbcTemplate.query(sql, rowMapper());
     }
 
     public Optional<Line> findById(final Long id) {
-        final String sql = "select id, name, color from Line where id = ?";
+        final String sql = "select id, name, color from LINE where id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), id));
         } catch (EmptyResultDataAccessException e) {
@@ -57,22 +57,22 @@ public class LineDao {
     }
 
     public boolean existsByName(final String name) {
-        final String sql = "select count(*) > 0 from Line where name = ?";
+        final String sql = "select exists(select * from LINE where name = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
     }
 
     public void update(final Long id, final Line line) {
-        final String sql = "update Line set name = ?, color = ? where id = ?";
+        final String sql = "update LINE set name = ?, color = ? where id = ?";
         jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
     public void deleteById(final Long id) {
-        final String sql = "delete from Line where id = ?";
+        final String sql = "delete from LINE where id = ?";
         jdbcTemplate.update(sql, id);
     }
 
     public boolean existsById(final Long id) {
-        final String sql = "select count(*) > 0 from Line where id = ?";
+        final String sql = "select exists(select * from LINE where id = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
     }
 }
