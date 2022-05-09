@@ -61,11 +61,11 @@ public class Section {
         return distance;
     }
 
-    public boolean isContainStation(Long upStationId, Long downStationId) {
-        if (this.upStationId.equals(upStationId) || this.upStationId.equals(downStationId)) {
-            return true;
-        }
+    public boolean isContainStation(Section section) {
+        return upStationId.equals(section.downStationId) || downStationId.equals(section.upStationId);
+    }
 
-        return this.downStationId.equals(upStationId) || this.downStationId.equals(downStationId);
+    public boolean isFork(Section section) {
+        return upStationId.equals(section.getUpStationId()) || downStationId.equals(section.getDownStationId());
     }
 }

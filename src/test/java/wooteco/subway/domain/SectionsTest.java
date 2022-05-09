@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.util.ArrayList;
@@ -20,5 +21,23 @@ class SectionsTest {
         // when & then
         final Section section = new Section(2L, 1L, 1L, 2L, 1);
         assertDoesNotThrow(() -> sections.addSection(section));
+    }
+    
+    @DisplayName("하나의 노선에는 갈래길이 허용되지 않기 때문에 새로운 구간이 추가되기 전에 갈래길이 생기지 않도록 기존 구간을 변경한다.")
+    @Test
+    public void forkRode() {
+        //given
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(new Section(1L, 1L, 1L, 3L, 7));
+        final Sections sections = new Sections(sectionList);
+
+        //when
+        final Section section = new Section(2L, 1L, 1L, 2L, 4);
+        sections.addSection(section);
+
+        //then
+        assertThat(sections.getSections().size()).isEqualTo(2);
+        assertThat(sections.getSections()).extracting("distance")
+                .containsExactlyInAnyOrder(4, 3);
     }
 }
