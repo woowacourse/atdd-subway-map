@@ -13,8 +13,8 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        isPossibleRegistration(section);
         preventFork(section);
+        isPossibleRegistration(section);
 
         sections.add(section);
     }
@@ -38,11 +38,18 @@ public class Sections {
     }
 
     private void processFork(Section existingSection, Section newSection) {
+        checkDistance(existingSection, newSection);
         final Section section = new Section(existingSection.getId(), existingSection.getLineId(), newSection.getDownStationId(),
                 existingSection.getDownStationId(), existingSection.getDistance() - newSection.getDistance());
 
         sections.add(section);
         sections.remove(existingSection);
+    }
+
+    private void checkDistance(Section existingSection, Section newSection) {
+        if (existingSection.getDistance() <= newSection.getDistance()) {
+            throw new IllegalSectionException("구간 등록이 불가능합니다.");
+        }
     }
 
     public List<Section> getSections() {

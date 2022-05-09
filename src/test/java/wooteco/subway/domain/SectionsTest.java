@@ -1,12 +1,14 @@
 package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.IllegalSectionException;
 
 class SectionsTest {
 
@@ -39,5 +41,19 @@ class SectionsTest {
         assertThat(sections.getSections().size()).isEqualTo(2);
         assertThat(sections.getSections()).extracting("distance")
                 .containsExactlyInAnyOrder(4, 3);
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
+    @Test
+    public void checkDistance() {
+        //given
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(new Section(1L, 1L, 1L, 3L, 7));
+        final Sections sections = new Sections(sectionList);
+
+        // when & then
+        final Section section = new Section(2L, 1L, 1L, 2L, 7);
+        assertThatThrownBy(() -> sections.addSection(section))
+                        .isInstanceOf(IllegalSectionException.class);
     }
 }
