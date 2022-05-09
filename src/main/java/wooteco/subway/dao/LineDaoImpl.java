@@ -39,7 +39,7 @@ public class LineDaoImpl implements LineDao {
 
     @Override
     public List<Line> findAll() {
-        final String sql = "SELECT id, name, color FROM line LIMIT 100";
+        final String sql = "SELECT id, name, color FROM line";
         return jdbcTemplate.query(sql, lineMapper());
     }
 

@@ -36,7 +36,7 @@ public class StationDaoImpl implements StationDao {
 
     @Override
     public List<Station> findAll() {
-        final String sql = "SELECT id, name FROM station LIMIT 100 ";
+        final String sql = "SELECT id, name FROM station";
         return jdbcTemplate.query(sql, stationMapper());
     }
 
