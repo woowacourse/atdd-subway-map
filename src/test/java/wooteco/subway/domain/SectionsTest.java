@@ -1,6 +1,7 @@
 package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,5 +36,45 @@ public class SectionsTest {
 
         //then
         assertThat(sections.getDownDestination()).isEqualTo(new Station("서초"));
+    }
+
+    @Test
+    @DisplayName("상행 종점 뒤에 새 구간을 추가한다.")
+    void addSectionAfterUpDestination() {
+        //given
+        Section section = new Section(new Station("역삼"), new Station("강남"), 5);
+        Sections sections = new Sections(section);
+
+        //when
+        Section newSection = new Section(new Station("역삼"), new Station("서초"), 3);
+        sections.add(newSection);
+
+        //then
+        assertAll(
+            () -> assertThat(sections.getValues().get(0)).isEqualTo(
+                new Section(new Station("역삼"), new Station("서초"), 3)),
+            () -> assertThat(sections.getValues().get(1)).isEqualTo(
+                new Section(new Station("서초"), new Station("강남"), 2))
+        );
+    }
+
+    @Test
+    @DisplayName("하행 종점 앞에 새 구간을 추가한다.")
+    void addSectionBeforeDownDestination() {
+        //given
+        Section section = new Section(new Station("역삼"), new Station("강남"), 5);
+        Sections sections = new Sections(section);
+
+        //when
+        Section newSection = new Section(new Station("서초"), new Station("강남"), 3);
+        sections.add(newSection);
+
+        //then
+        assertAll(
+            () -> assertThat(sections.getValues().get(0)).isEqualTo(
+                new Section(new Station("역삼"), new Station("서초"), 2)),
+            () -> assertThat(sections.getValues().get(1)).isEqualTo(
+                new Section(new Station("서초"), new Station("강남"), 3))
+        );
     }
 }
