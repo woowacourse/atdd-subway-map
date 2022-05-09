@@ -48,4 +48,9 @@ public class StationService {
         }
         return true;
     }
+
+    public StationResponse getStation(Long id) {
+        Station station = stationDao.findById(id);
+        return new StationResponse(station.getId(), station.getName());
+    }
 }

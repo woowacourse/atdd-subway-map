@@ -86,4 +86,14 @@ public class StationServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재하지 않은 지하철역입니다.");
     }
+
+    @DisplayName("지하철역 목록 하나를 Id로 조회한다.")
+    @Test
+    void getStation() {
+        doReturn(new Station("강남역"))
+                .when(jdbcStationDao).findById(anyLong());
+
+        StationResponse stationResponse = stationService.getStation(1L);
+        assertThat(stationResponse.getName()).isEqualTo("강남역");
+    }
 }
