@@ -30,9 +30,9 @@
 - [ ] 지하철 노선 등록
     - [x] 요청) 노선 추가 시 3가지 정보를 추가로 입력받는다
         - [x] upStationId(상행 종점), downStationId(하행 종점), distance(두 종점 간 거리)
-    - [ ] 응답) 포함된 역들(stations) 리스트를 함께 반환한다.
-    - [ ] 노선 추가 시 구간(section) 정보도 함께 등록한다.
-    - [ ] [ERROR] 노선 추가 시 upstaionId와 downStationId사이에 같은 노선 구간이 존재하는 경우
+    - [x] 응답) 포함된 역들(stations) 리스트를 함께 반환한다.
+    - [x] 노선 추가 시 구간(section) 정보도 함께 등록한다.
+    - [x] [ERROR] 노선 추가 시 upstaionId와 downStationId사이에 같은 노선 구간이 존재하는 경우
 - [ ] 지하철 노선 목록 조회
     - [ ] 응답) 포함된 역들(stations) 리스트를 함께 반환한다.
 - [ ] 지하철 노선 ID로 조회
@@ -74,3 +74,4 @@
 
 ### 나중에 체크해볼 것
 - [x] lineService.save() 에서 sectionService.save()에서 예외나면 롤백되나 확인
+- [ ] 구간 추가 시 A-B, B-A 같은지 체크

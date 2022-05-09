@@ -51,4 +51,11 @@ public class SectionDao {
         String sql = "SELECT * FROM section";
         return jdbcTemplate.query(sql, new MapSqlParameterSource(), rowMapper);
     }
+
+    public List<Section> findByLineId(Long lineId) {
+        String sql = "SELECT * FROM section WHERE line_id = :lineId";
+        Map<String, Object> params = new HashMap<>();
+        params.put("lineId", lineId);
+        return jdbcTemplate.query(sql, new MapSqlParameterSource(params), rowMapper);
+    }
 }
