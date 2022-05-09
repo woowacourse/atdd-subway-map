@@ -1,7 +1,9 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.groups.Tuple.tuple;
 
+import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
@@ -184,11 +186,29 @@ class JdbcSectionDaoTest {
     @DisplayName("입력받은 lineId가 SECTION에 존재하지 않는 것을 확인한다")
     void hasNotLineId() {
         // given
-        
+
         // when
         boolean result = sectionDao.existByLineId(2L);
 
         // then
         assertThat(result).isFalse();
+    }
+
+    @Test
+    @DisplayName("입력받은 lineId의 모든 구간 정보를 조회한다")
+    void findAll() {
+        // given
+        sectionDao.save(GIVEN_SECTION);
+        sectionDao.save(new Section(
+                1L, 2L, 3L,
+                6, 2L));
+
+        // when
+        List<Section> sections = sectionDao.findByLineId(1L);
+
+        // then
+        assertThat(sections).hasSize(2)
+                .extracting("lineId", "upStationId", "downStationId", "distance", "lineOrder")
+                .containsExactly(tuple(1L, 1L, 2L, 6, 1L), tuple(1L, 2L, 3L, 6, 2L));
     }
 }

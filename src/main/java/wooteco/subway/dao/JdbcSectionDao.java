@@ -90,4 +90,18 @@ public class JdbcSectionDao implements SectionDao {
                 + ")";
         return jdbcTemplate.queryForObject(sql, boolean.class, lineId);
     }
+
+    @Override
+    public List<Section> findByLineId(Long lineId) {
+        String sql = "SELECT * from \"SECTION\" WHERE line_id = (?)";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            return new Section(
+                    rs.getLong("line_id"),
+                    rs.getLong("up_station_id"),
+                    rs.getLong("down_station_id"),
+                    rs.getInt("distance"),
+                    rs.getLong("line_order")
+            );
+        }, lineId);
+    }
 }

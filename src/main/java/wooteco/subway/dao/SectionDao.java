@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.List;
 import java.util.Optional;
 import wooteco.subway.domain.Section;
 
@@ -20,4 +21,6 @@ public interface SectionDao {
     void updateLineOrder(Long lineId, Long lineOrder);
 
     boolean existByLineId(Long lineId);
+
+    List<Section> findByLineId(Long lineId);
 }
