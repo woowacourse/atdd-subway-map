@@ -28,18 +28,23 @@
 ### 3단계 기능 목록
 
 > [제공된 페이지](https://d2owgqwkhzq0my.cloudfront.net/index.html) 를 통해 테스트할 수 있다.  
-> 변경된 [API 문서](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/c682be69ae4e412c9e3905a59ef7b7ed#Line) 는 링크를 통해 확인할 수 있다.
+> 데이터 형식은 변경된 [API 문서](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/c682be69ae4e412c9e3905a59ef7b7ed#Line) 에 따른다.
 
 1. 지하철 노선 API 변경
     - 지하철 노선은 구간 정보를 포함
     - 노선 등록 시 `upStationId`, `downStationId`, `distance` 데이터 추가 입력
+        - (e) 존재하지 않는 역 이용
+        - (e) 상행과 하행 역이 동일
+        - (e) 거리가 0 이하
     - 노선 조회 시 구간 정보를 포함
 2. 구간 API 구현
     - 구간 등록
-        - (e) 갈래길 (ex: A역의 상행으로는 B역, C역 두 갈래가 있다)
-        - (e) 새로운 역과의 길이가 기존 역과의 길이보다 크거나 같은 경우
+        - (e) 거리가 0 이하
+        - (e) 새로운 역과의 거리가 기존 역과의 거리보다 크거나 같은 경우
         - (e) 이미 등록된 구간
+        - (e) 갈래길 (ex: A역의 상행으로는 B역, C역 두 갈래가 있다)
         - (e) 존재하지 않는 역 이용
+        - (e) 상행과 하행 역이 동일
     - 구간 제거
         - 중간에 역 제거 시 구간 재배치 필요 (거리는 두 구간의 합으로 설정)
 
