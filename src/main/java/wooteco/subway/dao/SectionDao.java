@@ -24,13 +24,13 @@ public class SectionDao {
 
         final Map<String, Object> params = new HashMap<>();
         params.put("lineId", section.getLineId());
-        params.put("upStationId", section.getUpStationId());
-        params.put("downStationId", section.getDownStationId());
+        params.put("upStationId", section.getUpStation().getId());
+        params.put("downStationId", section.getDownStation().getId());
         params.put("distance", section.getDistance());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder);
         final long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new Section(id, section.getUpStationId(), section.getDownStationId(), section.getDistance(), section.getLineId());
+        return new Section(id, section.getUpStation(), section.getDownStation(), section.getDistance(), section.getLineId());
     }
 }

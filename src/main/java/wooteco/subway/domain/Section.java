@@ -3,33 +3,33 @@ package wooteco.subway.domain;
 public class Section {
 
     private final Long id;
-    private final Long upStationId;
-    private final Long downStationId;
+    private final Station upStation;
+    private final Station downStation;
     private final int distance;
     private final Long lineId;
 
-    public Section(final Long id, final Long upStationId, final Long downStationId, final int distance, final Long lineId) {
+    public Section(final Long id, final Station upStation, final Station downStation, final int distance, final Long lineId) {
         this.id = id;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
         this.lineId = lineId;
     }
 
-    public Section(final Long upStationId, final Long downStationId, final int distance, final Long lineId) {
-        this(null, upStationId, downStationId, distance, lineId);
+    public Section(final Station upStation, final Station downStation, final int distance, final Long lineId) {
+        this(null, upStation, downStation, distance, lineId);
     }
 
     public Long getId() {
         return id;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
+    public Station getDownStation() {
+        return downStation;
     }
 
     public Long getLineId() {

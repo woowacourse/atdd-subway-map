@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 
 @JdbcTest
 @Transactional
@@ -27,14 +28,16 @@ class SectionDaoTest {
 
     @Test
     void save() {
+        final Station station1 = new Station(1L, "아차산역");
+        final Station station2 = new Station(2L, "군자역");
         final Line savedLine = lineDao.save(new Line("2호선", "bg-green-600"));
-        final Section section = new Section(1L, 2L, 10, savedLine.getId());
+        final Section section = new Section(station1, station2, 10, savedLine.getId());
         final Section savedSection = sectionDao.save(section);
 
         assertAll(
                 () -> assertThat(savedSection.getId()).isNotNull(),
-                () -> assertThat(savedSection.getUpStationId()).isEqualTo(section.getUpStationId()),
-                () -> assertThat(savedSection.getDownStationId()).isEqualTo(section.getDownStationId())
+                () -> assertThat(savedSection.getUpStation()).isEqualTo(section.getUpStation()),
+                () -> assertThat(savedSection.getDownStation()).isEqualTo(section.getDownStation())
         );
     }
 }
