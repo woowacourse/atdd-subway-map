@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.request.StationSaveRequest;
+import wooteco.subway.dto.request.StationRequest;
+import wooteco.subway.entity.StationEntity;
 
 @JdbcTest
 class StationDaoTest {
@@ -25,8 +26,9 @@ class StationDaoTest {
     @DisplayName("지하철역을 저장한다.")
     @Test
     void saveStation() {
-        StationSaveRequest stationSaveRequest = StationSaveRequest.of("강남역");
-        Station savedStation = stationDao.save(stationSaveRequest);
+        StationEntity stationEntity = new StationRequest("강남역")
+                .toEntity();
+        Station savedStation = stationDao.save(stationEntity);
 
         assertAll(
                 () -> assertThat(savedStation.getId()).isNotZero(),
@@ -37,8 +39,9 @@ class StationDaoTest {
     @DisplayName("특정 지하철역을 이름으로 조회한다.")
     @Test
     void findByName() {
-        StationSaveRequest stationSaveRequest = StationSaveRequest.of("강남역");
-        stationDao.save(stationSaveRequest);
+        StationEntity stationEntity = new StationRequest("강남역")
+                .toEntity();
+        stationDao.save(stationEntity);
         Optional<Station> wrappedStation = stationDao.findByName("강남역");
         assert (wrappedStation).isPresent();
 
@@ -51,8 +54,9 @@ class StationDaoTest {
     @DisplayName("특정 지하철역을 삭제한다.")
     @Test
     void deleteById() {
-        StationSaveRequest stationSaveRequest = StationSaveRequest.of("강남역");
-        Station savedStation = stationDao.save(stationSaveRequest);
+        StationEntity stationEntity = new StationRequest("강남역")
+                .toEntity();
+        Station savedStation = stationDao.save(stationEntity);
         stationDao.deleteById(savedStation.getId());
 
         Optional<Station> wrappedStation = stationDao.findByName("강남역");
@@ -62,8 +66,9 @@ class StationDaoTest {
     @DisplayName("특정 지하철역을 아이디로 조회한다.")
     @Test
     void findById() {
-        StationSaveRequest stationSaveRequest = StationSaveRequest.of("강남역");
-        Station savedStation = stationDao.save(stationSaveRequest);
+        StationEntity stationEntity = new StationRequest("강남역")
+                .toEntity();
+        Station savedStation = stationDao.save(stationEntity);
         Optional<Station> wrappedStation = stationDao.findById(savedStation.getId());
         assert (wrappedStation).isPresent();
 
