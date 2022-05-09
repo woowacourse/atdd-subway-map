@@ -2,8 +2,8 @@ package wooteco.subway.service.dto.station;
 
 public class StationFindResponse {
 
-    private Long id;
-    private String name;
+    private final Long id;
+    private final String name;
 
     public StationFindResponse(Long id, String name) {
         this.id = id;

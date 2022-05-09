@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.entity.LineEntity;
 import wooteco.subway.service.dto.line.LineFindResponse;
 import wooteco.subway.service.dto.line.LineSaveRequest;
 import wooteco.subway.service.dto.line.LineSaveResponse;
@@ -32,8 +33,8 @@ public class LineService {
     }
 
     public List<LineFindResponse> findAll() {
-        List<Line> lines = lineDao.findAll();
-        return lines.stream()
+        List<LineEntity> lineEntities = lineDao.findAll();
+        return lineEntities.stream()
             .map(i -> new LineFindResponse(i.getId(), i.getName(), i.getColor()))
             .collect(Collectors.toList());
     }

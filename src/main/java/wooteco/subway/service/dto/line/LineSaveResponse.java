@@ -2,9 +2,9 @@ package wooteco.subway.service.dto.line;
 
 public class LineSaveResponse {
 
-    private Long id;
-    private String name;
-    private String color;
+    private final Long id;
+    private final String name;
+    private final String color;
 
     public LineSaveResponse(Long id, String name, String color) {
         this.id = id;

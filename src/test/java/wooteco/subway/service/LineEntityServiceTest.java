@@ -10,20 +10,21 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.FakeLineDao;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.entity.LineEntity;
 import wooteco.subway.service.dto.line.LineFindResponse;
 import wooteco.subway.service.dto.line.LineSaveRequest;
 import wooteco.subway.service.dto.line.LineSaveResponse;
 
-class LineServiceTest {
+class LineEntityServiceTest {
 
     private final LineDao lineDao = new FakeLineDao();
     private final LineService lineService = new LineService(lineDao);
 
     @BeforeEach
     void setUp() {
-        List<Line> lines = lineDao.findAll();
-        List<Long> stationIds = lines.stream()
-            .map(Line::getId)
+        List<LineEntity> lineEntities = lineDao.findAll();
+        List<Long> stationIds = lineEntities.stream()
+            .map(LineEntity::getId)
             .collect(Collectors.toList());
 
         for (Long stationId : stationIds) {
@@ -34,21 +35,21 @@ class LineServiceTest {
     @Test
     void save() {
         // given
-        LineSaveRequest line = new LineSaveRequest("1호선", "bg-red-600");
+        LineSaveRequest line = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L);
 
         // when
         LineSaveResponse savedLine = lineService.save(line);
-        Line line1 = lineDao.findById(savedLine.getId()).get();
+        LineEntity lineEntity1 = lineDao.findById(savedLine.getId()).get();
 
         // then
-        assertThat(line.getName()).isEqualTo(line1.getName());
+        assertThat(line.getName()).isEqualTo(lineEntity1.getName());
     }
 
     @Test
     void validateDuplication() {
         // given
-        LineSaveRequest line1 = new LineSaveRequest("1호선", "bg-red-600");
-        LineSaveRequest line2 = new LineSaveRequest("1호선", "bg-red-600");
+        LineSaveRequest line1 = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L);
+        LineSaveRequest line2 = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L);
 
         // when
         lineService.save(line1);
@@ -62,8 +63,8 @@ class LineServiceTest {
     @Test
     void findAll() {
         // given
-        LineSaveRequest line1 = new LineSaveRequest("1호선", "bg-red-600");
-        LineSaveRequest line2 = new LineSaveRequest("2호선", "bg-green-600");
+        LineSaveRequest line1 = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L);
+        LineSaveRequest line2 = new LineSaveRequest("2호선", "bg-green-600", 1L, 2L);
 
         // when
         lineService.save(line1);
@@ -83,7 +84,7 @@ class LineServiceTest {
     @Test
     void delete() {
         // given
-        LineSaveRequest line = new LineSaveRequest("1호선", "bg-red-600");
+        LineSaveRequest line = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L);
         LineSaveResponse savedLine = lineService.save(line);
 
         // when
@@ -103,15 +104,15 @@ class LineServiceTest {
     @Test
     void update() {
         // given
-        LineSaveRequest originLine = new LineSaveRequest("1호선", "bg-red-600");
+        LineSaveRequest originLine = new LineSaveRequest("1호선", "bg-red-600", 1L, 2L);
         LineSaveResponse savedLine = lineService.save(originLine);
 
         // when
-        Line newLine = new Line("2호선", "bg-green-600");
-        lineService.updateById(savedLine.getId(), newLine);
-        Line line = lineDao.findById(savedLine.getId()).get();
+        Line newLineEntity = new Line("2호선", "bg-green-600");
+        lineService.updateById(savedLine.getId(), newLineEntity);
+        LineEntity lineEntity = lineDao.findById(savedLine.getId()).get();
 
         // then
-        assertThat(line).isEqualTo(newLine);
+        assertThat(lineEntity.getName()).isEqualTo(newLineEntity.getName());
     }
 }

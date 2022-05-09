@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
+import wooteco.subway.entity.StationEntity;
 
 @Repository
 public class StationDaoImpl implements StationDao{
@@ -19,27 +20,27 @@ public class StationDaoImpl implements StationDao{
     }
 
     @Override
-    public Station save(Station station) {
+    public StationEntity save(Station Station) {
         final String sql = "INSERT INTO station (name) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, station.getName());
+            ps.setString(1, Station.getName());
             return ps;
         }, keyHolder);
         long id = keyHolder.getKey().longValue();
 
-        return new Station(id, station.getName());
+        return new StationEntity(id, Station.getName());
     }
 
     @Override
-    public List<Station> findAll() {
+    public List<StationEntity> findAll() {
         final String sql = "SELECT id, name FROM station";
         return jdbcTemplate.query(sql, stationMapper());
     }
 
-    private RowMapper<Station> stationMapper() {
-        return (resultSet, rowNum) -> new Station(
+    private RowMapper<StationEntity> stationMapper() {
+        return (resultSet, rowNum) -> new StationEntity(
             resultSet.getLong("id"),
             resultSet.getString("name")
         );

@@ -33,7 +33,7 @@ public class LineController {
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@Valid @RequestBody LineRequest lineRequest) {
         LineSaveResponse lineSaveResponse = lineService.save(
-            new LineSaveRequest(lineRequest.getName(), lineRequest.getColor()));
+            new LineSaveRequest(lineRequest.getName(), lineRequest.getColor(), lineRequest.getUpStationId(), lineRequest.getDownStationId()));
         LineResponse lineResponse = new LineResponse(lineSaveResponse.getId(),
             lineSaveResponse.getName(), lineSaveResponse.getColor(),
             new ArrayList<>());
@@ -62,8 +62,8 @@ public class LineController {
     @PutMapping("/lines/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id,
         @RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        if (lineService.updateById(id, line)) {
+        Line lineEntity = new Line(lineRequest.getName(), lineRequest.getColor());
+        if (lineService.updateById(id, lineEntity)) {
             return ResponseEntity.ok().build();
         }
 

@@ -9,21 +9,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Station;
+import wooteco.subway.entity.StationEntity;
 import wooteco.subway.service.dto.station.StationFindResponse;
 import wooteco.subway.service.dto.station.StationSaveRequest;
 import wooteco.subway.service.dto.station.StationSaveResponse;
 
-class StationServiceTest {
+class StationEntityServiceTest {
 
     private final StationDao stationDao = new FakeStationDao();
     private final StationService stationService = new StationService(stationDao);
 
     @BeforeEach
     void setUp() {
-        List<Station> stations = stationDao.findAll();
-        List<Long> stationIds = stations.stream()
-            .map(Station::getId)
+        List<StationEntity> stationEntities = stationDao.findAll();
+        List<Long> stationIds = stationEntities.stream()
+            .map(StationEntity::getId)
             .collect(Collectors.toList());
 
         for (Long stationId : stationIds) {
@@ -48,14 +48,14 @@ class StationServiceTest {
     @Test
     void validateDuplication() {
         // given
-        Station station1 = new Station("범고래");
-        Station station2 = new Station("범고래");
+        StationEntity stationEntity1 = new StationEntity("범고래");
+        StationEntity stationEntity2 = new StationEntity("범고래");
 
         // when
-        stationService.save(new StationSaveRequest(station1.getName()));
+        stationService.save(new StationSaveRequest(stationEntity1.getName()));
 
         // then
-        assertThatThrownBy(() -> stationService.save(new StationSaveRequest(station2.getName())))
+        assertThatThrownBy(() -> stationService.save(new StationSaveRequest(stationEntity2.getName())))
             .hasMessage("중복된 이름이 존재합니다.")
             .isInstanceOf(IllegalArgumentException.class);
     }

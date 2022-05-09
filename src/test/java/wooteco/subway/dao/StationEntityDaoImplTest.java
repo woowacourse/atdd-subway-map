@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
+import wooteco.subway.entity.StationEntity;
 
 @JdbcTest
 class StationDaoImplTest {
@@ -25,9 +26,9 @@ class StationDaoImplTest {
     void setUp() {
         stationDao = new StationDaoImpl(jdbcTemplate);
 
-        List<Station> stations = stationDao.findAll();
-        List<Long> stationIds = stations.stream()
-            .map(Station::getId)
+        List<StationEntity> stationEntities = stationDao.findAll();
+        List<Long> stationIds = stationEntities.stream()
+            .map(StationEntity::getId)
             .collect(Collectors.toList());
 
         for (Long stationId : stationIds) {
@@ -38,56 +39,56 @@ class StationDaoImplTest {
     @Test
     void save() {
         // given
-        Station station = new Station("범고래");
+        Station Station = new Station("범고래");
 
         // when
-        Station result = stationDao.save(station);
+        StationEntity result = stationDao.save(Station);
 
         // then
-        assertThat(station).isEqualTo(result);
+        assertThat(Station.getName()).isEqualTo(result.getName());
     }
 
     @Test
     void findAll() {
         // given
-        Station station1 = stationDao.save(new Station("범고래"));
-        Station station2 = stationDao.save(new Station("애쉬"));
+        StationEntity Station1 = stationDao.save(new Station("범고래"));
+        StationEntity Station2 = stationDao.save(new Station("애쉬"));
 
         // when
-        List<Station> stations = stationDao.findAll();
+        List<StationEntity> stationEntities = stationDao.findAll();
 
         // then
-        assertThat(stations)
+        assertThat(stationEntities)
             .hasSize(2)
-            .contains(station1, station2);
+            .contains(Station1, Station2);
     }
 
     @Test
     void validateDuplication() {
         // given
-        Station station1 = new Station("범고래");
-        Station station2 = new Station("범고래");
+        Station Station1 = new Station("범고래");
+        Station Station2 = new Station("범고래");
 
         // when
-        stationDao.save(station1);
+        stationDao.save(Station1);
 
         // then
-        assertThatThrownBy(() -> stationDao.save(station2))
+        assertThatThrownBy(() -> stationDao.save(Station2))
             .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
     void delete() {
         // given
-        Station station = stationDao.save(new Station("범고래"));
+        StationEntity Station = stationDao.save(new Station("범고래"));
 
         // when
-        stationDao.deleteById(station.getId());
-        List<Station> stations = stationDao.findAll();
+        stationDao.deleteById(Station.getId());
+        List<StationEntity> stationEntities = stationDao.findAll();
 
         // then
-        assertThat(stations)
+        assertThat(stationEntities)
             .hasSize(0)
-            .doesNotContain(station);
+            .doesNotContain(Station);
     }
 }

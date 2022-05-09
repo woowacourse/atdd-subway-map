@@ -2,8 +2,8 @@ package wooteco.subway.service.dto.station;
 
 public class StationSaveResponse {
 
-    private Long id;
-    private String name;
+    private final Long id;
+    private final String name;
 
     public StationSaveResponse(Long id, String name) {
         this.id = id;

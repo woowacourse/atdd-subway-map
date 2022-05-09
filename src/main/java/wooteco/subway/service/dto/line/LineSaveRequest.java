@@ -5,10 +5,14 @@ public class LineSaveRequest {
 
     private final String name;
     private final String color;
+    private final Long upStationId;
+    private final Long downStationId;
 
-    public LineSaveRequest(String name, String color) {
+    public LineSaveRequest(String name, String color, Long upStationId, Long downStationId) {
         this.name = name;
         this.color = color;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
     }
 
     public String getName() {
@@ -17,5 +21,13 @@ public class LineSaveRequest {
 
     public String getColor() {
         return color;
+    }
+
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
     }
 }

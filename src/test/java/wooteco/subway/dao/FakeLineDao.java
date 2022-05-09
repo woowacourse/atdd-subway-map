@@ -6,17 +6,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import wooteco.subway.domain.Line;
+import wooteco.subway.entity.LineEntity;
 
 public class FakeLineDao implements LineDao {
 
     private Long seq = 0L;
-    private final Map<Long, Line> lines = new HashMap<>();
+    private final Map<Long, LineEntity> lines = new HashMap<>();
 
     @Override
     public Long save(Line line) {
         validateDuplicateName(line);
-        Line newLine = new Line(++seq, line.getName(), line.getColor());
-        lines.put(seq, newLine);
+        LineEntity newLineEntity = new LineEntity(++seq, line.getName(), line.getColor());
+        lines.put(seq, newLineEntity);
         return seq;
     }
 
@@ -27,7 +28,7 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public List<Line> findAll() {
+    public List<LineEntity> findAll() {
         return new ArrayList<>(lines.values());
     }
 
@@ -42,14 +43,14 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findById(Long id) {
+    public Optional<LineEntity> findById(Long id) {
         return Optional.ofNullable(lines.get(id));
     }
 
     @Override
     public boolean updateById(Long savedId, Line line) {
         if (lines.containsKey(savedId)) {
-            lines.replace(savedId, new Line(savedId, line.getName(), line.getColor()));
+            lines.replace(savedId, new LineEntity(savedId, line.getName(), line.getColor()));
             return true;
         }
 
@@ -58,7 +59,7 @@ public class FakeLineDao implements LineDao {
 
     @Override
     public boolean existsByName(String name) {
-        Optional<Line> presentLine = lines.values().stream()
+        Optional<LineEntity> presentLine = lines.values().stream()
             .filter(i -> i.getName().equals(name))
             .findAny();
         return presentLine.isPresent();

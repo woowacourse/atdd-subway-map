@@ -2,7 +2,7 @@ package wooteco.subway.service.dto.station;
 
 public class StationSaveRequest {
 
-    private String name;
+    private final String name;
 
     public StationSaveRequest(String name) {
         this.name = name;

@@ -2,9 +2,9 @@ package wooteco.subway.service.dto.line;
 
 public class LineFindResponse {
 
-    private Long id;
-    private String name;
-    private String color;
+    private final Long id;
+    private final String name;
+    private final String color;
 
     public LineFindResponse(Long id, String name, String color) {
         this.id = id;

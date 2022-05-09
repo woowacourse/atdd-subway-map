@@ -9,6 +9,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.entity.LineEntity;
 
 @Repository
 public class LineDaoImpl implements LineDao {
@@ -35,13 +36,13 @@ public class LineDaoImpl implements LineDao {
     }
 
     @Override
-    public List<Line> findAll() {
+    public List<LineEntity> findAll() {
         final String sql = "SELECT * FROM line";
         return jdbcTemplate.query(sql, lineMapper());
     }
 
-    private RowMapper<Line> lineMapper() {
-        return (resultSet, rowNum) -> new Line(
+    private RowMapper<LineEntity> lineMapper() {
+        return (resultSet, rowNum) -> new LineEntity(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("color")
@@ -56,7 +57,7 @@ public class LineDaoImpl implements LineDao {
     }
 
     @Override
-    public Optional<Line> findById(Long id) {
+    public Optional<LineEntity> findById(Long id) {
         final String sql = "SELECT * FROM line where id = ?";
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineMapper(), id));
     }
