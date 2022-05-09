@@ -115,9 +115,9 @@ class LineServiceTest {
                 () -> assertThatThrownBy(() -> lineService.updateById(-1L, "3호선", "orange"))
                         .isInstanceOf(NoSuchElementException.class),
                 () -> assertThatThrownBy(() -> lineService.updateById(lineResponse2.getId(), "1호선", "black"))
-                        .isInstanceOf(NoSuchElementException.class),
+                        .isInstanceOf(IllegalArgumentException.class),
                 () -> assertThatThrownBy(() -> lineService.updateById(lineResponse2.getId(), "3호선", "blue"))
-                        .isInstanceOf(NoSuchElementException.class)
+                        .isInstanceOf(IllegalArgumentException.class)
         );
     }
 

@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -23,14 +24,22 @@ public class StationDao {
     }
 
     public Station save(Station station) {
-        String sql = "INSERT INTO station (name) VALUES(?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement statement = connection.prepareStatement(sql, new String[]{"id"});
-            statement.setString(1, station.getName());
-            return statement;
-        }, keyHolder);
+        var sql = "INSERT INTO station (name) VALUES(?)";
+        var keyHolder = new GeneratedKeyHolder();
+        save(station, sql, keyHolder);
         return new Station(keyHolder.getKey().longValue(), station.getName());
+    }
+
+    private void save(Station station, String sql, KeyHolder keyHolder) {
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement statement = connection.prepareStatement(sql, new String[]{"id"});
+                statement.setString(1, station.getName());
+                return statement;
+            }, keyHolder);
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException("[ERROR] 이미 존재하는 역 이름 입니다.");
+        }
     }
 
     public List<Station> findAll() {

@@ -18,22 +18,22 @@ public class StationService {
     }
 
     public StationResponse createStation(String name) {
-        boolean hasName = stationDao.findAll().stream()
-                .anyMatch(it -> it.getName().equals(name));
-        if (hasName) {
-            throw new IllegalArgumentException("[ERROR] 중복된 이름이 존재합니다.");
-        }
-        Station newStation = stationDao.save(new Station(name));
+        var newStation = stationDao.save(new Station(name));
+
         return new StationResponse(newStation.getId(), newStation.getName());
     }
 
     public void deleteStation(Long id) {
+        checkDuplicateId(id);
+
+        stationDao.deleteById(id);
+    }
+
+    private void checkDuplicateId(Long id) {
         stationDao.findAll().stream()
                 .filter(it -> it.getId().equals(id))
                 .findAny()
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 역 입니다."));
-
-        stationDao.deleteById(id);
     }
 
     public List<StationResponse> findAll() {

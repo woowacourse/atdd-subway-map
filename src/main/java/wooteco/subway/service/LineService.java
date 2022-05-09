@@ -1,7 +1,6 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
@@ -19,12 +18,7 @@ public class LineService {
     }
 
     public LineResponse findLineInfos(Long id) {
-        findAll().stream()
-                .filter(it -> it.getId().equals(id))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당 노선이 존재하지 않습니다."));
-
-        Line line = lineDao.findById(id);
+        var line = lineDao.findById(id);
         return new LineResponse(line);
     }
 
@@ -37,59 +31,55 @@ public class LineService {
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
-        validateDuplicate(lineRequest.getName(), lineRequest.getColor());
-        Line line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        checkDuplicateNameAndColor(lineDao.findAll(), lineRequest.getName(), lineRequest.getColor());
+        var line = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
         return new LineResponse(line);
     }
 
-    private void validateDuplicate(String name, String color) {
-        validateDuplicateName(name);
-        validateDuplicateColor(color);
+    private void checkDuplicateNameAndColor(List<Line> lines, String name, String color) {
+        checkDuplicateName(lines, name);
+        checkDuplicateColor(lines, color);
     }
 
-    private void validateDuplicateName(String name) {
-        if (isDuplicatedName(name)) {
+    private void checkDuplicateName(List<Line> lines, String name) {
+        if (isDuplicatedName(lines, name)) {
             throw new IllegalArgumentException("[ERROR] 중복된 이름이 존재합니다.");
         }
     }
 
-    private boolean isDuplicatedName(String name) {
-        return lineDao.findAll().stream()
+    private boolean isDuplicatedName(List<Line> lines, String name) {
+        return lines.stream()
                 .anyMatch(it -> it.getName().equals(name));
     }
 
-    private void validateDuplicateColor(String color) {
-        if (isDuplicatedColor(color)) {
+    private void checkDuplicateColor(List<Line> lines, String color) {
+        if (isDuplicatedColor(lines, color)) {
             throw new IllegalArgumentException("[ERROR] 중복된 색이 존재합니다.");
         }
     }
 
-    private boolean isDuplicatedColor(String color) {
-        return lineDao.findAll().stream()
+    private boolean isDuplicatedColor(List<Line> lines, String color) {
+        return lines.stream()
                 .anyMatch(it -> it.getColor().equals(color));
     }
 
     public void updateById(Long id, String name, String color) {
-        lineDao.findAll().stream()
-                .filter(it -> it.getId().equals(id))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 노선 입니다."));
-        lineDao.findAll().stream()
+        checkLineId(id);
+        var lines = lineDao.findAll().stream()
                 .filter(it -> !it.getId().equals(id))
-                .filter(it -> it.getName().equals(name) || it.getColor().equals(color))
-                .findAny()
-                .ifPresent(s -> {
-                    throw new NoSuchElementException("[ERROR] 이미 존재하는 이름, 색상입니다.");
-                });
+                .collect(Collectors.toList());
+
+        checkDuplicateNameAndColor(lines, name, color);
 
         lineDao.update(id, name, color);
     }
 
+    private void checkLineId(Long id) {
+        lineDao.findById(id);
+    }
+
     public void deleteById(Long id) {
-        lineDao.findAll().stream()
-                .filter(it -> it.getId().equals(id))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 노선 입니다."));
+        checkLineId(id);
 
         lineDao.deleteById(id);
     }

@@ -2,6 +2,8 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.NoSuchElementException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -37,7 +39,11 @@ public class LineDao {
 
     public Line findById(Long id) {
         String sql = "SELECT * FROM line WHERE id=?";
-        return jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id);
+        try {
+            return jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NoSuchElementException("[ERROR] 해당 노선이 존재하지 않습니다.");
+        }
     }
 
     public List<Line> findAll() {
