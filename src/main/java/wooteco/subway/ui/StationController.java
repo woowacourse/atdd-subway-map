@@ -29,7 +29,7 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(@Valid @RequestBody final StationRequest stationRequest) {
+    public ResponseEntity<StationResponse> createStation(@RequestBody @Valid final StationRequest stationRequest) {
         final Station station = stationRequest.toEntity();
         final Station newStation = stationService.createStation(station);
         final StationResponse stationResponse = StationResponse.from(newStation);

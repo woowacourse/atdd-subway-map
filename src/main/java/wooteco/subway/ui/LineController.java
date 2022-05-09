@@ -17,6 +17,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/lines")
@@ -29,7 +30,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid final LineRequest lineRequest) {
         final Line line = lineRequest.toEntity();
         final Line newLine = lineService.createLine(line);
         final LineResponse lineResponse = LineResponse.from(newLine);

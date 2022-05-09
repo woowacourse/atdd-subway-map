@@ -18,16 +18,19 @@ public class ControllerAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
-        final String errorMessage = e.getBindingResult()
-                .getAllErrors()
-                .stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .collect(Collectors.joining(","));
-        return ResponseEntity.badRequest().body(errorMessage);
+        return ResponseEntity.badRequest().body(extractErrorMessage(e));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleServerException(final Exception e) {
         return ResponseEntity.internalServerError().body("서버에 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    }
+
+    private String extractErrorMessage(final MethodArgumentNotValidException e) {
+        return e.getBindingResult()
+                .getAllErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(","));
     }
 }
