@@ -25,9 +25,14 @@ public class Sections {
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("모든 상행과 하행이 연결됩니다."));
     }
 
-    private boolean isFirstUpStation(Station upStation) {
+    public boolean isFirstUpStation(Station station) {
         return sections.stream()
-                .noneMatch(section -> section.getDownStation().equals(upStation));
+                .noneMatch(section -> section.getDownStation().equals(station));
+    }
+
+    public boolean isLastDownStation(Station station) {
+        return sections.stream()
+                .noneMatch(section -> section.getUpStation().equals(station));
     }
 
     private SectionWithStation executeToLastSection(List<Station> stations, SectionWithStation nowSection) {

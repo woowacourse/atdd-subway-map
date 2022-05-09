@@ -155,4 +155,84 @@ class SectionServiceTest extends ServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("새 구간의 길이가 기존 역 사이 길이보다 작아야 합니다.");
     }
+
+    @DisplayName("노선의 상행 역을 지울 수 있다.")
+    @Test
+    void deleteSection_upStation() {
+        //given
+        Station saveStation = stationService.save(STATION);
+        Station saveStation2 = stationService.save(STATION_2);
+        Station saveStation3 = stationService.save(STATION_3);
+        Station saveStation4 = stationService.save(STATION_4);
+        Line saveLine = lineService.save(LINE);
+        sectionService.save(SECTION);
+        sectionService.save(SECTION_2);
+        sectionService.save(SECTION_4);
+
+        //when
+        sectionService.deleteSection(saveLine.getId(),saveStation.getId());
+
+        //then
+        assertThat(sectionService.findStationsOfLine(saveLine.getId()))
+                .containsExactly(saveStation2, saveStation3, saveStation4);
+    }
+
+    @DisplayName("노선의 하행 역을 지울 수 있다.")
+    @Test
+    void deleteSection_downStation() {
+        //given
+        Station saveStation = stationService.save(STATION);
+        Station saveStation2 = stationService.save(STATION_2);
+        Station saveStation3 = stationService.save(STATION_3);
+        Station saveStation4 = stationService.save(STATION_4);
+        Line saveLine = lineService.save(LINE);
+        sectionService.save(SECTION);
+        sectionService.save(SECTION_2);
+        sectionService.save(SECTION_4);
+
+        //when
+        sectionService.deleteSection(saveLine.getId(),saveStation4.getId());
+
+        //then
+        assertThat(sectionService.findStationsOfLine(saveLine.getId()))
+                .containsExactly(saveStation,saveStation2, saveStation3);
+    }
+
+    @DisplayName("노선의 중간 역을 지울 수 있다.")
+    @Test
+    void deleteSection_middleStation() {
+        //given
+        Station saveStation = stationService.save(STATION);
+        Station saveStation2 = stationService.save(STATION_2);
+        Station saveStation3 = stationService.save(STATION_3);
+        Station saveStation4 = stationService.save(STATION_4);
+        Line saveLine = lineService.save(LINE);
+        sectionService.save(SECTION);
+        sectionService.save(SECTION_2);
+        sectionService.save(SECTION_4);
+
+        //when
+        sectionService.deleteSection(saveLine.getId(),saveStation2.getId());
+
+        //then
+        assertThat(sectionService.findStationsOfLine(saveLine.getId()))
+                .containsExactly(saveStation,saveStation3, saveStation4);
+        assertThat(sectionService.findById(4L).getDistance())
+                .isEqualTo(15);
+    }
+
+    @DisplayName("노선이 1개 이하의 구간을 가지고 있으면 역을 삭제할 수 없다.")
+    @Test
+    void deleteSection_OneSectionError() {
+        //given
+        Station saveStation = stationService.save(STATION);
+        stationService.save(STATION_2);
+        Line saveLine = lineService.save(LINE);
+        sectionService.save(SECTION);
+
+        //when then
+        assertThatThrownBy(() -> sectionService.deleteSection(saveLine.getId(),saveStation.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 지하철 노선은 1개 이하의 구간을 가지고 있어 역을 삭제할 수 없습니다.");
+    }
 }

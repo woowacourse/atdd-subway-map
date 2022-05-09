@@ -16,6 +16,7 @@ public class SectionService {
     private static final String DUPLICATED_SECTION_ERROR_MESSAGE = "중복된 구간입니다.";
     private static final String INVALID_STATION_ID_ERROR_MESSAGE = "구간 안에 존재하지 않는 아이디의 역이 있습니다.";
     private static final String LINK_FAILURE_ERROR_MESSAGE = "해당 구간은 역과 연결될 수 없습니다.";
+    private static final String ONE_LESS_SECTION_ERROR_MESSAGE = "해당 지하철 노선은 1개 이하의 구간을 가지고 있어 역을 삭제할 수 없습니다.";
     private final SectionDao sectionDao;
     private final StationDao stationDao;
 
@@ -25,8 +26,8 @@ public class SectionService {
     }
 
     public Section save(Section section) {
-        Sections sections = getSections(section.getLineId());
         validateSection(section);
+        Sections sections = getSections(section.getLineId());
         if (sections.isMiddleSection(section)) {
             boolean isUpAttach = sections.isMiddleUpAttachSection(section);
             Section baseSection = getBaseSection(section, isUpAttach);
@@ -34,6 +35,10 @@ public class SectionService {
             return sectionDao.findById(id);
         }
         Long id = sectionDao.save(section);
+        return sectionDao.findById(id);
+    }
+
+    public Section findById(Long id) {
         return sectionDao.findById(id);
     }
 
@@ -90,24 +95,43 @@ public class SectionService {
         return getSections(lineId).calculateStations();
     }
 
-    private Sections getSections(Long lineId) {
+    public Sections getSections(Long lineId) {
         return new Sections(sectionDao.findAllByLineId(lineId).stream()
-                .map(this::getSectionWithStation)
+                .map(section -> SectionWithStation.of(section,
+                        stationDao.findById(section.getUpStationId()),
+                        stationDao.findById(section.getDownStationId())))
                 .collect(Collectors.toList())
         );
     }
 
-    private SectionWithStation getSectionWithStation(Section section) {
-        return SectionWithStation.of(section, stationDao.findById(section.getUpStationId()),
-                stationDao.findById(section.getDownStationId()));
+    public void deleteSection(Long lineId, Long stationId) {
+        validateTwoMoreSections(lineId);
+        Sections sections = getSections(lineId);
+        Station station = stationDao.findById(stationId);
+        if (sections.isFirstUpStation(station)) {
+            sectionDao.delete(sectionDao.findByUpStationId(lineId, stationId).getId());
+            return;
+        }
+        if (sections.isLastDownStation(station)) {
+            sectionDao.delete(sectionDao.findByDownStationId(lineId, stationId).getId());
+            return;
+        }
+        deleteMiddleSection(lineId, stationId);
     }
 
-    public void deleteSection(Long lineId, Long stationId) {
-        //TODO 구간제거 기능 추가
-        List<Section> sections = sectionDao.findAllByLineId(lineId);
-        boolean isUpStation = sections.stream().anyMatch(section -> section.getUpStationId().equals(stationId));
-        boolean isDownStation = sections.stream().anyMatch(section -> section.getDownStationId().equals(stationId));
-        //
+    private void validateTwoMoreSections(Long lineId) {
+        if (sectionDao.findAllByLineId(lineId).size()<= 1) {
+            throw new IllegalArgumentException(ONE_LESS_SECTION_ERROR_MESSAGE);
+        }
+    }
 
+    private void deleteMiddleSection(Long lineId, Long stationId) {
+        Section upSection = sectionDao.findByDownStationId(lineId, stationId);
+        Section downSection = sectionDao.findByUpStationId(lineId, stationId);
+        sectionDao.delete(upSection.getId());
+        sectionDao.delete(downSection.getId());
+        Section combinedSection = new Section(lineId, upSection.getUpStationId(), downSection.getDownStationId(),
+                upSection.getDistance() + downSection.getDistance());
+        sectionDao.save(combinedSection);
     }
 }
