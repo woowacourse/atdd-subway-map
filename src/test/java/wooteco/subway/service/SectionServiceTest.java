@@ -13,6 +13,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.dto.StationResponse;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -69,15 +70,17 @@ class SectionServiceTest {
         Long stationSaveId1 = stationDao.save(new Station("강남역"));
         Long stationSaveId2 = stationDao.save(new Station("역삼역"));
         Long stationSaveId3 = stationDao.save(new Station("선릉역"));
+        Long stationSaveId4 = stationDao.save(new Station("잠실역"));
         Long lineId = lineService.save(new LineRequest("신분당선", "bg-red-600", stationSaveId1, stationSaveId2, 10));
+        sectionService.addSection(lineId, new SectionRequest(stationSaveId2, stationSaveId3, 4));
 
         // when
-        sectionService.addSection(lineId, new SectionRequest(stationSaveId3, stationSaveId2, 4));
+        sectionService.addSection(lineId, new SectionRequest(stationSaveId2, stationSaveId4, 2));
 
         // then
-        assertThat(lineService.findById(lineId).getStations()).hasSize(3)
-                .extracting("name")
-                .containsExactly("강남역", "선릉역", "역삼역");
+        assertThat(lineService.findById(lineId).getStations()).hasSize(4)
+                .extracting(StationResponse::getName)
+                .containsExactly("강남역", "역삼역", "잠실역", "선릉역");
     }
 
     @Test
@@ -87,15 +90,17 @@ class SectionServiceTest {
         Long stationSaveId1 = stationDao.save(new Station("강남역"));
         Long stationSaveId2 = stationDao.save(new Station("역삼역"));
         Long stationSaveId3 = stationDao.save(new Station("선릉역"));
+        Long stationSaveId4 = stationDao.save(new Station("잠실역"));
         Long lineId = lineService.save(new LineRequest("신분당선", "bg-red-600", stationSaveId1, stationSaveId2, 10));
+        sectionService.addSection(lineId, new SectionRequest(stationSaveId2, stationSaveId3, 4));
 
         // when
-        sectionService.addSection(lineId, new SectionRequest(stationSaveId1, stationSaveId3, 4));
+        sectionService.addSection(lineId, new SectionRequest(stationSaveId1, stationSaveId4, 2));
 
         // then
-        assertThat(lineService.findById(lineId).getStations()).hasSize(3)
+        assertThat(lineService.findById(lineId).getStations()).hasSize(4)
                 .extracting("name")
-                .containsExactly("강남역", "선릉역", "역삼역");
+                .containsExactly("강남역", "잠실역", "역삼역", "선릉역");
     }
 
     @Test
@@ -106,7 +111,7 @@ class SectionServiceTest {
         Long stationSaveId2 = stationDao.save(new Station("역삼역"));
         Long stationSaveId3 = stationDao.save(new Station("선릉역"));
         Long lineId = lineService.save(new LineRequest("신분당선", "bg-red-600", stationSaveId1, stationSaveId2, 10));
-        sectionService.addSection(lineId, new SectionRequest(stationSaveId1, stationSaveId3, 4));
+        sectionService.addSection(lineId, new SectionRequest(stationSaveId2, stationSaveId3, 4));
 
         // when & then
         assertDoesNotThrow(() -> sectionService.deleteSection(lineId, stationSaveId1));

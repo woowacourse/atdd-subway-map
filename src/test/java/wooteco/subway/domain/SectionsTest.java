@@ -82,7 +82,29 @@ class SectionsTest {
         // when & then
         assertThatThrownBy(() -> sections.add(new Section(4L, 1L, 5L, 4L, 5)))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("구간에 등록되지 않은 역입니다.");
+                .hasMessage("기존 노선에 등록할 수 없는 구간입니다.");
+    }
+
+    @Test
+    @DisplayName("노선의 중간구간에 상행역을 등록할 수 있다.")
+    void validAddMiddleSection() {
+        // given
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(new Section(1L, 1L, 1L, 2L, 10));
+        sectionList.add(new Section(1L, 1L, 2L, 3L, 10));
+        Sections sections = new Sections(sectionList);
+
+        // when
+        sections.add(new Section(1L, 1L, 2L, 4L, 5));
+
+        // then
+        assertThat(sections.getSections()).hasSize(3)
+                .extracting("upStationId", "downStationId", "distance")
+                .containsExactly(
+                        tuple(1L, 2L, 10),
+                        tuple(2L, 4L, 5),
+                        tuple(4L, 3L, 5)
+                );
     }
 
     @Test

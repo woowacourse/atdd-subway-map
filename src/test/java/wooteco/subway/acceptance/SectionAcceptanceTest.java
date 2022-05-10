@@ -58,7 +58,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("중간에 구간을 생성한다.")
     void addUpMiddleSection() {
         // given
-        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 4);
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 4);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()

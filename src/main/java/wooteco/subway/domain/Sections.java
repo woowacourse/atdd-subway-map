@@ -18,7 +18,9 @@ public class Sections {
     }
 
     public void add(Section requestSection) {
-        validateSection(requestSection);
+        validateIncludeSection(requestSection);
+        validateDuplicateSection(requestSection);
+        validateSameSection(requestSection);
         if (validateFinalSection(requestSection)) {
             saveFinalSection(requestSection);
             return;
@@ -26,20 +28,29 @@ public class Sections {
         saveMiddleSection(requestSection);
     }
 
-    private void validateSection(Section requestSection) {
-        final boolean isIncludedUpStation = sections.stream()
+    private void validateSameSection(Section requestSection) {
+        final boolean isSameSection = sections.stream()
                 .anyMatch(section -> section.getUpStationId().equals(requestSection.getUpStationId())
-                        || section.getUpStationId().equals(requestSection.getDownStationId()));
-        final boolean isIncludedDownStation = sections.stream()
-                .anyMatch(section -> section.getDownStationId().equals(requestSection.getUpStationId())
-                        || section.getDownStationId().equals(requestSection.getDownStationId()));
-
-        if (isIncludedUpStation == true && isIncludedDownStation == true) {
+                        && section.getDownStationId().equals(requestSection.getDownStationId()));
+        if (isSameSection) {
             throw new IllegalArgumentException("이미 연결되어 있는 구간입니다.");
         }
+    }
 
-        if (isIncludedUpStation == false && isIncludedDownStation == false) {
-            throw new IllegalArgumentException("구간에 등록되지 않은 역입니다.");
+    private void validateDuplicateSection(Section requestSection) {
+        if (requestSection.getUpStationId().equals(requestSection.getDownStationId())) {
+            throw new IllegalArgumentException("같은 역은 등록할 수 없습니다.");
+        }
+    }
+
+    private void validateIncludeSection(Section requestSection) {
+        final boolean upStation = sections.stream()
+                .anyMatch(section -> section.getDownStationId().equals(requestSection.getDownStationId()));
+        final boolean downStation = sections.stream()
+                .anyMatch(section -> section.getUpStationId().equals(requestSection.getUpStationId()));
+
+        if (upStation == true && downStation == true) {
+            throw new IllegalArgumentException("이미 연결되어 있는 구간입니다.");
         }
     }
 
@@ -130,6 +141,7 @@ public class Sections {
         }
         removeMiddleSection(lineId, findSections);
     }
+
     private void validateSectionSize() {
         if (sections.size() == SECTIONS_MINIMUM) {
             throw new IllegalArgumentException("구간은 1개 이상이 있어야 합니다.");
@@ -162,8 +174,6 @@ public class Sections {
         sections.add(index, updateSection);
         sections.removeAll(findSections);
     }
-
-
 
     public List<Section> getSections() {
         return sections;

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -31,8 +32,10 @@ public class LineService {
         this.sectionDao = sectionDao;
     }
 
+    @Transactional
     public Long save(LineRequest request) {
         validateDuplicateName(request.getName());
+        validateDuplicateSections(request);
         final Line line = new Line(request.getName(), request.getColor());
         final Long lineId = lineDao.save(line);
 
@@ -48,6 +51,12 @@ public class LineService {
                 .anyMatch(line -> line.getName().equals(name));
         if (isExist) {
             throw new IllegalArgumentException("중복된 지하철 노선이 존재합니다.");
+        }
+    }
+
+    private void validateDuplicateSections(LineRequest request) {
+        if (request.getUpStationId().equals(request.getDownStationId())) {
+            throw new IllegalArgumentException("상행과 하행 종점이 동일합니다.");
         }
     }
 
