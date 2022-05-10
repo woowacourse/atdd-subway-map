@@ -9,7 +9,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
@@ -39,36 +39,21 @@ public class LineService {
         checkDuplicateName(lineDao.isExistName(name));
 
         Line line = lineDao.insert(name, request.getColor());
-        Section section = sectionDao.insert(request.getUpStationId(), request.getDownStationId(),
-                request.getDistance(), line.getId());
+        sectionDao.insert(request.getUpStationId(), request.getDownStationId(), request.getDistance(), line.getId());
 
-        List<StationResponse> stationResponses = getStationResponses(section);
+        List<StationResponse> stationResponses = getStationResponsesByLineId(line.getId());
 
         return new LineResponse(line, stationResponses);
     }
 
-    private List<StationResponse> getStationResponses(Section section) {
-        List<Long> stationIds = List.of(section.getUpStationId(), section.getDownStationId());
-
-        return stationIds.stream()
-                .map(stationDao::findById)
-                .map(station -> new StationResponse(
-                        station.orElseThrow(() -> new NotFoundException(STATION_NOT_FOUND))))
-                .collect(Collectors.toList());
-    }
-
     @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
-        List<Line> lines = lineDao.findAll();
-        List<List<StationResponse>> stationResponses = lines.stream()
-                .map(line -> getStationResponsesById(line.getId()))
-                .collect(Collectors.toList());
-
         List<LineResponse> lineResponses = new ArrayList<>();
-        for (int i = 0; i < lines.size(); i++) {
-            lineResponses.add(new LineResponse(lines.get(i), stationResponses.get(i)));
-        }
 
+        for (Line line : lineDao.findAll()) {
+            List<StationResponse> stationResponsesByLineId = getStationResponsesByLineId(line.getId());
+            lineResponses.add(new LineResponse(line, stationResponsesByLineId));
+        }
         return lineResponses;
     }
 
@@ -77,23 +62,20 @@ public class LineService {
         Line line = lineDao.findById(id)
                 .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND));
 
-        List<StationResponse> stationResponses = getStationResponsesById(id).stream()
-                .distinct()
-                .collect(Collectors.toList());
+        List<StationResponse> responses = getStationResponsesByLineId(id);
 
-        return new LineResponse(line, stationResponses);
+        return new LineResponse(line, responses);
     }
 
-    private List<StationResponse> getStationResponsesById(Long id) {
-        List<StationResponse> stationResponses = new ArrayList<>();
+    private List<StationResponse> getStationResponsesByLineId(Long lineId) {
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        List<Long> stationIds = sections.convertToStationIds();
 
-        List<Section> sections = sectionDao.findByLineId(id);
-        for (Section section : sections) {
-            List<StationResponse> tempResponse = getStationResponses(section);
-            stationResponses.add(tempResponse.get(0));
-            stationResponses.add(tempResponse.get(1));
-        }
-        return stationResponses;
+        return stationIds.stream()
+                .map(stationDao::findById)
+                .map(station -> new StationResponse(
+                        station.orElseThrow(() -> new NotFoundException(STATION_NOT_FOUND))))
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -111,6 +93,7 @@ public class LineService {
         Line oldLine = lineDao.findById(id)
                 .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND));
         Line newLine = new Line(oldLine.getId(), request.getName(), request.getColor());
+        
         lineDao.update(newLine);
     }
 
