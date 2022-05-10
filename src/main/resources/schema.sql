@@ -20,5 +20,6 @@ CREATE TABLE IF NOT EXISTS section
     up_station_id BIGINT NOT NULL,
     down_station_id BIGINT NOT NULL,
     distance INT,
-    PRIMARY KEY(id)
+    PRIMARY KEY(id),
+    UNIQUE KEY unique_section (line_id, up_station_id, down_station_id)
 );
