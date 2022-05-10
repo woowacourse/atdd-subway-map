@@ -32,7 +32,7 @@ public class LineDaoTest {
     @Test
     @DisplayName("노선을 저장한다.")
     void save() {
-        LineRequest lineRequest = new LineRequest("강남역", "green", 1L, 2L, 10);
+        LineRequest lineRequest = new LineRequest("2호선", "green", 1L, 2L, 10);
 
         Line line = lineDao.save(lineRequest);
         String actualName = line.getName();
