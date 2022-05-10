@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -58,14 +59,19 @@ public class JdbcSectionDao {
         return new Sections(sections);
     }
 
-    public Section findByLineIdAndUpStationId(Long lineId, Long upStationId) {
+    public Optional<Section> findByLineIdAndUpStationId(Long lineId, Long upStationId) {
         String sql = "select * from section where line_id = ? and up_station_id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper, lineId, upStationId);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, upStationId));
     }
 
-    public Section findByLineIdAndDownStationId(Long lineId, Long downStationId) {
+    public Optional<Section> findByLineIdAndDownStationId(Long lineId, Long downStationId) {
         String sql = "select * from section where line_id = ? and down_station_id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper, lineId, downStationId);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, downStationId));
+    }
+
+    public boolean updateDownStationIdByLineIdAndUpStationId(Long lineId, Long upStationId, Long downStationId) {
+        String sql = "update section set down_station_id = ? where line_id = ? and up_station_id = ?";
+        return jdbcTemplate.update(sql, downStationId, lineId, upStationId) == FUNCTION_SUCCESS;
     }
 
     public boolean deleteByLineIdAndUpStationId(Long lineId, Long upStationId) {
