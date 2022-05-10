@@ -42,15 +42,15 @@ public class SectionService {
         Section section = Section.of(line, sectionRequest);
         // 1. 종점에 추가 가능한가
         if (section.canAddAsLastStation(sections)) {
-            sectionDao.save(section);
+            save(section);
             return;
         }
         // 2. 갈래길로 추가
         SectionResult result = section.canAddAsBetweenStation(sections);
         if (result.canAddAsBetweenStation()) {
             sectionDao.delete(result.getExistedSection());
-            sectionDao.save(result.getInsertedSection());
-            sectionDao.save(result.getGeneratedSection());
+            save(result.getInsertedSection());
+            save(result.getGeneratedSection());
         }
     }
 }
