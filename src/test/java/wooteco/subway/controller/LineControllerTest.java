@@ -56,16 +56,19 @@ class LineControllerTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    //TODO: 리팩토링
     @DisplayName("중복된 이름을 가진 지하철 노선을 등록할 때 400 상태코드로 응답한다.")
     @Test
-    @Disabled
     void throwsExceptionWhenCreateDuplicatedName() {
+        Station upStation = stationDao.save(new Station("동천역"));
+        Station downStation = stationDao.save(new Station("판교역"));
         lineDao.save(new Line("신분당선", "red"));
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "red");
+        params.put("upStationId", upStation.getId().toString());
+        params.put("downStationId", downStation.getId().toString());
+        params.put("distance", "10");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)

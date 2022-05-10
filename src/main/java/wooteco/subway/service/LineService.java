@@ -1,5 +1,7 @@
 package wooteco.subway.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
@@ -11,10 +13,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.DuplicateNameException;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import wooteco.subway.exception.BadRequestLineException;
 import wooteco.subway.exception.NotFoundException;
 
 @Service
@@ -31,6 +30,21 @@ public class LineService {
     }
 
     public LineResponse save(LineRequest lineRequest) {
+        if (lineRequest.getName().isBlank()) {
+            throw new BadRequestLineException("이름은 공백, 빈값이면 안됩니다.");
+        }
+
+        if (lineRequest.getColor().isBlank()) {
+            throw new BadRequestLineException("색깔은 공백, 빈값이면 안됩니다.");
+        }
+
+        if (lineRequest.getUpStationId() == lineRequest.getDownStationId()) {
+            throw new BadRequestLineException("상행선과 하행선은 같은 지하철 역이면 안됩니다.");
+        }
+
+        if (lineRequest.getDistance() < 1) {
+            throw new BadRequestLineException("상행선과 하행선의 거리는 1 이상이어야 합니다.");
+        }
 
         Station upStation = getStationOrException(lineRequest.getUpStationId());
         Station downStation = getStationOrException(lineRequest.getDownStationId());
@@ -47,7 +61,7 @@ public class LineService {
 
             return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateNameException(lineRequest.getName() + "은 이미 존재합니다.");
+            throw new DuplicateKeyException("이미 존재하는 이름 또는 색깔이 있습니다.");
         }
     }
 
@@ -73,7 +87,7 @@ public class LineService {
         try {
             lineDao.update(new Line(lineId, name, color));
         } catch (DuplicateKeyException e) {
-            throw new DuplicateNameException(name + "은 이미 존재합니다.");
+            throw new DuplicateKeyException("이미 존재하는 노선 이름 또는 색깔이 있습니다.");
         }
     }
 
