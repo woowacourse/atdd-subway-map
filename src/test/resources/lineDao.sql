@@ -1,3 +1,4 @@
+drop table section if exists;
 drop table line if exists;
 
 create table LINE

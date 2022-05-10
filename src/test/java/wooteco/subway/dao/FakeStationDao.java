@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import wooteco.subway.domain.Station;
 
 public class FakeStationDao implements StationDao {
@@ -40,5 +41,16 @@ public class FakeStationDao implements StationDao {
         return stations.values()
                 .stream()
                 .anyMatch(it -> it.hasSameName(station));
+    }
+
+    @Override
+    public List<Station> findStationByIds(List<Long> ids) {
+        List<Station> targets = new ArrayList<>();
+        for (Entry<Long, Station> entry : stations.entrySet()) {
+            if (ids.contains(entry.getKey())) {
+                targets.add(entry.getValue());
+            }
+        }
+        return targets;
     }
 }

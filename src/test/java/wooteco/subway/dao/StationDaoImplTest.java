@@ -63,4 +63,19 @@ class StationDaoImplTest {
 
         assertThat(stations).isEmpty();
     }
+
+    @DisplayName("지하철 역 아이디 리스트에 해당하는 지하철 역을 모두 반환한다.")
+    @Test
+    void findStationByIds() {
+        stationDao.save(new Station("강남역"));
+        stationDao.save(new Station("신촌역"));
+        stationDao.save(new Station("아현역"));
+
+        List<Long> stationIds = List.of(1L, 2L);
+
+        List<Station> stations = stationDao.findStationByIds(stationIds);
+
+        assertThat(stations.get(0).getName()).isEqualTo("서울역");
+        assertThat(stations.get(1).getName()).isEqualTo("강남역");
+    }
 }

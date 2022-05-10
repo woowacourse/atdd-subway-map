@@ -55,4 +55,11 @@ public class StationDaoImpl implements StationDao {
         SqlParameterSource namedParameters = new BeanPropertySqlParameterSource(station);
         return Boolean.TRUE.equals(namedParameterJdbcTemplate.queryForObject(sql, namedParameters, Boolean.class));
     }
+
+    @Override
+    public List<Station> findStationByIds(List<Long> ids) {
+        String sql = "select * from station where id in (:ids)";
+        SqlParameterSource namedParameter = new MapSqlParameterSource("ids", ids);
+        return namedParameterJdbcTemplate.query(sql, namedParameter, ACTOR_ROW_MAPPER);
+    }
 }

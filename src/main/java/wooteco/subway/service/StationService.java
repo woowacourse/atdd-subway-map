@@ -18,6 +18,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
+
     public Station save(Station station) {
         if (stationDao.existsByName(station)) {
             throw new DuplicatedStationException();
@@ -34,5 +35,9 @@ public class StationService {
 
     public List<Station> findAll() {
         return stationDao.findAll();
+    }
+
+    public List<Station> findStationByIds(List<Long> ids) {
+        return stationDao.findStationByIds(ids);
     }
 }

@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 
 @JdbcTest
 @Sql("classpath:sectionDao.sql")
@@ -21,17 +23,32 @@ public class SectionDaoImplTest {
     private DataSource dataSource;
 
     private SectionDao sectionDao;
+    private LineDao lineDao;
+    private StationDao stationDao;
+
     private Section section;
+    private Line line;
 
     @BeforeEach
     void setUp() {
         sectionDao = new SectionDaoImpl(dataSource);
-        section = sectionDao.save(new Section(1L, 1L, 2L, 10));
+        lineDao = new LineDaoImpl(dataSource);
+        stationDao = new StationDaoImpl(dataSource);
+
+        stationDao.save(new Station("서울역"));
+        stationDao.save(new Station("강남역"));
+        stationDao.save(new Station("선릉역"));
+
+        line = lineDao.save(new Line("분당선", "red"));
+
+        section = sectionDao.save(new Section(line.getId(), 1L, 2L, 10));
     }
 
     @DisplayName("새로운 구간을 추가한다.")
     @Test
     void save() {
+        lineDao.save(new Line("신분당선", "orange"));
+
         assertThatCode(() ->
                 sectionDao.save(new Section(2L, 2L, 3L, 5)))
                 .doesNotThrowAnyException();
@@ -40,7 +57,7 @@ public class SectionDaoImplTest {
     @DisplayName("구간을 변경한다.")
     @Test
     void update() {
-        sectionDao.update(new Section(1L, 1L, 3L, 2L, 5));
+        sectionDao.update(new Section(section.getId(), line.getId(), 3L, 2L, 5));
 
         List<Section> sections = sectionDao.findByLineId(1L);
 

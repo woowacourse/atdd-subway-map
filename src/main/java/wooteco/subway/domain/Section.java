@@ -57,4 +57,15 @@ public class Section {
                 || this.upStationId.equals(section.downStationId)
                 || this.downStationId.equals(section.upStationId);
     }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", lineId=" + lineId +
+                ", upStationId=" + upStationId +
+                ", downStationId=" + downStationId +
+                ", distance=" + distance +
+                '}';
+    }
 }

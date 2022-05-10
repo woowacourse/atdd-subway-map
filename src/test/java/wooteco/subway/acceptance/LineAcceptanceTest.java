@@ -20,18 +20,44 @@ import wooteco.subway.dto.LineResponse;
 class LineAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> createResponse;
-    private Map<String, String> createParams;
+    private Map<String, Object> createParams;
 
     @BeforeEach
     void setUpLine() {
+        createStations();
+
         createParams = new HashMap<>();
         createParams.put("name", "신분당선");
         createParams.put("color", "red");
+        createParams.put("upStationId", 1);
+        createParams.put("downStationId", 2);
+        createParams.put("distance", 10);
 
         createResponse = createLine(createParams);
     }
 
-    private ExtractableResponse<Response> createLine(Map<String, String> params) {
+    private void createStations() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "사당역");
+        ExtractableResponse<Response> response1 = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
+        params.put("name", "강남역");
+        ExtractableResponse<Response> response2 = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> createLine(Map<String, Object> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -65,6 +91,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         //given
         createParams.put("name", "4호선");
         createParams.put("color", "skyBlue");
+        createParams.put("upStationId", 1);
+        createParams.put("downStationId", 2);
+        createParams.put("distance", 10);
 
         ExtractableResponse<Response> createResponse2 = createLine(createParams);
 
