@@ -26,6 +26,13 @@ public class FakeStationDao implements StationDao {
     }
 
     @Override
+    public List<Station> findByIds(final List<Long> ids) {
+        return ids.stream()
+                .map(stations::get)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    @Override
     public int deleteById(Long id) {
         if (stations.containsKey(id)) {
             stations.remove(id);

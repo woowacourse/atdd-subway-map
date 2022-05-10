@@ -23,7 +23,7 @@ public class StationService {
         Station station = new Station(stationRequest.getName());
         validateStationName(station);
         Station savedStation = stationDao.save(station);
-        return new StationResponse(savedStation.getId(), savedStation.getName());
+        return new StationResponse(savedStation);
     }
 
     private void validateStationName(final Station station) {
@@ -42,7 +42,7 @@ public class StationService {
     public List<StationResponse> findAll() {
         return stationDao.findAll()
                 .stream()
-                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .map(StationResponse::new)
                 .collect(Collectors.toUnmodifiableList());
     }
 }

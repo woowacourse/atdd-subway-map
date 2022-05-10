@@ -40,6 +40,17 @@ class StationDaoImplTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    @DisplayName("id값들에 해당하는 모든 지하철 역을 반환한다.")
+    void findByIds() {
+        stationDao.save(new Station("강남역"));
+        stationDao.save(new Station("용산역"));
+
+        final List<Station> stations = stationDao.findByIds(List.of(1L, 3L));
+
+        assertThat(stations).contains(new Station(1L, "서울역"), new Station(3L, "용산역"));
+    }
+
     @DisplayName("저장되어있는 모든 지하철 역을 반환한다.")
     @Test
     void findAll() {
