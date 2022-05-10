@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
@@ -328,20 +329,49 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("name을 지정하지 않고 요청하면 bad request 예외를 반환해야 한다.")
     void emptyName() {
-        LineRequest lineRequest = new LineRequest(
-            null,
-            "bg-red-600",
-            stationId1,
-            stationId2,
-            10
-        );
+        LineRequest lineRequest = new LineRequest(null, "bg-red-600", stationId1, stationId2, 10);
+        createLineRequest(lineRequest)
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
 
-        RestAssured.given().log().all()
+    @Test
+    @DisplayName("color를 지정하지 않고 요청하면 bad request 예외를 반환해야 한다.")
+    void emptyColor() {
+        LineRequest lineRequest = new LineRequest("1호선", null, stationId1, stationId2, 10);
+        createLineRequest(lineRequest)
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("upStationId를 지정하지 않고 요청하면 bad request 예외를 반환해야 한다.")
+    void emptyUpStationId() {
+        LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", null, stationId2, 10);
+        createLineRequest(lineRequest)
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("downStationId를 지정하지 않고 요청하면 bad request 예외를 반환해야 한다.")
+    void emptyDownStationId() {
+        LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", stationId1, null, 10);
+        createLineRequest(lineRequest)
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("distance가 1보다 작으면 bad request 예외를 반환해야 한다.")
+    void notPositiveDistance() {
+        LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", stationId1, stationId2, 0);
+        createLineRequest(lineRequest)
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ValidatableResponse createLineRequest(LineRequest lineRequest) {
+        return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(lineRequest)
             .when()
             .post("/lines")
-            .then().log().all()
-            .statusCode(HttpStatus.BAD_REQUEST.value());
+            .then().log().all();
     }
 }
