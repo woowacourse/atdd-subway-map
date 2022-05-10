@@ -18,12 +18,16 @@ public class StationService {
     }
 
     public StationResponse save(StationRequest stationRequest) {
-        if (stationDao.existByName(stationRequest.getName())) {
-            throw new IllegalArgumentException("중복된 지하철 역 이름입니다.");
-        }
+        validateNameDuplication(stationRequest);
         Station station = new Station(stationRequest.getName());
         Station newStation = stationDao.save(station);
         return StationResponse.of(newStation);
+    }
+
+    private void validateNameDuplication(StationRequest stationRequest) {
+        if (stationDao.existByName(stationRequest.getName())) {
+            throw new IllegalArgumentException("중복된 지하철 역 이름입니다.");
+        }
     }
 
     public List<StationResponse> findAll() {
@@ -34,9 +38,13 @@ public class StationService {
     }
 
     public void delete(Long id) {
+        validateExistence(id);
+        stationDao.delete(id);
+    }
+
+    private void validateExistence(Long id) {
         if (!stationDao.existById(id)) {
             throw new IllegalArgumentException("존재하지 않는 지하철 역입니다.");
         }
-        stationDao.delete(id);
     }
 }
