@@ -16,9 +16,11 @@ public class LineService {
     private static final int ROW_SIZE_WHEN_NOT_DELETED = 0;
 
     private final LineDao lineDao;
+    private final SectionService sectionService;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SectionService sectionService) {
         this.lineDao = lineDao;
+        this.sectionService = sectionService;
     }
 
     public LineEntity createLine(LineEntity line) {
@@ -27,6 +29,12 @@ public class LineService {
             throw new DataDuplicationException("이미 등록된 노선입니다.");
         }
         return lineDao.save(line);
+    }
+
+    public LineEntity createLine(LineEntity lineEntity, Long upStationId, Long downStationId, int distance) {
+        LineEntity line = createLine(lineEntity);
+        sectionService.createSection(line.getId(), upStationId, downStationId, distance);
+        return line;
     }
 
     public List<LineEntity> findAll() {

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.LineEntity;
 import wooteco.subway.domain.StationEntity;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.SectionService;
 import wooteco.subway.service.StationService;
 import wooteco.subway.ui.request.LineRequest;
 import wooteco.subway.ui.response.LineResponse;
@@ -27,17 +28,21 @@ public class LineController {
 
     private final LineService lineService;
     private final StationService stationService;
+    private final SectionService sectionService;
 
-    public LineController(LineService lineService, StationService stationService) {
+    public LineController(LineService lineService, StationService stationService,
+        SectionService sectionService) {
         this.lineService = lineService;
         this.stationService = stationService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineEntity newLine = lineService.createLine(lineRequest.toEntity());
         StationEntity upStationEntity = stationService.findById(lineRequest.getUpStationId());
         StationEntity downStationEntity = stationService.findById(lineRequest.getDownStationId());
+        LineEntity newLine = lineService.createLine(lineRequest.toEntity(), lineRequest.getUpStationId(),
+            lineRequest.getDownStationId(), lineRequest.getDistance());
         LineResponse lineResponse = new LineResponse(newLine, List.of(upStationEntity, downStationEntity));
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
@@ -54,7 +59,8 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
         LineEntity line = lineService.findById(id);
-        return ResponseEntity.ok().body(new LineResponse(line));
+        List<StationEntity> stations = sectionService.findStationsByLineId(id);
+        return ResponseEntity.ok().body(new LineResponse(line, stations));
     }
 
     @PutMapping("/{id}")

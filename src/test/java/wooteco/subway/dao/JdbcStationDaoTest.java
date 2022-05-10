@@ -41,7 +41,7 @@ class JdbcStationDaoTest {
     }
 
     @Test
-    @DisplayName("모든 Station 을 검색한다.")
+    @DisplayName("모든 Station 을 조회한다.")
     void findAll() {
         //given
         StationEntity station1 = new StationEntity("lala");
