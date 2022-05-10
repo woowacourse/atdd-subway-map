@@ -34,7 +34,7 @@ public class StationDao {
     private void save(Station station, String sql, KeyHolder keyHolder) {
         try {
             jdbcTemplate.update(connection -> {
-                PreparedStatement statement = connection.prepareStatement(sql, new String[]{"id"});
+                var statement = connection.prepareStatement(sql, new String[]{"id"});
                 statement.setString(1, station.getName());
                 return statement;
             }, keyHolder);

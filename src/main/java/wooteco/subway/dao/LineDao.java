@@ -28,8 +28,8 @@ public class LineDao {
     }
 
     public Line save(Line line) {
-        String sql = "INSERT INTO line (name, color) VALUES(?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        var sql = "INSERT INTO line (name, color) VALUES(?, ?)";
+        var keyHolder = new GeneratedKeyHolder();
         save(line, sql, keyHolder);
         return new Line(keyHolder.getKey().longValue(), line.getName(), line.getColor());
     }
@@ -37,7 +37,7 @@ public class LineDao {
     private void save(Line line, String sql, KeyHolder keyHolder) {
         try {
             jdbcTemplate.update(connection -> {
-                PreparedStatement statement = connection.prepareStatement(sql, new String[]{"id"});
+                var statement = connection.prepareStatement(sql, new String[]{"id"});
                 statement.setString(1, line.getName());
                 statement.setString(2, line.getColor());
                 return statement;
@@ -48,7 +48,7 @@ public class LineDao {
     }
 
     public Line findById(Long id) {
-        String sql = "SELECT * FROM line WHERE id=?";
+        var sql = "SELECT * FROM line WHERE id=?";
         try {
             return jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id);
         } catch (EmptyResultDataAccessException e) {
