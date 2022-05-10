@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.service.LineService;
@@ -26,7 +27,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody CreateLineRequest lineRequest) {
         LineResponse lineResponse = lineService.save(lineRequest);
         URI location = URI.create("/stations/" + lineResponse.getId());
         return ResponseEntity.created(location).body(lineResponse);

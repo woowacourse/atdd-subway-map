@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import wooteco.subway.dao.DaoTest;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.exception.NotFoundException;
@@ -63,7 +64,7 @@ class LineServiceTest extends DaoTest {
 
         @Test
         void 중복되지_않는_이름인_경우_성공() {
-            LineResponse actual = service.save(new LineRequest("새로운 노선", "분홍색"));
+            LineResponse actual = service.save(new CreateLineRequest("새로운 노선", "분홍색"));
 
             LineResponse expected = new LineResponse(4L, "새로운 노선", "분홍색");
 
@@ -72,7 +73,7 @@ class LineServiceTest extends DaoTest {
 
         @Test
         void 중복되는_이름인_경우_예외발생() {
-            assertThatThrownBy(() -> service.save(new LineRequest("이미 존재하는 노선 이름", "노란색")))
+            assertThatThrownBy(() -> service.save(new CreateLineRequest("이미 존재하는 노선 이름", "노란색")))
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }

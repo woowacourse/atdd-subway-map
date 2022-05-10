@@ -5,9 +5,10 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.entity.LineEntity;
+import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.entity.LineEntity;
 import wooteco.subway.exception.NotFoundException;
 
 @Service
@@ -36,7 +37,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse save(LineRequest lineRequest) {
+    public LineResponse save(CreateLineRequest lineRequest) {
         validateUniqueName(lineRequest.getName());
 
         LineEntity lineEntity = new LineEntity(lineRequest.getName(), lineRequest.getColor());
