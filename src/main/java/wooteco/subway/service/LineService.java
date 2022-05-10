@@ -27,7 +27,7 @@ public class LineService {
     }
 
     @Transactional
-    public long save(final LineRequest lineRequest) {
+    public LineResponse save(final LineRequest lineRequest) {
         Line line = convertLine(lineRequest);
         Section section = convertSection(lineRequest);
 
@@ -35,7 +35,7 @@ public class LineService {
 
         long lineId = lineDao.save(line);
         sectionDao.save(lineId, section);
-        return lineId;
+        return find(lineId);
     }
 
     public List<LineResponse> findAll() {

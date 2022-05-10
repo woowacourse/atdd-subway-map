@@ -16,7 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.LineRequest;
+import wooteco.subway.service.dto.LineResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +27,7 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
 
-    private static final Line LINE = new Line("신분당선", "bg-red-600");
+    private static final Line LINE = new Line(1L, "신분당선", "bg-red-600");
     private static final LineRequest LINE_REQUEST = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
 
     @Mock
@@ -40,23 +42,30 @@ class LineServiceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void save() {
-        // when
-        long lineId = lineService.save(LINE_REQUEST);
-
         // mocking
         given(lineDao.find(any()))
                 .willReturn(Optional.of(LINE));
+        given(lineDao.findStations(any()))
+                .willReturn(List.of(new Station("강남역"), new Station("역삼역"), new Station("삼성역")));
+
+        // when
+        LineResponse lineResponse = lineService.save(LINE_REQUEST);
 
         // then
         assertAll(
-                () -> assertThat(lineService.find(lineId).getName()).isEqualTo("신분당선"),
-                () -> assertThat(lineService.find(lineId).getColor()).isEqualTo("bg-red-600")
+                () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("bg-red-600"),
+                () -> assertThat(lineResponse.getStations()).hasSize(3)
         );
     }
 
     @DisplayName("중복된 이름의 지하철 노선을 생성할 경우 예외를 발생시킨다.")
     @Test
     void saveDuplicatedName() {
+        // mocking
+        given(lineDao.find(any()))
+                .willReturn(Optional.of(LINE));
+
         // given
         lineService.save(LINE_REQUEST);
 
@@ -73,6 +82,10 @@ class LineServiceTest {
     @DisplayName("중복된 색상의 지하철 노선을 생성할 경우 예외를 발생시킨다.")
     @Test
     void saveDuplicatedColor() {
+        // mocking
+        given(lineDao.find(any()))
+                .willReturn(Optional.of(LINE));
+
         // given
         lineService.save(LINE_REQUEST);
 
@@ -89,6 +102,10 @@ class LineServiceTest {
     @DisplayName("지하철 노선의 목록을 조회한다.")
     @Test
     void findAll() {
+        // mocking
+        given(lineDao.find(any()))
+                .willReturn(Optional.of(LINE));
+
         // given
         lineService.save(LINE_REQUEST);
 
@@ -103,12 +120,13 @@ class LineServiceTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void find() {
-        // given
-        long lineId = lineService.save(LINE_REQUEST);
-
         // mocking
-        given(lineDao.find(lineId))
+        given(lineDao.find(any()))
                 .willReturn(Optional.of(LINE));
+
+        // given
+        LineResponse lineResponse = lineService.save(LINE_REQUEST);
+        long lineId = lineResponse.getId();
 
         // when & then
         assertAll(
@@ -133,8 +151,13 @@ class LineServiceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void update() {
+        // mocking
+        given(lineDao.find(any()))
+                .willReturn(Optional.of(LINE));
+
         // given
-        long lineId = lineService.save(LINE_REQUEST);
+        LineResponse lineResponse = lineService.save(LINE_REQUEST);
+        long lineId = lineResponse.getId();
 
         // mocking
         given(lineDao.existLineById(lineId))
@@ -148,8 +171,13 @@ class LineServiceTest {
     @DisplayName("중복된 이름으로 지하철 노선을 수정할 경우 예외를 발생시킨다.")
     @Test
     void updateDuplicatedName() {
+        // mocking
+        given(lineDao.find(any()))
+                .willReturn(Optional.of(LINE));
+
         // given
-        long lineId = lineService.save(LINE_REQUEST);
+        LineResponse lineResponse = lineService.save(LINE_REQUEST);
+        long lineId = lineResponse.getId();
 
         // mocking
         given(lineDao.existLineByName(any()))
@@ -164,8 +192,13 @@ class LineServiceTest {
     @DisplayName("중복된 색상으로 지하철 노선을 수정할 경우 예외를 발생시킨다.")
     @Test
     void updateDuplicatedColor() {
+        // mocking
+        given(lineDao.find(any()))
+                .willReturn(Optional.of(LINE));
+
         // given
-        long lineId = lineService.save(LINE_REQUEST);
+        LineResponse lineResponse = lineService.save(LINE_REQUEST);
+        long lineId = lineResponse.getId();
 
         // mocking
         given(lineDao.existLineByColor(any()))
@@ -193,8 +226,13 @@ class LineServiceTest {
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void delete() {
+        // mocking
+        given(lineDao.find(any()))
+                .willReturn(Optional.of(LINE));
+
         // given
-        long lineId = lineService.save(LINE_REQUEST);
+        LineResponse lineResponse = lineService.save(LINE_REQUEST);
+        long lineId = lineResponse.getId();
 
         // mocking
         given(lineDao.existLineById(any()))
