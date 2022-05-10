@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.service.dto.LineRequest;
 
@@ -25,10 +26,13 @@ import java.util.Optional;
 class LineServiceTest {
 
     private static final Line LINE = new Line("신분당선", "bg-red-600");
-    private static final LineRequest LINE_REQUEST = new LineRequest("신분당선", "bg-red-600", null, null, 0);
+    private static final LineRequest LINE_REQUEST = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
 
     @Mock
     private LineDao lineDao;
+
+    @Mock
+    private SectionDao sectionDao;
 
     @InjectMocks
     private LineService lineService;

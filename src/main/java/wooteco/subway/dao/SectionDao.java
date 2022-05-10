@@ -1,8 +1,10 @@
 package wooteco.subway.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
 
+@Repository
 public class SectionDao {
 
     private final JdbcTemplate jdbcTemplate;

@@ -6,7 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.service.dto.LineRequest;
 import wooteco.subway.service.dto.LineResponse;
 
@@ -14,16 +16,23 @@ import wooteco.subway.service.dto.LineResponse;
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
 
-    public LineService(final LineDao lineDao) {
+    public LineService(final LineDao lineDao, final SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
     @Transactional
     public long save(final LineRequest lineRequest) {
         Line line = convertLine(lineRequest);
+        Section section = convertSection(lineRequest);
+
         validateLine(line);
-        return lineDao.save(line);
+
+        long lineId = lineDao.save(line);
+        sectionDao.save(lineId, section);
+        return lineId;
     }
 
     public List<LineResponse> findAll() {
@@ -75,6 +84,10 @@ public class LineService {
 
     private Line convertLine(final LineRequest lineRequest) {
         return new Line(lineRequest.getName(), lineRequest.getColor());
+    }
+
+    private Section convertSection(final LineRequest lineRequest) {
+        return new Section(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
     }
 
     private List<LineResponse> convertLineResponses(final List<Line> lines) {
