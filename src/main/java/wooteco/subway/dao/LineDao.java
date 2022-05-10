@@ -10,7 +10,7 @@ public interface LineDao {
 
     Line findById(Long id);
 
-    Long update(Long id, String name, String color);
+    Long update(Long id, Line line);
 
     void deleteById(Long id);
 }

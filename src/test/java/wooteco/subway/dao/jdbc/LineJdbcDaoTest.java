@@ -122,7 +122,7 @@ class LineJdbcDaoTest {
         String changedColor = "changedColor";
 
         // when
-        Long updateId = dao.update(savedId, changedName, changedColor);
+        Long updateId = dao.update(savedId, new Line(changedName, changedColor));
 
         // then
         Line findLine = dao.findById(updateId);
@@ -143,7 +143,7 @@ class LineJdbcDaoTest {
         Long savedId = dao.save(duplicateName);
 
         //when, then
-        assertThatThrownBy(() -> dao.update(savedId, name, "changedColor"))
+        assertThatThrownBy(() -> dao.update(savedId, new Line(name, "changedColor")))
                 .isInstanceOf(DuplicateLineException.class);
     }
 
@@ -158,14 +158,14 @@ class LineJdbcDaoTest {
         Long savedId = dao.save(toBeUpdate);
 
         //when, then
-        assertThatThrownBy(() -> dao.update(savedId, "duplicateColorLine", color))
+        assertThatThrownBy(() -> dao.update(savedId, new Line("duplicateColorLine", color)))
                 .isInstanceOf(DuplicateLineException.class);
     }
 
     @DisplayName("없는 노선 정보를 변경하려 할 때, 예외를 던진다")
     @Test
     void throwExceptionWhenTryToUpdateNoLine() {
-        assertThatThrownBy(() -> dao.update(1L, "changedName", "changedColor"))
+        assertThatThrownBy(() -> dao.update(1L, new Line("changedName", "changedColor")))
                 .isInstanceOf(NoSuchLineException.class);
     }
 
