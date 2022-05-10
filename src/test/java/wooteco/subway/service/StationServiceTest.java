@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.dto.station.StationResponse;
 
 @JdbcTest
 class StationServiceTest {
@@ -29,7 +27,7 @@ class StationServiceTest {
     @Test
     @DisplayName("지하철 역을 저장할 수 있다.")
     void saveStation() {
-        StationResponse stationResponse = stationService.createStation("강남역");
+        var stationResponse = stationService.createStation("강남역");
 
         Assertions.assertThat(stationResponse.getName()).isEqualTo("강남역");
     }
@@ -44,17 +42,17 @@ class StationServiceTest {
     }
 
     @Test
-    @DisplayName("역 삭제 성공")
+    @DisplayName("기존에 존재하는 역 삭제 성공")
     void deleteStation() {
-        StationResponse stationResponse = stationService.createStation("용문역");
-        Long id = stationResponse.getId();
+        var stationResponse = stationService.createStation("용문역");
+        var id = stationResponse.getId();
 
         stationService.deleteStation(id);
-        List<Long> ids = stationService.findAll()
+        var ids = stationService.findAll()
                 .stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
-        
+
         Assertions.assertThat(ids).doesNotContain(id);
     }
 

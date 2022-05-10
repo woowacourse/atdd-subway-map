@@ -28,7 +28,7 @@ class StationDaoTest {
     @Test
     @DisplayName("Station 추가")
     void save() {
-        Station station = stationDao.save(new Station("선릉역"));
+        var station = stationDao.save(new Station("선릉역"));
 
         assertThat(station.getName()).isEqualTo("선릉역");
     }
@@ -36,8 +36,8 @@ class StationDaoTest {
     @Test
     @DisplayName("Station 목록 조회")
     void findAll() {
-        Station station1 = stationDao.save(new Station("선릉역"));
-        Station station2 = stationDao.save(new Station("잠실역"));
+        var station1 = stationDao.save(new Station("선릉역"));
+        var station2 = stationDao.save(new Station("잠실역"));
 
         assertAll(
                 () -> assertThat(stationDao.findAll()).hasSize(2),
@@ -49,9 +49,9 @@ class StationDaoTest {
     @Test
     @DisplayName("특정 Station 삭제")
     void deleteById() {
-        Station station = stationDao.save(new Station("선릉역"));
+        var station = stationDao.save(new Station("선릉역"));
         stationDao.deleteById(station.getId());
-        List<Station> stations = stationDao.findAll();
+        var stations = stationDao.findAll();
 
         assertThat(stations).doesNotContain(station);
     }

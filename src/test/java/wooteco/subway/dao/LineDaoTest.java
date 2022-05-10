@@ -28,7 +28,7 @@ class LineDaoTest {
     @Test
     @DisplayName("노선을 추가한다")
     void save() {
-        Line line = lineDao.save(new Line("1호선", "blue"));
+        var line = lineDao.save(new Line("1호선", "blue"));
 
         assertThat(line.getName()).isEqualTo("1호선");
         assertThat(line.getColor()).isEqualTo("blue");
@@ -37,16 +37,16 @@ class LineDaoTest {
     @Test
     @DisplayName("특정 노선 조회")
     void findById() {
-        Line line = lineDao.save(new Line("1호선", "blue"));
+        var line = lineDao.save(new Line("1호선", "blue"));
         assertThat(lineDao.findById(line.getId())).isEqualTo(line);
     }
 
     @Test
     void findAll() {
-        Line line1 = lineDao.save(new Line("1호선", "blue"));
-        Line line2 = lineDao.save(new Line("2호선", "green"));
+        var line1 = lineDao.save(new Line("1호선", "blue"));
+        var line2 = lineDao.save(new Line("2호선", "green"));
 
-        List<Line> lines = lineDao.findAll();
+        var lines = lineDao.findAll();
 
         assertAll(
                 () -> assertThat(lines).hasSize(2),
@@ -57,8 +57,8 @@ class LineDaoTest {
 
     @Test
     void updateById() {
-        Line savedLine = lineDao.save(new Line("1호선", "blue"));
-        Long id = savedLine.getId();
+        var savedLine = lineDao.save(new Line("1호선", "blue"));
+        var id = savedLine.getId();
 
         lineDao.update(id, "2호선", "black");
 
@@ -67,7 +67,7 @@ class LineDaoTest {
 
     @Test
     void deleteById() {
-        Line line = lineDao.save(new Line("1호선", "blue"));
+        var line = lineDao.save(new Line("1호선", "blue"));
 
         lineDao.deleteById(line.getId());
 

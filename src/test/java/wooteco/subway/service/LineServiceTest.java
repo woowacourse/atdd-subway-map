@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +32,7 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 생성")
     void saveLine() {
-        LineResponse lineResponse = lineService.createLine(new LineRequest("2호선", "테스트색20"));
+        var lineResponse = lineService.createLine(new LineRequest("2호선", "테스트색20"));
         assertThat(lineResponse.getName()).isEqualTo("2호선");
     }
 
@@ -78,7 +77,7 @@ class LineServiceTest {
         var lineResponse2 = lineService.createLine(lineRequest2);
 
         //when
-        List<Long> ids = lineService.findAll().stream()
+        var ids = lineService.findAll().stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
 
@@ -130,7 +129,7 @@ class LineServiceTest {
 
         lineService.deleteById(id);
 
-        boolean actual = lineService.findAll().stream()
+        var actual = lineService.findAll().stream()
                 .noneMatch(it -> it.getId().equals(id));
 
         assertThat(actual).isTrue();
