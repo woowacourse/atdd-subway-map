@@ -25,7 +25,7 @@ class StationRepositoryTest extends RepositoryTest {
 
         assertAll(
             () -> assertThat(savedStation.getId()).isNotNull(),
-            () -> assertThat(savedStation).isEqualTo(station)
+            () -> assertThat(savedStation.isSameName(station.getName())).isTrue()
         );
     }
 
@@ -48,11 +48,7 @@ class StationRepositoryTest extends RepositoryTest {
         stationRepository.save(station2);
 
         List<Station> stations = stationRepository.findAll();
-
-        assertAll(
-            () -> assertThat(stations).hasSize(2),
-            () -> assertThat(stations).containsExactly(station1, station2)
-        );
+        assertThat(stations).hasSize(2);
     }
 
     @DisplayName("역을 삭제한다")

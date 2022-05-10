@@ -44,12 +44,15 @@ public class Sections {
     private boolean isSectionConnected(final Map<Station, Station> upToDownStations,
                                        final Station upStation,
                                        final Station downStation) {
+        System.out.println(upToDownStations);
+        System.out.println(upStation);
+        System.out.println(downStation);
         return upToDownStations.containsKey(upStation) && upToDownStations.containsValue(downStation);
     }
 
     private void validateDuplicateSection(final Section section) {
         values.stream()
-                .filter(value -> value.equals(section))
+                .filter(value -> value.isSameSection(section))
                 .findAny()
                 .ifPresent(value -> {
                     throw new SectionCreateException(SECTION_ALREADY_EXIST_MESSAGE);

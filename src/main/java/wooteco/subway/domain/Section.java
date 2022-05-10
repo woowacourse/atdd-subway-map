@@ -97,6 +97,10 @@ public class Section {
         return distance;
     }
 
+    public boolean isSameSection(final Section section) {
+        return equals(section) && isSameUpStation(section.getUpStation()) && isSameDownStation(section.getDownStation());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -106,13 +110,12 @@ public class Section {
             return false;
         }
         Section section = (Section) o;
-        return Objects.equals(lineId, section.lineId) && Objects.equals(upStation, section.upStation)
-                && Objects.equals(downStation, section.downStation);
+        return Objects.equals(id, section.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lineId, upStation, downStation);
+        return Objects.hash(id);
     }
 
     @Override
