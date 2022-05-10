@@ -68,6 +68,7 @@ public class SectionService {
         }
     }
 
+    @Transactional
     public void delete(Long lineId, Long stationId) {
         validateExistLine(lineId);
         validateExistStationInLine(lineId, stationId);
