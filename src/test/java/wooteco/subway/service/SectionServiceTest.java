@@ -37,7 +37,7 @@ public class SectionServiceTest extends ServiceTest {
     @Test
     void saveSameSectionThenThrowException() {
         //given
-        Section section = new Section(10, 1L, 1L, 2L);
+        Section section = new Section(10, 2L, 1L, 2L);
         Section existedSection1 = new Section(10, 2L, 1L, 2L);
         Section existedSection2 = new Section(10, 2L, 2L, 3L);
 
@@ -49,14 +49,14 @@ public class SectionServiceTest extends ServiceTest {
         assertThatThrownBy(() -> {
             sectionService.save(section);
         }).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("기존에 존재하는 노선은 등록할 수 없습니다.");
+                .hasMessageContaining("기존에 존재하는 노선 구간은 등록할 수 없습니다.");
     }
 
     @DisplayName("[ERROR] 정확히 일치하지 않더라도 구간이 연결되어 있으면 새로 등록할 수 없다.")
     @Test
     void saveLinearlySameSectionThenThrowException() {
         //given
-        Section section = new Section(10, 1L, 1L, 3L);
+        Section section = new Section(10, 2L, 1L, 3L);
         Section existedSection1 = new Section(10, 2L, 1L, 2L);
         Section existedSection2 = new Section(10, 2L, 2L, 3L);
 
@@ -68,7 +68,7 @@ public class SectionServiceTest extends ServiceTest {
         assertThatThrownBy(() -> {
             sectionService.save(section);
         }).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("기존에 존재하는 노선은 등록할 수 없습니다.");
+                .hasMessageContaining("기존에 존재하는 노선 구간은 등록할 수 없습니다.");
     }
 
     @DisplayName("구간에 포함된 지하철 역 ID 리스트를 조회한다.")

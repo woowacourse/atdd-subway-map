@@ -29,12 +29,6 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public List<Long> getUpStationIds() {
-        return sections.stream()
-                .map(Section::getUpStationId)
-                .collect(Collectors.toList());
-    }
-
     public Optional<Section> getExistedUpStationSection(Long upStationId) {
         return sections.stream()
                 .filter(section -> section.getUpStationId().equals(upStationId))

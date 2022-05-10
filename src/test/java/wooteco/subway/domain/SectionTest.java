@@ -108,4 +108,68 @@ class SectionTest {
             assertThat(generated.getDownStationId()).isEqualTo(6L);
         });
     }
+
+    @DisplayName("상행 구간 사이 갈림길이 모든 조건이 충족하면 추가할 수 있다.")
+    @Test
+    void createBetweenUpSection() {
+        Section section1 = new Section(10, 2L, 1L, 3L);
+        Section section2 = new Section(10, 2L, 3L, 2L);
+        Section section3 = new Section(10, 2L, 2L, 4L);
+
+        Sections sections = new Sections(List.of(section1, section2, section3));
+
+        Section newSection = new Section(4, 2L, 1L, 5L);
+
+        SectionResult sectionResult = newSection.canAddAsBetweenStation(sections);
+
+        assertThat(sectionResult.canAddAsBetweenStation()).isTrue();
+    }
+
+    @DisplayName("상행 구간 사이 갈림길이 길이 조건이 충족하지 않으면 False를 반환한다.")
+    @Test
+    void createBetweenUpSectionBadDistance() {
+        Section section1 = new Section(10, 2L, 1L, 3L);
+        Section section2 = new Section(10, 2L, 3L, 2L);
+        Section section3 = new Section(10, 2L, 2L, 4L);
+
+        Sections sections = new Sections(List.of(section1, section2, section3));
+
+        Section newSection = new Section(10, 2L, 1L, 5L);
+
+        SectionResult sectionResult = newSection.canAddAsBetweenStation(sections);
+
+        assertThat(sectionResult.canAddAsBetweenStation()).isFalse();
+    }
+
+    @DisplayName("하행 구간 사이 갈림길이 모든 조건이 충족하면 추가할 수 있다.")
+    @Test
+    void createBetweenUpSectionSameLine() {
+        Section section1 = new Section(10, 2L, 1L, 3L);
+        Section section2 = new Section(10, 2L, 3L, 2L);
+        Section section3 = new Section(10, 2L, 2L, 4L);
+
+        Sections sections = new Sections(List.of(section1, section2, section3));
+
+        Section newSection = new Section(4, 2L, 5L, 3L);
+
+        SectionResult sectionResult = newSection.canAddAsBetweenStation(sections);
+
+        assertThat(sectionResult.canAddAsBetweenStation()).isTrue();
+    }
+
+    @DisplayName("하행 구간 사이 갈림길이 길이 조건이 충족하지 않으면 False를 반환한다.")
+    @Test
+    void createBetweenDownSectionBadDistance() {
+        Section section1 = new Section(10, 2L, 1L, 3L);
+        Section section2 = new Section(10, 2L, 3L, 2L);
+        Section section3 = new Section(10, 2L, 2L, 4L);
+
+        Sections sections = new Sections(List.of(section1, section2, section3));
+
+        Section newSection = new Section(10, 2L, 5L, 3L);
+
+        SectionResult sectionResult = newSection.canAddAsBetweenStation(sections);
+
+        assertThat(sectionResult.canAddAsBetweenStation()).isFalse();
+    }
 }

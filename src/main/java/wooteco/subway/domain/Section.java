@@ -113,14 +113,10 @@ public class Section {
         if (upStationSection.isPresent() && upStationSection.get().getDistance() > distance) {
             return SectionResult.of(upStationSection.get(), this);
         }
-        Optional<Section> downStationSection = sections.getExistedUpStationSection(downStationId);
+        Optional<Section> downStationSection = sections.getExistedDownStationSection(downStationId);
         if (downStationSection.isPresent() && downStationSection.get().getDistance() > distance) {
             return SectionResult.of(downStationSection.get(), this);
         }
         return new SectionResult(false);
-    }
-
-    private void calculateDistance() {
-
     }
 }
