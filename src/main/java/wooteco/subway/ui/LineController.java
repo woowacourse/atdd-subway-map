@@ -27,6 +27,7 @@ public class LineController {
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
         final Line newLine = lineService.create(lineRequest.getName(), lineRequest.getColor());
+        sectionService.create(newLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId()))
                 .body(new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), sectionService.getStationsByLineId(newLine.getId())));
     }
@@ -47,7 +48,7 @@ public class LineController {
 
     @PutMapping("/lines/{id}")
     public ResponseEntity<Void> editLine(@PathVariable final Long id, @RequestBody final LineRequest lineRequest) {
-        lineService.edit(id, lineRequest);
+        lineService.edit(id, lineRequest.getName(), lineRequest.getColor());
         return ResponseEntity.ok().build();
     }
 

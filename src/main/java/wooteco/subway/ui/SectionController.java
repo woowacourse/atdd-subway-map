@@ -15,7 +15,7 @@ public class SectionController {
 
     @PostMapping("/lines/{lineId}/sections")
     public ResponseEntity<Void> create(@PathVariable final Long lineId, @RequestBody final SectionRequest sectionRequest) {
-        sectionService.create(lineId, sectionRequest);
+        sectionService.create(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         return ResponseEntity.ok().build();
     }
 

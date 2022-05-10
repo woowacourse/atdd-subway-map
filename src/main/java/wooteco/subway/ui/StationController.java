@@ -22,7 +22,7 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody final StationRequest stationRequest) {
-        final Station newStation = stationService.create(stationRequest);
+        final Station newStation = stationService.create(stationRequest.getName());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId()))
                 .body(new StationResponse(newStation.getId(), newStation.getName()));
     }
@@ -30,10 +30,9 @@ public class StationController {
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<StationResponse> showStations() {
         final List<Station> stations = stationService.findAll();
-        final List<StationResponse> stationResponses = stations.stream()
+        return stations.stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());
-        return stationResponses;
     }
 
     @DeleteMapping("/stations/{id}")

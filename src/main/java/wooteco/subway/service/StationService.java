@@ -3,7 +3,6 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
 import wooteco.subway.exception.NameDuplicationException;
 
 import java.util.List;
@@ -16,10 +15,9 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station create(final StationRequest stationRequest) {
-        checkDuplication(stationRequest.getName());
-        final Station station = new Station(stationRequest.getName());
-        return stationDao.save(station);
+    public Station create(final String name) {
+        checkDuplication(name);
+        return stationDao.save(new Station(name));
     }
 
     private void checkDuplication(final String name) {
