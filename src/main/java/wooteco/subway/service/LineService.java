@@ -13,6 +13,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import wooteco.subway.domain.entity.SectionEntity;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
@@ -36,8 +37,15 @@ public class LineService {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance());
         Line newLine = lineDao.save(line);
 
-        Section saveSection = new Section(newLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(),
+        Station upStation = stationDao.findById(lineRequest.getUpStationId())
+                .orElseThrow(() -> new StationNotFoundException(lineRequest.getUpStationId()));
+
+        Station downStation = stationDao.findById(lineRequest.getDownStationId())
+                .orElseThrow(() -> new StationNotFoundException(lineRequest.getDownStationId()));
+
+        Section saveSection = new Section(newLine.getId(), upStation, downStation,
                 lineRequest.getDistance());
+
         sectionDao.save(saveSection);
         List<StationResponse> stations = extractUniqueStationsFromSections(newLine);
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), stations);
@@ -70,14 +78,16 @@ public class LineService {
     }
 
     private ArrayList<StationResponse> extractUniqueStationsFromSections(Line line) {
-        List<Section> sections = sectionDao.findAllByLineId(line.getId());
+        List<SectionEntity> sections = sectionDao.findAllByLineId(line.getId());
         Set<StationResponse> stations = new LinkedHashSet<>();
 
-        for (Section section : sections) {
-            Station upStation = stationDao.findById(section.getUpStationId())
-                    .orElseThrow(() -> new StationNotFoundException(section.getUpStationId()));
-            Station downStation = stationDao.findById(section.getDownStationId())
-                    .orElseThrow(() -> new StationNotFoundException(section.getDownStationId()));
+        for (SectionEntity sectionEntity : sections) {
+            Station upStation = stationDao.findById(sectionEntity.getUpStationId())
+                    .orElseThrow(() -> new StationNotFoundException(
+                            sectionEntity.getUpStationId()));
+            Station downStation = stationDao.findById(sectionEntity.getDownStationId())
+                    .orElseThrow(() -> new StationNotFoundException(
+                            sectionEntity.getDownStationId()));
             stations.add(new StationResponse(upStation));
             stations.add(new StationResponse(downStation));
         }

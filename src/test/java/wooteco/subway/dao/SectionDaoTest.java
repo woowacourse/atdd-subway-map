@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 
 @JdbcTest
 class SectionDaoTest {
@@ -17,7 +18,7 @@ class SectionDaoTest {
     private SectionDao sectionDao;
     private LineDao lineDao;
 
-    private Section testSection1 = new Section(100L, 1L, 2L, 3L,10L);
+    private Section testSection1 = new Section(100L, 1L, new Station("testStation1"), new Station("testStation2"),10L);
 
     @Autowired
     private SectionDaoTest(JdbcTemplate jdbcTemplate) {

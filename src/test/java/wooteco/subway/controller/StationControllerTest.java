@@ -11,16 +11,19 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationResponse;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestDatabase
+@Sql("classpath:test-schema.sql")
 class StationControllerTest {
 
     private Station testStation1 = new Station("강남역");
@@ -40,12 +43,12 @@ class StationControllerTest {
         // when
         ExtractableResponse<Response> response = RestAssured.
                 given().log().all().
-                    body(testStation1).
-                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                body(testStation1).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                    post("/stations").
+                post("/stations").
                 then().log().all().
-                    extract();
+                extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -58,22 +61,22 @@ class StationControllerTest {
         // given
         RestAssured.
                 given().log().all().
-                    body(testStation1).
-                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                body(testStation1).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                    post("/stations").
+                post("/stations").
                 then().
-                    extract();
+                extract();
 
         // when
         RestAssured.
                 given().log().all().
-                    body(testStation1).
-                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                body(testStation1).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                    post("/stations").
+                post("/stations").
                 then().
-                    statusCode(HttpStatus.BAD_REQUEST.value());
+                statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -82,29 +85,29 @@ class StationControllerTest {
         /// given
         ExtractableResponse<Response> createResponse1 = RestAssured.
                 given().log().all().
-                    body(testStation1).
-                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                body(testStation1).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                    post("/stations").
+                post("/stations").
                 then().
-                    extract();
+                extract();
 
         ExtractableResponse<Response> createResponse2 = RestAssured.
                 given().log().all().
-                    body(testStation2).
-                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                body(testStation2).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                    post("/stations").
+                post("/stations").
                 then().
-                    extract();
+                extract();
 
         // when
         ExtractableResponse<Response> response = RestAssured.
                 given().log().all().
                 when().
-                    get("/stations").
+                get("/stations").
                 then().
-                    extract();
+                extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -123,20 +126,20 @@ class StationControllerTest {
         // given
         ExtractableResponse<Response> createResponse = RestAssured.
                 given().log().all().
-                    body(testStation1).
-                    contentType(MediaType.APPLICATION_JSON_VALUE).
+                body(testStation1).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                    post("/stations").
+                post("/stations").
                 then().
-                    extract();
+                extract();
 
         // when
         String uri = createResponse.header("Location");
         RestAssured.
                 given().log().all().
                 when().
-                    delete(uri).
+                delete(uri).
                 then().
-                    statusCode(HttpStatus.NO_CONTENT.value());
+                statusCode(HttpStatus.NO_CONTENT.value());
     }
 }
