@@ -106,8 +106,19 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] station이 포함된 Section 클래스 생성
 - [x] 지하철역 삭제 후처리
     - [x] section 외래키로 잇기, 연결된 section 먼저 삭제
-- [ ] MockMVC 사용해 컨트롤러/서비스단 수정
+- [ ] Sections에 서비스 로직 이동 및 테스트코드 이동
+- [ ] 새로 만든 객체들의 테스트코드 수정
+- [ ] 테스트코드 속도 개선
+    - [ ] MockMVC 사용해 컨트롤러/서비스단 수정? -> 나중에
+    - [ ] Drop table 대신 truncate 어쩌구 사용..
+- [ ] 테스트코드 가독성 개선
+    - [ ] RestAssured 메소드명 한글로?
+- [ ] Entity는 vo ㄴㄴ
+    - [ ] equals 대신 usingRecursiveComparison 사용?
+    - [ ] [참고자료](https://prolog.techcourse.co.kr/studylogs/2352)
 - [ ] 예외처리 꼼꼼하게~ 수정^^ CustomException 써보거나 기존 쓸만한 Exception 적용
+    - [ ] IllegalStateException, NoSuchElementException 등
+    - [ ] sql 관련 Exception 검색 후 적용
 
 ### 1단계 피드백
 
