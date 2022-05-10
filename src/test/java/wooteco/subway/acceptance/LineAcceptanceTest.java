@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.request.LineRequest;
-import wooteco.subway.dto.response.LineWithStationsResponse;
+import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.dto.response.StationResponse;
 
 class LineAcceptanceTest extends AcceptanceTest {
@@ -144,15 +144,15 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
 
-        List<LineWithStationsResponse> resultLineWithStations = new ArrayList<>(response.jsonPath()
-                .getList(".", LineWithStationsResponse.class));
+        List<LineResponse> resultLine = new ArrayList<>(response.jsonPath()
+                .getList(".", LineResponse.class));
 
-        List<Long> resultLineIds = resultLineWithStations.stream()
-                .map(LineWithStationsResponse::getId)
+        List<Long> resultLineIds = resultLine.stream()
+                .map(LineResponse::getId)
                 .collect(Collectors.toList());
 
-        List<String> resultStationNames = resultLineWithStations.stream()
-                .map(LineWithStationsResponse::getStations)
+        List<String> resultStationNames = resultLine.stream()
+                .map(LineResponse::getStations)
                 .flatMap(List::stream)
                 .map(StationResponse::getName)
                 .collect(Collectors.toList());

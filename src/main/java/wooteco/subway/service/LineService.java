@@ -16,7 +16,7 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domain.Stations;
 import wooteco.subway.dto.request.LineRequest;
-import wooteco.subway.dto.response.LineWithStationsResponse;
+import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.entity.LineEntity;
 import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.entity.StationEntity;
@@ -37,7 +37,7 @@ public class LineService {
         this.stationDao = stationDao;
     }
 
-    public LineWithStationsResponse createLine(LineRequest lineRequest) {
+    public LineResponse createLine(LineRequest lineRequest) {
         LineEntity lineEntity = lineRequest.toLineEntity();
         checkNameDuplication(lineRequest);
         LineEntity savedLineEntity = lineDao.save(lineEntity);
@@ -45,7 +45,7 @@ public class LineService {
 
         Line savedLine = new Line(savedLineEntity.getId(), savedLineEntity.getName(), savedLineEntity.getColor(),
                 stations);
-        return LineWithStationsResponse.of(savedLine);
+        return LineResponse.of(savedLine);
     }
 
     private void checkNameDuplication(LineRequest lineRequest) {
@@ -78,10 +78,10 @@ public class LineService {
         return stationEntity.get();
     }
 
-    public List<LineWithStationsResponse> findAllLines() {
+    public List<LineResponse> findAllLines() {
         List<Line> lines = getAllLines();
         return lines.stream()
-                .map(LineWithStationsResponse::of)
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
@@ -119,12 +119,12 @@ public class LineService {
         return new Sections(sections);
     }
 
-    public LineWithStationsResponse findLineById(Long id) {
+    public LineResponse findLineById(Long id) {
         Optional<LineEntity> wrappedLineEntity = lineDao.findById(id);
         checkLineExist(wrappedLineEntity);
         LineEntity lineEntity = wrappedLineEntity.get();
         Line line = getLine(lineEntity);
-        return LineWithStationsResponse.of(line);
+        return LineResponse.of(line);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
