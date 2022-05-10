@@ -87,7 +87,6 @@ public class Sections {
 
     public void remove(Long stationId) {
         final List<Section> removeCandidates = getSectionContainsStation(stationId);
-        System.out.println(removeCandidates);
         if (removeCandidates.size() == 1) {
             sections.remove(removeCandidates.get(0));
             return;
