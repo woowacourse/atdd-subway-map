@@ -18,14 +18,22 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.JdbcLineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
 
     @Mock
     private JdbcLineDao jdbcLineDao;
+
+    @Mock
+    private SectionService sectionService;
+
+    @Mock
+    private StationService stationService;
 
     @InjectMocks
     private LineService lineService;
@@ -36,12 +44,30 @@ class LineServiceTest {
         doReturn(1L)
                 .when(jdbcLineDao).save(any(Line.class));
 
-        LineResponse lineResponse = lineService.createLine(new LineRequest("신분당선", "bg-red-600"));
+        doReturn(new StationResponse(1L, "강남역"))
+                .when(stationService).getStation(1L);
+
+        doReturn(new StationResponse(2L, "잠실역"))
+                .when(stationService).getStation(2L);
+
+        doReturn(new StationResponse(3L, "선릉역"))
+                .when(stationService).getStation(3L);
+
+        doReturn(List.of(new Section(1L, 1L, 2L, 3), new Section(2L, 2L, 3L, 4)))
+                .when(sectionService).getSectionsByLineId(1L);
+
+        LineResponse lineResponse = lineService.createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 3));
+
+        List<String> names = lineResponse.getStations().stream()
+                .map(stationResponse -> stationResponse.getName())
+                .collect(Collectors.toList());
 
         assertAll(
-                () -> lineResponse.getId().equals(1L),
-                () -> lineResponse.getName().equals("신분당선"),
-                () -> lineResponse.getColor().equals("bg-red-600")
+                () -> assertThat(lineResponse.getId()).isEqualTo(1L),
+                () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("bg-red-600"),
+                () -> assertThat(lineResponse.getStations().size()).isEqualTo(3),
+                () -> assertThat(names).containsExactly("강남역", "잠실역", "선릉역")
         );
     }
 
