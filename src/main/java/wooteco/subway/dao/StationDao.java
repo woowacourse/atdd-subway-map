@@ -64,4 +64,10 @@ public class StationDao {
                 "or station.id = section.down_station_id where line_id = ?";
         return jdbcTemplate.query(SQL, rowMapper(), id);
     }
+
+    public boolean hasStationByStationAndLineId(Long lineId, Long stationId) {
+        String SQL = "select exists (select * from station join section on station.id = section.up_station_id " +
+                "or station.id = section.down_station_id where section.line_id = ? and station.id = ?)";
+        return jdbcTemplate.queryForObject(SQL, Boolean.class, lineId, stationId);
+    }
 }
