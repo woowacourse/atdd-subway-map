@@ -2,7 +2,7 @@ package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static wooteco.subway.testutils.Fixture.LINE_REQUEST_1호선;
+import static wooteco.subway.testutils.Fixture.LINE_REQUEST_PUT_신분당선2;
 import static wooteco.subway.testutils.Fixture.LINE_REQUEST_분당선;
 import static wooteco.subway.testutils.Fixture.LINE_REQUEST_신분당선;
 import static wooteco.subway.testutils.Fixture.STATION_REQUEST_강남역;
@@ -77,10 +77,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 수정한다.")
     void update() {
         //given
+        AcceptanceTestUtil.requestPostStation(STATION_REQUEST_강남역, "/stations");
+        AcceptanceTestUtil.requestPostStation(STATION_REQUEST_잠실역, "/stations");
         requestPostLine(LINE_REQUEST_신분당선, "/lines");
 
         //when
-        ExtractableResponse<Response> response = requestPutLine(LINE_REQUEST_1호선, "/lines/1");
+        ExtractableResponse<Response> response = requestPutLine(LINE_REQUEST_PUT_신분당선2, "/lines/1");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
