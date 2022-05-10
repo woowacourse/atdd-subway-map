@@ -19,7 +19,6 @@ import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineRequestV2;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineResponseV2;
-import wooteco.subway.exception.NoSuchLineException;
 
 @RestController
 @RequestMapping("/lines")
@@ -39,6 +38,11 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponseV2> showSingleLine(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findLine(id));
+    }
+
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineDao.findAll();
@@ -46,13 +50,6 @@ public class LineController {
                 .map(LineResponse::from)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        LineResponse lineResponse = LineResponse.from(lineDao.findById(id)
-                .orElseThrow(NoSuchLineException::new));
-        return ResponseEntity.ok().body(lineResponse);
     }
 
     @PutMapping(value = "/{id}")
