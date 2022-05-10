@@ -57,4 +57,32 @@ public class SectionService {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
         return sections.getStationsId();
     }
+
+    public void deleteByLineIdAndStationId(long lineId, long stationId) {
+        Sections sections = new Sections(sectionDao.findByLineIdAndStationId(lineId, stationId));
+        long order;
+
+        if (sections.hasTwoSection()) {
+            Section upsideSection = sections.getUpsideSection();
+            Section downsideSection = sections.getDownsideSection();
+
+            long upStationId = upsideSection.getUpStationId();
+            long downStationId = downsideSection.getDownStationId();
+            int distance = upsideSection.getDistance() + downsideSection.getDistance();
+            long lineOrder = upsideSection.getLineOrder();
+
+            sectionDao.deleteById(upsideSection.getId());
+            sectionDao.deleteById(downsideSection.getId());
+            sectionDao.save(new Section(null, lineId, upStationId, downStationId, distance, lineOrder));
+
+            order = downsideSection.getLineOrder(); // 2
+        }
+
+        Section section = sections.getDeleteSection();
+        order = section.getLineOrder();
+        sectionDao.deleteById(section.getId());
+        // where order_line > order;
+
+        sectionDao.updateLineOrderByDec(lineId, order);
+    }
 }

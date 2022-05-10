@@ -111,4 +111,26 @@ public class JdbcSectionDao implements SectionDao {
         String sql = "DELETE FROM \"SECTION\" WHERE id = (?)";
         jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public List<Section> findByLineIdAndStationId(long lineId, long stationId) {
+        String sql = "SELECT * FROM \"SECTION\""
+                + " WHERE line_id = (?) AND (up_station_id = (?) OR down_station_id = (?))";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            return new Section(
+                    rs.getLong("id"),
+                    rs.getLong("line_id"),
+                    rs.getLong("up_station_id"),
+                    rs.getLong("down_station_id"),
+                    rs.getInt("distance"),
+                    rs.getLong("line_order")
+            );
+        }, lineId, stationId, stationId);
+    }
+
+    @Override
+    public void updateLineOrderByDec(long lineId, long lineOrder) {
+        String sql = "UPDATE \"SECTION\" SET line_order = line_order - 1 WHERE line_id = (?) AND line_order > (?)";
+        jdbcTemplate.update(sql, lineId, lineOrder);
+    }
 }

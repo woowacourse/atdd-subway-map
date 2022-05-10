@@ -106,9 +106,7 @@ public class Sections {
     }
 
     public List<Long> getStationsId() {
-        List<Section> sortedSections = sections.stream()
-                .sorted(Comparator.comparingLong(Section::getLineOrder))
-                .collect(Collectors.toList());
+        List<Section> sortedSections = createSortedSection();
 
         List<Long> stationsId = new ArrayList<>();
         for (Section section : sortedSections) {
@@ -117,5 +115,27 @@ public class Sections {
         stationsId.add(sortedSections.get(sections.size() - 1).getDownStationId());
 
         return stationsId;
+    }
+
+    private List<Section> createSortedSection() {
+        return sections.stream()
+                .sorted(Comparator.comparingLong(Section::getLineOrder))
+                .collect(Collectors.toList());
+    }
+
+    public boolean hasTwoSection() {
+        return sections.size() == 2;
+    }
+
+    public Section getDeleteSection() {
+        return sections.get(0);
+    }
+
+    public Section getUpsideSection() {
+        return createSortedSection().get(0);
+    }
+
+    public Section getDownsideSection() {
+        return createSortedSection().get(1);
     }
 }
