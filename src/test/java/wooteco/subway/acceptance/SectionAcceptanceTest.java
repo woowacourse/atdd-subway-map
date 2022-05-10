@@ -89,4 +89,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+    @DisplayName("섹션을 하나 뿐일 때 삭제하면 400 Bad Request를 반환한다.")
+    @Test
+    void deleteSectionException() {
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+        Station 역삼역 = stationRepository.save(new Station("역삼역"));
+
+        LineResponse lineResponse = lineService.create(
+                new LineRequest("2호선", "bg-green-200", 강남역.getId(), 역삼역.getId(), 5));
+
+        ExtractableResponse<Response> response = httpDeleteTest(
+                "/lines/" + lineResponse.getId() + "/sections?stationId=" + 역삼역.getId());
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

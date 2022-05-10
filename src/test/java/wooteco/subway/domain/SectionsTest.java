@@ -14,6 +14,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.utils.exception.SectionCreateException;
+import wooteco.subway.utils.exception.SectionDeleteException;
 
 public class SectionsTest {
 
@@ -122,8 +123,7 @@ public class SectionsTest {
         Sections sections = new Sections(rawSections);
 
         assertThatThrownBy(() -> sections.delete(신당역))
-                .isInstanceOf(SectionCreateException.class)
-                .hasMessageContaining("더이상 구간을 삭제할 수 없습니다.");
+                .isInstanceOf(SectionDeleteException.class);
     }
 
     @DisplayName("첫번째 구간을 탐색한다.")
