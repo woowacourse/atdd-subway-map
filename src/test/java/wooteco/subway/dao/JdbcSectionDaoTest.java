@@ -15,6 +15,8 @@ import wooteco.subway.domain.Section;
 class JdbcSectionDaoTest {
 
     private JdbcSectionDao jdbcSectionDao;
+    private JdbcLineDao lineDao;
+    private Long lineId;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -22,14 +24,16 @@ class JdbcSectionDaoTest {
     @BeforeEach
     void setUp() {
         jdbcSectionDao = new JdbcSectionDao(jdbcTemplate);
-        Section section = new Section(1L, 2L, 3L, 5);
+        lineDao = new JdbcLineDao(jdbcTemplate);
+        lineId = lineDao.save("hi", "color");
+        Section section = new Section(lineId, 2L, 3L, 5);
         jdbcSectionDao.save(section);
     }
 
     @DisplayName("구간 정보를 등록한다.")
     @Test
     void save() {
-        Section section = new Section(1L, 2L, 3L, 5);
+        Section section = new Section(lineId, 3L, 4L, 5);
         Long id = jdbcSectionDao.save(section);
         assertThat(id).isNotNull();
     }
@@ -37,7 +41,7 @@ class JdbcSectionDaoTest {
     @DisplayName("구간 정보를 제거한다.")
     @Test
     void deleteByLineIdAndStationId() {
-        boolean isDeleted = jdbcSectionDao.deleteByLineIdAndStationId(1L, 2L);
+        boolean isDeleted = jdbcSectionDao.deleteByLineIdAndStationId(lineId, 2L);
         assertThat(isDeleted).isTrue();
     }
 
@@ -51,12 +55,12 @@ class JdbcSectionDaoTest {
     @DisplayName("지하철 호선에 따른 구간을 조회한다.")
     @Test
     void findByLineId() {
-        Section section1 = new Section(1L, 3L, 4L, 5);
+        Section section1 = new Section(lineId, 3L, 4L, 5);
         jdbcSectionDao.save(section1);
-        Section section2 = new Section(1L, 4L, 5L, 5);
+        Section section2 = new Section(lineId, 4L, 5L, 5);
         jdbcSectionDao.save(section2);
 
-        List<Section> sectionList = jdbcSectionDao.findByLineId(1L).getSections();
+        List<Section> sectionList = jdbcSectionDao.findByLineId(lineId).getSections();
         assertThat(sectionList.size()).isEqualTo(3);
     }
 }
