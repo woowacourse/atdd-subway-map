@@ -15,6 +15,7 @@ import wooteco.subway.domain.Line;
 @Repository
 public class JdbcLineDao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
+
     private final RowMapper<Line> lineRowMapper = (resultSet, rowMapper) -> new Line(
         resultSet.getLong("id"),
         resultSet.getString("name"),

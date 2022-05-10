@@ -10,17 +10,17 @@ public class Line {
     private final String name;
     private final String color;
 
-    public Line(Long id, String name, String color) {
+    public Line(String name, String color) {
         validateNameSize(name);
         validateColorSize(color);
-        this.id = id;
         this.name = name;
         this.color = color;
     }
 
-    public Line(String name, String color) {
+    public Line(Long id, String name, String color) {
         validateNameSize(name);
         validateColorSize(color);
+        this.id = id;
         this.name = name;
         this.color = color;
     }
