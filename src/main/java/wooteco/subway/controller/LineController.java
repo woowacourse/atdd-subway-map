@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,14 +30,14 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     public ResponseEntity<LineResponse2> createLine(@RequestBody LineRequest lineRequest) {
         RequestLineInfo lineInfo = LineConverter.toInfo2(lineRequest);
         LineResponse2 lineResponse = LineConverter.toResponse(lineService.save(lineInfo));
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<List<LineResponse>> showLines() {
         List<LineInfo> lineInfos = lineService.findAll();
         List<LineResponse> lineResponses = lineInfos.stream()
@@ -47,7 +46,7 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponses);
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         LineResponse lineResponse = LineConverter.toResponse(lineService.find(id));
         return ResponseEntity.ok().body(lineResponse);
