@@ -2,7 +2,6 @@ package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
@@ -17,7 +16,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -27,6 +25,7 @@ import wooteco.subway.service.dto.LineResponse;
 import wooteco.subway.ui.dto.LineCreateRequest;
 import wooteco.subway.ui.dto.LineRequest;
 import wooteco.subway.ui.dto.SectionRequest;
+import wooteco.subway.utils.RestAssuredUtil;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -80,13 +79,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "bg-green-500", 1L, 2L, 20);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(lineCreateRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssuredUtil.post("/lines", lineCreateRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -100,13 +93,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(lineCreateRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssuredUtil.post("/lines", lineCreateRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -137,21 +124,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
+        List<Long> expectedLineIds = List.of(savedId1, savedId2);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssuredUtil.get("/lines");
+        List<Long> resultLineIds = findLineIds(response);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = List.of(savedId1, savedId2);
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+        assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    private List<Long> findLineIds(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", LineResponse.class).stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
     @DisplayName("id 를 이용하여 노선을 조회한다.")
@@ -161,11 +148,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String id = String.valueOf(savedId1);
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines/" + id)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssuredUtil.get("/lines/" + id);
 
         //then
         Integer findId = response.jsonPath().get("id");
@@ -179,11 +162,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String id = "999999";
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines/" + id)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssuredUtil.get("/lines/" + id);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -199,13 +178,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String name = "다른분당선";
         LineRequest lineRequest = new LineRequest(name, "bg-red-600");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/lines/" + id)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssuredUtil.put("/lines/" + id, lineRequest);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -221,13 +194,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String name = "분당선";
         LineRequest lineRequest = new LineRequest(name, "bg-red-600");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/lines/" + id)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssuredUtil.put("/lines/" + id, lineRequest);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -242,26 +209,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         expectedIds.remove(Long.parseLong(id));
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete("/lines/" + id)
-                .then().log().all()
-                .extract();
+        RestAssuredUtil.delete("/lines/" + id);
 
         //then
         assertThat(expectedIds).isEqualTo(selectLines());
     }
 
     private List<Long> selectLines() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
-
-        return response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
+        ExtractableResponse<Response> response = RestAssuredUtil.get("/lines");
+        return findLineIds(response);
     }
 
     @DisplayName("구간 생성")
@@ -271,13 +227,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(savedId2, 1L, 2L, 5);
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(sectionRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/2/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssuredUtil.post("/lines/2/sections", sectionRequest);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
