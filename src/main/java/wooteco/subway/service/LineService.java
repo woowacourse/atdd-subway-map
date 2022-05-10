@@ -112,10 +112,13 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    public LineInfo find(Long id) {
+    public ResponseLineInfo find(Long id) {
         validateNotExists(id);
-        LineEntity line = lineDao.find(id);
-        return new LineInfo(line.getId(), line.getName(), line.getColor());
+        LineEntity lineEntity = lineDao.find(id);
+        Line line = new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(), new Sections(findSections(
+            lineEntity.getId())));
+        return new ResponseLineInfo(line.getId(), line.getName(), line.getColor(),
+            convertStationToInfo(line.getStations()));
     }
 
     public void update(LineInfo lineInfo) {

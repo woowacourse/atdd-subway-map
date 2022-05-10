@@ -19,7 +19,6 @@ import wooteco.subway.dto.info.RequestLineInfo;
 import wooteco.subway.dto.info.ResponseLineInfo;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
-import wooteco.subway.dto.response.LineResponse2;
 import wooteco.subway.service.LineService;
 
 @RestController
@@ -32,16 +31,16 @@ public class LineController {
     }
 
     @PostMapping()
-    public ResponseEntity<LineResponse2> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         RequestLineInfo lineInfo = LineConverter.toInfo2(lineRequest);
-        LineResponse2 lineResponse = LineConverter.toResponse(lineService.save(lineInfo));
+        LineResponse lineResponse = LineConverter.toResponse(lineService.save(lineInfo));
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping()
-    public ResponseEntity<List<LineResponse2>> showLines() {
+    public ResponseEntity<List<LineResponse>> showLines() {
         List<ResponseLineInfo> lineInfos = lineService.findAll();
-        List<LineResponse2> lineResponses = lineInfos.stream()
+        List<LineResponse> lineResponses = lineInfos.stream()
             .map(info -> LineConverter.toResponse(info))
             .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);

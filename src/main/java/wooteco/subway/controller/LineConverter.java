@@ -8,7 +8,6 @@ import wooteco.subway.dto.info.RequestLineInfo;
 import wooteco.subway.dto.info.ResponseLineInfo;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
-import wooteco.subway.dto.response.LineResponse2;
 import wooteco.subway.dto.response.StationResponse;
 
 public class LineConverter {
@@ -18,10 +17,6 @@ public class LineConverter {
 
     static LineInfo toInfo(Long id, LineRequest lineRequest) {
         return new LineInfo(id, lineRequest.getName(), lineRequest.getColor());
-    }
-
-    static LineResponse toResponse(LineInfo lineInfo) {
-        return new LineResponse(lineInfo.getId(), lineInfo.getName(), lineInfo.getColor());
     }
 
     static RequestLineInfo toInfo2(LineRequest lineRequest) {
@@ -34,11 +29,11 @@ public class LineConverter {
             lineRequest.getDownStationId(), lineRequest.getDistance());
     }
 
-    static LineResponse2 toResponse(ResponseLineInfo responseLineInfo) {
+    static LineResponse toResponse(ResponseLineInfo responseLineInfo) {
         List<StationResponse> stationResponses = responseLineInfo.getStationInfos().stream()
             .map(StationConverter::toResponse)
             .collect(Collectors.toList());
-        return new LineResponse2(responseLineInfo.getId(), responseLineInfo.getName(), responseLineInfo.getColor(),
+        return new LineResponse(responseLineInfo.getId(), responseLineInfo.getName(), responseLineInfo.getColor(),
             stationResponses);
     }
 }
