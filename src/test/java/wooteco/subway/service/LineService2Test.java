@@ -20,13 +20,6 @@ import wooteco.subway.exception.NotFoundException;
 @SpringBootTest
 class LineService2Test extends ServiceTest {
 
-    private static final String VALID_LINE_NAME = "새로운 노선";
-    private static final String COLOR = "노란색";
-    private static final long VALID_UP_STATION_ID = 1L;
-    private static final long VALID_DOWN_STATION_ID = 2L;
-    private static final int DISTANCE = 10;
-    private static final long INVALID_ID = 999999L;
-
     private static final StationResponse STATION_RESPONSE_1 = new StationResponse(1L, "이미 존재하는 역 이름");
     private static final StationResponse STATION_RESPONSE_2 = new StationResponse(2L, "선릉역");
     private static final StationResponse STATION_RESPONSE_3 = new StationResponse(3L, "잠실역");
@@ -39,6 +32,21 @@ class LineService2Test extends ServiceTest {
 
     @Autowired
     private SectionDao sectionDao;
+
+    @Test
+    void findAll_메서드는_모든_데이터를_노선의_id_순서대로_조회() {
+        List<LineResponse2> actual = service.findAll();
+
+        List<LineResponse2> expected = List.of(
+                new LineResponse2(1L, "이미 존재하는 노선 이름", "노란색",
+                        List.of(STATION_RESPONSE_1, STATION_RESPONSE_3)),
+                new LineResponse2(2L, "신분당선", "빨간색",
+                        List.of(STATION_RESPONSE_1, STATION_RESPONSE_2, STATION_RESPONSE_3)),
+                new LineResponse2(3L, "2호선", "초록색",
+                        List.of(STATION_RESPONSE_1, STATION_RESPONSE_3)));
+
+        assertThat(actual).isEqualTo(expected);
+    }
 
     @DisplayName("find 메서드는 특정 id에 해당되는 데이터를 조회한다")
     @Nested
@@ -64,6 +72,13 @@ class LineService2Test extends ServiceTest {
     @DisplayName("save 메서드는 데이터를 저장한다")
     @Nested
     class SaveTest {
+
+        private static final String VALID_LINE_NAME = "새로운 노선";
+        private static final String COLOR = "노란색";
+        private static final long VALID_UP_STATION_ID = 1L;
+        private static final long VALID_DOWN_STATION_ID = 2L;
+        private static final int DISTANCE = 10;
+        private static final long INVALID_ID = 999999L;
 
         @Test
         void 유효한_입력인_경우_성공() {

@@ -12,6 +12,18 @@ public class FullStationEntity {
         this.stationEntity = stationEntity;
     }
 
+    public Long getId() {
+        return lineEntity.getId();
+    }
+
+    public LineEntity getLineEntity() {
+        return lineEntity;
+    }
+
+    public StationEntity getStationEntity() {
+        return stationEntity;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

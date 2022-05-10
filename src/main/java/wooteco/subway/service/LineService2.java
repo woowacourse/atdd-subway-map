@@ -1,15 +1,20 @@
 package wooteco.subway.service;
 
+import static java.util.stream.Collectors.groupingBy;
+
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.FullStationDao;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.response.LineResponse2;
 import wooteco.subway.dto.response.StationResponse;
+import wooteco.subway.entity.FullStationEntity;
 import wooteco.subway.entity.LineEntity;
 import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.entity.Sections;
@@ -24,13 +29,29 @@ public class LineService2 {
     private static final String STATION_NOT_FOUND_EXCEPTION_MESSAGE = "존재하지 않는 역을 입력하였습니다.";
 
     private final LineDao lineDao;
-    private final StationDao stationDao;
     private final SectionDao sectionDao;
+    private final StationDao stationDao;
+    private final FullStationDao fullStationDao;
 
-    public LineService2(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
+    public LineService2(LineDao lineDao,
+                        StationDao stationDao,
+                        SectionDao sectionDao,
+                        FullStationDao fullStationDao) {
         this.lineDao = lineDao;
         this.stationDao = stationDao;
         this.sectionDao = sectionDao;
+        this.fullStationDao = fullStationDao;
+    }
+
+    public List<LineResponse2> findAll() {
+        return fullStationDao.findAll()
+                .stream()
+                .collect(groupingBy(FullStationEntity::getId))
+                .values()
+                .stream()
+                .map(this::toLineResponse)
+                .sorted(Comparator.comparingLong(LineResponse2::getId))
+                .collect(Collectors.toUnmodifiableList());
     }
 
     // TODO: sort stations in order &/or select with JOIN
@@ -91,6 +112,14 @@ public class LineService2 {
                 lineRequest.getUpStationId(),
                 lineRequest.getDownStationId(),
                 lineRequest.getDistance());
+    }
+
+    private LineResponse2 toLineResponse(List<FullStationEntity> fullStations) {
+        LineEntity lineEntity = fullStations.get(0).getLineEntity();
+        List<StationEntity> stations = fullStations.stream()
+                .map(FullStationEntity::getStationEntity)
+                .collect(Collectors.toList());
+        return toLineResponse(lineEntity, stations);
     }
 
     private LineResponse2 toLineResponse(LineEntity lineEntity,

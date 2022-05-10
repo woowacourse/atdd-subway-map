@@ -9,6 +9,7 @@ VALUES (1, '이미 존재하는 노선 이름', '노란색'),
        (3, '2호선', '초록색');
 
 INSERT INTO section(id, line_id, up_station_id, down_station_id, distance)
-VALUES (1, 2, 1, 2, 5),
-       (2, 2, 2, 3, 5),
-       (3, 3, 1, 3, 7);
+VALUES (1, 1, 3, 1, 5),
+       (2, 2, 1, 2, 5),
+       (3, 2, 2, 3, 5),
+       (4, 3, 1, 3, 7);
