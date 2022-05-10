@@ -49,4 +49,8 @@ public class LineRequest {
     public Long getDownStationId() {
         return downStationId;
     }
+
+    public int getDistance() {
+        return distance;
+    }
 }

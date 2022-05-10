@@ -136,23 +136,30 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(actualLineResponses).isEqualTo(expectedLineResponses);
     }
 
-    @Disabled
     @Test
     @DisplayName("단일 노선을 조회한다.")
     void getLine() {
         // given
-        LineRequest request = new LineRequest("4호선", "sky-blue");
+        String lineName = "4호선";
+        String lineColor = "sky-blue";
+        LineRequest request = new LineRequest(lineName, lineColor, stationIdA, stationIdB, 5);
         ExtractableResponse<Response> createResponse = getExtractablePostResponse(request, defaultUri);
 
         // when
         String uri = createResponse.header("Location");
+        Long lineId = Long.parseLong(uri.split("/")[2]);
         ExtractableResponse<Response> response = getExtractableGetResponse(uri);
         LineResponse lineResponse = response.body().jsonPath().getObject(".", LineResponse.class);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(lineResponse.getName()).isEqualTo("4호선");
-        assertThat(lineResponse.getColor()).isEqualTo("sky-blue");
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(response.body().jsonPath().getLong("id")).isEqualTo(lineId),
+            () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo(lineName),
+            () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo(lineColor),
+            () -> assertThat(response.body().jsonPath().getString("stations"))
+                .isEqualTo("[[id:1, name:강남], [id:2, name:역삼]]")
+        );
     }
 
     @Test

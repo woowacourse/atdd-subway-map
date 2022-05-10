@@ -19,7 +19,8 @@ class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(new FakeLineDao());
+        lineService = new LineService(new FakeLineDao(),
+            new SectionService(new FakeSectionDao(), new StationService(new FakeStationDao())));
     }
 
     @Test
