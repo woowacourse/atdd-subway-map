@@ -3,8 +3,8 @@ package wooteco.subway.repository.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -47,16 +47,15 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Optional<StationEntity> findById(final Long id) {
+    public StationEntity findById(final Long id) {
         final String sql = "select id, name from STATION where id = :id";
         final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
         final SqlParameterSource source = new MapSqlParameterSource(params);
         try {
-            final StationEntity stationEntity = jdbcTemplate.queryForObject(sql, source, rowMapper);
-            return Optional.of(stationEntity);
+            return jdbcTemplate.queryForObject(sql, source, rowMapper);
         } catch (EmptyResultDataAccessException exception) {
-            return Optional.empty();
+            throw new NoSuchElementException();
         }
     }
 

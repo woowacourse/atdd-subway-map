@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import wooteco.subway.dto.request.SectionRequestDto;
-import wooteco.subway.service.SectionService;
 
 @Controller
 @RequestMapping("/lines/{lineId}/sections")

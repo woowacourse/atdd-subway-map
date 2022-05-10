@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.StationRequestDto;
 import wooteco.subway.exception.DuplicateStationNameException;
-import wooteco.subway.exception.NoSuchStationException;
 import wooteco.subway.repository.dao.StationDao;
 import wooteco.subway.repository.entity.StationEntity;
 
@@ -31,9 +30,7 @@ public class StationService {
     }
 
     public Station searchById(final Long id) {
-        return stationDao.findById(id)
-                .orElseThrow(() -> new NoSuchStationException())
-                .generateStation();
+        return stationDao.findById(id).generateStation();
     }
 
     public List<Station> searchAll() {

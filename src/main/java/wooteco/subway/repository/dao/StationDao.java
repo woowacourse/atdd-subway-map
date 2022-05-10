@@ -1,7 +1,6 @@
 package wooteco.subway.repository.dao;
 
 import java.util.List;
-import java.util.Optional;
 import wooteco.subway.repository.entity.StationEntity;
 
 public interface StationDao {
@@ -10,7 +9,7 @@ public interface StationDao {
 
     List<StationEntity> findAll();
 
-    Optional<StationEntity> findById(final Long id);
+    StationEntity findById(final Long id);
 
     void deleteById(final Long id);
 }

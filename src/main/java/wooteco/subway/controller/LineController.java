@@ -30,7 +30,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponseDto> createLine(@RequestBody final LineRequestDto lineRequestDto) {
-        final Line newLine = lineService.register(lineRequestDto);
+        final Line newLine = lineService.registerLine(lineRequestDto);
         final LineResponseDto lineResponseDto =
                 new LineResponseDto(newLine.getId(), newLine.getName(), newLine.getColor(), new ArrayList<>());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponseDto);
@@ -38,7 +38,7 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponseDto>> showLines() {
-        final List<Line> lines = lineService.searchAll();
+        final List<Line> lines = lineService.searchAllLines();
         final List<LineResponseDto> lineResponseDtos = lines.stream()
                 .map(line -> new LineResponseDto(line.getId(), line.getName(), line.getColor(), new ArrayList<>()))
                 .collect(Collectors.toList());
@@ -47,7 +47,7 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponseDto> showLine(@PathVariable final Long id) {
-        final Line line = lineService.searchById(id);
+        final Line line = lineService.searchLineById(id);
         return ResponseEntity.ok()
                 .body(new LineResponseDto(line.getId(), line.getName(), line.getColor(), new ArrayList<>()));
     }
@@ -55,13 +55,13 @@ public class LineController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> modifyLine(@PathVariable final Long id,
                                            @RequestBody final LineRequestDto lineRequestDto) {
-        lineService.modify(id, lineRequestDto);
+        lineService.modifyLine(id, lineRequestDto);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removeLine(@PathVariable final Long id) {
-        lineService.remove(id);
+        lineService.removeLine(id);
         return ResponseEntity.noContent().build();
     }
 }

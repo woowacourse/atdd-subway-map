@@ -3,8 +3,8 @@ package wooteco.subway.repository.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -48,16 +48,15 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<LineEntity> findById(final Long id) {
+    public LineEntity findById(final Long id) {
         final String sql = "select id, name, color from LINE where id = :id";
         final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
         final SqlParameterSource source = new MapSqlParameterSource(params);
         try {
-            final LineEntity lineEntity = jdbcTemplate.queryForObject(sql, source, rowMapper);
-            return Optional.of(lineEntity);
+            return jdbcTemplate.queryForObject(sql, source, rowMapper);
         } catch (EmptyResultDataAccessException exception) {
-            return Optional.empty();
+            throw new NoSuchElementException();
         }
     }
 
