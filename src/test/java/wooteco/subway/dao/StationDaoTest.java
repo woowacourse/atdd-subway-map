@@ -58,8 +58,8 @@ class StationDaoTest {
 
         assertAll(() -> {
             assertThat(stations).hasSize(2);
-            assertThat(stations).hasSize(2);
-            assertThat(stations).contains(station1, station2);
+            assertThat(stations.get(0).getName()).isEqualTo(station1.getName());
+            assertThat(stations.get(1).getName()).isEqualTo(station2.getName());
         });
     }
 

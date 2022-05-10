@@ -76,7 +76,10 @@ public class LineDaoTest {
 
         assertAll(() -> {
             assertThat(lines).hasSize(2);
-            assertThat(lines).contains(line1, line2);
+            assertThat(lines.get(0).getName()).isEqualTo(line1.getName());
+            assertThat(lines.get(0).getColor()).isEqualTo(line1.getColor());
+            assertThat(lines.get(1).getName()).isEqualTo(line2.getName());
+            assertThat(lines.get(1).getColor()).isEqualTo(line2.getColor());
         });
     }
 
