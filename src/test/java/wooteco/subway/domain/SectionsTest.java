@@ -22,7 +22,7 @@ class SectionsTest {
 
         // when & then
         final Section section = new Section(2L, 1L, 1L, 2L, 1);
-        assertDoesNotThrow(() -> sections.addSection(section));
+        assertDoesNotThrow(() -> sections.add(section));
     }
     
     @DisplayName("하나의 노선에는 갈래길이 허용되지 않기 때문에 새로운 구간이 추가되기 전에 갈래길이 생기지 않도록 기존 구간을 변경한다.")
@@ -35,7 +35,7 @@ class SectionsTest {
 
         // when
         final Section section = new Section(2L, 1L, 1L, 2L, 4);
-        sections.addSection(section);
+        sections.add(section);
 
         // then
         assertThat(sections.getSections().size()).isEqualTo(2);
@@ -53,7 +53,7 @@ class SectionsTest {
 
         // when & then
         final Section section = new Section(2L, 1L, 1L, 2L, 7);
-        assertThatThrownBy(() -> sections.addSection(section))
+        assertThatThrownBy(() -> sections.add(section))
                         .isInstanceOf(IllegalSectionException.class);
     }
 
@@ -67,7 +67,7 @@ class SectionsTest {
 
         // when & then
         final Section section = new Section(2L, 1L, 1L, 3L, 7);
-        assertThatThrownBy(() -> sections.addSection(section))
+        assertThatThrownBy(() -> sections.add(section))
                 .isInstanceOf(IllegalSectionException.class);
     }
 
@@ -82,8 +82,29 @@ class SectionsTest {
 
         // when & then
         final Section section = new Section(2L, 1L, 4L, 5L, 7);
-        assertThatThrownBy(() -> sections.addSection(section))
+        assertThatThrownBy(() -> sections.add(section))
                 .isInstanceOf(IllegalSectionException.class);
         assertThat(sections.getSections().size()).isEqualTo(2);
+    }
+
+    @DisplayName("Station을 받아 구간을 제거할 수 있다.")
+    @Test
+    public void deleteSection() {
+        // given
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(new Section(1L, 1L, 1L, 2L, 3));
+        sectionList.add(new Section(1L, 1L, 2L, 3L, 4));
+        final Sections sections = new Sections(sectionList);
+
+        // when
+        final Station station = new Station(2L, "중간역");
+        sections.delete(station);
+
+        // then
+        assertThat(sections.getSections().size()).isEqualTo(1);
+        final Section section = sections.getSections().get(0);
+        assertThat(section.getDistance()).isEqualTo(7);
+        assertThat(section.getUpStationId()).isEqualTo(1L);
+        assertThat(section.getDownStationId()).isEqualTo(3L);
     }
 }
