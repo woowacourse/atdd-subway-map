@@ -6,9 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,20 +15,28 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private Long savedId1;
-    private Long savedId2;
+    private Long lineId1;
+    private Long lineId2;
+    private Long stationId1;
+    private Long stationId2;
+    private Long stationId3;
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -40,13 +46,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         jdbcTemplate.update("delete from STATION", new EmptySqlParameterSource());
         jdbcTemplate.update("delete from LINE", new EmptySqlParameterSource());
         jdbcTemplate.update("delete from SECTION", new EmptySqlParameterSource());
-        insertStationData("강남역");
-        insertStationData("선릉역");
-        savedId1 = insertData("신분당선", "red");
-        savedId2 = insertData("분당선", "yellow");
+        stationId1 = insertStationData("강남역");
+        stationId2 = insertStationData("선릉역");
+        stationId3 = insertStationData("잠실역");
+        lineId1 = insertLineData("신분당선", "red");
+        lineId2 = insertLineData("분당선", "yellow");
+        insertSectionData(lineId1, stationId1, stationId2, 10);
     }
 
-    private Long insertData(String name, String color) {
+    private Long insertLineData(String name, String color) {
         String insertSql = "insert into LINE (name, color) values (:name, :color)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource source = new MapSqlParameterSource();
@@ -64,49 +72,41 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
+    private Long insertSectionData(Long lineId, Long upStationId, Long downStationId, int distance) {
+        String insertSql = "insert into SECTION (line_id, up_station_id, down_station_id, distance) values (:lineId, :upStationId, :downStationId, :distance)";
+        SqlParameterSource source = new BeanPropertySqlParameterSource(
+                new Section(lineId, upStationId, downStationId, distance));
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(insertSql, source, keyHolder);
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
-        LineRequest request = new LineRequest("2호선", "green", 1L, 2L, 10);
+        LineRequest request = new LineRequest("2호선", "green", stationId1, stationId2, 10);
         String path = "/lines";
-
         // when
-        ExtractableResponse<Response> response = execute(request, path);
-
+        ExtractableResponse<Response> response = executePostApi(request, path);
+        List<Station> expectStations = response.body().jsonPath().getList("stations", StationResponse.class)
+                .stream().map(it -> new Station(it.getId(), it.getName()))
+                .collect(Collectors.toList());
         // then
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(response.header("Location")).isNotBlank()
-        );
-    }
-
-    private ExtractableResponse<Response> execute(LineRequest request, String path) {
-        return RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(path)
-                .then().log().all()
-                .extract();
+        assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.header("Location")).isNotBlank(),
+                () -> assertThat(expectStations).isEqualTo(
+                        List.of(new Station(stationId1, "강남역"), new Station(stationId2, "선릉역"))));
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLineWithDuplicateName() {
         // given
-        LineRequest request = new LineRequest("신분당선", "red", 1L, 2L, 10);
+        LineRequest request = new LineRequest("신분당선", "red", stationId1, stationId2, 10);
         String path = "/lines";
-
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(path)
-                .then().log().all()
-                .extract();
-
+        ExtractableResponse<Response> response = executePostApi(request, path);
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -115,41 +115,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-
+        String path = "/lines";
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
-
-        List<Long> expectedLineIds = List.of(savedId1, savedId2);
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
+        ExtractableResponse<Response> response = executeGetApi(path);
+        List<Long> expectedLineIds = List.of(lineId1, lineId2);
+        List<Long> actualLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+                .map(LineResponse::getId).collect(Collectors.toList());
         // then
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(resultLineIds).containsAll(expectedLineIds)
-        );
+        assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(actualLineIds).containsAll(expectedLineIds));
     }
 
     @DisplayName("id 를 이용하여 노선을 조회한다.")
     @Test
     void findLine() {
         //given
-        String id = String.valueOf(savedId1);
-
+        String id = String.valueOf(lineId1);
+        String path = "/lines/" + id;
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines/" + id)
-                .then().log().all()
-                .extract();
-
+        ExtractableResponse<Response> response = executeGetApi(path);
         Integer findId = response.jsonPath().get("id");
+        List<Station> expectStations = response.body().jsonPath().getList("stations", StationResponse.class)
+                .stream().map(it -> new Station(it.getId(), it.getName()))
+                .collect(Collectors.toList());
         //then
-        assertThat(findId).isEqualTo(Integer.parseInt(id));
+        assertAll(() -> assertThat(findId).isEqualTo(Integer.parseInt(id)),
+                () -> assertThat(expectStations).isEqualTo(
+                        List.of(new Station(stationId1, "강남역"), new Station(stationId2, "선릉역"))));
     }
 
     @DisplayName("존재하지 않는 id 를 이용하여 노선을 조회한다.")
@@ -157,14 +149,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void findLineWithNoneId() {
         //given
         String id = "-1";
-
+        String path = "/lines/" + id;
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines/" + id)
-                .then().log().all()
-                .extract();
-
+        ExtractableResponse<Response> response = executeGetApi(path);
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -173,20 +160,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         //given
-        String id = String.valueOf(savedId1);
-
-        Map<String, String> parameter = new HashMap<>();
-        parameter.put("name", "다른분당선");
-        parameter.put("color", "bg-black-600");
+        String id = String.valueOf(lineId1);
+        Line line = new Line("다른분당선", "black");
+        String path = "/lines/" + id;
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(parameter)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/lines/" + id)
-                .then().log().all()
-                .extract();
-
+        ExtractableResponse<Response> response = executePutApi(line, path);
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -195,20 +173,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineWithDuplicatedName() {
         //given
-        String id = String.valueOf(savedId1);
-
-        Map<String, String> parameter = new HashMap<>();
-        parameter.put("name", "분당선");
-        parameter.put("color", "bg-red-600");
+        String id = String.valueOf(lineId1);
+        Line line = new Line("분당선", "blue");
+        String path = "/lines/" + id;
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(parameter)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/lines/" + id)
-                .then().log().all()
-                .extract();
-
+        ExtractableResponse<Response> response = executePutApi(line, path);
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -217,20 +186,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineWithDuplicatedColor() {
         //given
-        String id = String.valueOf(savedId1);
-
-        Map<String, String> parameter = new HashMap<>();
-        parameter.put("name", "신분당선");
-        parameter.put("color", "bg-red-600");
+        String id = String.valueOf(lineId1);
+        Line line = new Line("신분당선", "red");
+        String path = "/lines/" + id;
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(parameter)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/lines/" + id)
-                .then().log().all()
-                .extract();
-
+        ExtractableResponse<Response> response = executePutApi(line, path);
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -239,16 +199,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLineById() {
         //given
-        String id = String.valueOf(savedId1);
-
+        String id = String.valueOf(lineId1);
+        String path = "/lines/" + id;
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete("/lines/" + id)
-                .then().log().all()
-                .extract();
-
+        ExtractableResponse<Response> response = executeDeleteApi(path);
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> executeGetApi(String path) {
+        return RestAssured.given().log().all()
+                .when().get(path)
+                .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> executePostApi(LineRequest request, String path) {
+        return RestAssured.given().log().all().body(request).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(path)
+                .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> executePutApi(Line line, String path) {
+        return RestAssured.given().log().all()
+                .body(line).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put(path)
+                .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> executeDeleteApi(String path) {
+        return RestAssured.given().log().all()
+                .when().delete(path)
+                .then().log().all().extract();
     }
 }

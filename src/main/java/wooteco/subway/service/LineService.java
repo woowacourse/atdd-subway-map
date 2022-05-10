@@ -8,6 +8,7 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -61,8 +62,15 @@ public class LineService {
 
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id);
-        return new LineResponse(line);
+        Sections sections = new Sections(sectionDao.findByLineId(id));
+        return new LineResponse(line, findByStationResponses(sections));
+    }
 
+    private List<StationResponse> findByStationResponses(Sections sections) {
+        List<Long> stationIdsInOrder = sections.findStationIdsInOrder();
+        return stationIdsInOrder.stream()
+                .map(id -> new StationResponse(stationDao.findById(id)))
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public List<LineResponse> findAll() {
