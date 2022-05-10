@@ -88,4 +88,43 @@ public class Sections {
     public List<Section> getValues() {
         return List.copyOf(values);
     }
+
+    public void delete(Station station) {
+        validateDeletable();
+
+        if (station.equals(getUpDestination())) {
+            values.remove(0);
+            return;
+        }
+
+        if (station.equals(getDownDestination())) {
+            values.remove(values.size() - 1);
+            return;
+        }
+
+        Section section = values.stream()
+            .filter(it -> it.contains(station))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("삭제할 역이 존재하지 않습니다."));
+
+        mergeTwoSections(section);
+    }
+
+    private void validateDeletable() {
+        if (values.size() <= 1) {
+            throw new IllegalArgumentException("구간이 하나인 경우 삭제할 수 없습니다.");
+        }
+    }
+
+    private void mergeTwoSections(Section section) {
+        int index = values.indexOf(section);
+        Section nextSection = findNextSection(section);
+        values.set(index, new Section(section.getUpStation(), nextSection.getDownStation(),
+            section.getDistance() + nextSection.getDistance()));
+        values.remove(index + 1);
+    }
+
+    private Section findNextSection(Section section) {
+        return values.get(values.indexOf(section) + 1);
+    }
 }
