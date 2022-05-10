@@ -90,6 +90,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
+
+        @Test
+        void 존재하지_않는_지하철역을_종점으로_입력하면_404_NOT_FOUND() {
+            Map<String, Object> params = jsonLineOf("새로운 이름", "검정색", 9999L, 2L, 10);
+
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/lines", params);
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        }
     }
 
     @DisplayName("GET /lines - 지하철 노선 목록 조회 테스트")

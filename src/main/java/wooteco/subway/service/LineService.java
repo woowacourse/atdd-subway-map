@@ -65,12 +65,11 @@ public class LineService {
     @Transactional
     public LineResponse save(CreateLineRequest lineRequest) {
         validateUniqueLineName(lineRequest.getName());
-        List<StationEntity> stations = findExistingStations(lineRequest);
 
         LineEntity line = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
         sectionDao.save(toSection(lineRequest, line));
 
-        return toLineResponse(line, stations);
+        return toLineResponse(line, findStations(lineRequest));
     }
 
     @Transactional
@@ -108,7 +107,7 @@ public class LineService {
                 .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE));
     }
 
-    private List<StationEntity> findExistingStations(CreateLineRequest lineRequest) {
+    private List<StationEntity> findStations(CreateLineRequest lineRequest) {
         List<Long> stationsIds = List.of(lineRequest.getUpStationId(), lineRequest.getDownStationId());
         List<StationEntity> stations = stationDao.findAllByIds(stationsIds);
         if (stationsIds.size() != stations.size()) {
@@ -117,8 +116,8 @@ public class LineService {
         return stations;
     }
 
-    private SectionEntity toSection(CreateLineRequest lineRequest, LineEntity createdLineEntity) {
-        return new SectionEntity(createdLineEntity.getId(),
+    private SectionEntity toSection(CreateLineRequest lineRequest, LineEntity lineEntity) {
+        return new SectionEntity(lineEntity.getId(),
                 lineRequest.getUpStationId(),
                 lineRequest.getDownStationId(),
                 lineRequest.getDistance());

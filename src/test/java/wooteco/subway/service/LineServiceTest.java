@@ -114,6 +114,58 @@ class LineServiceTest extends ServiceTest {
             assertThatThrownBy(() -> service.save(noneExistingUpStationRequest))
                     .isInstanceOf(NotFoundException.class);
         }
+
+        @Test
+        void 거리가_0인_경우_예외발생() {
+            CreateLineRequest nullDistanceRequest = new CreateLineRequest(
+                    VALID_LINE_NAME, COLOR, VALID_UP_STATION_ID, VALID_DOWN_STATION_ID, 0);
+            assertThatThrownBy(() -> service.save(nullDistanceRequest))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @DisplayName("null 및 공백 입력 여부 검증")
+        @Nested
+        class NullAndBlankValidationTest {
+
+            @Test
+            void 이름이_null_혹은_공백인_경우_예외발생() {
+                CreateLineRequest nullNameRequest = new CreateLineRequest(
+                        null, COLOR, VALID_UP_STATION_ID, VALID_DOWN_STATION_ID, DISTANCE);
+                CreateLineRequest blankNameRequest = new CreateLineRequest(
+                        "    ", COLOR, VALID_UP_STATION_ID, VALID_DOWN_STATION_ID, DISTANCE);
+
+                assertThatThrownBy(() -> service.save(blankNameRequest))
+                        .isInstanceOf(IllegalArgumentException.class);
+                assertThatThrownBy(() -> service.save(nullNameRequest))
+                        .isInstanceOf(IllegalArgumentException.class);
+            }
+
+            @Test
+            void 색상이_null_혹은_공백인_경우_예외발생() {
+                CreateLineRequest nullColorRequest = new CreateLineRequest(
+                        VALID_LINE_NAME, null, VALID_UP_STATION_ID, VALID_DOWN_STATION_ID, DISTANCE);
+                CreateLineRequest blankColorRequest = new CreateLineRequest(
+                        VALID_LINE_NAME, "   ", VALID_UP_STATION_ID, VALID_DOWN_STATION_ID, DISTANCE);
+
+                assertThatThrownBy(() -> service.save(nullColorRequest))
+                        .isInstanceOf(IllegalArgumentException.class);
+                assertThatThrownBy(() -> service.save(blankColorRequest))
+                        .isInstanceOf(IllegalArgumentException.class);
+            }
+
+            @Test
+            void 지하철역_id가_null_경우_예외발생() {
+                CreateLineRequest nullUpStationRequest = new CreateLineRequest(
+                        VALID_LINE_NAME, COLOR, null, VALID_DOWN_STATION_ID, DISTANCE);
+                CreateLineRequest nullDownStationRequest = new CreateLineRequest(
+                        VALID_LINE_NAME, COLOR, VALID_UP_STATION_ID, null, DISTANCE);
+
+                assertThatThrownBy(() -> service.save(nullUpStationRequest))
+                        .isInstanceOf(IllegalArgumentException.class);
+                assertThatThrownBy(() -> service.save(nullDownStationRequest))
+                        .isInstanceOf(IllegalArgumentException.class);
+            }
+        }
     }
 
     @DisplayName("delete 메서드는 노선과 모든 구간 데이터를 삭제한다")
