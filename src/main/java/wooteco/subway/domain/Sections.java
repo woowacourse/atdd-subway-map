@@ -186,10 +186,8 @@ public class Sections {
     }
 
     public SectionsUpdateResult removeStation(final Station station) {
-        if (!isUpStation(station) && !isDownStation(station)) {
-            throw new NotFoundStationException("[ERROR] 해당 구간이 존재하지 않습니다.");
-        }
-        if (isUpStation(station) && isDownStation(station)) {
+        validateRemoveStation(station);
+        if (isBetween(station)) {
             return removeStationBetween(station);
         }
         if (isUpStation(station)) {
@@ -198,23 +196,49 @@ public class Sections {
         return simpleRemoveLast();
     }
 
+    private void validateRemoveStation(final Station station) {
+        if (!isUpStation(station) && !isDownStation(station)) {
+            throw new NotFoundStationException("[ERROR] 해당 구간이 존재하지 않습니다.");
+        }
+        if (value.size() <= 1) {
+            throw new IllegalStateException("[ERROR] 구간이 한개일 경우엔 삭제할 수 없습니다.");
+        }
+    }
+
+    private boolean isBetween(final Station station) {
+        return isUpStation(station) && isDownStation(station);
+    }
+
     private SectionsUpdateResult removeStationBetween(final Station station) {
         final List<Section> deletedSections = new ArrayList<>();
-        final List<Section> addedSections = new ArrayList<>();
+        final Section frontSection = removeOldFrontSection(station, deletedSections);
+        final Section backSection = removeOldBackSection(station, deletedSections);
+
+        final List<Section> addedSections = addNewMergedSection(frontSection, backSection);
+
+        return new SectionsUpdateResult(deletedSections, addedSections);
+    }
+
+    private Section removeOldFrontSection(final Station station, final List<Section> deletedSections) {
         final Section frontSection = findSectionThisDownStation(station);
-        final int sectionIndex = value.indexOf(frontSection);
         value.remove(frontSection);
         deletedSections.add(frontSection);
+        return frontSection;
+    }
 
+    private Section removeOldBackSection(final Station station, final List<Section> deletedSections) {
         final Section backSection = findSectionThisUpStation(station);
         value.remove(backSection);
         deletedSections.add(backSection);
+        return backSection;
+    }
 
+    private List<Section> addNewMergedSection(final Section frontSection, final Section backSection) {
+        final List<Section> addedSections = new ArrayList<>();
         final Section newSection = mergeSection(frontSection, backSection);
-        value.add(sectionIndex, newSection);
+        value.add(value.indexOf(frontSection), newSection);
         addedSections.add(newSection);
-
-        return new SectionsUpdateResult(deletedSections, addedSections);
+        return addedSections;
     }
 
     private Section findSectionThisUpStation(final Station station) {
