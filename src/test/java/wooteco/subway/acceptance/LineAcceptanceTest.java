@@ -437,6 +437,40 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @Sql(value = "/sql/InsertSections.sql")
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void addSectionBetweenStationFailAlreadyRegisteredUpAndDown() {
+        /*
+        이미 등록된 노선 아이디 : 1
+        이미 등록된 역 아이디 : 1, 2, 3
+        구간 등록된 역 아이디 : 1, 2
+        역 사이 거리 : 10
+         */
+        // given
+        Long lineId = 1L;
+        Long paramUpStationId = 1L;
+        Long paramDownStationId = 2L;
+        int paramDistance = 3;
+        SectionRequest params = new SectionRequest(paramUpStationId, paramDownStationId, paramDistance);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message"))
+                        .isEqualTo("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+        );
+    }
+
     @Sql(value = "/sql/InsertTwoStation.sql")
     @DisplayName("지하철노선 목록을 조회한다.")
     @Test

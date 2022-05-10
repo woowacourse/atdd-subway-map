@@ -20,16 +20,26 @@ public class SectionService {
         Long downStationId = request.getDownStationId();
         int distance = request.getDistance();
 
-        updateIfForkLine(id, request);
-
-        sectionDao.save(new Section(id, upStationId, downStationId, distance));
-    }
-
-    private void updateIfForkLine(Long id, SectionRequest request) {
         Optional<Section> sectionByUpStation = sectionDao.findByLineIdAndUpStationId(id, request.getUpStationId());
         Optional<Section> sectionByDownStation =
                 sectionDao.findByLineIdAndDownStationId(id, request.getDownStationId());
 
+        checkCanAddSection(sectionByUpStation, sectionByDownStation);
+        updateIfForkLine(id, request, sectionByUpStation, sectionByDownStation);
+
+        sectionDao.save(new Section(id, upStationId, downStationId, distance));
+    }
+
+    private void checkCanAddSection(Optional<Section> sectionByUpStation, Optional<Section> sectionByDownStation) {
+        if (sectionByUpStation.isPresent() && sectionByDownStation.isPresent()) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음");
+        }
+    }
+
+    private void updateIfForkLine(Long id,
+                                  SectionRequest request,
+                                  Optional<Section> sectionByUpStation,
+                                  Optional<Section> sectionByDownStation) {
         if (sectionByUpStation.isPresent()) {
             Section section = sectionByUpStation.get();
             int distance = section.getDistance() - request.getDistance();
