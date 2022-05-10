@@ -32,20 +32,32 @@ public class SectionService {
 
         if (sectionByUpStation.isPresent()) {
             Section section = sectionByUpStation.get();
+            int distance = section.getDistance() - request.getDistance();
+            validateDistance(distance);
+
             sectionDao.update(section.getId(), new Section(
                     id,
                     request.getDownStationId(),
                     section.getDownStationId(),
-                    section.getDistance() - request.getDistance()));
+                    distance));
             return;
         }
         if (sectionByDownStation.isPresent()) {
             Section section = sectionByDownStation.get();
+            int distance = request.getDistance() - section.getDistance();
+            validateDistance(distance);
+
             sectionDao.update(section.getId(), new Section(
                     id,
                     section.getUpStationId(),
                     request.getUpStationId(),
-                    request.getDistance() - section.getDistance()));
+                    distance));
+        }
+    }
+
+    private void validateDistance(int distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException("역 사이 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
         }
     }
 }

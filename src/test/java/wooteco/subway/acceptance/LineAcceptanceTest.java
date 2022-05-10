@@ -403,6 +403,40 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @Sql(value = "/sql/InsertSections.sql")
+    @DisplayName("기존 상하행 거리보다 거리가 멀거나 같은 경우 구간을 등록할 수 없다.")
+    @Test
+    void addSectionBetweenStationFailOverDistance() {
+        /*
+        이미 등록된 노선 아이디 : 1
+        이미 등록된 역 아이디 : 1, 2, 3
+        구간 등록된 역 아이디 : 1, 2
+        역 사이 거리 : 10
+         */
+        // given
+        Long lineId = 1L;
+        Long paramUpStationId = 1L;
+        Long paramDownStationId = 3L;
+        int paramDistance = 10;
+        SectionRequest params = new SectionRequest(paramUpStationId, paramDownStationId, paramDistance);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message"))
+                        .isEqualTo("역 사이 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+        );
+    }
+
     @Sql(value = "/sql/InsertTwoStation.sql")
     @DisplayName("지하철노선 목록을 조회한다.")
     @Test
