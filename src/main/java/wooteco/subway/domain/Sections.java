@@ -41,7 +41,7 @@ public class Sections {
         Optional<Section> foundSection = findByUpStationId(newSection.getUpStationId());
         if (foundSection.isPresent()) {
             foundSection.get().updateUpStationId(newSection.getDownStationId());
-            foundSection.get().shortenDistance(newSection.getDistance());
+            foundSection.get().reduceDistance(newSection.getDistance());
             return List.of(newSection, foundSection.get());
         }
         return List.of(newSection);
@@ -49,7 +49,7 @@ public class Sections {
 
     private Optional<Section> findByUpStationId(Long id) {
         return value.stream()
-                .filter(other -> other.isSameUpStationId(id))
+                .filter(section -> section.isSameUpStationId(id))
                 .findFirst();
     }
 
@@ -57,7 +57,7 @@ public class Sections {
         Optional<Section> foundSection = findByDownStationId(newSection.getDownStationId());
         if (foundSection.isPresent()) {
             foundSection.get().updateDownStationId(newSection.getUpStationId());
-            foundSection.get().shortenDistance(newSection.getDistance());
+            foundSection.get().reduceDistance(newSection.getDistance());
             return List.of(newSection, foundSection.get());
         }
         return List.of(newSection);
@@ -65,8 +65,27 @@ public class Sections {
 
     private Optional<Section> findByDownStationId(Long id) {
         return value.stream()
-                .filter(other -> other.isSameDownStationId(id))
+                .filter(section -> section.isSameDownStationId(id))
                 .findFirst();
+    }
+
+    public Optional<Section> delete(Long sectionId) {
+        Section section = findBySectionId(sectionId);
+        value.remove(section);
+
+        Optional<Section> updatedSection = findByUpStationId(section.getDownStationId());
+        if (updatedSection.isPresent()) {
+            updatedSection.get().updateUpStationId(section.getUpStationId());
+            updatedSection.get().addDistance(section.getDistance());
+        }
+        return updatedSection;
+    }
+
+    private Section findBySectionId(Long id) {
+        return value.stream()
+                .filter(section -> section.isSameId(id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 id인 구역을 찾을 수 없습니다."));
     }
 
     public List<Section> getValue() {

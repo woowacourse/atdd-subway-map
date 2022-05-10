@@ -30,8 +30,12 @@ public class Section {
         return upStationId.equals(section.downStationId);
     }
 
-    public void shortenDistance(int distance) {
+    public void reduceDistance(int distance) {
         this.distance -= distance;
+    }
+
+    public void addDistance(int distance) {
+        this.distance += distance;
     }
 
     public boolean isSameDownStationId(Section section) {
@@ -48,6 +52,10 @@ public class Section {
 
     public boolean isSameUpStationId(Long id) {
         return id.equals(upStationId);
+    }
+
+    public boolean isSameId(Long id) {
+        return id.equals(this.id);
     }
 
     public void updateDownStationId(Long id) {

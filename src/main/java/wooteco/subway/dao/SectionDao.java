@@ -61,4 +61,10 @@ public class SectionDao {
         MapSqlParameterSource source = new MapSqlParameterSource("lineId", lineId);
         jdbcTemplate.update(sql, source);
     }
+
+    public void deleteById(Long id) {
+        String sql = "delete from SECTION where id = :id";
+        MapSqlParameterSource source = new MapSqlParameterSource("id", id);
+        jdbcTemplate.update(sql, source);
+    }
 }
