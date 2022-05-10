@@ -1,7 +1,5 @@
 package wooteco.subway.domain.entity;
 
-import wooteco.subway.domain.Station;
-
 public class LineEntity {
     private Long id;
     private String name;
