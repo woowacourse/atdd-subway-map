@@ -1,0 +1,49 @@
+###
+POST http://localhost:8080/stations
+Content-Type: application/json
+
+{
+  "name": "강남역"
+}
+
+> {%
+ client.global.set("stationId1", response.body.id);
+ client.log("쿠키: "+client.global.get("stationId1"));
+ %}
+
+<> 2022-05-10T143821.201.json
+
+###
+POST http://localhost:8080/stations
+Content-Type: application/json
+
+{
+  "name": "역삼역"
+}
+
+> {%
+ client.global.set("stationId2", response.body.id);
+ client.log("쿠키: "+client.global.get("stationId2"));
+ %}
+<> 2022-05-10T143847.201.json
+<> 2022-05-10T134717.201.json
+
+###
+POST http://localhost:8080/lines
+Content-Type: application/json
+
+{
+  "name": "분당선",
+  "color": "노랑이",
+  "upStationId": {{stationId1}},
+  "downStationId": {{stationId2}},
+  "distance": 5
+}
+
+> {%
+ client.global.set("line2Id", response.body.id);
+ client.log("쿠키: "+client.global.get("line2Id"));
+ %}
+
+<> 2022-05-10T143858.201.json
+<> 2022-05-10T134722.201.json
