@@ -47,11 +47,6 @@ public class StationDao {
         return jdbcTemplate.query(sql, STATION_ROW_MAPPER);
     }
 
-    public Station findByName(String name) {
-        String sql = "SELECT * FROM station WHERE name=?";
-        return jdbcTemplate.queryForObject(sql, STATION_ROW_MAPPER, name);
-    }
-
     public void deleteById(Long id) {
         String sql = "DELETE FROM station WHERE id=?";
         jdbcTemplate.update(sql, id);

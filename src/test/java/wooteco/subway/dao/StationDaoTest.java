@@ -47,15 +47,6 @@ class StationDaoTest {
     }
 
     @Test
-    @DisplayName("특정 Station 조회")
-    void findByName() {
-        Station station1 = stationDao.save(new Station("선릉역"));
-        Station station2 = stationDao.findByName("선릉역");
-
-        assertThat(station1).isEqualTo(station2);
-    }
-
-    @Test
     @DisplayName("특정 Station 삭제")
     void deleteById() {
         Station station = stationDao.save(new Station("선릉역"));
