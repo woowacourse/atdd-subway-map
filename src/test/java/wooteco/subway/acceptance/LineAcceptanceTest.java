@@ -3,14 +3,18 @@ package wooteco.subway.acceptance;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static wooteco.subway.acceptance.AcceptanceFixture.LINE_URL;
+import static wooteco.subway.acceptance.AcceptanceFixture.STATION_URL;
 import static wooteco.subway.acceptance.AcceptanceFixture.deleteMethodRequest;
 import static wooteco.subway.acceptance.AcceptanceFixture.getExpectedLineIds;
 import static wooteco.subway.acceptance.AcceptanceFixture.getMethodRequest;
 import static wooteco.subway.acceptance.AcceptanceFixture.getResultLineIds;
 import static wooteco.subway.acceptance.AcceptanceFixture.postMethodRequest;
 import static wooteco.subway.acceptance.AcceptanceFixture.putMethodRequest;
+import static wooteco.subway.acceptance.AcceptanceFixture.강남역_인자;
 import static wooteco.subway.acceptance.AcceptanceFixture.경의중앙선_인자;
+import static wooteco.subway.acceptance.AcceptanceFixture.분당선_요청;
 import static wooteco.subway.acceptance.AcceptanceFixture.분당선_인자;
+import static wooteco.subway.acceptance.AcceptanceFixture.역삼역_인자;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -25,14 +29,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = postMethodRequest(분당선_인자, LINE_URL);
+        ExtractableResponse<Response> 강남역_응답 = postMethodRequest(강남역_인자, STATION_URL);
+        ExtractableResponse<Response> 역삼역_응답 = postMethodRequest(역삼역_인자, STATION_URL);
+        ExtractableResponse<Response> 분당선_응답 = postMethodRequest(분당선_요청, LINE_URL);
 
         // then
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(response.header("Location")).isNotBlank(),
-                () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo("분당선"),
-                () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo("노랑이")
+                () -> assertThat(분당선_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(분당선_응답.header("Location")).isNotBlank(),
+                () -> assertThat(분당선_응답.body().jsonPath().getString("name")).isEqualTo("분당선"),
+                () -> assertThat(분당선_응답.body().jsonPath().getString("color")).isEqualTo("노랑이"),
+                () -> assertThat(분당선_응답.body().jsonPath().getList("stations").size()).isEqualTo(2)
         );
     }
 

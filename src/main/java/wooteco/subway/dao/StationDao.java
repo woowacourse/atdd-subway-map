@@ -49,4 +49,9 @@ public class StationDao {
         final String sql = "DELETE FROM station where id = ?";
         return jdbcTemplate.update(sql, id);
     }
+
+    public Station findById(Long id) {
+        final String sql = "SELECT * FROM station WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
+    }
 }

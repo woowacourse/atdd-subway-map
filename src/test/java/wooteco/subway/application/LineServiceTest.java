@@ -5,8 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static wooteco.subway.application.ServiceFixture.강남역;
 import static wooteco.subway.application.ServiceFixture.경의중앙선;
 import static wooteco.subway.application.ServiceFixture.분당선;
+import static wooteco.subway.application.ServiceFixture.역삼역;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineResponse;
 
 class LineServiceTest {
 
@@ -23,23 +27,29 @@ class LineServiceTest {
     @Mock
     private LineDao lineDao;
 
+    @Mock
+    private StationDao stationDao;
+
     public LineServiceTest() {
         MockitoAnnotations.openMocks(this);
-        this.lineService = new LineService(lineDao);
+        this.lineService = new LineService(lineDao, stationDao, new FakeSectionDao());
     }
 
     @Test
-    @DisplayName("저장에 성공할 시 노선 객체를 반환한다.")
+    @DisplayName("저장에 성공할 시 노선 Dto 객체를 반환한다.")
     void save() {
         //when
         given(lineDao.save(any(Line.class))).willReturn(분당선);
-        Line saveLine = lineService.save("분당선", "노랑이");
+        given(stationDao.findById(1L)).willReturn(강남역);
+        given(stationDao.findById(2L)).willReturn(역삼역);
+        LineResponse response = lineService.save("분당선", "노랑이", 1L, 2L, 5);
 
         //then
         assertAll(
-                () -> assertThat(saveLine.getId()).isEqualTo(1L),
-                () -> assertThat(saveLine.getName()).isEqualTo("분당선"),
-                () -> assertThat(saveLine.getColor()).isEqualTo("노랑이")
+                () -> assertThat(response.getId()).isEqualTo(1L),
+                () -> assertThat(response.getName()).isEqualTo("분당선"),
+                () -> assertThat(response.getColor()).isEqualTo("노랑이"),
+                () -> assertThat(response.getStations().size()).isEqualTo(2)
         );
     }
 
@@ -50,7 +60,7 @@ class LineServiceTest {
         given(lineDao.existsByName(any(String.class))).willReturn(true);
 
         //then
-        assertThatThrownBy(() -> lineService.save("분당선", "노랑이"))
+        assertThatThrownBy(() -> lineService.save("분당선", "노랑이", 1L, 2L, 5))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("중복");
     }
