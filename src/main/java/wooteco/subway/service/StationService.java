@@ -10,6 +10,7 @@ import wooteco.subway.dto.station.StationResponse;
 import wooteco.subway.exception.NotFoundException;
 
 @Service
+@Transactional(readOnly = true)
 public class StationService {
 
     private final StationDao stationDao;

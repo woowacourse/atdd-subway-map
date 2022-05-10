@@ -16,6 +16,7 @@ import wooteco.subway.dto.line.LineUpdateRequest;
 import wooteco.subway.exception.NotFoundException;
 
 @Service
+@Transactional(readOnly = true)
 public class LineService {
 
     private final LineDao lineDao;
@@ -45,7 +46,6 @@ public class LineService {
         sectionDao.save(section);
     }
 
-    @Transactional
     public List<LineResponse> findAll() {
         return lineDao.findAll()
                 .stream()

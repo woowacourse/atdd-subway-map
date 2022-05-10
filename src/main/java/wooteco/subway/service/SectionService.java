@@ -12,6 +12,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.section.SectionSaveRequest;
 
 @Service
+@Transactional(readOnly = true)
 public class SectionService {
 
     private final LineDao lineDao;
