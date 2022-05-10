@@ -25,5 +25,7 @@ create table SECTION
     distance int,
     line_id bigint not null,
     primary key(id),
-    constraint fk_line_id foreign key(line_id) references LINE(id) on delete cascade
+    constraint fk_line_id foreign key(line_id) references LINE(id) on delete cascade,
+    constraint fk_up_station_id foreign key(up_station_id) references STATION(id) on delete cascade,
+    constraint fk_down_station_id foreign key(down_station_id) references STATION(id) on delete cascade
 );
