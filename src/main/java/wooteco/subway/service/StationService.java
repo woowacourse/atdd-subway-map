@@ -8,8 +8,8 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.DuplicateNameException;
 
 @Service
 public class StationService {
@@ -37,6 +37,15 @@ public class StationService {
         return stationDao.findAll()
                 .stream()
                 .anyMatch(station -> station.getName().equals(stationRequest.getName()));
+    }
+
+    public List<StationResponse> findStationsById(final Long upStationId, final Long downStationId) {
+        final Station upStation = stationDao.findById(upStationId);
+        final Station downStation = stationDao.findById(downStationId);
+        final StationResponse upStationResponse = new StationResponse(upStation.getId(), upStation.getName());
+        final StationResponse downStationResponse = new StationResponse(downStation.getId(), downStation.getName());
+
+        return List.of(upStationResponse, downStationResponse);
     }
 
     public List<StationResponse> findAll() {

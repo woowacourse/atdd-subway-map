@@ -9,43 +9,36 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 
 public class SectionDaoImplTest extends DaoImplTest {
 
+    private LineDaoImpl lineDaoImpl;
     private SectionDaoImpl sectionDaoImpl;
+    private StationDaoImpl stationDaoImpl;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
+        lineDaoImpl = new LineDaoImpl(jdbcTemplate);
         sectionDaoImpl = new SectionDaoImpl(jdbcTemplate);
+        stationDaoImpl = new StationDaoImpl(jdbcTemplate);
     }
 
     @DisplayName("구간 정보를 저장한다.")
     @Test
     void save() {
-        Section section = new Section(1L, 1L, 2L, 12);
+        Station upStation = stationDaoImpl.findById(1L);
+        Station downStation = stationDaoImpl.findById(2L);
+
+        Section section = new Section(1L, upStation, downStation, 12);
         Section newSection = sectionDaoImpl.save(section);
 
         assertThat(newSection.getLineId()).isEqualTo(1L);
-        assertThat(newSection.getUpStationId()).isEqualTo(1L);
-        assertThat(newSection.getDownStationId()).isEqualTo(2L);
+        assertThat(newSection.getUpStation()).isEqualTo(upStation);
+        assertThat(newSection.getDownStation()).isEqualTo(downStation);
         assertThat(newSection.getDistance()).isEqualTo(12);
-    }
-
-    @DisplayName("같은 노선 아이디를 가지는 구간 정보를 전부 조회한다.")
-    @Test
-    void findByLineId() {
-        Section firstSection = new Section(1L, 1L, 2L, 12);
-        Section secondSection = new Section(1L, 1L, 2L, 12);
-        Section thirdSection = new Section(1L, 1L, 2L, 12);
-
-        sectionDaoImpl.save(firstSection);
-        sectionDaoImpl.save(secondSection);
-        sectionDaoImpl.save(thirdSection);
-        List<Section> sections = sectionDaoImpl.findByLineId(firstSection.getLineId());
-
-        sections.forEach(section -> assertThat(section.getLineId()).isEqualTo(firstSection.getLineId()));
     }
 }

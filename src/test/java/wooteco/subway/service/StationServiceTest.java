@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -20,6 +21,7 @@ class StationServiceTest {
 
     @BeforeEach
     void setUp() {
+        FakeStationDao.init();
         stationService = new StationService(new FakeStationDao());
     }
 
@@ -53,7 +55,7 @@ class StationServiceTest {
     }
 
     @Test
-    @DisplayName("역 정보들 조회")
+    @DisplayName("역 정보전체를 조회한다.")
     void findAll() {
         StationRequest firstStation = new StationRequest("역삼역");
         StationRequest secondStation = new StationRequest("삼성역");
