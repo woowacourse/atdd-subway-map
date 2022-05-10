@@ -26,7 +26,7 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public Long save(Station station) {
-        final String sql = "insert into STATION (name) values (?)";
+        final String sql = "INSERT INTO station (name) VALUES (?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
@@ -40,7 +40,7 @@ public class JdbcStationDao implements StationDao {
     @Override
     public Station findById(Long id) {
         try {
-            final String sql = "select * from STATION where id = ?";
+            final String sql = "SELECT * FROM station WHERE id = ?";
             return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -49,19 +49,19 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public List<Station> findAll() {
-        final String sql = "select * from STATION";
+        final String sql = "SELECT * FROM station";
         return jdbcTemplate.query(sql, stationRowMapper);
     }
 
     @Override
     public boolean hasStation(String name) {
-        final String sql = "select exists (select * from STATION where name = ?)";
+        final String sql = "SELECT exists (SELECT * FROM station WHERE name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
     @Override
     public void deleteById(Long id) {
-        final String sql = "delete from STATION where id = ?";
+        final String sql = "DELETE FROM station WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 }

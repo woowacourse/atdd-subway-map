@@ -21,11 +21,11 @@ public class JdbcLineDaoTest {
     void setUp() {
         lineDao = new JdbcLineDao(jdbcTemplate);
 
-        jdbcTemplate.execute("create table if not exists LINE(\n"
-                + "    id bigint auto_increment not null,\n"
-                + "    name varchar(255) not null unique,\n"
-                + "    color varchar(20) not null,\n"
-                + "    primary key(id)\n"
+        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS LINE(\n"
+                + "    id BIGINT AUTO_INCREMENT NOT NULL,\n"
+                + "    name VARCHAR(255) NOT NULL UNIQUE,\n"
+                + "    color VARCHAR(20) NOT NULL,\n"
+                + "    PRIMARY KEY(id)\n"
                 + ");");
 
         final Line line1 = new Line("분당선", "bg-red-600");
@@ -37,7 +37,7 @@ public class JdbcLineDaoTest {
     @Test
     @DisplayName("지하철 노선을 저장한다.")
     void save() {
-        final String sql = "select count(*) from LINE";
+        final String sql = "SELECT count(*) FROM LINE";
         final int expected = 2;
 
         final int actual = jdbcTemplate.queryForObject(sql, Integer.class);

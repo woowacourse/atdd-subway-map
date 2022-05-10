@@ -27,7 +27,7 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public Long save(Line line) {
-        final String sql = "insert into LINE (name, color) values (?, ?)";
+        final String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
@@ -42,7 +42,7 @@ public class JdbcLineDao implements LineDao {
     @Override
     public Line findById(Long id) {
         try {
-            final String sql = "select * from LINE where id = ?";
+            final String sql = "SELECT * FROM LINE WHERE id = ?";
             return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -51,25 +51,25 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public List<Line> findAll() {
-        final String sql = "select * from LINE";
+        final String sql = "SELECT * from LINE";
         return jdbcTemplate.query(sql, lineRowMapper);
     }
 
     @Override
     public boolean hasLine(String name) {
-        final String sql = "select exists (select * from LINE where name = ?)";
+        final String sql = "SELECT EXISTS (SELECT * FROM LINE WHERE name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
     @Override
     public void updateById(Long id, String name, String color) {
-        final String sql = "update LINE set name = ?, color = ? where id = ?";
+        final String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
         jdbcTemplate.update(sql, name, color, id);
     }
 
     @Override
     public void deleteById(Long id) {
-        final String sql = "delete from LINE where id = ?";
+        final String sql = "DELETE FROM LINE WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 }

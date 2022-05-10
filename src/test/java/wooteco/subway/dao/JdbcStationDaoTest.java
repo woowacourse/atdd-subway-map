@@ -21,10 +21,10 @@ public class JdbcStationDaoTest {
     void setUp() {
         stationDao = new JdbcStationDao(jdbcTemplate);
 
-        jdbcTemplate.execute("create table if not exists STATION(\n"
-                + "    id bigint auto_increment not null,\n"
-                + "    name varchar(255) not null unique,\n"
-                + "    primary key(id)\n"
+        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS STATION(\n"
+                + "    id BIGINT AUTO_INCREMENT NOT NULL,\n"
+                + "    name VARCHAR(255) NOT NULL UNIQUE,\n"
+                + "    PRIMARY KEY(id)\n"
                 + ");");
 
         final Station station1 = new Station("지하철역이름");
@@ -36,7 +36,7 @@ public class JdbcStationDaoTest {
     @Test
     @DisplayName("지하철역을 저장한다.")
     void save() {
-        final String sql = "select count(*) from STATION";
+        final String sql = "SELECT count(*) FROM STATION";
         final int expected = 2;
 
         final int actual = jdbcTemplate.queryForObject(sql, Integer.class);

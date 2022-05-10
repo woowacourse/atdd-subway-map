@@ -5,10 +5,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.LineDaoImpl;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.service.fakeDao.LineDaoImpl;
 
 public class LineServiceTest {
     private final LineService lineService = new LineService(LineDaoImpl.getInstance());

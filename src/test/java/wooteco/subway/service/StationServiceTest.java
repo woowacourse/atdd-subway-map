@@ -5,10 +5,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.StationDaoImpl;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.service.fakeDao.StationDaoImpl;
 
 public class StationServiceTest {
 
