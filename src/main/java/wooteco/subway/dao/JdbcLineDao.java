@@ -14,30 +14,27 @@ import wooteco.subway.domain.Line;
 @Repository
 public class JdbcLineDao implements LineDao {
 
-    private static final String COLUMN_NAME = "name";
-    private static final String COLUMN_COLOR = "color";
-    private static final String COLUMN_ID = "id";
     private static final String TABLE_NAME = "line";
 
     private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert lineInserter;
+    private final SimpleJdbcInsert simpleInserter;
 
     public JdbcLineDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.lineInserter = new SimpleJdbcInsert(jdbcTemplate)
+        this.simpleInserter = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(TABLE_NAME)
-                .usingGeneratedKeyColumns(COLUMN_ID);
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public Line save(Line line) {
-        Map<String, String> params = Map.of(COLUMN_NAME, line.getName(), COLUMN_COLOR, line.getColor());
-        long insertedId = lineInserter.executeAndReturnKey(params).longValue();
+        Map<String, String> params = Map.of("name", line.getName(), "color", line.getColor());
+        long insertedId = simpleInserter.executeAndReturnKey(params).longValue();
         return setId(line, insertedId);
     }
 
     private Line setId(Line line, long id) {
-        Field field = ReflectionUtils.findField(Line.class, COLUMN_ID);
+        Field field = ReflectionUtils.findField(Line.class, "id");
         Objects.requireNonNull(field).setAccessible(true);
         ReflectionUtils.setField(field, line, id);
         return line;
@@ -51,9 +48,9 @@ public class JdbcLineDao implements LineDao {
 
     private RowMapper<Line> getRowMapper() {
         return (resultSet, rowNumber) -> {
-            String name = resultSet.getString(COLUMN_NAME);
-            String color = resultSet.getString(COLUMN_COLOR);
-            long id = resultSet.getLong(COLUMN_ID);
+            String name = resultSet.getString("name");
+            String color = resultSet.getString("color");
+            long id = resultSet.getLong("id");
             return setId(new Line(name, color), id);
         };
     }
@@ -65,10 +62,10 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Line updateById(Long id, Line line) {
+    public Line update(Line line) {
         String sql = "UPDATE line set name = ?, color = ? where id = ?";
-        jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
-        return setId(line, id);
+        jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
+        return findById(line.getId());
     }
 
     @Override

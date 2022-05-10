@@ -14,30 +14,28 @@ import wooteco.subway.domain.Station;
 @Repository
 public class JdbcStationDao implements StationDao {
 
-    private static final String COLUMN_NAME = "name";
-    private static final String COLUMN_ID = "id";
     private static final String TABLE_NAME = "station";
 
     private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert stationInserter;
+    private final SimpleJdbcInsert simpleInserter;
 
     public JdbcStationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.stationInserter = new SimpleJdbcInsert(jdbcTemplate)
+        this.simpleInserter = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(TABLE_NAME)
-                .usingGeneratedKeyColumns(COLUMN_ID);
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public Station save(Station station) {
-        final Map<String, String> params = Map.of(COLUMN_NAME, station.getName());
+        final Map<String, String> params = Map.of("name", station.getName());
 
-        long savedId = stationInserter.executeAndReturnKey(params).longValue();
+        long savedId = simpleInserter.executeAndReturnKey(params).longValue();
         return setId(station, savedId);
     }
 
     private Station setId(Station station, long id) {
-        Field field = ReflectionUtils.findField(Station.class, COLUMN_ID);
+        Field field = ReflectionUtils.findField(Station.class, "id");
         Objects.requireNonNull(field).setAccessible(true);
         ReflectionUtils.setField(field, station, id);
         return station;
@@ -51,8 +49,8 @@ public class JdbcStationDao implements StationDao {
 
     private RowMapper<Station> getRowMapper() {
         return (resultSet, rowNumber) -> {
-            String name = resultSet.getString(COLUMN_NAME);
-            long id = resultSet.getLong(COLUMN_ID);
+            String name = resultSet.getString("name");
+            long id = resultSet.getLong("id");
             return setId(new Station(name), id);
         };
     }
