@@ -286,4 +286,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .statusCode(HttpStatus.NO_CONTENT.value());
     }
+
+    @DisplayName("db 작성")
+    @Test
+    void db_aa() {
+
+    }
 }
