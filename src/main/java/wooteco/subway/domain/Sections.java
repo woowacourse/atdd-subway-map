@@ -66,9 +66,8 @@ public class Sections {
                 .orElseThrow(() -> new IllegalSectionException("구간 등록이 불가능합니다."));
     }
 
-    public void delete(Station station) {
+    public void delete(Long stationId) {
         validateDeletion();
-        final Long stationId = station.getId();
 
         final Section previousSection = getPreviousSection(stationId);
         final Section laterSection = getLaterSection(stationId);

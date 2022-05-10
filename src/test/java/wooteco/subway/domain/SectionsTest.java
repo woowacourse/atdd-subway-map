@@ -99,7 +99,7 @@ class SectionsTest {
 
         // when
         final Station station = new Station(2L, "중간역");
-        sections.delete(station);
+        sections.delete(station.getId());
 
         // then
         assertThat(sections.getSections().size()).isEqualTo(1);
@@ -119,7 +119,7 @@ class SectionsTest {
 
         // when & then
         final Station station = new Station(1L, "상행역");
-        assertThatThrownBy(() -> sections.delete(station))
+        assertThatThrownBy(() -> sections.delete(station.getId()))
                 .isInstanceOf(IllegalSectionException.class);
     }
 
