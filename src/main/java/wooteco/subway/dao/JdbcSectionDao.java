@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -49,7 +50,7 @@ public class JdbcSectionDao implements SectionDao {
         final String sql = "select * from SECTION where id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper, id));
-        } catch (Exception e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
@@ -67,7 +68,7 @@ public class JdbcSectionDao implements SectionDao {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper,
                     lineId, section.getUpStationId(), lineId, section.getDownStationId()));
-        } catch (Exception e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
@@ -77,7 +78,7 @@ public class JdbcSectionDao implements SectionDao {
         final String sql = "select * from SECTION where line_id = ? and up_station_id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper, lineId, upStationId));
-        } catch (Exception e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
@@ -87,7 +88,7 @@ public class JdbcSectionDao implements SectionDao {
         final String sql = "select * from SECTION where line_id = ? and down_station_id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper, lineId, downStationId));
-        } catch (Exception e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
