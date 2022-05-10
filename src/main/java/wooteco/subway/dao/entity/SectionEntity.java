@@ -1,8 +1,8 @@
-package wooteco.subway.domain;
+package wooteco.subway.dao.entity;
 
 import java.util.Objects;
 
-public class Section {
+public class SectionEntity {
 
     private final Long id;
     private final Long upStationId;
@@ -10,7 +10,7 @@ public class Section {
     private final Long lineId;
     private final int distance;
 
-    public Section(Long id, Long upStationId, Long downStationId, Long lineId, int distance) {
+    public SectionEntity(Long id, Long upStationId, Long downStationId, Long lineId, int distance) {
         this.id = id;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
@@ -18,7 +18,7 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section(Long upStationId, Long downStationId, Long lineId, int distance) {
+    public SectionEntity(Long upStationId, Long downStationId, Long lineId, int distance) {
         this(null, upStationId, downStationId, lineId, distance);
     }
 
@@ -50,10 +50,10 @@ public class Section {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Section section = (Section) o;
-        return distance == section.distance && Objects.equals(
-                upStationId, section.upStationId) && Objects.equals(downStationId, section.downStationId)
-                && Objects.equals(lineId, section.lineId);
+        SectionEntity sectionEntity = (SectionEntity) o;
+        return distance == sectionEntity.distance && Objects.equals(
+                upStationId, sectionEntity.upStationId) && Objects.equals(downStationId, sectionEntity.downStationId)
+                && Objects.equals(lineId, sectionEntity.lineId);
     }
 
     @Override

@@ -7,38 +7,38 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import wooteco.subway.controller.AcceptanceTest;
-import wooteco.subway.domain.Line;
+import wooteco.subway.dao.entity.LineEntity;
 
 public class LineDaoTest extends AcceptanceTest {
 
     @Autowired
     private LineDao lineDao;
 
-    private Line line = new Line("신분당선", "red");
+    private LineEntity lineEntity = new LineEntity("신분당선", "red");
 
     @DisplayName("노선을 등록한다.")
     @Test
     void save() {
-        Line actual = lineDao.save(line);
+        LineEntity actual = lineDao.save(lineEntity);
 
-        assertThat(actual).isEqualTo(line);
+        assertThat(actual).isEqualTo(lineEntity);
     }
 
     @DisplayName("모든 노선 목록을 조회한다.")
     @Test
     void findAll() {
-        lineDao.save(line);
-        lineDao.save(new Line("1호선", "blue"));
+        lineDao.save(lineEntity);
+        lineDao.save(new LineEntity("1호선", "blue"));
 
-        List<Line> lines = lineDao.findAll();
+        List<LineEntity> lineEntities = lineDao.findAll();
 
-        assertThat(lines.size()).isEqualTo(2);
+        assertThat(lineEntities.size()).isEqualTo(2);
     }
 
     @DisplayName("id에 맞는 노선을 조회한다.")
     @Test
     void findById() {
-        Line expected = lineDao.save(line);
+        LineEntity expected = lineDao.save(lineEntity);
 
         assertThat(lineDao.findById(expected.getId()).get()).isEqualTo(expected);
     }
@@ -52,11 +52,11 @@ public class LineDaoTest extends AcceptanceTest {
     @DisplayName("노선의 이름과 색깔을 수정한다.")
     @Test
     void update() {
-        Line saveLine = lineDao.save(line);
-        Line expected = new Line(saveLine.getId(), "다른 분당선", "green");
+        LineEntity saveLineEntity = lineDao.save(lineEntity);
+        LineEntity expected = new LineEntity(saveLineEntity.getId(), "다른 분당선", "green");
 
         lineDao.update(expected);
-        Line actual = lineDao.findById(saveLine.getId()).get();
+        LineEntity actual = lineDao.findById(saveLineEntity.getId()).get();
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -64,10 +64,10 @@ public class LineDaoTest extends AcceptanceTest {
     @DisplayName("노선을 삭제한다.")
     @Test
     void delete() {
-        Line saveLine = lineDao.save(line);
+        LineEntity saveLineEntity = lineDao.save(lineEntity);
 
-        lineDao.delete(saveLine.getId());
+        lineDao.delete(saveLineEntity.getId());
 
-        assertThat(lineDao.findById(saveLine.getId()).isEmpty()).isTrue();
+        assertThat(lineDao.findById(saveLineEntity.getId()).isEmpty()).isTrue();
     }
 }

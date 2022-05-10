@@ -3,7 +3,6 @@ package wooteco.subway.controller;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
+import wooteco.subway.dao.entity.LineEntity;
+import wooteco.subway.dao.entity.StationEntity;
 import wooteco.subway.dto.LineResponse;
 
 import java.util.HashMap;
@@ -35,8 +34,8 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 등록한다.")
     @Test
     void createLine() {
-        Station upStation = stationDao.save(new Station("동천역"));
-        Station downStation = stationDao.save(new Station("판교역"));
+        StationEntity upStation = stationDao.save(new StationEntity("동천역"));
+        StationEntity downStation = stationDao.save(new StationEntity("판교역"));
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "red");
@@ -59,9 +58,9 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("중복된 이름을 가진 지하철 노선을 등록할 때 400 상태코드로 응답한다.")
     @Test
     void throwsExceptionWhenCreateDuplicatedName() {
-        Station upStation = stationDao.save(new Station("동천역"));
-        Station downStation = stationDao.save(new Station("판교역"));
-        lineDao.save(new Line("신분당선", "red"));
+        StationEntity upStation = stationDao.save(new StationEntity("동천역"));
+        StationEntity downStation = stationDao.save(new StationEntity("판교역"));
+        lineDao.save(new LineEntity("신분당선", "red"));
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
@@ -84,8 +83,8 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
-        lineDao.save(new Line("신분당선", "red"));
-        lineDao.save(new Line("1호선", "blue"));
+        lineDao.save(new LineEntity("신분당선", "red"));
+        lineDao.save(new LineEntity("1호선", "blue"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -100,11 +99,11 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
-        Line line = lineDao.save(new Line("신분당선", "red"));
+        LineEntity lineEntity = lineDao.save(new LineEntity("신분당선", "red"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get("/lines/" + line.getId())
+                .get("/lines/" + lineEntity.getId())
                 .then().log().all()
                 .extract();
 
@@ -112,43 +111,43 @@ class LineControllerTest extends AcceptanceTest {
 
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(lineResponse.getName()).isEqualTo(line.getName()),
-                () -> assertThat(lineResponse.getColor()).isEqualTo(line.getColor())
+                () -> assertThat(lineResponse.getName()).isEqualTo(lineEntity.getName()),
+                () -> assertThat(lineResponse.getColor()).isEqualTo(lineEntity.getColor())
         );
     }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
-        Line line = lineDao.save(new Line("신분당선", "red"));
+        LineEntity lineEntity = lineDao.save(new LineEntity("신분당선", "red"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(new Line("다른분당선", "blue"))
+                .body(new LineEntity("다른분당선", "blue"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put("/lines/" + line.getId())
+                .put("/lines/" + lineEntity.getId())
                 .then().log().all()
                 .extract();
 
-        Line updatedLine = lineDao.findById(line.getId()).get();
+        LineEntity updatedLineEntity = lineDao.findById(lineEntity.getId()).get();
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(updatedLine.getName()).isEqualTo("다른분당선"),
-                () -> assertThat(updatedLine.getColor()).isEqualTo("blue")
+                () -> assertThat(updatedLineEntity.getName()).isEqualTo("다른분당선"),
+                () -> assertThat(updatedLineEntity.getColor()).isEqualTo("blue")
         );
     }
 
     @DisplayName("노선에서 수정하려는 이름을 가진 노선이 존재한다면 400 상태코드로 응답한다.")
     @Test
     void updateLineResponse400() {
-        lineDao.save(new Line("다른분당선", "blue"));
-        Line line = lineDao.save(new Line("신분당선", "red"));
+        lineDao.save(new LineEntity("다른분당선", "blue"));
+        LineEntity lineEntity = lineDao.save(new LineEntity("신분당선", "red"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(new Line("다른분당선", "blue"))
+                .body(new LineEntity("다른분당선", "blue"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put("/lines/" + line.getId())
+                .put("/lines/" + lineEntity.getId())
                 .then().log().all()
                 .extract();
 
@@ -159,7 +158,7 @@ class LineControllerTest extends AcceptanceTest {
     @Test
     void updateLineResponse404() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(new Line("다른분당선", "blue"))
+                .body(new LineEntity("다른분당선", "blue"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put("/lines/" + 1)
@@ -172,11 +171,11 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void deleteLine() {
-        Line line = lineDao.save(new Line("신분당선", "red"));
+        LineEntity lineEntity = lineDao.save(new LineEntity("신분당선", "red"));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .delete("/lines/" + line.getId())
+                .delete("/lines/" + lineEntity.getId())
                 .then().log().all()
                 .extract();
 

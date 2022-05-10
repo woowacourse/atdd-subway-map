@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import wooteco.subway.controller.AcceptanceTest;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Station;
+import wooteco.subway.dao.entity.StationEntity;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
@@ -29,8 +29,8 @@ public class LineServiceTest extends AcceptanceTest {
     @DisplayName("노선을 등록하고 LineResponse를 반환한다.")
     @Test
     void save() {
-        Station upStation = stationDao.save(new Station("동천역"));
-        Station downStation = stationDao.save(new Station("판교역"));
+        StationEntity upStation = stationDao.save(new StationEntity("동천역"));
+        StationEntity downStation = stationDao.save(new StationEntity("판교역"));
 
         LineResponse lineResponse = lineService.save(
                 new LineRequest("신분당선", "red", upStation.getId(), downStation.getId(), 10));

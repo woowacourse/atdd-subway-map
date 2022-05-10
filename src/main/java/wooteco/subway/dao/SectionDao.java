@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Section;
+import wooteco.subway.dao.entity.SectionEntity;
 
 @Repository
 public class SectionDao {
@@ -21,10 +21,10 @@ public class SectionDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Section save(Section section) {
-        final SqlParameterSource parameters = new BeanPropertySqlParameterSource(section);
+    public SectionEntity save(SectionEntity sectionEntity) {
+        final SqlParameterSource parameters = new BeanPropertySqlParameterSource(sectionEntity);
         final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Section(id, section.getUpStationId(), section.getDownStationId(), section.getLineId(),
-                section.getDistance());
+        return new SectionEntity(id, sectionEntity.getUpStationId(), sectionEntity.getDownStationId(), sectionEntity.getLineId(),
+                sectionEntity.getDistance());
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Line;
+import wooteco.subway.dao.entity.LineEntity;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -26,27 +26,27 @@ public class LineDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Line save(Line line) {
-        final SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
+    public LineEntity save(LineEntity lineEntity) {
+        final SqlParameterSource parameters = new BeanPropertySqlParameterSource(lineEntity);
         final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Line(id, line.getName(), line.getColor());
+        return new LineEntity(id, lineEntity.getName(), lineEntity.getColor());
     }
 
-    public List<Line> findAll() {
+    public List<LineEntity> findAll() {
         String SQL = "select * from line;";
         return jdbcTemplate.query(SQL, rowMapper());
     }
 
-    private RowMapper<Line> rowMapper() {
+    private RowMapper<LineEntity> rowMapper() {
         return (rs, rowNum) -> {
             final Long id = rs.getLong("id");
             final String name = rs.getString("name");
             final String color = rs.getString("color");
-            return new Line(id, name, color);
+            return new LineEntity(id, name, color);
         };
     }
 
-    public Optional<Line> findById(Long id) {
+    public Optional<LineEntity> findById(Long id) {
         String SQL = "select * from line where id = ?;";
         try {
             return Optional.of(jdbcTemplate.queryForObject(SQL, rowMapper(), id));
@@ -55,9 +55,9 @@ public class LineDao {
         }
     }
 
-    public void update(Line line) {
+    public void update(LineEntity lineEntity) {
         String SQL = "update line set name = ?, color = ? where id = ?;";
-        jdbcTemplate.update(SQL, line.getName(), line.getColor(), line.getId());
+        jdbcTemplate.update(SQL, lineEntity.getName(), lineEntity.getColor(), lineEntity.getId());
     }
 
     public void delete(Long id) {

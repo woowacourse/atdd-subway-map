@@ -47,26 +47,26 @@
 - downStationId
 - distance
 
-> 등록 - POST /lines
+> 등록 - POST /lineEntities
   - 노선과 동시에 상행선, 하행선에 관한 구간도 등록한다.
   - [x]  [예외] 이름, 색깔은 빈값이면 안된다. (Bad Request 400) - `LineService`
   - [x]  [예외] 이름, 색깔은 중복이 있으면 안된다. (Bad Request 400) - `LineDao`
   - [x]  [예외] 지하철이 있는 id 값이어야 한다. (Not Found 400) - `StationDao`
   - [x]  [예외] upStationId와 downStationId는 같아선 안된다. (Bad Request 400) - `LineService`
   - [x]  [예외] 거리는 1 이상이어야 한다. (Bad Request 400) - `LineService`
-> 목록 - GET /lines
+> 목록 - GET /lineEntities
 
-> 조회 - GET /lines/{id}
+> 조회 - GET /lineEntities/{id}
   - [ ]  [예외] 노선이 있는 id 값이어야 한다. (Not Found 404)
-> 수정 - PUT /lines/{id}
+> 수정 - PUT /lineEntities/{id}
   - [ ]  [예외] 이미 있는 이름, 색깔이면 안된다. (Bad Request 400)
   - [ ]  [예외] 노선이 있는 id 값이어야 한다. (Not Found 404)
-> 삭제 - DELETE /lines/{id}
+> 삭제 - DELETE /lineEntities/{id}
   - [ ]  [예외] 노선이 있는 id 값이어야 한다. (Not Found 404)
 
 ## 구간
-- [ ] 구간 등록 `POST /lines/1/sections`
-- [ ] 구간 제거 `DELETE /lines/1/sections?stationId=2`
+- [ ] 구간 등록 `POST /lineEntities/1/sections`
+- [ ] 구간 제거 `DELETE /lineEntities/1/sections?stationId=2`
 
 
 ## 🚀 Getting Started

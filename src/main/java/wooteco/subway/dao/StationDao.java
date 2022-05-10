@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Station;
+import wooteco.subway.dao.entity.StationEntity;
 import wooteco.subway.exception.NotFoundException;
 
 import javax.sql.DataSource;
@@ -28,21 +28,21 @@ public class StationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Station save(Station station) {
+    public StationEntity save(StationEntity station) {
         final SqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
         final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Station(id, station.getName());
+        return new StationEntity(id, station.getName());
     }
 
-    private RowMapper<Station> rowMapper() {
+    private RowMapper<StationEntity> rowMapper() {
         return (rs, rowNum) -> {
             final Long id = rs.getLong("id");
             final String name = rs.getString("name");
-            return new Station(id, name);
+            return new StationEntity(id, name);
         };
     }
 
-    public List<Station> findAll() {
+    public List<StationEntity> findAll() {
         String SQL = "select * from station;";
         return jdbcTemplate.query(SQL, rowMapper());
     }
@@ -52,7 +52,7 @@ public class StationDao {
         validateExistById(jdbcTemplate.update(SQL, id), id);
     }
 
-    public Optional<Station> findById(Long stationId) {
+    public Optional<StationEntity> findById(Long stationId) {
         String SQL = "select * from station where id = ?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(SQL, rowMapper(), stationId));

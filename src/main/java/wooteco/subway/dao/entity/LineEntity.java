@@ -1,19 +1,19 @@
-package wooteco.subway.domain;
+package wooteco.subway.dao.entity;
 
 import java.util.Objects;
 
-public class Line {
+public class LineEntity {
 
     private Long id;
     private String name;
     private String color;
 
-    public Line(String name, String color) {
+    public LineEntity(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public Line(Long id, String name, String color) {
+    public LineEntity(Long id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -43,8 +43,8 @@ public class Line {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Line line = (Line) o;
-        return getName().equals(line.getName()) && getColor().equals(line.getColor());
+        LineEntity lineEntity = (LineEntity) o;
+        return getName().equals(lineEntity.getName()) && getColor().equals(lineEntity.getColor());
     }
 
     @Override
