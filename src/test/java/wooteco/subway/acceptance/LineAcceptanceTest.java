@@ -21,13 +21,32 @@ import wooteco.subway.dto.response.LineResponse;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private void createStation(String stationName) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", stationName);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
+        createStation("강남역");
+        createStation("선릉역");
+
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "green");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -47,9 +66,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
+        createStation("강남역");
+        createStation("선릉역");
+
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "green");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
         RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -76,9 +101,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
+        createStation("강남역");
+        createStation("선릉역");
+
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "2호선");
         params1.put("color", "green");
+        params1.put("upStationId", "1");
+        params1.put("downStationId", "2");
+        params1.put("distance", "10");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
             .body(params1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -90,6 +121,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "3호선");
         params2.put("color", "blue");
+        params2.put("upStationId", "1");
+        params2.put("downStationId", "2");
+        params2.put("distance", "10");
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
             .body(params2)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -111,7 +145,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
             .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-            .map(it -> it.getId())
+            .map(LineResponse::getId)
             .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
@@ -120,9 +154,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         /// given
+        createStation("강남역");
+        createStation("선릉역");
+
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "2호선");
         params1.put("color", "green");
+        params1.put("upStationId", "1");
+        params1.put("downStationId", "2");
+        params1.put("distance", "10");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
             .body(params1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -168,9 +208,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         /// given
+        createStation("강남역");
+        createStation("선릉역");
+
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "2호선");
         params1.put("color", "green");
+        params1.put("upStationId", "1");
+        params1.put("downStationId", "2");
+        params1.put("distance", "10");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
             .body(params1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -216,9 +262,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineWithDuplicateName() {
         /// given
+        createStation("강남역");
+        createStation("선릉역");
+
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "2호선");
         params1.put("color", "green");
+        params1.put("upStationId", "1");
+        params1.put("downStationId", "2");
+        params1.put("distance", "10");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
             .body(params1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -231,6 +283,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "다른분당선");
         params2.put("color", "blue");
+        params2.put("upStationId", "1");
+        params2.put("downStationId", "2");
+        params2.put("distance", "10");
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
             .body(params2)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -259,9 +314,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
+        createStation("강남역");
+        createStation("선릉역");
+
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "green");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)

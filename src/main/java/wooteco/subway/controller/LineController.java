@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.dto.info.LineInfo;
+import wooteco.subway.dto.info.RequestLineInfo;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.dto.response.LineResponse2;
 import wooteco.subway.service.LineService;
 
 @RestController
@@ -30,9 +32,9 @@ public class LineController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineInfo lineInfo = LineConverter.toInfo(lineRequest);
-        LineResponse lineResponse = LineConverter.toResponse(lineService.save(lineInfo));
+    public ResponseEntity<LineResponse2> createLine(@RequestBody LineRequest lineRequest) {
+        RequestLineInfo lineInfo = LineConverter.toInfo2(lineRequest);
+        LineResponse2 lineResponse = LineConverter.toResponse(lineService.save(lineInfo));
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 

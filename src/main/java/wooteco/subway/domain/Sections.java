@@ -1,7 +1,10 @@
 package wooteco.subway.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Sections {
     private static final int LIMIT_LOW_SIZE = 1;
@@ -89,5 +92,16 @@ public class Sections {
             .filter(section -> section.isSameId(id))
             .findFirst()
             .orElse(null);
+    }
+
+    public List<Station> getStations() {
+        List<Station> upStations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
+        List<Station> downStations = sections.stream().map(Section::getDownStation).collect(Collectors.toList());
+
+        Set<Station> stations = new HashSet<>();
+        stations.addAll(upStations);
+        stations.addAll(downStations);
+
+        return new ArrayList<>(stations);
     }
 }

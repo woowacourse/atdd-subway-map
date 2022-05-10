@@ -36,9 +36,9 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public void update(Long sectionId, Section section) {
-        String sql = "UPDATE SECTION SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
+    public void update(Long lineId, Section section) {
+        String sql = "UPDATE SECTION SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ? AND line_id = ?";
         jdbcTemplate.update(sql, section.getUpStationId(), section.getDownStationId(), section.getDistance(),
-            sectionId);
+            section.getId(), lineId);
     }
 }

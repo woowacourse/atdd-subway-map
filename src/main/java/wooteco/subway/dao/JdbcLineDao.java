@@ -11,12 +11,13 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineEntity;
 
 @Repository
 public class JdbcLineDao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<Line> lineRowMapper = (resultSet, rowMapper) -> new Line(
+    private final RowMapper<LineEntity> lineRowMapper = (resultSet, rowMapper) -> new LineEntity(
         resultSet.getLong("id"),
         resultSet.getString("name"),
         resultSet.getString("color")
@@ -26,10 +27,10 @@ public class JdbcLineDao implements LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Line save(Line line) {
+    public LineEntity save(Line line) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO LINE(name, color) VALUES(?, ?)";
-        
+
         jdbcTemplate.update((Connection conn) -> {
             PreparedStatement pstmt = conn.prepareStatement(sql, new String[] {"id"});
             pstmt.setString(1, line.getName());
@@ -41,7 +42,7 @@ public class JdbcLineDao implements LineDao {
         return getLine(id);
     }
 
-    private Line getLine(Long id) {
+    private LineEntity getLine(Long id) {
         String sql = "SELECT * FROM LINE WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
@@ -51,12 +52,12 @@ public class JdbcLineDao implements LineDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
-    public List<Line> findAll() {
+    public List<LineEntity> findAll() {
         String sql = "SELECT id, name, color FROM LINE";
         return jdbcTemplate.query(sql, lineRowMapper);
     }
 
-    public Line find(Long id) {
+    public LineEntity find(Long id) {
         String sql = "SELECT id, name, color FROM LINE WHERE id =?";
         return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }

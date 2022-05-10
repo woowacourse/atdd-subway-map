@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.List;
+
 public class Line {
     private static final String ERROR_MESSAGE_NAME_SIZE = "존재할 수 없는 이름입니다.";
     private static final String ERROR_MESSAGE_COLOR_SIZE = "존재할 수 없는 색상입니다.";
@@ -9,6 +11,7 @@ public class Line {
     private Long id;
     private final String name;
     private final String color;
+    private Sections sections;
 
     public Line(String name, String color) {
         validateNameSize(name);
@@ -23,6 +26,15 @@ public class Line {
         this.id = id;
         this.name = name;
         this.color = color;
+    }
+
+    public Line(Long id, String name, String color, Sections sections) {
+        validateNameSize(name);
+        validateColorSize(color);
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
     }
 
     private void validateNameSize(String name) {
@@ -47,5 +59,9 @@ public class Line {
 
     public String getColor() {
         return color;
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 }

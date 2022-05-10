@@ -6,22 +6,34 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.info.LineInfo;
+import wooteco.subway.dto.info.RequestLineInfo;
+import wooteco.subway.dto.info.ResponseLineInfo;
 
 public class LineServiceTest {
 
     private LineService lineService;
+    private FakeLineDao fakeLineDao;
+    private FakeSectionDao fakeSectionDao;
+    private FakeStationDao fakeStationDao;
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(new FakeLineDao());
+        fakeLineDao = new FakeLineDao();
+        fakeSectionDao = new FakeSectionDao();
+        fakeStationDao = new FakeStationDao();
+        lineService = new LineService(fakeLineDao, fakeSectionDao, fakeStationDao);
+
+        fakeStationDao.save(new Station("강남역"));
+        fakeStationDao.save(new Station("선릉역"));
     }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        LineInfo lineInfoToRequest = new LineInfo("2호선", "red");
-        LineInfo lineInfoToResponse = lineService.save(lineInfoToRequest);
+        RequestLineInfo lineInfoToRequest = new RequestLineInfo("2호선", "red", 1L, 2L, 10);
+        ResponseLineInfo lineInfoToResponse = lineService.save(lineInfoToRequest);
 
         assertThat(lineInfoToResponse.getName()).isEqualTo(lineInfoToRequest.getName());
     }
@@ -29,7 +41,7 @@ public class LineServiceTest {
     @DisplayName("중복된 이름으로 지하철 노선 생성 요청 시 예외를 던진다.")
     @Test
     void createLineWithDuplicateName() {
-        LineInfo lineInfoToRequest = new LineInfo("2호선", "red");
+        RequestLineInfo lineInfoToRequest = new RequestLineInfo("2호선", "red", 1L, 2L, 10);
         lineService.save(lineInfoToRequest);
 
         assertThatThrownBy(() -> lineService.save(lineInfoToRequest)).isInstanceOf(IllegalArgumentException.class)
@@ -39,8 +51,8 @@ public class LineServiceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
-        LineInfo lineInfoToRequest = new LineInfo("2호선", "red");
-        LineInfo lineInfoToRequest2 = new LineInfo("3호선", "red");
+        RequestLineInfo lineInfoToRequest = new RequestLineInfo("2호선", "red", 1L, 2L, 10);
+        RequestLineInfo lineInfoToRequest2 = new RequestLineInfo("3호선", "red", 1L, 2L, 10);
         lineService.save(lineInfoToRequest);
         lineService.save(lineInfoToRequest2);
 
@@ -50,8 +62,8 @@ public class LineServiceTest {
     @DisplayName("지하철 노선 조회한다.")
     @Test
     void getLine() {
-        LineInfo lineInfoToRequest = new LineInfo("2호선", "red");
-        LineInfo lineInfoToResponse = lineService.save(lineInfoToRequest);
+        RequestLineInfo lineInfoToRequest = new RequestLineInfo("2호선", "red", 1L, 2L, 10);
+        ResponseLineInfo lineInfoToResponse = lineService.save(lineInfoToRequest);
 
         assertThat(lineService.find(lineInfoToResponse.getId()).getName()).isEqualTo(lineInfoToRequest.getName());
     }
@@ -66,8 +78,8 @@ public class LineServiceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
-        LineInfo lineInfoToRequest = new LineInfo("2호선", "red");
-        LineInfo lineInfoToResponse = lineService.save(lineInfoToRequest);
+        RequestLineInfo lineInfoToRequest = new RequestLineInfo("2호선", "red", 1L, 2L, 10);
+        ResponseLineInfo lineInfoToResponse = lineService.save(lineInfoToRequest);
 
         LineInfo lineInfoToRequest2 = new LineInfo(lineInfoToResponse.getId(), "3호선", "red");
         lineService.update(lineInfoToRequest2);
@@ -85,8 +97,8 @@ public class LineServiceTest {
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void deleteLine() {
-        LineInfo lineInfoToRequest = new LineInfo("2호선", "red");
-        LineInfo lineInfoToResponse = lineService.save(lineInfoToRequest);
+        RequestLineInfo lineInfoToRequest = new RequestLineInfo("2호선", "red", 1L, 2L, 10);
+        ResponseLineInfo lineInfoToResponse = lineService.save(lineInfoToRequest);
 
         lineService.delete(lineInfoToResponse.getId());
         assertThat(lineService.findAll()).hasSize(0);

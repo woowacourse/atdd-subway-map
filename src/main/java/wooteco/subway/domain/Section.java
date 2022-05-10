@@ -1,12 +1,14 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
+
 public class Section {
     private Long id;
     private Station upStation;
     private Station downStation;
-    private int distance;
+    private Integer distance;
 
-    public Section(Long id, Station upStation, Station downStation, int distance) {
+    public Section(Long id, Station upStation, Station downStation, Integer distance) {
         validateUpAndDownAreDifferent(upStation, downStation);
         validateDistance(distance);
         this.id = id;
@@ -15,7 +17,7 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Station upStation, Station downStation, Integer distance) {
         validateUpAndDownAreDifferent(upStation, downStation);
         validateDistance(distance);
         this.upStation = upStation;
@@ -29,8 +31,8 @@ public class Section {
         }
     }
 
-    private void validateDistance(int distance) {
-        if (distance <= 0) {
+    private void validateDistance(Integer distance) {
+        if (distance.intValue() <= 0) {
             throw new IllegalArgumentException("구간 사이의 거리는 양수여야합니다.");
         }
     }
@@ -80,7 +82,7 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 
@@ -90,5 +92,22 @@ public class Section {
 
     public Long getDownStationId() {
         return downStation.getId();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Section))
+            return false;
+        Section section = (Section)o;
+        return Objects.equals(getId(), section.getId()) && Objects.equals(getUpStation(),
+            section.getUpStation()) && Objects.equals(getDownStation(), section.getDownStation())
+            && Objects.equals(getDistance(), section.getDistance());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getUpStation(), getDownStation(), getDistance());
     }
 }

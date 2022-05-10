@@ -48,7 +48,7 @@ public class JdbcSectionDaoTest {
 
         sectionDao.save(lineId, section);
         SectionEntity sectionEntity = sectionDao.findByLine(lineId).get(0);
-        Section newSection = new Section(lineId, new Station(3L, "역삼역"), station2, 11);
-        sectionDao.update(sectionEntity.getId(), newSection);
+        Section newSection = new Section(sectionEntity.getId(), new Station(3L, "역삼역"), station2, 11);
+        sectionDao.update(lineId, newSection);
     }
 }

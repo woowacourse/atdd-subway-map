@@ -10,5 +10,5 @@ public interface SectionDao {
 
     List<SectionEntity> findByLine(Long lineId);
 
-    void update(Long sectionId, Section section);
+    void update(Long lineId, Section section);
 }

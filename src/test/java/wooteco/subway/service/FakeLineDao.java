@@ -1,25 +1,26 @@
 package wooteco.subway.service;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.util.ReflectionUtils;
 
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineEntity;
 
 public class FakeLineDao implements LineDao {
     private Long seq = 0L;
     private Map<Long, Line> lines = new LinkedHashMap<>();
 
     @Override
-    public Line save(Line line) {
+    public LineEntity save(Line line) {
         Line persistLine = createNewObject(line);
         lines.put(persistLine.getId(), persistLine);
-        return persistLine;
+        return new LineEntity(persistLine.getId(), persistLine.getName(), persistLine.getColor());
     }
 
     @Override
@@ -37,13 +38,17 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public List<Line> findAll() {
-        return new ArrayList<>(lines.values());
+    public List<LineEntity> findAll() {
+        return lines.values()
+            .stream()
+            .map(line -> new LineEntity(line.getId(), line.getName(), line.getColor()))
+            .collect(Collectors.toList());
     }
 
     @Override
-    public Line find(Long id) {
-        return lines.get(id);
+    public LineEntity find(Long id) {
+        Line line = lines.get(id);
+        return new LineEntity(line.getId(), line.getName(), line.getColor());
     }
 
     @Override
