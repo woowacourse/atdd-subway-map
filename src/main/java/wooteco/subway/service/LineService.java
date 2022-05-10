@@ -137,7 +137,7 @@ public class LineService {
         final Section upSection = sections.stream()
                 .filter(it -> sectionDao.findByDownStationId(lineId, it.getUpStationId()).isEmpty())
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("구간 내 존재하는 역 조회에 오류가 발생했습니다."));
+                .orElseThrow(() -> new NoSuchElementException("구간의 상행역 종점 조회에 오류가 발생했습니다."));
         stationDao.findById(upSection.getUpStationId()).ifPresent(stations::add);
         addDownSectionToSort(lineId, upSection, stations);
         return stations;
