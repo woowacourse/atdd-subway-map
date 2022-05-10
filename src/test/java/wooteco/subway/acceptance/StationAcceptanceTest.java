@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -8,6 +9,7 @@ import io.restassured.response.Response;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -39,14 +41,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
         requestPostStation(STATION_REQUEST_강남역, "/stations");
 
         // when, then
-        RestAssured.given().log().all()
-            .body(STATION_REQUEST_강남역)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then()
-            .log().all()
-            .statusCode(HttpStatus.BAD_REQUEST.value());
+        final ExtractableResponse<Response> response = requestPostStation(STATION_REQUEST_강남역, "/stations");
+
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -59,18 +56,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = requestGetStations("/stations");
+        List<Long> expectedStationIds = getExpectedStationIds(createResponse1, createResponse2);
+        List<Long> resultStationIds = getResultStationIds(response);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedStationIds = Stream.of(createResponse1, createResponse2)
-            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-            .collect(Collectors.toList());
-        List<Long> resultStationIds = response.jsonPath()
-            .getList(".", StationResponse.class)
-            .stream()
-            .map(StationResponse::getId)
-            .collect(Collectors.toList());
-        assertThat(resultStationIds).containsAll(expectedStationIds);
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(resultStationIds).containsAll(expectedStationIds)
+        );
     }
 
     @Test
@@ -78,16 +71,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void deleteStation() {
         // given
         StationRequest request = new StationRequest("강남역");
-
         ExtractableResponse<Response> createResponse = requestPostStation(request, "/stations");
 
-        // when, then
-        String uri = createResponse.header("Location");
-        RestAssured.given().log().all()
-            .when()
-            .delete(uri)
-            .then().log().all()
-            .statusCode(HttpStatus.NO_CONTENT.value());
+        // when
+        final ExtractableResponse<Response> response = requestDeleteStation(createResponse);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private ExtractableResponse<Response> requestPostStation(final StationRequest requestBody, final String URI) {
@@ -108,5 +98,28 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
         return response;
+    }
+
+    private List<Long> getResultStationIds(final ExtractableResponse<Response> response) {
+        return response.jsonPath()
+            .getList(".", StationResponse.class)
+            .stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
+    }
+
+    private List<Long> getExpectedStationIds(final ExtractableResponse<Response> createResponse1,
+                                             final ExtractableResponse<Response> createResponse2) {
+        return Stream.of(createResponse1, createResponse2)
+            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+            .collect(Collectors.toList());
+    }
+
+    private ExtractableResponse<Response> requestDeleteStation(final ExtractableResponse<Response> createResponse) {
+        return RestAssured.given().log().all()
+            .when()
+            .delete(createResponse.header("Location"))
+            .then().log().all()
+            .extract();
     }
 }

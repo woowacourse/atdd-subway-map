@@ -1,6 +1,7 @@
 package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -29,8 +30,10 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = requestPostLine(LINE_REQUEST_신분당선, "/lines");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+            () -> assertThat(response.header("Location")).isNotBlank()
+        );
     }
 
     @Test
@@ -43,16 +46,14 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         //when
         ExtractableResponse<Response> response = requestGetLines("/lines");
+        List<Long> expectedLineIds = getExpectedLineIds(createResponse1, createResponse2);
+        List<Long> resultLineIds = getResultLineIds(response);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-            .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-            .map(LineResponse::getId)
-            .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(resultLineIds).containsAll(expectedLineIds)
+        );
     }
 
     @Test
@@ -132,5 +133,18 @@ class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
         return response;
+    }
+
+    private List<Long> getExpectedLineIds(final ExtractableResponse<Response> createResponse1,
+                                          final ExtractableResponse<Response> createResponse2) {
+        return Stream.of(createResponse1, createResponse2)
+            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+            .collect(Collectors.toList());
+    }
+
+    private List<Long> getResultLineIds(final ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", LineResponse.class).stream()
+            .map(LineResponse::getId)
+            .collect(Collectors.toList());
     }
 }

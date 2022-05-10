@@ -30,11 +30,11 @@ public class StationDaoTest {
     @Test
     @DisplayName("지하철역을 저장한다.")
     void save() {
-        final Station expected = STATION_강남;
+        final Station created = stationDao.save(STATION_강남);
 
-        final Station actual = stationDao.save(expected);
+        assertThat(STATION_강남.getId()).isEqualTo(STATION_강남.getId());
 
-        assertThat(actual).isEqualTo(expected);
+        stationDao.deleteById(created.getId());
     }
 
     @Test
