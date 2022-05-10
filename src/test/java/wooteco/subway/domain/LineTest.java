@@ -176,4 +176,16 @@ public class LineTest {
         assertThatThrownBy(() -> line.addSection(section))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    @DisplayName("상행역과 하행역이 둘 다 노선에 등록되어 있지 않으면 예외 발생")
+    void noExistentStationException() {
+        //given
+        final Station newUpStation = new Station("석촌고분역");
+        final Station newDownStation = new Station("석촌역");
+        final Section section = new Section(newUpStation, newDownStation, 5);
+        //then
+        assertThatThrownBy(() -> line.addSection(section))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

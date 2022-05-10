@@ -74,7 +74,10 @@ public class Sections {
         if (sections.stream()
                 .anyMatch(it -> it.getDownStation().equals(section.getUpStation()))) {
             sections.add(section);
+            return;
         }
+
+        throw new IllegalArgumentException("상행역과 하행역 둘 다 노선에 포함되어 있지 않아 등록이 불가합니다.");
     }
 
     public List<Station> getStations() {
