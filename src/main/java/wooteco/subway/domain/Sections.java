@@ -62,15 +62,23 @@ public class Sections {
     }
 
     private Section findSameUpSection(Section section) {
+        return findSameUpIdSection(section.getUpStationId());
+    }
+
+    public Section findSameUpIdSection(Long id) {
         return sections.stream()
-            .filter(it -> it.getUpStationId().equals(section.getUpStationId()))
+            .filter(it -> it.getUpStationId().equals(id))
             .findFirst()
             .get();
     }
 
     private Section findSameDownSection(Section section) {
+        return findSameDownIdSection(section.getDownStationId());
+    }
+
+    public Section findSameDownIdSection(Long id) {
         return sections.stream()
-            .filter(it -> it.getDownStationId().equals(section.getDownStationId()))
+            .filter(it -> it.getDownStationId().equals(id))
             .findFirst()
             .get();
     }
@@ -85,5 +93,13 @@ public class Sections {
         if (existing.getDistance() <= additional.getDistance()) {
             throw new IllegalStateException("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
         }
+    }
+
+    public boolean isMiddleStation(Long id) {
+        return isExistDownStation(id) && isExistUpStation(id);
+    }
+
+    public boolean isEndStation(Long id) {
+        return !isMiddleStation(id) && (isExistUpStation(id) || isExistDownStation(id));
     }
 }

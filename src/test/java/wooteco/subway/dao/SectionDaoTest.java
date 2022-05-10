@@ -2,8 +2,6 @@ package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,8 +63,7 @@ public class SectionDaoTest {
         Section section = new Section(1L, 1L, 2L, 10);
         sectionDao.save(section);
 
-        List<Section> sections = sectionDao.findAllByLineId(1L);
-        sectionDao.delete(sections.get(0).getUpStationId());
+        sectionDao.delete(1L, 1L);
 
         assertThat(sectionDao.findAllByLineId(1L)).hasSize(0);
     }

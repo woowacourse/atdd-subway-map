@@ -77,4 +77,24 @@ public class SectionServiceTest {
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
     }
+
+    @DisplayName("지하철 구간을 삭제한다. - 종단점 삭제")
+    @Test
+    void deleteEndLocation() {
+        saveEndLocation();
+        sectionService.delete(1L, 1L);
+
+        assertThat(sectionService.findAllStationIdByLineId(1L))
+            .containsOnly(2L, 3L);
+    }
+
+    @DisplayName("지하철 구간을 삭제한다. - 중간점 삭제")
+    @Test
+    void deleteMiddleLocation() {
+        saveEndLocation();
+        sectionService.delete(1L, 2L);
+
+        assertThat(sectionService.findAllStationIdByLineId(1L))
+            .containsOnly(1L, 3L);
+    }
 }
