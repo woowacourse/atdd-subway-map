@@ -13,12 +13,19 @@ public class Sections {
         this.sections = sections;
     }
 
-    public void add(Section section) {
+    public List<Section> add(Section section) {
+        if (sections.size() == 0) {
+            sections.add(section);
+            return sections;
+        }
+
         checkContainsSameSection(section);
         preventFork(section);
         isPossibleRegistration(section);
 
         sections.add(section);
+
+        return sections;
     }
 
     private void checkContainsSameSection(Section section) {
@@ -66,13 +73,15 @@ public class Sections {
                 .orElseThrow(() -> new IllegalSectionException("구간 등록이 불가능합니다."));
     }
 
-    public void delete(Long stationId) {
+    public List<Section> delete(Long stationId) {
         validateDeletion();
 
         final Section previousSection = getPreviousSection(stationId);
         final Section laterSection = getLaterSection(stationId);
 
         deleteSection(previousSection, laterSection);
+
+        return sections;
     }
 
     private void validateDeletion() {

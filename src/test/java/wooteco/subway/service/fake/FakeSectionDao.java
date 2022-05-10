@@ -43,6 +43,12 @@ public class FakeSectionDao implements SectionDao {
                 .collect(toList());
     }
 
+    @Override
+    public int deleteByLineId(Long lineId) {
+        sections.removeIf(section -> section.getLineId().equals(lineId));
+        return DELETE_SUCCESS;
+    }
+
     private static Section createNewObject(Section section) {
         Field field = ReflectionUtils.findField(Section.class, "id");
         field.setAccessible(true);

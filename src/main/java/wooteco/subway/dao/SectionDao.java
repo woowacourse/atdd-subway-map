@@ -10,4 +10,6 @@ public interface SectionDao {
     int deleteById(Long id);
 
     List<Section> findByLineId(Long id);
+
+    int deleteByLineId(Long lineId);
 }

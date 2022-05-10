@@ -59,4 +59,11 @@ public class JdbcSectionDao implements SectionDao {
 
         return jdbcTemplate.query(sql, SECTION_ROW_MAPPER, id);
     }
+
+    @Override
+    public int deleteByLineId(Long lineId) {
+        String sql = "DELETE FROM `section` WHERE line_id = ?";
+
+        return jdbcTemplate.update(sql, lineId);
+    }
 }
