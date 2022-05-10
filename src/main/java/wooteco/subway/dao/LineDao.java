@@ -33,7 +33,7 @@ public class LineDao {
     public Line save(Line line) {
         SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
         Long id = simpleInsert.executeAndReturnKey(parameters).longValue();
-        return Line.of(id, line.getName(), line.getColor());
+        return Line.of(id, line);
     }
 
     public List<Line> findAll() {

@@ -18,8 +18,12 @@ public class Station {
         return new Station(id, name);
     }
 
+    public static Station of(Long id, Station other) {
+        return of(id, other.name);
+    }
+
     public static Station of(String name) {
-        return Station.of(null, name);
+        return of(null, name);
     }
 
     public Long getId() {

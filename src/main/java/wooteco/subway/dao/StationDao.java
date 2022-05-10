@@ -32,7 +32,7 @@ public class StationDao {
     public Station save(Station station) {
         SqlParameterSource parameters = new BeanPropertySqlParameterSource(station);
         Long id = simpleInsert.executeAndReturnKey(parameters).longValue();
-        return Station.of(id, station.getName());
+        return Station.of(id, station);
     }
 
     public List<Station> findAll() {

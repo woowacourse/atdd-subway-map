@@ -18,6 +18,10 @@ public class Line {
         return new Line(id, name, color);
     }
 
+    public static Line of(Long id, Line other) {
+        return of(id, other.name, other.color);
+    }
+
     public static Line of(String name, String color) {
         return of(null, name, color);
     }
