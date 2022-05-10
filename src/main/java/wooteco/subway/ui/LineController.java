@@ -45,12 +45,13 @@ public class LineController {
         return ResponseEntity.ok(lineService.findById(id));
     }
 
-    /*
     @PutMapping("/lines/{id}")
     public void updateLine(@PathVariable Long id,@Valid @RequestBody LineRequest lineRequest) {
         lineService.update(id, lineRequest);
     }
 
+
+    /*
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         lineService.delete(id);

@@ -81,11 +81,11 @@ public class LineService {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), makeStations(sections));
     }
 
-    /*
-    public void update(Long id, SimpleLineRequest lineRequest) {
+    public void update(Long id, LineRequest lineRequest) {
         lineDao.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
     }
 
+    /*
     public void delete(Long id) {
         lineDao.deleteById(id);
     }

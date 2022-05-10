@@ -118,7 +118,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         //then
-        List<Long> expectedLineIds = Arrays.asList(line1, line2 ).stream()
+        List<Long> expectedLineIds = Arrays.asList(line1, line2).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
@@ -133,7 +133,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("등록된 노선들 중 입력된 id값과 일치하는 노선을 반환한다. ")
     void findLindById() {
         //given
-        ExtractableResponse<Response> line = createLineResponse(new LineRequest("2호선", "green", 1L, 2L, 10));
+        createLineResponse(new LineRequest("2호선", "green", 1L, 2L, 10));
 
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -148,41 +148,28 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     }
 
-//    @Test
-//    @DisplayName("등록된 노선을 수정한다.")
-//    void update() {
-//        //given
-//        Map<String, String> params = new HashMap<>();
-//        params.put("name", "신분당선");
-//        params.put("color", "bg-red-600");
-//        params.put("upStationId", "1");
-//        params.put("downStationId", "2");
-//        params.put("distance", "10");
-//
-//        RestAssured.given().log().all()
-//                .body(params)
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .when()
-//                .post("/lines")
-//                .then().log().all()
-//                .extract();
-//        //when
-//        Map<String, String> requestParams = new HashMap<>();
-//        requestParams.put("name", "1호선");
-//        requestParams.put("color", "bg-red-600");
-//
-//        ExtractableResponse<Response> response = RestAssured.given().log().all()
-//                .body(requestParams)
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .when()
-//                .put("/lines/1")
-//                .then().log().all()
-//                .extract();
-//
-//        // then
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-//    }
-//
+    @Test
+    @DisplayName("등록된 노선을 수정한다.")
+    void update() {
+        //given
+        createLineResponse(new LineRequest("2호선", "green", 1L, 2L, 10));
+
+        //when
+        LineRequest lineRequest = new LineRequest("3호선","yellow");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/1")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+    }
+
 //    @Test
 //    @DisplayName("등록된 노선을 삭제한다.")
 //    void delete() {
