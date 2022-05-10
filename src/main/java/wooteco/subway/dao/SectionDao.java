@@ -21,10 +21,10 @@ public class SectionDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Section save(long lineId, long upStationId, long downStationId, int distance) {
-        Section section = new Section(lineId, upStationId, downStationId, distance);
+    public SectionDto save(long lineId, long upStationId, long downStationId, int distance) {
+        SectionDto section = new SectionDto(lineId, upStationId, downStationId, distance);
         SqlParameterSource parameters = new BeanPropertySqlParameterSource(section);
         long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Section(id, lineId, upStationId, downStationId, distance);
+        return new SectionDto(id, lineId, upStationId, downStationId, distance);
     }
 }

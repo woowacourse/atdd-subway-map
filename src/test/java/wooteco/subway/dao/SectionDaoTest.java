@@ -25,7 +25,7 @@ public class SectionDaoTest {
         long expectedDownStationId = 3L;
         int expectedDistance = 5;
 
-        Section section = sectionDao.save(expectedLineId, expectedUpStationId, expectedDownStationId, expectedDistance);
+        SectionDto section = sectionDao.save(expectedLineId, expectedUpStationId, expectedDownStationId, expectedDistance);
         long actualLineId = section.getLineId();
         long actualUpStationId = section.getUpStationId();
         long actualDownStationId = section.getDownStationId();
