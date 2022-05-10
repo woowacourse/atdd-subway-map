@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -95,5 +96,19 @@ class SectionServiceTest {
         assertThat(lineService.findById(lineId).getStations()).hasSize(3)
                 .extracting("name")
                 .containsExactly("강남역", "선릉역", "역삼역");
+    }
+
+    @Test
+    @DisplayName("구간을 삭제할 수 있다.")
+    void removeSection() {
+        // given
+        Long stationSaveId1 = stationDao.save(new Station("강남역"));
+        Long stationSaveId2 = stationDao.save(new Station("역삼역"));
+        Long stationSaveId3 = stationDao.save(new Station("선릉역"));
+        Long lineId = lineService.save(new LineRequest("신분당선", "bg-red-600", stationSaveId1, stationSaveId2, 10));
+        sectionService.addSection(lineId, new SectionRequest(stationSaveId1, stationSaveId3, 4));
+
+        // when & then
+        assertDoesNotThrow(() -> sectionService.deleteSection(lineId, stationSaveId1));
     }
 }
