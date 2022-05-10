@@ -21,9 +21,9 @@ public class Sections {
         validateCanAdd(section);
         validateSection(section);
 
+        value.add(section);
         findUpSection(section).ifPresent(it -> update(section, it));
         findDownSection(section).ifPresent(it -> update(section, it));
-        value.add(section);
     }
 
     private void update(final Section source, final Section target) {
@@ -56,6 +56,10 @@ public class Sections {
         final Optional<Section> upSection = findUpSection(other);
         final Optional<Section> downSection = findDownSection(other);
         return upSection.isPresent() || downSection.isPresent();
+    }
+
+    public Section findLastInsert() {
+        return value.get(value.size() - 1);
     }
 
     private void validateSection(final Section other) {
