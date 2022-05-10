@@ -19,12 +19,20 @@ public class Section {
     }
 
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+        validStationsId(upStationId, downStationId);
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
     }
+
+    private void validStationsId(Long upStationId, Long downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new IllegalArgumentException("상행역과 하행역이 같습니다.");
+        }
+    }
+
 
     public Long getId() {
         return id;
