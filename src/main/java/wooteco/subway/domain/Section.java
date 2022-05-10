@@ -5,6 +5,7 @@ import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.SectionResult;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class Section {
@@ -120,5 +121,13 @@ public class Section {
             return SectionResult.of(downStationSection.get(), this);
         }
         return new SectionResult(false);
+    }
+
+    public boolean isEqualDownStationId(Long stationId) {
+        return downStationId.equals(stationId);
+    }
+
+    public boolean isEqualUpStationId(Long stationId) {
+        return upStationId.equals(stationId);
     }
 }

@@ -37,11 +37,25 @@ public class Sections {
 
     public Optional<Section> getExistedDownStationSection(Long downStationId) {
         return sections.stream()
-                .filter(section -> section.getDownStationId().equals(downStationId))
+                .filter(section -> isEqualDownStationId(downStationId, section))
                 .findFirst();
+    }
+
+    private boolean isEqualDownStationId(Long downStationId, Section section) {
+        return section.getDownStationId().equals(downStationId);
     }
 
     public boolean isLastStation(Long stationId) {
         return getLastStationIds().contains(stationId);
+    }
+
+    public Sections getByStationId(Long stationId) {
+        return new Sections(sections.stream()
+                .filter(section -> section.isEqualDownStationId(stationId) || section.isEqualUpStationId(stationId))
+                .collect(Collectors.toList()));
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }

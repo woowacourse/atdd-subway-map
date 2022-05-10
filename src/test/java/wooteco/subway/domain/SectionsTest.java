@@ -99,4 +99,20 @@ class SectionsTest {
         assertThat(actual).isEqualTo(result);
     }
 
+    @DisplayName("역과 관련된 구간을 모두 반환한다.")
+    @Test
+    void getSectionsByStationId() {
+        Section section1 = new Section(10, 2L, 1L, 3L);
+        Section section2 = new Section(10, 2L, 3L, 2L);
+        Section section3 = new Section(10, 2L, 2L, 4L);
+
+        Sections sections = new Sections(List.of(section1, section2, section3));
+
+        Sections actual = sections.getByStationId(2L);
+        Sections expected = new Sections(List.of(section2, section3));
+
+        assertThat(actual.getSections().size()).isEqualTo(2);
+        assertThat(actual.getSections()).isEqualTo(List.of(section2, section3));
+    }
+
 }
