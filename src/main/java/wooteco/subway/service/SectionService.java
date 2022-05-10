@@ -4,6 +4,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionRequest;
 
 @Service
@@ -15,38 +16,38 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public void addSection(Long id, SectionRequest request) {
+    public void addSection(Long lineId, SectionRequest request) {
         Long upStationId = request.getUpStationId();
         Long downStationId = request.getDownStationId();
         int distance = request.getDistance();
 
-        Optional<Section> sectionByUpStation = sectionDao.findByLineIdAndUpStationId(id, request.getUpStationId());
-        Optional<Section> sectionByDownStation =
-                sectionDao.findByLineIdAndDownStationId(id, request.getDownStationId());
+        checkHasStation(lineId, upStationId, downStationId);
+        updateIfForkLine(lineId, request);
 
-        checkCanAddSection(sectionByUpStation, sectionByDownStation);
-        updateIfForkLine(id, request, sectionByUpStation, sectionByDownStation);
-
-        sectionDao.save(new Section(id, upStationId, downStationId, distance));
+        sectionDao.save(new Section(lineId, upStationId, downStationId, distance));
     }
 
-    private void checkCanAddSection(Optional<Section> sectionByUpStation, Optional<Section> sectionByDownStation) {
+    private void checkHasStation(Long lineId, Long upStationId, Long downStationId) {
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        sections.checkHasStation(upStationId, downStationId);
+    }
+
+    private void updateIfForkLine(Long lineId, SectionRequest request) {
+        Optional<Section> sectionByUpStation = sectionDao.findByLineIdAndUpStationId(lineId, request.getUpStationId());
+        Optional<Section> sectionByDownStation =
+                sectionDao.findByLineIdAndDownStationId(lineId, request.getDownStationId());
+
         if (sectionByUpStation.isPresent() && sectionByDownStation.isPresent()) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음");
         }
-    }
 
-    private void updateIfForkLine(Long id,
-                                  SectionRequest request,
-                                  Optional<Section> sectionByUpStation,
-                                  Optional<Section> sectionByDownStation) {
         if (sectionByUpStation.isPresent()) {
             Section section = sectionByUpStation.get();
             int distance = section.getDistance() - request.getDistance();
             validateDistance(distance);
 
             sectionDao.update(section.getId(), new Section(
-                    id,
+                    lineId,
                     request.getDownStationId(),
                     section.getDownStationId(),
                     distance));
@@ -58,7 +59,7 @@ public class SectionService {
             validateDistance(distance);
 
             sectionDao.update(section.getId(), new Section(
-                    id,
+                    lineId,
                     section.getUpStationId(),
                     request.getUpStationId(),
                     distance));

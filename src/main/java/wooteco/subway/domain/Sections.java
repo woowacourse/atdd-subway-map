@@ -2,8 +2,10 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Sections {
 
@@ -34,5 +36,21 @@ public class Sections {
                 .filter(key -> !stationsBySection.containsValue(key))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("구간 등록이 잘못되었습니다."));
+    }
+
+    public void checkHasStation(Long upStationId, Long downStationId) {
+        List<Long> allStationId = getAllStationId();
+        if (!allStationId.contains(upStationId) && !getAllStationId().contains(downStationId)) {
+            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
+        }
+    }
+
+    private List<Long> getAllStationId() {
+        Set<Long> ids = new HashSet<>();
+        sections.forEach(section -> {
+            ids.add(section.getUpStationId());
+            ids.add(section.getDownStationId());
+        });
+        return new ArrayList<>(ids);
     }
 }
