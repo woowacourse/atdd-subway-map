@@ -4,12 +4,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.notfound.NotFoundLineException;
 
 @Repository
 public class LineDao {
@@ -38,8 +40,12 @@ public class LineDao {
     }
 
     public Line find(final Long id) {
-        final String sql = "SELECT * FROM LINE WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper(), id);
+        try {
+            final String sql = "SELECT * FROM LINE WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, rowMapper(), id);
+        } catch (final EmptyResultDataAccessException e) {
+            throw new NotFoundLineException();
+        }
     }
 
     public void update(final Long id, final String name, final String color) {

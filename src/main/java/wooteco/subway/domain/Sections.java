@@ -2,7 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.notfound.NotFoundException;
 
 public class Sections {
 

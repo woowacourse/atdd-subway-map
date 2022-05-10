@@ -1,12 +1,12 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.handler;
 
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.dto.response.ErrorResponse;
+import wooteco.subway.exception.duplicate.DuplicateException;
+import wooteco.subway.exception.notfound.NotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -16,18 +16,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }
 
-    @ExceptionHandler(DuplicateKeyException.class)
+    @ExceptionHandler(DuplicateException.class)
     public ResponseEntity<ErrorResponse> duplicateException(final Exception e) {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }
 
-    @ExceptionHandler({EmptyResultDataAccessException.class, NotFoundException.class})
+    @ExceptionHandler({NotFoundException.class})
     public ResponseEntity<Void> emptyResultException() {
         return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> exception(final Exception e) {
-        return ResponseEntity.internalServerError().body(new ErrorResponse(e.getMessage()));
+    public ResponseEntity<ErrorResponse> exception() {
+        return ResponseEntity.internalServerError().body(new ErrorResponse("오류가 발생했습니다. 관리자에게 문의해주세요*^^*"));
     }
 }

@@ -4,12 +4,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.notfound.NotFoundStationException;
 
 @Repository
 public class StationDao {
@@ -32,8 +34,12 @@ public class StationDao {
     }
 
     public Station findById(final Long id) {
-        final String sql = "SELECT * FROM STATION WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper(), id);
+        try {
+            final String sql = "SELECT * FROM STATION WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, rowMapper(), id);
+        } catch (final EmptyResultDataAccessException e) {
+            throw new NotFoundStationException();
+        }
     }
 
     public List<Station> findAll() {

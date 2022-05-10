@@ -3,6 +3,7 @@ package wooteco.subway.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Objects;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -10,6 +11,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.exception.notfound.NotFoundException;
+import wooteco.subway.exception.notfound.NotFoundSectionException;
 
 @Repository
 public class SectionDao {
@@ -42,13 +45,21 @@ public class SectionDao {
     }
 
     public Sections findAllByLineId(final Long id) {
-        final String sql = "SELECT * FROM SECTION WHERE line_id = ?";
-        return new Sections(jdbcTemplate.query(sql, ROW_MAPPER, id));
+        try {
+            final String sql = "SELECT * FROM SECTION WHERE line_id = ?";
+            return new Sections(jdbcTemplate.query(sql, ROW_MAPPER, id));
+        } catch (final EmptyResultDataAccessException e) {
+            throw new NotFoundException("존재하지 않는 노선(ID: " + id + ")입니다.");
+        }
     }
 
     public Section findById(final Long id) {
-        final String sql = "SELECT * FROM SECTION WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+        try {
+            final String sql = "SELECT * FROM SECTION WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+        } catch (final EmptyResultDataAccessException e) {
+            throw new NotFoundSectionException();
+        }
     }
 
     public void deleteAllByLineId(final Long lineId) {

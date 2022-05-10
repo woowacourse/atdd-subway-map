@@ -2,12 +2,14 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.request.CreateStationRequest;
 import wooteco.subway.dto.response.StationResponse;
-import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.duplicate.DuplicateStationException;
+import wooteco.subway.exception.notfound.NotFoundStationException;
 
 @Service
 public class StationService {
@@ -19,10 +21,14 @@ public class StationService {
     }
 
     public StationResponse createStation(final CreateStationRequest request) {
-        final Station station = new Station(request.getName());
-        final Long id = stationDao.save(station);
-        final Station savedStation = stationDao.findById(id);
-        return StationResponse.from(savedStation);
+        try {
+            final Station station = new Station(request.getName());
+            final Long id = stationDao.save(station);
+            final Station savedStation = stationDao.findById(id);
+            return StationResponse.from(savedStation);
+        } catch (final DuplicateKeyException e) {
+            throw new DuplicateStationException();
+        }
     }
 
     public List<StationResponse> showStations() {
@@ -39,7 +45,7 @@ public class StationService {
 
     private void validateNotExistStation(Long id) {
         if (!stationDao.existsById(id)) {
-            throw new NotFoundException("존재하지 않는 역(ID: " + id + ")입니다.");
+            throw new NotFoundStationException();
         }
     }
 }

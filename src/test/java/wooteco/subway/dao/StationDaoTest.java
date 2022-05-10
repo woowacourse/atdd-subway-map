@@ -9,9 +9,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.notfound.NotFoundStationException;
 
 @JdbcTest
 class StationDaoTest {
@@ -53,7 +53,7 @@ class StationDaoTest {
         final long id = 1L;
 
         assertThatThrownBy(() -> stationDao.findById(id))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+                .isInstanceOf(NotFoundStationException.class);
     }
 
     @Test

@@ -143,7 +143,7 @@ class LineServiceTest {
         final String color = "bg-red-600";
 
         // mocking
-        given(lineDao.find(id)).willReturn(new Line(id, name, color));
+        given(lineDao.existsById(1L)).willReturn(true);
 
         // when
         lineService.updateLine(id, new UpdateLineRequest(name, color));
@@ -161,7 +161,7 @@ class LineServiceTest {
         final String color = "bg-red-600";
 
         // mocking
-        given(lineDao.find(id)).willReturn(new Line(id, name, color));
+        given(lineDao.existsById(1L)).willReturn(true);
 
         // when
         lineService.deleteLine(id);

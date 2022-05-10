@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
@@ -15,7 +16,9 @@ import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.dto.request.CreateSectionRequest;
-import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.duplicate.DuplicateLineException;
+import wooteco.subway.exception.notfound.NotFoundLineException;
+import wooteco.subway.exception.notfound.NotFoundStationException;
 
 @Transactional
 @Service
@@ -32,9 +35,13 @@ public class LineService {
     }
 
     public LineResponse create(final CreateLineRequest request) {
-        final Long lineId = lineDao.save(request.toLine());
-        sectionDao.save(request.toSection(lineId));
-        return show(lineId);
+        try {
+            final Long lineId = lineDao.save(request.toLine());
+            sectionDao.save(request.toSection(lineId));
+            return show(lineId);
+        } catch (final DuplicateKeyException e) {
+            throw new DuplicateLineException();
+        }
     }
 
     @Transactional(readOnly = true)
@@ -61,12 +68,12 @@ public class LineService {
     }
 
     public void updateLine(final Long id, final UpdateLineRequest request) {
-        lineDao.find(id);
+        validateNotExistLine(id);
         lineDao.update(id, request.getName(), request.getColor());
     }
 
     public void deleteLine(final Long id) {
-        lineDao.find(id);
+        validateNotExistLine(id);
         lineDao.delete(id);
     }
 
@@ -97,13 +104,13 @@ public class LineService {
 
     private void validateNotExistLine(final Long id) {
         if (!lineDao.existsById(id)) {
-            throw new NotFoundException("존재하지 않는 노선(ID: " + id + ")입니다.");
+            throw new NotFoundLineException();
         }
     }
 
     private void validateNotExistStation(final Long id) {
         if (!stationDao.existsById(id)) {
-            throw new NotFoundException("존재하지 않는 역(ID: " + id + ")입니다.");
+            throw new NotFoundStationException();
         }
     }
 

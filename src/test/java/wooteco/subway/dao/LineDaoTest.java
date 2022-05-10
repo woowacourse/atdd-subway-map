@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.notfound.NotFoundLineException;
 
 @JdbcTest
 public class LineDaoTest {
@@ -99,7 +99,7 @@ public class LineDaoTest {
         final long id = 1L;
 
         assertThatThrownBy(() -> lineDao.find(id))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+                .isInstanceOf(NotFoundLineException.class);
     }
 
     @Test
