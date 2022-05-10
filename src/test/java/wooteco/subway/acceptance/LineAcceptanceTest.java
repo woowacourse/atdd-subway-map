@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,6 @@ import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("노선 관련 기능")
-@Disabled
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선을 생성한다.")
@@ -32,8 +30,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         String name = "2호선";
         String color = "bg-green-600";
+        Long upStationId = generateStationId("선릉역");
+        Long downStationId = generateStationId("잠실역");
+        Integer distance = 7;
 
-        ExtractableResponse<Response> response = generateLine(name, color);
+        ExtractableResponse<Response> response = generateLine(name, color, upStationId, downStationId, distance);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -42,8 +43,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 관리한다.")
     @TestFactory
     Stream<DynamicTest> dynamicTestStream() {
-        ExtractableResponse<Response> createdResponse1 = generateLine("1호선", "bg-blue-600");
-        ExtractableResponse<Response> createdResponse2 = generateLine("2호선", "bg-green-600");
+        String name1 = "1호선";
+        String color1 = "bg-blue-600";
+        Long upStationId1 = generateStationId("중동역");
+        Long downStationId1 = generateStationId("신도림역");
+        Integer distance1 = 10;
+
+        String name2 = "2호선";
+        String color2 = "bg-green-600";
+        Long upStationId2 = generateStationId("선릉역");
+        Long downStationId2 = generateStationId("잠실역");
+        Integer distance2 = 10;
+
+        ExtractableResponse<Response> createdResponse1 = generateLine(name1, color1, upStationId1, downStationId1,
+                distance1);
+        ExtractableResponse<Response> createdResponse2 = generateLine(name2, color2, upStationId2,
+                downStationId2, distance2);
 
         return Stream.of(
                 dynamicTest("노선을 조회한다.", () -> {
@@ -163,10 +178,32 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private ExtractableResponse<Response> generateLine(String name, String color) {
+    private long generateStationId(String name) {
+        ExtractableResponse<Response> response = generateStation(name);
+        return response.jsonPath().getLong("id");
+    }
+
+    private ExtractableResponse<Response> generateStation(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> generateLine(String name, String color, Long upStationId,
+                                                       Long downStationId, Integer distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        params.put("upStationId", String.valueOf(upStationId));
+        params.put("downStationId", String.valueOf(downStationId));
+        params.put("distance", String.valueOf(distance));
 
         return RestAssured.given().log().all()
                 .body(params)
