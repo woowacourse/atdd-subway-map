@@ -6,7 +6,9 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class SectionService {
@@ -27,7 +29,16 @@ public class SectionService {
         sectionDao.delete(lineId, stationId);
     }
 
-    public List<Station> getStationsByLineId(Long id) {
-        return List.of();
+    public List<Station> findStationsByLineId(final Long lineId) {
+        return stationDao.findStationsById(findStationIdsByLineId(lineId));
+    }
+
+    private Set<Long> findStationIdsByLineId(final Long id) {
+        final Set<Long> stationIds = new HashSet<>();
+        for (final Section section : sectionDao.findSectionsByLineId(id)) {
+            stationIds.add(section.getUpStationId());
+            stationIds.add(section.getDownStationId());
+        }
+        return stationIds;
     }
 }

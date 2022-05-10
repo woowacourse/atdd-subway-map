@@ -8,6 +8,8 @@ import wooteco.subway.domain.Station;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 public class StationDao {
@@ -49,6 +51,14 @@ public class StationDao {
     public Station findById(final Long id) {
         final String sql = "select * from Station where id = ?";
         return jdbcTemplate.queryForObject(sql, stationMapper, id);
+    }
+
+    public List<Station> findStationsById(final Set<Long> ids) {
+        final String sql = String.format("select * from Station where id in (%s)",
+                ids.stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(", ")));
+        return jdbcTemplate.query(sql, new StationMapper());
     }
 
     private static final class StationMapper implements RowMapper<Station> {
