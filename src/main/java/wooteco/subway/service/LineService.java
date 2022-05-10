@@ -19,9 +19,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@Validated
 public class LineService {
-
     private final LineDao lineDao;
     private final StationDao stationDao;
     private final SectionDao sectionDao;
@@ -45,7 +43,7 @@ public class LineService {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), createStationResponseOf(line));
     }
 
-    private Line validateAndSave(Line line){
+    private Line validateAndSave(Line line) {
         checkDuplication(line);
         return lineDao.save(line);
     }
@@ -77,7 +75,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    private List<Station> findStationsIn(List<Section> sections){
+    private List<Station> findStationsIn(List<Section> sections) {
         Set<Long> stationIds = new HashSet<>();
         for (Section section : sections) {
             stationIds.add(section.getUpStationId());

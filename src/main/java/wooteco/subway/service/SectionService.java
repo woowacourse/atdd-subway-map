@@ -17,36 +17,16 @@ public class SectionService {
     }
 
     @Transactional
-    public void save(Section section) {
+    public void save(Long lineId, SectionRequest sectionRequest) {
+        Section section = sectionRequest.toSection(lineId);
+        checkSavable(section);
         checkAndFixOverLappingBy(section);
         sectionDao.save(section);
     }
 
     private void checkAndFixOverLappingBy(Section section) {
-        Optional<Section> overLappedSection = sectionDao.getSectionsOverLappedBy(section);
-
-        if (overLappedSection.isPresent()) {
-            Section revisedSection = reviseSection(overLappedSection.get(), section);
-            sectionDao.update(revisedSection);
-        }
-    }
-
-    private Section reviseSection(Section existedSection, Section newSection) {
-        Long id = existedSection.getId();
-        Long lineId = existedSection.getLineId();
-        int revisedDistance = existedSection.getDistance() - newSection.getDistance();
-
-        if (Objects.equals(existedSection.getUpStationId(), newSection.getUpStationId())) {
-            return new Section(id, lineId, newSection.getDownStationId(), existedSection.getDownStationId(), revisedDistance);
-        }
-
-        return new Section(id, lineId, existedSection.getUpStationId(), newSection.getUpStationId(), revisedDistance);
-    }
-
-    public void checkValidAndSave(Long lineId, SectionRequest sectionRequest) {
-        Section section = sectionRequest.toSection(lineId);
-        checkSavable(section);
-        save(section);
+        sectionDao.getSectionsOverLappedBy(section)
+                .ifPresent(value -> sectionDao.update(value.revisedBy(section)));
     }
 
     private void checkSavable(Section section) {

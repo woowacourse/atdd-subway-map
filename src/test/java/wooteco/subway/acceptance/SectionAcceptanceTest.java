@@ -21,33 +21,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void createStations(){
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "강남역");
-        ExtractableResponse<Response> createStationResponse1 = RestAssured.given().log().all()
-                .body(params1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        createStationResponseOf(params1);
 
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "역삼역");
-        ExtractableResponse<Response> createStationResponse2 = RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        createStationResponseOf(params2);
 
         Map<String, String> params3 = new HashMap<>();
         params3.put("name", "선릉역");
-        ExtractableResponse<Response> createStationResponse3 = RestAssured.given().log().all()
-                .body(params3)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        createStationResponseOf(params3);
 
         Map<String, Object> params4 = new HashMap<>();
         params4.put("name", "1호선");
@@ -56,13 +38,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         params4.put("downStationId", 2L);
         params4.put("distance", 10);
 
-        ExtractableResponse<Response> createLineResponse = RestAssured.given().log().all()
-                .body(params4)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        createLineResponseOf(params4);
     }
 
     @DisplayName("구간을 생성한다.")
@@ -75,13 +51,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         params.put("distance", 10);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/1/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = createSectionResponseOf(params);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -93,13 +63,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // given
         Map<String, String> params5 = new HashMap<>();
         params5.put("name", "교대역");
-        ExtractableResponse<Response> createStationResponse3 = RestAssured.given().log().all()
-                .body(params5)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        createStationResponseOf(params5);
 
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", 3L);
@@ -107,13 +71,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         params.put("distance", 10);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/1/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = createSectionResponseOf(params);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -129,24 +87,46 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         params.put("distance", 10);
 
         // when
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+        createSectionResponseOf(params);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("lines/1/sections?stationId=1")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void createStationResponseOf(Map<String, String> params) {
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private void createLineResponseOf(Map<String, Object> params) {
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> createSectionResponseOf(Map<String, Object> params) {
+        return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines/1/sections")
                 .then().log().all()
                 .extract();
-
-        // when
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
-
 }

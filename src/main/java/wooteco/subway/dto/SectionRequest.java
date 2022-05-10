@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import wooteco.subway.domain.Section;
 
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
 
 @Getter
 @NoArgsConstructor
