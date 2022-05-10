@@ -58,6 +58,14 @@ public class Section {
         return this.downStationId.equals(section.downStationId);
     }
 
+    public int plusDistance(final Section section) {
+        return this.distance + section.distance;
+    }
+
+    public int minusDistance(final Section section) {
+        return this.distance - section.distance;
+    }
+
     public Long getId() {
         return id;
     }

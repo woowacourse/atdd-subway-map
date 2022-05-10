@@ -1,7 +1,9 @@
 package wooteco.subway.domain;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import wooteco.subway.exception.notfound.NotFoundSectionException;
 
 public class Sections {
@@ -13,18 +15,11 @@ public class Sections {
     }
 
     public List<Long> toSortedStationIds() {
-        Section section = findFirstSection(findAnySection());
-
-        final List<Long> stationIds = new ArrayList<>();
-        stationIds.add(section.getUpStationId());
-
-        while (hasLowerSection(section)) {
-            section = findLowerSection(section);
-            stationIds.add(section.getUpStationId());
-        }
-
-        stationIds.add(section.getDownStationId());
-        return stationIds;
+        final LinkedList<Long> stationsIds = new LinkedList<>();
+        final Section section = findAnySection();
+        addUpperStationIds(stationsIds, section);
+        addLowerStationIds(stationsIds, section);
+        return stationsIds;
     }
 
     private Section findAnySection() {
@@ -33,71 +28,58 @@ public class Sections {
                 .orElseThrow(NotFoundSectionException::new);
     }
 
-    private Section findFirstSection(final Section section) {
-        if (hasUpperSection(section)) {
-            return findFirstSection(findUpperSection(section));
-        }
-        return section;
+    private void addUpperStationIds(final LinkedList<Long> stationsIds, final Section section) {
+        stationsIds.addFirst(section.getUpStationId());
+        findUpperSection(section).ifPresent(value -> addUpperStationIds(stationsIds, value));
     }
 
-    private boolean hasUpperSection(final Section section) {
-        return sections.stream()
-                .anyMatch(section::isLowerThan);
-    }
-
-    private Section findUpperSection(final Section section) {
+    private Optional<Section> findUpperSection(final Section section) {
         return sections.stream()
                 .filter(section::isLowerThan)
-                .findFirst()
-                .orElseThrow(NotFoundSectionException::new);
+                .findFirst();
     }
 
-    private boolean hasLowerSection(final Section section) {
-        return sections.stream()
-                .anyMatch(section::isUpperThan);
+    private void addLowerStationIds(final LinkedList<Long> stationsIds, final Section section) {
+        stationsIds.addLast(section.getDownStationId());
+        findLowerSection(section).ifPresent(value -> addLowerStationIds(stationsIds, value));
     }
 
-    private Section findLowerSection(final Section section) {
+    private Optional<Section> findLowerSection(final Section section) {
         return sections.stream()
                 .filter(section::isUpperThan)
-                .findFirst()
-                .orElseThrow(NotFoundSectionException::new);
+                .findFirst();
     }
 
     public void add(final Section section) {
-        if (hasSameSection(section)) {
-            throw new IllegalArgumentException("이미 있는 구간은 추가할 수 없습니다.");
-        }
-        if (hasSameUpStationIdSection(section)) {
-            addSectionWhenHasSameUpStationId(section);
-            return;
-        }
-        if (hasSameDownStationIdSection(section)) {
-            addSectionWhenHasSameDownStationId(section);
+        validateDuplicateSection(section);
+        final Optional<Section> foundSection = findSameUpOrDownStationIdSection(section);
+        if (foundSection.isPresent()) {
+            addAtMiddle(section, foundSection.get());
             return;
         }
         sections.add(section);
     }
 
-    private boolean hasSameSection(final Section section) {
-        return sections.stream()
-                .anyMatch(section::equals);
+    private void validateDuplicateSection(final Section section) {
+        sections.stream()
+                .filter(section::equals)
+                .findAny()
+                .ifPresent(value -> {
+                    throw new IllegalArgumentException("이미 있는 구간은 추가할 수 없습니다.");
+                });
     }
 
-    private boolean hasSameUpStationIdSection(final Section section) {
+    private Optional<Section> findSameUpOrDownStationIdSection(final Section section) {
         return sections.stream()
-                .anyMatch(s -> s.hasSameUpStationId(section));
+                .filter(s -> s.hasSameUpStationId(section) || s.hasSameDownStationId(section))
+                .findFirst();
     }
 
-    private void addSectionWhenHasSameUpStationId(final Section section) {
-        final Section originSection = findSameUpStationIdSection(section);
+    private void addAtMiddle(final Section section, final Section originSection) {
         validateDistance(section, originSection);
-
-        final Section newSection = new Section(section.getLineId(), section.getDownStationId(),
-                originSection.getDownStationId(), originSection.getDistance() - section.getDistance());
         sections.remove(originSection);
         sections.add(section);
-        sections.add(newSection);
+        sections.add(createNewSection(section, originSection));
     }
 
     private void validateDistance(final Section section, final Section originSection) {
@@ -106,70 +88,50 @@ public class Sections {
         }
     }
 
-    private Section findSameUpStationIdSection(final Section section) {
-        return sections.stream()
-                .filter(s -> s.hasSameUpStationId(section))
-                .findFirst()
-                .orElseThrow(NotFoundSectionException::new);
-    }
-
-    private boolean hasSameDownStationIdSection(final Section section) {
-        return sections.stream()
-                .anyMatch(s -> s.hasSameDownStationId(section));
-    }
-
-    private void addSectionWhenHasSameDownStationId(final Section section) {
-        final Section originSection = findSameDownStationIdSection(section);
-        validateDistance(section, originSection);
-
-        final Section newSection = new Section(section.getLineId(), originSection.getUpStationId(),
-                section.getUpStationId(), originSection.getDistance() - section.getDistance());
-        sections.remove(originSection);
-        sections.add(section);
-        sections.add(newSection);
-    }
-
-    private Section findSameDownStationIdSection(final Section section) {
-        return sections.stream()
-                .filter(s -> s.hasSameDownStationId(section))
-                .findFirst()
-                .orElseThrow(NotFoundSectionException::new);
+    private Section createNewSection(final Section section, final Section originSection) {
+        if (section.hasSameUpStationId(originSection)) {
+            return new Section(section.getLineId(), section.getDownStationId(),
+                    originSection.getDownStationId(), originSection.minusDistance(section));
+        }
+        return new Section(section.getLineId(), originSection.getUpStationId(),
+                section.getUpStationId(), originSection.minusDistance(section));
     }
 
     public void remove(final Long stationId) {
-        if (isFirstStationId(stationId)) {
-            removeFirstSection(stationId);
+        final Optional<Section> upperSection = findSameDownStationIdSection2(stationId);
+        final Optional<Section> lowerSection = findSameUpStationIdSection2(stationId);
+        if (upperSection.isPresent() && lowerSection.isPresent()) {
+            removeAtMiddle(upperSection.get(), lowerSection.get());
             return;
         }
-        if (isLastStationId(stationId)) {
-            removeLastSection(stationId);
-            return;
-        }
-        removeBothSideSections(stationId);
+        removeAtSide(upperSection, lowerSection);
     }
 
-    private void removeBothSideSections(Long stationId) {
-        final Section upperSection = findSameDownStationIdSection(stationId);
-        final Section lowerSection = findSameUpStationIdSection(stationId);
+    private Optional<Section> findSameUpStationIdSection2(final Long stationId) {
+        return sections.stream()
+                .filter(s -> s.getUpStationId().equals(stationId))
+                .findFirst();
+    }
+
+    private Optional<Section> findSameDownStationIdSection2(final Long stationId) {
+        return sections.stream()
+                .filter(s -> s.getDownStationId().equals(stationId))
+                .findFirst();
+    }
+
+    private void removeAtMiddle(final Section upperSection, final Section lowerSection) {
         final Section newSection = new Section(upperSection.getLineId(), upperSection.getUpStationId(),
-                lowerSection.getDownStationId(), upperSection.getDistance() + lowerSection.getDistance());
+                lowerSection.getDownStationId(), upperSection.plusDistance(lowerSection));
         sections.remove(upperSection);
         sections.remove(lowerSection);
         sections.add(newSection);
     }
 
-    private void removeLastSection(final Long stationId) {
+    private void removeAtSide(final Optional<Section> upperSection, final Optional<Section> lowerSection) {
         validateSizeWhenFirstOrLastSection();
-        final Section section = findSameDownStationIdSection(stationId);
-        sections.remove(section);
+        upperSection.ifPresent(sections::remove);
+        lowerSection.ifPresent(sections::remove);
     }
-
-    private void removeFirstSection(final Long stationId) {
-        validateSizeWhenFirstOrLastSection();
-        final Section section = findSameUpStationIdSection(stationId);
-        sections.remove(section);
-    }
-
 
     private void validateSizeWhenFirstOrLastSection() {
         if (sections.size() < 2) {
@@ -177,36 +139,7 @@ public class Sections {
         }
     }
 
-    private boolean isFirstStationId(final Long stationId) {
-        return findFirstSection(findAnySection()).getUpStationId().equals(stationId);
-    }
-
-    private boolean isLastStationId(final Long stationId) {
-        return findLastSection(findAnySection()).getDownStationId().equals(stationId);
-    }
-
-    private Section findLastSection(final Section section) {
-        if (hasLowerSection(section)) {
-            return findLastSection(findLowerSection(section));
-        }
-        return section;
-    }
-
-    private Section findSameUpStationIdSection(final Long stationId) {
-        return sections.stream()
-                .filter(s -> s.getUpStationId().equals(stationId))
-                .findFirst()
-                .orElseThrow(NotFoundSectionException::new);
-    }
-
-    private Section findSameDownStationIdSection(final Long stationId) {
-        return sections.stream()
-                .filter(s -> s.getDownStationId().equals(stationId))
-                .findFirst()
-                .orElseThrow(NotFoundSectionException::new);
-    }
-
     public List<Section> getSections() {
-        return sections;
+        return List.copyOf(sections);
     }
 }
