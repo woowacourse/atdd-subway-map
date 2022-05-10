@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
+import java.util.Optional;
 
 class SectionsTest {
 
@@ -116,5 +118,65 @@ class SectionsTest {
                 .isEmpty();
 
         assertThat(empty).isTrue();
+    }
+
+    @DisplayName("(이미 존재하는 역이 하행역일 때) 갈래길인 경우 구간을 기존 구간 사이에 등록한다.")
+    @Test
+    void addBranchedUpSection() {
+        final Station newStation1 = new Station(3L, "어린이대공원역");
+        final Station newStation2 = new Station(2L, "군자역");
+        final Section newSection = new Section(newStation1, newStation2, 5, 1L);
+
+        sections.add(newSection);
+
+        final Optional<Section> updatedSection = sections.getSections().stream()
+                .filter(section -> section.getDownStation().equals(newStation1))
+                .findAny();
+
+        final Optional<Section> addedSection = sections.getSections().stream()
+                .filter(section -> section.getUpStation().equals(newStation1))
+                .findAny();
+
+        assert (updatedSection.isPresent() && addedSection.isPresent());
+
+        assertAll(
+                () -> assertThat(updatedSection.get().getUpStation()).isEqualTo(station1),
+                () -> assertThat(updatedSection.get().getDownStation()).isEqualTo(newStation1),
+                () -> assertThat(updatedSection.get().getDistance()).isEqualTo(5),
+
+                () -> assertThat(addedSection.get().getUpStation()).isEqualTo(newStation1),
+                () -> assertThat(addedSection.get().getDownStation()).isEqualTo(newStation2),
+                () -> assertThat(addedSection.get().getDistance()).isEqualTo(5)
+        );
+    }
+
+    @DisplayName("(이미 존재하는 역이 상행역일 때) 갈래길인 경우 구간을 기존 구간 사이에 등록한다.")
+    @Test
+    void addBranchedDownSection() {
+        final Station newStation1 = new Station(1L, "아차산역");
+        final Station newStation2 = new Station(3L, "어린이대공원역");
+        final Section newSection = new Section(newStation1, newStation2, 5, 1L);
+
+        sections.add(newSection);
+
+        final Optional<Section> updatedSection = sections.getSections().stream()
+                .filter(section -> section.getUpStation().equals(newStation2))
+                .findAny();
+
+        final Optional<Section> addedSection = sections.getSections().stream()
+                .filter(section -> section.getDownStation().equals(newStation2))
+                .findAny();
+
+        assert (updatedSection.isPresent() && addedSection.isPresent());
+
+        assertAll(
+                () -> assertThat(updatedSection.get().getUpStation()).isEqualTo(newStation2),
+                () -> assertThat(updatedSection.get().getDownStation()).isEqualTo(station2),
+                () -> assertThat(updatedSection.get().getDistance()).isEqualTo(5),
+
+                () -> assertThat(addedSection.get().getUpStation()).isEqualTo(newStation1),
+                () -> assertThat(addedSection.get().getDownStation()).isEqualTo(newStation2),
+                () -> assertThat(addedSection.get().getDistance()).isEqualTo(5)
+        );
     }
 }

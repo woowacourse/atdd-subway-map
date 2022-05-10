@@ -43,4 +43,27 @@ public class Section {
     public boolean isGreaterOrEqualTo(final Section other) {
         return this.distance >= other.distance;
     }
+
+    private int calculateDistance(final Section section) {
+        return this.distance - section.distance;
+    }
+
+    public Section createSectionByUpStation(final Section section) {
+        return new Section(this.id, this.upStation, section.upStation, calculateDistance(section), this.lineId);
+    }
+
+    public Section createSectionByDownStation(final Section section) {
+        return new Section(this.id, section.downStation, this.downStation, calculateDistance(section), this.lineId);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                ", lineId=" + lineId +
+                '}';
+    }
 }

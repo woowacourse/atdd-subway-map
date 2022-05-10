@@ -17,9 +17,23 @@ public class Sections {
         validateExist(section);
         validateSection(section);
 
-        if (!isBranched(section)) {
-            value.add(section);
+        final Optional<Section> upSection = findUpSection(section);
+        final Optional<Section> downSection = findDownSection(section);
+
+        if (upSection.isPresent()) {
+            final Section targetSection = upSection.get();
+            value.remove(targetSection);
+            value.add(targetSection.createSectionByDownStation(section));
         }
+
+        if (downSection.isPresent()) {
+            final Section targetSection = downSection.get();
+            value.remove(targetSection);
+            value.add(targetSection.createSectionByUpStation(section));
+        }
+
+        value.add(section);
+
     }
 
     public boolean isBranched(final Section other) {
@@ -83,5 +97,12 @@ public class Sections {
 
     public List<Section> getSections() {
         return value;
+    }
+
+    @Override
+    public String toString() {
+        return "Sections{" +
+                "value=" + value +
+                '}';
     }
 }
