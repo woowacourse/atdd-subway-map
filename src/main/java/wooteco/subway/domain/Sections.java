@@ -4,10 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Sections {
+    private static final int LIMIT_LOW_SIZE = 1;
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
+        validateSize(sections);
         this.sections = new ArrayList<>(sections);
+    }
+
+    private void validateSize(List<Section> sections) {
+        if (sections.size() < LIMIT_LOW_SIZE) {
+            throw new IllegalArgumentException("구간은 최소 한 개가 있어야 합니다.");
+        }
     }
 
     public void add(Section section) {
