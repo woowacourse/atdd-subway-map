@@ -59,7 +59,7 @@ public class LineService {
 
     private Station findByStationId(Long id) {
         return stationDao.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("구간 상행역 생성에 오류가 발생했습니다."));
+                .orElseThrow(() -> new NoSuchElementException("구간 내 존재하는 역 조회에 오류가 발생했습니다."));
     }
 
     public void addSection(Long lineId, SectionRequest sectionRequest) {
@@ -107,9 +107,6 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         final List<Line> lines = lineDao.findAll();
-        for (Line line : lines) {
-            makeLineResponseByLine(line);
-        }
         return lines.stream()
                 .map(this::makeLineResponseByLine)
                 .collect(Collectors.toUnmodifiableList());
