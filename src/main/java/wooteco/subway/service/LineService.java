@@ -40,8 +40,8 @@ public class LineService {
 
         Long lineId = lineDao.save(line);
 
-        SectionRequest sectionRequest = SectionRequest.from(lineId, line);
-        sectionDao.save(sectionRequest.toEntity());
+        SectionRequest sectionRequest = SectionRequest.from(line);
+        sectionDao.save(sectionRequest.toEntity(lineId));
 
         List<StationResponse> stations = generateStationResponses(line.getDownStationId(), line.getUpStationId());
         return new LineResponse(lineId, line.getName(), line.getColor(), stations);

@@ -8,7 +8,6 @@ public class SectionRequest {
     private static final String DUPLICATED_SECTIONS_ERROR_MESSAGE = "상행과 하행은 같은 역으로 등록할 수 없습니다.";
     private static final int MIN_DISTANCE = 1;
 
-    private Long lineId;
     private Long upStationId;
     private Long downStationId;
     private int distance;
@@ -16,16 +15,15 @@ public class SectionRequest {
     private SectionRequest() {
     }
 
-    public SectionRequest(Long lineId, Long upStationId, Long downStationId, int distance) {
+    public SectionRequest(Long upStationId, Long downStationId, int distance) {
         validSection(upStationId, downStationId, distance);
-        this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
     }
 
-    public static SectionRequest from(Long lineId, LineCreateRequest lineCreateRequest) {
-        return new SectionRequest(lineId, lineCreateRequest.getUpStationId(), lineCreateRequest.getDownStationId(),
+    public static SectionRequest from(LineCreateRequest lineCreateRequest) {
+        return new SectionRequest(lineCreateRequest.getUpStationId(), lineCreateRequest.getDownStationId(),
                 lineCreateRequest.getDistance());
     }
 
@@ -48,12 +46,8 @@ public class SectionRequest {
         }
     }
 
-    public Section toEntity() {
+    public Section toEntity(Long lineId) {
         return new Section(0L, lineId, upStationId, downStationId, distance);
-    }
-
-    public Long getLineId() {
-        return lineId;
     }
 
     public Long getUpStationId() {

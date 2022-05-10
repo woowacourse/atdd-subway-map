@@ -39,6 +39,7 @@ public class SectionDao {
         String sql = "insert into SECTION (line_id, up_station_id, down_station_id, distance) "
                 + "values (:lineId, :upStationId, :downStationId, :distance)";
         SqlParameterSource source = new BeanPropertySqlParameterSource(section);
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(sql, source, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();

@@ -20,10 +20,10 @@ class SectionDaoTest {
     @Test
     void save() {
         // given
-        SectionRequest section = new SectionRequest(1L, 1L, 2L, 10);
+        SectionRequest section = new SectionRequest(1L, 2L, 10);
 
         // when
-        Long id = sectionDao.save(section.toEntity());
+        Long id = sectionDao.save(section.toEntity(1L));
 
         // then
         assertThat(id).isEqualTo(2L);

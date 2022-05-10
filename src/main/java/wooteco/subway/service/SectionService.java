@@ -26,10 +26,10 @@ public class SectionService {
 
     @Transactional
     public void create(Long lineId, SectionRequest sectionRequest) {
-        validRequest(sectionRequest);
+        validRequest(lineId, sectionRequest);
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
 
-        Section newSection = sectionRequest.toEntity();
+        Section newSection = sectionRequest.toEntity(lineId);
         List<Section> needUpdateSections = sections.add(newSection);
 
         for (Section section : needUpdateSections) {
@@ -45,13 +45,18 @@ public class SectionService {
         sectionDao.update(section);
     }
 
-    private void validRequest(SectionRequest sectionRequest) {
-        if (!stationDao.existsById(sectionRequest.getUpStationId())
-                || !stationDao.existsById(sectionRequest.getDownStationId())) {
-            throw new IllegalArgumentException("존재하지 않는 역을 등록할 수 없습니다.");
+    private void validRequest(Long lineId, SectionRequest sectionRequest) {
+        if (!stationDao.existsById(sectionRequest.getUpStationId())) {
+            throw new IllegalArgumentException(
+                    String.format("상행역에 존재하지 않는 역을 등록할 수 없습니다. -> %d", sectionRequest.getUpStationId()));
         }
-        if (!lineDao.existsById(sectionRequest.getLineId())) {
-            throw new IllegalArgumentException("존재하지 않는 노선에 등록할 수 없습니다.");
+        if (!stationDao.existsById(sectionRequest.getDownStationId())) {
+            throw new IllegalArgumentException(
+                    String.format("하행역에 존재하지 않는 역을 등록할 수 없습니다. -> %d", sectionRequest.getDownStationId()));
+        }
+        if (!lineDao.existsById(lineId)) {
+            throw new IllegalArgumentException(
+                    String.format("존재하지 않는 노선에 등록할 수 없습니다. -> %d", lineId));
         }
     }
 

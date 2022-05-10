@@ -224,7 +224,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createSection() {
         //given
-        SectionRequest sectionRequest = new SectionRequest(savedId2, 1L, 2L, 5);
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 5);
 
         //when
         ExtractableResponse<Response> response = RestAssuredUtil.post("/lines/2/sections", sectionRequest);
