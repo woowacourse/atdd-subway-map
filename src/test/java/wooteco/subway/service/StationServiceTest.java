@@ -9,11 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
 
 @SpringBootTest
-@Transactional
+@Sql("/schema.sql")
 class StationServiceTest {
 
     @Autowired

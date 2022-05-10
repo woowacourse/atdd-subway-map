@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
@@ -23,7 +23,7 @@ import wooteco.subway.dto.LineEditRequest;
 import wooteco.subway.dto.LineRequest;
 
 @SpringBootTest
-@Transactional
+@Sql("/schema.sql")
 class LineServiceTest {
 
     @Autowired
@@ -53,9 +53,9 @@ class LineServiceTest {
     void 중복된_노선_예외발생() {
         Station up = stationDao.save(new Station("합정역"));
         Station down = stationDao.save(new Station("홍대입구역"));
-        lineDao.save(new LineDto("2호선", "bg-blue-200"));
+        lineService.save(new LineRequest("1호선", "bg-darkblue-600", up.getId(), down.getId(), 3));
 
-        assertThatThrownBy(() -> lineService.save(new LineRequest("2호선", "bg-red-600", up.getId(), down.getId(), 3)))
+        assertThatThrownBy(() -> lineService.save(new LineRequest("1호선", "bg-darkblue-600", up.getId(), down.getId(), 3)))
                 .isInstanceOf(DuplicateKeyException.class)
                 .hasMessageContaining("이미 존재하는 노선");
     }
