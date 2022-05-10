@@ -9,19 +9,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Line;
 
 @SuppressWarnings("NonAsciiCharacters")
-@SpringBootTest
-@Sql("classpath:dao_test_db.sql")
-class LineDaoTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+class LineDaoTest extends DaoTest {
 
     @Autowired
     private LineDao dao;
@@ -59,7 +51,6 @@ class LineDaoTest {
             assertThat(dataFound).isFalse();
         }
     }
-
 
     @DisplayName("findByName 메서드는 name에 해당하는 데이터를 조회한다")
     @Nested

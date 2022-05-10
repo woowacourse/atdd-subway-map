@@ -9,19 +9,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.Station;
 
 @SuppressWarnings("NonAsciiCharacters")
-@SpringBootTest
-@Sql("classpath:dao_test_db.sql")
-class StationDaoTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+class StationDaoTest extends DaoTest {
 
     @Autowired
     private StationDao dao;

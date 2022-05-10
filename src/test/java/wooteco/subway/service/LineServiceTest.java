@@ -9,18 +9,15 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.DaoTest;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.exception.NotFoundException;
 
 @SuppressWarnings("NonAsciiCharacters")
-@SpringBootTest
-@Transactional
-@Sql("classpath:dao_test_db.sql")
-class LineServiceTest {
+@SpringBootTest // TODO: should be replaced
+class LineServiceTest extends DaoTest {
 
     @Autowired
     private LineService service;
