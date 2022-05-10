@@ -14,10 +14,6 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section(final Section section) {
-        this(section.upStation, section.downStation, section.distance);
-    }
-
     public MatchingResult match(final Section newSection) {
         if (isSameSection(newSection)) {
             return MatchingResult.SAME_SECTION;
@@ -54,6 +50,13 @@ public class Section {
         return this.distance > newSection.distance;
     }
 
+    public Station getNewStation(final MatchingResult result) {
+        if (result == MatchingResult.ADD_TO_LEFT) {
+            return upStation;
+        }
+        return downStation;
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -62,8 +65,12 @@ public class Section {
         return downStation;
     }
 
-    public int calculateDistanceDifference(final Section newSection) {
-        return this.distance - newSection.distance;
+    public Section changeDownStationAndDistance(final Section newSection, final Station newStation) {
+        return new Section(this.upStation, newStation, newSection.distance);
+    }
+
+    public Section changeUpStationAndDistance(final Section newSection, final Station newStation) {
+        return new Section(newStation, this.downStation, distance - newSection.distance);
     }
 
     @Override
