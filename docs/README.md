@@ -63,28 +63,28 @@
 
 ### 지하철구간 등록
 - 지하철구간 등록
-  - [ ] 등록하고자 하는 지하철구간의 `상행역 ID`, `하행역 ID`, `거리`가 필요하다.
+  - [x] 등록하고자 하는 지하철구간의 `상행역 ID`, `하행역 ID`, `거리`가 필요하다.
     - [ ] `상행역 ID`에 해당하는 지하철역이 존재해야 한다.
     - [ ] `하행역 ID`에 해당하는 지하철역이 존재해야 한다.
     - [ ] `상행역 ID`와 `하행역 ID`는 달라야 한다.
     - [ ] `거리`는 양수여야 한다.
-  - [ ] 새로 등록할 구간의 상행역과 하행역 중 노선에 이미 등록되어 있는 역을 기준으로 새로운 구간을 추가한다.
-    - [ ] 상행 종점 등록
+  - [x] 새로 등록할 구간의 상행역과 하행역 중 노선에 이미 등록되어 있는 역을 기준으로 새로운 구간을 추가한다.
+    - [x] 상행 종점 등록
       <img src="https://nextstep-storage.s3.ap-northeast-2.amazonaws.com/2d4654cc24f949c1818773df2ae57890" style="width:700px;">
 
-    - [ ] 하행 종점 등록
+    - [x] 하행 종점 등록
       ![image.png](https://nextstep-storage.s3.ap-northeast-2.amazonaws.com/832a8b49635c40b58f16fae1726909f6)
   
     - 갈래길 방지
-      - [ ] 하나의 노선에는 갈래길이 허용되지 않기 때문에 새로운 구간이 추가되기 전에 갈래길이 생기지 않도록 기존 구간을 변경한다.
+      - [x] 하나의 노선에는 갈래길이 허용되지 않기 때문에 새로운 구간이 추가되기 전에 갈래길이 생기지 않도록 기존 구간을 변경한다.
       ![image.png](https://nextstep-storage.s3.ap-northeast-2.amazonaws.com/be71b2febc0c4d179c6606f9fe1a473b)
-      - [ ] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.
+      - [x] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.
       ![image.png](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/dadbeaff524047c7a56ba2898b803995)
 
-      - [ ] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.
+      - [x] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.
       - 아래의 이미지 에서 A-B, B-C 구간이 등록된 상황에서 B-C 구간을 등록할 수 없다.(A-C 구간도 등록할 수 없음)
       ![image.png](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/7290f728d350426798ae6330ec4de730)
-      - [ ] 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.
+      - [x] 상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 추가할 수 없다.
       ![image.png](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/60c4586d8efe487fb9bdbff262af5261)
 
 - 지하철구간 제거

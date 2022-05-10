@@ -22,12 +22,28 @@ public class Section {
         this(TEMPORARY_ID, upStation, downStation, distance);
     }
 
+    public boolean containsStation(Station station) {
+        return station.equals(upStation) || station.equals(downStation);
+    }
+
     public boolean equalsUpStation(Station station) {
         return equalsUpStation(station.getId());
     }
 
     public boolean equalsUpStation(Long stationId) {
         return stationId.equals(upStation.getId());
+    }
+
+    public boolean equalsDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public boolean isCloserThan(Section section) {
+        return this.distance < section.distance;
+    }
+
+    public int calculateDifferenceOfDistance(Section section) {
+        return Math.abs(this.distance - section.distance);
     }
 
     public Long getId() {
