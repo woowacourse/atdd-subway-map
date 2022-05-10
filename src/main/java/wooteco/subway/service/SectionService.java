@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
@@ -75,8 +74,16 @@ public class SectionService {
 
     public void deleteStation(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        if (!containsIdInSections(stationId, sections)) {
+            return;
+        }
+
         if (sections.isTerminal(stationId)) {
             sectionDao.deleteByLineIdAndStationId(lineId, stationId);
         }
+    }
+
+    private boolean containsIdInSections(Long stationId, Sections sections) {
+        return sections.getSortedStationId().contains(stationId);
     }
 }
