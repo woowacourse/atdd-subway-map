@@ -30,21 +30,17 @@ class LineControllerTest extends AcceptanceTest {
 
     private Station savedStation1;
     private Station savedStation2;
-    private Station savedStation3;
-
-    private Line savedLine1;
 
     @BeforeEach
     void setUpStations() {
         savedStation1 = stationDao.insert(new Station("선릉역"));
         savedStation2 = stationDao.insert(new Station("선정릉역"));
-        savedStation3 = stationDao.insert(new Station("한티역"));
     }
 
     @DisplayName("지하철 노선을 등록한다.")
     @Test
     void createLine() {
-        LineRequest request = new LineRequest("신분당선", "red", null, null, 0);
+        LineRequest request = new LineRequest("신분당선", "red", savedStation1.getId(), savedStation2.getId(),10);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(request)
