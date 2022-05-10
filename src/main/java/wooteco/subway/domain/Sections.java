@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import wooteco.subway.exception.IllegalSectionException;
@@ -107,5 +108,54 @@ public class Sections {
 
     public List<Section> getSections() {
         return List.copyOf(sections);
+    }
+
+    public List<Section> getSortedSection() {
+        final List<Section> copySections = new ArrayList<>(List.copyOf(sections));
+
+        final Section firstSection = findFirstSection(copySections);
+
+        List<Section> sortedSections = new ArrayList<>();
+        sortedSections.add(firstSection);
+        copySections.remove(firstSection);
+
+        concatenateSection(sortedSections, copySections);
+        
+        return sortedSections;
+    }
+
+    private Section findFirstSection(List<Section> copySections) {
+        return copySections.stream()
+                .filter(section -> isFirst(section.getUpStationId()))
+                .findAny()
+                .orElseThrow();
+    }
+
+    private boolean isFirst(Long upStationId) {
+        return sections.stream()
+                .anyMatch(section -> upStationId.equals(section.getDownStationId()));
+    }
+
+    private void concatenateSection(List<Section> sortedSections, List<Section> copySections) {
+        while (!copySections.isEmpty()) {
+            final Section lastSection = sortedSections.get(sortedSections.size() - 1);
+            final Long lastDownStationId = lastSection.getDownStationId();
+
+            checkAndConcatenate(sortedSections, copySections, lastDownStationId);
+        }
+    }
+
+    private void checkAndConcatenate(List<Section> sortedSections, List<Section> copySections, Long lastDownStationId) {
+        for (Section section : copySections) {
+            moveOneByOne(sortedSections, copySections, lastDownStationId, section);
+        }
+    }
+
+    private void moveOneByOne(List<Section> sortedSections, List<Section> copySections, Long lastDownStationId,
+                              Section section) {
+        if (section.getUpStationId().equals(lastDownStationId)) {
+            sortedSections.add(section);
+            copySections.remove(section);
+        }
     }
 }
