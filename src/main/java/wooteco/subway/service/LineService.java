@@ -20,9 +20,9 @@ public class LineService {
 
     public LineResponse save(LineRequest lineRequest) {
         Line newLine = new Line(lineRequest.getName(), lineRequest.getColor());
-        validateRequest(newLine);
+        validateName(newLine);
 
-        Long lineId = lineDao.save(newLine);
+        long lineId = lineDao.save(newLine);
         return createLineResponse(lineDao.findById(lineId));
     }
 
@@ -43,7 +43,7 @@ public class LineService {
 
     public void update(Long lineId, LineRequest lineRequest) {
         Line newLine = new Line(lineRequest.getName(), lineRequest.getColor());
-        validateRequest(newLine);
+        validateName(newLine);
 
         lineDao.update(lineId, newLine);
     }
@@ -52,20 +52,9 @@ public class LineService {
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
-    private void validateRequest(Line line) {
-        validateName(line);
-        validateColor(line);
-    }
-
     private void validateName(Line line) {
         if (lineDao.existByName(line)) {
             throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
-        }
-    }
-
-    private void validateColor(Line line) {
-        if (lineDao.existByColor(line)) {
-            throw new IllegalArgumentException("이미 존재하는 노선 색깔입니다.");
         }
     }
 }
