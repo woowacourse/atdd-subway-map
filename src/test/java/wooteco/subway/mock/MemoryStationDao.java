@@ -49,12 +49,6 @@ public class MemoryStationDao implements StationDao {
     }
 
     @Override
-    public boolean existByName(String name) {
-        return stations.values().stream()
-                .anyMatch(station -> station.isSameName(name));
-    }
-
-    @Override
     public Station findById(Long id) {
         return stations.get(id);
     }

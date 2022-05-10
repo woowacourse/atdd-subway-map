@@ -6,8 +6,6 @@ import wooteco.subway.domain.Station;
 public interface StationDao {
     Station save(Station station);
 
-    boolean existByName(String name);
-
     Station findById(Long id);
 
     List<Station> findAll();
