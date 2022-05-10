@@ -1,7 +1,3 @@
-TRUNCATE TABLE STATION;
-TRUNCATE TABLE LINE;
-TRUNCATE TABLE SECTION;
-
 create table if not exists STATION
 (
     id   bigint auto_increment not null,
