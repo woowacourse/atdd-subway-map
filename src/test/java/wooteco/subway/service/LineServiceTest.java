@@ -12,17 +12,24 @@ import org.springframework.dao.DuplicateKeyException;
 
 import wooteco.subway.dao.FakeLineDao;
 import wooteco.subway.dao.FakeSectionDao;
+import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 class LineServiceTest {
 
+    private Long upStationId;
+    private Long downStationId;
+
     private final LineDao lineDao = new FakeLineDao();
+    private final StationDao stationDao = new FakeStationDao();
     private final SectionDao sectionDao = new FakeSectionDao();
-    private final LineService lineService = new LineService(lineDao, sectionDao);
+    private final LineService lineService = new LineService(lineDao, stationDao, sectionDao);
 
     @BeforeEach
     void setUp() {
@@ -34,12 +41,15 @@ class LineServiceTest {
         for (Long stationId : stationIds) {
             lineDao.deleteById(stationId);
         }
+
+        upStationId = stationDao.save(new Station("강남역")).getId();
+        downStationId = stationDao.save(new Station("선릉역")).getId();
     }
 
     @Test
     void save() {
         // given
-        LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", null, null, 0);
+        LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 0);
 
         // when
         LineResponse lineResponse = lineService.save(lineRequest);
@@ -55,8 +65,8 @@ class LineServiceTest {
     @Test
     void validateDuplication() {
         // given
-        LineRequest lineRequest1 = new LineRequest("1호선", "bg-red-600", null, null, 0);
-        LineRequest lineRequest2 = new LineRequest("1호선", "bg-red-600", null, null, 0);
+        LineRequest lineRequest1 = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 0);
+        LineRequest lineRequest2 = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 0);
 
         // when
         lineService.save(lineRequest1);
@@ -70,8 +80,8 @@ class LineServiceTest {
     @Test
     void findAll() {
         // given
-        LineRequest lineRequest1 = new LineRequest("1호선", "bg-red-600", null, null, 0);
-        LineRequest lineRequest2 = new LineRequest("2호선", "bg-green-600", null, null, 0);
+        LineRequest lineRequest1 = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 0);
+        LineRequest lineRequest2 = new LineRequest("2호선", "bg-green-600", upStationId, downStationId, 0);
 
         // when
         lineService.save(lineRequest1);
@@ -91,7 +101,7 @@ class LineServiceTest {
     @Test
     void delete() {
         // given
-        LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", null, null, 0);
+        LineRequest lineRequest = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 0);
         LineResponse lineResponse = lineService.save(lineRequest);
 
         // when
@@ -111,11 +121,11 @@ class LineServiceTest {
     @Test
     void update() {
         // given
-        LineRequest originLine = new LineRequest("1호선", "bg-red-600", null, null, 0);
+        LineRequest originLine = new LineRequest("1호선", "bg-red-600", upStationId, downStationId, 0);
         LineResponse lineResponse = lineService.save(originLine);
 
         // when
-        LineRequest newLine = new LineRequest("2호선", "bg-green-600", null, null, 0);
+        LineRequest newLine = new LineRequest("2호선", "bg-green-600", upStationId, downStationId, 0);
         lineService.updateById(lineResponse.getId(), newLine);
         Line line = lineDao.findById(lineResponse.getId()).get();
 

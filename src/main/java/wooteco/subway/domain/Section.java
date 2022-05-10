@@ -1,41 +1,40 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.dto.LineRequest;
-
 public class Section {
     private Long id;
-    private Long lineId;
-    private final Long upStationId;
-    private final Long downStationId;
+    private final Station upStation;
+    private final Station downStation;
     private final int distance;
 
-    private Section(Long lineId, Long upStationId, Long downStationId, int distance) {
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+    private Section(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
-    public static Section from(Long lineId, LineRequest lineRequest) {
-        return new Section(lineId, lineRequest.getUpStationId(), lineRequest.getDownStationId(),
-            lineRequest.getDistance());
-    }
-
-    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
-        this(lineId, upStationId, downStationId, distance);
+    private Section(Long id, Station upStation, Station downStation, int distance) {
+        this(upStation, downStation, distance);
         this.id = id;
     }
 
-    public Long getLineId() {
-        return lineId;
+    public static Section from(Long id, Section section) {
+        return new Section(id, section.getUpStation(), section.getDownStation(), section.getDistance());
     }
 
-    public Long getUpStationId() {
-        return upStationId;
+    public static Section from(Station upStation, Station downStation, int distance) {
+        return new Section(upStation, downStation, distance);
     }
 
-    public Long getDownStationId() {
-        return downStationId;
+    public Long getId() {
+        return id;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 
     public int getDistance() {
@@ -53,20 +52,16 @@ public class Section {
 
         if (getDistance() != section.getDistance())
             return false;
-        if (getLineId() != null ? !getLineId().equals(section.getLineId()) : section.getLineId() != null)
+        if (getUpStation() != null ? !getUpStation().equals(section.getUpStation()) : section.getUpStation() != null)
             return false;
-        if (getUpStationId() != null ? !getUpStationId().equals(section.getUpStationId()) :
-            section.getUpStationId() != null)
-            return false;
-        return getDownStationId() != null ? getDownStationId().equals(section.getDownStationId()) :
-            section.getDownStationId() == null;
+        return getDownStation() != null ? getDownStation().equals(section.getDownStation()) :
+            section.getDownStation() == null;
     }
 
     @Override
     public int hashCode() {
-        int result = getLineId() != null ? getLineId().hashCode() : 0;
-        result = 31 * result + (getUpStationId() != null ? getUpStationId().hashCode() : 0);
-        result = 31 * result + (getDownStationId() != null ? getDownStationId().hashCode() : 0);
+        int result = getUpStation() != null ? getUpStation().hashCode() : 0;
+        result = 31 * result + (getDownStation() != null ? getDownStation().hashCode() : 0);
         result = 31 * result + getDistance();
         return result;
     }

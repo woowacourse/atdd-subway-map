@@ -11,9 +11,8 @@ public class FakeSectionDao implements SectionDao {
     private final Map<Long, Section> sections = new HashMap<>();
 
     @Override
-    public Long save(Section section) {
-        Section newSection = new Section(++seq, section.getLineId(), section.getUpStationId(), section.getDownStationId(),
-            section.getDistance());
+    public Long save(Section section, Long lineId) {
+        Section newSection = Section.from(++seq, section);
         sections.put(seq, newSection);
         return seq;
     }

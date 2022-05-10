@@ -2,7 +2,9 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -18,6 +20,17 @@ public class StationDaoImpl implements StationDao {
 
     public StationDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public Optional<Station> findById(Long id) {
+        final String sql = "SELECT id, name FROM STATION WHERE id = ?";
+
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, stationMapper(), id));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     @Override

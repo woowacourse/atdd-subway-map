@@ -8,8 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.domain.Station;
 
 @JdbcTest
 public class SectionDaoImplTest {
@@ -17,22 +18,25 @@ public class SectionDaoImplTest {
     private JdbcTemplate jdbcTemplate;
 
     private SectionDao sectionDao;
+    private LineDao lineDao;
 
     @BeforeEach
     void setUp() {
         sectionDao = new SectionDaoImpl(jdbcTemplate);
+        lineDao = new LineDaoImpl(jdbcTemplate);
     }
 
     @Test
     void save() {
         // given
-        LineRequest lineRequest = new LineRequest("", "", 1L, 2L, 10);
-        Section section = Section.from(1L, lineRequest);
+        Line line = new Line("1호선", "bg-red-600");
+        Long savedLineId = lineDao.save(line);
+        Section section = Section.from(new Station(1L, "강남역"), new Station(2L, "선릉역"), 10);
 
         // when
-        Long savedId = sectionDao.save(section);
+        Long savedSectionId = sectionDao.save(section, savedLineId);
 
         // then
-        assertThat(savedId).isPositive();
+        assertThat(savedSectionId).isPositive();
     }
 }
