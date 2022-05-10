@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
+
 public class Section {
 
     private Long id;
@@ -9,6 +11,12 @@ public class Section {
     private int distance;
 
     public Section() {
+    }
+
+    public Section(Long upStationId, Long downStationId, int distance) {
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
     }
 
     public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
@@ -44,5 +52,58 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean isSameSection(Section section) {
+        return Objects.equals(upStationId, section.getUpStationId())
+            && Objects.equals(downStationId, section.getDownStationId());
+    }
+
+    public boolean isSameUpByDown(Section section) {
+        return Objects.equals(upStationId, section.getDownStationId());
+    }
+
+    public boolean isSameDownByUp(Section section) {
+        return Objects.equals(downStationId, section.getUpStationId());
+    }
+
+    public boolean isSameUpStation(Section section) {
+        return Objects.equals(upStationId, section.getUpStationId());
+    }
+
+    public boolean isSameDownStation(Section section) {
+        return Objects.equals(downStationId, section.getDownStationId());
+    }
+
+    public boolean isLongDistance(Section section) {
+        return distance > section.getDistance();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Section section = (Section) o;
+
+        if (distance != section.distance) {
+            return false;
+        }
+        if (!upStationId.equals(section.upStationId)) {
+            return false;
+        }
+        return downStationId.equals(section.downStationId);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = upStationId.hashCode();
+        result = 31 * result + downStationId.hashCode();
+        result = 31 * result + distance;
+        return result;
     }
 }
