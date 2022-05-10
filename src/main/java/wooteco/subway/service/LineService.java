@@ -4,33 +4,34 @@ import java.util.List;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import wooteco.subway.dao.LineDao;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.LineDto;
 import wooteco.subway.dto.LineEditRequest;
 import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.SectionDto;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.repository.LineRepository;
 import wooteco.subway.repository.SectionRepository;
 import wooteco.subway.repository.StationRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class LineService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
     private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository,
+                       SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
         this.sectionRepository = sectionRepository;
     }
 
+    @Transactional
     public Line save(LineRequest lineRequest) {
         Section section = new Section(stationRepository.findById(lineRequest.getUpStationId()),
                 stationRepository.findById(lineRequest.getDownStationId()), lineRequest.getDistance());
@@ -55,6 +56,7 @@ public class LineService {
         }
     }
 
+    @Transactional
     public void update(Long id, LineEditRequest lineEditRequest) {
         Line line = lineRepository.findById(id);
         line.updateNameAndColor(lineEditRequest.getName(), lineEditRequest.getColor());
@@ -65,6 +67,7 @@ public class LineService {
         }
     }
 
+    @Transactional
     public void addSection(Long id, SectionRequest request) {
         Line line = lineRepository.findById(id);
         Station up = stationRepository.findById(request.getUpStationId());
@@ -92,10 +95,12 @@ public class LineService {
         }
     }
 
+    @Transactional
     public void deleteById(Long id) {
         lineRepository.delete(id);
     }
 
+    @Transactional
     public void deleteSection(Long id, Long stationId) {
         Line line = lineRepository.findById(id);
         Station station = stationRepository.findById(stationId);

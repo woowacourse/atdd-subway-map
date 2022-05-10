@@ -4,10 +4,12 @@ import java.util.List;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
 @Service
+@Transactional(readOnly = true)
 public class StationService {
 
     private final StationDao stationDao;
@@ -16,6 +18,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public Station save(Station station) {
         try {
             return stationDao.save(station);
@@ -36,6 +39,7 @@ public class StationService {
         return stationDao.findAll();
     }
 
+    @Transactional
     public void deleteById(Long id) {
         stationDao.deleteById(id);
     }
