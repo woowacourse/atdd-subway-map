@@ -20,8 +20,10 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -35,20 +37,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void init() {
+        jdbcTemplate.update("delete from STATION", new EmptySqlParameterSource());
         jdbcTemplate.update("delete from LINE", new EmptySqlParameterSource());
-
-        savedId1 = insertData("신분당선", "bg-red-600");
-        savedId2 = insertData("분당선", "bg-green-600");
+        jdbcTemplate.update("delete from SECTION", new EmptySqlParameterSource());
+        insertStationData("강남역");
+        insertStationData("선릉역");
+        savedId1 = insertData("신분당선", "red");
+        savedId2 = insertData("분당선", "yellow");
     }
 
     private Long insertData(String name, String color) {
         String insertSql = "insert into LINE (name, color) values (:name, :color)";
-
         KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource source = new MapSqlParameterSource();
         source.addValue("name", name);
         source.addValue("color", color);
+        jdbcTemplate.update(insertSql, source, keyHolder);
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
 
+    private Long insertStationData(String name) {
+        String insertSql = "insert into STATION (name) values (:name)";
+        SqlParameterSource source = new MapSqlParameterSource("name", name);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(insertSql, source, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
@@ -57,18 +68,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "bg-green-500");
+        LineRequest request = new LineRequest("2호선", "green", 1L, 2L, 10);
+        String path = "/lines";
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = execute(request, path);
 
         // then
         assertAll(
@@ -77,20 +81,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    private ExtractableResponse<Response> execute(LineRequest request, String path) {
+        return RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(path)
+                .then().log().all()
+                .extract();
+    }
+
     @DisplayName("기존에 존재하는 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLineWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        LineRequest request = new LineRequest("신분당선", "red", 1L, 2L, 10);
+        String path = "/lines";
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines")
+                .post(path)
                 .then().log().all()
                 .extract();
 

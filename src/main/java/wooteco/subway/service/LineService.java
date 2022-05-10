@@ -35,6 +35,12 @@ public class LineService {
         return new LineResponse(id, lineRequest.getName(), lineRequest.getColor(), responses);
     }
 
+    private void validDuplicatedLine(String name, String color) {
+        if (lineDao.existByName(name) || lineDao.existByColor(color)) {
+            throw new IllegalArgumentException("중복된 Line 이 존재합니다.");
+        }
+    }
+
     private List<StationResponse> findStationBySection(Section section) {
         List<Station> stations = findBySection(section);
         return stations.stream()
@@ -51,12 +57,6 @@ public class LineService {
     public void update(Long id, LineRequest lineRequest) {
         validDuplicatedLine(lineRequest.getName(), lineRequest.getColor());
         lineDao.update(id, lineRequest);
-    }
-
-    private void validDuplicatedLine(String name, String color) {
-        if (lineDao.existByName(name) || lineDao.existByColor(color)) {
-            throw new IllegalArgumentException("중복된 Line 이 존재합니다.");
-        }
     }
 
     public LineResponse findById(Long id) {
