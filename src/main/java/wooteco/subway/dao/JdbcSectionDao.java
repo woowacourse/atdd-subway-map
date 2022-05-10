@@ -2,9 +2,7 @@ package wooteco.subway.dao;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -46,18 +44,8 @@ public class JdbcSectionDao {
     }
 
 
-    public List<Long> findStationIdsByLineId(long lineId) {
-        List<Long> stationIds = new ArrayList<>();
+    public List<Section> findSectionsByLineId(long lineId) {
         String sql = "select * from section where line_id = ? ";
-        List<Section> sections = jdbcTemplate.query(sql, rowMapper, lineId);
-
-        for (Section section : sections) {
-            stationIds.add(section.getUpStationId());
-            stationIds.add(section.getDownStationId());
-        }
-
-        return stationIds.stream()
-                .distinct()
-                .collect(Collectors.toList());
+        return jdbcTemplate.query(sql, rowMapper, lineId);
     }
 }

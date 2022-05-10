@@ -36,12 +36,16 @@ public class JdbcSectionDaoTest {
     @DisplayName("노선에 포함되는 지하철역들을 조회한다.")
     @Test
     void findStationsByLineId() {
-        jdbcSectionDao.save(1L, new Section(1L, 2L, 7));
-        jdbcSectionDao.save(1L, new Section(1L, 3L, 3));
-        jdbcSectionDao.save(1L, new Section(2L, 3L, 2));
-        jdbcSectionDao.save(1L, new Section(3L, 4L, 4));
-        List<Long> stationIds = jdbcSectionDao.findStationIdsByLineId(1L);
+        Section section1 = new Section(1L, 2L, 7);
+        Section section2 = new Section(1L, 3L, 3);
+        Section section3 = new Section(2L, 3L, 2);
+        Section section4 = new Section(3L, 4L, 4);
+        jdbcSectionDao.save(1L, section1);
+        jdbcSectionDao.save(1L, section2);
+        jdbcSectionDao.save(1L, section3);
+        jdbcSectionDao.save(1L, section4);
+        List<Section> sections = jdbcSectionDao.findSectionsByLineId(1L);
 
-        assertThat(stationIds).containsExactly(1L, 2L, 3L, 4L);
+        assertThat(sections).containsExactly(section1, section2, section3, section4);
     }
 }
