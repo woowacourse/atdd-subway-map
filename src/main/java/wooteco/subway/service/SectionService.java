@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
@@ -69,6 +70,13 @@ public class SectionService {
     private void validateDistance(int distance) {
         if (distance <= 0) {
             throw new IllegalArgumentException("역 사이 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
+        }
+    }
+
+    public void deleteStation(Long lineId, Long stationId) {
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        if (sections.isTerminal(stationId)) {
+            sectionDao.deleteByLineIdAndStationId(lineId, stationId);
         }
     }
 }

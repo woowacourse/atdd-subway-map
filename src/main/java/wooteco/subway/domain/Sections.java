@@ -9,6 +9,8 @@ import java.util.Set;
 
 public class Sections {
 
+    private static final int FIRST_INDEX = 0;
+
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -19,7 +21,7 @@ public class Sections {
         Map<Long, Long> stationsBySection = new HashMap<>();
         sections.forEach(section -> stationsBySection.put(section.getUpStationId(), section.getDownStationId()));
 
-        Long upStationId = getUpStationId(stationsBySection);
+        Long upStationId = findUpStationId(stationsBySection);
 
         List<Long> stations = new ArrayList<>();
         stations.add(upStationId);
@@ -31,7 +33,7 @@ public class Sections {
         return stations;
     }
 
-    private Long getUpStationId(Map<Long, Long> stationsBySection) {
+    private Long findUpStationId(Map<Long, Long> stationsBySection) {
         return stationsBySection.keySet().stream()
                 .filter(key -> !stationsBySection.containsValue(key))
                 .findFirst()
@@ -52,5 +54,22 @@ public class Sections {
             ids.add(section.getDownStationId());
         });
         return new ArrayList<>(ids);
+    }
+
+    public boolean isTerminal(Long stationId) {
+        List<Long> sortedStationId = getSortedStationId();
+        Long upStationId = getUpStationId(sortedStationId);
+        Long downStationId = getDownStationId(sortedStationId);
+
+        return stationId.equals(upStationId) || stationId.equals(downStationId);
+    }
+
+    private Long getUpStationId(List<Long> ids) {
+        return ids.get(FIRST_INDEX);
+    }
+
+    private Long getDownStationId(List<Long> ids) {
+        int lastIndex = ids.size() - 1;
+        return ids.get(lastIndex);
     }
 }
