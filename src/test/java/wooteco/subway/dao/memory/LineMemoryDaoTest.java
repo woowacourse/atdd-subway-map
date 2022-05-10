@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.dao.memory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,7 +11,7 @@ import wooteco.subway.dao.memory.LineMemoryDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.NoSuchLineException;
 
-public class LineDaoTest {
+public class LineMemoryDaoTest {
 
     @BeforeEach
     void setUp() {
