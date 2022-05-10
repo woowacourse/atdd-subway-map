@@ -13,4 +13,9 @@ public class SubwayExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleException(InvalidInputException invalidInputException) {
         return ResponseEntity.badRequest().body(new ExceptionResponse(invalidInputException.getMessage()));
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ExceptionResponse> handleException2(IllegalArgumentException illegalArgumentException) {
+        return ResponseEntity.badRequest().body(new ExceptionResponse(illegalArgumentException.getMessage()));
+    }
 }

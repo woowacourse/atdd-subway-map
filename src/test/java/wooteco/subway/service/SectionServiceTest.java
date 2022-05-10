@@ -1,24 +1,27 @@
 package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.FakeSectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.exception.section.DuplicatedSectionException;
+import wooteco.subway.exception.section.NonexistentSectionStationException;
+import wooteco.subway.exception.section.SectionLengthExcessException;
 
 public class SectionServiceTest {
 
     private SectionService sectionService;
-    private Section section;
-    private Sections sections;
 
     @BeforeEach
     void setUp() {
         sectionService = new SectionService(new FakeSectionDao());
-        section = sectionService.save(new Section(1L, 1L, 2L, 10));
+        sectionService.save(new Section(1L, 1L, 2L, 10));
     }
 
     @DisplayName("새로운 구간을 추가한다.")
@@ -27,6 +30,102 @@ public class SectionServiceTest {
         Section newSection = new Section(1L, 2L, 3L, 5);
 
         assertThat(sectionService.save(newSection).getUpStationId()).isEqualTo(2L);
+    }
+
+    @DisplayName("새로 등록할 구간의 하행역이 이미 노선의 상행 종착역 으로 등록되어 있으면, 상행 종점으로 등록한다.")
+    @Test
+    void save_upStation() {
+        Section newSection = new Section(1L, 3L, 1L, 5);
+
+        assertThat(sectionService.save(newSection).getUpStationId()).isEqualTo(3L);
+    }
+
+    @DisplayName("새로 등록할 구간의 상행역이 이미 노선의 하행 종착역으로 등록되어 있으면, 하행 종점으로 등록한다.")
+    @Test
+    void save_downStation() {
+        Section newSection = new Section(1L, 2L, 3L, 5);
+
+        assertThat(sectionService.save(newSection).getDownStationId()).isEqualTo(3L);
+    }
+
+    @DisplayName("존재하는 상행역이 같으면, 기존 구간의 상핵역을 새로 등록할 구간의 하행역으로 변경한다.")
+    @Test
+    void save_changeExistingSectionUpStation() {
+        Section newSection = new Section(1L, 1L, 4L, 3);
+
+        sectionService.save(newSection);
+
+        List<Section> sections = sectionService.findByLineId(1L);
+
+        Section targetSection = sections.stream()
+                .filter(section -> section.getId().equals(1L))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+
+        assertThat(targetSection.getUpStationId()).isEqualTo(4L);
+    }
+
+    @DisplayName("존재하는 하행역이 같으면, 기존 구간의 하행역을 새로 등록할 구간의 상행역으로 변경한다.")
+    @Test
+    void save_changeExistingSectionDownStation() {
+        Section newSection = new Section(1L, 4L, 2L, 3);
+
+        sectionService.save(newSection);
+
+        List<Section> sections = sectionService.findByLineId(1L);
+
+        Section targetSection = sections.stream()
+                .filter(section -> section.getId().equals(1L))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+
+        assertThat(targetSection.getDownStationId()).isEqualTo(4L);
+    }
+
+    @DisplayName("새로운 구간의 길이가 기존 역 사이 길이보다 크거나 같으면 예외가 발생한다.")
+    @Test
+    void save_distanceException() {
+        Section newSection = new Section(1L, 4L, 2L, 10);
+
+        assertThatThrownBy(() -> sectionService.save(newSection))
+                .isInstanceOf(SectionLengthExcessException.class);
+    }
+
+    @DisplayName("새로운 구간의 상행역과 하행역이 이미 노선에 등록되어 있는 경우, 추가할 수 없다. A-B")
+    @Test
+    void save_duplicateSection1() {
+        Section newSection = new Section(1L, 1L, 2L, 10);
+
+        assertThatThrownBy(() -> sectionService.save(newSection))
+                .isInstanceOf(DuplicatedSectionException.class);
+    }
+
+    @DisplayName("새로운 구간의 상행역과 하행역이 이미 노선에 등록되어 있는 경우, 추가할 수 없다. A-B-C인 경우, A-C 등록")
+    @Test
+    void save_duplicateSection2() {
+        sectionService.save(new Section(1L, 2L, 3L, 10));
+        Section newSection = new Section(1L, 1L, 3L, 10);
+
+        assertThatThrownBy(() -> sectionService.save(newSection))
+                .isInstanceOf(DuplicatedSectionException.class);
+    }
+
+    @DisplayName("새로운 구간의 상행역과 하행역이 이미 노선에 등록되어 있는 경우, 추가할 수 없다. A-B인 경우, B-A 등록")
+    @Test
+    void save_duplicateSection3() {
+        Section newSection = new Section(1L, 2L, 1L, 10);
+
+        assertThatThrownBy(() -> sectionService.save(newSection))
+                .isInstanceOf(DuplicatedSectionException.class);
+    }
+
+    @DisplayName("상행역과 하행 둘 중 하나도 포함되어 있지 않으면 추가할 수 없다.")
+    @Test
+    void save_unExistingException() {
+        Section newSection = new Section(1L, 5L, 6L, 10);
+
+        assertThatThrownBy(() -> sectionService.save(newSection))
+                .isInstanceOf(NonexistentSectionStationException.class);
     }
 
     @DisplayName("lineId에 해당되는 모든 구간들을 반환한다.")
@@ -40,7 +139,7 @@ public class SectionServiceTest {
         assertThat(sections.getSections()).hasSize(2);
     }
 
-    @DisplayName("lineId에 해당되는 모든 구간들을 반환한다.")
+    @DisplayName("lineId에 해당되는 구간들을 변경한다.")
     @Test
     void update() {
         Section newSection = new Section(1L, 2L, 3L, 5);
@@ -49,6 +148,17 @@ public class SectionServiceTest {
         Sections sections = new Sections(sectionService.findByLineId(1L), 1L);
 
         assertThat(sections.getSections()).hasSize(2);
+    }
+
+    @DisplayName("lineId에 해당되는 station id들을 반환한다.")
+    @Test
+    void findStationIdsByLineId() {
+        Section newSection = new Section(1L, 2L, 3L, 5);
+        sectionService.save(newSection);
+
+        List<Long> stationIds = sectionService.findStationIdsByLineId(1L);
+
+        assertThat(stationIds).contains(1L, 2L, 3L);
     }
 
 }

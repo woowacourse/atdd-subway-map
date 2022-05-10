@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.section.DuplicatedSectionException;
+import wooteco.subway.exception.section.NonexistentSectionStationException;
+import wooteco.subway.exception.section.SectionLengthExcessException;
 
 class SectionsTest {
-
 
     @DisplayName("초기 구간을 입력 받아 구간들을 생성한다.")
     @Test
@@ -40,7 +42,7 @@ class SectionsTest {
         Section newSection = new Section(1L, 1L, 2L, 10);
 
         assertThatThrownBy(() -> sections.validateAddable(newSection))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(DuplicatedSectionException.class);
     }
 
     @DisplayName("입력받은 구간에 대해 같은 구간이 존재할 때에 예외가 발생한다.")
@@ -51,7 +53,7 @@ class SectionsTest {
         Section newSection = new Section(1L, 4L, 2L, 10);
 
         assertThatThrownBy(() -> sections.validateAddable(newSection))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(DuplicatedSectionException.class);
     }
 
     @DisplayName("입력받은 구간에 대해 상행역과 하행역 모두 구간들에 포함되어 있지 않으면 예외가 발생한다.")
@@ -62,7 +64,7 @@ class SectionsTest {
         Section newSection = new Section(1L, 5L, 6L, 10);
 
         assertThatThrownBy(() -> sections.validateAddable(newSection))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(NonexistentSectionStationException.class);
     }
 
     @DisplayName("입력받은 구간에 대해 같은 상행역이 존재하는 경우 구간 변경이 필요하다.")
@@ -122,5 +124,15 @@ class SectionsTest {
         assertThat(sections.findUpdatingSection(newSection).getUpStationId()).isEqualTo(2L);
         assertThat(sections.findUpdatingSection(newSection).getDownStationId()).isEqualTo(4L);
         assertThat(sections.findUpdatingSection(newSection).getDistance()).isEqualTo(3);
+    }
+
+    @DisplayName("새로운 구간의 길이가 기존 역 사이 길이보다 크거나 같으면 예외가 발생한다.")
+    @Test
+    void findUpdatingSection_exception() {
+        Sections sections = new Sections(new ArrayList<>(List.of(new Section(1L, 1L, 2L, 10),
+                new Section(1L, 2L, 3L, 5))), 1L);
+
+        assertThatThrownBy(() -> sections.findUpdatingSection(new Section(1L, 4L, 3L, 5)))
+                .isInstanceOf(SectionLengthExcessException.class);
     }
 }

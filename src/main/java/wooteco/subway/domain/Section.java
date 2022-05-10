@@ -23,6 +23,30 @@ public class Section {
         this.distance = distance;
     }
 
+    public boolean hasSameUpStation(Section section) {
+        return this.upStationId.equals(section.upStationId);
+    }
+
+    public boolean hasSameDownStation(Section section) {
+        return this.downStationId.equals(section.downStationId);
+    }
+
+    public boolean isSameUpStationId(Long upStationId) {
+        return this.upStationId.equals(upStationId);
+    }
+
+    public boolean isSameDownStationId(Long downStationId) {
+        return this.downStationId.equals(downStationId);
+    }
+
+    public boolean isGreaterOrEqualDistanceThan(Section section) {
+        return this.distance >= section.distance;
+    }
+
+    public int calculateDistanceDifference(Section section) {
+        return this.distance - section.distance;
+    }
+
     public Long getId() {
         return id;
     }
@@ -41,31 +65,5 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    public boolean hasSameUpStation(Section section) {
-        return this.upStationId.equals(section.upStationId);
-    }
-
-    public boolean hasSameDownStation(Section section) {
-        return this.downStationId.equals(section.downStationId);
-    }
-
-    public boolean hasAnySameStation(Section section) {
-        return hasSameDownStation(section)
-                || hasSameDownStation(section)
-                || this.upStationId.equals(section.downStationId)
-                || this.downStationId.equals(section.upStationId);
-    }
-
-    @Override
-    public String toString() {
-        return "Section{" +
-                "id=" + id +
-                ", lineId=" + lineId +
-                ", upStationId=" + upStationId +
-                ", downStationId=" + downStationId +
-                ", distance=" + distance +
-                '}';
     }
 }
