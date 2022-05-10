@@ -67,7 +67,7 @@ class StationDaoTest {
     }
 
     @Test
-    @DisplayName("id 를 이용하여 station을 삭제한다.")
+    @DisplayName("id 를 이용하여 station 을 삭제한다.")
     void deleteById() {
         //given
 

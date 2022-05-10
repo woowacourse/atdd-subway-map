@@ -42,13 +42,17 @@ public class Sections {
     }
 
     public void validNonLinkSection(SectionRequest sectionRequest) {
-        long linkedSectionCount = sections.stream()
-                .filter(section -> section.getUpStationId().equals(sectionRequest.getDownStationId())
-                        || section.getDownStationId().equals(sectionRequest.getUpStationId()))
-                .count();
+        long linkedSectionCount = countLinkedSection(sectionRequest);
         if (linkedSectionCount == 0) {
             throw new IllegalArgumentException("연결할 section 이 존재하지 않습니다.");
         }
+    }
+
+    public long countLinkedSection(SectionRequest sectionRequest) {
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(sectionRequest.getDownStationId())
+                        || section.getDownStationId().equals(sectionRequest.getUpStationId()))
+                .count();
     }
 
     public void validSameStations(SectionRequest sectionRequest) {
@@ -65,14 +69,24 @@ public class Sections {
         sections.stream()
                 .filter(s -> s.getUpStationId().equals(sectionRequest.getUpStationId()))
                 .findFirst()
-                .ifPresent(section1 -> {
-                    validSectionDistance(sectionRequest, section1);
-                });
+                .ifPresent(section1 -> validSectionDistance(sectionRequest, section1));
     }
 
     private void validSectionDistance(SectionRequest sectionRequest, Section section) {
         if (section.getDistance() <= sectionRequest.getDistance()) {
             throw new IllegalArgumentException("추가될 구간의 길이가 기존 구간의 길이보다 깁니다.");
         }
+    }
+
+    public Optional<Section> findUpSection(SectionRequest sectionRequest) {
+        return sections.stream()
+                .filter(section -> section.getDownStationId().equals(sectionRequest.getUpStationId()))
+                .findFirst();
+    }
+
+    public Optional<Section> findDownSection(SectionRequest sectionRequest) {
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(sectionRequest.getDownStationId()))
+                .findFirst();
     }
 }

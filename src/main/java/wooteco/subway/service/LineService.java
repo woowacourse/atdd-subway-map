@@ -18,6 +18,7 @@ import wooteco.subway.dto.StationResponse;
 @Service
 public class LineService {
 
+    public static final int midPointCount = 2;
     private final StationDao stationDao;
     private final LineDao lineDao;
     private final SectionDao sectionDao;
@@ -57,12 +58,22 @@ public class LineService {
     }
 
     public void saveSection(Long lineId, SectionRequest sectionRequest) {
-        validSection(lineId, sectionRequest);
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        validSection(sections, sectionRequest);
+        if (sections.countLinkedSection(sectionRequest) == midPointCount) {
+            processBiDirectionSection(sectionRequest, sections);
+        }
         sectionDao.save(new Section(lineId, sectionRequest));
     }
 
-    private void validSection(Long lineId, SectionRequest sectionRequest) {
-        Sections sections = new Sections(sectionDao.findByLineId(lineId));
+    private void processBiDirectionSection(SectionRequest sectionRequest, Sections sections) {
+        sections.findUpSection(sectionRequest)
+                .ifPresent(section -> sectionDao.deleteById(section.getId()));
+        sections.findDownSection(sectionRequest).ifPresent(section -> sectionDao.updateDistanceById(section.getId(),
+                section.getDistance() - sectionRequest.getDistance()));
+    }
+
+    private void validSection(Sections sections, SectionRequest sectionRequest) {
         sections.validSameStations(sectionRequest);
         sections.validNonLinkSection(sectionRequest);
         sections.validExistingSectionDistance(sectionRequest);

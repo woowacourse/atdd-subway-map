@@ -42,4 +42,17 @@ public class SectionDao {
         SqlParameterSource source = new MapSqlParameterSource("lineId", lineId);
         return jdbcTemplate.query(selectSql, source, eventRowMapper);
     }
+
+    public void updateDistanceById(Long id, int distance) {
+        String updateSql = "update SECTION set distance=:distance where id=:id";
+        MapSqlParameterSource source = new MapSqlParameterSource("id", id);
+        source.addValue("distance", distance);
+        jdbcTemplate.update(updateSql, source);
+    }
+
+    public void deleteById(Long id) {
+        String deleteSql = "delete from SECTION where id=:id";
+        SqlParameterSource source = new MapSqlParameterSource("id", id);
+        jdbcTemplate.update(deleteSql, source);
+    }
 }

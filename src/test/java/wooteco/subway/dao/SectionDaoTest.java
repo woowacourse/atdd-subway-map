@@ -15,6 +15,9 @@ import wooteco.subway.domain.Section;
 @JdbcTest
 class SectionDaoTest {
 
+    private Long savedId1;
+    private final long lineId = 1L;
+
     private SectionDao sectionDao;
 
     @Autowired
@@ -23,12 +26,12 @@ class SectionDaoTest {
     @BeforeEach
     void setUp() {
         sectionDao = new SectionDao(jdbcTemplate);
-        sectionDao.save(new Section(1L, 1L, 2L, 10));
-        sectionDao.save(new Section(1L, 2L, 3L, 5));
+        savedId1 = sectionDao.save(new Section(lineId, 1L, 2L, 10));
+        sectionDao.save(new Section(lineId, 2L, 3L, 5));
     }
 
-    @Test
     @DisplayName("section 을 저장한다.")
+    @Test
     void save() {
         //given
         Section section = new Section(1L, 1L, 2L, 10);
@@ -38,21 +41,49 @@ class SectionDaoTest {
         assertThat(sectionId).isNotNull();
     }
 
+    @DisplayName("Line_id 를 이용하여 section 을 조회한다.")
     @Test
-    @DisplayName("Line-id 를 이용하여 section 을 조회한다.")
     void findByLineId() {
         //given
         Long lineId = 1L;
         //when
         List<Section> sections = sectionDao.findByLineId(lineId);
+        //then
         long expectedIdCount = sections.stream()
                 .filter(section -> section.getLineId().equals(lineId))
                 .count();
-        //then
         assertAll(
                 () -> assertThat(sections.size()).isEqualTo(2),
                 () -> assertThat(expectedIdCount).isEqualTo(2)
         );
+    }
+
+    @DisplayName("id 를 이용하여 distance 를 수정한다.")
+    @Test
+    void updateDistanceById() {
+        //given
+        int updateDistance = 1;
+        //when
+        sectionDao.updateDistanceById(savedId1, updateDistance);
+        //then
+        List<Section> sections = sectionDao.findByLineId(lineId);
+        sections.stream()
+                .filter(section -> section.getId().equals(savedId1))
+                .findFirst()
+                .ifPresent(section -> assertThat(section.getDistance()).isEqualTo(updateDistance));
+
+    }
+
+    @DisplayName("id 를 이용하여 section 을 삭제한다.")
+    @Test
+    void deleteById() {
+        //given
+
+        //when
+        sectionDao.deleteById(savedId1);
+        //then
+        List<Section> sections = sectionDao.findByLineId(lineId);
+        assertThat(sections.size()).isEqualTo(1);
     }
 
 }
