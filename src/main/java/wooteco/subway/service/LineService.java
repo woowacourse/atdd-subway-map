@@ -99,7 +99,9 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteById(Long id) {
         lineDao.deleteById(id);
+        sectionDao.deleteByLineId(id);
     }
 }
