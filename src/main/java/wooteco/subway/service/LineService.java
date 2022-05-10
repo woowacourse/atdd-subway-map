@@ -46,13 +46,12 @@ public class LineService {
     }
 
     public LineResponse showById(Long lineId) {
-        Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
-        return LineResponse.of(findLineBy(lineId), sections.getStations());
+        return LineResponse.of(findLineBy(lineId), getStations(lineId));
     }
 
     public List<LineResponse> showAll() {
         return lineDao.findAll().stream()
-            .map(LineResponse::from)
+            .map(line -> LineResponse.of(line, getStations(line.getId())))
             .collect(Collectors.toList());
     }
 
@@ -70,6 +69,11 @@ public class LineService {
     private Line findLineBy(Long id) {
         return lineDao.findById(id)
             .orElseThrow(() -> new NotFoundException("조회하려는 id가 존재하지 않습니다."));
+    }
+
+    private List<Station> getStations(Long lineId) {
+        Sections sections = new Sections(toSections(sectionDao.findByLineId(lineId)));
+        return sections.getStations();
     }
 
     private void validateDuplicateNameAndColor(String name, String color) {
