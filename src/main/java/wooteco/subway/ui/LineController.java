@@ -33,18 +33,17 @@ public class LineController {
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<LineResponse>> showLines() {
+    public List<LineResponse> showLines() {
         final List<Line> lines = lineService.findAll();
-        final List<LineResponse> lineResponses = lines.stream()
+        return lines.stream()
                 .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), sectionService.getBothOfStations(it.getSection())))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping("/lines/{id}")
-    public ResponseEntity<LineResponse> searchLine(@PathVariable final Long id) {
+    public LineResponse searchLine(@PathVariable final Long id) {
         final Line line = lineService.findById(id);
-        return ResponseEntity.ok().body(new LineResponse(line.getId(), line.getName(), line.getColor(), sectionService.getBothOfStations(line.getSection())));
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), sectionService.getBothOfStations(line.getSection()));
     }
 
     @PutMapping("/lines/{id}")

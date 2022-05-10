@@ -28,12 +28,12 @@ public class StationController {
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<StationResponse>> showStations() {
+    public List<StationResponse> showStations() {
         final List<Station> stations = stationService.findAll();
         final List<StationResponse> stationResponses = stations.stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationResponses);
+        return stationResponses;
     }
 
     @DeleteMapping("/stations/{id}")

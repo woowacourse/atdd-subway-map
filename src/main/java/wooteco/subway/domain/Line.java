@@ -1,8 +1,5 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Line {
     private Long id;
     private String name;
