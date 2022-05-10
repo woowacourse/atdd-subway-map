@@ -60,6 +60,7 @@ public class SectionService {
     @Transactional
     public void delete(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        sections.validateSize();
         Sections sectionsToDelete = sections.getByStationId(stationId);
 
         for (Section section : sectionsToDelete.getSections()) {

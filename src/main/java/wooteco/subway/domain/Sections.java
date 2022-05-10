@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 public class Sections {
     private static final int MERGE_SECTION_SIZE = 2;
     private static final int LAST_STATION_SIZE = 1;
+    public static final int ONE_SECTION = 1;
 
     private final List<Section> sections;
 
@@ -94,5 +95,11 @@ public class Sections {
         return sections.stream()
                 .mapToInt(Section::getDistance)
                 .sum();
+    }
+
+    public void validateSize() {
+        if (sections.size() == ONE_SECTION) {
+            throw new IllegalArgumentException("구간이 하나인 경우에는 삭제할 수 없습니다.");
+        }
     }
 }
