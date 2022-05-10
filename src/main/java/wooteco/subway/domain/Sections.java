@@ -33,7 +33,19 @@ public class Sections {
                     section1.getDistance() - section.getDistance()));
             return;
         }
-        sections.add(section);
+        if (sections.stream()
+                .anyMatch(it -> it.getDownStation().equals(section.getDownStation()))) {
+            final Section section1 = sections.stream()
+                    .filter(it -> it.getDownStation().equals(section.getDownStation()))
+                    .findFirst()
+                    .orElseThrow();
+            sections.remove(section1);
+            sections.add(new Section(section1.getUpStation(), section.getUpStation(), section1.getDistance() - section
+                    .getDistance()));
+            sections.add(section);
+            return;
+        }
+//        sections.add(section);
     }
 
     public List<Station> getStations() {
