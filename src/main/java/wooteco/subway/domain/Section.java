@@ -5,7 +5,6 @@ import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.SectionResult;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public class Section {

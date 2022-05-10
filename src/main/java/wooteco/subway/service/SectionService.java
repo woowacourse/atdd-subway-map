@@ -5,9 +5,9 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.dto.SectionResult;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.dto.SectionResult;
 
 import java.util.List;
 

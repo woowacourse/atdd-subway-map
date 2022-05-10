@@ -318,10 +318,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("downStationId", downStationId);
         params.put("distance", distance);
 
-        return post("/lines/"+lineId+"/sections", params);
+        return post("/lines/" + lineId + "/sections", params);
     }
 
     private ExtractableResponse<Response> deleteSection(Long lineId, Long stationId) {
-        return deleteWithQueryParam("/lines/"+lineId+"/sections", stationId);
+        return deleteWithQueryParam("/lines/" + lineId + "/sections", stationId);
     }
 }

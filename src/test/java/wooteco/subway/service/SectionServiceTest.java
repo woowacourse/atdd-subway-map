@@ -91,5 +91,4 @@ public class SectionServiceTest extends ServiceTest {
         assertThat(stationIds.size()).isEqualTo(6);
         assertThat(stationIds).isEqualTo(List.of(1L, 2L, 3L, 4L, 6L, 7L));
     }
-
 }
