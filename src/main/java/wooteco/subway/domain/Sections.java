@@ -30,24 +30,25 @@ public class Sections {
 
     private void validateSameSection(Section requestSection) {
         final boolean isSameSection = sections.stream()
-                .anyMatch(section -> section.getUpStationId().equals(requestSection.getUpStationId())
-                        && section.getDownStationId().equals(requestSection.getDownStationId()));
+                .anyMatch(section -> section.isSameUpStationId(requestSection)
+                        && section.isSameDownStationId(requestSection));
+
         if (isSameSection) {
             throw new IllegalArgumentException("이미 연결되어 있는 구간입니다.");
         }
     }
 
     private void validateDuplicateSection(Section requestSection) {
-        if (requestSection.getUpStationId().equals(requestSection.getDownStationId())) {
+        if (requestSection.isSameStation(requestSection)) {
             throw new IllegalArgumentException("같은 역은 등록할 수 없습니다.");
         }
     }
 
     private void validateIncludeSection(Section requestSection) {
         final boolean isExistUpStation = sections.stream()
-                .anyMatch(section -> section.getDownStationId().equals(requestSection.getDownStationId()));
+                .anyMatch(section -> section.isSameDownStationId(requestSection));
         final boolean isExistDownStation = sections.stream()
-                .anyMatch(section -> section.getUpStationId().equals(requestSection.getUpStationId()));
+                .anyMatch(section -> section.isSameUpStationId(requestSection));
 
         if (isExistUpStation == true && isExistDownStation == true) {
             throw new IllegalArgumentException("이미 연결되어 있는 구간입니다.");
@@ -82,12 +83,12 @@ public class Sections {
 
     private boolean isMiddleUpSection(Section requestSection) {
         return sections.stream()
-                .anyMatch(section -> section.getUpStationId().equals(requestSection.getUpStationId()));
+                .anyMatch(section -> section.isSameUpStationId(requestSection));
     }
 
     private boolean isMiddleDownSection(Section requestSection) {
         return sections.stream()
-                .anyMatch(section -> section.getDownStationId().equals(requestSection.getDownStationId()));
+                .anyMatch(section -> section.isSameDownStationId(requestSection));
     }
 
     private void saveMiddleUpSection(Section requestSection) {
@@ -124,8 +125,8 @@ public class Sections {
 
     private Section findIncludedSection(Section requestSection) {
         final Section findSection = sections.stream()
-                .filter(section -> section.getDownStationId().equals(requestSection.getDownStationId())
-                        || section.getUpStationId().equals(requestSection.getUpStationId()))
+                .filter(section -> section.isSameDownStationId(requestSection)
+                        || section.isSameUpStationId(requestSection))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구역입니다."));
         return findSection;

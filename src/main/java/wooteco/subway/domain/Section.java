@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
+
 public class Section {
 
     private static final int DISTANCE_MINIMUM = 0;
@@ -27,6 +29,18 @@ public class Section {
         if (distance <= DISTANCE_MINIMUM) {
             throw new IllegalArgumentException("거리는 0이하의 값을 설정할 수 없습니다.");
         }
+    }
+
+    public boolean isSameUpStationId(Section otherSection) {
+        return Objects.equals(this.upStationId, otherSection.upStationId);
+    }
+
+    public boolean isSameDownStationId(Section otherSection) {
+        return Objects.equals(this.downStationId, otherSection.downStationId);
+    }
+
+    public boolean isSameStation(Section requestSection) {
+        return Objects.equals(this.upStationId, requestSection.downStationId);
     }
 
     public Long getId() {
