@@ -42,7 +42,7 @@ class LineServiceTest {
             .hasMessage("이미 해당 이름의 노선이 있습니다.");
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("모든 지하철 노선들을 조회한다.")
     @Test
     void findAll() {
         Line line = new Line("신분당선", "red", 1L, 2L, 10);
@@ -51,6 +51,15 @@ class LineServiceTest {
         lineService.save(line2);
 
         assertThat(lineService.findAll()).hasSize(2);
+    }
+
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void find() {
+        Line line = new Line("신분당선", "red", 1L, 2L, 10);
+        Line savedLine = lineService.save(line);
+
+        assertThat(lineService.findById(savedLine.getId()).getName()).isEqualTo("신분당선");
     }
 
     @DisplayName("지하철 노선을 수정한다.")

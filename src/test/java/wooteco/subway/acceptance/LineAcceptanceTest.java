@@ -91,7 +91,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("모든 지하철 노선들을 조회한다.")
     @Test
     void getStations() {
         stationDao.save(new Station("강남역"));
@@ -127,6 +127,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .map(it -> it.getId())
             .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void getStation() {
+        stationDao.save(new Station("강남역"));
+        stationDao.save(new Station("선릉역"));
+
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "신분당선");
+        params1.put("color", "bg-red-600");
+        params1.put("upStationId", "1");
+        params1.put("downStationId", "2");
+        params1.put("distance", "10");
+        ExtractableResponse<Response> createResponse1 = givenLineRequest(params1);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines/1")
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 수정한다.")

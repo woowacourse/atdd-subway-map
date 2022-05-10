@@ -56,6 +56,16 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponses);
     }
 
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+        Line line = lineService.findById(id);
+        List<Station> stations = sectionService.findAllStationIdByLineId(line.getId()).stream()
+            .map(stationService::findById)
+            .collect(Collectors.toList());
+        LineResponse lineResponse = LineResponse.of(line, stations);
+        return ResponseEntity.ok().body(lineResponse);
+    }
+
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> putLines(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line line = lineRequest.toEntity();
