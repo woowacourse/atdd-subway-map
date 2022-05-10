@@ -57,6 +57,6 @@ public class JdbcSectionDao implements SectionDao {
     public List<Section> findByLineId(Long id) {
         String sql = "SELECT * FROM `section` WHERE id = ?";
 
-        return jdbcTemplate.query(sql, SECTION_ROW_MAPPER);
+        return jdbcTemplate.query(sql, SECTION_ROW_MAPPER, id);
     }
 }

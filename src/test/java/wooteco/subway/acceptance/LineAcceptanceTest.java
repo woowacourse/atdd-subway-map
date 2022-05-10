@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
 
 @DisplayName("노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
@@ -22,7 +24,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 등록한다.")
     void createLine() {
         // given
-        final LineRequest params = new LineRequest("신분당선", "bg-red-600");
+        final Long upStationId = extractStationIdFromName("지하철역");
+        final Long downStationId = extractStationIdFromName("새로운지하철역");
+
+        final LineRequest params = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 10);
 
         // when
         ExtractableResponse<Response> response = AcceptanceFixture.post(params, "/lines");
@@ -38,7 +43,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
     void createLineWithDuplicateName() {
         // given
-        final LineRequest params = new LineRequest("신분당선", "bg-red-600");
+        final Long upStationId = extractStationIdFromName("지하철역");
+        final Long downStationId = extractStationIdFromName("새로운지하철역");
+
+        final LineRequest params = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 10);
         AcceptanceFixture.post(params, "/lines");
 
         // when
@@ -52,10 +60,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 전체를 조회한다.")
     void getLines() {
         // given
-        final LineRequest params1 = new LineRequest("신분당선", "bg-red-600");
+        final Long upStationId = extractStationIdFromName("지하철역");
+        final Long downStationId = extractStationIdFromName("새로운지하철역");
+        final Long anotherDownStationId = extractStationIdFromName("또다른지하철역");
+
+        final LineRequest params1 = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 10);
         ExtractableResponse<Response> createResponse1 = AcceptanceFixture.post(params1, "/lines");
 
-        final LineRequest params2 = new LineRequest("분당선", "br-green-600");
+        final LineRequest params2 = new LineRequest("분당선", "br-green-600", upStationId, anotherDownStationId, 10);
         ExtractableResponse<Response> createResponse2 = AcceptanceFixture.post(params2, "/lines");
 
         // when
@@ -77,7 +89,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 조회한다.")
     void getLine() {
         // given
-        final LineRequest params = new LineRequest("신분당선", "bg-red-600");
+        final Long upStationId = extractStationIdFromName("지하철역");
+        final Long downStationId = extractStationIdFromName("새로운지하철역");
+
+        final LineRequest params = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 10);
 
         ExtractableResponse<Response> param = AcceptanceFixture.post(params, "/lines");
         final String savedId = param.header("Location").split("/")[2];
@@ -98,7 +113,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존 노선의 이름과 색상을 변경할 수 있다.")
     void updateById() {
         // given
-        final LineRequest params = new LineRequest("신분당선", "bg-red-600");
+        final Long upStationId = extractStationIdFromName("지하철역");
+        final Long downStationId = extractStationIdFromName("새로운지하철역");
+
+        final LineRequest params = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 10);
 
         ExtractableResponse<Response> param = AcceptanceFixture.post(params, "/lines");
         final String savedId = param.header("Location").split("/")[2];
@@ -118,7 +136,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존 노선을 삭제할 수 있다.")
     void deleteById() {
         // given
-        final LineRequest params = new LineRequest("신분당선", "bg-red-600");
+        final Long upStationId = extractStationIdFromName("지하철역");
+        final Long downStationId = extractStationIdFromName("새로운지하철역");
+
+        final LineRequest params = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 10);
 
         ExtractableResponse<Response> param = AcceptanceFixture.post(params, "/lines");
         final String savedId = param.header("Location").split("/")[2];
@@ -140,5 +161,14 @@ class LineAcceptanceTest extends AcceptanceTest {
         return response.jsonPath().getList(".", LineResponse.class).stream()
                 .map(LineResponse::getId)
                 .collect(toList());
+    }
+
+    private Long extractStationIdFromName(String name) {
+        final StationRequest stationRequest = new StationRequest(name);
+        final ExtractableResponse<Response> stationResponse = AcceptanceFixture.post(stationRequest, "/stations");
+
+        return stationResponse.jsonPath()
+                .getObject(".", StationResponse.class)
+                .getId();
     }
 }
