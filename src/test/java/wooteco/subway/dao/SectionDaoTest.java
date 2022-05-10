@@ -19,6 +19,18 @@ class SectionDaoTest extends DaoTest {
     private SectionDao dao;
 
     @Test
+    void findAll_메서드는_모든_구간_데이터를_조회() {
+        List<SectionEntity> actual = dao.findAll();
+
+        List<SectionEntity> expected = List.of(
+                new SectionEntity(1L, 1L, 1L, 2L, 10),
+                new SectionEntity(2L, 1L, 2L, 3L, 5),
+                new SectionEntity(3L, 2L, 1L, 3L, 10));
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     void findAllByLineId_메서드는_lineId에_해당하는_모든_구간_데이터를_조회() {
         List<SectionEntity> actual = dao.findAllByLineId(1L);
 
@@ -36,9 +48,9 @@ class SectionDaoTest extends DaoTest {
 
         @Test
         void 중복되지_않는_정보인_경우_생성된_섹션_반환() {
-            SectionEntity actual = dao.save(new SectionEntity(1L, 3L, 1L, 10));
+            SectionEntity actual = dao.save(new SectionEntity(3L, 3L, 1L, 10));
 
-            SectionEntity expected = new SectionEntity(3L, 1L, 3L, 1L, 10);
+            SectionEntity expected = new SectionEntity(4L, 3L, 3L, 1L, 10);
 
             assertThat(actual).isEqualTo(expected);
         }
@@ -80,8 +92,8 @@ class SectionDaoTest extends DaoTest {
         void deleteByLineIdAndDownStationId_메서드는_노선에서_하행역에_해당되는_데이터를_삭제() {
             dao.deleteByLineIdAndDownStationId(1L, 3L);
 
-            boolean exists = jdbcTemplate.queryForObject(
-                    "SELECT COUNT(*) FROM section WHERE id = 3", Integer.class) > 0;
+            boolean exists = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM section "
+                    + "WHERE line_id = 1 AND id = 3", Integer.class) > 0;
 
             assertThat(exists).isFalse();
         }
