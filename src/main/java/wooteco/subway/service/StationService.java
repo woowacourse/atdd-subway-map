@@ -7,6 +7,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.DataNotFoundException;
 
 @Service
 public class StationService {
@@ -44,7 +45,7 @@ public class StationService {
 
     private void validateExistence(Long id) {
         if (!stationDao.existById(id)) {
-            throw new IllegalArgumentException("존재하지 않는 지하철 역입니다.");
+            throw new DataNotFoundException("존재하지 않는 지하철 역입니다.");
         }
     }
 }

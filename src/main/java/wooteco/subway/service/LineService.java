@@ -7,6 +7,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.DataNotFoundException;
 
 @Service
 public class LineService {
@@ -52,7 +53,7 @@ public class LineService {
 
     private void validateExistence(Long id) {
         if (!lineDao.existById(id)) {
-            throw new IllegalArgumentException("존재하지 않는 지하철 노선 id입니다.");
+            throw new DataNotFoundException("존재하지 않는 지하철 노선입니다.");
         }
     }
 
