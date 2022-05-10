@@ -47,20 +47,20 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
-    @GetMapping
-    public ResponseEntity<List<LineResponse>> findLines() {
-        List<LineEntity> lines = lineService.findAll();
-        List<LineResponse> lineResponses = lines.stream()
-            .map(LineResponse::new)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok().body(lineResponses);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
         LineEntity line = lineService.findById(id);
         List<StationEntity> stations = sectionService.findStationsByLineId(id);
         return ResponseEntity.ok().body(new LineResponse(line, stations));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<LineResponse>> findLines() {
+        List<LineEntity> lines = lineService.findAll();
+        List<LineResponse> lineResponses = lines.stream()
+            .map(line -> new LineResponse(line, sectionService.findStationsByLineId(line.getId())))
+            .collect(Collectors.toList());
+        return ResponseEntity.ok().body(lineResponses);
     }
 
     @PutMapping("/{id}")

@@ -40,8 +40,8 @@ public class JdbcSectionDao implements SectionDao {
 
     @Override
     public List<SectionEntity> findByLineId(Long lineId) {
-        String sql = "select * from section";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> createSection(rs));
+        String sql = "select * from section where line_id = ?";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> createSection(rs), lineId);
     }
 
     private SectionEntity createSection(ResultSet rs) throws SQLException {

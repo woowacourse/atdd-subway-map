@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -107,7 +106,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @Disabled
     @Test
     @DisplayName("모든 노선을 조회한다.")
     void getLines() {
@@ -132,33 +130,30 @@ class LineAcceptanceTest extends AcceptanceTest {
         List<LineResponse> actualLineResponses = response.jsonPath().getList(".", LineResponse.class);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(actualLineResponses).isEqualTo(expectedLineResponses);
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(actualLineResponses).isEqualTo(expectedLineResponses)
+        );
     }
 
     @Test
     @DisplayName("단일 노선을 조회한다.")
     void getLine() {
         // given
-        String lineName = "4호선";
-        String lineColor = "sky-blue";
-        LineRequest request = new LineRequest(lineName, lineColor, stationIdA, stationIdB, 5);
+        LineRequest request = new LineRequest("4호선", "sky-blue", stationIdA, stationIdB, 5);
         ExtractableResponse<Response> createResponse = getExtractablePostResponse(request, defaultUri);
 
         // when
         String uri = createResponse.header("Location");
-        Long lineId = Long.parseLong(uri.split("/")[2]);
         ExtractableResponse<Response> response = getExtractableGetResponse(uri);
+
         LineResponse lineResponse = response.body().jsonPath().getObject(".", LineResponse.class);
+        LineResponse expected = createResponse.jsonPath().getObject(".", LineResponse.class);
 
         // then
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(response.body().jsonPath().getLong("id")).isEqualTo(lineId),
-            () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo(lineName),
-            () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo(lineColor),
-            () -> assertThat(response.body().jsonPath().getString("stations"))
-                .isEqualTo("[[id:1, name:강남], [id:2, name:역삼]]")
+            () -> assertThat(lineResponse).isEqualTo(expected)
         );
     }
 
