@@ -24,10 +24,10 @@ public class LineService {
     private final SectionDao sectionDao;
     private final StationDao stationDao;
 
-    public LineService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
+    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
-        this.sectionDao = sectionDao;
         this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
     }
 
     @Transactional
@@ -44,7 +44,7 @@ public class LineService {
         sectionDao.insert(section);
 
         List<StationResponse> stationResponses = findStationByLineId(savedLine);
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
+        return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(), stationResponses);
     }
 
     private void validateDataSize(String name, String color) {
