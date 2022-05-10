@@ -28,57 +28,6 @@ public class Sections {
         return createSortedStations(calculateTopSection());
     }
 
-    private Section findAnySection() {
-        return sections.stream()
-                .findAny()
-                .orElseThrow(notFoundSectionSupplier());
-    }
-
-    private Supplier<NotFoundException> notFoundSectionSupplier() {
-        return () -> new NotFoundException("section을 찾을 수 없습니다.");
-    }
-
-    private Section calculateTopSection() {
-        return calculateTopSection(findAnySection());
-    }
-
-    private Section calculateTopSection(final Section section) {
-        if (!hasUpperSection(section)) {
-            return section;
-        }
-        return calculateTopSection(upperSection(section));
-    }
-
-    private boolean hasUpperSection(final Section section) {
-        return sections.stream()
-                .anyMatch(section::isUpperSection);
-    }
-
-    private Section upperSection(final Section section) {
-        return sections.stream()
-                .filter(section::isUpperSection)
-                .findFirst()
-                .orElseThrow(notFoundSectionSupplier());
-    }
-
-    private Section calculateLastSection() {
-        return calculateLastSection(findAnySection());
-    }
-
-    private Section calculateLastSection(final Section section) {
-        if (!hasLowerSection(section)) {
-            return section;
-        }
-        return calculateLastSection(calculateDownSection(section));
-    }
-
-    private Section calculateDownSection(final Section section) {
-        return sections.stream()
-                .filter(section::isLowerSection)
-                .findFirst()
-                .orElseThrow(notFoundSectionSupplier());
-    }
-
     private List<Station> createSortedStations(Section section) {
         List<Station> stations = new ArrayList<>();
         stations.add(section.getUpStation());
@@ -89,18 +38,6 @@ public class Sections {
         }
         stations.add(section.getDownStation());
         return stations;
-    }
-
-    private boolean hasLowerSection(final Section section) {
-        return sections.stream()
-                .anyMatch(section::isLowerSection);
-    }
-
-    private Section lowerSection(final Section section) {
-        return sections.stream()
-                .filter(section::isLowerSection)
-                .findFirst()
-                .orElseThrow(notFoundSectionSupplier());
     }
 
     public void addSection(final Section section) {
@@ -134,11 +71,6 @@ public class Sections {
         return hasEqualsUpStation(section) && hasEqualsDownStation(section);
     }
 
-    private boolean hasEqualsUpStation(final Section section) {
-        return sections.stream()
-                .anyMatch(section::equalsUpStation);
-    }
-
     private boolean hasEqualsDownStation(final Section section) {
         return sections.stream()
                 .anyMatch(section::equalsDownStation);
@@ -166,19 +98,6 @@ public class Sections {
         sections.add(section);
         sections.removeIf(updatedSection::equals);
         sections.add(updatedSection.createMiddleSectionByUpStationSection(section));
-    }
-
-    private Section findSection(final Predicate<Section> isDesiredSection) {
-        return sections.stream()
-                .filter(isDesiredSection)
-                .findFirst()
-                .orElseThrow(notFoundSectionSupplier());
-    }
-
-    private void validateEqualsOrLargerDistance(final Section section, final Section updatedSection) {
-        if (updatedSection.isEqualsOrLargerDistance(section)) {
-            throw new IllegalStateException("기존 길이보다 길거나 같은 구간은 중간에 추가될 수 없습니다.");
-        }
     }
 
     public Section removeSection(final Station station) {
@@ -238,6 +157,80 @@ public class Sections {
 
     private Predicate<Section> isDownStations(final Station station) {
         return section -> section.isDownStation(station);
+    }
+
+    private Section calculateTopSection() {
+        return calculateTopSection(findAnySection());
+    }
+
+    private Section calculateTopSection(final Section section) {
+        if (!hasUpperSection(section)) {
+            return section;
+        }
+        return calculateTopSection(upperSection(section));
+    }
+
+    private boolean hasUpperSection(final Section section) {
+        return sections.stream()
+                .anyMatch(section::isUpperSection);
+    }
+
+    private Section upperSection(final Section section) {
+        return sections.stream()
+                .filter(section::isUpperSection)
+                .findFirst()
+                .orElseThrow(notFoundSectionSupplier());
+    }
+
+    private Section calculateLastSection() {
+        return calculateLastSection(findAnySection());
+    }
+
+    private Section calculateLastSection(final Section section) {
+        if (!hasLowerSection(section)) {
+            return section;
+        }
+        return calculateLastSection(lowerSection(section));
+    }
+
+    private boolean hasLowerSection(final Section section) {
+        return sections.stream()
+                .anyMatch(section::isLowerSection);
+    }
+
+    private Section lowerSection(final Section section) {
+        return sections.stream()
+                .filter(section::isLowerSection)
+                .findFirst()
+                .orElseThrow(notFoundSectionSupplier());
+    }
+
+    private Section findAnySection() {
+        return sections.stream()
+                .findAny()
+                .orElseThrow(notFoundSectionSupplier());
+    }
+
+    private boolean hasEqualsUpStation(final Section section) {
+        return sections.stream()
+                .anyMatch(section::equalsUpStation);
+    }
+
+    private Section findSection(final Predicate<Section> isDesiredSection) {
+        return sections.stream()
+                .filter(isDesiredSection)
+                .findFirst()
+                .orElseThrow(notFoundSectionSupplier());
+    }
+
+    private void validateEqualsOrLargerDistance(final Section section, final Section updatedSection) {
+        if (updatedSection.isEqualsOrLargerDistance(section)) {
+            throw new IllegalStateException("기존 길이보다 길거나 같은 구간은 중간에 추가될 수 없습니다.");
+        }
+    }
+
+    private Supplier<NotFoundException> notFoundSectionSupplier() {
+        return () -> new NotFoundException("section을 찾을 수 없습니다.");
     }
 
     public List<Section> getSections() {
