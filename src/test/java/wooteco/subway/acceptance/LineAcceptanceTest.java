@@ -25,7 +25,7 @@ import wooteco.subway.dto.LineResponse;
 
 @DisplayName("노선 관련 기능")
 @Disabled
-public class LineAcceptanceDynamicTest extends AcceptanceTest {
+public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선을 생성한다.")
     @Test

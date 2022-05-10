@@ -20,7 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.dto.StationResponse;
 
-public class StationAcceptanceDynamicTest extends AcceptanceTest {
+public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 관리한다.")
     @TestFactory
