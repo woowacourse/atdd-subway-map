@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineEditRequest;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
@@ -52,8 +53,8 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.update(id, new Line(lineRequest.getName(), lineRequest.getColor()));
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineEditRequest LineEditRequest) {
+        lineService.update(id, LineEditRequest);
         return ResponseEntity.ok().build();
     }
 

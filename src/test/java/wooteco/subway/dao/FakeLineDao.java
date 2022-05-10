@@ -46,10 +46,10 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public LineDto update(Long id, LineDto updateLine) {
-        lines.remove(findById(id));
+    public LineDto update(LineDto updateLine) {
+        lines.remove(findById(updateLine.getId()));
 
-        LineDto line = new LineDto(id, updateLine.getName(), updateLine.getColor());
+        LineDto line = new LineDto(updateLine.getId(), updateLine.getName(), updateLine.getColor());
         lines.add(line);
 
         return line;

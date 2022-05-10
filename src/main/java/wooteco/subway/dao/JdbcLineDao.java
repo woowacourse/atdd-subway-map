@@ -55,12 +55,12 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public LineDto update(Long id, LineDto updateLine) {
+    public LineDto update(LineDto lineDto) {
         String sql = "update LINE set name = :name, color = :color where id = :id";
         jdbcTemplate.update(sql,
-                Map.of("id", id, "name", updateLine.getName(), "color", updateLine.getColor()));
+                Map.of("id", lineDto.getId(), "name", lineDto.getName(), "color", lineDto.getColor()));
 
-        return findById(id);
+        return findById(lineDto.getId());
     }
 
     @Override

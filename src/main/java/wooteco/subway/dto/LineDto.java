@@ -23,7 +23,7 @@ public class LineDto {
     }
 
     public static LineDto from(Line line) {
-        return new LineDto(line.getName(), line.getColor());
+        return new LineDto(line.getId(), line.getName(), line.getColor());
     }
 
     public Long getId() {

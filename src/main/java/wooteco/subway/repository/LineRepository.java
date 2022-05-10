@@ -53,4 +53,8 @@ public class LineRepository {
                 .map(lineDto -> findById(lineDto.getId()))
                 .collect(Collectors.toList());
     }
+
+    public void update(Line line) {
+        lineDao.update(LineDto.from(line));
+    }
 }

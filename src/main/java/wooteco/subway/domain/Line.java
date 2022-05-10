@@ -69,6 +69,13 @@ public class Line {
         }
     }
 
+    public void updateNameAndColor(String name, String color) {
+        validateNameNotEmpty(name);
+        validateColorNotEmpty(color);
+        this.name = name;
+        this.color = color;
+    }
+
     public List<Section> getSections() {
         return sections.getSections();
     }

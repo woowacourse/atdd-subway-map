@@ -19,6 +19,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineDto;
+import wooteco.subway.dto.LineEditRequest;
 import wooteco.subway.dto.LineRequest;
 
 @SpringBootTest
@@ -108,7 +109,7 @@ class LineServiceTest {
         Line savedLine = lineService.save(new LineRequest("4호선", "bg-purple-600", up.getId(), down.getId(), 3));
         Line newLine = new Line("4호선", "bg-skyblue-600", new Sections(new Section(up, down, 3)));
 
-        lineService.update(savedLine.getId(), newLine);
+        lineService.update(savedLine.getId(), new LineEditRequest("4호선", "bg-skyblue-600"));
 
         assertThat(lineService.findById(savedLine.getId())).isEqualTo(newLine);
     }
@@ -123,7 +124,7 @@ class LineServiceTest {
 
         Line newLine = new Line("2호선", "bg-brown-600");
 
-        assertThatThrownBy(() -> lineService.update(savedLine.getId(), newLine))
+        assertThatThrownBy(() -> lineService.update(savedLine.getId(), new LineEditRequest("2호선", "bg-brown-600")))
                 .isInstanceOf(DuplicateKeyException.class)
                 .hasMessageContaining("이미 존재하는 노선");
     }

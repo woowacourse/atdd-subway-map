@@ -9,6 +9,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.LineDto;
+import wooteco.subway.dto.LineEditRequest;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.repository.LineRepository;
 import wooteco.subway.repository.StationRepository;
@@ -51,9 +52,11 @@ public class LineService {
         }
     }
 
-    public void update(Long id, Line line) {
+    public void update(Long id, LineEditRequest lineEditRequest) {
+        Line line = lineRepository.findById(id);
+        line.updateNameAndColor(lineEditRequest.getName(), lineEditRequest.getColor());
         try {
-            lineDao.update(id, LineDto.from(line));
+            lineRepository.update(line);
         } catch (DuplicateKeyException e) {
             throw new DuplicateKeyException("이미 존재하는 노선 이름입니다.");
         }
