@@ -12,15 +12,59 @@ public class Sections {
         this.sections = sections;
     }
 
-    public List<Station> getStations() {
+    public List<Station> getSortedStations() {
+        Section randomSection = findAnySection();
+        Section topSection = findTopSection(randomSection);
+        return createSortedStations(topSection);
+    }
+
+    private Section findAnySection() {
+        return sections.stream()
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("존재하는 구간 데이터가 없습니다."));
+    }
+
+    private Section findTopSection(final Section section) {
+        if (isTopSection(section)) {
+            return section;
+        }
+        return findTopSection(nextUpperSection(section));
+    }
+
+    private boolean isTopSection(final Section section) {
+        return sections.stream()
+                .noneMatch(existingSection -> existingSection.isUpperThan(section));
+    }
+
+    private Section nextUpperSection(final Section section) {
+        return sections.stream()
+                .filter(existingSection -> existingSection.isUpperThan(section))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("존재하는 구간 데이터가 없습니다."));
+    }
+
+    private List<Station> createSortedStations(Section section) {
         final List<Station> stations = new ArrayList<>();
-        for (Section section : sections) {
+        while (isNotLastSection(section)) {
             stations.add(section.getUpStation());
             stations.add(section.getDownStation());
+            section = nextSection(section);
         }
         return stations.stream()
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    private boolean isNotLastSection(final Section section) {
+        return sections.stream()
+                .anyMatch(existingSection -> existingSection.isLowerThan(section));
+    }
+
+    private Section nextSection(final Section section) {
+        return sections.stream()
+                .filter(existingSection -> existingSection.isLowerThan(section))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("더이상 하행구간이 없습니다."));
     }
 
     public void addSection(final Section section) {

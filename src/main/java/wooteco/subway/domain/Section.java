@@ -38,6 +38,14 @@ public class Section {
         return distance;
     }
 
+    public boolean isUpperThan(final Section otherSection) {
+        return this.downStation.equals(otherSection.upStation);
+    }
+
+    public boolean isLowerThan(final Section otherSection) {
+        return this.upStation.equals(otherSection.downStation);
+    }
+
     public boolean isConnectedSection(final Section otherSection) {
         return contain(otherSection.upStation) || contain(otherSection.downStation);
     }

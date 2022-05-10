@@ -60,7 +60,7 @@ public class LineService {
 
     private List<StationResponse> stationsOnLine(long lineId) {
         final Sections sections = new Sections(sectionDao.findByLineId(lineId));
-        List<Station> stations = sections.getStations();
+        List<Station> stations = sections.getSortedStations();
         return stations.stream()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());
