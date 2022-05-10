@@ -92,8 +92,8 @@ public class LineRepositoryTest extends RepositoryTest {
         Line findUpdateLine = lineRepository.findById(id);
 
         assertAll(
-            () -> assertThat(findUpdateLine.getName()).isEqualTo("신분당선"),
-            () -> assertThat(findUpdateLine.getColor()).isEqualTo("bg-yellow-600")
+                () -> assertThat(findUpdateLine.getName()).isEqualTo("신분당선"),
+                () -> assertThat(findUpdateLine.getColor()).isEqualTo("bg-yellow-600")
         );
     }
 

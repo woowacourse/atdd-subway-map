@@ -148,8 +148,8 @@ public class LineRepository {
 
     static class LineSection {
 
-        private Line line;
-        private Section section;
+        private final Line line;
+        private final Section section;
 
         public LineSection(Line line, Section section) {
             this.line = line;

@@ -8,8 +8,8 @@ public class Section {
     private static final int DISTANCE_STANDARD = 0;
     private static final String DISTANCE_FAIL_MESSAGE = "거리는 0km 초과이어야 합니다.";
 
-    private Long id;
-    private Long lineId;
+    private final Long id;
+    private final Long lineId;
     private Station upStation;
     private Station downStation;
     private int distance;
@@ -29,14 +29,14 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section(final Long lineId, final Station upStation, final Station downStation, final int distance) {
+        this(null, lineId, upStation, downStation, distance);
+    }
+
     private void validateSameSection(Station upStation, Station downStation) {
         if (upStation.equals(downStation)) {
             throw new SectionCreateException("동일한 역은 구간으로 등록할 수 없습니다.");
         }
-    }
-
-    public Section(final Long lineId, final Station upStation, final Station downStation, final int distance) {
-        this(null, lineId, upStation, downStation, distance);
     }
 
     private void validateDistance(final int distance) {
@@ -105,7 +105,8 @@ public class Section {
     }
 
     public boolean isSameSection(final Section section) {
-        return equals(section) && isSameUpStation(section.getUpStation()) && isSameDownStation(section.getDownStation());
+        return equals(section) && isSameUpStation(section.getUpStation()) && isSameDownStation(
+                section.getDownStation());
     }
 
     @Override

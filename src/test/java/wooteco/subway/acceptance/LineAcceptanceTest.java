@@ -47,6 +47,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
+
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성하면 400 bad-request가 발생한다.")
     @Test
     void createLineWithDuplicateName() {
@@ -64,7 +65,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineRequest newBundangLine = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 5);
         ExtractableResponse<Response> newBundangPostResponse = httpPostTest(newBundangLine, "/lines");
 
-        LineRequest bundangLine = new LineRequest("분당선", "bg-green-600", 강남역.getId(), 역삼역.getId(), 5);;
+        LineRequest bundangLine = new LineRequest("분당선", "bg-green-600", 강남역.getId(), 역삼역.getId(), 5);
 
         ExtractableResponse<Response> bundangPostResponse = httpPostTest(bundangLine, "/lines");
 
@@ -117,7 +118,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         LineRequest params = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 5);
-
 
         ExtractableResponse<Response> createResponse = httpPostTest(params, "/lines");
 
