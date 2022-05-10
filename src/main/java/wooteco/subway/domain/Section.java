@@ -67,6 +67,7 @@ public class Section {
     }
 
     public void updateSectionWithSameUpStation(final Section otherSection) {
+        validateLongerThan(otherSection);
         this.upStation = otherSection.downStation;
         this.distance = this.distance - otherSection.distance;
     }
@@ -76,7 +77,14 @@ public class Section {
     }
 
     public void updateSectionWithSameDownStation(final Section otherSection) {
+        validateLongerThan(otherSection);
         this.downStation = otherSection.upStation;
         this.distance = this.distance - otherSection.distance;
+    }
+
+    private void validateLongerThan(final Section otherSection) {
+        if (this.distance <= otherSection.distance) {
+            throw new IllegalArgumentException("현재 구간의 길이가 추가하려는 구간의 길이보다 작거나 같습니다.");
+        }
     }
 }

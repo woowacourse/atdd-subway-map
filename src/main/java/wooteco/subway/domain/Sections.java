@@ -105,12 +105,13 @@ public class Sections {
     }
 
     private void addSectionToMiddle(final Section section) {
-        sections.add(section);
         if (hasSameUpStation(section)) {
             updateSectionWithSameUpStation(section);
+            sections.add(section);
             return;
         }
         updateSectionWithSameDownStation(section);
+        sections.add(section);
     }
 
     private boolean hasSameUpStation(final Section section) {
