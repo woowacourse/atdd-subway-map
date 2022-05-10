@@ -21,20 +21,19 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 생성한다.")
     @Test
     void createLine_created() {
-
+        //given
         requestToCreateStation("강남역");
         requestToCreateStation("사당역");
-        // when
+
+        //when
         ExtractableResponse<Response> response =
                 requestToCreateLine("신분당선", "red", "1", "2", "10");
 
-
         LineResponse lineResponse = response.jsonPath()
                 .getObject(".", LineResponse.class);
-        Long lineId = lineResponse.getId();
         List<StationResponse> stations = lineResponse.getStations();
 
-        // then
+        //then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(response.header("Location")).isNotBlank(),
@@ -51,16 +50,16 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("이미 존재하는 노선 이름 혹은 노선 색으로 생성하면 bad Request를 응답한다.")
     @Test
     void createLine_badRequest() {
-        // given
+        //given
         requestToCreateLine("신분당선", "red", "1", "2", "10");
 
-        // when
+        //when
         ExtractableResponse<Response> response =
                 requestToCreateLine("신분당선", "red", "1", "2", "10");
         final ExceptionResponse exceptionResponse = response.jsonPath()
                 .getObject(".", ExceptionResponse.class);
 
-        // then
+        //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(exceptionResponse.getExceptionMessage()).isEqualTo("노선 이름 혹은 노선 색이 이미 존재합니다.");
     }
@@ -87,6 +86,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         final StationResponse secondLineUpStation = secondLineResponse.getStations().get(0);
         final StationResponse secondLineDownStation = secondLineResponse.getStations().get(1);
 
+        //then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(firstLineResponse.getId()).isEqualTo(1L),
@@ -126,6 +126,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         LineResponse lineResponse = response.jsonPath()
                 .getObject(".", LineResponse.class);
 
+        //then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(lineResponse.getId()).isEqualTo(1L),
@@ -167,10 +168,10 @@ class LineAcceptanceTest extends AcceptanceTest {
                         .jsonPath()
                         .getObject(".", LineResponse.class)
                         .getId();
-        // when
+        //when
         final ExtractableResponse<Response> response = requestToDeleteLine(resultLineId);
 
-        // then
+        //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
