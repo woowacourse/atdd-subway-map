@@ -59,7 +59,8 @@ public class Sections {
 
     private Section getExistSection(Section newSection) {
         return sections.stream()
-                .filter(section -> section.getUpStationId().equals(newSection.getUpStationId()))
+                .filter(section -> section.getUpStationId().equals(newSection.getUpStationId())
+                        || section.getDownStationId().equals(newSection.getDownStationId()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구간입니다."));
     }
@@ -69,11 +70,11 @@ public class Sections {
         int newDistance = existSection.getDistance() - newSection.getDistance();
 
         if (!includeUpStation(newSection.getDownStationId()) && includeDownStation(newSection.getDownStationId())) {
-            return new Section(existSection.getId(), existSection.getUpStationId(),
+            return new Section(existSection.getId(), existSection.getLineId(), existSection.getUpStationId(),
                     newSection.getUpStationId(), newDistance);
         }
 
-        return new Section(existSection.getId(), newSection.getDownStationId(),
+        return new Section(existSection.getId(), existSection.getLineId(), newSection.getDownStationId(),
                 existSection.getDownStationId(), newDistance);
     }
 
