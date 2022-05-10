@@ -78,13 +78,21 @@ public class LineService {
     public List<LineResponse> findAll() {
         return lineDao.findAll()
                 .stream()
-                .map(LineResponse::of)
+                .map(l -> LineResponse.of(l, createStationResponseByLineId(l.getId())))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long lineId) {
         Line line = lineDao.findById(lineId);
-        return LineResponse.of(line);
+        List<StationResponse> stationResponses = createStationResponseByLineId(lineId);
+        return LineResponse.of(line, stationResponses);
+    }
+
+    private List<StationResponse> createStationResponseByLineId(Long lineId) {
+        List<Station> stations = stationDao.findAllByLineId(lineId);
+        return stations.stream()
+                .map(s -> new StationResponse(s.getId(), s.getName()))
+                .collect(Collectors.toList());
     }
 
     public void update(Long lineId, LineRequest request) {
