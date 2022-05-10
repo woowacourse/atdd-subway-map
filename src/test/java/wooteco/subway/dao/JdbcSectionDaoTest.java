@@ -56,7 +56,7 @@ class JdbcSectionDaoTest {
         Section section2 = new Section(1L, 4L, 5L, 5);
         jdbcSectionDao.save(section2);
 
-        List<Section> sectionList = jdbcSectionDao.findByLineId(1L);
+        List<Section> sectionList = jdbcSectionDao.findByLineId(1L).getSections();
         assertThat(sectionList.size()).isEqualTo(3);
     }
 }

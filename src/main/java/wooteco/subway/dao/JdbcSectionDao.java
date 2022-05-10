@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 
 public class JdbcSectionDao {
 
@@ -49,8 +50,9 @@ public class JdbcSectionDao {
         return jdbcTemplate.update(sql, lineId, stationId, stationId) == FUNCTION_SUCCESS;
     }
 
-    public List<Section> findByLineId(Long lineId) {
+    public Sections findByLineId(Long lineId) {
         String sql = "select * from section where line_id = ?";
-        return jdbcTemplate.query(sql, rowMapper, lineId);
+        List<Section> sections = jdbcTemplate.query(sql, rowMapper, lineId);
+        return new Sections(sections);
     }
 }
