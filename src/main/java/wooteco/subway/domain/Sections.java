@@ -1,7 +1,8 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import wooteco.subway.exception.NotFoundException;
@@ -11,6 +12,8 @@ public class Sections {
     private static final String NOT_CONTAINS_UP_AND_DOWN_STATIONS = "상행역과 하행역이 모두 노선에 등록되어 있지 않습니다.";
     private static final String STATION_NOT_FOUND_IN_SECTIONS = "해당 노선에서는 입력한 지하철 역을 찾을 수 없습니다.";
     private static final String CAN_NOT_DELETE_MORE = "해당 노선은 더 삭제할 수 없습니다.";
+
+    private static final long DEFAULT = -1L;
 
     private final List<Section> value;
 
@@ -39,16 +42,36 @@ public class Sections {
     }
 
     public List<Long> convertToStationIds() {
-        List<Long> stationIds = new ArrayList<>();
+        Long id = value.get(0).getUpStationId();
+        LinkedList<Long> result = new LinkedList<>();
+        result.add(id);
 
-        for (Section section : value) {
-            stationIds.add(section.getUpStationId());
-            stationIds.add(section.getDownStationId());
-        }
+        checkUpperStations(result, id);
+        checkLowerStations(result, id);
 
-        return stationIds.stream()
+        return result.stream()
                 .distinct()
                 .collect(Collectors.toUnmodifiableList());
+    }
+
+    private void checkLowerStations(LinkedList<Long> result, Long id) {
+        Map<Long, Long> stationIds = value.stream()
+                .collect(Collectors.toMap(Section::getDownStationId, Section::getUpStationId));
+
+        while (stationIds.getOrDefault(id, DEFAULT) != DEFAULT) {
+            id = stationIds.get(id);
+            result.addFirst(id);
+        }
+    }
+
+    private void checkUpperStations(LinkedList<Long> result, Long id) {
+        Map<Long, Long> stationIds = value.stream()
+                .collect(Collectors.toMap(Section::getUpStationId, Section::getDownStationId));
+
+        while (stationIds.getOrDefault(id, DEFAULT) != DEFAULT) {
+            id = stationIds.get(id);
+            result.addLast(id);
+        }
     }
 
     public List<Section> findByStationId(long stationId) {
