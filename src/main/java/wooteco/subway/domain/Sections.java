@@ -5,7 +5,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Sections {
     private final List<Section> sections;
@@ -136,5 +135,13 @@ public class Sections {
         List<Long> downStationIds = downStationIds();
         downStationIds.removeAll(upStationIds());
         return downStationIds.contains(stationId);
+    }
+
+    public int size() {
+        return sections.size();
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }
