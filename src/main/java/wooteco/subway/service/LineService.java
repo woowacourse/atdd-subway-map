@@ -1,6 +1,9 @@
 package wooteco.subway.service;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,16 +72,41 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineResponse> findLines() {
+        List<LineResponse> lineResponses = new ArrayList<>();
         List<Line> lines = lineDao.findAll();
-        return lines.stream()
-                .map(LineResponse::new)
+        for (Line line : lines) {
+            Set<Long> lineIds = findLineIds(line);
+            List<StationResponse> stationResponses = createStationResponse(lineIds);
+            LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(),
+                    stationResponses);
+            lineResponses.add(lineResponse);
+        }
+        return lineResponses;
+    }
+
+    private Set<Long> findLineIds(Line line) {
+        List<Section> sections = sectionDao.findByLineId(line.getId());
+        Set<Long> lineIds = sections.stream()
+                .map(Section::getStationId)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toUnmodifiableSet());
+        return lineIds;
+    }
+
+    private List<StationResponse> createStationResponse(Set<Long> lineIds) {
+        List<StationResponse> stationResponses = lineIds.stream()
+                .map(stationDao::findById)
+                .map(StationResponse::new)
                 .collect(Collectors.toUnmodifiableList());
+        return stationResponses;
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
         Line line = lineDao.findById(id);
-        return new LineResponse(line);
+        Set<Long> lineIds = findLineIds(line);
+        List<StationResponse> stationResponse = createStationResponse(lineIds);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponse);
     }
 
     @Transactional

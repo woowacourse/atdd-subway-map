@@ -46,8 +46,8 @@ public class SectionDaoImpl implements SectionDao {
     }
 
     @Override
-    public List<Section> findAll() {
-        String sql = "SELECT * FROM SECTION";
-        return jdbcTemplate.query(sql, rowMapper);
+    public List<Section> findByLineId(Long lineId) {
+        String sql = "SELECT * FROM SECTION WHERE line_id = ?";
+        return jdbcTemplate.query(sql, rowMapper, lineId);
     }
 }

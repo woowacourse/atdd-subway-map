@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Section;
 
@@ -19,15 +20,17 @@ public class FakeSectionDao implements SectionDao {
         return persistSection;
     }
 
-    @Override
-    public List<Section> findAll() {
-        return null;
-    }
-
     private Section createNewObject(Section section) {
         Field field = ReflectionUtils.findField(Section.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, section, ++seq);
         return section;
+    }
+
+    @Override
+    public List<Section> findByLineId(Long lineId) {
+        return sections.values().stream()
+                .filter(section -> section.getLineId() == lineId)
+                .collect(Collectors.toUnmodifiableList());
     }
 }

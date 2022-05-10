@@ -22,9 +22,9 @@
 ## 3단계
 ### 1. 노선 추가 API 수정
 
-- [ ] 노선 추가 시 3가지 정보 추가(upStationId, downStationId, distance)
+- [x] 노선 추가 시 3가지 정보 추가(upStationId, downStationId, distance)
   - [x] 지하철 노선을 등록하는 기능
-  - [ ] 지하철 노선 목록을 조회하는 기능
+  - [x] 지하철 노선 목록을 조회하는 기능
 - [x] 노선 추가 시 구간 정보도 함께 등록하는 기능
 
 ### 2. 구간 관리

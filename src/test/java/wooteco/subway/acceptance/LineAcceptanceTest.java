@@ -11,13 +11,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationRequest;
@@ -100,11 +98,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
-    @Disabled
     void createLineWithDuplicateName() throws JsonProcessingException {
         // given
-        Line line1 = new Line("신분당선", "bg-red-600");
-        String params1 = om.writeValueAsString(line1);
+        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        String params1 = om.writeValueAsString(lineRequest1);
 
         RestAssured.given().log().all()
                 .body(params1)
@@ -115,8 +112,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // when
-        Line line2 = new Line("신분당선", "bg-red-400");
-        String params2 = om.writeValueAsString(line2);
+        LineRequest lineRequest2 = new LineRequest("신분당선", "bg-green-600", 3L, 4L, 10);
+        String params2 = om.writeValueAsString(lineRequest2);
+
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -131,12 +129,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("기존에 존재하는 노선 색으로 노선을 생성한다.")
-    @Disabled
+    @DisplayName("기존에 존재하는 노선의 색으로 노선을 생성한다.")
     void createLineWithDuplicateColor() throws JsonProcessingException {
         // given
-        Line line = new Line("신분당선", "bg-red-600");
-        String params1 = om.writeValueAsString(line);
+        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        String params1 = om.writeValueAsString(lineRequest1);
 
         RestAssured.given().log().all()
                 .body(params1)
@@ -147,8 +144,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // when
-        Line line2 = new Line("분당선", "bg-red-600");
-        String params2 = om.writeValueAsString(line2);
+        LineRequest lineRequest2 = new LineRequest("분당선", "bg-red-600", 3L, 4L, 10);
+        String params2 = om.writeValueAsString(lineRequest2);
+
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -163,12 +161,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("노선을 조회한다.")
-    @Disabled
+    @DisplayName("노선 목록을 조회한다.")
     void getLines() throws JsonProcessingException {
         /// given
-        Line line1 = new Line("신분당선", "bg-red-600");
-        String params1 = om.writeValueAsString(line1);
+        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        String params1 = om.writeValueAsString(lineRequest1);
+
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -177,8 +175,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        Line line2 = new Line("2호선", "bg-green-600");
-        String params2 = om.writeValueAsString(line2);
+        LineRequest lineRequest2 = new LineRequest("2호선", "bg-green-600", 3L, 4L, 10);
+        String params2 = om.writeValueAsString(lineRequest2);
+
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -207,11 +206,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("노선을 하나 조회한다.")
-    @Disabled
     void getLine() throws JsonProcessingException {
         /// given
-        Line line = new Line("신분당선", "bg-red-600");
-        String params = om.writeValueAsString(line);
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        String params = om.writeValueAsString(lineRequest);
 
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
@@ -235,11 +233,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("노선을 수정한다.")
-    @Disabled
     void updateLine() throws JsonProcessingException {
         /// given
-        Line line1 = new Line("신분당선", "bg-red-600");
-        String params1 = om.writeValueAsString(line1);
+        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        String params1 = om.writeValueAsString(lineRequest1);
+
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -250,8 +248,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long lineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
 
         // when
-        Line line2 = new Line("다른분당선", "bg-blue-600");
-        String params2 = om.writeValueAsString(line2);
+        LineRequest lineRequest2 = new LineRequest("다른분당선", "bg-blue-600");
+        String params2 = om.writeValueAsString(lineRequest2);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params2)
@@ -267,11 +265,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("노선을 제거한다.")
-    @Disabled
     void deleteLine() throws JsonProcessingException {
         // given
-        Line line = new Line("신분당선", "bg-red-600");
-        String params = om.writeValueAsString(line);
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        String params = om.writeValueAsString(lineRequest);
+
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

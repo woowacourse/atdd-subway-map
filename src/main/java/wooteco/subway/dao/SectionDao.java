@@ -7,5 +7,5 @@ public interface SectionDao {
 
     Section insert(Section section);
 
-    List<Section> findAll();
+    List<Section> findByLineId(Long lineId);
 }
