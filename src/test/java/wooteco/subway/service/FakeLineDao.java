@@ -50,10 +50,10 @@ public class FakeLineDao implements LineDao {
     }
 
     @Override
-    public Line updateById(final Long id, final Line line) {
-        final Line persistLine = findById(id);
-        persistLine.update(line);
-        return persistLine;
+    public Line update(final Line line) {
+        Line foundLine = findById(line.getId());
+        foundLine.update(line);
+        return foundLine;
     }
 
     @Override

@@ -50,8 +50,10 @@ public class LineService {
     }
 
     public void updateById(final Long id, final LineRequest request) {
-        final Line line = new Line(request.getName(), request.getColor());
-        lineDao.updateById(id, line);
+        final Line foundLine = lineDao.findById(id);
+        final Line updateLine = new Line(request.getName(), request.getColor());
+        foundLine.update(updateLine);
+        lineDao.update(foundLine);
     }
 
     public void deleteById(final Long id) {

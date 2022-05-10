@@ -80,7 +80,8 @@ public class LineDaoTest {
 
         // when
         final Line line = new Line("5호선", "bg-green-600");
-        final Line updatedLine = lineDao.updateById(persistLine.getId(), line);
+        persistLine.update(line);
+        final Line updatedLine = lineDao.update(persistLine);
 
         // then
         assertThat(updatedLine).isEqualTo(line);

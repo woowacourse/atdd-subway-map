@@ -11,7 +11,7 @@ public interface LineDao {
 
     Line findById(Long id);
 
-    Line updateById(Long id, Line line);
+    Line update(Line line);
 
     Integer deleteById(Long id);
 }
