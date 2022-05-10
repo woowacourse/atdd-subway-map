@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.*;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class SectionService {
 
     private final SectionDao sectionDao;
@@ -21,10 +23,12 @@ public class SectionService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public void saveInitialSection(LineRequest lineRequest, Line line){
         sectionDao.saveInitialSection(lineRequest, line.getId());
     }
 
+    @Transactional
     public void addSection(SectionRequest sectionRequest, long lineId) {
           Section newSection = new Section(sectionRequest, lineId);
           if(isStartOrEndOfSection(newSection, lineId)){
@@ -36,9 +40,9 @@ public class SectionService {
 
       private void insertToBetweenSections(Section newSection) {
           Section findSection = sectionDao.findBySameUpOrDownStation(newSection)
-                  .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구간입니다."));
+                  .orElseThrow(() -> new IllegalArgumentException("해당 구간이 존재하지 않습니다."));
           validateDistance(findSection, newSection);
-          changeExistSection(newSection, findSection);
+          updateExistSection(newSection, findSection);
           sectionDao.save(newSection);
       }
 
@@ -48,7 +52,7 @@ public class SectionService {
           }
       }
 
-      private void changeExistSection(Section newSection, Section findSection) {
+      private void updateExistSection(Section newSection, Section findSection) {
           sectionDao.updateDistance(findSection, newSection);
           if(newSection.hasSameUpstation(findSection)){
               sectionDao.updateUpStation(findSection, newSection);
@@ -73,6 +77,7 @@ public class SectionService {
           return sectionDao.findByUpStationId(section.getUpStationId(), id).isPresent() || sectionDao.findByDownStationId(section.getDownStationId(), id).isPresent();
       }
 
+      @Transactional
       public void deleteSection(long stationId, long lineId) {
 
           Station station = stationDao.findById(stationId)
@@ -92,6 +97,37 @@ public class SectionService {
           deleteBetweenStation(stationId, lineId);
       }
 
+      private void validateSectionSize(Sections sections) {
+          if(sections.isLessThanOneSection()){
+              throw new IllegalArgumentException("노선 내의 구간이 하나 이하라면 삭제할 수 없습니댜.");
+          }
+      }
+
+    private void deleteFirstStation(long stationId, long lineId) {
+        Section section = sectionDao.findByUpStationId(stationId, lineId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 구간이 존재하지 않습니다."));
+        sectionDao.deleteById(section.getId(), section.getLineId());
+    }
+
+    private void deleteLastStation(long stationId, long lineId) {
+        Section section = sectionDao.findByDownStationId(stationId, lineId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 구간이 존재하지 않습니다."));
+        sectionDao.deleteById(section.getId(), section.getLineId());
+    }
+
+    private void deleteBetweenStation(long stationId, long lineId) {
+        Section previousSection = sectionDao.findByDownStationId(stationId, lineId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 구간이 존재하지 않습니다."));
+        Section nextSection = sectionDao.findByUpStationId(stationId, lineId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 구간이 존재하지 않습니다."));
+
+        sectionDao.deleteById(previousSection.getId(), lineId);
+        sectionDao.deleteById(nextSection.getId(), lineId);
+        int distance = previousSection.getDistance() + nextSection.getDistance();
+        Section mergeSection = new Section(lineId, previousSection.getUpStationId(), nextSection.getDownStationId(), distance);
+        sectionDao.save(mergeSection);
+    }
+
     public Sections makeSectionsToStations(long lineId) {
         List<SectionWithStation> sections = new ArrayList<>();
         List<Section> getSections = sectionDao.findByLine(lineId)
@@ -107,35 +143,4 @@ public class SectionService {
 
         return new Sections(sections);
     }
-
-      private void validateSectionSize(Sections sections) {
-          if(sections.isLessThanOneSection()){
-              throw new IllegalArgumentException("노선 내의 구간이 하나 이하라면 삭제할 수 없습니댜.");
-          }
-      }
-
-      private void deleteBetweenStation(long stationId, long lineId) {
-          Section previousSection = sectionDao.findByDownStationId(stationId, lineId)
-                  .orElseThrow(() -> new IllegalArgumentException("해당 구간이 존재하지 않습니다."));
-          Section nextSection = sectionDao.findByUpStationId(stationId, lineId)
-                  .orElseThrow(() -> new IllegalArgumentException("해당 구간이 존재하지 않습니다."));
-
-          sectionDao.deleteById(previousSection.getId(), lineId);
-          sectionDao.deleteById(nextSection.getId(), lineId);
-          int distance = previousSection.getDistance() + nextSection.getDistance();
-          Section mergeSection = new Section(lineId, previousSection.getUpStationId(), nextSection.getDownStationId(), distance);
-          sectionDao.save(mergeSection);
-      }
-
-      private void deleteLastStation(long stationId, long lineId) {
-              Section section = sectionDao.findByDownStationId(stationId, lineId)
-                      .orElseThrow(() -> new IllegalArgumentException("해당 구간이 존재하지 않습니다."));
-              sectionDao.deleteById(section.getId(), section.getLineId());
-      }
-
-      private void deleteFirstStation(long stationId, long lineId) {
-              Section section = sectionDao.findByUpStationId(stationId, lineId)
-                      .orElseThrow(() -> new IllegalArgumentException("해당 구간이 존재하지 않습니다."));
-              sectionDao.deleteById(section.getId(), section.getLineId());
-      }
 }

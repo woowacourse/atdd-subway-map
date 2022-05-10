@@ -16,7 +16,6 @@ public class SectionController {
         this.sectionService = sectionService;
     }
 
-
     @PostMapping("/{id}/sections")
        public void addSection(@Valid @RequestBody SectionRequest sectionRequest, @PathVariable long id) {
            sectionService.addSection(sectionRequest, id);
