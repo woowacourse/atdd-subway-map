@@ -62,20 +62,21 @@ public class LineService {
 
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id);
-        Sections sections = new Sections(sectionDao.findByLineId(id));
-        return new LineResponse(line, findByStationResponses(sections));
+        return findLineResponseByLine(line);
     }
 
-    private List<StationResponse> findByStationResponses(Sections sections) {
+    private LineResponse findLineResponseByLine(Line line) {
+        Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
         List<Long> stationIdsInOrder = sections.findStationIdsInOrder();
-        return stationIdsInOrder.stream()
+        List<StationResponse> stationResponses = stationIdsInOrder.stream()
                 .map(id -> new StationResponse(stationDao.findById(id)))
                 .collect(Collectors.toUnmodifiableList());
+        return new LineResponse(line, stationResponses);
     }
 
     public List<LineResponse> findAll() {
         return lineDao.findAll().stream()
-                .map(LineResponse::new)
+                .map(this::findLineResponseByLine)
                 .collect(Collectors.toList());
     }
 

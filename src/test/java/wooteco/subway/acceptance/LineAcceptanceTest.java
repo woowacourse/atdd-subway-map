@@ -52,33 +52,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         lineId1 = insertLineData("신분당선", "red");
         lineId2 = insertLineData("분당선", "yellow");
         insertSectionData(lineId1, stationId1, stationId2, 10);
-    }
-
-    private Long insertLineData(String name, String color) {
-        String insertSql = "insert into LINE (name, color) values (:name, :color)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        MapSqlParameterSource source = new MapSqlParameterSource();
-        source.addValue("name", name);
-        source.addValue("color", color);
-        jdbcTemplate.update(insertSql, source, keyHolder);
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
-    }
-
-    private Long insertStationData(String name) {
-        String insertSql = "insert into STATION (name) values (:name)";
-        SqlParameterSource source = new MapSqlParameterSource("name", name);
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(insertSql, source, keyHolder);
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
-    }
-
-    private Long insertSectionData(Long lineId, Long upStationId, Long downStationId, int distance) {
-        String insertSql = "insert into SECTION (line_id, up_station_id, down_station_id, distance) values (:lineId, :upStationId, :downStationId, :distance)";
-        SqlParameterSource source = new BeanPropertySqlParameterSource(
-                new Section(lineId, upStationId, downStationId, distance));
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(insertSql, source, keyHolder);
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        insertSectionData(lineId2, stationId1, stationId3, 10);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -122,13 +96,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<Long> actualLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
                 .map(LineResponse::getId).collect(Collectors.toList());
         // then
+        List<List<Station>> linesStations = response.jsonPath().getList(".", LineResponse.class).stream()
+                .map(its -> its.getStations().stream()
+                        .map(it -> new Station(it.getId(), it.getName())).collect(Collectors.toList()))
+                .collect(Collectors.toList());
+
         assertAll(() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(actualLineIds).containsAll(expectedLineIds));
+                () -> assertThat(actualLineIds).containsAll(expectedLineIds),
+                () -> assertThat(linesStations).isEqualTo(
+                        List.of(List.of(new Station(stationId1, "강남역"), new Station(stationId2, "선릉역")),
+                                List.of(new Station(stationId1, "강남역"), new Station(stationId3, "잠실역")))));
     }
 
     @DisplayName("id 를 이용하여 노선을 조회한다.")
     @Test
-    void findLine() {
+    void findLineById() {
         //given
         String id = String.valueOf(lineId1);
         String path = "/lines/" + id;
@@ -205,6 +187,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = executeDeleteApi(path);
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private Long insertLineData(String name, String color) {
+        String insertSql = "insert into LINE (name, color) values (:name, :color)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        MapSqlParameterSource source = new MapSqlParameterSource();
+        source.addValue("name", name);
+        source.addValue("color", color);
+        jdbcTemplate.update(insertSql, source, keyHolder);
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    private Long insertStationData(String name) {
+        String insertSql = "insert into STATION (name) values (:name)";
+        SqlParameterSource source = new MapSqlParameterSource("name", name);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(insertSql, source, keyHolder);
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    private void insertSectionData(Long lineId, Long upStationId, Long downStationId, int distance) {
+        String insertSql = "insert into SECTION (line_id, up_station_id, down_station_id, distance) values (:lineId, :upStationId, :downStationId, :distance)";
+        SqlParameterSource source = new BeanPropertySqlParameterSource(
+                new Section(lineId, upStationId, downStationId, distance));
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(insertSql, source, keyHolder);
+        Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     private ExtractableResponse<Response> executeGetApi(String path) {
