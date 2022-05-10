@@ -16,8 +16,12 @@ public class SectionService {
     }
 
     public Long save(Section section) {
-        Sections sections = new Sections(sectionDao.findSectionsByLineId(section.getLineId()));
-        sections.add(section);
+        Sections sections = new Sections(sectionDao.findAllByLineId(section.getLineId()));
+        sections.validateSectionInLine(section);
+        if (sections.isRequireUpdate(section)) {
+            sections.validateSectionDistance(section);
+            sectionDao.update(sections.getUpdatedSection(section));
+        }
         return sectionDao.save(section);
     }
 
