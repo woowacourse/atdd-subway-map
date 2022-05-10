@@ -60,4 +60,19 @@ public class Sections {
             throw new IllegalArgumentException("상행역과 하행역이 노선에 이미 존재합니다.");
         }
     }
+
+    public void validExistingSectionDistance(SectionRequest sectionRequest) {
+        sections.stream()
+                .filter(s -> s.getUpStationId().equals(sectionRequest.getUpStationId()))
+                .findFirst()
+                .ifPresent(section1 -> {
+                    validSectionDistance(sectionRequest, section1);
+                });
+    }
+
+    private void validSectionDistance(SectionRequest sectionRequest, Section section) {
+        if (section.getDistance() <= sectionRequest.getDistance()) {
+            throw new IllegalArgumentException("추가될 구간의 길이가 기존 구간의 길이보다 깁니다.");
+        }
+    }
 }

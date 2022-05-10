@@ -65,6 +65,7 @@ public class LineService {
         Sections sections = new Sections(sectionDao.findByLineId(lineId));
         sections.validSameStations(sectionRequest);
         sections.validNonLinkSection(sectionRequest);
+        sections.validExistingSectionDistance(sectionRequest);
     }
 
     public List<LineResponse> findLineAll() {

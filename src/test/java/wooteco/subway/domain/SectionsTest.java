@@ -48,4 +48,17 @@ class SectionsTest {
                 .hasMessage("상행역과 하행역이 노선에 이미 존재합니다.");
     }
 
+    @DisplayName("section 을 이용하여 기존 역 사이의 길이보다 크거나 같은 경우, 예외를 발생시킨다.")
+    @Test
+    void validExistingSectionDistance() {
+        //given
+        SectionRequest request = new SectionRequest(3L, 2L, 2);
+        //when
+
+        //then
+        assertThatThrownBy(() -> sections.validExistingSectionDistance(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("추가될 구간의 길이가 기존 구간의 길이보다 깁니다.");
+    }
+
 }
