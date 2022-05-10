@@ -8,24 +8,27 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 
 import wooteco.subway.domain.Station;
 
-@SpringBootTest
+@JdbcTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class StationDaoTest {
 
-    private final StationDao stationDao;
+    private JdbcTemplate jdbcTemplate;
+    private StationDao stationDao;
 
-    public StationDaoTest(StationDao stationDao) {
-        this.stationDao = stationDao;
+    public StationDaoTest(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    @AfterEach
-    void reset() {
-        stationDao.deleteAll();
+    @BeforeEach
+    void set(){
+        stationDao = new StationDao(jdbcTemplate.getDataSource());
     }
 
     @Test
@@ -65,9 +68,9 @@ public class StationDaoTest {
     @Test
     @DisplayName("입력된 id의 지하철 역을 삭제한다")
     void deleteById() {
-        stationDao.save("선릉역");
+        Station station1 = stationDao.save("선릉역");
 
-        stationDao.deleteById(1L);
+        stationDao.deleteById(station1.getId());
 
         assertThat(stationDao.findAll()).hasSize(0);
     }

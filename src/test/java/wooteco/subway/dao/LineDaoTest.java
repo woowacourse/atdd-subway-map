@@ -8,20 +8,30 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 
-@SpringBootTest
+@JdbcTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class LineDaoTest {
 
-    private final LineDao lineDao;
+    private JdbcTemplate jdbcTemplate;
+    private LineDao lineDao;
 
-    public LineDaoTest(LineDao lineDao) {
-        this.lineDao = lineDao;
+    public LineDaoTest(JdbcTemplate jdbcTemplate){
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @BeforeEach
+    void set(){
+        lineDao = new LineDao(jdbcTemplate.getDataSource());
     }
 
     @AfterEach
@@ -38,7 +48,7 @@ public class LineDaoTest {
         String actualName = line.getName();
         String actualColor = line.getColor();
 
-        assertThat(actualName).isEqualTo("강남역");
+        assertThat(actualName).isEqualTo("2호선");
         assertThat(actualColor).isEqualTo("green");
     }
 
