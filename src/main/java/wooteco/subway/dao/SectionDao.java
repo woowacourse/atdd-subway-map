@@ -32,6 +32,7 @@ public class SectionDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // TODO: should be removed or be used for replacing current logic
     public List<SectionViewEntity> findAll() {
         final String sql = "SELECT A.line_id, A.distance, B.id AS up_station_id, "
                 + "B.name AS up_station_name, C.id AS down_station_id, C.name AS down_station_name "

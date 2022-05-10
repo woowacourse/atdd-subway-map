@@ -11,12 +11,6 @@ public class CreateLineRequest {
     public CreateLineRequest() {
     }
 
-    // TODO: should be replaced
-    public CreateLineRequest(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
-
     public CreateLineRequest(String name,
                              String color,
                              Long upStationId,

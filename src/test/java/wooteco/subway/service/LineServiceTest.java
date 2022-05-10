@@ -9,50 +9,61 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import wooteco.subway.dao.DaoTest;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dto.request.CreateLineRequest;
-import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.exception.NotFoundException;
 
 @SuppressWarnings("NonAsciiCharacters")
-@SpringBootTest // TODO: should be replaced
-class LineServiceTest extends DaoTest {
+@SpringBootTest
+class LineServiceTest extends ServiceTest {
+
+    private static final StationResponse STATION_RESPONSE_1 = new StationResponse(1L, "이미 존재하는 역 이름");
+    private static final StationResponse STATION_RESPONSE_2 = new StationResponse(2L, "선릉역");
+    private static final StationResponse STATION_RESPONSE_3 = new StationResponse(3L, "잠실역");
 
     @Autowired
     private LineService service;
 
     @Autowired
-    private LineDao dao;
+    private LineDao lineDao;
+
+    @Autowired
+    private SectionDao sectionDao;
 
     @Test
-    void findAll_메서드는_모든_데이터를_id_순서대로_조회() {
+    void findAll_메서드는_모든_데이터를_노선의_id_순서대로_조회() {
         List<LineResponse> actual = service.findAll();
 
         List<LineResponse> expected = List.of(
-                new LineResponse(1L, "이미 존재하는 노선 이름", "노란색"),
-                new LineResponse(2L, "신분당선", "빨간색"),
-                new LineResponse(3L, "2호선", "초록색")
-        );
+                new LineResponse(1L, "이미 존재하는 노선 이름", "노란색",
+                        List.of(STATION_RESPONSE_1, STATION_RESPONSE_3)),
+                new LineResponse(2L, "신분당선", "빨간색",
+                        List.of(STATION_RESPONSE_1, STATION_RESPONSE_2, STATION_RESPONSE_3)),
+                new LineResponse(3L, "2호선", "초록색",
+                        List.of(STATION_RESPONSE_1, STATION_RESPONSE_3)));
 
         assertThat(actual).isEqualTo(expected);
     }
 
-    @DisplayName("find 메서드는 특정 id의 데이터를 조회한다.")
+    @DisplayName("find 메서드는 특정 id에 해당되는 데이터를 조회한다")
     @Nested
     class FindTest {
 
         @Test
-        void 존재하는_데이터의_id가_입력된_경우_성공() {
-            LineResponse actual = service.find(1L);
-            LineResponse excepted = new LineResponse(1L, "이미 존재하는 노선 이름", "노란색");
+        void 구간_정보를_포함한_노선의_모든_정보_조회() {
+            LineResponse actual = service.find(2L);
 
-            assertThat(actual).isEqualTo(excepted);
+            LineResponse expected = new LineResponse(2L, "신분당선", "빨간색",
+                    List.of(STATION_RESPONSE_1, STATION_RESPONSE_2, STATION_RESPONSE_3));
+
+            assertThat(actual).isEqualTo(expected);
         }
 
         @Test
-        void 존재하지_않는_데이터의_id가_입력된_경우_예외발생() {
+        void 존재하지_않는_노선인_경우_예외_발생() {
             assertThatThrownBy(() -> service.find(99999L))
                     .isInstanceOf(NotFoundException.class);
         }
@@ -62,63 +73,50 @@ class LineServiceTest extends DaoTest {
     @Nested
     class SaveTest {
 
-        @Test
-        void 중복되지_않는_이름인_경우_성공() {
-            LineResponse actual = service.save(new CreateLineRequest("새로운 노선", "분홍색"));
+        private static final String VALID_LINE_NAME = "새로운 노선";
+        private static final String COLOR = "노란색";
+        private static final long VALID_UP_STATION_ID = 1L;
+        private static final long VALID_DOWN_STATION_ID = 2L;
+        private static final int DISTANCE = 10;
+        private static final long INVALID_ID = 999999L;
 
-            LineResponse expected = new LineResponse(4L, "새로운 노선", "분홍색");
+        @Test
+        void 유효한_입력인_경우_성공() {
+            LineResponse actual = service.save(new CreateLineRequest(
+                    VALID_LINE_NAME, COLOR, 1L, 2L, DISTANCE));
+
+            LineResponse expected = new LineResponse(4L, VALID_LINE_NAME, COLOR,
+                    List.of(STATION_RESPONSE_1, STATION_RESPONSE_2));
 
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
-        void 중복되는_이름인_경우_예외발생() {
-            assertThatThrownBy(() -> service.save(new CreateLineRequest("이미 존재하는 노선 이름", "노란색")))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
-    }
-
-    @DisplayName("update 메서드는 데이터를 수정한다")
-    @Nested
-    class UpdateTest {
-
-        @Test
-        void 중복되지_않는_이름으로_수정_가능() {
-            service.update(1L, new UpdateLineRequest("새로운 노선 이름", "노란색"));
-
-            String actual = dao.findById(1L).get().getName();
-            String expected = "새로운 노선 이름";
-
-            assertThat(actual).isEqualTo(expected);
-        }
-
-        @Test
-        void 색상은_자유롭게_수정_가능() {
-            UpdateLineRequest validLineRequest = new UpdateLineRequest("새로운 노선 이름", "새로운 색상");
-            service.update(1L, validLineRequest);
-
-            String actual = dao.findById(1L).get().getColor();
-            String expected = "새로운 색상";
-
-            assertThat(actual).isEqualTo(expected);
-        }
-
-        @Test
-        void 중복되는_이름으로_수정하려는_경우_예외발생() {
-            UpdateLineRequest duplicateLineNameRequest = new UpdateLineRequest("이미 존재하는 노선 이름", "노란색");
-            assertThatThrownBy(() -> service.update(2L, duplicateLineNameRequest))
+        void 중복되는_노선명인_경우_예외발생() {
+            CreateLineRequest duplicateLineNameRequest = new CreateLineRequest(
+                    "이미 존재하는 노선 이름", COLOR, VALID_UP_STATION_ID, VALID_DOWN_STATION_ID, DISTANCE);
+            assertThatThrownBy(() -> service.save(duplicateLineNameRequest))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
-        void 존재하지_않는_노선을_수정하려는_경우_예외발생() {
-            UpdateLineRequest validLineRequest = new UpdateLineRequest("새로운 노선 이름", "노란색");
-            assertThatThrownBy(() -> service.update(999999999L, validLineRequest))
+        void 존재하지_않는_상행역을_입력한_경우_예외발생() {
+            CreateLineRequest noneExistingUpStationRequest = new CreateLineRequest(
+                    VALID_LINE_NAME, COLOR, INVALID_ID, VALID_DOWN_STATION_ID, DISTANCE);
+            assertThatThrownBy(() -> service.save(noneExistingUpStationRequest))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void 존재하지_않는_하행역을_입력한_경우_예외발생() {
+            CreateLineRequest noneExistingUpStationRequest = new CreateLineRequest(
+                    VALID_LINE_NAME, COLOR, VALID_UP_STATION_ID, INVALID_ID, DISTANCE);
+            assertThatThrownBy(() -> service.save(noneExistingUpStationRequest))
                     .isInstanceOf(NotFoundException.class);
         }
     }
 
-    @DisplayName("delete 메서드는 특정 데이터를 삭제한다")
+    @DisplayName("delete 메서드는 노선과 모든 구간 데이터를 삭제한다")
     @Nested
     class DeleteTest {
 
@@ -126,9 +124,11 @@ class LineServiceTest extends DaoTest {
         void 존재하는_데이터의_id가_입력된_경우_삭제성공() {
             service.delete(1L);
 
-            boolean notFound = dao.findById(1L).isEmpty();
+            boolean lineNotFound = lineDao.findById(1L).isEmpty();
+            List<?> sectionsConnectedToLine = sectionDao.findAllByLineId(1L);
 
-            assertThat(notFound).isTrue();
+            assertThat(lineNotFound).isTrue();
+            assertThat(sectionsConnectedToLine).isEmpty();
         }
 
         @Test

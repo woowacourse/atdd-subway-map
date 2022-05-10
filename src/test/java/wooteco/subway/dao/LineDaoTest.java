@@ -18,19 +18,6 @@ class LineDaoTest extends DaoTest {
     @Autowired
     private LineDao dao;
 
-    @Test
-    void findAll_메서드는_모든_데이터를_조회() {
-        List<LineEntity> actual = dao.findAll();
-
-        List<LineEntity> expected = List.of(
-                new LineEntity(1L, "이미 존재하는 노선 이름", "노란색"),
-                new LineEntity(2L, "신분당선", "빨간색"),
-                new LineEntity(3L, "2호선", "초록색")
-        );
-
-        assertThat(actual).isEqualTo(expected);
-    }
-
     @DisplayName("findById 메서드는 특정 id의 데이터를 조회한다.")
     @Nested
     class FindByIdTest {

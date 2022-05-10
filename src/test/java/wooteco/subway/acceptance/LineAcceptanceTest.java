@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
-import wooteco.subway.dto.response.LineResponse2;
+import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.test_utils.HttpMethod;
 import wooteco.subway.test_utils.HttpUtils;
@@ -56,8 +56,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             Map<String, Object> params = jsonLineOf("신분당선", "bg-red-600", 1L, 2L, 10);
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/lines", params);
-            LineResponse2 actualBody = extractSingleLineResponseBody(response);
-            LineResponse2 expectedBody = new LineResponse2(4L, "신분당선", "bg-red-600", STATION_RESPONSE_1_2);
+            LineResponse actualBody = extractSingleLineResponseBody(response);
+            LineResponse expectedBody = new LineResponse(4L, "신분당선", "bg-red-600", STATION_RESPONSE_1_2);
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             assertThat(response.header("Location")).isNotBlank();
@@ -99,19 +99,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         @Test
         void 성공시_200_OK() {
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/lines");
-            List<LineResponse2> actualBody = extractJsonBody(response);
-            List<LineResponse2> expectedBody = List.of(
-                    new LineResponse2(1L, "1호선", "노란색", STATION_RESPONSE_1_3),
-                    new LineResponse2(2L, "2호선", "빨간색", STATION_RESPONSE_1_2_3),
-                    new LineResponse2(3L, "존재하는 노선명", "초록색", STATION_RESPONSE_1_3)
+            List<LineResponse> actualBody = extractJsonBody(response);
+            List<LineResponse> expectedBody = List.of(
+                    new LineResponse(1L, "1호선", "노란색", STATION_RESPONSE_1_3),
+                    new LineResponse(2L, "2호선", "빨간색", STATION_RESPONSE_1_2_3),
+                    new LineResponse(3L, "존재하는 노선명", "초록색", STATION_RESPONSE_1_3)
             );
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             assertThat(actualBody).isEqualTo(expectedBody);
         }
 
-        private List<LineResponse2> extractJsonBody(ExtractableResponse<Response> response) {
-            return response.jsonPath().getList(".", LineResponse2.class);
+        private List<LineResponse> extractJsonBody(ExtractableResponse<Response> response) {
+            return response.jsonPath().getList(".", LineResponse.class);
         }
     }
 
@@ -123,8 +123,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         @Test
         void 성공시_200_OK() {
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/lines/1");
-            LineResponse2 actualBody = extractSingleLineResponseBody(response);
-            LineResponse2 expectedBody = new LineResponse2(1L, "1호선", "노란색", STATION_RESPONSE_1_3);
+            LineResponse actualBody = extractSingleLineResponseBody(response);
+            LineResponse expectedBody = new LineResponse(1L, "1호선", "노란색", STATION_RESPONSE_1_3);
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             assertThat(actualBody).isEqualTo(expectedBody);
@@ -229,7 +229,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }};
     }
 
-    private LineResponse2 extractSingleLineResponseBody(ExtractableResponse<Response> response) {
-        return response.jsonPath().getObject(".", LineResponse2.class);
+    private LineResponse extractSingleLineResponseBody(ExtractableResponse<Response> response) {
+        return response.jsonPath().getObject(".", LineResponse.class);
     }
 }
