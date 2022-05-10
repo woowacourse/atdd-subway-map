@@ -19,6 +19,15 @@ public class SectionTest {
                 .isInstanceOf(SectionCreateException.class);
     }
 
+    @DisplayName("동일한 역을 구간으로 등록하면 예외가 발생한다.")
+    @Test
+    void sameStationNoSectionException() {
+        assertThatThrownBy(() ->
+                new Section(1L, new Station(1L, "신당역"),
+                        new Station(1L, "신당역"), 3))
+                .isInstanceOf(SectionCreateException.class);
+    }
+
     @DisplayName("두 섹션을 하나로 합친다.")
     @Test
     void merge() {

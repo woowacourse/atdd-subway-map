@@ -40,6 +40,38 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("거리가 초과하는 섹션을 등록하면 400 BadRequest를 반환한다.")
+    @Test
+    void createSectionDistanceFail() {
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+        Station 역삼역 = stationRepository.save(new Station("역삼역"));
+        Station 선릉역 = stationRepository.save(new Station("선릉역"));
+
+        LineResponse lineResponse = lineService.create(
+                new LineRequest("2호선", "bg-green-200", 강남역.getId(), 역삼역.getId(), 5));
+        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 선릉역.getId(), 6);
+        ExtractableResponse<Response> response = httpPostTest(sectionRequest,
+                "/lines/" + lineResponse.getId() + " /sections");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("이미 연결된 섹션을 등록하면 400 BadRequest를 반환한다.")
+    @Test
+    void createSectionAlreadyConnectedFail() {
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+        Station 역삼역 = stationRepository.save(new Station("역삼역"));
+        Station 선릉역 = stationRepository.save(new Station("선릉역"));
+
+        LineResponse lineResponse = lineService.create(
+                new LineRequest("2호선", "bg-green-200", 강남역.getId(), 역삼역.getId(), 5));
+        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 역삼역.getId(), 6);
+        ExtractableResponse<Response> response = httpPostTest(sectionRequest,
+                "/lines/" + lineResponse.getId() + " /sections");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("섹션을 삭제하면 200 Ok를 반환한다.")
     @Test
     void deleteSection() {

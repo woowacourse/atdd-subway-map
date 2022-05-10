@@ -21,11 +21,18 @@ public class Section {
                    final int distance
     ) {
         validateDistance(distance);
+        validateSameSection(upStation, downStation);
         this.id = id;
         this.lineId = lineId;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void validateSameSection(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new SectionCreateException("동일한 역은 구간으로 등록할 수 없습니다.");
+        }
     }
 
     public Section(final Long lineId, final Station upStation, final Station downStation, final int distance) {
