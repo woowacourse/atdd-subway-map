@@ -19,26 +19,6 @@ import wooteco.subway.dto.StationResponse;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private ExtractableResponse<Response> postStations(StationRequest stationRequest) {
-        return RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> postLines(LineRequest lineRequest) {
-        return RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
     private ExtractableResponse<Response> getLineById(long expectId) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
