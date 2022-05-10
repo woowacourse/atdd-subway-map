@@ -18,8 +18,9 @@ import wooteco.subway.exception.NotFoundException;
 @Service
 public class LineService2 {
 
-    private static final String STATION_NOT_FOUND_EXCEPTION_MESSAGE = "해당되는 역은 존재하지 않습니다.";
-    private static final String DUPLICATE_NAME_EXCEPTION_MESSAGE = "중복되는 이름의 지하철 노선이 존재합니다.";
+    private static final String DUPLICATE_LINE_NAME_EXCEPTION_MESSAGE = "중복되는 이름의 지하철 노선이 존재합니다.";
+    private static final String LINE_NOT_FOUND_EXCEPTION_MESSAGE = "해당되는 노선은 존재하지 않습니다.";
+    private static final String STATION_NOT_FOUND_EXCEPTION_MESSAGE = "존재하지 않는 역을 입력하였습니다.";
 
     private final LineDao lineDao;
     private final StationDao stationDao;
@@ -34,26 +35,28 @@ public class LineService2 {
     @Transactional
     public LineResponse2 save(CreateLineRequest lineRequest) {
         validateUniqueLineName(lineRequest.getName());
-        StationEntity upStation = findExistingStation(lineRequest.getUpStationId());
-        StationEntity downStation = findExistingStation(lineRequest.getDownStationId());
+        List<StationEntity> stations = findExistingStations(lineRequest);
 
-        LineEntity lineEntity = new LineEntity(lineRequest.getName(), lineRequest.getColor());
-        LineEntity createdLineEntity = lineDao.save(lineEntity);
-        sectionDao.save(toSection(lineRequest, createdLineEntity));
+        LineEntity line = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
+        sectionDao.save(toSection(lineRequest, line));
 
-        return toLineResponse(createdLineEntity, List.of(upStation, downStation));
+        return toLineResponse(line, stations);
     }
 
     private void validateUniqueLineName(String name) {
         boolean isDuplicateName = lineDao.findByName(name).isPresent();
         if (isDuplicateName) {
-            throw new IllegalArgumentException(DUPLICATE_NAME_EXCEPTION_MESSAGE);
+            throw new IllegalArgumentException(DUPLICATE_LINE_NAME_EXCEPTION_MESSAGE);
         }
     }
 
-    private StationEntity findExistingStation(Long id) {
-        return stationDao.findById(id)
-                .orElseThrow(() -> new NotFoundException(STATION_NOT_FOUND_EXCEPTION_MESSAGE));
+    private List<StationEntity> findExistingStations(CreateLineRequest lineRequest) {
+        List<Long> stationsIds = List.of(lineRequest.getUpStationId(), lineRequest.getDownStationId());
+        List<StationEntity> stations = stationDao.findAllByIds(stationsIds);
+        if (stationsIds.size() != stations.size()) {
+            throw new NotFoundException(STATION_NOT_FOUND_EXCEPTION_MESSAGE);
+        }
+        return stations;
     }
 
     private SectionEntity toSection(CreateLineRequest lineRequest, LineEntity createdLineEntity) {
