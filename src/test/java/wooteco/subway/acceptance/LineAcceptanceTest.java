@@ -219,4 +219,47 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+    @Test
+    @DisplayName("노선에서 역을 삭제한다.")
+    void removeStation() {
+        // given
+        final List<Long> stationIds = save2StationsRequest("선릉역", "잠실역");
+        Map<String, String> lineParams = new HashMap<>();
+        lineParams.put("name", "2호선");
+        lineParams.put("color", "bg-green-600");
+        lineParams.put("upStationId", stationIds.get(0).toString());
+        lineParams.put("downStationId", stationIds.get(1).toString());
+        lineParams.put("distance", "10");
+        ExtractableResponse<Response> lineCreateResponse = createLineRequest(lineParams);
+        final LineResponseDto createdLine = lineCreateResponse.jsonPath()
+                .getObject(".", LineResponseDto.class);
+
+        final Long newStationId = save2StationsRequest("삼성역", "봉은사역").get(0);
+
+        Map<String, String> sectionParams = new HashMap<>();
+        sectionParams.put("upStationId", stationIds.get(0).toString());
+        sectionParams.put("downStationId", newStationId.toString());
+        sectionParams.put("distance", "5");
+
+        RestAssured.given().log().all()
+                .when()
+                .body(sectionParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .post("/lines/" + createdLine.getId() + "/sections")
+                .then().log().all()
+                .extract();
+
+        // when
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .body(sectionParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .delete("/lines/" + createdLine.getId() + "/sections?stationId=" + newStationId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }

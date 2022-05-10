@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.request.LineRequestDto;
@@ -78,6 +79,13 @@ public class LineController {
                 sectionRequestDto.getDownStationId(),
                 sectionRequestDto.getDistance()
         );
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/lines/{lineId}/sections")
+    public ResponseEntity<Void> removeStation(@PathVariable final Long lineId,
+                                                @RequestParam final Long stationId) {
+        lineService.removeStation(lineId, stationId);
         return ResponseEntity.ok().build();
     }
 }
