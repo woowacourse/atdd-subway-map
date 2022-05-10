@@ -80,6 +80,7 @@ public class Sections {
                 .filter(section -> section.getUpStation().equals(newUpStation))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당 구간이 존재하지 않습니다."));
+        validateDistance(distance, oldSection);
         final int oldSectionIndex = value.indexOf(oldSection);
         final Section frontSection = Section.createWithoutId(newUpStation, newDownStation, distance);
         final Section backSection = Section.createWithoutId(
@@ -112,6 +113,7 @@ public class Sections {
                 .filter(section -> section.getDownStation().equals(newDownStation))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당 구간이 존재하지 않습니다."));
+        validateDistance(distance, oldSection);
         final int oldSectionIndex = value.indexOf(oldSection);
         final Section frontSection = Section.createWithoutId(
                 oldSection.getUpStation(),
@@ -119,6 +121,12 @@ public class Sections {
                 oldSection.getDistance() - distance);
         final Section backSection = Section.createWithoutId(newUpStation, newDownStation, distance);
         splitSection(oldSectionIndex, frontSection, backSection);
+    }
+
+    private void validateDistance(final Integer distance, final Section oldSection) {
+        if (distance >= oldSection.getDistance()) {
+            throw new IllegalArgumentException("[ERROR] 역 사이에 새 역을 등록할 경우엔 길이가 원래 있던 길이보다 짧아야합니다.");
+        }
     }
 
     private void splitSection(final int oldSectionIndex, final Section frontSection, final Section backSection) {
