@@ -69,15 +69,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
         params.put("name", "강남역");
         ExtractableResponse<Response> createResponse = httpPostTest(params, "/stations");
 
-        // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = httpDeleteTest(uri);
 
-        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }

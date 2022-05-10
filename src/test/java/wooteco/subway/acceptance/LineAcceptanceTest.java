@@ -128,11 +128,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = httpPostTest(params, "/lines");
 
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = httpDeleteTest(uri);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }

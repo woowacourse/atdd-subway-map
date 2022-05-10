@@ -40,4 +40,12 @@ public class AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
+    protected ExtractableResponse<Response> httpDeleteTest(String url) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete(url)
+                .then().log().all()
+                .extract();
+    }
 }
