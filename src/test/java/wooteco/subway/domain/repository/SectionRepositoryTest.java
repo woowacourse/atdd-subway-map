@@ -70,14 +70,4 @@ class SectionRepositoryTest {
                 () -> assertThat(sections.get(1).getDownStation().getId()).isEqualTo(DOWN_STATION_ID)
         );
     }
-
-    @DisplayName("노선 식별자에 해당하는 상행 종점 역을 조회한다.")
-    @Test
-    void findTerminalUpStationByLineId() {
-       //when
-        Section section = sectionRepository.findTerminalUpStationByLineId(LINE_ID).get();
-
-        assertThat(section.getUpStation().getId()).isEqualTo(TERMINAL_UP_STATION_ID);
-    }
-
 }

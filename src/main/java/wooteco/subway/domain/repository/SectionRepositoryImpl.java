@@ -71,24 +71,4 @@ public class SectionRepositoryImpl implements SectionRepository {
         SqlParameterSource parameters = new MapSqlParameterSource("line_id", lineId);
         return namedParameterJdbcTemplate.query(sql, parameters, rowMapper());
     }
-
-    @Override
-    public Optional<Section> findTerminalUpStationByLineId(Long lineId) {
-        String sql = "SELECT * FROM section WHERE line_id = :line_id GROUP BY up_station_id HAVING count(*) = 1";
-        SqlParameterSource parameters = new MapSqlParameterSource("line_id", lineId);
-        List<Section> sections = namedParameterJdbcTemplate.query(sql, parameters, rowMapper());
-        return getOptional(sections);
-    }
-
-    @Override
-    public Optional<Section> findTerminalDownStationByLineId(Long lineId) {
-        return null;
-    }
-
-    private Optional<Section> getOptional(List<Section> sections) {
-        if (sections.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(sections.get(0));
-    }
 }
