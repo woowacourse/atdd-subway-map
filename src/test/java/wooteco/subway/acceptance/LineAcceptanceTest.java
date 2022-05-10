@@ -1,31 +1,22 @@
 package wooteco.subway.acceptance;
 
-import static org.assertj.core.api.Assertions.*;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.StationDao;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.dto.SimpleLineResponse;
 import wooteco.subway.dto.StationRequest;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
@@ -111,57 +102,30 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-//    @Test
-//    @DisplayName("현재 등록된 노선 전체를 불러온다.")
-//    void findAllLine() {
-//        //given
-//        Map<String, String> params1 = new HashMap<>();
-//        params1.put("name", "신분당선");
-//        params1.put("color", "bg-red-600");
-//        params1.put("upStationId", "1");
-//        params1.put("downStationId", "2");
-//        params1.put("distance", "10");
-//
-//        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-//                .body(params1)
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .when()
-//                .post("/lines")
-//                .then().log().all()
-//                .extract();
-//
-//        Map<String, String> params2 = new HashMap<>();
-//        params2.put("name", "신분당선");
-//        params2.put("color", "bg-red-600");
-//        params2.put("upStationId", "1");
-//        params2.put("downStationId", "2");
-//        params2.put("distance", "10");
-//
-//        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-//                .body(params2)
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .when()
-//                .post("/lines")
-//                .then().log().all()
-//                .extract();
-//
-//        //when
-//        ExtractableResponse<Response> response = RestAssured.given().log().all()
-//                .when()
-//                .get("/lines")
-//                .then().log().all()
-//                .extract();
-//
-//        //then
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-//        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-//                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-//                .collect(Collectors.toList());
-//        List<Long> resultLineIds = response.jsonPath().getList(".", SimpleLineResponse.class).stream()
-//                .map(SimpleLineResponse::getId)
-//                .collect(Collectors.toList());
-//        assertThat(resultLineIds).containsAll(expectedLineIds);
-//    }
+    @Test
+    @DisplayName("현재 등록된 노선 전체를 불러온다.")
+    void findAllLine() {
+        //given
+        ExtractableResponse<Response> line1 = createLineResponse(new LineRequest("2호선", "green", 1L, 2L, 10));
+        ExtractableResponse<Response> line2 = createLineResponse(new LineRequest("3호선", "yellow", 1L, 2L, 10));
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines")
+                .then().log().all()
+                .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<Long> expectedLineIds = Arrays.asList(line1, line2 ).stream()
+                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                .collect(Collectors.toList());
+        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
+        assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
 //
 //    @Test
 //    @DisplayName("등록된 노선들 중 입력된 id값과 일치하는 노선을 반환한다. ")

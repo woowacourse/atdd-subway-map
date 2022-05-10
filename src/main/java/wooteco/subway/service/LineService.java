@@ -1,18 +1,20 @@
 package wooteco.subway.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
-
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.*;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
+import wooteco.subway.dto.StationResponse;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -52,14 +54,24 @@ public class LineService {
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
     }
-/*
-    public List<SimpleLineResponse> findAll() {
+
+    public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
+
         return lines.stream()
-                .map(SimpleLineResponse::new)
+                .map((line) -> new LineResponse(line.getId(), line.getName(), line.getColor(), findStationsByLine(line.getId())))
                 .collect(Collectors.toList());
     }
 
+
+    public List<StationResponse> findStationsByLine(long lineId){
+        List<Section> sections = sectionDao.findByLine(lineId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 노선에 구간이 존재하지 않습니다."));
+
+        return makeStations(sections);
+    }
+
+    /*
     public SimpleLineResponse findById(Long id) {
         Line line = lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다."));

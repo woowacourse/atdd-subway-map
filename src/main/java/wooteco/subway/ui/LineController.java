@@ -1,6 +1,7 @@
 package wooteco.subway.ui;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,12 +33,13 @@ public class LineController {
     public void addSection(@Valid  @RequestBody SectionRequest sectionRequest, @PathVariable long id) {
         lineService.addSection(sectionRequest, id);
     }
-/*
+
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> findAllLine() {
         return ResponseEntity.ok(lineService.findAll());
     }
 
+    /*
    @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> findLineById(@PathVariable Long id) {
         return ResponseEntity.ok(lineService.findById(id));
