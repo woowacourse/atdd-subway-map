@@ -4,19 +4,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import wooteco.subway.entity.SectionEntity;
-import wooteco.subway.entity.StationEntity;
 
 @SuppressWarnings("NonAsciiCharacters")
 class SectionDaoTest extends DaoTest {
 
     @Autowired
     private SectionDao dao;
+
+    @Test
+    void findAllByLineId_메서드는_lineId에_해당하는_모든_구간_데이터를_조회() {
+        List<SectionEntity> actual = dao.findAllByLineId(1L);
+
+        List<SectionEntity> expected = List.of(
+                new SectionEntity(1L, 1L, 2L, 10),
+                new SectionEntity(1L, 2L, 3L, 5));
+
+        assertThat(actual).isEqualTo(expected);
+    }
 
     @DisplayName("save 메서드는 데이터를 저장한다")
     @Nested
