@@ -59,3 +59,20 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
    - H2 DB를 이용해 DB 저장, 확인, console 활용
 - 스프링 빈을 활용하기
    - 객체와 싱글톤이나 static으로 구현 객체들을 스프링 빈으로 관리
+
+# 3단계 기능 요구 사항
+
+## 지하철 노선 추가 API 수정
+- 노선 추가 시 3가지 정보를 추가로 입력 받음
+    - upStationId: 상행 종점
+    - downStationId: 하행 종점
+    - distance: 두 종점간의 거리
+- 두 종점간의 연결 정보를 이용하여 노선 추가 시 구간(Section) 정보도 함께 등록
+    - 변경된 API 스펙은 API 문서v2 참고
+
+## 구간 관리 API 구현
+- 추가 기능
+    - 노선에 구간을 추가
+    - 노선에 포함된 구간 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답
+    - 구간 제거
+    - 구간 관리 API 스펙은 API 문서v2 참고
