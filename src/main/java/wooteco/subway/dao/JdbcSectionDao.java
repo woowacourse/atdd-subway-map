@@ -68,11 +68,4 @@ public class JdbcSectionDao implements SectionDao {
         final String sql = "select exists (select * from SECTION where id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
-
-    @Override
-    public boolean existSectionByLineIdAndStationId(Long lineId, Long stationId) {
-        final String sql = "select exists (select * from SECTION where line_id = ? "
-                + "and (up_station_id = ? or down_station_id = ?))";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId, stationId);
-    }
 }
