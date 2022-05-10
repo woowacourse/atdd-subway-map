@@ -22,8 +22,12 @@ public class SectionService {
     }
 
     public void save(Long lineId, SectionRequest request) {
+        final Sections sections = new Sections(sectionDao.findByLineId(lineId));
+
         final Section section = new Section(lineId, request.getUpStationId(), request.getDownStationId(),
                 request.getDistance());
+
+        sections.add(section);
 
         sectionDao.save(section);
     }

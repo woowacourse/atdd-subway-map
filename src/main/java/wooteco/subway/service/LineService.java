@@ -55,13 +55,7 @@ public class LineService {
 
     public LineResponse findById(Long id) {
         final Line line = lineDao.findById(id);
-
         final Sections sections = new Sections(sectionDao.findByLineId(line.getId()));
-
-        final List<Section> sections1 = sections.getSections();
-        for (Section section : sections1) {
-            System.out.println("section.getId() = " + section.getId());
-        }
 
         return new LineResponse(line, sortedStations(sections));
     }
@@ -84,12 +78,11 @@ public class LineService {
 
         List<StationResponse> stations = new ArrayList<>();
 
-        for (int i = 0; i < sortedSections.size(); i++) {
-            final Section section = sortedSections.get(i);
-
+        for (final Section section : sortedSections) {
             final Station findStation = stationDao.findById(section.getUpStationId());
             stations.add(new StationResponse(findStation));
         }
+
         final Section lastSection = sortedSections.get(sortedSections.size() - 1);
         final Station lastStation = stationDao.findById(lastSection.getDownStationId());
         stations.add(new StationResponse(lastStation));
