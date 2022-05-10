@@ -55,6 +55,24 @@ class SectionRepositoryTest extends RepositoryTest {
         );
     }
 
+    @DisplayName("List로 들어온 Section을 모두 삭제한다.")
+    @Test
+    void deleteSections() {
+        Station saved_신당역 = stationRepository.save(신당역);
+        Station saved_동묘앞역 = stationRepository.save(동묘앞역);
+        Section section1 = new Section(1L, saved_신당역, saved_동묘앞역, 5);
+        Long id1 = sectionRepository.save(section1);
+
+        Station saved_창신역 = stationRepository.save(창신역);
+        Section section2 = new Section(1L, saved_신당역, saved_창신역, 5);
+        Long id2 = sectionRepository.save(section2);
+
+        sectionRepository.deleteSections(List.of(new Section(id1, 1L, saved_신당역, saved_동묘앞역, 5),
+                new Section(id2, 1L, saved_신당역, saved_창신역, 5)));
+
+        assertThat(sectionRepository.findByLineId(1L)).isEmpty();
+    }
+
     @DisplayName("노선을 삭제한다.")
     @Test
     void deleteById() {
