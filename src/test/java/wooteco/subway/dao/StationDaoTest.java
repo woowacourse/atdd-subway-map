@@ -64,4 +64,18 @@ class StationDaoTest {
         // then
         assertThat(affectedRows).isOne();
     }
+
+    @Test
+    @DisplayName("id들에 해당하는 역 모두 가져오기")
+    void findByIds() {
+        // given
+        stationDao.save(new Station("선릉"));
+        stationDao.save(new Station("잠실"));
+
+        // when
+        List<Station> stations = stationDao.findByIds(List.of(1,2));
+
+        // then
+        assertThat(stations).hasSize(2);
+    }
 }

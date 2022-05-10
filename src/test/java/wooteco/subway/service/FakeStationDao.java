@@ -43,6 +43,19 @@ public class FakeStationDao implements StationDao {
         return 1;
     }
 
+    @Override
+    public List<Station> findByIds(List<Integer> ids) {
+        List<Station> stations = new ArrayList<>();
+        for (Integer id : ids) {
+            for (Station station : stations) {
+                if (station.getId().equals(id)) {
+                    stations.add(station);
+                }
+            }
+        }
+        return stations;
+    }
+
     private Station createNewObject(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);

@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
@@ -18,12 +21,14 @@ public class JdbcStationDao implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleInserter;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public JdbcStationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleInserter = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(TABLE_NAME)
                 .usingGeneratedKeyColumns("id");
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
     }
 
     @Override
@@ -59,5 +64,12 @@ public class JdbcStationDao implements StationDao {
     public Integer deleteById(Long id) {
         String sql = "DELETE FROM station WHERE id = ?";
         return jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public List<Station> findByIds(List<Integer> ids) {
+        SqlParameterSource parameters = new MapSqlParameterSource("ids", ids);
+        String query = "SELECT * FROM station where id in (:ids)";
+        return namedParameterJdbcTemplate.query(query, parameters, getRowMapper());
     }
 }
