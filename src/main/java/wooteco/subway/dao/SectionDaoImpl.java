@@ -59,4 +59,11 @@ public class SectionDaoImpl implements SectionDao {
         int updateSize = jdbcTemplate.update(sql, downStationId, distance, sectionId);
         return updateSize != 0;
     }
+
+    @Override
+    public boolean deleteById(Long sectionId) {
+        final String sql = "DELETE FROM section where id = ?";
+        int updateSize = jdbcTemplate.update(sql, sectionId);
+        return updateSize != 0;
+    }
 }
