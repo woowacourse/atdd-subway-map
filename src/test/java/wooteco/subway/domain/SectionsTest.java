@@ -84,4 +84,19 @@ class SectionsTest {
         assertThat(downStationSection).isEmpty();
     }
 
+    @DisplayName("해당 역이 종점인지 확인한다.")
+    @ParameterizedTest
+    @CsvSource({"1,true", "2,false"})
+    void isLastStation(Long stationId, boolean result) {
+        Section section1 = new Section(10, 2L, 1L, 3L);
+        Section section2 = new Section(10, 2L, 3L, 2L);
+        Section section3 = new Section(10, 2L, 2L, 4L);
+
+        Sections sections = new Sections(List.of(section1, section2, section3));
+
+        boolean actual = sections.isLastStation(stationId);
+
+        assertThat(actual).isEqualTo(result);
+    }
+
 }

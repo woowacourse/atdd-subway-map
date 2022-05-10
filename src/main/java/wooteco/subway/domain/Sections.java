@@ -40,4 +40,8 @@ public class Sections {
                 .filter(section -> section.getDownStationId().equals(downStationId))
                 .findFirst();
     }
+
+    public boolean isLastStation(Long stationId) {
+        return getLastStationIds().contains(stationId);
+    }
 }
