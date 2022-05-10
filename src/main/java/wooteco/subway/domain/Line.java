@@ -31,14 +31,6 @@ public class Line {
         return color;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
