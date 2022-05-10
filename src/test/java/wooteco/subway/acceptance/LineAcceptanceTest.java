@@ -299,7 +299,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
-                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get("/lines/" + lineId)
@@ -343,7 +342,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
-                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get("/lines/" + lineId)
@@ -387,7 +385,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
-                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get("/lines/" + lineId)
