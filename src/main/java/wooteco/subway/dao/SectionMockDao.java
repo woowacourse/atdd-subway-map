@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Section;
 
@@ -28,7 +30,7 @@ public class SectionMockDao implements SectionDao {
     }
 
     @Override
-    public List<Section> findSectionsByLineId(Long lineId) {
+    public List<Section> findAllByLineId(Long lineId) {
         return sections.stream()
                 .filter(section -> section.getLineId().equals(lineId))
                 .collect(Collectors.toList());
@@ -37,6 +39,15 @@ public class SectionMockDao implements SectionDao {
     @Override
     public List<Section> findAll() {
         return Collections.unmodifiableList(sections);
+    }
+
+    @Override
+    public void update(Section section) {
+        int updatedSectionIndex = IntStream.range(0, sections.size())
+                .filter(i -> sections.get(i).getId().equals(section.getId()))
+                .findFirst()
+                .orElseThrow(() -> new EmptyResultDataAccessException("존재하지 않는 구간입니다.", 1));
+        sections.set(updatedSectionIndex, section);
     }
 
     @Override

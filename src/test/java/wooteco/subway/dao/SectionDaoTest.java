@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +43,7 @@ public class SectionDaoTest {
         sectionDao.save(SECTION);
         sectionDao.save(new Section(1L, 2L, 3L, 2));
 
-        List<Section> sections = sectionDao.findSectionsByLineId(1L);
+        List<Section> sections = sectionDao.findAllByLineId(1L);
 
         assertThat(sections).hasSize(2);
     }
@@ -56,6 +57,23 @@ public class SectionDaoTest {
         List<Section> sections = sectionDao.findAll();
 
         assertThat(sections).hasSize(2);
+    }
+
+    @DisplayName("지하철 구간을 수정한다.")
+    @Test
+    void update() {
+        long saveSectionId = sectionDao.save(SECTION);
+        Section updateSection = new Section(saveSectionId, 1L, 1L, 3L, 3);
+
+        sectionDao.update(updateSection);
+
+        Section section = sectionDao.findAll().get(0);
+        assertAll(
+                () -> {
+                    assertThat(section.getDownStationId()).isEqualTo(3L);
+                    assertThat(section.getDistance()).isEqualTo(3);
+                }
+        );
     }
 
     @DisplayName("지하철 구간을 삭제한다.")

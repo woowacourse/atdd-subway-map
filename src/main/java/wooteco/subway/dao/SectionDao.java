@@ -7,9 +7,11 @@ public interface SectionDao {
 
     long save(Section section);
 
-    List<Section> findSectionsByLineId(Long lineId);
+    List<Section> findAllByLineId(Long lineId);
 
     List<Section> findAll();
+
+    void update(Section section);
 
     void delete(Long id);
 
