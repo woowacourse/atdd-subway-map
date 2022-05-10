@@ -8,10 +8,12 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.service.dto.line.LineRequestDTO;
 import wooteco.subway.service.dto.line.LineResponseDTO;
 import wooteco.subway.service.dto.station.StationResponseDto;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -64,13 +66,23 @@ public class LineService {
 
     private LineResponseDTO makeLineResponseDto(Line line) {
         Sections sections = new Sections(sectionDao.findAllByLineId(line.getId()));
-        List<Long> stationIds = sections.getStationIds();
-        List<StationResponseDto> stations = stationDao.findAll().stream()
-                .filter(it -> stationIds.contains(it.getId()))
-                .map(StationResponseDto::new)
-                .collect(Collectors.toList());
+        List<StationResponseDto> stations = new ArrayList<>();
+        Long upStationId = sections.findFinalUpStationId();
+        addStations(upStationId, sections, stations);
 
         return new LineResponseDTO(line, stations);
+    }
+
+    private void addStations(Long upStationId, Sections sections, List<StationResponseDto> stations) {
+        if (sections.hasUpStationId(upStationId)){
+            Section section = sections.getSectionByUpStationId(upStationId);
+            Station station = stationDao.findById(upStationId);
+            stations.add(new StationResponseDto(station));
+            addStations(section.getDownStationId(), sections, stations);
+            return;
+        }
+        Station station = stationDao.findById(upStationId);
+        stations.add(new StationResponseDto(station));
     }
 
     private void validateDuplicate(LineRequestDTO lineRequestDTO) {

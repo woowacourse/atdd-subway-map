@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -142,5 +143,16 @@ public class Sections {
         return sections.stream()
                 .map(it -> it.getDownStationId())
                 .collect(Collectors.toList());
+    }
+
+    public Long findFinalUpStationId() {
+        return getUpStationIds().stream()
+                .filter(it -> !getDownStationIds().contains(it))
+                .findAny()
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 상행역 종점 조회 오류가 발생했습니다."));
+    }
+
+    public boolean hasUpStationId(Long upStationId) {
+        return getUpStationIds().contains(upStationId);
     }
 }

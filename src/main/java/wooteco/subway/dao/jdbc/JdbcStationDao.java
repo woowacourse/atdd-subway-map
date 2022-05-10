@@ -43,6 +43,12 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
+    public Station findById(Long id) {
+        String sql = "SELECT * FROM station WHERE id=?";
+        return jdbcTemplate.queryForObject(sql, STATION_ROW_MAPPER, id);
+    }
+
+    @Override
     public Station findByName(String name) {
         String sql = "SELECT * FROM station WHERE name=?";
         return jdbcTemplate.queryForObject(sql, STATION_ROW_MAPPER, name);

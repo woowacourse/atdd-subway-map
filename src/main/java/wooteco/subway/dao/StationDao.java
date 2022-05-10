@@ -8,6 +8,8 @@ public interface StationDao {
 
     Station create(Station station);
 
+    Station findById(Long upStationId);
+
     Station findByName(String name);
 
     List<Station> findAll();
