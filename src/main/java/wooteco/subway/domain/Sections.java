@@ -2,7 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import wooteco.subway.exception.notfound.NotFoundException;
+import wooteco.subway.exception.notfound.NotFoundSectionException;
 
 public class Sections {
 
@@ -30,7 +30,7 @@ public class Sections {
     private Section findAnySection() {
         return sections.stream()
                 .findAny()
-                .orElseThrow(() -> new NotFoundException("구간을 찾을 수 없습니다."));
+                .orElseThrow(NotFoundSectionException::new);
     }
 
     private Section findFirstSection(final Section section) {
@@ -49,7 +49,7 @@ public class Sections {
         return sections.stream()
                 .filter(section::isLowerThan)
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("구간을 찾을 수 없습니다."));
+                .orElseThrow(NotFoundSectionException::new);
     }
 
     private boolean hasLowerSection(final Section section) {
@@ -61,7 +61,7 @@ public class Sections {
         return sections.stream()
                 .filter(section::isUpperThan)
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("구간을 찾을 수 없습니다."));
+                .orElseThrow(NotFoundSectionException::new);
     }
 
     public void add(final Section section) {
@@ -110,7 +110,7 @@ public class Sections {
         return sections.stream()
                 .filter(s -> s.hasSameUpStationId(section))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("구간을 찾을 수 없습니다."));
+                .orElseThrow(NotFoundSectionException::new);
     }
 
     private boolean hasSameDownStationIdSection(final Section section) {
@@ -133,7 +133,7 @@ public class Sections {
         return sections.stream()
                 .filter(s -> s.hasSameDownStationId(section))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("구간을 찾을 수 없습니다."));
+                .orElseThrow(NotFoundSectionException::new);
     }
 
     public void remove(final Long stationId) {
@@ -196,14 +196,14 @@ public class Sections {
         return sections.stream()
                 .filter(s -> s.getUpStationId().equals(stationId))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("구간을 찾을 수 없습니다."));
+                .orElseThrow(NotFoundSectionException::new);
     }
 
     private Section findSameDownStationIdSection(final Long stationId) {
         return sections.stream()
                 .filter(s -> s.getDownStationId().equals(stationId))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("구간을 찾을 수 없습니다."));
+                .orElseThrow(NotFoundSectionException::new);
     }
 
     public List<Section> getSections() {
