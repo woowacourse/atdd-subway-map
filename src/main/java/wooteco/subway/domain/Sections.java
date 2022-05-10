@@ -44,9 +44,6 @@ public class Sections {
     private boolean isSectionConnected(final Map<Station, Station> upToDownStations,
                                        final Station upStation,
                                        final Station downStation) {
-        System.out.println(upToDownStations);
-        System.out.println(upStation);
-        System.out.println(downStation);
         return upToDownStations.containsKey(upStation) && upToDownStations.containsValue(downStation);
     }
 

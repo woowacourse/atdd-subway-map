@@ -39,4 +39,22 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+    @DisplayName("섹션을 삭제하면 200 Ok를 반환한다.")
+    @Test
+    void deleteSection() {
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+        Station 역삼역 = stationRepository.save(new Station("역삼역"));
+        Station 선릉역 = stationRepository.save(new Station("선릉역"));
+
+        LineResponse lineResponse = lineService.create(
+                new LineRequest("2호선", "bg-green-200", 강남역.getId(), 역삼역.getId(), 5));
+        SectionRequest sectionRequest = new SectionRequest(역삼역.getId(), 선릉역.getId(), 4);
+        httpPostTest(sectionRequest, "/lines/" + lineResponse.getId() + " /sections");
+
+        ExtractableResponse<Response> response = httpDeleteTest(
+                "/lines/" + lineResponse.getId() + "/sections?stationId=" + 선릉역.getId());
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }

@@ -22,6 +22,7 @@ create table if not exists SECTION
     distance        int,
     primary key (id)
 );
+
 TRUNCATE TABLE station RESTART IDENTITY;
 ALTER TABLE station ALTER COLUMN id RESTART WITH 1;
 

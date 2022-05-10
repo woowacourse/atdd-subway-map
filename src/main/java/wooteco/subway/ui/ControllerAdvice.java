@@ -16,7 +16,7 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<ErrorResponse> dataAccessExceptionHandler(DataAccessException e) {
+    public ResponseEntity<ErrorResponse> dataAccessExceptionHandler() {
         return ResponseEntity.internalServerError().body(new ErrorResponse("[ERROR] 데이터를 조회할 수 없습니다."));
     }
 }
