@@ -1,6 +1,6 @@
 drop table if exists STATION;
-drop table if exists LINE;
 drop table if exists SECTION;
+drop table if exists LINE;
 
 create table if not exists STATION
 (
@@ -20,9 +20,10 @@ create table if not exists LINE
 create table if not exists SECTION
 (
     id bigint auto_increment not null,
-    foreign key (line_id) references LINE (id) on delete cascade,
+    line_id bigint not null,
     up_station_id bigint not null,
     down_station_id bigint not null,
     distance int,
-    primary key(id)
+    primary key(id),
+    foreign key (line_id) references LINE (id) on delete cascade
 );
