@@ -84,4 +84,18 @@ public class SectionDaoTest {
                 .isEqualTo(section1);
     }
 
+    @DisplayName("노선에 이미 등록되어 있는 구간인지 확인한다.")
+    @Test
+    void checkExist() {
+        Line line = lineDao.save(new Line("2호선", "green"));
+        Station upStation = stationDao.save(new Station("강남역"));
+        Station downStation = stationDao.save(new Station("역삼역"));
+        Section section = new Section(upStation, downStation, 1);
+        sectionDao.save(line, section);
+
+        boolean actual = sectionDao.exists(line, section);
+
+        assertThat(actual).isTrue();
+    }
+
 }

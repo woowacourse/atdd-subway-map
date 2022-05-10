@@ -57,4 +57,13 @@ public class SectionDao {
         jdbcTemplate.update(sql, parameters);
     }
 
+    public boolean exists(Line line, Section section) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM SECTION WHERE line_id = :line_id "
+                + "AND up_station_id = :up_station_id AND down_station_id = :down_station_id)";
+        SqlParameterSource parameters = new MapSqlParameterSource("line_id", line.getId())
+                .addValue("up_station_id", section.getUpStation().getId())
+                .addValue("down_station_id", section.getDownStation().getId());
+        return Integer.valueOf(1).equals(jdbcTemplate.queryForObject(sql, parameters, Integer.class));
+    }
+
 }
