@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 
 @JdbcTest
 class JdbcSectionDaoTest {
@@ -94,5 +95,15 @@ class JdbcSectionDaoTest {
     void updateByLineIdAndStationId() {
         boolean isUpdated = jdbcSectionDao.updateDownStationIdByLineIdAndUpStationId(lineId, 2L, 3L);
         assertThat(isUpdated).isTrue();
+    }
+
+    @DisplayName("지하철 호선과 지하철역에 따라 구간을 조회한다.")
+    @Test
+    void findByLineIdAndStationId() {
+        Section section = new Section(lineId, 3L, 4L, 5);
+        jdbcSectionDao.save(section);
+
+        Sections sections = jdbcSectionDao.findByLineIdAndStationId(lineId, 3L);
+        assertThat(sections.getSections().size()).isEqualTo(2);
     }
 }

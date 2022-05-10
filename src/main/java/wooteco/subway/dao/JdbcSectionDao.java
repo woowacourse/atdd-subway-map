@@ -59,6 +59,12 @@ public class JdbcSectionDao {
         return new Sections(sections);
     }
 
+    public Sections findByLineIdAndStationId(Long lineId, Long stationId) {
+        String sql = "select * from section where line_id = ? and (up_station_id = ? or down_station_id = ?)";
+        List<Section> sections =  jdbcTemplate.query(sql, rowMapper, lineId, stationId, stationId);
+        return new Sections(sections);
+    }
+
     public Optional<Section> findByLineIdAndUpStationId(Long lineId, Long upStationId) {
         String sql = "select * from section where line_id = ? and up_station_id = ?";
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, lineId, upStationId));
