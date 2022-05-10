@@ -1,10 +1,8 @@
 package wooteco.subway.domain;
 
-public class Section {
+import java.util.Objects;
 
-    private static final String INVALID_DISTANCE_ERROR_MESSAGE = "유효하지 않은 거리입니다.";
-    private static final String DUPLICATED_SECTIONS_ERROR_MESSAGE = "상행과 하행은 같은 역으로 등록할 수 없습니다.";
-    private static final int MIN_DISTANCE = 1;
+public class Section {
 
     private Long id;
     private Long lineId;
@@ -12,29 +10,36 @@ public class Section {
     private Long downStationId;
     private int distance;
 
-    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
-        this.id = id;
+    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
         this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
     }
 
-    public void validSection() {
-        validDistance();
-        validStations();
+    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+        this(lineId, upStationId, downStationId, distance);
+        this.id = id;
     }
 
-    private void validDistance() {
-        if (distance < MIN_DISTANCE) {
-            throw new IllegalArgumentException(INVALID_DISTANCE_ERROR_MESSAGE);
-        }
+    public boolean canConnectWithDownStation(Section section) {
+        return downStationId.equals(section.upStationId);
     }
 
-    private void validStations() {
-        if (downStationId.equals(upStationId)) {
-            throw new IllegalArgumentException(DUPLICATED_SECTIONS_ERROR_MESSAGE);
-        }
+    public boolean canConnectWithUpStation(Section section) {
+        return upStationId.equals(section.downStationId);
+    }
+
+    public void shortenDistance(int distance) {
+        this.distance -= distance;
+    }
+
+    public void updateDownStationId(Long id) {
+        this.downStationId = id;
+    }
+
+    public void updateUpStationId(Long id) {
+        this.upStationId = id;
     }
 
     public Long getId() {
@@ -55,5 +60,35 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Section)) {
+            return false;
+        }
+        Section section = (Section) o;
+        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(lineId,
+                section.lineId) && Objects.equals(upStationId, section.upStationId) && Objects.equals(
+                downStationId, section.downStationId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, lineId, upStationId, downStationId, distance);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", lineId=" + lineId +
+                ", upStationId=" + upStationId +
+                ", downStationId=" + downStationId +
+                ", distance=" + distance +
+                '}';
     }
 }
