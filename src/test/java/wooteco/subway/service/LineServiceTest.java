@@ -28,18 +28,12 @@ public class LineServiceTest {
 
     private LineService lineService;
     private LineRepository lineRepository;
-    private SectionService sectionService;
-    private SectionRepository sectionRepository;
-    private StationRepository stationRepository;
-    private Station station1;
-    private Station station2;
 
     @BeforeEach
     void setUp() {
         lineRepository = new LineRepositoryImpl(dataSource);
-        sectionRepository = new SectionRepositoryImpl(dataSource);
-        lineService = new LineService(lineRepository, sectionService, sectionRepository);
-        stationRepository = new StationRepositoryImpl(dataSource);
+        lineService = new LineService(lineRepository,
+                new SectionRepositoryImpl(dataSource));
     }
 
     @DisplayName("노선을 생성한다.")
@@ -77,12 +71,12 @@ public class LineServiceTest {
     @DisplayName("노선을 조회한다.")
     @Test
     void showLine() {
-        Line line = lineRepository.save(new Line("분당선", "bg-red-600"));
+        Line line = lineRepository.findById(LINE_ID).get();
         LineResponse lineResponse = lineService.getLine(line.getId());
 
         assertAll(
-                () -> assertThat(lineResponse.getName()).isEqualTo("분당선"),
-                () -> assertThat(lineResponse.getColor()).isEqualTo("bg-red-600")
+                () -> assertThat(lineResponse.getName()).isEqualTo("2호선"),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("bg-green-600")
         );
     }
 

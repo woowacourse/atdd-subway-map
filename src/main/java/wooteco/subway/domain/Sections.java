@@ -4,7 +4,9 @@ import wooteco.subway.utils.exception.NoTerminalStationException;
 import wooteco.subway.utils.exception.NotFoundException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -16,25 +18,37 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-        for (Section section : sections) {
-            stations.add(section.getUpStation());
-            stations.add(section.getDownStation());
-        }
-        return stations.stream()
-                .distinct()
-                .collect(Collectors.toList());
+        Map<Station, Station> hash = sections.stream()
+                .collect(Collectors.toMap(
+                        Section::getUpStation,
+                        Section::getDownStation,
+                        (key, value) -> key,
+                        HashMap::new));
+        Section terminalSection = getTerminalUpStationSection();
+
+        Station upStation = terminalSection.getUpStation();
+        return getStations(hash, upStation);
     }
 
-    public Station getTerminalDownStation() {
-        List<Station> upStations = sections.stream()
-                .map(Section::getUpStation)
+    private List<Station> getStations(Map<Station, Station> hash, Station upStation) {
+        List<Station> stations = new ArrayList<>();
+        stations.add(upStation);
+        while (hash.containsKey(upStation)){
+            Station nextStation = hash.get(upStation);
+            stations.add(nextStation);
+            upStation = nextStation;
+        }
+        return stations;
+    }
+
+    private Section getTerminalUpStationSection() {
+        List<Station> downStations = sections.stream()
+                .map(Section::getDownStation)
                 .collect(Collectors.toList());
-        Section terminalUpStation = sections.stream()
-                .filter(section -> !upStations.contains(section.getDownStation()))
+        return sections.stream()
+                .filter(section -> !downStations.contains(section.getUpStation()))
                 .findFirst()
                 .orElseThrow(() -> new NoTerminalStationException("[ERROR] 종점이 없습니다."));
-        return terminalUpStation.getDownStation();
     }
 
     public boolean isDuplicateSection(Long upStationId, Long downStationId) {

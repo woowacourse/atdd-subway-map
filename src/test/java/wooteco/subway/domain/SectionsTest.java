@@ -34,20 +34,33 @@ class SectionsTest {
     void getStations() {
         List<Station> stations = sections.getStations();
         assertAll(
+                () -> assertThat(stations).hasSize(3),
                 () -> assertThat(stations.get(0)).isEqualTo(terminalUpStation),
                 () -> assertThat(stations.get(1)).isEqualTo(upStation),
                 () -> assertThat(stations.get(2)).isEqualTo(downStation)
         );
     }
 
-    @DisplayName("하행 종점의 역을 조회한다.")
+    @DisplayName("구간에 있는 모든 역들을 상행에서 하행순서대로 조회한다.")
     @Test
-    void getTerminalUpStation() {
-        Station station = sections.getTerminalDownStation();
-        assertThat(station).isEqualTo(downStation);
+    void getOrderStations() {
+        Station newStation = new Station(4L, "하행종점역");
+        Sections sections = new Sections(List.of(
+                new Section(1L, downStation, newStation, 4),
+                new Section(1L, terminalUpStation, upStation, 5),
+                new Section(1L, upStation, downStation, 5)
+        ));
+        List<Station> stations = sections.getStations();
+        assertAll(
+                () -> assertThat(stations).hasSize(4),
+                () -> assertThat(stations.get(0)).isEqualTo(terminalUpStation),
+                () -> assertThat(stations.get(1)).isEqualTo(upStation),
+                () -> assertThat(stations.get(2)).isEqualTo(downStation),
+                () -> assertThat(stations.get(3)).isEqualTo(newStation)
+        );
     }
 
-    @DisplayName("상행, 하행 id와 중복되는 구간이 존재하면 true를 반환한다. ")
+    @DisplayName("상행, 하행 id와 중복되는 구간이 존재하면 true를 반환한다.")
     @Test
     void checkDuplicateSection() {
         assertThat(sections.isDuplicateSection(1L, 2L)).isTrue();

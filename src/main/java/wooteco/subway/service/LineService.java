@@ -19,12 +19,10 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private final LineRepository lineRepository;
-    private final SectionService sectionService;
     private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, SectionService sectionService, SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
-        this.sectionService = sectionService;
         this.sectionRepository = sectionRepository;
     }
 
