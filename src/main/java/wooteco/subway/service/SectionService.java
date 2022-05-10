@@ -26,13 +26,18 @@ public class SectionService {
 
     @Transactional
     public void create(Long lineId, SectionRequest request) {
-        validateRequest(lineId, request);
+        validateExistLine(lineId);
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        validateExistStationInLine(sections, request.getUpStationId(), request.getDownStationId());
+
         if (sections.isLastStation(request.getUpStationId(), request.getDownStationId())) {
             sectionDao.insert(new Section(lineId, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
             return;
         }
+        createMiddleSection(lineId, request, sections);
+    }
 
+    private void createMiddleSection(Long lineId, SectionRequest request, Sections sections) {
         Section existSection = sections.findExistSection(request.getUpStationId(), request.getDownStationId());
         if (request.getDistance() >= existSection.getDistance()) {
             throw new IllegalArgumentException("새로운 구간의 길이는 기존 역 사이의 길이보다 작아야 합니다.");
@@ -43,23 +48,18 @@ public class SectionService {
         sectionDao.update(updateExistSection);
     }
 
-    private void validateRequest(Long lineId, SectionRequest request) {
-        validateExistLine(lineId);
-        validateExistStationInLine(lineId, request.getUpStationId(), request.getDownStationId());
-    }
-
     private void validateExistLine(Long id) {
         if (!lineDao.existLineById(id)) {
             throw new IllegalArgumentException("존재하지 않는 노선입니다.");
         }
     }
 
-    private void validateExistStationInLine(Long lineId, Long upStationId, Long downStationId) {
+    private void validateExistStationInLine(Sections sections, Long upStationId, Long downStationId) {
         if (!stationDao.existStationById(upStationId) || !stationDao.existStationById(downStationId)) {
             throw new IllegalArgumentException("등록되지 않은 역으로는 구간을 만들 수 없습니다.");
         }
-        boolean isExistUpStation = stationDao.hasStationByStationAndLineId(lineId, upStationId);
-        boolean isExistDownStation = stationDao.hasStationByStationAndLineId(lineId, downStationId);
+        boolean isExistUpStation = sections.hasStation(upStationId);
+        boolean isExistDownStation = sections.hasStation(downStationId);
         if (!isExistUpStation && !isExistDownStation) {
             throw new IllegalArgumentException("구간을 추가하기 위해서는 노선에 들어있는 역이 필요합니다.");
         }
@@ -71,18 +71,20 @@ public class SectionService {
     @Transactional
     public void delete(Long lineId, Long stationId) {
         validateExistLine(lineId);
-        validateExistStationInLine(lineId, stationId);
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        validateExistStationInLine(sections, stationId);
         validateRemainOneSection(sections);
 
-        if (deleteStationLocatedLast(sections, stationId)) {
+        Optional<Section> sectionWithLastStation = sections.checkAndExtractLastStation(stationId);
+        if (sectionWithLastStation.isPresent()) {
+            sectionDao.deleteById(sectionWithLastStation.get().getId());
             return;
         }
-        deleteStationLocatedMiddle(sections, lineId, stationId);
+        deleteMiddleStation(sections, lineId, stationId);
     }
 
-    private void validateExistStationInLine(Long lineId, Long stationId) {
-        if (!stationDao.hasStationByStationAndLineId(lineId, stationId)) {
+    private void validateExistStationInLine(Sections sections, Long stationId) {
+        if (!sections.hasStation(stationId)) {
             throw new IllegalArgumentException("현재 라인에 존재하지 않는 역입니다.");
         }
     }
@@ -93,16 +95,7 @@ public class SectionService {
         }
     }
 
-    private boolean deleteStationLocatedLast(Sections sections, Long stationId) {
-        Optional<Section> sectionWithLastStation = sections.checkAndExtractLastStation(stationId);
-        if (sectionWithLastStation.isPresent()) {
-            sectionDao.deleteById(sectionWithLastStation.get().getId());
-            return true;
-        }
-        return false;
-    }
-
-    private void deleteStationLocatedMiddle(Sections sections, Long lineId, Long stationId) {
+    private void deleteMiddleStation(Sections sections, Long lineId, Long stationId) {
         Section upSideStation = sections.extractUpSideStation(stationId);
         Section downSideStation = sections.extractDownSideStation(stationId);
         Section newSection = new Section(lineId, upSideStation.getUpStationId(), downSideStation.getDownStationId(),

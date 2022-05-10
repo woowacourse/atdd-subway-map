@@ -43,6 +43,11 @@ public class Sections {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
+    public boolean hasStation(Long stationId) {
+        return values.stream()
+                .anyMatch(s -> s.getUpStationId().equals(stationId) || s.getDownStationId().equals(stationId));
+    }
+
     public boolean hasOneSection() {
         return values.size() <= 1;
     }
