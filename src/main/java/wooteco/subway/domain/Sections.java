@@ -12,8 +12,8 @@ public class Sections {
         this.values = values;
     }
 
-    public boolean isLastStation(Long upStationId, Long downStationId) {
-        return isLastUpStation(downStationId) || isLastDownStation(upStationId);
+    public boolean isLastStation(Long newUpStationId, Long newDownStationId) {
+        return isLastUpStation(newDownStationId) || isLastDownStation(newUpStationId);
     }
 
     private boolean isLastUpStation(Long stationId) {
@@ -36,9 +36,9 @@ public class Sections {
                 .noneMatch(s -> s.getUpStationId().equals(stationId));
     }
 
-    public Section findExistSection(Long upStationId, Long downStationId) {
+    public Section findExistSection(Long newUpStationId, Long newDownStationId) {
         return values.stream()
-                .filter(s -> s.getUpStationId().equals(upStationId))
+                .filter(s -> s.getUpStationId().equals(newUpStationId) || s.getDownStationId().equals(newDownStationId))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
