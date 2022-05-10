@@ -64,8 +64,13 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 -[x] 노선 기능에 대한 E2E 테스트를 작성
 
 ### 지하철 노선 추가 API 수정
-- [ ] 노선 추가 시 3가지 정보를 추가로 입력 받음
+- [x] 노선 추가 시 3가지 정보를 추가로 입력 받음
 - upStationId: 상행 종점
 - downStationId: 하행 종점
 - distance: 두 종점간의 거리
-- [ ] 두 종점간의 연결 정보를 이용하여 노선 추가 시 구간(Section) 정보도 함께 등록
+- [x] 두 종점간의 연결 정보를 이용하여 노선 추가 시 구간(Section) 정보도 함께 등록
+
+### 구간 관리 API 구현
+- [x] 노선에 구간을 추가
+- [x] 노선에 포함된 구간 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답
+- [ ] 구간 제거
