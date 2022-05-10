@@ -12,9 +12,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.domain.Line;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
@@ -27,6 +26,9 @@ class LineServiceTest {
 
     @Mock
     private SectionDao sectionDao;
+
+    @Mock
+    private StationDao stationDao;
 
 
     @Test
@@ -68,17 +70,6 @@ class LineServiceTest {
         assertThatThrownBy(() -> lineService.findById(id))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 ID의 노선은 존재하지 않습니다.");
-    }
-
-    @Test
-    @DisplayName("line 과 section 을 저장한다.")
-    void save() {
-        //given
-        given(lineDao.save(any(Line.class))).willReturn(1L);
-        //when
-        LineResponse response = lineService.save(new LineRequest("2호선", "red", 1L, 2L, 10));
-        //then
-
     }
 
 }

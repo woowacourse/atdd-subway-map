@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -40,7 +41,8 @@ public class StationDao {
     public Station findById(Long id) {
         String selectSql = "select * from STATION where id = :id";
         SqlParameterSource source = new MapSqlParameterSource("id", id);
-        return Objects.requireNonNull(jdbcTemplate.queryForObject(selectSql, source, eventRowMapper));
+        Optional<Station> station = Optional.ofNullable(jdbcTemplate.queryForObject(selectSql, source, eventRowMapper));
+        return station.orElseThrow(() -> new IllegalStateException("지하철 역이 존재하지 않습니다."));
     }
 
     public List<Station> findAll() {

@@ -43,9 +43,9 @@ public class LineService {
     }
 
     private List<Station> findBySection(Section section) {
-        Long upStationId = section.getUpStationId();
-        Long downStationId = section.getDownStationId();
-        return List.of(stationDao.findById(upStationId), stationDao.findById(downStationId));
+        Station upStation = stationDao.findById(section.getUpStationId());
+        Station downStation = stationDao.findById(section.getDownStationId());
+        return List.of(upStation, downStation);
     }
 
     public void update(Long id, LineRequest lineRequest) {
