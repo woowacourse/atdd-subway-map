@@ -30,9 +30,6 @@ public class Sections {
         final Station downStation = section.getDownStation();
         if ((!stations.contains(upStation) && !stations.contains(downStation)) ||
                 (stations.contains(upStation) && stations.contains(downStation))) {
-
-            System.out.println("구간 상 하 역이 둘 다 없거나 둘 다 있거나!!!");
-
             throw new IllegalSectionException();
         }
     }

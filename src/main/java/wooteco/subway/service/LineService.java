@@ -77,16 +77,10 @@ public class LineService {
         final Section section = new Section(upStation, downStation, sectionRequestDto.getDistance());
         final Sections sections = new Sections(searchSectionsByLineId(line.getId()));
         if (sections.isAddableOnLine(section)) {
-
-            System.out.println("구간이 노선 중간에 생성!!!");
-
             final Section overlapSection = sections.findOverlapSection(section);
             registerSectionWhenOnLine(line.getId(), section, overlapSection);
             return;
         }
-
-        System.out.println("구간이 노선 양끝에 생성!!!");
-
         sectionDao.save(new SectionEntity(lineId, section));
     }
 
