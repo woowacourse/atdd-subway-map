@@ -21,6 +21,10 @@ public class StationResponse {
         this(station.getId(), station.getName());
     }
 
+    public static StationResponse from(StationEntity stationEntity) {
+        return new StationResponse(stationEntity.getId(), stationEntity.getName());
+    }
+
     public Long getId() {
         return id;
     }

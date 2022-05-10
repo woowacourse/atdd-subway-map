@@ -1,14 +1,18 @@
 package wooteco.subway.ui.response;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import wooteco.subway.domain.LineEntity;
+import wooteco.subway.domain.StationEntity;
 
 public class LineResponse {
 
     private Long id;
     private String name;
     private String color;
+    private List<StationResponse> stations;
 
     public LineResponse() {
     }
@@ -19,8 +23,21 @@ public class LineResponse {
         this.color = color;
     }
 
+    public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.stations = stations;
+    }
+
     public LineResponse(LineEntity line) {
         this(line.getId(), line.getName(), line.getColor());
+    }
+
+    public LineResponse(LineEntity line, List<StationEntity> stationEntities) {
+        this(line.getId(), line.getName(), line.getColor(), stationEntities.stream()
+            .map(StationResponse::from)
+            .collect(Collectors.toList()));
     }
 
     public Long getId() {
@@ -33,6 +50,10 @@ public class LineResponse {
 
     public String getColor() {
         return color;
+    }
+
+    public List<StationResponse> getStations() {
+        return stations;
     }
 
     @Override
