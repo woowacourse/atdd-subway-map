@@ -25,14 +25,6 @@ public class Line {
         this.color = color;
     }
 
-    public Line(final long id, final String name, final String color, final Section section) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        sections.add(section);
-        stations.addAll(Set.of(section.getUpStation(), section.getDownStation()));
-    }
-
     public void update(final String name, final String color) {
         this.name = name;
         this.color = color;
