@@ -104,6 +104,10 @@ public class LineService {
         int distance = request.getDistance();
         Section wait = new Section(line, upStation, downStation, distance);
 
+        if (sections.existUpStation(upStation) && sections.existDownStation(downStation)) {
+            throw new IllegalArgumentException("기존에 존재하는 구간입니다.");
+        }
+
         if (sections.existUpStation(upStation)) {
             Section section = sections.findUpStation(upStation);
             List<Section> split = section.splitFromUpStation(wait);
