@@ -50,12 +50,12 @@ public class StationDao {
     }
 
     public int delete(Long id) {
-        final String sql = "DELETE FROM STATION WHERE id=?";
+        final String sql = "DELETE FROM STATION WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
 
     public boolean isExistName(String name) {
-        final String sql = "SELECT EXISTS (SELECT * FROM STATION WHERE name=?)";
+        final String sql = "SELECT EXISTS (SELECT * FROM STATION WHERE name = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
     }
 

@@ -71,10 +71,12 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 
 ## 3단계 기능 요구사항
 
-### 지하철 노선 관련
+### 기존 구현 사항 관련
 
 - [x] 노선 추가 시 상행종점, 하행종점, 거리를 추가로 입력
 - [x] 노선 추가 시 구간(Section) 정보도 함께 등록
+- [x] 노선 삭제 시 구간(Section) 정보도 함께 삭제
+- [x] 구간에 등록되어 있는 지하철 역은 삭제 불가능
 
 ### 구간관리 관련
 

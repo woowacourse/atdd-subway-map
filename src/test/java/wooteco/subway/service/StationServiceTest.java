@@ -54,7 +54,8 @@ class StationServiceTest {
         stationService.insert(잠실역_요청);
 
         //when
-        List<String> responseNames = stationService.findAll().stream().map(StationResponse::getName)
+        List<String> responseNames = stationService.findAll().stream()
+                .map(StationResponse::getName)
                 .collect(Collectors.toList());
 
         //then

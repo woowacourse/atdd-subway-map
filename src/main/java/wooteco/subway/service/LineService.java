@@ -83,6 +83,7 @@ public class LineService {
         if (lineDao.delete(id) == 0) {
             throw new NotFoundException(LINE_NOT_FOUND);
         }
+        sectionDao.deleteByLineId(id);
     }
 
     @Transactional
