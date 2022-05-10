@@ -16,11 +16,12 @@ public class ExceptionAdviser {
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<ErrorResponse> EmptyResultDataAccessExceptionHandler(EmptyResultDataAccessException e) {
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.notFound().build() ;
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> exceptionHandler() {
+    public ResponseEntity<ErrorResponse> exceptionHandler(RuntimeException e) {
+        e.printStackTrace();
         return ResponseEntity.internalServerError().body(new ErrorResponse("런타임 에러", "현재 서버에 문제가 발생해 응답할 수 없습니다."));
     }
 }

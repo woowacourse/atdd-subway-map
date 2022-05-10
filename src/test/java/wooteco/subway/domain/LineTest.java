@@ -88,4 +88,24 @@ class LineTest {
                         .isInstanceOf(IndexOutOfBoundsException.class)
         );
     }
+    
+    @DisplayName("중간역 삭제 후 변경된 구간 탐지")
+    @Test
+    void 두_라인_사이_다른_구간_반환() {
+        Section AtoB = new Section(new Station("A"), new Station("B"), 1);
+        Section BtoC = new Section(new Station("B"), new Station("C"), 1);
+        Section CtoD = new Section(new Station("C"), new Station("D"), 1);
+        Sections sections = new Sections(new LinkedList<>(List.of(AtoB, BtoC, CtoD)));
+        Line line = new Line("1호선", "red", sections);
+        Sections oldSections = new Sections(line.getSections());
+        line.delete(new Station("C"));
+        List<Section> result = oldSections.findDifferentSections(new Sections(line.getSections()));
+
+        assertAll(
+                () -> assertThat(result.get(0)).isEqualTo(BtoC),
+                () -> assertThat(result.get(1)).isEqualTo(CtoD),
+                () -> assertThatThrownBy(() -> result.get(2))
+                        .isInstanceOf(IndexOutOfBoundsException.class)
+        );
+    }
 }

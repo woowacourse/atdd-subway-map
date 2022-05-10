@@ -76,6 +76,10 @@ public class Section {
         }
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public Station getUp() {
         return up;
     }

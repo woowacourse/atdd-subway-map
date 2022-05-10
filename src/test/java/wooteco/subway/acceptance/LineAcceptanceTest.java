@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineEditRequest;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationRequest;
 
 @DisplayName("노선 관련 기능")
@@ -46,6 +47,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
+                .then().log().all()
+                .extract();
+        return response;
+    }
+
+    private ExtractableResponse<Response> getLine(Long id) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + id)
                 .then().log().all()
                 .extract();
         return response;
@@ -184,5 +194,61 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("구간을 추가한다")
+    @Test
+    void 구간_추가() {
+        // given
+        Long 강남역Id = postStationThenReturnId("강남역");
+        Long 선릉역Id = postStationThenReturnId("선릉역");
+        Long 역삼역Id = postStationThenReturnId("역삼역");
+        LineRequest lineRequest = new LineRequest(
+                "2호선", "bg-green-600", 강남역Id, 선릉역Id, 3);
+        Long lineId = postToLines(lineRequest).jsonPath().getLong("id");
+
+        // when
+        SectionRequest request = new SectionRequest(역삼역Id, 선릉역Id, 1);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("구간을 삭제한다")
+    @Test
+    void 구간_삭제() {
+        // given
+        Long 강남역Id = postStationThenReturnId("강남역");
+        Long 선릉역Id = postStationThenReturnId("선릉역");
+        Long 역삼역Id = postStationThenReturnId("역삼역");
+        LineRequest lineRequest = new LineRequest(
+                "2호선", "bg-green-600", 강남역Id, 선릉역Id, 3);
+        Long lineId = postToLines(lineRequest).jsonPath().getLong("id");
+
+        // when
+        SectionRequest request = new SectionRequest(역삼역Id, 선릉역Id, 1);
+
+        RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/lines/" + lineId + "/sections?stationId=" + 선릉역Id)
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

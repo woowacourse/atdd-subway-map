@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.LinkedList;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
@@ -69,5 +71,22 @@ class JdbcSectionDaoTest {
         sectionDao.save(SectionDto.of(included2, savedLine.getId()));
 
         assertThat(sectionDao.findByLineId(savedLine.getId()).size()).isEqualTo(2);
+    }
+    
+    @DisplayName("구간_삭제")
+    @Test
+    void 구간_삭제() {
+        Station up = stationDao.save(new Station("합정역"));
+        Station down = stationDao.save(new Station("홍대입구역"));
+        Section section = new Section(up, down, 1);
+        Line line = new Line("2호선", "green", new Sections(section));
+        LineDto savedId = lineDao.save(LineDto.from(line));
+
+        SectionDto savedSection = sectionDao.save(SectionDto.of(section, savedId.getId()));
+
+        sectionDao.delete(savedSection.getId());
+
+        assertThatThrownBy(() -> sectionDao.findById(savedSection.getId()))
+                .isInstanceOf(EmptyResultDataAccessException.class);
     }
 }

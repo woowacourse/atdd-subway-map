@@ -55,6 +55,19 @@ public class JdbcSectionDao implements SectionDao {
         return jdbcTemplate.query(sql, Map.of("id", id), mapper());
     }
 
+    @Override
+    public void update(SectionDto sectionDto) {
+        String sql = "update SECTION set up_station_id = :upStationId, down_station_id = :downStationId where id = :id";
+        jdbcTemplate.update(sql, Map.of("upStationId", sectionDto.getUpStationId(),
+                "downStationId", sectionDto.getDownStationId(), "id", sectionDto.getId()));
+    }
+
+    @Override
+    public void delete(Long id) {
+        String sql = "delete from SECTION where id = :id";
+        jdbcTemplate.update(sql, Map.of("id", id));
+    }
+
     private RowMapper<SectionDto> mapper() {
         return (resultSet, rowNum) ->
                 new SectionDto(

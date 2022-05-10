@@ -15,6 +15,10 @@ public class Sections {
         this.sections = sections;
     }
 
+    public Sections(List<Section> sections) {
+        this.sections = new LinkedList<>(sections);
+    }
+
     public Sections(Section section) {
         this.sections = new LinkedList<>();
         sections.add(section);
@@ -95,8 +99,14 @@ public class Sections {
         }
     }
 
+    public List<Section> findDifferentSections(Sections other) {
+        LinkedList<Section> result = new LinkedList<>(this.sections);
+        result.removeAll(other.sections);
+        return result;
+    }
+
     public List<Section> getSections() {
-        return Collections.unmodifiableList(sections);
+        return new LinkedList<>(sections);
     }
 
     public List<Station> getStations() {

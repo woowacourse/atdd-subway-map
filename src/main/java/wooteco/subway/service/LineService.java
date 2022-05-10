@@ -8,10 +8,14 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineDto;
 import wooteco.subway.dto.LineEditRequest;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.SectionDto;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.repository.LineRepository;
+import wooteco.subway.repository.SectionRepository;
 import wooteco.subway.repository.StationRepository;
 
 @Service
@@ -19,13 +23,15 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final SectionRepository sectionRepository;
     private final LineDao lineDao;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository,
+    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository,
                        LineDao lineDao) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
         this.lineDao = lineDao;
+        this.sectionRepository = sectionRepository;
     }
 
     public Line save(LineRequest lineRequest) {
@@ -62,7 +68,54 @@ public class LineService {
         }
     }
 
+    public void addSection(Long id, SectionRequest request) {
+        // A - - C
+        // A - B - C
+        // 삭제 : A-C
+        // 추가 : A-B, B-C
+        Line line = lineRepository.findById(id);
+        Station up = stationRepository.findById(request.getUpStationId());
+        Station down = stationRepository.findById(request.getDownStationId());
+        Section section = new Section(up, down, request.getDistance());
+
+        Sections before = new Sections(line.getSections());
+        line.add(section);
+        Sections after = new Sections(line.getSections());
+        List<Section> deleteTargets = before.findDifferentSections(after);
+        List<Section> insertTargets = after.findDifferentSections(before);
+
+        for (Section deleteTarget : deleteTargets) {
+            sectionRepository.delete(deleteTarget.getId());
+        }
+
+        for (Section updateTarget : insertTargets) {
+            sectionRepository.create(line.getId(),
+                    new SectionRequest(updateTarget.getUp().getId(), updateTarget.getDown().getId(),
+                            updateTarget.getDistance()));
+        }
+
+    }
+
     public void deleteById(Long id) {
         lineDao.deleteById(id);
+    }
+
+    public void deleteSection(Long id, Long stationId) {
+        Line line = lineRepository.findById(id);
+        Station station = stationRepository.findById(stationId);
+
+        Sections before = new Sections(line.getSections());
+        line.delete(station);
+        Sections after = new Sections(line.getSections());
+        List<Section> deleteTargets = before.findDifferentSections(after);
+        List<Section> insertTargets = after.findDifferentSections(before);
+
+        for (Section deleteTarget : deleteTargets) {
+            sectionRepository.delete(deleteTarget.getId());
+        }
+        for (Section updateTarget : insertTargets) {
+            sectionRepository.create(line.getId(),
+                    new SectionRequest(updateTarget.getUp().getId(), updateTarget.getDown().getId(), updateTarget.getDistance()));
+        }
     }
 }

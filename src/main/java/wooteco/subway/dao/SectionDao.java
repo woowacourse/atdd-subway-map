@@ -12,4 +12,8 @@ public interface SectionDao {
     SectionDto findById(Long id);
 
     List<SectionDto> findByLineId(Long id);
+
+    void update(SectionDto sectionDto);
+
+    void delete(Long id);
 }

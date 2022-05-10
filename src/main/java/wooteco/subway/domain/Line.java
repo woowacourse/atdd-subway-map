@@ -76,6 +76,10 @@ public class Line {
         this.color = color;
     }
 
+    public List<Section> findDifferentSections(Sections sections) {
+        return this.sections.findDifferentSections(sections);
+    }
+
     public List<Section> getSections() {
         return sections.getSections();
     }
