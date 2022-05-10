@@ -49,6 +49,10 @@ public class Line {
         }
     }
 
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
     public Long getId() {
         return id;
     }
