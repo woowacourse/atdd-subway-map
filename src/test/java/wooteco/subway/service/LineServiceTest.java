@@ -3,13 +3,19 @@ package wooteco.subway.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.error.exception.NotFoundException;
@@ -19,53 +25,128 @@ import wooteco.subway.error.exception.NotFoundException;
 class LineServiceTest {
 
     private final LineService lineService;
+    private final StationDao stationDao;
 
     @Autowired
-    public LineServiceTest(LineService lineService) {
+    public LineServiceTest(LineService lineService, StationDao stationDao) {
         this.lineService = lineService;
+        this.stationDao = stationDao;
     }
 
-    @DisplayName("노선을 저장한다.")
-    @Test
-    void 노선_저장() {
-        String name = "2호선";
-        String color = "bg-green-600";
-        LineRequest lineRequest = new LineRequest(name, color);
+    @DisplayName("노선 저장과 관련된 기능")
+    @TestFactory
+    Stream<DynamicTest> dynamicTestFromStationSave() {
+        Station upStation = generateStation("선릉역");
+        Station downStation = generateStation("잠실역");
 
-        LineResponse lineResponse = lineService.save(lineRequest);
+        return Stream.of(
+                dynamicTest("노선을 저장한다.", () -> {
+                    String name = "2호선";
+                    String color = "bg-green-600";
+                    LineRequest lineRequest = new LineRequest(
+                            name, color, upStation.getId(), downStation.getId(), 10);
 
-        assertAll(
-                () -> assertThat(lineResponse.getName()).isEqualTo(name),
-                () -> assertThat(lineResponse.getColor()).isEqualTo(color)
+                    LineResponse lineResponse = lineService.save(lineRequest);
+
+                    assertAll(
+                            () -> assertThat(lineResponse.getName()).isEqualTo(name),
+                            () -> assertThat(lineResponse.getColor()).isEqualTo(color),
+                            () -> assertThat(lineResponse.getStations().size()).isEqualTo(2)
+                    );
+                }),
+
+                dynamicTest("중복된 이름의 노선을 저장할 경우 예외를 발생시킨다.", () -> {
+                    String name = "2호선";
+                    String color = "bg-green-600";
+                    LineRequest lineRequest = new LineRequest(
+                            name, color, upStation.getId(), downStation.getId(), 10);
+
+                    assertThatThrownBy(() -> lineService.save(lineRequest))
+                            .isInstanceOf(IllegalArgumentException.class);
+                }),
+
+                dynamicTest("노선의 저장 시 상행과 하행이 같은 지하철역인 경우 예외를 던진다.", () -> {
+                    LineRequest lineRequest = new LineRequest(
+                            "2호선", "bg-green-600", 1L, 1L, 10);
+
+                    assertThatThrownBy(() -> lineService.save(lineRequest))
+                            .isInstanceOf(IllegalArgumentException.class);
+                })
         );
     }
 
-    @DisplayName("중복된 이름의 노선을 저장할 경우 예외를 발생시킨다.")
+    @DisplayName("존재하지 않는 지하철역을 활용하여 노선을 등록할 경우 예외를 던진다.")
     @Test
-    void 중복된_노선_저장_예외발생() {
-        String name = "2호선";
-        String color = "bg-green-600";
-        LineRequest lineRequest = new LineRequest(name, color);
-
-        lineService.save(lineRequest);
+    void 존재하지_않는_지하철역으로_노선_등록_예외발생() {
+        LineRequest lineRequest = new LineRequest(
+                "2호선", "bg-green-600", 1L, 2L, 10);
 
         assertThatThrownBy(() -> lineService.save(lineRequest))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
-    @DisplayName("노선을 조회한다.")
-    @Test
-    void 노선_조회() {
-        String name = "2호선";
-        String color = "bg-green-600";
-        LineRequest lineRequest = new LineRequest(name, color);
-        LineResponse lineResponse = lineService.save(lineRequest);
+    @DisplayName("노선 조작과 관련된 기능")
+    @TestFactory
+    Stream<DynamicTest> dynamicTestFromStationManipulate() {
+        Station upStation = generateStation("선릉역");
+        Station downStation = generateStation("잠실역");
 
-        LineResponse findResponse = lineService.findById(lineResponse.getId());
+        String name1 = "2호선";
+        String color1 = "bg-green-600";
+        Integer distance1 = 7;
+        LineResponse lineResponse1 = lineService.save(
+                new LineRequest(name1, color1, upStation.getId(), downStation.getId(), distance1));
 
-        assertAll(
-                () -> assertThat(findResponse.getName()).isEqualTo(name),
-                () -> assertThat(findResponse.getColor()).isEqualTo(color)
+        Station upStation2 = generateStation("중동역");
+        Station downStation2 = generateStation("신도림역");
+
+        String name2 = "1호선";
+        String color2 = "bg-blue-600";
+        Integer distance2 = 10;
+        LineResponse lineResponse2 = lineService.save(
+                new LineRequest(name2, color2, upStation2.getId(), downStation2.getId(), distance2));
+
+        return Stream.of(
+                dynamicTest("노선을 조회한다.", () -> {
+                    assertAll(
+                            () -> assertThat(lineResponse1.getName()).isEqualTo(name1),
+                            () -> assertThat(lineResponse1.getColor()).isEqualTo(color1)
+                    );
+                }),
+
+                dynamicTest("다수의 노선을 조회한다.", () -> {
+                    List<LineResponse> lines = lineService.findAll();
+
+                    assertThat(lines.size()).isEqualTo(2);
+                }),
+
+                dynamicTest("존재하는 노선을 수정한다.", () -> {
+                    String updateColor = "bg-blue-600";
+                    LineRequest updateRequest = new LineRequest(name1, updateColor);
+                    lineService.update(lineResponse1.getId(), updateRequest);
+
+                    LineResponse updatedResponse = lineService.findById(lineResponse1.getId());
+                    assertAll(
+                            () -> assertThat(updatedResponse.getName()).isEqualTo(name1),
+                            () -> assertThat(updatedResponse.getColor()).isEqualTo(updateColor)
+                    );
+                }),
+
+                dynamicTest("중복된 이름을 가진 노선으로 수정할 경우 예외를 던진다.", () -> {
+                    String updateName = "2호선";
+                    String updateColor = "bg-green-600";
+                    LineRequest updateRequest = new LineRequest(updateName, updateColor);
+
+                    assertThatThrownBy(() -> lineService.update(lineResponse2.getId(), updateRequest))
+                            .isInstanceOf(IllegalArgumentException.class);
+                }),
+
+                dynamicTest("노선을 삭제한다.", () -> {
+                    lineService.deleteById(lineResponse1.getId());
+                    lineService.deleteById(lineResponse2.getId());
+
+                    assertThat(lineService.findAll().size()).isEqualTo(0);
+                })
         );
     }
 
@@ -76,37 +157,9 @@ class LineServiceTest {
                 .isInstanceOf(NotFoundException.class);
     }
 
-    @DisplayName("다수의 노선을 조회한다.")
-    @Test
-    void 다수_노선_조회() {
-        lineService.save(new LineRequest("2호선", "bg-green-600"));
-        lineService.save(new LineRequest("수인분당선", "bg-yellow-600"));
-
-        List<LineResponse> lines = lineService.findAll();
-
-        assertThat(lines.size()).isEqualTo(2);
-    }
-
-    @DisplayName("존재하는 노선을 수정한다.")
-    @Test
-    void 노선_수정() {
-        String name = "2호선";
-        String color = "bg-green-600";
-        LineResponse lineResponse = lineService.save(new LineRequest(name, color));
-
-        String updateColor = "bg-blue-600";
-        LineRequest updateRequest = new LineRequest(name, updateColor);
-        LineResponse updatedResponse = lineService.update(lineResponse.getId(), updateRequest);
-
-        assertAll(
-                () -> assertThat(updatedResponse.getName()).isEqualTo(name),
-                () -> assertThat(updatedResponse.getColor()).isEqualTo(updateColor)
-        );
-    }
-
     @DisplayName("존재하지 않는 노선을 수정하는 경우 예외를 던진다.")
     @Test
-    void 존재하지_않는_노선_수정() {
+    void 존재하지_않는_노선_수정_예외발생() {
         String name = "2호선";
         String updateColor = "bg-blue-600";
         LineRequest updateRequest = new LineRequest(name, updateColor);
@@ -115,27 +168,14 @@ class LineServiceTest {
                 .isInstanceOf(NotFoundException.class);
     }
 
-    @DisplayName("중복된 이름을 가진 노선으로 수정할 경우 예외를 던진다.")
+    @DisplayName("존재하지 않는 노선을 삭제하는 경우 예외를 던진다.")
     @Test
-    void 중복된_이름_노선_수정_예외발생() {
-        lineService.save(new LineRequest("2호선", "bg-green-600"));
-        LineResponse lineResponse = lineService.save(new LineRequest("3호선", "bg-orange-600"));
-
-        String updateName = "2호선";
-        String updateColor = "bg-green-600";
-        LineRequest updateRequest = new LineRequest(updateName, updateColor);
-
-        assertThatThrownBy(() -> lineService.update(lineResponse.getId(), updateRequest))
-                .isInstanceOf(IllegalArgumentException.class);
+    void 존재하지_않는_노선_삭제_예외발생() {
+        assertThatThrownBy(() -> lineService.deleteById(0L))
+                .isInstanceOf(NotFoundException.class);
     }
 
-    @DisplayName("노선을 삭제한다.")
-    @Test
-    void 노선_삭제() {
-        LineResponse lineResponse = lineService.save(new LineRequest("2호선", "bg-green-600"));
-
-        lineService.deleteById(lineResponse.getId());
-
-        assertThat(lineService.findAll().size()).isEqualTo(0);
+    private Station generateStation(String name) {
+        return stationDao.save(new Station(name));
     }
 }

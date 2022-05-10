@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import org.springframework.http.MediaType;
 import wooteco.subway.dto.LineResponse;
 
 @DisplayName("노선 관련 기능")
+@Disabled
 public class LineAcceptanceDynamicTest extends AcceptanceTest {
 
     @DisplayName("노선을 생성한다.")
