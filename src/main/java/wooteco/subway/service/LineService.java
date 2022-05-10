@@ -53,10 +53,9 @@ public class LineService {
         }
     }
 
-    public Line update(Long id, Line line) {
+    public void update(Long id, Line line) {
         try {
-            LineDto lineDto = lineDao.update(id, LineDto.from(line));
-            return new Line(lineDto.getId(), line.getName(), line.getColor(), new Sections(new LinkedList<>(line.getSections())));
+            lineDao.update(id, LineDto.from(line));
         } catch (DuplicateKeyException e) {
             throw new DuplicateKeyException("이미 존재하는 노선 이름입니다.");
         }

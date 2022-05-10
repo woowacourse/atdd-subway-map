@@ -108,9 +108,9 @@ class LineServiceTest {
         Line savedLine = lineService.save(new LineRequest("4호선", "bg-purple-600", up.getId(), down.getId(), 3));
         Line newLine = new Line("4호선", "bg-skyblue-600", new Sections(new Section(up, down, 3)));
 
-        Line result = lineService.update(savedLine.getId(), newLine);
+        lineService.update(savedLine.getId(), newLine);
 
-        assertThat(result).isEqualTo(newLine);
+        assertThat(lineService.findById(savedLine.getId())).isEqualTo(newLine);
     }
 
     @DisplayName("중복된 노선 이름으로 업데이트 시 예외가 발생한다")
