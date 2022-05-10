@@ -65,10 +65,10 @@ class StationServiceTest {
     @DisplayName("존재하는 지하철 역을 삭제할 수 있다.")
     void delete() {
         //when
-        stationService.insert(선릉역_요청);
+        StationResponse insert = stationService.insert(선릉역_요청);
 
         //then
-        assertDoesNotThrow(() -> stationService.delete(1L));
+        assertDoesNotThrow(() -> stationService.delete(insert.getId()));
     }
 
     @Test
