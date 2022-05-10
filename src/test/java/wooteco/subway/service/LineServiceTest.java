@@ -7,7 +7,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static wooteco.subway.Fixtures.BLUE;
 import static wooteco.subway.Fixtures.HYEHWA;
-import static wooteco.subway.Fixtures.ID_1;
 import static wooteco.subway.Fixtures.LINE_2;
 import static wooteco.subway.Fixtures.LINE_4;
 import static wooteco.subway.Fixtures.RED;
@@ -27,11 +26,11 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.request.UpdateLineRequest;
-import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.CreateSectionRequest;
+import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.dto.response.StationResponse;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
@@ -57,8 +56,8 @@ class LineServiceTest {
         final Sections sections = new Sections(List.of(new Section(1L, 1L, 2L, 10)));
 
         // mocking
-        given(lineDao.save(any(Line.class))).willReturn(ID_1);
-        given(sectionDao.save(any(Section.class))).willReturn(ID_1);
+        given(lineDao.save(any(Line.class))).willReturn(1L);
+        given(sectionDao.save(any(Section.class))).willReturn(1L);
         given(lineDao.find(1L)).willReturn(savedLine);
         given(sectionDao.findAllByLineId(1L)).willReturn(sections);
         given(stationDao.findById(1L)).willReturn(new Station(1L, HYEHWA));

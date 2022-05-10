@@ -2,8 +2,6 @@ package wooteco.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static wooteco.subway.Fixtures.ID_1;
-import static wooteco.subway.Fixtures.ID_2;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +22,7 @@ public class SectionTest {
     @ValueSource(ints = {-1, 0})
     @DisplayName("구간의 거리가 0 이하인 경우 예외를 발생시킨다.")
     void exceptionIllegalDistance(final int distance) {
-        assertThatThrownBy(() -> new Section(ID_1, ID_1, ID_2, distance))
+        assertThatThrownBy(() -> new Section(1L, 1L, 2L, distance))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간의 거리는 0보다 커야합니다.");
     }

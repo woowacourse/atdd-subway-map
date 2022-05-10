@@ -10,8 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static wooteco.subway.Fixtures.BLUE;
 import static wooteco.subway.Fixtures.HYEHWA;
-import static wooteco.subway.Fixtures.ID_1;
-import static wooteco.subway.Fixtures.ID_2;
 import static wooteco.subway.Fixtures.LINE_2;
 import static wooteco.subway.Fixtures.LINE_4;
 import static wooteco.subway.Fixtures.RED;
@@ -28,10 +26,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.dto.request.CreateLineRequest;
 import wooteco.subway.dto.request.CreateSectionRequest;
 import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.service.LineService;
 
 @Nested
@@ -51,12 +49,12 @@ public class LineControllerTest {
     @DisplayName("지하철 노선을 생성한다. 이때 관련 구간을 같이 생성한다.")
     void create() throws Exception {
         // given
-        final CreateLineRequest request = new CreateLineRequest(LINE_2, RED, ID_1, ID_2, 10);
+        final CreateLineRequest request = new CreateLineRequest(LINE_2, RED, 1L, 2L, 10);
         final String requestContent = objectMapper.writeValueAsString(request);
 
-        final List<StationResponse> stations = List.of(new StationResponse(ID_1, HYEHWA),
-                new StationResponse(ID_2, SINSA));
-        final LineResponse response = new LineResponse(ID_1, LINE_2, RED, stations);
+        final List<StationResponse> stations = List.of(new StationResponse(1L, HYEHWA),
+                new StationResponse(2L, SINSA));
+        final LineResponse response = new LineResponse(1L, LINE_2, RED, stations);
 
         // mocking
         given(lineService.create(any(CreateLineRequest.class))).willReturn(response);
