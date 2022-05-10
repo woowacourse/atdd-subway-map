@@ -10,8 +10,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.FakeLineDao;
+import wooteco.subway.dao.FakeSectionDao;
 import wooteco.subway.dao.FakeStationDao;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
@@ -22,7 +24,8 @@ public class LineServiceTest {
 
     private LineDao lineDao = new FakeLineDao();
     private StationDao stationDao = new FakeStationDao();
-    private LineService lineService = new LineService(lineDao, stationDao);
+    private SectionDao sectionDao = new FakeSectionDao();
+    private LineService lineService = new LineService(lineDao, stationDao, sectionDao);
 
     @BeforeEach
     void setUp() {

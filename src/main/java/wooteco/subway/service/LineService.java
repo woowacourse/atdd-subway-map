@@ -5,8 +5,10 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -20,10 +22,12 @@ public class LineService {
 
     private final LineDao lineDao;
     private final StationDao stationDao;
+    private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao, StationDao stationDao) {
+    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
         this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
     }
 
     @Transactional
@@ -34,6 +38,9 @@ public class LineService {
 
         Station upStation = stationDao.findById(lineRequest.getUpStationId());
         Station downStation = stationDao.findById(lineRequest.getDownStationId());
+
+        sectionDao.insert(new Section(newLine.getId(), lineRequest.getUpStationId(), lineRequest.getDownStationId(),
+                lineRequest.getDistance()));
 
         StationResponse upStationResponse = new StationResponse(lineRequest.getUpStationId(), upStation.getName());
         StationResponse downStationResponse = new StationResponse(lineRequest.getDownStationId(),
