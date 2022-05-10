@@ -8,7 +8,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = "classpath:/delete.sql",
+@Sql(scripts = "classpath:/truncate.sql",
     executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
 )
 public class AcceptanceTest {
