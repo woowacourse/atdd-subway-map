@@ -19,8 +19,8 @@ public class ExceptionAdvisor {
         return ResponseEntity.badRequest().body("존재하지 않는 결과입니다.");
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Void> handleException() {
-        return ResponseEntity.internalServerError().build();
+    @ExceptionHandler({Exception.class, RuntimeException.class})
+    public ResponseEntity<String> handleException() {
+        return ResponseEntity.internalServerError().body("예상치 못한 에러가 발생했습니다.");
     }
 }
