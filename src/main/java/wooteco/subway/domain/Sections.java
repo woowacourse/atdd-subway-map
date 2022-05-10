@@ -1,9 +1,11 @@
 package wooteco.subway.domain;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Sections {
 
@@ -19,46 +21,29 @@ public class Sections {
         validateCanAdd(section);
         validateSection(section);
 
-        final Optional<Section> upSection = findUpSection(section);
-        final Optional<Section> downSection = findDownSection(section);
-
-        if (upSection.isPresent()) {
-            final Section targetSection = upSection.get();
-            value.remove(targetSection);
-            value.add(targetSection.createSectionByDownStation(section));
-        }
-
-        if (downSection.isPresent()) {
-            final Section targetSection = downSection.get();
-            value.remove(targetSection);
-            value.add(targetSection.createSectionByUpStation(section));
-        }
-
+        findUpSection(section).ifPresent(it -> update(section, it));
+        findDownSection(section).ifPresent(it -> update(section, it));
         value.add(section);
+    }
+
+    private void update(final Section source, final Section target) {
+        value.remove(target);
+        value.add(target.createSectionInBetween(source));
     }
 
     public void delete(final long stationId) {
         validateSize();
-        final Optional<Section> targetOnDownSection = value.stream()
-                .filter(section -> section.getDownStation().getId() == stationId)
-                .findAny();
-
-        final Optional<Section> targetOnUpSection = value.stream()
-                .filter(section -> section.getUpStation().getId() == stationId)
-                .findAny();
+        final Optional<Section> targetOnDownSection = findDownSection(stationId);
+        final Optional<Section> targetOnUpSection = findUpSection(stationId);
 
         if (targetOnDownSection.isEmpty() && targetOnUpSection.isEmpty()) {
             throw new IllegalArgumentException("구간에 존재하지 않는 지하철 역입니다.");
         }
-
+        if (targetOnDownSection.isPresent() && targetOnUpSection.isPresent()) {
+            value.add(targetOnDownSection.get().mergeSection(targetOnUpSection.get()));
+        }
         targetOnDownSection.ifPresent(value::remove);
         targetOnUpSection.ifPresent(value::remove);
-
-        if (targetOnDownSection.isPresent() && targetOnUpSection.isPresent()) {
-            final Section upSection = targetOnUpSection.get();
-            final Section downSection = targetOnDownSection.get();
-            value.add(downSection.mergeSection(upSection));
-        }
     }
 
     private void validateSize() {
@@ -90,16 +75,28 @@ public class Sections {
                 .findAny();
     }
 
-    private void validateUpSection(final Section other) {
-        final Optional<Section> upSection = findUpSection(other);
-
-        upSection.ifPresent(it -> validateDistance(it, other));
+    private Optional<Section> findDownSection(final long stationId) {
+        return value.stream()
+                .filter(section -> section.getDownStation().getId() == stationId)
+                .findAny();
     }
 
     private Optional<Section> findUpSection(final Section other) {
         return value.stream()
                 .filter(it -> it.getUpStation().equals(other.getUpStation()))
                 .findAny();
+    }
+
+    private Optional<Section> findUpSection(final long stationId) {
+        return value.stream()
+                .filter(section -> section.getUpStation().getId() == stationId)
+                .findAny();
+    }
+
+    private void validateUpSection(final Section other) {
+        final Optional<Section> upSection = findUpSection(other);
+
+        upSection.ifPresent(it -> validateDistance(it, other));
     }
 
     private void validateDistance(final Section section, final Section other) {
@@ -109,20 +106,30 @@ public class Sections {
     }
 
     private void validateCanAdd(final Section other) {
-        final HashSet<Station> stations = new HashSet<>();
-        for (Section section : value) {
-            stations.add(section.getUpStation());
-            stations.add(section.getDownStation());
-        }
+        final List<Station> stations = collectExistingStations();
+        validateSectionInsertion(other, stations);
+    }
 
+    private List<Station> collectExistingStations() {
+        return Stream.concat(getStation(Section::getUpStation), getStation(Section::getDownStation))
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private Stream<Station> getStation(Function<Section, Station> getSectionStationFunction) {
+        return value.stream()
+                .map(getSectionStationFunction);
+    }
+
+    private void validateSectionInsertion(final Section other, final List<Station> stations) {
         final boolean hasUpStation = stations.contains(other.getUpStation());
         final boolean hasDownStation = stations.contains(other.getDownStation());
 
         if (hasUpStation && hasDownStation) {
-            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
+            throw new IllegalStateException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
         }
         if (!hasUpStation && !hasDownStation) {
-            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
+            throw new IllegalStateException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
         }
     }
 

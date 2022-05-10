@@ -56,6 +56,13 @@ public class Section {
         return new Section(this.id, section.downStation, this.downStation, calculateDistance(section), this.lineId);
     }
 
+    public Section createSectionInBetween(Section section) {
+        if (this.upStation.equals(section.upStation)) {
+            return createSectionByDownStation(section);
+        }
+        return createSectionByUpStation(section);
+    }
+
     public Section mergeSection(final Section section) {
         return new Section(this.id, this.upStation, section.downStation, mergeDistance(section), this.lineId);
     }
