@@ -32,23 +32,26 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest lineRequest) {
         checkExistLineByName(lineRequest);
-        final Long id = lineDao.save(lineRequest);
-        final Section section = saveInitialSection(id, lineRequest.getUpStationId(), lineRequest.getDownStationId(),
-                lineRequest.getDistance());
-        final Line line = new Line(id, lineRequest.getName(), lineRequest.getColor(), section);
+        final Line line = createLine(lineRequest);
 
-        final Station upStation = findByStationId(section.getUpStationId());
-        final Station downStation = findByStationId(section.getDownStationId());
-        final StationResponse upStationResponse = new StationResponse(upStation.getId(), upStation.getName());
-        final StationResponse downStationResponse = new StationResponse(downStation.getId(), downStation.getName());
+        final Station upStation = findByStationId(lineRequest.getUpStationId());
+        final Station downStation = findByStationId(lineRequest.getDownStationId());
+        final List<StationResponse> stationResponses = makeStationResponseByStation(List.of(upStation, downStation));
 
-        return new LineResponse(id, line.getName(), line.getColor(), List.of(upStationResponse, downStationResponse));
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
 
     private void checkExistLineByName(LineRequest lineRequest) {
         if (lineDao.hasLine(lineRequest.getName())) {
             throw new IllegalArgumentException("같은 이름의 노선이 존재합니다.");
         }
+    }
+
+    private Line createLine(LineRequest lineRequest) {
+        final Long id = lineDao.save(lineRequest);
+        final Section section = saveInitialSection(id, lineRequest.getUpStationId(), lineRequest.getDownStationId(),
+                lineRequest.getDistance());
+        return new Line(id, lineRequest.getName(), lineRequest.getColor(), section);
     }
 
     private Section saveInitialSection(Long newLineId, Long upStationId, Long downStationId, int distance) {
@@ -69,7 +72,7 @@ public class LineService {
         final Section section = new Section(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
                 sectionRequest.getDistance());
         line.addSection(section);
-        checkFinalSectionAndAdd(lineId, sectionRequest, section);
+        checkFinalSectionAndAdd(lineId, section);
     }
 
     private void validateLine(List<Section> sections) {
@@ -78,9 +81,9 @@ public class LineService {
         }
     }
 
-    private void checkFinalSectionAndAdd(Long lineId, SectionRequest sectionRequest, Section section) {
+    private void checkFinalSectionAndAdd(Long lineId, Section section) {
         final Optional<Section> upSection = sectionDao.findByDownStationId(lineId, section.getUpStationId());
-        final Optional<Section> downSection = sectionDao.findByUpStationId(lineId, sectionRequest.getDownStationId());
+        final Optional<Section> downSection = sectionDao.findByUpStationId(lineId, section.getDownStationId());
         if (upSection.isEmpty() && downSection.isEmpty()) {
             addNotFinalSection(lineId, section);
             return;
