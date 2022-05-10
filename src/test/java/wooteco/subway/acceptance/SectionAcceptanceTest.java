@@ -169,6 +169,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("이미 존재하는 구간을 등록할 때 예외를 발생시킨다.")
+    @Test
     void createDuplicateSection() {
         // given
         // when
