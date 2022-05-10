@@ -20,13 +20,13 @@ public class LineController {
         this.service = service;
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest.Post lineRequest) {
         LineResponse lineResponse = service.insert(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok().body(service.findAll());
     }
