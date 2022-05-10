@@ -11,9 +11,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.jdbc.SectionJdbcDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dao.application.LineService;
+import wooteco.subway.dao.jdbc.SectionJdbcDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
@@ -73,5 +73,29 @@ class LineServiceTest {
 
         // then
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @DisplayName("노선 목록을 조회한다")
+    @Test
+    void findLines() {
+        LineService sut = new LineService(stationDao, lineDao, sectionDao);
+        Station station1 = new Station(1L, "서울역");
+        Station station2 = new Station(2L, "성수");
+        Line line1 = new Line(1L, "1호선", "파란색");
+        Section section1 = new Section(1L, station1, station2, 10);
+
+        Station station3 = new Station(3L, "홍대입구");
+        Line line2 = new Line(2L, "2호선", "초록색");
+        Section section2 = new Section(2L, station2, station3, 10);
+
+        when(lineDao.findAll()).thenReturn(List.of(line1, line2));
+        when(sectionDao.findByLineId(1L)).thenReturn(List.of(section1));
+        when(sectionDao.findByLineId(2L)).thenReturn(List.of(section2));
+
+        // when
+        List<LineResponseV2> lines = sut.findLines();
+
+        // then
+        assertThat(lines).containsExactly(LineResponseV2.of(line1, section1), LineResponseV2.of(line2, section2));
     }
 }

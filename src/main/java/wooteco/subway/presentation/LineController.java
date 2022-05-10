@@ -2,7 +2,6 @@ package wooteco.subway.presentation;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +16,6 @@ import wooteco.subway.dao.application.LineService;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineRequestV2;
-import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineResponseV2;
 
 @RestController
@@ -44,12 +42,8 @@ public class LineController {
     }
 
     @GetMapping
-    public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineDao.findAll();
-        List<LineResponse> lineResponses = lines.stream()
-                .map(LineResponse::from)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(lineResponses);
+    public ResponseEntity<List<LineResponseV2>> showLines() {
+        return ResponseEntity.ok().body(lineService.findLines());
     }
 
     @PutMapping(value = "/{id}")

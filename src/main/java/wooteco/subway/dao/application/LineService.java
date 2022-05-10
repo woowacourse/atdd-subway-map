@@ -1,5 +1,6 @@
 package wooteco.subway.dao.application;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,5 +49,15 @@ public class LineService {
                 .orElseThrow(NoSuchLineException::new);
         List<Section> sections = sectionDao.findByLineId(findLine.getId());
         return LineResponseV2.of(findLine, sections);
+    }
+
+    public List<LineResponseV2> findLines() {
+        List<LineResponseV2> result = new ArrayList<>();
+        List<Line> lines = lineDao.findAll();
+        for (Line line : lines) {
+            List<Section> sectionsByLine = sectionDao.findByLineId(line.getId());
+            result.add(LineResponseV2.of(line, sectionsByLine));
+        }
+        return result;
     }
 }

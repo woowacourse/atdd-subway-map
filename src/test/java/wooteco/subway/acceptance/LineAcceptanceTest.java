@@ -191,27 +191,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    /*
+     * given
+     * 지하철 노선이 등록되어 있다.
+     *
+     * when
+     * 지하철 노선 목록을 조회한다.
+     *
+     * then
+     * 지하철 노선 목록을 응답한다.
+     * */
     @DisplayName("지하철노선 목록을 조회한다.")
     @Test
     void getLines() {
         /// given
-        LineRequest lineRequest1 = new LineRequest("2호선", "초록색");
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(lineRequest1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        long id1 = registerStationAndReturnId("지하철역1");
+        long id2 = registerStationAndReturnId("지하철역2");
+        long id3 = registerStationAndReturnId("지하철역3");
+        long id4 = registerStationAndReturnId("지하철역4");
 
-        LineRequest lineRequest2 = new LineRequest("5호선", "보라색");
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(lineRequest2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse1 = registerLineAndReturnResponse("노선1", "색깔1", id1, id2, 10);
+        ExtractableResponse<Response> createResponse2 = registerLineAndReturnResponse("노선2", "색깔2", id3, id4, 10);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -225,10 +225,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
+        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponseV2.class).stream()
+                .map(LineResponseV2::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+
+        List<LineResponseV2> responseEntities = response.jsonPath().getList(".", LineResponseV2.class);
+
+        ArrayList<String> stationNames = new ArrayList<>();
+        for (LineResponseV2 responseEntity : responseEntities) {
+            stationNames.addAll(
+                    responseEntity.getStations().stream().map(StationResponse::getName).collect(Collectors.toList()));
+        }
+        assertThat(stationNames).containsExactly("지하철역1", "지하철역2", "지하철역3", "지하철역4");
+
     }
 
     /*
