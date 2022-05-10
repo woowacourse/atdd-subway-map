@@ -1,5 +1,7 @@
 package wooteco.subway.ui.dto;
 
+import wooteco.subway.domain.Section;
+
 public class SectionRequest {
     private Long lineId;
     private Long upStationId;
@@ -30,5 +32,9 @@ public class SectionRequest {
 
     public Long getLineId() {
         return lineId;
+    }
+
+    public Section toSection() {
+        return new Section(lineId, upStationId, downStationId, distance);
     }
 }

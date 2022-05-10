@@ -13,6 +13,10 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section(Long upStationId, Long downStationId) {
+        this(null, upStationId, downStationId, 0);
+    }
+
     public Long getUpStationId() {
         return upStationId;
     }

@@ -11,13 +11,9 @@ public class Sections {
         this.sections = sections;
     }
 
-    public boolean isForkedRoad(Section section) {
-        Map<Long, Long> sectionId = getSectionId();
-
-        Long upStationId = findUpStationId(sectionId);
-        Long downStationId = findDownStationId(sectionId);
-
-        validateForkedLoad(section, upStationId, downStationId);
+    public boolean isMiddleSection(Section section) {
+        Long upStationId = findUpStationId();
+        Long downStationId = findDownStationId();
         return isMiddlePoint(section, upStationId, downStationId);
     }
 
@@ -34,23 +30,24 @@ public class Sections {
         return sectionId;
     }
 
-    private void validateForkedLoad(Section section,  Long upStationId, Long downStationId) {
-        if (section.getUpStationId().equals(upStationId)) {
-            throw new IllegalArgumentException("갈래길은 생성할 수 없습니다.");
-        }
-        if (section.getDownStationId().equals(downStationId)) {
+    public void validateForkedLoad(Section section) {
+        Long upStationId = findUpStationId();
+        Long downStationId = findDownStationId();
+        if (section.getUpStationId().equals(upStationId) || section.getDownStationId().equals(downStationId)) {
             throw new IllegalArgumentException("갈래길은 생성할 수 없습니다.");
         }
     }
 
-    private Long findDownStationId(Map<Long, Long> sectionId) {
+    private Long findDownStationId() {
+        Map<Long, Long> sectionId = getSectionId();
         return sectionId.values().stream()
             .filter(i -> !(sectionId.containsKey(i)))
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("하행점을 찾을 수 없습니다."));
     }
 
-    private Long findUpStationId(Map<Long, Long> sectionId) {
+    private Long findUpStationId() {
+        Map<Long, Long> sectionId = getSectionId();
         return sectionId.keySet().stream()
             .filter(i -> !(sectionId.containsValue(i)))
             .findAny()

@@ -55,7 +55,7 @@ public class SectionDaoImpl implements SectionDao {
 
     @Override
     public boolean update(Long sectionId, Long downStationId, int distance) {
-        final String sql = "UPDATE section SET up_station_id = ?, distance = ? where id = ?";
+        final String sql = "UPDATE section SET down_station_id = ?, distance = ? where id = ?";
         int updateSize = jdbcTemplate.update(sql, downStationId, distance, sectionId);
         return updateSize != 0;
     }
