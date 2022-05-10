@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import wooteco.subway.dao.DaoTest;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dto.request.CreateLineRequest;
-import wooteco.subway.dto.request.LineRequest;
+import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.exception.NotFoundException;
 
@@ -84,7 +84,7 @@ class LineServiceTest extends DaoTest {
 
         @Test
         void 중복되지_않는_이름으로_수정_가능() {
-            service.update(1L, new LineRequest("새로운 노선 이름", "노란색"));
+            service.update(1L, new UpdateLineRequest("새로운 노선 이름", "노란색"));
 
             String actual = dao.findById(1L).get().getName();
             String expected = "새로운 노선 이름";
@@ -94,7 +94,7 @@ class LineServiceTest extends DaoTest {
 
         @Test
         void 색상은_자유롭게_수정_가능() {
-            LineRequest validLineRequest = new LineRequest("새로운 노선 이름", "새로운 색상");
+            UpdateLineRequest validLineRequest = new UpdateLineRequest("새로운 노선 이름", "새로운 색상");
             service.update(1L, validLineRequest);
 
             String actual = dao.findById(1L).get().getColor();
@@ -105,14 +105,14 @@ class LineServiceTest extends DaoTest {
 
         @Test
         void 중복되는_이름으로_수정하려는_경우_예외발생() {
-            LineRequest duplicateLineNameRequest = new LineRequest("이미 존재하는 노선 이름", "노란색");
+            UpdateLineRequest duplicateLineNameRequest = new UpdateLineRequest("이미 존재하는 노선 이름", "노란색");
             assertThatThrownBy(() -> service.update(2L, duplicateLineNameRequest))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
         void 존재하지_않는_노선을_수정하려는_경우_예외발생() {
-            LineRequest validLineRequest = new LineRequest("새로운 노선 이름", "노란색");
+            UpdateLineRequest validLineRequest = new UpdateLineRequest("새로운 노선 이름", "노란색");
             assertThatThrownBy(() -> service.update(999999999L, validLineRequest))
                     .isInstanceOf(NotFoundException.class);
         }

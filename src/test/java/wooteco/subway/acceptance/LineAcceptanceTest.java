@@ -16,7 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
-import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.dto.response.LineResponse2;
+import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.test_utils.HttpMethod;
 import wooteco.subway.test_utils.HttpUtils;
 
@@ -24,17 +25,25 @@ import wooteco.subway.test_utils.HttpUtils;
 @DisplayName("인수테스트 - /lines")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private static final StationResponse STATION_1 = new StationResponse(1L, "강남역");
+    private static final StationResponse STATION_2 = new StationResponse(2L, "선릉역");
+    private static final StationResponse STATION_3 = new StationResponse(3L, "잠실역");
+    private static final List<StationResponse> STATION_RESPONSE_1_2 = List.of(STATION_1, STATION_2);
+    private static final List<StationResponse> STATION_RESPONSE_1_2_3 = List.of(STATION_1, STATION_2, STATION_3);
+    private static final List<StationResponse> STATION_RESPONSE_1_3 = List.of(STATION_1, STATION_3);
+
     @BeforeAll
-    void beforeAll() throws Exception {
+    void setup() throws Exception {
         try (Connection connection = dataSource.getConnection()) {
             ScriptUtils.executeSqlScript(connection, new ClassPathResource("setup_test_db.sql"));
+            ScriptUtils.executeSqlScript(connection, new ClassPathResource("lines_assurance_test_fixture.sql"));
         }
     }
 
     @AfterEach
-    public void cleanse() throws Exception {
+    public void cleanseAndSetup() throws Exception {
         try (Connection connection = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(connection, new ClassPathResource("cleanse_test_db.sql"));
+            ScriptUtils.executeSqlScript(connection, new ClassPathResource("lines_assurance_test_fixture.sql"));
         }
     }
 
@@ -44,11 +53,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 성공시_201_CREATED() {
-            Map<String, String> params = jsonLineOf("신분당선", "bg-red-600");
+            Map<String, Object> params = jsonLineOf("신분당선", "bg-red-600", 1L, 2L, 10);
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/lines", params);
-            LineResponse actualBody = extractSingleLineResponseBody(response);
-            LineResponse expectedBody = new LineResponse(1L, "신분당선", "bg-red-600");
+            LineResponse2 actualBody = extractSingleLineResponseBody(response);
+            LineResponse2 expectedBody = new LineResponse2(4L, "신분당선", "bg-red-600", STATION_RESPONSE_1_2);
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             assertThat(response.header("Location")).isNotBlank();
@@ -56,7 +65,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }
 
         @Test
-        void 이름_혹은_색상_정보가_담기지_않은_경우_400_BAD_REQUEST() {
+        void 정보가_담기지_않은_경우_400_BAD_REQUEST() {
             Map<String, String> emptyParams = new HashMap<>();
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", emptyParams);
@@ -65,8 +74,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }
 
         @Test
-        void 이름_혹은_색상_정보가_공백으로_구성된_경우_400_BAD_REQUEST() {
-            Map<String, String> blankParams = jsonLineOf("   ", "  ");
+        void 정보가_공백으로_구성된_경우_400_BAD_REQUEST() {
+            Map<String, Object> blankParams = jsonLineOf("   ", "  ", 1L, 2L, 10);
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", blankParams);
 
@@ -75,8 +84,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 이미_존재하는_노선명_입력시_400_BAD_REQUEST() {
-            Map<String, String> params = jsonLineOf("신분당선", "bg-red-600");
-            postLine(params);
+            Map<String, Object> params = jsonLineOf("존재하는 노선명", "bg-red-600", 1L, 2L, 10);
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/lines", params);
 
@@ -90,22 +98,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 성공시_200_OK() {
-            postLine("신분당선", "bg-red-600");
-            postLine("분당선", "bg-green-600");
-
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/lines");
-            List<LineResponse> actualBody = extractJsonBody(response);
-            List<LineResponse> expectedBody = List.of(
-                    new LineResponse(1L, "신분당선", "bg-red-600"),
-                    new LineResponse(2L, "분당선", "bg-green-600")
+            List<LineResponse2> actualBody = extractJsonBody(response);
+            List<LineResponse2> expectedBody = List.of(
+                    new LineResponse2(1L, "1호선", "노란색", STATION_RESPONSE_1_3),
+                    new LineResponse2(2L, "2호선", "빨간색", STATION_RESPONSE_1_2_3),
+                    new LineResponse2(3L, "존재하는 노선명", "초록색", STATION_RESPONSE_1_3)
             );
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             assertThat(actualBody).isEqualTo(expectedBody);
         }
 
-        private List<LineResponse> extractJsonBody(ExtractableResponse<Response> response) {
-            return response.jsonPath().getList(".", LineResponse.class);
+        private List<LineResponse2> extractJsonBody(ExtractableResponse<Response> response) {
+            return response.jsonPath().getList(".", LineResponse2.class);
         }
     }
 
@@ -113,13 +119,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Nested
     class ShowLineTest {
 
+        // TODO: 순서대로 정렬하여 조회
         @Test
         void 성공시_200_OK() {
-            postLine("신분당선", "bg-red-600");
-
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/lines/1");
-            LineResponse actualBody = extractSingleLineResponseBody(response);
-            LineResponse expectedBody = new LineResponse(1L, "신분당선", "bg-red-600");
+            LineResponse2 actualBody = extractSingleLineResponseBody(response);
+            LineResponse2 expectedBody = new LineResponse2(1L, "1호선", "노란색", STATION_RESPONSE_1_3);
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             assertThat(actualBody).isEqualTo(expectedBody);
@@ -139,7 +144,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 성공시_200_OK() {
-            postLine("신분당선", "bg-red-600");
             Map<String, String> params = jsonLineOf("NEW 분당선", "bg-red-800");
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.PUT, "/lines/1", params);
@@ -158,11 +162,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 이미_존재하는_지하철_노선_이름으로_수정시_400_BAD_REQUEST() {
-            Map<String, String> duplicateLineParams = jsonLineOf("NEW 분당선", "bg-red-600");
-            postLine(duplicateLineParams);
-            postLine("신분당선", "bg-red-600");
+            Map<String, String> duplicateNameParams = jsonLineOf("존재하는 노선명", "bg-red-600");
 
-            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.PUT, "/lines/2", duplicateLineParams);
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.PUT, "/lines/2", duplicateNameParams);
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
@@ -192,8 +194,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         @Test
         void 성공시_204_OK() {
-            postLine("신분당선", "bg-red-600");
-
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.DELETE, "/lines/1");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -207,22 +207,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }
     }
 
-    private HashMap<String, String> jsonLineOf(String name, String color) {
+    private HashMap<String, String> jsonLineOf(String name,
+                                               String color) {
         return new HashMap<>() {{
             put("name", name);
             put("color", color);
         }};
     }
 
-    private void postLine(String name, String color) {
-        postLine(jsonLineOf(name, color));
+    private HashMap<String, Object> jsonLineOf(String name,
+                                               String color,
+                                               Long upStationId,
+                                               Long downStationId,
+                                               int distance) {
+        return new HashMap<>() {{
+            put("name", name);
+            put("color", color);
+            put("upStationId", upStationId);
+            put("downStationId", downStationId);
+            put("distance", distance);
+        }};
     }
 
-    private void postLine(Map<String, String> params) {
-        HttpUtils.send(HttpMethod.POST, "/lines", params);
-    }
-
-    private LineResponse extractSingleLineResponseBody(ExtractableResponse<Response> response) {
-        return response.jsonPath().getObject(".", LineResponse.class);
+    private LineResponse2 extractSingleLineResponseBody(ExtractableResponse<Response> response) {
+        return response.jsonPath().getObject(".", LineResponse2.class);
     }
 }

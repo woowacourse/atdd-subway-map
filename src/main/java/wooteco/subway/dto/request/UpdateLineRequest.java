@@ -1,14 +1,14 @@
 package wooteco.subway.dto.request;
 
-public class LineRequest {
+public class UpdateLineRequest {
 
     private String name;
     private String color;
 
-    public LineRequest() {
+    public UpdateLineRequest() {
     }
 
-    public LineRequest(String name, String color) {
+    public UpdateLineRequest(String name, String color) {
         this.name = name;
         this.color = color;
     }
@@ -31,6 +31,6 @@ public class LineRequest {
 
     @Override
     public String toString() {
-        return "LineRequest{" + "name='" + name + '\'' + ", color='" + color + '\'' + '}';
+        return "UpdateLineRequest{" + "name='" + name + '\'' + ", color='" + color + '\'' + '}';
     }
 }

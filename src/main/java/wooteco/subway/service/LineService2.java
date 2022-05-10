@@ -12,6 +12,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.request.CreateLineRequest;
+import wooteco.subway.dto.request.UpdateLineRequest;
 import wooteco.subway.dto.response.LineResponse2;
 import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.entity.FullStationEntity;
@@ -70,6 +71,15 @@ public class LineService2 {
         sectionDao.save(toSection(lineRequest, line));
 
         return toLineResponse(line, stations);
+    }
+
+    @Transactional
+    public void update(Long id, UpdateLineRequest lineRequest) {
+        validateExistingLine(id);
+        validateUniqueLineName(lineRequest.getName());
+
+        LineEntity lineEntity = new LineEntity(id, lineRequest.getName(), lineRequest.getColor());
+        lineDao.update(lineEntity);
     }
 
     @Transactional
