@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,6 +13,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineEntity;
 import wooteco.subway.dto.SectionEntity;
 import wooteco.subway.dto.info.LineInfo;
@@ -52,14 +54,9 @@ public class LineService {
         Section section = new Section(stationDao.getStation(upStationId), stationDao.getStation(downStationId),
             distance);
         sectionDao.save(lineEntity.getId(), section);
-        List<SectionEntity> sectionEntities = sectionDao.findByLine(lineEntity.getId());
-        List<Section> sections = sectionEntities.stream().map(sectionEntity -> {
-            return new Section(sectionEntity.getId(), stationDao.getStation(sectionEntity.getUpStationId())
-                , stationDao.getStation(sectionEntity.getDownStationId()), sectionEntity.getDistance());
-        }).collect(Collectors.toList());
 
         Line resultLine = new Line(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(),
-            new Sections(sections));
+            new Sections(findSections(lineEntity.getId())));
         List<StationInfo> stationInfos = resultLine.getStations()
             .stream()
             .map(station -> new StationInfo(station.getId(), station.getName()))
@@ -80,10 +77,38 @@ public class LineService {
         }
     }
 
-    public List<LineInfo> findAll() {
-        List<LineEntity> lines = lineDao.findAll();
-        return lines.stream()
-            .map(it -> new LineInfo(it.getId(), it.getName(), it.getColor()))
+    public List<ResponseLineInfo> findAll() {
+        List<Line> lines = new ArrayList<>();
+        List<LineEntity> lineEntities = lineDao.findAll();
+        for (LineEntity lineEntity : lineEntities) {
+            Long lineId = lineEntity.getId();
+            lines.add(
+                new Line(lineId, lineEntity.getName(), lineEntity.getColor(), new Sections(findSections(lineId))));
+        }
+
+        List<ResponseLineInfo> responseLineInfos = new ArrayList<>();
+        for (Line line : lines) {
+            responseLineInfos.add(new ResponseLineInfo(line.getId(), line.getName(), line.getColor(),
+                convertStationToInfo(line.getStations())));
+        }
+        return responseLineInfos;
+    }
+
+    private List<Section> findSections(Long lineId) {
+        List<SectionEntity> sectionEntities = sectionDao.findByLine(lineId);
+        return sectionEntities.stream()
+            .map(this::findSection)
+            .collect(Collectors.toList());
+    }
+
+    private Section findSection(SectionEntity sectionEntity) {
+        return new Section(sectionEntity.getId(), stationDao.getStation(sectionEntity.getUpStationId())
+            , stationDao.getStation(sectionEntity.getDownStationId()), sectionEntity.getDistance());
+    }
+
+    private List<StationInfo> convertStationToInfo(List<Station> stations) {
+        return stations.stream()
+            .map(station -> new StationInfo(station.getId(), station.getName()))
             .collect(Collectors.toList());
     }
 
