@@ -19,9 +19,9 @@ import wooteco.subway.dto.response.LineResponse;
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final LineRequest LINE_REQUEST_신분당선 = new LineRequest("신분당선", "bg-red-600");
-    private static final LineRequest LINE_REQUEST_분당선 = new LineRequest("분당선", "bg-red-601");
-    private static final LineRequest LINE_REQUEST_1호선 = new LineRequest("1호선", "bg-red-602");
+    private static final LineRequest LINE_REQUEST_신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+    private static final LineRequest LINE_REQUEST_분당선 = new LineRequest("분당선", "bg-red-601", 3L, 4L, 12);
+    private static final LineRequest LINE_REQUEST_1호선 = new LineRequest("1호선", "bg-red-602", 5L, 6L, 14);
 
     @Test
     @DisplayName("노선을 추가한다.")

@@ -9,15 +9,29 @@ public class LineRequest {
 
     private String name;
     private String color;
+    private Long upStationId;
+    private Long downStationId;
+    private int distance;
+
 
     private LineRequest() {
     }
 
-    public LineRequest(String name, String color) {
+    public LineRequest(final String name,
+                       final String color,
+                       final Long upStationId,
+                       final Long downStationId,
+                       final int distance) {
         Objects.requireNonNull(name, ERROR_NULL);
         Objects.requireNonNull(color, ERROR_NULL);
+        Objects.requireNonNull(upStationId, ERROR_NULL);
+        Objects.requireNonNull(downStationId, ERROR_NULL);
+        Objects.requireNonNull(distance, ERROR_NULL);
         this.name = name;
         this.color = color;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
     }
 
     public String getName() {
@@ -28,8 +42,20 @@ public class LineRequest {
         return color;
     }
 
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
     public Line toEntity(final Long id) {
-        return new Line(id, this.name, this.color);
+        return new Line(id, this.name, this.color, this.upStationId, this.downStationId, this.distance);
     }
 
     public Line toEntity() {

@@ -17,8 +17,8 @@ import wooteco.subway.dto.request.LineRequest;
 @JdbcTest
 public class LineDaoTest {
 
-    private static final Line LINE_1호선_BLUE = new Line("1호선", "blue");
-    private static final Line LINE_2호선_GREEN = new Line("2호선", "green");
+    private static final Line LINE_1호선_BLUE = new Line("1호선", "blue", 1L, 2L, 10);
+    private static final Line LINE_2호선_GREEN = new Line("2호선", "green", 3L, 4L, 12);
 
     @Autowired
     private DataSource dataSource;
@@ -81,7 +81,7 @@ public class LineDaoTest {
     @DisplayName("입력된 id의 노선을 수정한다.")
     void update() {
         final Line created = lineDao.save(LINE_2호선_GREEN);
-        final LineRequest lineRequest = new LineRequest("1호선", "green");
+        final LineRequest lineRequest = new LineRequest("1호선", "green", 1L, 2L, 10);
         final Line updated = lineRequest.toEntity(created.getId());
 
         lineDao.update(updated);

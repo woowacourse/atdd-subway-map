@@ -22,7 +22,11 @@ public class JdbcLineDao implements LineDao {
         new Line(
             resultSet.getLong("id"),
             resultSet.getString("name"),
-            resultSet.getString("color"));
+            resultSet.getString("color"),
+            resultSet.getLong("up_station_id"),
+            resultSet.getLong("down_station_id"),
+            resultSet.getInt("distance")
+        );
 
     public JdbcLineDao(final DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -41,7 +45,8 @@ public class JdbcLineDao implements LineDao {
     public Line save(final Line line) {
         final SqlParameterSource parameters = new BeanPropertySqlParameterSource(line);
         final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Line(id, line.getName(), line.getColor());
+        return new Line(id, line.getName(), line.getColor(), line.getUpStationId(),
+            line.getDownStationId(), line.getDistance());
     }
 
     @SuppressWarnings("ConstantConditions")
