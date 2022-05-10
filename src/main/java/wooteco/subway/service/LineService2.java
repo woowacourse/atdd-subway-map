@@ -12,6 +12,7 @@ import wooteco.subway.dto.response.LineResponse2;
 import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.entity.LineEntity;
 import wooteco.subway.entity.SectionEntity;
+import wooteco.subway.entity.Sections;
 import wooteco.subway.entity.StationEntity;
 import wooteco.subway.exception.NotFoundException;
 
@@ -32,6 +33,15 @@ public class LineService2 {
         this.sectionDao = sectionDao;
     }
 
+    // TODO: sort stations in order &/or select with JOIN
+    public LineResponse2 find(Long id) {
+        LineEntity lineEntity = findExistingLine(id);
+        List<Long> stationIds = new Sections(sectionDao.findAllByLineId(id)).getStationIds();
+        List<StationEntity> stations = stationDao.findAllByIds(stationIds);
+
+        return toLineResponse(lineEntity, stations);
+    }
+
     @Transactional
     public LineResponse2 save(CreateLineRequest lineRequest) {
         validateUniqueLineName(lineRequest.getName());
@@ -48,6 +58,11 @@ public class LineService2 {
         if (isDuplicateName) {
             throw new IllegalArgumentException(DUPLICATE_LINE_NAME_EXCEPTION_MESSAGE);
         }
+    }
+
+    private LineEntity findExistingLine(Long id) {
+        return lineDao.findById(id)
+                .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE));
     }
 
     private List<StationEntity> findExistingStations(CreateLineRequest lineRequest) {

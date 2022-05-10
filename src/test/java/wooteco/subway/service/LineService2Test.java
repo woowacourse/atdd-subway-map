@@ -25,8 +25,33 @@ class LineService2Test extends ServiceTest {
     private static final int DISTANCE = 10;
     private static final long INVALID_ID = 999999L;
 
+    private static final StationResponse STATION_RESPONSE_1 = new StationResponse(1L, "이미 존재하는 역 이름");
+    private static final StationResponse STATION_RESPONSE_2 = new StationResponse(2L, "선릉역");
+    private static final StationResponse STATION_RESPONSE_3 = new StationResponse(3L, "잠실역");
+
     @Autowired
     private LineService2 service;
+
+    @DisplayName("find 메서드는 특정 id에 해당되는 데이터를 조회한다")
+    @Nested
+    class FindTest {
+
+        @Test
+        void 구간_정보를_포함한_노선의_모든_정보_조회() {
+            LineResponse2 actual = service.find(2L);
+
+            LineResponse2 expected = new LineResponse2(2L, "신분당선", "빨간색",
+                    List.of(STATION_RESPONSE_1, STATION_RESPONSE_2, STATION_RESPONSE_3));
+
+            assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        void 존재하지_않는_노선인_경우_예외_발생() {
+            assertThatThrownBy(() -> service.find(99999L))
+                    .isInstanceOf(NotFoundException.class);
+        }
+    }
 
     @DisplayName("save 메서드는 데이터를 저장한다")
     @Nested
@@ -35,11 +60,10 @@ class LineService2Test extends ServiceTest {
         @Test
         void 유효한_입력인_경우_성공() {
             LineResponse2 actual = service.save(new CreateLineRequest(
-                    VALID_LINE_NAME, COLOR, VALID_UP_STATION_ID, VALID_DOWN_STATION_ID, DISTANCE));
+                    VALID_LINE_NAME, COLOR, 1L, 2L, DISTANCE));
 
             LineResponse2 expected = new LineResponse2(4L, VALID_LINE_NAME, COLOR,
-                    List.of(new StationResponse(VALID_UP_STATION_ID, "이미 존재하는 역 이름"),
-                            new StationResponse(VALID_DOWN_STATION_ID, "선릉역")));
+                    List.of(STATION_RESPONSE_1, STATION_RESPONSE_2));
 
             assertThat(actual).isEqualTo(expected);
         }
