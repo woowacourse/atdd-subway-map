@@ -111,4 +111,11 @@ public class SectionRepository {
         SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(sections);
         namedParameterJdbcTemplate.batchUpdate(sql, batch);
     }
+
+    public void deleteByLineId(final Long id) {
+        String sql = "DELETE FROM section WHERE id = :id";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+
+        namedParameterJdbcTemplate.update(sql, parameters);
+    }
 }

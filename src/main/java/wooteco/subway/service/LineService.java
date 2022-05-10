@@ -94,6 +94,7 @@ public class LineService {
     }
 
     public void delete(final Long id) {
+        sectionRepository.deleteByLineId(id);
         lineRepository.deleteById(id);
     }
 }

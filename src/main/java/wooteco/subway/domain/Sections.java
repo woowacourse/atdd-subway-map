@@ -72,8 +72,8 @@ public class Sections {
 
     private void cutInSection(final Section section) {
         Optional<Section> foundExistSectionPoint = values.stream()
-                .filter(value -> value.isSameUpStation(value.getUpStation())
-                        || value.isSameDownStation(value.getDownStation()))
+                .filter(value -> value.isSameUpStation(section.getUpStation())
+                        || value.isSameDownStation(section.getDownStation()))
                 .findAny();
         if (foundExistSectionPoint.isPresent()) {
             Section foundSection = foundExistSectionPoint.get();
@@ -85,6 +85,7 @@ public class Sections {
     private void updateCutInSection(final Section section, final Section foundSection) {
         if (foundSection.isSameUpStation(section.getUpStation())) {
             foundSection.updateStations(section.getDownStation(), foundSection.getDownStation());
+            return;
         }
         foundSection.updateStations(foundSection.getUpStation(), section.getUpStation());
         foundSection.subtractDistance(section.getDistance());
@@ -133,7 +134,11 @@ public class Sections {
 
     public Station findFirstStation() {
         List<Station> downStations = getDownStations();
-        return getUpStations().stream()
+        List<Station> upStations = getUpStations();
+
+        System.out.println(downStations);
+        System.out.println(upStations);
+        return upStations.stream()
                 .filter(station -> !downStations.contains(station))
                 .findFirst()
                 .orElseThrow(() -> new SubwayException("[ERROR] 첫번째 구간을 찾을 수 없습니다."));
