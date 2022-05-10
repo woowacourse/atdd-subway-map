@@ -52,6 +52,10 @@ public class Sections {
             throw new IllegalArgumentException("구간에 존재하지 않는 지하철 역입니다.");
         }
 
+        if (downSection.isPresent() ^ upSection.isPresent()) {
+            downSection.ifPresent(value::remove);
+            upSection.ifPresent(value::remove);
+        }
     }
 
     private void validateSize() {
