@@ -11,9 +11,10 @@ import wooteco.subway.dto.StationRequest;
 
 public class AcceptanceTestFixture {
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    public static final LineRequest.Post lineRequestPost = new LineRequest.Post("name", "red", 1L, 2L, 10);
-    public static final LineRequest.Post lineRequestPost2 = new LineRequest.Post("name2", "blue", 3L, 4L, 10);
-    public static final LineRequest.Put lineRequestPut = new LineRequest.Put("name2", "blue");
+
+    public static final LineRequest.Post line1Post = new LineRequest.Post("1호선", "blue", 1L, 2L, 10);
+    public static final LineRequest.Post line2Post = new LineRequest.Post("2호선", "green", 3L, 4L, 10);
+    public static final LineRequest.Put line2Put = new LineRequest.Put("2호선", "blue");
 
 
     public static String getLineRequest(LineRequest.Put lineRequestPut) {
