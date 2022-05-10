@@ -31,7 +31,7 @@ public class SectionService {
         return sectionDao.create(newSection).getId();
     }
 
-    public Sections findAllByLineId(Long lineId){
+    public Sections findAllByLineId(Long lineId) {
         return new Sections(sectionDao.findAllByLineId(lineId));
     }
 

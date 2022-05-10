@@ -9,6 +9,9 @@ import wooteco.subway.service.dto.line.LineResponseDTO;
 import wooteco.subway.service.dto.section.SectionRequestDto;
 import wooteco.subway.service.dto.station.StationResponseDto;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class ControllerDtoAssembler {
 
     private ControllerDtoAssembler() {
@@ -19,7 +22,10 @@ public class ControllerDtoAssembler {
     }
 
     public static LineResponse lineResponseByDTO(LineResponseDTO lineResponseDTO) {
-        return new LineResponse(lineResponseDTO.getId(), lineResponseDTO.getName(), lineResponseDTO.getColor());
+        List<StationResponse> stations = lineResponseDTO.getStations().stream()
+                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .collect(Collectors.toList());
+        return new LineResponse(lineResponseDTO.getId(), lineResponseDTO.getName(), lineResponseDTO.getColor(), stations);
     }
 
     public static LineRequestDTO lineRequestDTO(LineRequest lineRequest) {

@@ -25,10 +25,10 @@ public class LineAcceptance extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> params = makeParamsLine("1호선", "blue", 1L, 2L, 10);
+        Map<String, String> lineParams = makeParamsLine("1호선", "blue", 1L, 2L, 10);
 
         // when
-        ExtractableResponse<Response> response = createPostLineResponse(params);
+        ExtractableResponse<Response> response = createPostLineResponse(lineParams);
 
         // then
         assertAll(
