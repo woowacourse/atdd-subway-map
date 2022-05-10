@@ -1,6 +1,7 @@
 package wooteco.subway.mockDao;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import wooteco.subway.repository.dao.SectionDao;
 import wooteco.subway.repository.entity.SectionEntity;
@@ -26,5 +27,10 @@ public class MockSectionDao implements SectionDao {
         store.put(saved.getId(), saved);
 
         return saved;
+    }
+
+    @Override
+    public Optional<SectionEntity> findById(final Long id) {
+        return Optional.ofNullable(store.get(id));
     }
 }
