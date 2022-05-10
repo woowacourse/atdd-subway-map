@@ -2,66 +2,55 @@ package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.BDDMockito.given;
+import static wooteco.subway.service.ServiceTestFixture.경의중앙_생성;
+import static wooteco.subway.service.ServiceTestFixture.동두천역_요청;
+import static wooteco.subway.service.ServiceTestFixture.선릉역_요청;
+import static wooteco.subway.service.ServiceTestFixture.수인분당선_수정;
+import static wooteco.subway.service.ServiceTestFixture.이호선_생성;
+import static wooteco.subway.service.ServiceTestFixture.이호선_수정;
+import static wooteco.subway.service.ServiceTestFixture.일호선_생성;
+import static wooteco.subway.service.ServiceTestFixture.잠실역_요청;
+import static wooteco.subway.service.ServiceTestFixture.지행역_요청;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import wooteco.subway.acceptance.AcceptanceTestFixture;
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.NotFoundException;
 
 @SpringBootTest
+@Transactional
 class LineServiceTest {
-    @Mock
-    LineDao lineDao;
-
-    @Mock
-    SectionDao sectionDao;
-
-    @Mock
-    StationDao stationDao;
-
-    @InjectMocks
+    @Autowired
     LineService lineService;
 
-    @Test
-    @DisplayName("지하철 노선 이름이 중복되지 않는다면 등록할 수 있다.")
-    void save() {
-        given(lineDao.isExistName("name")).willReturn(false);
-        given(lineDao.insert("name", "red")).willReturn(new Line(1L, "name", "red"));
+    @Autowired
+    StationService stationService;
 
-        given(sectionDao.insert(1L, 2L, 10, 1L)).willReturn(Section.of(1L, 1L, 2L, 10));
+    @BeforeEach
+    void init() {
+        Long id1 = stationService.insert(잠실역_요청).getId();
+        Long id2 = stationService.insert(동두천역_요청).getId();
 
-        given(stationDao.findById(1L)).willReturn(Optional.of(new Station(1L, "name")));
-        given(stationDao.findById(2L)).willReturn(Optional.of(new Station(2L, "name2")));
-
-        LineResponse lineResponse = lineService.insert(AcceptanceTestFixture.lineRequestPost);
-
-        assertThat(lineResponse.getId()).isEqualTo(1L);
-        assertThat(lineResponse.getName()).isEqualTo("name");
-        assertThat(lineResponse.getColor()).isEqualTo("red");
+        lineService.insert(일호선_생성(id1, id2));
+        lineService.insert(이호선_생성(id1, id2));
     }
 
     @Test
     @DisplayName("지하철 노선 이름이 중복된다면 등록할 수 없다.")
     void saveDuplicate() {
-        given(lineDao.isExistName("name")).willReturn(true);
-        given(lineDao.insert("name", "red")).willReturn(new Line(1L, "name", "red"));
 
-        assertThatThrownBy(() -> lineService.insert(AcceptanceTestFixture.lineRequestPost))
+        Long id1 = stationService.insert(지행역_요청).getId();
+        Long id2 = stationService.insert(선릉역_요청).getId();
+
+        assertThatThrownBy(() -> lineService.insert(일호선_생성(id1, id2)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지하철 노선 이름이 중복될 수 없습니다.");
     }
@@ -69,19 +58,8 @@ class LineServiceTest {
     @Test
     @DisplayName("지하철 노선 목록을 조회할 수 있다.")
     void findAll() {
-        given(lineDao.findAll()).willReturn(List.of(new Line(1L, "name", "red"), new Line(2L, "name2", "blue")));
-        given(sectionDao.findByLineId(1L)).willReturn(List.of(Section.of(1L, 1L, 2L, 10)));
-        given(sectionDao.findByLineId(2L)).willReturn(List.of(Section.of(2L, 3L, 4L, 10)));
-
-        given(stationDao.findById(1L)).willReturn(Optional.of(new Station(1L, "name")));
-        given(stationDao.findById(2L)).willReturn(Optional.of(new Station(2L, "name2")));
-        given(stationDao.findById(3L)).willReturn(Optional.of(new Station(3L, "name3")));
-        given(stationDao.findById(4L)).willReturn(Optional.of(new Station(4L, "name4")));
+        //when
         List<LineResponse> lineResponses = lineService.findAll();
-
-        List<Long> ids = lineResponses.stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
 
         List<String> names = lineResponses.stream()
                 .map(LineResponse::getName)
@@ -91,50 +69,25 @@ class LineServiceTest {
                 .map(LineResponse::getColor)
                 .collect(Collectors.toList());
 
-        assertThat(ids).containsOnly(1L, 2L);
-        assertThat(names).containsOnly("name", "name2");
-        assertThat(colors).containsOnly("red", "blue");
-    }
-
-    @Test
-    @DisplayName("존재하는 지하철 노선을 조회할 수 있다.")
-    void findById() {
-        given(lineDao.findById(1L)).willReturn(Optional.of(new Line(1L, "name", "red")));
-        given(sectionDao.findByLineId(1L)).willReturn(List.of(Section.of(1L, 1L, 2L, 10)));
-        given(stationDao.findById(1L)).willReturn(Optional.of(new Station(1L, "name")));
-        given(stationDao.findById(2L)).willReturn(Optional.of(new Station(2L, "name2")));
-
-        LineResponse response = lineService.findById(1L);
-
-        assertThat(response.getId()).isEqualTo(1L);
-        assertThat(response.getName()).isEqualTo("name");
-        assertThat(response.getColor()).isEqualTo("red");
+        //then
+        assertAll(
+                () -> assertThat(names).containsOnly("1호선", "2호선"),
+                () -> assertThat(colors).containsOnly("green", "blue")
+        );
     }
 
     @Test
     @DisplayName("존재하지 않는 지하철 노선은 조회할 수 없다.")
     void findByIdNotFound() {
-        given(lineDao.findById(1L)).willReturn(Optional.empty());
-
-        assertThatThrownBy(() -> lineService.findById(1L))
+        assertThatThrownBy(() -> lineService.findById(10L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("존재하지 않는 노선입니다.");
     }
 
     @Test
-    @DisplayName("존재하는 지하철 노선을 삭제할 수 있다.")
-    void deleteById() {
-        given(lineDao.delete(1L)).willReturn(1);
-
-        assertDoesNotThrow(() -> lineService.deleteById(1L));
-    }
-
-    @Test
     @DisplayName("존재하지 않는 지하철 노선은 삭제할 수 없다.")
     void deleteByIdNotFound() {
-        given(lineDao.isExistId(1L)).willReturn(false);
-
-        assertThatThrownBy(() -> lineService.deleteById(1L))
+        assertThatThrownBy(() -> lineService.deleteById(30L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 노선입니다.");
     }
@@ -142,30 +95,42 @@ class LineServiceTest {
     @Test
     @DisplayName("존재하는 지하철 노선을 수정할 수 있다.")
     void update() {
-        given(lineDao.findById(1L)).willReturn(Optional.of(new Line(1L, "name2", "blue")));
-        given(lineDao.isExistName(1L, "name2")).willReturn(false);
+        //given
+        Long id1 = stationService.insert(지행역_요청).getId();
+        Long id2 = stationService.insert(선릉역_요청).getId();
 
-        assertDoesNotThrow(() -> lineService.update(1L, AcceptanceTestFixture.lineRequestPut));
+        LineResponse insert = lineService.insert(경의중앙_생성(id1, id2));
+
+        //when & then
+        assertDoesNotThrow(() -> lineService.update(insert.getId(), 수인분당선_수정));
     }
 
     @Test
     @DisplayName("존재하지 않는 지하철 노선을 수정할 수 없다.")
     void updateNotFound() {
-        given(lineDao.update(new Line(1L, "name2", "blue"))).willReturn(0);
-        given(lineDao.isExistName(1L, "name2")).willReturn(false);
+        //given
+        Long id1 = stationService.insert(지행역_요청).getId();
+        Long id2 = stationService.insert(선릉역_요청).getId();
 
-        assertThatThrownBy(() -> lineService.update(1L, AcceptanceTestFixture.lineRequestPut))
+        LineResponse insert = lineService.insert(경의중앙_생성(id1, id2));
+
+        //when & then
+        assertThatThrownBy(() -> lineService.update(insert.getId() + 1, 수인분당선_수정))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 노선입니다.");
+               .hasMessage("존재하지 않는 노선입니다.");
     }
 
     @Test
     @DisplayName("지하철 노선 이름이 중복된다면 수정할 수 없다.")
     void updateDuplicate() {
-        given(lineDao.isExistName(1L, "name2")).willReturn(true);
-        given(lineDao.findById(1L)).willReturn(Optional.of(new Line(1L, "name", "blue")));
+        //given
+        Long id1 = stationService.insert(지행역_요청).getId();
+        Long id2 = stationService.insert(선릉역_요청).getId();
 
-        assertThatThrownBy(() -> lineService.update(1L, AcceptanceTestFixture.lineRequestPut))
+        LineResponse insert = lineService.insert(경의중앙_생성(id1, id2));
+
+        //when & then
+        assertThatThrownBy(() -> lineService.update(insert.getId(), 이호선_수정))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지하철 노선 이름이 중복될 수 없습니다.");
     }
