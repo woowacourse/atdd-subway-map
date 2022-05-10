@@ -4,19 +4,13 @@ import java.util.Objects;
 
 public class SectionViewEntity {
 
-    private final Long lineId;
     private final StationEntity upStation;
     private final StationEntity downStation;
-    private final int distance;
 
-    public SectionViewEntity(Long lineId,
-                             StationEntity upStation,
-                             StationEntity downStation,
-                             int distance) {
-        this.lineId = lineId;
+    public SectionViewEntity(StationEntity upStation,
+                             StationEntity downStation) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
     }
 
     public StationEntity getUpStation() {
@@ -44,24 +38,20 @@ public class SectionViewEntity {
             return false;
         }
         SectionViewEntity that = (SectionViewEntity) o;
-        return distance == that.distance
-                && Objects.equals(lineId, that.lineId) && Objects.equals(
-                upStation, that.upStation)
+        return Objects.equals(upStation, that.upStation)
                 && Objects.equals(downStation, that.downStation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lineId, upStation, downStation, distance);
+        return Objects.hash(upStation, downStation);
     }
 
     @Override
     public String toString() {
         return "SectionViewEntity{" +
-                "lineId=" + lineId +
-                ", upStation=" + upStation +
+                "upStation=" + upStation +
                 ", downStation=" + downStation +
-                ", distance=" + distance +
                 '}';
     }
 }

@@ -18,8 +18,7 @@ public class SectionViewDao {
         StationEntity downStation = new StationEntity(
                 resultSet.getLong("down_station_id"),
                 resultSet.getString("down_station_name"));
-        return new SectionViewEntity(resultSet.getLong("line_id"),
-                upStation, downStation, resultSet.getInt("distance"));
+        return new SectionViewEntity(upStation, downStation);
     };
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -29,11 +28,11 @@ public class SectionViewDao {
     }
 
     public List<SectionViewEntity> findAllByLineId(Long lineId) {
-        final String sql = "SELECT A.line_id, A.distance, B.id AS up_station_id, "
-                + "B.name AS up_station_name, C.id AS down_station_id, C.name AS down_station_name "
+        final String sql = "SELECT B.id AS up_station_id, B.name AS up_station_name, "
+                + "C.id AS down_station_id, C.name AS down_station_name "
                 + "FROM section A, station B, station C "
                 + "WHERE A.up_station_id = B.id AND A.down_station_id = C.id "
-                + "AND line_id = :lineId";
+                + "AND A.line_id = :lineId";
 
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("lineId", lineId);

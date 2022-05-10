@@ -23,8 +23,8 @@ class SectionViewDaoTest extends DaoTest {
         List<SectionViewEntity> actual = dao.findAllByLineId(1L);
 
         List<SectionViewEntity> expected = List.of(
-                new SectionViewEntity(1L, STATION1, STATION2, 10),
-                new SectionViewEntity(1L, STATION2, STATION3, 5));
+                new SectionViewEntity(STATION1, STATION2),
+                new SectionViewEntity(STATION2, STATION3));
 
         assertThat(actual).isEqualTo(expected);
     }
