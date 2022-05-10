@@ -21,8 +21,8 @@ public class LineService {
     public LineResponse save(LineRequest lineRequest) {
         validateNameDuplication(lineRequest.getName());
         Line line = lineRequest.toLine();
-        Line newLine = lineDao.save(line);
-        return LineResponse.of(newLine);
+        Long savedId = lineDao.save(line);
+        return findById(savedId);
     }
 
     private void validateNameDuplication(String name) {
@@ -38,9 +38,9 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse find(Long id) {
+    public LineResponse findById(Long id) {
         validateExistence(id);
-        Line line = lineDao.find(id);
+        Line line = lineDao.findById(id);
         return LineResponse.of(line);
     }
 

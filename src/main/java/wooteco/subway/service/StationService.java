@@ -21,14 +21,20 @@ public class StationService {
     public StationResponse save(StationRequest stationRequest) {
         validateNameDuplication(stationRequest);
         Station station = stationRequest.toStation();
-        Station newStation = stationDao.save(station);
-        return StationResponse.of(newStation);
+        Long savedId = stationDao.save(station);
+        return findById(savedId);
     }
 
     private void validateNameDuplication(StationRequest stationRequest) {
         if (stationDao.existByName(stationRequest.getName())) {
             throw new IllegalArgumentException("중복된 지하철 역 이름입니다.");
         }
+    }
+
+    private StationResponse findById(Long id) {
+        validateExistence(id);
+        Station station = stationDao.findById(id);
+        return StationResponse.of(station);
     }
 
     public List<StationResponse> findAll() {

@@ -24,7 +24,7 @@ public class LineDao {
             resultSet.getString("color")
     );
 
-    public Line save(Line line) {
+    public Long save(Line line) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO LINE(name, color) VALUES(?, ?)";
         String name = line.getName();
@@ -36,9 +36,7 @@ public class LineDao {
             return pstmt;
         }, keyHolder);
 
-        Long id = keyHolder.getKey().longValue();
-
-        return new Line(id, name, color);
+        return keyHolder.getKey().longValue();
     }
 
     public boolean existByName(String name) {
@@ -51,7 +49,7 @@ public class LineDao {
         return jdbcTemplate.query(sql, actorRowMapper);
     }
 
-    public Line find(Long id) {
+    public Line findById(Long id) {
         String sql = "SELECT id, name, color FROM LINE WHERE id =?";
         return jdbcTemplate.queryForObject(sql, actorRowMapper, id);
     }

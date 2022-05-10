@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -17,7 +18,12 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Station save(Station station) {
+    private final RowMapper<Station> actorRowMapper = (resultSet, rowNum) -> new Station(
+            resultSet.getLong("id"),
+            resultSet.getString("name")
+    );
+
+    public Long save(Station station) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO STATION(name) VALUES(?)";
         String name = station.getName();
@@ -27,9 +33,7 @@ public class StationDao {
             return pstmt;
         }, keyHolder);
 
-        Long id = keyHolder.getKey().longValue();
-
-        return new Station(id, name);
+        return keyHolder.getKey().longValue();
     }
 
     public boolean existByName(String name) {
@@ -39,10 +43,7 @@ public class StationDao {
 
     public List<Station> findAll() {
         String sql = "SELECT id, name FROM STATION";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Station(
-                resultSet.getLong("id"),
-                resultSet.getString("name")
-        ));
+        return jdbcTemplate.query(sql, actorRowMapper);
     }
 
     public void delete(Long id) {
@@ -53,5 +54,10 @@ public class StationDao {
     public boolean existById(Long id) {
         String sql = "SELECT EXISTS(SELECT * FROM STATION WHERE id = ?) AS SUCCESS";
         return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    public Station findById(Long id) {
+        String sql = "SELECT id, name FROM STATION WHERE id =?";
+        return jdbcTemplate.queryForObject(sql, actorRowMapper, id);
     }
 }
