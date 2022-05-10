@@ -21,14 +21,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("POST /lines - 지하철 노선 생성 테스트")
     @Nested
-    class CreateLineTest extends AcceptanceTest {
+    class CreateLineTest {
 
         @Test
         void 성공시_201_CREATED() {
             Map<String, String> params = jsonLineOf("신분당선", "bg-red-600");
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/lines", params);
-            LineResponse actualBody = response.jsonPath().getObject(".", LineResponse.class);
+            LineResponse actualBody = extractSingleLineResponseBody(response);
             LineResponse expectedBody = new LineResponse(1L, "신분당선", "bg-red-600");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -66,28 +66,40 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("GET /lines - 지하철 노선 목록 조회 테스트")
-    @Test
-    void 성공시_200_OK() {
-        postLine("신분당선", "bg-red-600");
-        postLine("분당선", "bg-green-600");
+    @Nested
+    class ShowStationsTest {
 
-        ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/lines");
-        List<LineResponse> responseBody = response.jsonPath().getList(".", LineResponse.class);
+        @Test
+        void 성공시_200_OK() {
+            postLine("신분당선", "bg-red-600");
+            postLine("분당선", "bg-green-600");
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(responseBody).hasSize(2);
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/lines");
+            List<LineResponse> actualBody = extractJsonBody(response);
+            List<LineResponse> expectedBody = List.of(
+                    new LineResponse(1L, "신분당선", "bg-red-600"),
+                    new LineResponse(2L, "분당선", "bg-green-600")
+            );
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(actualBody).isEqualTo(expectedBody);
+        }
+
+        private List<LineResponse> extractJsonBody(ExtractableResponse<Response> response) {
+            return response.jsonPath().getList(".", LineResponse.class);
+        }
     }
 
     @DisplayName("GET /lines/:id - 지하철 노선 조회 테스트")
     @Nested
-    class ShowLineTest extends AcceptanceTest {
+    class ShowLineTest {
 
         @Test
         void 성공시_200_OK() {
             postLine("신분당선", "bg-red-600");
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/lines/1");
-            LineResponse actualBody = response.jsonPath().getObject(".", LineResponse.class);
+            LineResponse actualBody = extractSingleLineResponseBody(response);
             LineResponse expectedBody = new LineResponse(1L, "신분당선", "bg-red-600");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -104,7 +116,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("PUT /lines/:id - 지하철 노선 수정 테스트")
     @Nested
-    class UpdateLineTest extends AcceptanceTest {
+    class UpdateLineTest {
 
         @Test
         void 성공시_200_OK() {
@@ -157,7 +169,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("DELETE /lines/:id - 지하철 노선 제거 테스트")
     @Nested
-    class DeleteLineTest extends AcceptanceTest {
+    class DeleteLineTest {
 
         @Test
         void 성공시_204_OK() {
@@ -189,5 +201,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void postLine(Map<String, String> params) {
         HttpUtils.send(HttpMethod.POST, "/lines", params);
+    }
+
+    private LineResponse extractSingleLineResponseBody(ExtractableResponse<Response> response) {
+        return response.jsonPath().getObject(".", LineResponse.class);
     }
 }

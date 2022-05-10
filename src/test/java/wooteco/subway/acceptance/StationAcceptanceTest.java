@@ -21,16 +21,19 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("POST /stations - 지하철역 생성 테스트")
     @Nested
-    class CreateStationTest extends AcceptanceTest {
+    class CreateStationTest {
 
         @Test
         void 성공시_201_CREATED() {
             Map<String, String> params = jsonStationOf("강남역");
 
             ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.POST, "/stations", params);
+            StationResponse actualBody = extractSingleLineResponseBody(response);
+            StationResponse expectedBody = new StationResponse(1L, "강남역");
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             assertThat(response.header("Location")).isNotBlank();
+            assertThat(actualBody).isEqualTo(expectedBody);
         }
 
         @Test
@@ -63,22 +66,33 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("GET /stations - 지하철역 조회 테스트")
-    @Test
-    void 성공시_200_OK() {
-        postStations("강남역", "역삼역");
+    @Nested
+    class ShowStationsTest {
 
-        ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/stations");
+        @Test
+        void 성공시_200_OK() {
+            postStations("강남역", "역삼역");
 
-        List<StationResponse> responseBody = response.jsonPath()
-                .getList(".", StationResponse.class);
+            ExtractableResponse<Response> response = HttpUtils.send(HttpMethod.GET, "/stations");
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(responseBody).hasSize(2);
+            List<StationResponse> actualBody = extractJsonBody(response);
+            List<StationResponse> expectedBody = List.of(
+                    new StationResponse(1L, "강남역"),
+                    new StationResponse(2L, "역삼역")
+            );
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(actualBody).isEqualTo(expectedBody);
+        }
+
+        private List<StationResponse> extractJsonBody(ExtractableResponse<Response> response) {
+            return response.jsonPath().getList(".", StationResponse.class);
+        }
     }
 
     @DisplayName("DELETE /stations/:id - 지하철역 제거 테스트")
     @Nested
-    class DeleteStationTest extends AcceptanceTest {
+    class DeleteStationTest {
 
         @Test
         void 성공시_204_OK() {
@@ -112,5 +126,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     private void postStation(Map<String, String> params) {
         HttpUtils.send(HttpMethod.POST, "/stations", params);
+    }
+
+    private StationResponse extractSingleLineResponseBody(ExtractableResponse<Response> response) {
+        return response.jsonPath().getObject(".", StationResponse.class);
     }
 }
