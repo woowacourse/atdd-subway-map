@@ -9,12 +9,10 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.ExceptionMessage;
-import wooteco.subway.exception.InternalServerException;
 
 @Service
 public class StationService {
 
-    private static final int STATIONS_NOT_DELETED = 0;
     private final StationDao stationDao;
 
     public StationService(StationDao stationDao) {
@@ -41,10 +39,6 @@ public class StationService {
     }
 
     public void delete(Long id) {
-        Integer deletedStations = stationDao.deleteById(id);
-
-        if (deletedStations == STATIONS_NOT_DELETED) {
-            throw new InternalServerException(ExceptionMessage.UNKNOWN_DELETE_STATION_FAIL.getContent());
-        }
+        stationDao.deleteById(id);
     }
 }

@@ -10,13 +10,11 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.exception.ExceptionMessage;
-import wooteco.subway.exception.InternalServerException;
 import wooteco.subway.exception.NotFoundException;
 
 @Service
 public class LineService {
 
-    private static final int LINES_NOT_DELETED = 0;
     private final LineDao lineDao;
 
     public LineService(final LineDao lineDao) {
@@ -57,10 +55,6 @@ public class LineService {
     }
 
     public void deleteById(final Long id) {
-        Integer deletedLines = lineDao.deleteById(id);
-
-        if (deletedLines == LINES_NOT_DELETED) {
-            throw new InternalServerException(ExceptionMessage.UNKNOWN_DELETE_LINE_FAIL.getContent());
-        }
+        lineDao.deleteById(id);
     }
 }
