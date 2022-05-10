@@ -61,4 +61,22 @@ public class Section {
     public boolean equalsWithDownStation(final Section otherSection) {
         return this.downStation.equals(otherSection.upStation) || this.downStation.equals(otherSection.downStation);
     }
+
+    public boolean hasSameUpStation(final Section otherSection) {
+        return this.upStation.equals(otherSection.upStation);
+    }
+
+    public void updateSectionWithSameUpStation(final Section otherSection) {
+        this.upStation = otherSection.downStation;
+        this.distance = this.distance - otherSection.distance;
+    }
+
+    public boolean hasSameDownStationWith(final Section otherSection) {
+        return this.downStation.equals(otherSection.downStation);
+    }
+
+    public void updateSectionWithSameDownStation(final Section otherSection) {
+        this.downStation = otherSection.upStation;
+        this.distance = this.distance - otherSection.distance;
+    }
 }

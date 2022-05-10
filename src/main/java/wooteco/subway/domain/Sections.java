@@ -45,7 +45,7 @@ public class Sections {
 
     private List<Station> createSortedStations(Section section) {
         final List<Station> stations = new ArrayList<>();
-        while (isNotLastSection(section)) {
+        while (!isLastSection(section)) {
             stations.add(section.getUpStation());
             stations.add(section.getDownStation());
             section = nextSection(section);
@@ -55,9 +55,9 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    private boolean isNotLastSection(final Section section) {
+    private boolean isLastSection(final Section section) {
         return sections.stream()
-                .anyMatch(existingSection -> existingSection.isLowerThan(section));
+                .noneMatch(existingSection -> existingSection.isLowerThan(section));
     }
 
     private Section nextSection(final Section section) {
@@ -69,6 +69,11 @@ public class Sections {
 
     public void addSection(final Section section) {
         validateAddableSection(section);
+        if (isTopSection(section) || isLastSection(section)) {
+            sections.add(section);
+            return;
+        }
+        addSectionToMiddle(section);
     }
 
     private void validateAddableSection(final Section section) {
@@ -97,5 +102,35 @@ public class Sections {
     private boolean hasEqualDownStationWith(final Section section) {
         return sections.stream()
                 .anyMatch(existingSection -> existingSection.equalsWithDownStation(section));
+    }
+
+    private void addSectionToMiddle(final Section section) {
+        sections.add(section);
+        if (hasSameUpStation(section)) {
+            updateSectionWithSameUpStation(section);
+            return;
+        }
+        updateSectionWithSameDownStation(section);
+    }
+
+    private boolean hasSameUpStation(final Section section) {
+        return sections.stream()
+                .anyMatch(existingSection -> existingSection.hasSameUpStation(section));
+    }
+
+    private void updateSectionWithSameUpStation(final Section section) {
+        final Section sectionWithSameUpStation = sections.stream()
+                .filter(existingSection -> existingSection.hasSameUpStation(section))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
+        sectionWithSameUpStation.updateSectionWithSameUpStation(section);
+    }
+
+    private void updateSectionWithSameDownStation(final Section section) {
+        final Section sectionWithSameDownStation = sections.stream()
+                .filter(existingSection -> existingSection.hasSameDownStationWith(section))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
+        sectionWithSameDownStation.updateSectionWithSameDownStation(section);
     }
 }
