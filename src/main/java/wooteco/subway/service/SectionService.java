@@ -1,9 +1,10 @@
 package wooteco.subway.service;
 
-import java.util.Optional;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.SectionRequest;
 
 @Service
@@ -22,43 +23,38 @@ public class SectionService {
             return;
         }
 
-        if (sectionDao.existByLineIdAndStationId(lineId, sectionReq.getUpStationId())
-                && sectionDao.existByLineIdAndStationId(lineId, sectionReq.getDownStationId())) {
-            throw new IllegalArgumentException("상행, 하행이 대상 노선에 둘 다 존재합니다.");
-        }
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
 
-        if (!sectionDao.existByLineIdAndStationId(lineId, sectionReq.getUpStationId())
-                && !sectionDao.existByLineIdAndStationId(lineId, sectionReq.getDownStationId())) {
-            throw new IllegalArgumentException("상행, 하행이 대상 노선에 둘 다 존재하지 않습니다.");
-        }
+        long upStationId = sectionReq.getUpStationId();
+        long downStationId = sectionReq.getDownStationId();
+        int distance = sectionReq.getDistance();
 
-        Optional<Long> upStationId = sectionDao.findIdByLineIdAndUpStationId(lineId,
-                sectionReq.getUpStationId());
-        if (upStationId.isPresent()) {
-            int distance = sectionDao.findDistanceById(upStationId.get());
-            if (distance <= sectionReq.getDistance()) {
-                throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우, 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다.");
-            }
-        }
+        sections.validateSection(upStationId, downStationId, distance);
 
-        Optional<Long> downStationId = sectionDao.findIdByLineIdAndDownStationId(lineId,
-                sectionReq.getDownStationId());
-        if (downStationId.isPresent()) {
-            int distance = sectionDao.findDistanceById(downStationId.get());
-            if (distance <= sectionReq.getDistance()) {
-                throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우, 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다.");
-            }
+        Section section = sections.find겹치는SectionId(upStationId, downStationId, distance);
+        if (section.getId() != null) {
+            sectionDao.deleteById(section.getId());
+            sectionDao.save(section);
         }
-
-        Section section = createSection(lineId, sectionReq, sectionDao.findLineOrderById(lineId));
-        sectionDao.save(section);
+        Sections sectionsss = new Sections(sectionDao.findAllByLineId(lineId));
+        sectionDao.updateLineOrder(lineId, section.getLineOrder());
+        sectionDao.save(createSection(lineId, sectionReq, section.getLineOrder()));
+        Sections sectionss = new Sections(sectionDao.findAllByLineId(lineId));
     }
 
     private Section createSection(Long lineId, SectionRequest sectionReq, Long lineOrder) {
-        return new Section(lineId,
+        return new Section(
+                null,
+                lineId,
                 sectionReq.getUpStationId(),
                 sectionReq.getDownStationId(),
                 sectionReq.getDistance(),
-                lineOrder);
+                lineOrder
+        );
+    }
+
+    public List<Long> findAllStationByLineId(long lineId) {
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        return sections.getStationsId();
     }
 }

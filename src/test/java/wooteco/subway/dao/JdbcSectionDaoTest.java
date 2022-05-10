@@ -19,6 +19,7 @@ import wooteco.subway.domain.Section;
 class JdbcSectionDaoTest {
 
     public static final Section GIVEN_SECTION = new Section(
+            1L,
             1L, 1L, 2L,
             6, 1L);
 
@@ -32,9 +33,7 @@ class JdbcSectionDaoTest {
     @Test
     @DisplayName("Section을 저장한다.")
     void saveSection() {
-        Section section = GIVEN_SECTION;
-
-        Long id = sectionDao.save(section);
+        Long id = sectionDao.save(GIVEN_SECTION);
 
         assertThat(id).isEqualTo(1L);
     }
@@ -201,10 +200,10 @@ class JdbcSectionDaoTest {
         sectionDao.save(GIVEN_SECTION);
         sectionDao.save(new Section(
                 1L, 2L, 3L,
-                6, 2L));
+                6, 2));
 
         // when
-        List<Section> sections = sectionDao.findByLineId(1L);
+        List<Section> sections = sectionDao.findAllByLineId(1L);
 
         // then
         assertThat(sections).hasSize(2)

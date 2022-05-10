@@ -32,9 +32,7 @@ class SectionServiceTest {
         sectionService.save(1L, GIVEN_SECTION_REQ);
 
         // when
-        Throwable thrown = catchThrowable(() -> {
-            sectionService.save(1L, GIVEN_SECTION_REQ);
-        });
+        Throwable thrown = catchThrowable(() -> sectionService.save(1L, GIVEN_SECTION_REQ));
 
         // then
         assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
@@ -59,9 +57,7 @@ class SectionServiceTest {
         sectionService.save(1L, GIVEN_SECTION_REQ);
 
         // when
-        Throwable thrown = catchThrowable(() -> {
-            sectionService.save(1L, new SectionRequest(3L, 4L, 6));
-        });
+        Throwable thrown = catchThrowable(() -> sectionService.save(1L, new SectionRequest(3L, 4L, 6)));
 
         // then
         assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
@@ -75,9 +71,7 @@ class SectionServiceTest {
         sectionService.save(1L, GIVEN_SECTION_REQ);
 
         // when
-        Throwable thrown = catchThrowable(() -> {
-            sectionService.save(1L, new SectionRequest(1L, 3L, 6));
-        });
+        Throwable thrown = catchThrowable(() -> sectionService.save(1L, new SectionRequest(1L, 3L, 6)));
 
         // then
         assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
@@ -91,12 +85,24 @@ class SectionServiceTest {
         sectionService.save(1L, GIVEN_SECTION_REQ);
 
         // when
-        Throwable thrown = catchThrowable(() -> {
-            sectionService.save(1L, new SectionRequest(3L, 2L, 6));
-        });
+        Throwable thrown = catchThrowable(() -> sectionService.save(1L, new SectionRequest(3L, 2L, 6)));
 
         // then
         assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("역 사이에 새로운 역을 등록할 경우, 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("구간 등록 테스트")
+    void saveTest() {
+        // given
+        sectionService.save(1L, new SectionRequest(1L, 3L, 6));
+
+        // when
+        sectionService.save(1L, new SectionRequest(1L, 2L, 3));
+
+        // then
+        assertThat(sectionService.findAllStationByLineId(1L))
+                .containsExactly(1L, 2L, 3L);
     }
 }

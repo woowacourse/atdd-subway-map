@@ -22,5 +22,7 @@ public interface SectionDao {
 
     boolean existByLineId(Long lineId);
 
-    List<Section> findByLineId(Long lineId);
+    List<Section> findAllByLineId(Long lineId);
+
+    void deleteById(Long id);
 }

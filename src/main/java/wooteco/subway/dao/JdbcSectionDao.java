@@ -92,10 +92,11 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public List<Section> findByLineId(Long lineId) {
+    public List<Section> findAllByLineId(Long lineId) {
         String sql = "SELECT * from \"SECTION\" WHERE line_id = (?)";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             return new Section(
+                    rs.getLong("id"),
                     rs.getLong("line_id"),
                     rs.getLong("up_station_id"),
                     rs.getLong("down_station_id"),
@@ -103,5 +104,11 @@ public class JdbcSectionDao implements SectionDao {
                     rs.getLong("line_order")
             );
         }, lineId);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM \"SECTION\" WHERE id = (?)";
+        jdbcTemplate.update(sql, id);
     }
 }
